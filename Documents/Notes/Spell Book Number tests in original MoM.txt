@@ -1,0 +1,30 @@
+11 - 40% reduction
+13 - 60% reduction
+15 - 80% reduction
+17 - 100% reduction
+mastery - 15% reduction
+Reductions are capped at 100%, i.e. when spells are free (it does stop costs going -ve)
+They give this figure as a BONUS for research rather than a reduction in research cost of spells
+Research bonuses are not capped - combined with mastery & sage, tested up to at least 120% bonus
+None of these help with upkeep of summoned units, global/city/unit enchantments
+
+conjurer - 25% off casting and maintenance, 25% bonus to research of summoning spells
+Maint is rounded up, i.e. 15 maint -> 11.25 -> 12 maint
+(So it is possible with 15 spell books & conjurer to cast free summoning spells)
+
+sage - 25% bonus to research
+
+channeler - 50% off maint (round remainder down, i.e. maint 7 -> 3.5 -> maint 3)
+channeler DOES reduce cost of unit enchantments and maintance of summoned units, but the unit display in the original MoM doesn't show it
+e.g. Storm Giant (10 upkeep) with Wind Walking (10 upkeep) with channeler & conjurer
+75% reduction on the Storm Giant = 2.5 = 3, 50% reduction on Wind Walking = 5, total = 8
+
+Runemaster gives 25% off Arcane, but this can never be a problem since even for Magic Spirits the reduction may be:
+Runemaster 25% + Conjurer 25% = 50% off
+
+Heroes:
+Verified that Conjurer has no effect on researching, casting or upkeep of Summon Hero, even though its a Summoning Spell
+Verified that Conjurer has no effect on lowering casting cost of Torin, however it (rather oddly) does reduce his upkeep
+
+
+Ench Item & Create Artifact in the original are in section "Special Spells"

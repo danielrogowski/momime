@@ -1,0 +1,3 @@
+Made the disabled unit skill icons in PSP by altering brightness -80 by and contrast by -70
+Made attribute/RAT icons look alchemy-ish by doing R-13 G+4 B+13
+Made attribute/RAT icons look adamantium-ish by doing R-35 G-73 B-33

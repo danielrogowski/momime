@@ -1,0 +1,128 @@
+<HTML><HEAD><TITLE>Master of Magic - Implode's Multiplayer Edition - Source code readme</TITLE></HEAD>
+<link rel="stylesheet" type="text/css" href="mom.css" />
+<body>
+<h2>Master of Magic - Implode's Multiplayer Edition - Source code readme</h2>
+<p>This is a quick runthrough describing the project structure and necessary steps to build and run MoM IME.  It assumes
+you're familiar enough with using SVN, Maven and Eclipse.</p>
+
+<h3>Obtaining the source code</h3>
+<p>The MoM IME source code is currently available at <a href="http://sourceforge.net/m/momime">Sourceforge - MoM IME</a> and
+can be checked out using a command line SVN utility, TortoiseSVN or similar.  Note the default project root Sourceforge provides
+in the edit box <code>//svn.code.sf.net/p/momime/code/trunk</code> does not exist, MoMIME is split into separate subprojects
+corresponding to each Maven artefact so that each artefact can be separately versioned and the correct dependencies between versions
+set in all the project POMs.  Each subproject can be downloaded using SVN from the
+path <code>//svn.code.sf.net/p/momime/code/Java/<b>subprojectname</b>/trunk</code>.</p>
+
+<h3>Source code license</h3>
+<p>The MoM IME source code is distributed under the <a href="http://www.gnu.org/licenses/gpl.html">GNU General Public License (GPL)</a>.</p>
+
+<h3>Building</h3>
+<p>The MoM IME source code is built using Maven 3.x on the command line by building each of the subprojects/artefacts in the following
+order.  All other necessary libraries should be automatically downloaded by maven.</p>
+
+<table border=1>
+<tr><th>Subproject/artefact</th><th>Description</th></tr>
+<tr><td>NdgParent</td><td>Parent POM referenced by all the other artefacts.</td></tr>
+<tr><td>NdgRandom</td><td>Random number generator interface, so random results can be mocked in unit tests.</td></tr>
+<tr><td>NdgMap</td><td>Library for traversing coordinates around square and hex maps and performing operations on them.</td></tr>
+<tr><td>NdgMultiplayerBase</td><td>Multiplayer layer that allows clients to connect to a server over TCP/IP, and XML objects to be passed between them using JAXB.</td></tr>
+<tr><td>NdgMultiplayerSessionBase</td><td>Adds to NdgMultiplayerBase concept of sessions (game instances).  The server stores a user
+	registry; users must log on, start a session, others can then join, and clients in the same session have knowledge
+	about each other leaving and joining the session.  The state of each session is designed to be entirely contained so it can be persisted (i.e. save game files).  This
+	basically defines the messaging layer to support all this, with no implementation.
+	<br/>This is still hub-and-spoke architecture - clients have no direct connections to each other - if one client in a session
+	needs to send a message to another client, it must send the message to the server and code must be written on the server that
+	knows to bounce that message to the destination client.</td></tr>
+<tr><td>NdgMultiplayerSessionServer</td><td>Server-side implementation of NdgMultiplayerSessionBase.</td></tr>
+<tr><td>NdgMultiplayerSessionClient</td><td>Client-side implementation of NdgMultiplayerSessionBase.</td></tr>
+<tr><td>NdgUtils</td><td>General purpose utils lib, especially for Swing screen layouts.</td></tr>
+<tr><td>MoMIMECommon</td><td>Common code shared by the MoM IME Java server and client.</td></tr>
+<tr><td>MoMIMEServer</td><td>Main MoM IME Java server code.</td></tr>
+<tr><td>MoMIMEClient</td><td>Main MoM IME Java client code.  Note this is in the most part empty for now as the current client will still be
+	based in Delphi, however there is a dummy Java client in /src/test/java/momime.client.dummy which can be used to simulate
+	network messages to/from the MoM IME client in order to test out the server.  See "General project direction" below.</td></tr>
+<tr><td colspan=2><br/><br/></td></tr>
+<tr><td>NdgXmlEditor</td><td>Generic XML editor which uses info from XSDs to build forms with fields based on all the XSD type
+	defintions.  Forms are customisable as necessary.  All the MoM IME editors are extensions based on this.</td></tr>
+<tr><td>MoMIMEUtils</td><td>Helper classes for dealing with original MoM and MoM IME file formats; currently only required by MoMIMEEditors.</td></tr>
+<tr><td>MoMIMEEditors</td><td>MoM-specific extensions to NdgXmlEditor to allow editing all the XML files used by the game.</td></tr>
+</table>
+
+<h3>Other SVN checkouts</h3>
+
+<p>The following are other subprojects under the main Java folder in the SVN repository, but that are not maven artefacts used to build the main project:</p>
+
+<table border=1>
+<tr><th>Subproject/artefact</th><th>Description</th></tr>
+<tr><td>NdgMultiplayerBaseDemo</td><td>Exmaple server and client based on NdgMultiplayerBase so that this can be tested in isolation from session semantics.</td></tr>
+<tr><td>NdgMultiplayerSessionDemo</td><td>Exmaple server and client based on NdgMultiplayerSessionBase so that this can be tested in isolation from MoM.</td></tr>
+<tr><td>MoMIMEDocuments</td><td>Documents about building, developing, running, editing MoM IME and so on.</td></tr>
+<tr><td>MoMIMEMiscellanous</td><td>Eclipse formatting files, reference material like screen layouts and documentation from the original Master of Magic, installation project and completed installation files for end users.</td></tr>
+</table>
+
+<h3>Editing</h3>
+<p>MoM IME is developed using the latest version of Eclipse (currently 3.7/Indigo) with the following plugins (installed using Help - Install New Software from within the Eclipse IDE).  These
+are plugins are to support maven artefacts and dependencies within Eclipse:</p>
+
+<table border=1>
+<tr><th>Plugin</th><th>URL</th><th>Items to install</th></tr>
+<tr><td>subclipse</td><td>http://subclipse.tigris.org/update_1.8.x</td><td>3 required items to install</td></tr>
+<tr><td>m2eclipse 1.1</td><td>http://download.eclipse.org/technology/m2e/milestones/1.1</td><td>1 required item to install</td></tr>
+</table>
+
+<p><b>Important: </b>Even if you are using Eclipse which in the most part auto-builds all the code fine, you will still have to
+do a complete build of all the projects on the Maven command line first, otherwise Eclipse doesn't find the JAXB episode files.  Eclipse
+also regularly gives errors saying "Cannot parse the input schema(s).  Error messages should have been provided", but of course, none
+are provided.  This doesn't seem to stop anything from running correctly.</p>
+
+<p>The source code is properly aligned (e.g. tabs) if the editor font in Eclipse is set to <b>Tahoma 10</b> so please use this.  A formatting file is available in
+the MoMIMEMiscellaneous project, but even so this is there as a general guildline and so autocomplete on code formats it correctly,
+rather than for using the Eclipse autoformat option which will muck up a lot of tab and comment alignments so please don't use it and then check code back in.</p>
+
+<h3>General project direction, and Delphi reference code</h3>
+<p>Versions of MoM IME up to 0.9.3.1 were coded entirely in Delphi.  This code is available in SVN under
+<code>//svn.code.sf.net/p/momime/code/Delphi/<b>subprojectname</b>/trunk</code>.  The intention is for version 0.9.4, the server to be
+ported to Java and the messaging protocol changed to XML based, which is well underway, but for 0.9.4 the old Delphi client will be
+retained and modified to 'talk' using the new XML protocol.  From version 0.9.5 the client will also be ported to Java at which point the Delphi
+code will become redundant and be removed.  So the Delphi code is in the most part being provided purely as reference material.</p>
+
+<h3>Thread safety - Server</h3>
+<p>One of the major problems with the Delphi code, and what killed my first attempt at trying to port the server to Java, is the thread model
+that it uses.  Much of the game memory storage involves lists; access to (in the old thread model) which must be synchronized so that one
+thread doesn't try to read the list while another is updating it.  Any network app is inherently multi-threaded since, on the server, each
+client connection runs in its own thread which blocks until the next message from the client arrives.  So the Delphi code works such that
+access to any list from any thread must first lock the list.  Furthermore, because there are hundreds of such lists, the locking must always
+be performed in the same order to avoid any chance of deadlocks.  This became unmanageably complicated once I got into methods that required
+15-20 lists to be locked simultaneously.  Moreover, I came to the realise that it was all pointless since nearly every method inevitably
+needed to lock one of the main lists (e.g. list of players, the map terrain, or so on) and so none of them were going to run concurrently
+anyway so I was going to massive effort to try to enable threads to run concurrently with no benefit at all.</p>
+
+<p>So instead, in the new Java server port, I've taken a drastically different approach to thread safety, which is to say that only a single
+thread is able to access the entire game world.  Each session has its own thread, so if there are 3 games currently in progress, each of the
+3 games will run in its own 'session thread' concurrently since the 3 'game worlds' can be read/updated independantly and concurrently.  As messages arrive on each client connection, those messages are posted onto
+the queue for the session thread for whichever session that player is in, and then processed in sequence.  If a player leaves one
+session and joins another, the server will simply switch which session thread message queue that player's messages are being posted
+to.  All this session thread handling and message queueing is all done inside NdgMultiplayerSessionServer.  Thus none of the code in
+MoMIMEServer ever has to worry about thread safety issues.</p>
+
+<h3>Thread safety - Client</h3>
+
+<p>The Java client port will work in much the same way.  The client is simplier in that it only ever has
+a single game world to deal with, and a single connection it is receiving messages from (the server), however it is more complicated in
+that it has to continually redrawing the screen.  It will avoid thread safety issues by in the most part being single threaded.  That means
+it cannot be processing a message from the server at the same time as it is redrawing the screen.</p>
+
+<p>So the client will basically run in an endless loop.  If there is a message from the server to process then do so; otherwise redraw
+the screen and loop again.  If a message arrives from the server mid-way through the screen being redrawn, it will be queued up and
+processed once the screen redraw completes.  While this might make the appearance slightly jerky if screen redraws freeze momentarily when
+big messages are processed, I think its worth that sacrifice to have a thread safety model that is easy to use, and really the client should
+not be doing much heavy processing as a result of receiving messages from the server anyway, since all the heavy processing should
+be done server-side.</p>
+
+<h3>Eclipse Set-up</h3>
+<p>To actually run the server from Eclipse you need a local - not versioned - copy of MoMIMEServerConfig.xml.  In there you put paths to your copies of the server database (versioned 
+file found at MoMIMEServerDatabase\src\external\resources\momime.server.database) which can be referenced directly; and user registry (an empty versioned 
+file found at NdgMultiplayerSessionServer\src\external\resources\com.ndg.multiplayer.userregistry but you need to take a copy of this to some
+other non-versioned location and then reference that from the config file).</p>
+
+</body></html>

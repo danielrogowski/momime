@@ -1,0 +1,245 @@
+<HTML>
+<HEAD>
+<TITLE>Master of Magic - Implode's Multiplayer Edition - Notes on Overland AI</TITLE>
+</HEAD>
+<link rel="stylesheet" type="text/css" href="mom.css" />
+<BODY>
+	<h1>Master of Magic - Implode's Multiplayer Edition - Notes on Overland AI</h1>
+
+	<h2>Unit ratings</h2>
+	<p>
+		The overall goal setting depends on understanding these concepts, so they should be listed here first.
+	</p>
+
+	<h3>Unit Current Rating (UCR)</h3>
+	<p>
+		Value describing current strength of unit, computed from its attributes (ExpandedUnitDetails structure) as follows:
+	</p>
+	<ul>
+		<li>+10 for each melee attack, +10 for each defence, +15 for each HP, +20 for each ranged attack.
+		<li>Resistance needs a sliding scale, say +10 for first 5 points, then 6th is only +9, 7th is +8 and so on, since really high resistance ceases to be useful.
+		<li>Spells will be included by virtue of the skills that they grant (already dealt with when ExpandedUnitDetails is built).
+		<li>Skills that add attributes (e.g. Holy Armour, Lionheart) need nothing extra - they'll get bonuses from the attribute scores.
+		<li>Skills with more passive effects will either give a constant +value, e.g. First Strike may give +30; or will give a multiplier applies once all additive values are summed together,
+			e.g. Regeneration may give x2, Undead may give x0.25.
+		<li>At the end, multiply up by the number of figures the unit has, including damage taken to the lead figure, so may multiply a slightly damaged spearmen unit by x7.5.
+	</ul>
+
+	<h3>Unit Potential Rating (UPR)</h3>
+	<p>
+		Same as UCR except that it describes the value a unit has the potential to become, so will assume:
+	</p>
+	<ul>
+		<li>That the unit is fully healed.
+		<li>That the unit has maximum experience (doesn't necessarily mean maximum level - don't assume we'll get Warlord+Crusade).
+		<li>That hero items are at least +2 to several stats (if empty slots or low quality items - don't downgrade higher quality items).
+	</ul>
+
+	<h3>Unit Average Rating (UAR)</h3>
+	<p>
+		General quality score for how good the AI considers a paticular unit to be for planning purposes - when considering it for purposes of defending cities, purchasing, and so on.
+	</p>
+	<ul>
+		<li>UAR = (UCR + UPR) / 2.
+		<li>Use UCR instead when considering for purposes of whether initiating a particular attack is a good idea or not. 
+	</ul>
+
+
+
+	<h2>Unit goal setting</h2>
+
+	<h3>What can you do with units?</h3>
+	<p>
+		You can:
+	</p>
+	<ul>
+		<li>Defend a city.
+		<li>Park in a city for reasons other than defence (caster heroes giving bonus to wizard's casting skill by parking in fortress).
+		<li>Defend a captured node.
+		<li>Defend a captured tower of wizardy.
+		<li>Scout unknown terrain.
+		<li>Capture empty nodes/lairs/towers.
+		<li>Group into attack squads.
+		<li>Attack nodes/lairs/towers/enemy cities/enemy unit stacks.
+	</ul>
+
+	<h3>Unit movement decision process</h3>
+	<p>
+		Defensive:
+	</p>
+	<ul>
+		<li>Examine all our defensive positions - principally cities, but there's no reason this shouldn't also apply to empty/our nodes and towers as well.
+		<li>For each evaluate their strategic importance - for towers this is probably a fixed value (perhaps less if it is a single cell island on one or both planes);
+			for nodes this is just a number mulitplied by the magic power gained from the nodes (they're worth more on "powerful" games); for cities evaluating this
+			is a whole topic in itself but will be based on things like the city production (of all kinds - max size, % production bonus and so on), what buildings it has,
+			and a massive bonus if it contains your wizard's fortress.
+		<li>There needs to be some kind of weighting factor for the expected strength of attackers - so the AI isn't crazy paranoid about having almost no defence in its wizard's
+			fortress on turn 1, but later in the game that one unit of swordsmen defending just doesn't cut it anymore.  This could just ramp up based on the turn number for now,
+			which I don't really like the idea of, but given that you can't make an informed decision about what you don't know, and you can't see what enemy wizards are doing,
+			the only alternative is that the AI is actively sending out scouting patrols against all enemy wizards just to continually scan the state of their cities and armies,
+			which seems exceedingly difficult to write and probably a waste of our units even if I could write it.
+		<li>For each total up the UAR of all units stationed there.
+		<li>Then by comparing the weighted strategic importance value against the total of UARs, every defensive position can be categorized as either - not enough defence,
+			just right, or too much defence.
+		<li>Now ignoring any positions which are "just right", we can make two lists, one containing all places that need additional defensive units added, and another of
+			all units which are "mobile" - free to go help defend somewhere or form into attack squads.
+		<li>We then fulfill any defensive defecit by sending any available mobile units on movement paths to those locations.
+		<li>If after doing so, there's no mobile units left, then decision process stops here.
+		<li>
+	</ul>
+	<p>
+		Offensive:
+	</p>
+	<ul>
+		<li>Evalulate all potential targets compared to available unit stacks to see if we think there's any node/lair/tower/city we can capture, by comparing the sum of our UCRs against theirs.
+		<li>Consider the sum of all UCRs of all mobile units for whether its worth grouping mobile units into a stack to take out a tougher target.
+		<li>If no suitable targets exist, consider scouting - is every reachable terrain tile (i.e. our island, or if we are a boat, then entire ocean) known?  If not then go scout it.
+		<li>If no suitable targets exist and there is nothing we can scout, then just go bolster up defensive positions instead (we could be stuck on a small island, or we
+			could just need time to build more units before we can attack a tougher target).
+		<li>An interesting note to this is that there is no mechanism whereby units will decide to leave a unit stack, only join it to make it bigger.  I think that's reasonable, and also
+			avoids trying to code any difficulties around, what if the AI has a really useful unit joined with the stack (like Wind Mage hero) - then coding circumstances under which
+			we cannot break apart unit stacks.  I think its easier and not unreasonable to just say we NEVER break apart unit stacks.
+	</ul>
+	<p>
+		Miscellaneous.  The above only covers military units.  Other units will require special coding:
+	</p>
+	<ul>
+		<li>Magic/guardian spirits will need to search for nodes they can access without a fight (whether already captured by another spirit or not) to move to and try to capture.
+		<li>Settlers will need to evaluate the best available free location for a new city and move there.
+	</ul>
+
+
+
+	<h2>Cities goal setting</h2>
+
+	<h3>What can you do with cities?</h3>
+	<p>
+		You can construct:
+	</p>
+	<ul>
+		<li>A - More units.
+		<li>B - Structures whose purpose is to improve units built there in future (e.g. Fighters' Guild).
+		<li>C - City growth and economy structures (e.g. Granary, Bank).
+		<li>D - Settlers.
+		<li>E - Trade goods.
+	</ul>
+
+	<h3>City construction decision process</h3>
+	<ul>
+		<li>The first thing we need to decide, across all cities, is our urgency to build more units.  Key factor here is the number of units categorized as "mobile" from the unit movement logic.
+			i.e. Zero mobile units means we're underdefended and building more units is critical.  A low number of mobile units means we have no offensive or scouting capability so
+			building more units is still very important.  A high number of mobile units means we probably don't need to build more.  Countering that is the state of our economy - if we
+			can't afford any more gold or rations upkeep, then don't build more units.
+		<li>If we have an urgent need to build more units, decide the best place(s) to build them at (see below) and do so, so "A".
+		<li>If we have a less urgent need to build more units, can elect to slot in some improvement structures first so the units we build are better, so "A" or "B".
+		<li>If we don't need any more units, but this city is the best place to build them, then "B" or "C".
+		<li>In all other cases (i.e. either we don't need units, or we do need units but this is a bad place to build them), then the only decision is whether there's spare space to colonize
+			and so build some settlers once our city gets large enough (6,000 or more?), so "C" or "D".
+		<li>If there's no economy structures left to build and we don't need any settlers, then "E".
+		<li>Worth noting that this process means the AI will tend to build settlers not in its unit factories, which is a good thing - we really don't care if our settlers have adamantium carts.
+		<li>I'm a little undecided whether this process needs segmenting by map areas, but am tempted to just make it global - even if your factory that can build adamantium
+			longbowmen might be on the other plane and miles away, you're going to want to make units there and ship them across rather than build crappy units locally.
+	</ul>
+
+
+
+	<h2>City ratings and categorization</h2>
+	<p>
+		There are really only two categories of city: Unit factory, yes/no.  Everything that is a "no" is just a general economic city producing gold, rations and research.
+Which city to use as our unit factory needs to be evaluated on the fly and not persisted.  Its quite possible we could capture an enemy city right next to an adamanium deposit that
+makes our previous unit factory immediately obsolete.
+	</p>
+
+	<h3>Combat Factory Rating (CFR)</h3>
+
+	<ul>
+		<li>CFR = Max (UAR) across all units that can currently be produced there.
+		<li>The expandUnitDetails calculation engine will already take into account bumping up CFRs for Adamantium deposits, War Colleges, etc.
+		<li>So our designated unit factory is simply the one (or two) with the highest CFR.
+	</ul>
+
+
+
+	<h2>Overland spell casting</h2>
+	<p>
+		This needs a lot more thought yet.  For now I'm making notes of the kinds of things the spell casting AI will have to think about: 
+	</p>
+	<ul>
+		<li>If there are more nodes which are empty or occupied by our units but not owned by us than we have mobile spirits, then summon one.
+		<li>Summoning units to compliment constructing units in cities.
+		<li>Casting enhantments (e.g. Lionheart) on important units or cities.
+		<li>Healing damaged units.
+	</ul>
+
+	
+	<h2>Unit categorization</h2>
+	<p>All the above really only applies to land based combat units.  Other units that have special roles will require their own special rules about
+when we need to construct them, and where to move them and what to do.  So thinking the way to really write this is similar to the unit movement codes
+that worked so well in my other AI.  So the first problem is how to categorize units.  Each unit category will have two sets of codes - one to decide when to construct it,
+and another to decide what to do with it each turn, as well as a flag for whether to consider it as a combat unit or not (so the AI stops trying to defend cities with settlers).
+All non-combat units are considered to have ratings (UCR/UAR) of zero.  (This means the AI will never try attacking with Guardian Spirits, Galleys or Warships for example,
+which I am mostly fine with, though its a shame it'll never initiate naval combats).  Units will only stack with units of the same category, so we don't hamper flying units by stacking them with ground units.
+	</p>
+	<p>These unit categories need to be processed in a specific order - we have to have realised that our land units have nothing to do prior to deciding where to send
+transports, so that transports know which islands they are needed on.
+	</p>
+	<ul>
+		<li>Combat units (no matter if they are ground-only combat units, or swimming or flying combat units)
+			<ul>
+				<li>R - Reinforce reachable underdefended locations (or capture empty locations) if there are any
+				<li>A - Attack any reachable defended locations that our current stack is strong enough to
+				<li>W - Attack any reachable enemy unit stacks that are just wandering around the map that our current stack is strong enough to
+				<li>S - Scout reachable unknown terrain if there is any; really this is two steps, first "scout unknown terrain with at least one adjacent land tile" and secondly "scout any unknown terrain", so boats will hug coastline
+				<li>J - Join a bigger stack (of the same unit category - this stops us moving onto transports to stack with them) if there are any reachable defended locations that we aren't strong enough to
+				<li>P - Do we own any reachable towers that would allow us to do any of the above on the opposite plane, if so move to the tower
+				<li>T - If we can't fly or swim (i.e. if any terrain is impassable to us), we are not a transport, and we can reach a transport, then move to it (or stay inside, if we are already in one)
+				<li>D - As last resort, overdefend (or hide in) our locations - if this happens, it needs to set some kind of flag that tells us we need to move transports to this island
+			</ul>
+		<li>Land settlers
+			<ul>
+				<li>B - If we can see a good spot to build a city then head there and do so
+				<li>S - Scout reachable unknown terrain if there is any; really this is two steps, first "scout unknown terrain with at least one adjacent land tile" and secondly "scout any unknown terrain", so boats will hug coastline
+				<li>P - Do we own any reachable towers that would allow us to do any of the above on the opposite plane, if so move to the tower
+				<li>T - If we can't fly or swim (i.e. if any terrain is impassable to us) and we can reach a transport, then move to it (or stay inside, if we are already in one)
+				<li>D - As last resort, overdefend (or hide in) our locations - if this happens, it needs to set some kind of flag that tells us we need to move transports to this island
+			</ul>
+		<li>Land engineers
+			<ul>
+				<li>E - If we can see any two of our cities on the same land mass unconnected by road, then head there and work on the road
+				<li>S - Scout reachable unknown terrain if there is any; really this is two steps, first "scout unknown terrain with at least one adjacent land tile" and secondly "scout any unknown terrain", so boats will hug coastline
+				<li>P - Do we own any reachable towers that would allow us to do any of the above on the opposite plane, if so move to the tower
+				<li>T - If we can't fly or swim (i.e. if any terrain is impassable to us) and we can reach a transport, then move to it (or stay inside, if we are already in one)
+				<li>D - As last resort, overdefend (or hide in) our locations - if this happens, it needs to set some kind of flag that tells us we need to move transports to this island
+			</ul>
+		<li>Priests (who can cure Corruption)
+			<ul>
+				<li>O - If we can reach any tile that needs corruption cleared from it then go do so
+				<li>S - Scout reachable unknown terrain if there is any; really this is two steps, first "scout unknown terrain with at least one adjacent land tile" and secondly "scout any unknown terrain", so boats will hug coastline
+				<li>P - Do we own any reachable towers that would allow us to do any of the above on the opposite plane, if so move to the tower
+				<li>T - If we can't fly or swim (i.e. if any terrain is impassable to us) and we can reach a transport, then move to it (or stay inside, if we are already in one)
+				<li>D - As last resort, overdefend (or hide in) our locations - if this happens, it needs to set some kind of flag that tells us we need to move transports to this island
+			</ul>
+		<li>Magic/Guardian Spirits
+			<ul>
+				<li>N - If we can reach any node that we don't own and has no enemy units stationed there, then head for it and capture it
+				<li>S - Scout reachable unknown terrain if there is any; really this is two steps, first "scout unknown terrain with at least one adjacent land tile" and secondly "scout any unknown terrain", so boats will hug coastline
+				<li>P - Do we own any reachable towers that would allow us to do any of the above on the opposite plane, if so move to the tower
+				<li>T - If we can't fly or swim (i.e. if any terrain is impassable to us) and we can reach a transport, then move to it (or stay inside, if we are already in one)  (note spirits can always fly in MoM but I feel this should be here for consistency and complteness)
+				<li>D - As last resort, overdefend (or hide in) our locations - if this happens, it needs to set some kind of flag that tells us we need to move transports to this island
+			</ul>
+		<li>Transports (no matter if they are naval-only transports or flying transports)
+			<ul>
+				<li>C - If we are holding any units and we know of land where they have something to do, then head there (that will require testing the land combat unit rules for the specific unit stack being carried)
+				<li>L - If we are not holding any units, but some unit stack triggered code D above, head to the island they are on
+				<li>S - Scout reachable unknown terrain (ocean) if there is any (note we still might be carrying units that don't have anything better to do)
+				<li>F - If on the same plane as our wizard's fortress, head to the island it is on (never actually go inside a city, even if its a flying transport, since then no units can get inside it)
+				<li>Otherwise just park until needed
+			</ul>
+		<li>Any units who are in transports (any category from above):
+			<ul>
+				<li>Exactly as their steps above, its just the timing of this that's different
+			</ul>
+	</ul>
+	
+</BODY>
+</HTML>

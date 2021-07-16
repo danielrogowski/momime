@@ -1,0 +1,47 @@
+Simultaneous turns movement and combat system revamp for 0.9.6.  This is very much inspired from
+how 'Same Time' mode works in Risk 2, but given some key differences for MoM, namely
+a) In Risk armies can only ever move 1 cell at a time; in MoM some units can move 2-unlimited numbers of cells
+b) In 
+c) Risk has concept of multiple armies attacking the same cell ganging up on the defenders; just don't think that's necessary
+   or appropriate in MoM.
+
+So plan is to:
+
+1) Movement allocation remains unchanged - this sets up PendingMovement objects
+2) Whole notion of players getting a scroll up saying combats that need playing and ScheduledCombat objects and
+   ScheduledCombatURNs goes away, the server will dicate when things happen
+3) After all players have clicked Next Turn, the server will:
+
+4) Check path of every PendingMovement, and make a list of all those where the first cell being
+   moved to is free and clear, or occupied by ourselves (even if subsequent moves result in a combat).
+   Put the PendingMovement into the list the number of times for its slowest unit's DoubleOverlandMovement (full, not remaining)
+   so that faster units tend to get preference.  Select a PendingMovement from the list at random.  Move 1 cell.
+   Repeat until list is empty.
+
+   This guarantees that all pending moves left in the list are combats, and that for all combats, the two armies can
+   see each other (it avoids complications where you have say A -> [] <- B armies A and B who cannot see each other
+   both trying to walk to the same map cell, both unaware that doing so will initiate a combat).
+
+5) Reduce all pending moves (where we have movement remaining this turn - therefore its a combat) to 1 cell.
+   Not really sure this is necessary, worrying about sitaution where a stack is trying to move 2 spaces, but there's
+   an enemy unit at the midpoint - but then it'd just recalculate a new movement path to avoid the unit, or cancel the move
+   if no alternative path is available.
+
+6) Look for what Risk calls "Border Conflicts", where you have situations like A <-> B, where 2 stacks both
+   are trying to attack each other.  These work on the basis that the attacking units on each side are both midway between
+   the two cells, so both sides only use their listed attackerURNs and other units that may not have attacked remain behind.
+   For purposes of generating the combat map, pick a cell at random, but if one is a city, always pick the other.
+   Result is that the loser's PendingMovement gets deleted, and the winner's pending movement remains, so that they advance
+   into the cell (which may still be occupied).
+
+7) Do (4) again, to deal with winners from border conflicts advancing into empty cells.
+
+8) All remaining pending moves must be simple conflicts.  Process in any order.  However note when searching for defenders
+   to attack, exclude units who have a pending move left themselves.  This is to deal with situations like A -> B -> C to
+   make sure that units in A cannot attack units in B who are attacking units in C (the units in B are already halfway between
+   map cells B and C and so aren't still in cell B to defend).
+
+   This also means we may get conflicts like this where there ends up being no defenders.  Make sure these get processed
+   as simple moves and not combats.  This also deals with situations like A -> B <- C where A and C are owned by the same
+   player and both attacking B.  Either A or C attacks first, kills B, then the remaining pending move will just be
+   processed as a movement rather than a combat.

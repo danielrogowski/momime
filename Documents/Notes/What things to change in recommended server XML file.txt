@@ -1,0 +1,20 @@
+ALL draconian units should get Fire Breath (due to single RAT restriction, in the original Shaman, Magicians, etc. did not)
+Similarly Barbarian Bowmen should still have their Thrown attack
+Magic type of ranged attacks of summoned creatures should match their realm - so we don't have Storm Giants throwing Chaos lightning bolts
+Significantly bump the power of Wall of Fire and Immolation, which are currently just lame
+Non-coporeal/Wraithform should make Flight irrelevant, so Wraiths cannot use ench roads but move at double speed
+
+----------------------------------------------------------------------------------------------
+Following should get +2 bonus from node auras
+and also from Experience (although the only of these skills that a regular unit has is Poison)
+----------------------------------------------------------------------------------------------
+Stoning Gaze (Basilisk, Gorgons, Chaos Spawn)
+Stoning Touch (Cockatrices)
+Poison (Giant Spiders, Great Wyrms, Chaos Spawn, Nagas)
+Death Gaze (Chaos Spawn)
+Immolation (Doom Bat)
+
+Chaos Channels Fire Breath - debateable - CC fire breath Draconians would then get +2 to BOTH fire breaths
+For: This is not unreasonable, they'd get better at using their CC fire breath too
+Against: This means defining the power of the Breath attack gained from a spell, which currently isn't supported and then gets into a whole mess of what
+to do about things like Elemental Armour - should this show up as Elemental Armour 10 so you can change the strength of it?

@@ -301,6 +301,7 @@
 			<list>
 				<value>unitSkillImageFile</value>
 				<value>movementIconImageFile</value>
+				<value>unitSkillCombatOverlay</value>
 				<value>sampleTileImageFile</value>
 			</list>
 		</property>

@@ -2682,11 +2682,23 @@ The value of multiplicative skills is ignored, so don't use this for any skill t
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillCombatColour" type="momimecommon:colour" nxe:label="Unit skill (spell effect) colour" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillCombatOverlay" type="momimecommon:imageFilename" nxe:label="Unit skill (spell effect) image" nxe:gridwidth="300">
+		        <xsd:annotation>
+        			<xsd:documentation>Image to draw over the top of the unit in combat when it has this "skill", e.g. Web.  Or can show animation like Confusion below.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillCombatAnimation" type="momimecommon:animationID" nxe:label="Unit skill (spell effect) animation" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillCombatOverlayMinimumValue" type="momimecommon:unitSkillValue" nxe:label="Min skill value to draw overlay" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:documentation>If null, unitSkillCombatOverlay or unitSkillCombatAnimation will always be drawn if the unit has this "skill".  If there is a non-null
+value here, the image/anim will only be drawn if the unit has a non-null value for the skill of at least this value.  Used for Web which starts with value 12 representing
+the remaining HP of the web and decreases and eventually becomes null, at which point we no longer want to draw the web overlay, but the skill still exists to negate flight.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="grantsSkill" type="momimecommon:unitSkillID" nxe:label="Grants skill">

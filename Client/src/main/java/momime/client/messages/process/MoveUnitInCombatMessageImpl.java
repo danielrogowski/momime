@@ -1,5 +1,6 @@
 package momime.client.messages.process;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
+import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -42,6 +44,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 
 	/** Time, in seconds, a unit takes to walk from tile to tile in combat */
 	private final static double COMBAT_WALK_TIMING = 1;
+	
+	/** Helper methods and constants for creating and laying out Swing components */
+	private NdgUIUtils utils;
 	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
@@ -94,6 +99,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/** Current base zOrder of this unit on the combat map */
 	private int currentZOrder;
 	
+	/** Overlays to draw on top of the unit that's moving */
+	private List<BufferedImage> overlays;
+	
 	/** Animations to draw on top of the unit that's moving */
 	private List<AnimationEx> animations;
 	
@@ -122,15 +130,38 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		unit = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 		
-		// See if we need to draw an animation that moves with the unit, e.g. Confusion
+		// See if we need to draw any overlays or animations that move with the unit, e.g. Web or Confusion
+		overlays = new ArrayList<BufferedImage> ();
 		animations = new ArrayList<AnimationEx> ();
 		shadingColours = new ArrayList<String> ();
 		
 		for (final String unitSkillID : unit.listModifiedSkillIDs ())
 		{
 			final UnitSkillEx unitSkillDef = getClient ().getClientDB ().findUnitSkill (unitSkillID, "MoveUnitInCombatMessageImpl.start");
-			if (unitSkillDef.getUnitSkillCombatAnimation () != null)
-				animations.add (getClient ().getClientDB ().findAnimation (unitSkillDef.getUnitSkillCombatAnimation (), "MoveUnitInCombatMessageImpl.start"));
+			if ((unitSkillDef.getUnitSkillCombatOverlay () != null) || (unitSkillDef.getUnitSkillCombatAnimation () != null))
+			{
+				// Do we need a certain skill value to draw this?
+				final boolean drawOverlay;
+				if (unitSkillDef.getUnitSkillCombatOverlayMinimumValue () == null)
+					drawOverlay = true;
+				else
+				{
+					final Integer testSkillValue = unit.getModifiedSkillValue (unitSkillID);
+					if (testSkillValue == null)
+						drawOverlay = false;
+					else
+						drawOverlay = (testSkillValue >= unitSkillDef.getUnitSkillCombatOverlayMinimumValue ());
+				}
+				
+				if (drawOverlay)
+				{
+					if (unitSkillDef.getUnitSkillCombatOverlay () != null)
+						overlays.add (getUtils ().loadImage (unitSkillDef.getUnitSkillCombatOverlay ()));
+
+					if (unitSkillDef.getUnitSkillCombatAnimation () != null)
+						animations.add (getClient ().getClientDB ().findAnimation (unitSkillDef.getUnitSkillCombatAnimation (), "MoveUnitInCombatMessageImpl.start"));
+				}
+			}
 			
 			if (unitSkillDef.getUnitSkillCombatColour () != null)
 				shadingColours.add (unitSkillDef.getUnitSkillCombatColour ());
@@ -326,6 +357,22 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	}
 	
 	/**
+	 * @return Helper methods and constants for creating and laying out Swing components
+	 */
+	public final NdgUIUtils getUtils ()
+	{
+		return utils;
+	}
+
+	/**
+	 * @param util Helper methods and constants for creating and laying out Swing components
+	 */
+	public final void setUtils (final NdgUIUtils util)
+	{
+		utils = util;
+	}
+	
+	/**
 	 * @return Client-side unit utils
 	 */
 	public final UnitClientUtils getUnitClientUtils ()
@@ -382,11 +429,11 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param u Unit utils
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitUtils (final UnitUtils u)
 	{
-		unitUtils = utils;
+		unitUtils = u;
 	}
 
 	/**
@@ -501,6 +548,14 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		return currentZOrder;
 	}
 
+	/**
+	 * @return Overlays to draw on top of the unit that's moving
+	 */
+	public final List<BufferedImage> getOverlays ()
+	{
+		return overlays;
+	}
+	
 	/**
 	 * @return Animations to draw on top of the unit that's moving
 	 */

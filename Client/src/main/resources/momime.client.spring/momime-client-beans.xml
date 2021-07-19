@@ -365,6 +365,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="moveUnitInCombatMessage" class="momime.client.messages.process.MoveUnitInCombatMessageImpl" scope="prototype">
+		<property name="utils" ref="uiUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="client" ref="client" />

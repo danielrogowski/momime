@@ -17,7 +17,7 @@ import com.ndg.graphics.ImageCache;
 public final class LbxExtract
 {
 	/** Location of MoM IME Client project sources */
-	private final static String CLIENT_PROJECT_ROOT = "W:\\EclipseHome\\SourceForge\\MoMIME\\Client";
+	private final static String CLIENT_PROJECT_ROOT = "W:\\EclipseHome\\SF\\MoMIME\\Client";
 	
 	/** Cache for locating files and handling archives */
 	private ImageCache cache;
@@ -89,15 +89,10 @@ public final class LbxExtract
 			}
 		} */
 		
-		for (int n = 0; n <= 20 ; n++)
-		{
-			final int m = (n <= 17) ? n : (n + 15);
-			String s = Integer.valueOf (m).toString ();
-			while (s.length () < 2)
-				s = "0" + s;
-
-			convertImage ("ITEMISC.LBX", m, 0, "unitSkills\\IS" + s + "-icon");
-		}
+		for (int n = 0; n <= 9 ; n++)
+			convertImage ("CMBTFX.LBX", 13, n, "spells\\SP005\\cast-frame" + (n+1));
+		
+		convertImage ("RESOURCE.LBX", 82, 0, "spells\\SP005\\combat-overlay");
 		
 		System.out.println ("All done!");
 	} 

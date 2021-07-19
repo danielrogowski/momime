@@ -3,6 +3,7 @@
 .settings
 target
 test-output
+Backups
 /Client/MoMIMEClientConfig.xml
 /Client/MoMIMEClientLogging.xml
 /Editors/MoMIMEEditorsLogging.xml

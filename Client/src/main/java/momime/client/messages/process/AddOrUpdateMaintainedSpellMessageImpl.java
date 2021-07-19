@@ -277,10 +277,6 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 			// Not all spell book sections need special animation handling
 			default:
 		}
-		
-		// If no spell animation, then just add it right away
-		if (!animatedByOtherFrame)
-			processOneUpdate ();
 	}
 
 	/**
@@ -393,6 +389,11 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 			else
 				getOverlandMapUI ().setOverlandCastAnimation (null);
 		}
+
+		// If animation is being processed by another frame, then that other frame is also responsible for actually processing whatever update takes place (e.g. adding the spell).
+		// If we're responsible for it, then process it now the anim completed playing (if there was one).
+		if (!animatedByOtherFrame)
+			processOneUpdate ();
 	}
 
 	/**

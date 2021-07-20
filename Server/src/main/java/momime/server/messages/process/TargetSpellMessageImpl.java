@@ -17,6 +17,7 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -175,15 +176,15 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 							// If its a unit enchantment, now pick which skill ID we'll actually get
 							if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 							{
-								final List<String> unitSkillIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+								final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
 									(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), getOverlandTargetUnitURN ());
-								if ((unitSkillIDs == null) || (unitSkillIDs.size () == 0))
+								if ((unitSpellEffects == null) || (unitSpellEffects.size () == 0))
 									error = "Unit is supposedly a valid target, yet couldn't find any unitSkillIDs to use";
 								else
 								{
 									// Yay
 									error = null;
-									unitSkillID = unitSkillIDs.get (getRandomUtils ().nextInt (unitSkillIDs.size ()));
+									unitSkillID = unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID ();
 								}
 							}
 							else

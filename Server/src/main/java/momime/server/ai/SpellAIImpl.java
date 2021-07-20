@@ -28,6 +28,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitCanCast;
+import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -539,10 +540,10 @@ public final class SpellAIImpl implements SpellAI
 					break;
 					
 				case UNIT_ENCHANTMENTS:
-					final List<String> unitSkillIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+					final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
 						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, player.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
-					if ((unitSkillIDs != null) && (unitSkillIDs.size () > 0))
-						unitSkillID = unitSkillIDs.get (getRandomUtils ().nextInt (unitSkillIDs.size ()));
+					if ((unitSpellEffects != null) && (unitSpellEffects.size () > 0))
+						unitSkillID = unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID ();
 					break;
 			
 				// This is fine, only need to do this for certain types of spells

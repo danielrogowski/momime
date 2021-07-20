@@ -28,6 +28,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSpellEffect;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -887,9 +888,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		// It grants one of 5 possible effects
-		final List<String> effects = new ArrayList<String> ();
+		final List<UnitSpellEffect> effects = new ArrayList<UnitSpellEffect> ();
 		for (int n = 1; n <= 5; n++)
-			effects.add ("CSE00" + n);
+		{
+			final UnitSpellEffect effect = new UnitSpellEffect ();
+			effect.setUnitSkillID ("CSE00" + n);
+			effects.add (effect);
+		}
 		
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.listUnitSpellEffectsNotYetCastOnUnit (trueMap.getMaintainedSpell (), spell, 7, targetUnit.getUnitURN ())).thenReturn (effects);

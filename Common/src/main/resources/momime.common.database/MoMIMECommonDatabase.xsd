@@ -3394,6 +3394,13 @@ Normally there's only 1; 3 in the case of Chaos Channels or Warp Creature.</xsd:
 This is used for the fact that Black Channels turns units Undead, and while the Black Channels effect can be switched off, the Undead effect cannot.</xsd:documentation>
 				        </xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="storeSkillValueAsVariableDamage" type="xsd:boolean" nxe:label="Permanent?">
+				        <xsd:annotation>
+				        	<xsd:documentation>Usually we don't need to store values of skills granted from spells, because they don't change so we can always
+just go back to the spell def and look it up.  But in cases where the value of the granted skill may change, this causes it to be put into the
+variableDamage slot instead.  Used to store HP of webs.</xsd:documentation>
+				        </xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

@@ -281,7 +281,8 @@ public final class UnitUtilsImpl implements UnitUtils
 					if (effect.getUnitSkillID ().equals (thisSpell.getUnitSkillID ()))
 					{
 						found = true;
-						strength = effect.getUnitSkillValue ();
+						strength = ((effect.isStoreSkillValueAsVariableDamage () != null) && (effect.isStoreSkillValueAsVariableDamage ())) ?
+							thisSpell.getVariableDamage () : effect.getUnitSkillValue ();
 					}
 				}
 				

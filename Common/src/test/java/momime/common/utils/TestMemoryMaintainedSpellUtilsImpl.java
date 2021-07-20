@@ -473,9 +473,9 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effectA.setUnitSkillID ("A");
 		spell.getUnitSpellEffect ().add (effectA);
 		
-		final List<String> listOne = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
+		final List<UnitSpellEffect> listOne = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
 		assertEquals (1, listOne.size ());
-		assertEquals ("A", listOne.get (0));
+		assertEquals ("A", listOne.get (0).getUnitSkillID ());
 
 		// Spell with exactly one unitSpellEffectID, that is already cast yet
 		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
@@ -485,7 +485,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		existingEffectA.setUnitURN (10);
 		spells.add (existingEffectA);
 		
-		final List<String> listZero = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
+		final List<UnitSpellEffect> listZero = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
 		assertEquals (0, listZero.size ());
 		
 		// Add three more effects
@@ -521,11 +521,11 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spells.add (existingEffectD);
 		
 		// All three effect should still be listed
-		final List<String> listThree = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
+		final List<UnitSpellEffect> listThree = utils.listUnitSpellEffectsNotYetCastOnUnit (spells, spell, 1, 10);
 		assertEquals (3, listThree.size ());
-		assertEquals ("B", listThree.get (0));
-		assertEquals ("C", listThree.get (1));
-		assertEquals ("D", listThree.get (2));
+		assertEquals ("B", listThree.get (0).getUnitSkillID ());
+		assertEquals ("C", listThree.get (1).getUnitSkillID ());
+		assertEquals ("D", listThree.get (2).getUnitSkillID ());
 	}
 	
 	/**

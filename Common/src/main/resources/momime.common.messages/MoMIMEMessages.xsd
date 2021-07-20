@@ -690,7 +690,14 @@ Spell Ward is SP072, but it provides one of the effects SE072C,D,L,N,S (player's
 			
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectID" type="momimecommon:citySpellEffectID" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="variableDamage" type="momimecommon:unitSkillValue" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="variableDamage" type="momimecommon:unitSkillValue">
+			    <xsd:annotation>
+    				<xsd:documentation>This is used in 2 situations:
+1) When casting overland spells, and there is a delay between casting the spell (and picking any variable damage) and it being ready to actually take effect,
+	we need somewhere to store how much variable damage was originally chosen; and
+2) Unit skills granted from spells where storeSkillValueAsVariableDamage = true (used for Web).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
         </xsd:sequence>
 	</xsd:complexType>
 

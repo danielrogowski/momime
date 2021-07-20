@@ -487,19 +487,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 				(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
 			{
 				// What effects doesn't the unit already have - can cast Warp Creature multiple times
-				final List<String> unitSpellEffectIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+				final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 					spell, castingPlayer.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
 				
-				if ((unitSpellEffectIDs == null) || (unitSpellEffectIDs.size () == 0))
+				if ((unitSpellEffects == null) || (unitSpellEffects.size () == 0))
 					throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " on unit URN " + targetUnit.getUnitURN () +
 						" but unitSpellEffectIDs list came back empty");
 				
 				// Pick an actual effect at random
-				final String unitSpellEffectID = unitSpellEffectIDs.get (getRandomUtils ().nextInt (unitSpellEffectIDs.size ()));
+				final UnitSpellEffect unitSpellEffect = unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ()));
+				final Integer useVariableDamage = ((unitSpellEffect.isStoreSkillValueAsVariableDamage () != null) && (unitSpellEffect.isStoreSkillValueAsVariableDamage ()) &&
+					(unitSpellEffect.getUnitSkillValue () != null) && (unitSpellEffect.getUnitSkillValue () > 0)) ? unitSpellEffect.getUnitSkillValue () : variableDamage;
+				
 				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
-					castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffectID,
-					true, null, null, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+					castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (),
+					true, null, null, useVariableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			}
 			
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))

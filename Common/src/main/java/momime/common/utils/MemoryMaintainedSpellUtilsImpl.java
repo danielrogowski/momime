@@ -180,26 +180,26 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @return Null = this spell has no unitSpellEffectIDs defined; empty list = has effect(s) defined but they're all cast on this unit already; non-empty list = list of effects that can still be cast
 	 */
 	@Override
-	public final List<String> listUnitSpellEffectsNotYetCastOnUnit (final List<MemoryMaintainedSpell> spells, final Spell spell,
+	public final List<UnitSpellEffect> listUnitSpellEffectsNotYetCastOnUnit (final List<MemoryMaintainedSpell> spells, final Spell spell,
 		final int castingPlayerID, final int unitURN)
 	{
-    	final List<String> unitSpellEffectIDs;
+    	final List<UnitSpellEffect> unitSpellEffects;
     	
     	if (spell.getUnitSpellEffect ().size () == 0)
-    		unitSpellEffectIDs = null;
+    		unitSpellEffects = null;
     	else
     	{
-    		unitSpellEffectIDs = new ArrayList<String> ();
+    		unitSpellEffects = new ArrayList<UnitSpellEffect> ();
     		for (final UnitSpellEffect effect : spell.getUnitSpellEffect ())
     			
     			// Ignore permanent effects, since they aren't choosable
     			if (((effect.isPermanent () == null) || (!effect.isPermanent ())) &&
     				(findMaintainedSpell (spells, castingPlayerID, spell.getSpellID (), unitURN, effect.getUnitSkillID (), null, null) == null))
     				
-    				unitSpellEffectIDs.add (effect.getUnitSkillID ());
+    				unitSpellEffects.add (effect);
     	}
 
-    	return unitSpellEffectIDs;
+    	return unitSpellEffects;
 	}
 	
 	/**
@@ -297,11 +297,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		final boolean unitSpellEffectRequired = (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
     			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES);
     		
-    		final List<String> unitSpellEffectIDs = listUnitSpellEffectsNotYetCastOnUnit (mem.getMaintainedSpell (), spell, castingPlayerID, targetUnitURN);
-    		if ((unitSpellEffectRequired) && (unitSpellEffectIDs == null))
+    		final List<UnitSpellEffect> unitSpellEffects = listUnitSpellEffectsNotYetCastOnUnit (mem.getMaintainedSpell (), spell, castingPlayerID, targetUnitURN);
+    		if ((unitSpellEffectRequired) && (unitSpellEffects == null))
     			result = TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED;
     		
-    		else if ((unitSpellEffectRequired) && (unitSpellEffectIDs.size () == 0))
+    		else if ((unitSpellEffectRequired) && (unitSpellEffects.size () == 0))
     			result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
     		
     		else if (!getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell, targetUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ()))

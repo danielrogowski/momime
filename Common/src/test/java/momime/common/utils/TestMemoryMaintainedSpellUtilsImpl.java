@@ -900,6 +900,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setUnitUtils (mock (UnitUtils.class));
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, 1, null, null, xu, fow, db));
@@ -947,6 +948,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setUnitUtils (mock (UnitUtils.class));
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1216,6 +1218,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setUnitUtils (mock (UnitUtils.class));
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
@@ -1311,6 +1314,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setUnitUtils (mock (UnitUtils.class));
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1593,6 +1597,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setUnitUtils (mock (UnitUtils.class));
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));

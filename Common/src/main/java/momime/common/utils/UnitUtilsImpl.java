@@ -1202,7 +1202,6 @@ public final class UnitUtilsImpl implements UnitUtils
 		return total;
 	}
 	
-
 	/**
 	 * Whether a unit can be seen *at all* in combat.  So this isn't simply asking whether it has the Invisibility skill and whether we have
 	 * True Sight or Immunity to Illusions to negate it.  Even if a unit is invisible, we can still see it if we have one of our units adjacent to it.
@@ -1305,6 +1304,34 @@ public final class UnitUtilsImpl implements UnitUtils
 		return visible;
 	}
 	
+	/**
+	 * @param xu Unit to test
+	 * @param unitSpellEffects List of unit skills to test
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit is immune to all listed effects, false if we find at least one it isn't immune to
+	 * @throws RecordNotFoundException If we can't find definition for one of the skills
+	 */
+	@Override
+	public final boolean isUnitImmuneToSpellEffects (final ExpandedUnitDetails xu, final List<UnitSpellEffect> unitSpellEffects, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		boolean immuneToAll = true;
+		
+		for (final UnitSpellEffect effect : unitSpellEffects)
+		{
+			final UnitSkillEx unitSkill = db.findUnitSkill (effect.getUnitSkillID (), "isUnitImmuneToSpellEffects");
+			
+			boolean negated = false;
+			for (final NegatedBySkill negatedBySkill : unitSkill.getNegatedBySkill ())
+				if ((negatedBySkill.getNegatedByUnitID () == NegatedByUnitID.OUR_UNIT) && (xu.hasModifiedSkill (negatedBySkill.getNegatedBySkillID ())))
+					negated = true;
+			
+			if (!negated)
+				immuneToAll = false;
+		}
+		
+		return immuneToAll;
+	}
 	
 	/**
 	 * @return Player pick utils

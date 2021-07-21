@@ -304,6 +304,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else if ((unitSpellEffectRequired) && (unitSpellEffects.size () == 0))
     			result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
     		
+    		else if ((unitSpellEffectRequired) && (getUnitUtils ().isUnitImmuneToSpellEffects (targetUnit, unitSpellEffects, db)))
+    			result = TargetSpellResult.IMMUNE;
+    		
     		else if (!getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell, targetUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ()))
     			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
     		

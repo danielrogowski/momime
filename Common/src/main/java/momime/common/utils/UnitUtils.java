@@ -13,6 +13,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSpellEffect;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -258,4 +259,14 @@ public interface UnitUtils
 	 * @return Whether the unit should be visible on the overland map
 	 */
 	public boolean canSeeUnitOverland (final MemoryUnit mu, final int ourPlayerID, final List<MemoryMaintainedSpell> spells, final CommonDatabase db);
+	
+	/**
+	 * @param xu Unit to test
+	 * @param unitSpellEffects List of unit skills to test
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit is immune to all listed effects, false if we find at least one it isn't immune to
+	 * @throws RecordNotFoundException If we can't find definition for one of the skills
+	 */
+	public boolean isUnitImmuneToSpellEffects (final ExpandedUnitDetails xu, final List<UnitSpellEffect> unitSpellEffects, final CommonDatabase db)
+		throws RecordNotFoundException;
 }

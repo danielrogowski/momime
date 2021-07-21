@@ -97,7 +97,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 					(value.getUnitSkillID (), "UnitSkillListCellRenderer").getUnitSkillDescription ()));
 				
 				// Show strength of skills, e.g. Fire Breath 2
-				if ((value.getUnitSkillValue () != null) && (value.getUnitSkillValue () > 0) &&
+				if ((value.getUnitSkillValue () != null) && (value.getUnitSkillValue () > 0) && (getUnit ().hasModifiedSkill (value.getUnitSkillID ())) &&
 					(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
 					(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) &&
 					(!value.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO)) &&

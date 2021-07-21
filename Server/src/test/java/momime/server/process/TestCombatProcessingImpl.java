@@ -62,6 +62,7 @@ import momime.server.ServerTestData;
 import momime.server.ai.CombatAI;
 import momime.server.ai.CombatAIMovementResult;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
@@ -589,12 +590,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
+		final FogOfWarMidTurnMultiChanges multi = mock (FogOfWarMidTurnMultiChanges.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setCombatEndTurn (combatEndTurn);
+		proc.setFogOfWarMidTurnMultiChanges (multi);
 		
 		// Run method
 		proc.progressCombat (combatLocation, true, false, mom);
@@ -692,6 +695,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
+		final FogOfWarMidTurnMultiChanges multi = mock (FogOfWarMidTurnMultiChanges.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
@@ -699,6 +703,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setCombatAI (ai);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setCombatEndTurn (combatEndTurn);
+		proc.setFogOfWarMidTurnMultiChanges (multi);
 		
 		// Run method
 		proc.progressCombat (combatLocation, false, false, mom);
@@ -806,6 +811,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
+		final FogOfWarMidTurnMultiChanges multi = mock (FogOfWarMidTurnMultiChanges.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
@@ -813,6 +819,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setCombatAI (ai);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setCombatEndTurn (combatEndTurn);
+		proc.setFogOfWarMidTurnMultiChanges (multi);
 		
 		// Run method
 		proc.progressCombat (combatLocation, false, true, mom);
@@ -922,6 +929,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
+		final FogOfWarMidTurnMultiChanges multi = mock (FogOfWarMidTurnMultiChanges.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
@@ -929,6 +937,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setCombatAI (ai);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setCombatEndTurn (combatEndTurn);
+		proc.setFogOfWarMidTurnMultiChanges (multi);
 		
 		// Run method
 		proc.progressCombat (combatLocation, true, false, mom);

@@ -58,6 +58,7 @@ import momime.server.ai.CombatAIMovementResult;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarDuplication;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.UnitServerUtils;
@@ -129,6 +130,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
@@ -646,8 +650,11 @@ public final class CombatProcessingImpl implements CombatProcessing
 					((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
 				
 				// Give this player all their movement for this turn
-				getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayerID (), combatLocation,
+				final List<ExpandedUnitDetails> webbedUnits = getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayerID (), combatLocation,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				getFogOfWarMidTurnMultiChanges ().processWebbedUnits (webbedUnits,
+					mom.getGeneralServerKnowledge (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 				
 				// Allow the player to cast a spell this turn
 				tc.setSpellCastThisCombatTurn (null);
@@ -1625,5 +1632,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
+	{
+		return fogOfWarMidTurnMultiChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
+	{
+		fogOfWarMidTurnMultiChanges = obj;
 	}
 }

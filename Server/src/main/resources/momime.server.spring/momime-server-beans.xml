@@ -678,6 +678,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="combatEndTurn" ref="combatEndTurn" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 	</bean>
 
 	<bean id="combatEndTurn" class="momime.server.process.CombatEndTurnImpl">
@@ -890,6 +891,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">

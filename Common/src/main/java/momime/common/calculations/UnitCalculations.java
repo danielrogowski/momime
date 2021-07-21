@@ -34,11 +34,12 @@ public interface UnitCalculations
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
+	 * @return List of units that didn't get any movement allocated because they're stuck in a web
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public void resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation,
+	public List<ExpandedUnitDetails> resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 

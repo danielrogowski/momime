@@ -78,21 +78,40 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
+	 * @return List of units that didn't get any movement allocated because they're stuck in a web
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final void resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation,
+	public final List<ExpandedUnitDetails> resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		final List<ExpandedUnitDetails> webbedUnits = new ArrayList<ExpandedUnitDetails> ();
+		
 		for (final MemoryUnit thisUnit : mem.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+				
+				final boolean webbed;
+				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB))
+				{
+					final Integer webHP = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_WEB);
+					webbed = (webHP != null) && (webHP > 0);
+				}
+				else
+					webbed = false;
 					
-				thisUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db).getModifiedSkillValue
-					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+				thisUnit.setDoubleCombatMovesLeft (webbed ? 0 : (2 * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)));
+				
+				if (webbed)
+					webbedUnits.add (xu);
+			}
+		
+		return webbedUnits;
 	}
 	
 	/**

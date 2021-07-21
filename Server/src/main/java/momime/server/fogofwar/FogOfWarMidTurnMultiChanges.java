@@ -285,4 +285,22 @@ public interface FogOfWarMidTurnMultiChanges
 	public void planeShiftUnitStack (final List<ExpandedUnitDetails> selectedUnits, final List<PlayerServerDetails> players,
 		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * Units stuck in webs in combat hack/burn some of the HP off the web trying to free themselves.
+	 * 
+	 * @param webbedUnits List of units stuck in web
+	 * @param gsk Server knowledge structure
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 */
+	public void processWebbedUnits (final List<ExpandedUnitDetails> webbedUnits, final MomGeneralServerKnowledge gsk,
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 }

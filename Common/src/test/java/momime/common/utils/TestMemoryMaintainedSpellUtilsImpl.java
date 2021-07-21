@@ -3255,7 +3255,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Invalid magic realm/lifeform type
 		final UnitSpellEffect effectB = new UnitSpellEffect ();
-		effectA.setUnitSkillID ("B");
+		effectB.setUnitSkillID ("B");
 		spell.getUnitSpellEffect ().add (effectB);
 
 		magicRealm.setPickID ("X");

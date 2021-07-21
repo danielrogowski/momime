@@ -31,11 +31,13 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.TileSetEx;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -78,6 +80,9 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** True for city enchantments/curses and overland enchantments */
 	private boolean animatedByOtherFrame;
@@ -327,7 +332,17 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	public final void processOneUpdate ()
 	{
 		if (!isSpellTransient ())
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getMaintainedSpell ());
+		{
+			final MemoryMaintainedSpell oldSpell = getMemoryMaintainedSpellUtils ().findSpellURN
+				(getMaintainedSpell ().getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
+			if (oldSpell != null)
+			{
+				oldSpell.setCastingPlayerID (getMaintainedSpell ().getCastingPlayerID ());
+				oldSpell.setVariableDamage (getMaintainedSpell ().getVariableDamage ());
+			}
+			else
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getMaintainedSpell ());
+		}
 		
 		try
 		{
@@ -570,5 +585,21 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

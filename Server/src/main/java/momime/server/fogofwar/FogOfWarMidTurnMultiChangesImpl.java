@@ -55,7 +55,6 @@ import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.FogOfWarCalculations;
@@ -133,9 +132,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
-	
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
@@ -1265,24 +1261,24 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			
 			final int attackStrength = Math.max (meleeStrength, rangedStrength);
 			if (attackStrength > 0)
-			{
-				final int webHP = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_WEB);
 				
-				Integer newHP = webHP - attackStrength;
-				if (newHP <= 0)
-					newHP = null;
-				
-				// Find the web spell to update its remaining HP
-				final MemoryMaintainedSpell webSpell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
-					(gsk.getTrueMap ().getMaintainedSpell (), null, null, xu.getUnitURN (), CommonDatabaseConstants.UNIT_SKILL_ID_WEB, null, null);
-				if (webSpell == null)
-					log.warn ("Unit URN " + xu.getUnitURN () + " has " + webHP + " HP web on it, but can't find the web spell to reduce its HP");
-				else
-				{
-					webSpell.setVariableDamage (newHP);
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (webSpell, gsk, players, db, sd);
-				}
-			}
+				// Process ALL web spells, there could me multiple so we can't just use findMaintainedSpell to find the first one for us
+				for (final MemoryMaintainedSpell webSpell : gsk.getTrueMap ().getMaintainedSpell ())
+					if ((webSpell.getUnitSkillID () != null) && (webSpell.getUnitURN () != null) &&
+						(webSpell.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)) && (webSpell.getUnitURN () == xu.getUnitURN ()))
+					{
+						final Integer webHP = webSpell.getVariableDamage ();
+						if ((webHP != null) && (webHP > 0))
+						{
+							Integer newHP = webHP - attackStrength;
+							if (newHP <= 0)
+								newHP = null;
+							
+							// Update its remaining HP
+							webSpell.setVariableDamage (newHP);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (webSpell, gsk, players, db, sd);
+						}
+					}
 		}
 	}
 	
@@ -1572,21 +1568,5 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
-	}
-
-	/**
-	 * @return MemoryMaintainedSpell utils
-	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
-	{
-		return memoryMaintainedSpellUtils;
-	}
-
-	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
-	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
-	{
-		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

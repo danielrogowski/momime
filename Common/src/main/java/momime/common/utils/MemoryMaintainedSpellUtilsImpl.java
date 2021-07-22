@@ -321,53 +321,60 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else if ((healingSpell) && (getUnitUtils ().getHealableDamageTaken (targetUnit.getUnitDamage ()) == 0))
     			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
-    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&
-    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == targetUnitURN) && (s.getCastingPlayerID () != castingPlayerID))))
-    			result = TargetSpellResult.NOTHING_TO_DISPEL;
-    		
-    		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
-    			result = TargetSpellResult.VALID_TARGET;
-    		
     		else
     		{
-    			// Combat attack spell - immunity skill?
-    			final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "isUnitValidTargetForSpell");
-    			if (targetUnit.isUnitImmuneToDamageType (damageType))
-    				result = TargetSpellResult.IMMUNE;
-    			else
-	    			// Immune due to resistance?
-	    			switch (spell.getAttackSpellDamageResolutionTypeID ())
-	    			{
-	    				case EACH_FIGURE_RESIST_OR_DIE:
-	    				case SINGLE_FIGURE_RESIST_OR_DIE:
-	    				case RESIST_OR_TAKE_DAMAGE:
-	    				case RESISTANCE_ROLLS:
-	    				case DISINTEGRATE:
-	    					// Units with 10 or more resistance are immune to spells that roll against resistance
-	    					// First need to take into account if there's a saving throw modifier
-	    					// NB. Resistance rolls damage allows no saving throw modifier because in this case, the skill value represents the number of rolls to make
-	    					int resistance = Math.max (0, targetUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE));
-	    					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
-	    					{
-	    						final Integer savingThrowModifier = ((spell.getCombatMaxDamage () == null) || (variableDamage == null)) ? spell.getCombatBaseDamage () : variableDamage;
-	    						if (savingThrowModifier != null)
-	    							resistance = resistance - savingThrowModifier;
-
-		    					// Heroes with -spell save items
-		    					if ((castingUnit != null) && (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY)))
-		    						resistance = resistance - castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY);
-	    					}
-	    					
-	    					if (resistance >= 10)
-	    						result = TargetSpellResult.TOO_HIGH_RESISTANCE;
-	    					else
-	    						result = TargetSpellResult.VALID_TARGET;
-	    					break;
-	    				
-	    				default:
-	    					// Combat attack spell that rolls against something other than resistance, so always a valid target
-	    	    			result = TargetSpellResult.VALID_TARGET;
-	    			}
+    			final List<String> spellsImmuneToDispelling = db.getSpell ().stream ().filter
+    				(s -> (s.isImmuneToDispelling () != null) && (s.isImmuneToDispelling ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
+    			
+	    		if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&
+	    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == targetUnitURN) &&
+	    				(s.getCastingPlayerID () != castingPlayerID) && (!spellsImmuneToDispelling.contains (s.getSpellID ())))))
+	    			result = TargetSpellResult.NOTHING_TO_DISPEL;
+	    		
+	    		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
+	    			result = TargetSpellResult.VALID_TARGET;
+	    		
+	    		else
+	    		{
+	    			// Combat attack spell - immunity skill?
+	    			final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "isUnitValidTargetForSpell");
+	    			if (targetUnit.isUnitImmuneToDamageType (damageType))
+	    				result = TargetSpellResult.IMMUNE;
+	    			else
+		    			// Immune due to resistance?
+		    			switch (spell.getAttackSpellDamageResolutionTypeID ())
+		    			{
+		    				case EACH_FIGURE_RESIST_OR_DIE:
+		    				case SINGLE_FIGURE_RESIST_OR_DIE:
+		    				case RESIST_OR_TAKE_DAMAGE:
+		    				case RESISTANCE_ROLLS:
+		    				case DISINTEGRATE:
+		    					// Units with 10 or more resistance are immune to spells that roll against resistance
+		    					// First need to take into account if there's a saving throw modifier
+		    					// NB. Resistance rolls damage allows no saving throw modifier because in this case, the skill value represents the number of rolls to make
+		    					int resistance = Math.max (0, targetUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE));
+		    					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
+		    					{
+		    						final Integer savingThrowModifier = ((spell.getCombatMaxDamage () == null) || (variableDamage == null)) ? spell.getCombatBaseDamage () : variableDamage;
+		    						if (savingThrowModifier != null)
+		    							resistance = resistance - savingThrowModifier;
+	
+			    					// Heroes with -spell save items
+			    					if ((castingUnit != null) && (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY)))
+			    						resistance = resistance - castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY);
+		    					}
+		    					
+		    					if (resistance >= 10)
+		    						result = TargetSpellResult.TOO_HIGH_RESISTANCE;
+		    					else
+		    						result = TargetSpellResult.VALID_TARGET;
+		    					break;
+		    				
+		    				default:
+		    					// Combat attack spell that rolls against something other than resistance, so always a valid target
+		    	    			result = TargetSpellResult.VALID_TARGET;
+		    			}
+	    		}
     		}
     	}
 

@@ -3217,6 +3217,7 @@ this value each time a dispel attempt is made (counter magic).</xsd:documentatio
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastingCost" type="momimecommon:spellCastingCost" nxe:label="Overland Cost" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastingCost" type="momimecommon:spellCastingCost" nxe:label="Combat Cost" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="immuneToDispelling" type="xsd:boolean" nxe:label="Immune to Dispelling?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandDispelCost" type="momimecommon:spellCastingCost" nxe:label="Overland Dispel Cost" nxe:gridwidth="100">
 		        <xsd:annotation>
 		        	<xsd:documentation>Strength of spell when someone is trying to dispel it; by default = overlandCastingCost, but Spell Lock has a special value here.</xsd:documentation>

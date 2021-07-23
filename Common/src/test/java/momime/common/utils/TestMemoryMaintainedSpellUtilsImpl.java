@@ -3463,7 +3463,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, null, null, null, null));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, null, null, null, null, null));
 	}
 	
 	/**
@@ -3484,7 +3484,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), null, fow, null));
+		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), null, fow, null, null));
 	}
 	
 	/**
@@ -3513,7 +3513,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null));
+		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
 	}
 
 	/**
@@ -3548,7 +3548,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null));
+		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isOverlandLocationValidTargetForSpell
+			(spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
 	}
 
 	/**
@@ -3588,7 +3589,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, db));
+		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
 	}
 
 	/**
@@ -3630,7 +3631,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.INVALID_TILE_TYPE, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, db));
+		assertEquals (TargetSpellResult.INVALID_TILE_TYPE, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
 	}
 	
 	/**
@@ -3671,7 +3672,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
 	}
 	
 	/**
@@ -3698,7 +3699,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null));
+		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
 	}
 	
 	/**
@@ -3731,7 +3732,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
 	}
 		
 	/**
@@ -3769,7 +3770,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
 	}
 	
 	/**

@@ -35,7 +35,6 @@ import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MemoryBuilding;
@@ -49,7 +48,6 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageCreateArtifact;
 import momime.common.messages.NewTurnMessageSpell;
-import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
@@ -79,7 +77,6 @@ import momime.server.MomSessionVariables;
 import momime.server.ai.SpellAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
-import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
@@ -90,7 +87,6 @@ import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.HeroItemServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
-import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -182,11 +178,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Server-only spell calculations */
 	private ServerSpellCalculations serverSpellCalculations;
 	
-	/** Server-only unit calculations */
-	private ServerUnitCalculations serverUnitCalculations;
-	
 	/** Dispel magic processing */
 	private SpellDispelling spellDispelling;
+	
+	/** Casting for each type of spell */
+	private SpellCasting spellCasting;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -259,82 +255,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 		}
 
-		// Summoning
-		else if (sectionID == SpellBookSectionID.SUMMONING)
+		// Summoning, except Floating Island where you need to pick a target
+		else if ((sectionID == SpellBookSectionID.SUMMONING) && ((spell.isSummonAnywhere () == null) || (!spell.isSummonAnywhere ())))
 		{
 			// Find the location of the wizards' summoning circle 'building'
 			final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
 				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 
 			if (summoningCircleLocation != null)
-			{
-				// List out all the Unit IDs that this spell can summon
-				final List<UnitEx> possibleUnits = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ());
-
-				// Pick one at random
-				if (possibleUnits.size () > 0)
-				{
-					final UnitEx summonedUnit = possibleUnits.get (getRandomUtils ().nextInt (possibleUnits.size ()));
-
-					log.debug ("Player " + player.getPlayerDescription ().getPlayerName () + " had " + possibleUnits.size () + " possible units to summon from spell " +
-						spell.getSpellID () + ", randomly picked unit ID " + summonedUnit.getUnitID ());
-
-					// Check if the city with the summoning circle has space for the unit
-					final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) summoningCircleLocation.getCityLocation ();
-					final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-						(cityLocation, summonedUnit.getUnitID (), player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-
-					final MemoryUnit newUnit;
-					if (addLocation.getUnitLocation () == null)
-						newUnit = null;
-					else
-					{
-						// Add the unit
-						if (summonedUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-						{
-							// The unit object already exists for heroes
-							newUnit = getUnitServerUtils ().findUnitWithPlayerAndID (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summonedUnit.getUnitID ());
-
-							if (newUnit.getStatus () == UnitStatusID.NOT_GENERATED)
-								getUnitServerUtils ().generateHeroNameAndRandomSkills (newUnit, mom.getServerDB ());
-
-							getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
-						}
-						else
-							// For non-heroes, create a new unit
-							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-								summonedUnit.getUnitID (), addLocation.getUnitLocation (), null, null, null,
-								player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-						
-						// Let it move this turn
-						newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
-								(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
-					}
-
-					// Show on new turn messages for the player who summoned it
-					if (player.getPlayerDescription ().isHuman ())
-					{
-						final NewTurnMessageSummonUnit summoningSpell = new NewTurnMessageSummonUnit ();
-						summoningSpell.setMsgType (NewTurnMessageTypeID.SUMMONED_UNIT);
-						summoningSpell.setSpellID (spell.getSpellID ());
-						summoningSpell.setUnitID (summonedUnit.getUnitID ());
-						summoningSpell.setCityLocation (addLocation.getUnitLocation ());
-						summoningSpell.setUnitAddBumpType (addLocation.getBumpType ());
-
-						if (newUnit != null)
-							summoningSpell.setUnitURN (newUnit.getUnitURN ());
-
-						trans.getNewTurnMessage ().add (summoningSpell);
-					}
-				}
-			}
+				getSpellCasting ().castOverlandSummoningSpell (spell, player, (MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), mom);
 		}
 
 		// Any kind of overland spell that needs the player to choose a target
 		else if ((sectionID == SpellBookSectionID.CITY_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
 			(sectionID == SpellBookSectionID.CITY_CURSES) || (sectionID == SpellBookSectionID.UNIT_CURSES) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
-			(sectionID == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS))
+			(sectionID == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS) ||
+			(sectionID == SpellBookSectionID.SUMMONING))
 		{
 			// Add it on server - note we add it without a target chosen and without adding it on any
 			// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.
@@ -974,7 +910,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
 		if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
+			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
 		{
 			// Transient spell that performs some immediate action, then the temporary untargetted spell on the server gets removed
 			// So the spell never does get added to any clients
@@ -1034,6 +970,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null, mom);
 			}
+
+			// The only targetted overland summoning spell is Floating Island
+			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, mom);
 			
 			else if (spell.getSpellRadius () == null)
 			{
@@ -1118,6 +1058,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					"earthLore", mom.getSessionDescription (), mom.getServerDB ());
 			}
 		}
+
 		else if (spell.getBuildingID () == null)
 		{
 			// Enchantment or curse spell that generates some city or unit effect
@@ -1749,22 +1690,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	}
 
 	/**
-	 * @return Server-only unit calculations
-	 */
-	public final ServerUnitCalculations getServerUnitCalculations ()
-	{
-		return serverUnitCalculations;
-	}
-
-	/**
-	 * @param calc Server-only unit calculations
-	 */
-	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
-	{
-		serverUnitCalculations = calc;
-	}
-
-	/**
 	 * @return Dispel magic processing
 	 */
 	public final SpellDispelling getSpellDispelling ()
@@ -1778,5 +1703,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setSpellDispelling (final SpellDispelling p)
 	{
 		spellDispelling = p;
+	}
+
+	/**
+	 * @return Casting for each type of spell
+	 */
+	public final SpellCasting getSpellCasting ()
+	{
+		return spellCasting;
+	}
+
+	/**
+	 * @param c Casting for each type of spell
+	 */
+	public final void setSpellCasting (final SpellCasting c)
+	{
+		spellCasting = c;
 	}
 }

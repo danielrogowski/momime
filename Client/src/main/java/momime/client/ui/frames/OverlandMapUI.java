@@ -68,7 +68,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileSetEx;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
@@ -854,18 +853,82 @@ public final class OverlandMapUI extends MomClientFrameUI
 						else if (getOverlandMapRightHandPanel ().getTop () == OverlandMapRightHandPanelTop.TARGET_SPELL)
 						{
 							final Spell spell = getClient ().getClientDB ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID (), "OverlandMapUI");
-							if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) ||
-								(spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
+							switch (spell.getSpellBookSectionID ())
 							{
-								// If there isn't even a city here then don't even display a message
-								if (mc.getCityData () != null)
+								case CITY_ENCHANTMENTS:
+								case CITY_CURSES:
+									// If there isn't even a city here then don't even display a message
+									if (mc.getCityData () != null)
+									{
+										// Use common routine to do all the validation
+										final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
+											(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
+											getClient ().getOurPlayerID (), mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+											getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (),
+											getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ());
+										
+										if (validTarget == TargetSpellResult.VALID_TARGET)
+										{
+											final TargetSpellMessage msg = new TargetSpellMessage ();
+											msg.setSpellID (spell.getSpellID ());
+											msg.setOverlandTargetLocation (mapLocation);
+											getClient ().getServerConnection ().sendMessageToServer (msg);
+											
+											// Close out the "Target Spell" right hand panel
+											getOverlandMapProcessing ().updateMovementRemaining ();
+										}
+										else
+										{
+											final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
+											
+											final String buildingName;
+											if (spell.getBuildingID () == null)
+												buildingName = "";
+											else
+												buildingName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (spell.getBuildingID (), "OverlandMapUI").getBuildingName ());
+											
+											final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getCityLanguageText (validTarget)).replaceAll
+												("SPELL_NAME", spellName).replaceAll ("BUILDING_NAME", buildingName);
+											
+											final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+											msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
+											msg.setText (text);
+											msg.setVisible (true);												
+										}
+									}
+									break;
+							
+								// NB. There are no overland unit curses
+								case UNIT_ENCHANTMENTS:
+								case SPECIAL_UNIT_SPELLS:
+								{
+									// Find our units at this map location
+									final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+									for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+										if ((mapLocation.equals (unit.getUnitLocation ())) && (unit.getStatus () == UnitStatusID.ALIVE) &&
+											(unit.getOwningPlayerID () == getClient ().getOurPlayerID ()))
+											
+											units.add (unit);
+									
+									if (units.size () > 0)
+									{
+										final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
+										unitRowDisplay.setUnits (units);
+										unitRowDisplay.setTargetSpellID (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
+										unitRowDisplay.setVisible (true);
+									}
+									
+									break;
+								}
+
+								case SPECIAL_OVERLAND_SPELLS:
+								case DISPEL_SPELLS:
+								case SUMMONING:
 								{
 									// Use common routine to do all the validation
-									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
-										(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
-										getClient ().getOurPlayerID (), mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (),
-										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ());
+									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, getClient ().getOurPlayerID (),
+										mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
 									{
@@ -881,78 +944,21 @@ public final class OverlandMapUI extends MomClientFrameUI
 									{
 										final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 										
-										final String buildingName;
-										if (spell.getBuildingID () == null)
-											buildingName = "";
-										else
-											buildingName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (spell.getBuildingID (), "OverlandMapUI").getBuildingName ());
-										
-										final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getCityLanguageText (validTarget)).replaceAll
-											("SPELL_NAME", spellName).replaceAll ("BUILDING_NAME", buildingName);
+										final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getLocationLanguageText (validTarget)).replaceAll
+											("SPELL_NAME", spellName);
 										
 										final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 										msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
 										msg.setText (text);
 										msg.setVisible (true);												
 									}
+									
+									break;
 								}
-							}
-							
-							// NB. There are no overland unit curses
-							else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
-								(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS))
-							{
-								// Find our units at this map location
-								final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-								for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-									if ((mapLocation.equals (unit.getUnitLocation ())) && (unit.getStatus () == UnitStatusID.ALIVE) &&
-										(unit.getOwningPlayerID () == getClient ().getOurPlayerID ()))
-										
-										units.add (unit);
 								
-								if (units.size () > 0)
-								{
-									final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
-									unitRowDisplay.setUnits (units);
-									unitRowDisplay.setTargetSpellID (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
-									unitRowDisplay.setVisible (true);
-								}
+								default:
+									throw new MomException ("Clicking on the overland map to target a spell, but don't know what to do with spells from section " + spell.getSpellBookSectionID ());
 							}
-
-							else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
-								(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
-							{
-								// Use common routine to do all the validation
-								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, getClient ().getOurPlayerID (),
-									mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getClientDB ());
-								
-								if (validTarget == TargetSpellResult.VALID_TARGET)
-								{
-									final TargetSpellMessage msg = new TargetSpellMessage ();
-									msg.setSpellID (spell.getSpellID ());
-									msg.setOverlandTargetLocation (mapLocation);
-									getClient ().getServerConnection ().sendMessageToServer (msg);
-									
-									// Close out the "Target Spell" right hand panel
-									getOverlandMapProcessing ().updateMovementRemaining ();
-								}
-								else
-								{
-									final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
-									
-									final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getLocationLanguageText (validTarget)).replaceAll
-										("SPELL_NAME", spellName);
-									
-									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-									msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
-									msg.setText (text);
-									msg.setVisible (true);												
-								}
-							}
-							
-							else
-								throw new MomException ("Clicking on the overland map to target a spell, but don't know what to do with spells from section " + spell.getSpellBookSectionID ());
 						}
 						
 						// Left clicking on a space to move a stack of units to - can only do this if its our turn

@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -19,6 +21,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileType;
 import momime.common.database.UnitSpellEffect;
+import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -44,6 +47,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -455,13 +461,17 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param targetLocation Location we want to cast the spell at 
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param fow Area we can currently see
+	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
-	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
 	public final TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final int castingPlayerID, final MapCoordinates3DEx targetLocation,
-		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException
+		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
     	final TargetSpellResult result;
 
@@ -498,6 +508,36 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    		else
 	    			result = TargetSpellResult.VALID_TARGET;
 	    	}
+    	}
+    	
+    	// This is only used for Floating Island
+    	else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+    	{
+    		if (getUnitUtils ().findFirstAliveEnemyAtLocation (mem.getUnit (), targetLocation.getX (), targetLocation.getY (), targetLocation.getZ (), castingPlayerID) != null)
+    			result = TargetSpellResult.ENEMIES_HERE;
+
+    		else if (getUnitUtils ().countAliveEnemiesAtLocation (mem.getUnit (), targetLocation.getX (), targetLocation.getY (), targetLocation.getZ (), 0) > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
+    			result = TargetSpellResult.CELL_FULL;
+    		
+    		else
+   			{
+    			final AvailableUnit unit = new AvailableUnit ();
+				unit.setOwningPlayerID (castingPlayerID);
+				unit.setUnitID (spell.getSummonedUnit ().get (0));
+				
+				getUnitUtils ().initializeUnitSkills (unit, null, db);
+
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+
+				final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get
+					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+				
+    			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db) == null)
+    				result = TargetSpellResult.TERRAIN_IMPASSABLE;
+    			
+	    		else
+	    			result = TargetSpellResult.VALID_TARGET;
+   			}
     	}
     	
     	else
@@ -628,5 +668,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 }

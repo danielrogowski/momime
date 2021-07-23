@@ -1066,6 +1066,15 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <cannotTargetNodes language="en">
             <text>SPELL_NAME cannot be targetted at nodes.</text>
         </cannotTargetNodes>
+        <enemiesHere language="en">
+            <text>You cannot summon on top of enemy units.</text>
+        </enemiesHere>
+        <cellFull language="en">
+            <text>There are already the maximum number of units here.</text>
+        </cellFull>
+        <terrainImpassable language="en">
+            <text>The SPELL_NAME cannot be summoned on this type of terrain..</text>
+        </terrainImpassable>
         <cancelTitle language="en">
             <text>Cancel Spell</text>
         </cancelTitle>

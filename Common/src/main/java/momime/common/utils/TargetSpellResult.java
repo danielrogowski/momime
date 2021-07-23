@@ -66,5 +66,14 @@ public enum TargetSpellResult
 	INVALID_TILE_TYPE,
 	
 	/** Can only disjunct overland enchantments */
-	OVERLAND_ENCHANTMENTS_ONLY;
+	OVERLAND_ENCHANTMENTS_ONLY,
+	
+	/** Can't summon on top of enemy units */
+	ENEMIES_HERE,
+	
+	/** Map cell already has maximum number of units */
+	CELL_FULL,
+	
+	/** Can't summon on impassable terrain */
+	TERRAIN_IMPASSABLE;
 }

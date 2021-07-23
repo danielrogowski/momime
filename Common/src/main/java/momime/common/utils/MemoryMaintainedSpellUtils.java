@@ -5,6 +5,7 @@ import java.util.List;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -156,12 +157,16 @@ public interface MemoryMaintainedSpellUtils
 	 * @param targetLocation Location we want to cast the spell at 
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param fow Area we can currently see
+	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
-	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final int castingPlayerID, final MapCoordinates3DEx targetLocation,
-		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException;
+		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
 	 * Used for disjunction type spells being targetted at overland enchantments

@@ -3338,6 +3338,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 			<xsd:element minOccurs="0" maxOccurs="1" name="soundAndImageDelay" type="momimecommon:seconds" nxe:label="Sound &amp; image delay" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellSoundFile" type="momimecommon:imageFilename" nxe:label="Spell sound file" nxe:gridwidth="400" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="aiResearchOrder" type="momimecommon:aiResearchOrder" nxe:label="AI Research Order" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="summonAnywhere" type="xsd:boolean" nxe:label="Can summon anywhere?" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:unitID" nxe:label="Summoned unit">
 		        <xsd:annotation>
 		        	<xsd:documentation>For summoning spells, defines all possible units that can be summoned by the spell.

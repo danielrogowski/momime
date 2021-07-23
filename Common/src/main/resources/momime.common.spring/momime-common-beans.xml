@@ -293,6 +293,7 @@
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />

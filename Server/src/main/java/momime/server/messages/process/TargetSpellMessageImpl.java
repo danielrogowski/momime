@@ -230,7 +230,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 			}
 			
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
-				(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
+				(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
 			{
 				// Just validate that we got a location
 				if (getOverlandTargetUnitURN () != null)
@@ -250,12 +250,14 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				{
 					// Common routine used by both the client and server does the guts of the validation work
 					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, sender.getPlayerDescription ().getPlayerID (), 
-						(MapCoordinates3DEx) getOverlandTargetLocation (), mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getServerDB ());
+						(MapCoordinates3DEx) getOverlandTargetLocation (), mom.getGeneralServerKnowledge ().getTrueMap (),
+						priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ());
+					
 					if (reason == TargetSpellResult.VALID_TARGET)
 						error = null;
 					else
 						// Using the enum name isn't that great, but the client will already have performed this validation so should never see any message generated here anyway
-						error = "This city is not a valid target for this spell for reason " + reason;
+						error = "This location is not a valid target for this spell for reason " + reason;
 				}
 			}
 			

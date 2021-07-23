@@ -231,7 +231,9 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 				
 			case SPECIAL_OVERLAND_SPELLS:
 			case DISPEL_SPELLS:
+			case SUMMONING:
 				// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+				// Only summoning spell that comes here is Floating Island
 				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
 					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
 				{

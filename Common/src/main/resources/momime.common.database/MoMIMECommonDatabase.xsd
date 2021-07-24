@@ -2951,6 +2951,7 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="transportCapacity" type="momimecommon:transportCapacity" nxe:label="Transport Capacity" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="nonCombatUnit" type="xsd:boolean" nxe:label="Non-combat unit?" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="hiringFame" type="momimecommon:fame" nxe:label="Req'd Fame" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickType" type="momimecommon:heroSkillTypeID" nxe:label="Hero Random Pick Type" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickCount" type="momimecommon:heroRandomPickCount" nxe:label="Hero Random Picks" nxe:gridwidth="150" />

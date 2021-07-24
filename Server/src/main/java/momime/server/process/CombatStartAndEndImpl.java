@@ -40,8 +40,10 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.MomAI;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.CityServerUtils;
@@ -128,6 +130,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -226,10 +231,23 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			tc.setAttackerSpecialFameLost (0);
 		}
 		
-		// Are there any defenders (attacking an empty city) - if not then bypass the combat entirely
-		if (defendingPlayer == null)
+		// Did the attacker try to attack with only non-combat units?  If so then bypass the combat entirely
+		if ((attackerSummary != null) && (attackerSummary.getUnitCount () == 0))
 		{
-			log.debug ("Combat ending before it starts");
+			log.debug ("Combat ending before it starts (no attackers)");
+			
+			// If attacking an enemy city with no defence, set the player correctly so we notify the player that they've lost their city.
+			if ((defendingPlayer == null) && (tc.getCityData () != null))
+				defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "startCombat-CA");
+				
+			combatEnded (combatLocation, attackingPlayer, defendingPlayer, defendingPlayer,	// <-- who won
+				null, mom);
+		}
+		
+		// Are there any defenders (attacking an empty city) - if not then bypass the combat entirely
+		else if (defendingPlayer == null)
+		{
+			log.debug ("Combat ending before it starts (no defenders)");
 			
 			// If attacking an enemy city with no defence, set the player correctly so we notify the player that they've lost their city.
 			if (tc.getCityData () != null)
@@ -513,16 +531,28 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Put all the attackers in a list, and figure out moveFrom.
 				// NB. We intentionally don't check combatPosition and heading here because we DO want units to advance if they
 				// were land units sitting in transports during a naval combat.
+				// Also find any similar defenders, who didn't participate in the combat.
 				MapCoordinates3DEx moveFrom = null;
 				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+				final List<MemoryUnit> leftoverDefenders = new ArrayList<MemoryUnit> ();
+				
 				for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
-						(trueUnit.getCombatSide () == UnitCombatSideID.ATTACKER))
+					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) && (trueUnit.getCombatSide () != null))
 					{
-						unitStack.add (trueUnit);
-						moveFrom = new MapCoordinates3DEx ((MapCoordinates3DEx) trueUnit.getUnitLocation ());
+						if (trueUnit.getCombatSide () == UnitCombatSideID.ATTACKER)
+						{
+							unitStack.add (trueUnit);
+							moveFrom = new MapCoordinates3DEx ((MapCoordinates3DEx) trueUnit.getUnitLocation ());
+						}
+						else
+							leftoverDefenders.add (trueUnit);
 					}
-
+				
+				// Kill any leftover defenders
+				for (final MemoryUnit trueUnit : leftoverDefenders)
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE,
+						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+				
 				// Its possible to get a list of 0 here, if the only surviving attacking units were combat summons like phantom warriors which have now been removed
 				if (unitStack.size () > 0)
 					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
@@ -937,5 +967,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
 	}
 }

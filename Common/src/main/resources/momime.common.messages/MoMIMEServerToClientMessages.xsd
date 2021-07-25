@@ -714,6 +714,21 @@ This can be null for unusual kinds of attack, e.g. Warp Wood.</xsd:documentation
 		</xsd:complexContent>
 	</xsd:complexType>		       
 
+	<xsd:complexType name="damageCalculationConfusionData">
+	    <xsd:annotation>
+    		<xsd:documentation>Lets players involved in a combat know what confusion effect a unit rolled this turn.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimestoc:damageCalculationData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="confusionEffect" type="momimemsgs:confusionEffect" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
 <!-- Magic -->
 
 	<xsd:element name="fullSpellListMessage">

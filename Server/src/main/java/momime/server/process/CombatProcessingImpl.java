@@ -639,6 +639,12 @@ public final class CombatProcessingImpl implements CombatProcessing
 					log.debug ("Defender's turn");
 				}
 				
+				// Sequence is always (start new turn) - defender - attacker - (start new turn) - defender - attacker,
+				// so if its about to be the defender's turn, then take care of any start new turn things, like rolling for confusion
+				if (tc.getCombatCurrentPlayerID ().equals (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ()))
+					getCombatEndTurn ().combatStartTurn ((PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (),
+						combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ());
+				
 				// Tell all human players involved in the combat who the new player is
 				final SetCombatPlayerMessage msg = new SetCombatPlayerMessage ();
 				msg.setCombatLocation (combatLocation);

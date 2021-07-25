@@ -694,6 +694,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="damageCalculator" ref="damageCalculator" />
 	</bean>
 	
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">

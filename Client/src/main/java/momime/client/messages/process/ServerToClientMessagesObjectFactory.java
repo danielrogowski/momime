@@ -21,6 +21,7 @@ import momime.common.messages.servertoclient.ChosenWizardMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.CounterMagicResultsMessage;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
+import momime.common.messages.servertoclient.DamageCalculationConfusionData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
@@ -592,6 +593,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final DamageCalculationWallData createDamageCalculationWallData ()
 	{
 		return getFactory ().createDamageCalculationWallData ();
+	}
+	
+	/**
+	 * @return Newly created damage calculation breakdown line
+	 */
+	@Override
+	public final DamageCalculationConfusionData createDamageCalculationConfusionData ()
+	{
+		return getFactory ().createDamageCalculationConfusionData ();
 	}
 	
 	/**

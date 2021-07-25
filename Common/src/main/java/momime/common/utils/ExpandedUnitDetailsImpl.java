@@ -43,6 +43,9 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	/** Upkeep values, modified by reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here */
 	private final Map<String, Integer> modifiedUpkeepValues;
 	
+	/** PlayerID of the player who currently controls the unit; may not be owningPlayerID if unit has confusion cast on it */
+	private final int controllingPlayerID;
+	
 	/** Unit utils */
 	private final UnitUtils unitUtils;
 	
@@ -56,6 +59,7 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	 * @param aRangedAttackType Ranged attack type this unit has, or null if it has none
 	 * @param aBasicExpLvl Experience level of this unit (0-5 for regular units, 0-8 for heroes) excluding bonuses from Warlord/Crusade; null for units that don't gain experience (e.g. summoned)
 	 * @param aModifiedExpLvl Experience level of this unit (0-5 for regular units, 0-8 for heroes) including bonuses from Warlord/Crusade; null for units that don't gain experience (e.g. summoned)
+	 * @param aControllingPlayerID PlayerID of the player who currently controls the unit; may not be owningPlayerID if unit has confusion cast on it
 	 * @param aBasicSkillValues Calculated basic skill map
 	 * @param aModifiedSkillValues Modified skill values, broken down into their individual components; valueless skills will just have a null in the outer map
 	 * @param aBasicUpkeepValues Base upkeep values, before any reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here
@@ -64,12 +68,13 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	 */
 	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final UnitEx aUnitDefinition, final UnitType aUnitType, final PlayerPublicDetails anOwningPlayer,
 		final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackTypeEx aRangedAttackType,
-		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl,
+		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl, final int aControllingPlayerID,
 		final Map<String, Integer> aBasicSkillValues, final Map<String, Map<UnitSkillComponent, Integer>> aModifiedSkillValues,
 		final Map<String, Integer> aBasicUpkeepValues, final Map<String, Integer> aModifiedUpkeepValues, final UnitUtils aUnitUtils)
 	{
 		super (aUnit, aUnitDefinition, aUnitType, anOwningPlayer, aBasicExpLvl, aModifiedExpLvl, aBasicSkillValues);
 		
+		controllingPlayerID = aControllingPlayerID;
 		modifiedUnitMagicRealmLifeformType = aModifiedUnitMagicRealmLifeformType;
 		weaponGrade = aWeaponGrade;
 		rangedAttackType = aRangedAttackType;
@@ -323,6 +328,15 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 		}
 		
 		return total;
+	}
+	
+	/**
+	 * @return PlayerID of the player who currently controls the unit; may not be owningPlayerID if unit has confusion cast on it 
+	 */
+	@Override
+	public final int getControllingPlayerID ()
+	{
+		return controllingPlayerID;
 	}
 	
 	/**

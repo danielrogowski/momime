@@ -40,6 +40,7 @@ import momime.common.database.UnitSpellEffect;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.ConfusionEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -267,6 +268,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			}
 		
 		// STEP 3 - Add in skills from spells - we must do this next since some skills from spells may grant other skills, e.g. Invulerability spell effect grants Weapon Immunity
+		Integer confusionSpellOwner = null;
 		for (final MemoryMaintainedSpell thisSpell : mem.getMaintainedSpell ())
 			if ((thisSpell.getUnitURN () != null) && (unitStackUnitURNs.contains (thisSpell.getUnitURN ())) && (thisSpell.getUnitSkillID () != null))
 			{
@@ -291,7 +293,13 @@ public final class UnitUtilsImpl implements UnitUtils
 				
 				// Is it the unit we're calculating skills for?
 				if ((unit instanceof MemoryUnit) && (((MemoryUnit) unit).getUnitURN () == thisSpell.getUnitURN ()))
+				{
 					basicSkillValues.put (thisSpell.getUnitSkillID (), strength);
+					
+					// If we find a confusion spell cast on the unit, remember who cast it
+					if (thisSpell.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CONFUSION))
+						confusionSpellOwner = thisSpell.getCastingPlayerID ();
+				}
 				
 				// List the skill in the unit stack skills?
 				if (strength != null)
@@ -744,9 +752,14 @@ public final class UnitUtilsImpl implements UnitUtils
 			}));
 		}
 		
+		// STEP 19 - Work out who has control of the unit at the moment
+		int controllingPlayerID = unit.getOwningPlayerID ();
+		if ((unit instanceof MemoryUnit) && (((MemoryUnit) unit).getConfusionEffect () == ConfusionEffect.CASTER_CONTROLLED) && (confusionSpellOwner != null))
+			controllingPlayerID = confusionSpellOwner;
+		
 		// Finally can build the unit object
 		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, mu.getUnitDefinition (), unitType, mu.getOwningPlayer (), magicRealmLifeformType,
-			weaponGrade, rangedAttackType, mu.getBasicExperienceLevel (), mu.getModifiedExperienceLevel (),
+			weaponGrade, rangedAttackType, mu.getBasicExperienceLevel (), mu.getModifiedExperienceLevel (), controllingPlayerID,
 			basicSkillValues, modifiedSkillValues, basicUpkeepValues, modifiedUpkeepValues, this);
 		return xu;
 	}
@@ -1127,6 +1140,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		dest.setCombatHeading (source.getCombatHeading ());
 		dest.setCombatSide (source.getCombatSide ());
 		dest.setDoubleCombatMovesLeft (newDoubleCombatMovesLeft);
+		dest.setConfusionEffect (source.getConfusionEffect ());
 
 		dest.getFixedSpellsRemaining ().clear ();
 		dest.getFixedSpellsRemaining ().addAll (source.getFixedSpellsRemaining ());

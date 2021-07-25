@@ -1179,6 +1179,18 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <wallFailed language="en">
             <text>PERCENTAGE% chance to knock down wall - failed.</text>
         </wallFailed>
+        <confusionDoNothing language="en">
+            <text>PLAYER_NAME's RACE_UNIT_NAME will do nothing this turn.</text>
+        </confusionDoNothing>
+        <confusionMoveRandomly language="en">
+            <text>PLAYER_NAME's RACE_UNIT_NAME will move randomly this turn.</text>
+        </confusionMoveRandomly>
+        <confusionOwnerControlled language="en">
+            <text>PLAYER_NAME's RACE_UNIT_NAME will be controlled by PLAYER_NAME this turn.</text>
+        </confusionOwnerControlled>
+        <confusionCasterControlled language="en">
+            <text>PLAYER_NAME's RACE_UNIT_NAME will be controlled by CASTER_NAME this turn.</text>
+        </confusionCasterControlled>
     </combatDamage>
     <cityGrowthRate>
         <title language="en">

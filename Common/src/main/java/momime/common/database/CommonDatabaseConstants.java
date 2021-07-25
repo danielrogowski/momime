@@ -318,6 +318,9 @@ public final class CommonDatabaseConstants
 	
 	/** Unit is stuck in web and cannot move (if value > 0) and cannot fly (regardless of value) */
 	public final static String UNIT_SKILL_ID_WEB = "SC005";
+
+	/** Confusion (unit rolls random action each combat turn) */
+	public final static String UNIT_SKILL_ID_CONFUSION = "SC046";
 	
 	/**
 	 * Special code used for hero item bonuses, meaning "type(s) of attack appropriate for the type of weapon", so is used to differentiate

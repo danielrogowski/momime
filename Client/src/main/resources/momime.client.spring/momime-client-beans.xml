@@ -756,6 +756,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 	</bean>
 	
+	<bean id="damageCalculationConfusionData" class="momime.client.calculations.damage.DamageCalculationConfusionDataEx" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+	
 	<!-- Version of the client -->
 	
 	<context:property-placeholder location="classpath:MoMIMEClientVersion.properties" />

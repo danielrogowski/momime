@@ -21,6 +21,21 @@ import momime.common.messages.FogOfWarMemory;
 public interface CombatEndTurn
 {
 	/**
+	 * Makes any rolls necessary at the start of a combat turn.  Note what this means by "combat turn" is different than what combatEndTurn below means.
+	 * Here we mean before EITHER player has taken their turn, i.e. immediately before the defender gets a turn.
+	 * 
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param combatLocation The location the combat is taking place
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void combatStartTurn (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap)
+		throws JAXBException, XMLStreamException;
+	
+	/**
 	 * Deals with any processing at the end of one player's turn in combat (after none of their units have any moves left) 
 	 * 
 	 * @param combatLocation The location the combat is taking place

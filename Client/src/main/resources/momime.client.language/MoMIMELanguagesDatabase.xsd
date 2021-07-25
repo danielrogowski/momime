@@ -517,6 +517,22 @@
 						<xsd:selector xpath="wallFailed" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="combatDamageConfusionDoNothingPK">
+						<xsd:selector xpath="confusionDoNothing" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageConfusionMoveRandomlyPK">
+						<xsd:selector xpath="confusionMoveRandomly" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageConfusionOwnerControlledPK">
+						<xsd:selector xpath="confusionOwnerControlled" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageConfusionCasterControlledPK">
+						<xsd:selector xpath="confusionCasterControlled" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="cityGrowthRate" type="momimelangs:cityGrowthRate">
 					<xsd:key name="cityGrowthRateTitlePK">
@@ -2698,6 +2714,10 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceFear" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wallWrecked" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wallFailed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="confusionDoNothing" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="confusionMoveRandomly" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="confusionOwnerControlled" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="confusionCasterControlled" />
 		</xsd:sequence>
     </xsd:complexType>
 	

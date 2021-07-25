@@ -292,7 +292,8 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				// Similarly only the two sides involved in a combat should be able to 'see' the combat related values, but don't worry about that for now.
 				(newDoubleOverlandMovesLeft != dest.getDoubleOverlandMovesLeft ()) ||
 				(newSpecialOrder != dest.getSpecialOrder ()) ||
-				(!CompareUtils.safeIntegerCompare (newDoubleCombatMovesLeft, dest.getDoubleCombatMovesLeft ()));
+				(!CompareUtils.safeIntegerCompare (newDoubleCombatMovesLeft, dest.getDoubleCombatMovesLeft ())) ||
+				(source.getConfusionEffect () != dest.getConfusionEffect ());
 
 			// MemoryUnit - fixed spells remaining - already know the number of spells matches; order here is important.
 			final Iterator<Integer> sourceFixedSpells = source.getFixedSpellsRemaining ().iterator ();

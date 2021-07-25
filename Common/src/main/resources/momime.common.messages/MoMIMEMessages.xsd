@@ -810,6 +810,7 @@ set, but combatPosition and combatHeading left null (server only). -->
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatHeading" type="map:mapDirection" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatSide" type="momimecommon:unitCombatSideID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="doubleCombatMovesLeft" type="momimecommon:doubleMovement" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="confusionEffect" type="momimemsgs:confusionEffect" />
 
 					<!-- Hero items -->
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlot" type="momimemsgs:memoryUnitHeroItemSlot" />
@@ -1219,6 +1220,30 @@ So need a separate data item for this.</xsd:documentation>
 			<xsd:enumeration value="P"><xsd:annotation>
 				<xsd:documentation>Processing moves</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROCESSING_MOVES" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="confusionEffect">
+	    <xsd:annotation>
+    		<xsd:documentation>Possible effects of confusion spell each combat turn.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>Do nothing</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DO_NOTHING" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="R"><xsd:annotation>
+				<xsd:documentation>Move randomly</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MOVE_RANDOMLY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="O"><xsd:annotation>
+				<xsd:documentation>Controlled by owner of the unit (like normal)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OWNER_CONTROLLED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="C"><xsd:annotation>
+				<xsd:documentation>Controller by player who cast the confusion spell (the enemy)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CASTER_CONTROLLED" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

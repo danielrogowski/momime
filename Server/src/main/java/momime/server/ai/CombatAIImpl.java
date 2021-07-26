@@ -29,6 +29,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
@@ -297,7 +298,7 @@ public final class CombatAIImpl implements CombatAI
 			
 			// Move there
 			if (ok)
-				result = getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom) ?
+				result = getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, MoveUnitInCombatReason.MANUAL, movementDirections, movementTypes, mom) ?
 					CombatAIMovementResult.ENDED_COMBAT : CombatAIMovementResult.MOVED_OR_ATTACKED;
 		}
 		

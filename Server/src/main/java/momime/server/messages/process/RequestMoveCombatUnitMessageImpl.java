@@ -20,6 +20,7 @@ import momime.common.messages.CombatMapSize;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
+import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
@@ -124,7 +125,8 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		else
 		{
 			// Proceed with move
-			getCombatProcessing ().okToMoveUnitInCombat (xu, (MapCoordinates2DEx) getMoveTo (), movementDirections, movementTypes, mom);
+			getCombatProcessing ().okToMoveUnitInCombat (xu, (MapCoordinates2DEx) getMoveTo (), MoveUnitInCombatReason.MANUAL,
+				movementDirections, movementTypes, mom);
 		}
 	}
 

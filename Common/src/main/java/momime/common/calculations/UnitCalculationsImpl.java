@@ -1,6 +1,7 @@
 package momime.common.calculations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSkillEx;
+import momime.common.messages.ConfusionEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -54,6 +56,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 	/** Marks locations in the doubleMovementDistances array that we've proved that we cannot move to */
 	private final static int MOVEMENT_DISTANCE_CANNOT_MOVE_HERE = -2;
+	
+	/** List of confusion effects where the player does not get any allocated movement */
+	private final static List<ConfusionEffect> CONFUSION_NOT_PLAYER_CONTROLLED = Arrays.asList (ConfusionEffect.DO_NOTHING, ConfusionEffect.MOVE_RANDOMLY);
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -91,24 +96,34 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final List<ExpandedUnitDetails> webbedUnits = new ArrayList<ExpandedUnitDetails> ();
 		
 		for (final MemoryUnit thisUnit : mem.getUnit ())
-			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
-				
-				final boolean webbed;
-				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB))
-				{
-					final Integer webHP = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_WEB);
-					webbed = (webHP != null) && (webHP > 0);
-				}
-				else
-					webbed = false;
+				if (xu.getOwningPlayerID () == playerID)
+				{				
+					final boolean webbed;
+					if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB))
+					{
+						final Integer webHP = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_WEB);
+						webbed = (webHP != null) && (webHP > 0);
+					}
+					else
+						webbed = false;
+						
+					if (webbed)
+						thisUnit.setDoubleCombatMovesLeft (0);
+					else
+					{
+						if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CONFUSION)) && (CONFUSION_NOT_PLAYER_CONTROLLED.contains (thisUnit.getConfusionEffect ())))
+							thisUnit.setDoubleCombatMovesLeft (0);
+						else						
+							thisUnit.setDoubleCombatMovesLeft (2 * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+					}
 					
-				thisUnit.setDoubleCombatMovesLeft (webbed ? 0 : (2 * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)));
-				
-				if (webbed)
-					webbedUnits.add (xu);
+					if (webbed)
+						webbedUnits.add (xu);
+				}
 			}
 		
 		return webbedUnits;

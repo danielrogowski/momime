@@ -523,6 +523,7 @@ Either direction or teleportTo will be filled in, but not both.</xsd:documentati
 						<xsd:element minOccurs="0" maxOccurs="1" name="direction" type="map:mapDirection" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="teleportTo" type="map:mapCoordinates2D" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="doubleCombatMovesLeft" type="momimecommon:integerMapDistance" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="reason" type="momimestoc:moveUnitInCombatReason" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -1484,4 +1485,16 @@ The actual new unit(s) or hero item will be sent separately.</xsd:documentation>
 		</xsd:restriction>
 	</xsd:simpleType>
 
+	<xsd:simpleType name="moveUnitInCombatReason">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Manual (or AI) control</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MANUAL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="C"><xsd:annotation>
+				<xsd:documentation>Confusion - moved randomly</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CONFUSION" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
 </xsd:schema>

@@ -14,6 +14,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.server.MomSessionVariables;
 
 /**
  * Deals with any processing at the end of one player's turn in combat (after none of their units have any moves left)
@@ -27,13 +28,16 @@ public interface CombatEndTurn
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param combatLocation The location the combat is taking place
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void combatStartTurn (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap)
-		throws JAXBException, XMLStreamException;
+	public void combatStartTurn (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
+		final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**
 	 * Deals with any processing at the end of one player's turn in combat (after none of their units have any moves left) 

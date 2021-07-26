@@ -31,6 +31,7 @@ import momime.common.database.TileSetEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
+import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
@@ -353,7 +354,8 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		if (unit.getDoubleCombatMovesLeft () <= 0)
 			getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (unit.getMemoryUnit ());
 		
-		getCombatMapProcessing ().selectNextUnitToMoveCombat ();
+		if (getReason () == MoveUnitInCombatReason.MANUAL)
+			getCombatMapProcessing ().selectNextUnitToMoveCombat ();
 	}
 	
 	/**

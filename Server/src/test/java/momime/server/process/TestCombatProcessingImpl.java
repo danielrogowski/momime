@@ -46,6 +46,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
+import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
@@ -3524,7 +3525,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		
 		// Run method
-		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom));
+		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, MoveUnitInCombatReason.MANUAL, movementDirections, movementTypes, mom));
 		
 		// Check movement path messages
 		assertEquals (2, msgs.getMessages ().size ());
@@ -3711,7 +3712,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setDamageProcessor (damageProcessor);
 		
 		// Run method
-		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom));
+		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, MoveUnitInCombatReason.MANUAL, movementDirections, movementTypes, mom));
 		
 		// Check there were no movement path messages
 		assertEquals (0, msgs.getMessages ().size ());
@@ -3892,7 +3893,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setDamageProcessor (damageProcessor);
 		
 		// Run method
-		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom));
+		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, MoveUnitInCombatReason.MANUAL, movementDirections, movementTypes, mom));
 		
 		// Check movement path messages
 		assertEquals (1, msgs.getMessages ().size ());

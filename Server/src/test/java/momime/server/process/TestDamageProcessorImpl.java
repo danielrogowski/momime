@@ -222,7 +222,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, null, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
 			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
@@ -404,7 +404,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, null, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
@@ -552,7 +552,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, spellDamage, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (), defenders,
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
 			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
@@ -737,7 +737,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, spellDamage, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (), defenders,
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
 			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent

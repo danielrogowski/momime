@@ -115,9 +115,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/** Number of animation ticks */
 	private int tickCount;
 	
-	/** Damage is animated if we're one of the players invovled in the combat; damage is instant if its someone else's combat */
-	private boolean animated;
-	
 	/** Start coordinates of each individual missile making a ranged attack, in pixels */
 	private int [] [] start;
 	
@@ -168,9 +165,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			attackerUnit.setCombatHeading (getAttackerDirection ());
 		}
 
-		// Is either unit ours?  If so, then it must be damage from the combat we're in; if not, then it must be some combat going on elsewhere
-		animated = (getAttackerPlayerID () == getClient ().getOurPlayerID ());
-		
 		// Can we see the defender(s)?
 		defenderUnits = new ArrayList<ApplyDamageMessageDefenderDetails> ();
 		for (final ApplyDamageMessageUnit thisUnitDetails : getDefenderUnit ())
@@ -178,13 +172,11 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (thisUnitDetails.getDefenderUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ApplyDamageMessageImpl-d");
 			thisUnit.setCombatHeading (thisUnitDetails.getDefenderDirection ());
 			defenderUnits.add (new ApplyDamageMessageDefenderDetails (thisUnit, thisUnitDetails.getDefenderUnitDamage ()));
-
-			if (thisUnit.getOwningPlayerID () == getClient ().getOurPlayerID ())
-				animated = true;			
 		}
 		
-		// Perform any animation startup necessary
-		if (!animated)
+		// Perform any animation startup necessary.
+		// If is it a combat we are involved in then we animate it; if its just a combat we are observing then we just apply the damage immediately with no animation.
+		if (!isYourCombat ())
 		{
 			duration = 0;
 			tickCount = 0;
@@ -531,7 +523,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		}
 	
 		// If we're involved in the combat, we must be looked at combatUI, so possibly need to update the terrain
-		if ((animated) && (getWreckTilePosition () != null) && (isWrecked () != null) && (isWrecked ()))
+		if ((isYourCombat ()) && (getWreckTilePosition () != null) && (isWrecked () != null) && (isWrecked ()))
 		{
 			final MomCombatTile tile = getCombatUI ().getCombatTerrain ().getRow ().get (getWreckTilePosition ().getY ()).getCell ().get (getWreckTilePosition ().getX ());
 			tile.setWrecked (true);
@@ -539,7 +531,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		}
 		
 		// Jump to the next unit to move
-		if ((animated) && (attackerUnit != null))
+		if ((isYourCombat ()) && (attackerUnit != null))
 		{
 			// Update remaining movement
 			attackerUnit.setDoubleCombatMovesLeft (getAttackerDoubleCombatMovesLeft ());

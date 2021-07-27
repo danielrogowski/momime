@@ -54,7 +54,7 @@ public interface CombatEndTurn
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void combatEndTurn (final MapCoordinates3DEx combatLocation, final int playerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public void combatEndTurn (final MapCoordinates3DEx combatLocation, final int playerID,
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

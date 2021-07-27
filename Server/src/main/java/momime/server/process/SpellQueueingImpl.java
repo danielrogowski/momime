@@ -204,9 +204,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 				if (combatCastingUnit == null)
 					msg = "Cannot find the unit who is trying to cast a spell.";
 				
-				else if (combatCastingUnit.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ())
-					msg = "The unit you are trying to cast a spell from belongs to somebody else.";
-				
 				else if (combatCastingUnit.getStatus () != UnitStatusID.ALIVE)
 					msg = "The unit you are trying to cast a spell from is dead";
 				
@@ -218,8 +215,11 @@ public final class SpellQueueingImpl implements SpellQueueing
 				{
 					xuCombatCastingUnit = getUnitUtils ().expandUnitDetails (combatCastingUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+					if (xuCombatCastingUnit.getControllingPlayerID () != player.getPlayerDescription ().getPlayerID ())
+						msg = "The unit you are trying to cast a spell from is controlled by somebody else.";
 					
-					if (combatCastingFixedSpellNumber != null)
+					else if (combatCastingFixedSpellNumber != null)
 					{
 						// Validation for using fixed spells, e.g. Giant Spiders casting Web
 						if ((combatCastingFixedSpellNumber < 0) || (combatCastingFixedSpellNumber >= combatCastingUnit.getFixedSpellsRemaining ().size ()) ||

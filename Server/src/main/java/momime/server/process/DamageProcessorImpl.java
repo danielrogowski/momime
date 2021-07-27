@@ -142,18 +142,16 @@ public final class DamageProcessorImpl implements DamageProcessor
 		
 		// If its a spell, we work out the kind of damage dealt once only (so it only appears in the client message log once)
 		// If its a regular attribute-based attack, damage is worked out inside each resolution step.
+		final ExpandedUnitDetails xuAttackerPreliminary = (attacker == null) ? null : 
+			getUnitUtils ().expandUnitDetails (attacker, null, null, null,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
 		final AttackDamage commonPotentialDamageToDefenders;
 		if (spell == null)
 			commonPotentialDamageToDefenders = null;
 		else
-		{
-			final ExpandedUnitDetails xuAttacker = (attacker == null) ? null : 
-				getUnitUtils ().expandUnitDetails (attacker, null, null, null,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-
 			commonPotentialDamageToDefenders = getDamageCalculator ().attackFromSpell
-				(spell, variableDamage, castingPlayer, xuAttacker, attackingPlayer, defendingPlayer, mom.getServerDB ());
-		}
+				(spell, variableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB ());
 		
 		// Process our attack against each defender
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -267,8 +265,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// This includes both players involved in the combat (who will queue this up as an animation), and players who aren't involved in the combat but
 		// can see the units fighting (who will update the damage immediately).
 		// This also sends the number of combat movement points the attacker has left.
-		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, damageCalculationMsg.getAttackerPlayerID (), defenders,
-			damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackSpellID (),
+		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, attackingPlayer, defendingPlayer,
+			defenders, damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackSpellID (),
 			specialDamageResolutionsApplied, wreckTilePosition, sendWrecked, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		

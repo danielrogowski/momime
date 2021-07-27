@@ -941,6 +941,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="combatMapProcessing" class="momime.client.process.CombatMapProcessingImpl">
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
 	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">

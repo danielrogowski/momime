@@ -100,7 +100,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
-				if (xu.getOwningPlayerID () == playerID)
+				if (xu.getControllingPlayerID () == playerID)
 				{				
 					final boolean webbed;
 					if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB))
@@ -862,23 +862,24 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
 				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
 			{
-				if (thisUnit.getOwningPlayerID () == unitBeingMoved.getOwningPlayerID ())
+				// Note on owning vs controlling player ID - unitBeingMoved.getControllingPlayerID () is the player whose turn it is, who is controlling the unit, so this is fine.
+				// But they don't want to attack their own units who might just be temporarily confused, equally if an enemy unit is confused and currently under our
+				// control, we still want to kill it - ideally we confusee units and make them kill each other!  So this is why it is not xu.getControllingPlayerID ()
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, unitsBeingMoved, null, null, players, fogOfWarMemory, db);
+				if ((thisUnit == unitBeingMoved.getMemoryUnit ()) || (xu.getOwningPlayerID () == unitBeingMoved.getControllingPlayerID ()))
 					ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
-				else
+				
+				else if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getControllingPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, unitsBeingMoved, null, null, players, fogOfWarMemory, db);
-					if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getOwningPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
-					{
-						enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
-						
-						boolean visible = true;
-						for (final String invisibilitySkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY)
-							if (xu.hasModifiedSkill (invisibilitySkillID))
-								visible = false;
+					enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
+					
+					boolean visible = true;
+					for (final String invisibilitySkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY)
+						if (xu.hasModifiedSkill (invisibilitySkillID))
+							visible = false;
 
-						if (visible)
-							directlyVisibleEnemyUnits.add (xu);
-					}
+					if (visible)
+						directlyVisibleEnemyUnits.add (xu);
 				}
 			}
 		

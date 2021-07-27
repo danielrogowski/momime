@@ -31,20 +31,32 @@ public final class TestCombatAIImpl
 {
 	/**
 	 * Tests the listUnitsToMove method
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListUnitsToMove ()
+	public final void testListUnitsToMove () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		
+
+		// Players
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+
 		// Test unit list
-		final List<MemoryUnit> trueUnits = new ArrayList<MemoryUnit> ();
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final MemoryUnit notInCombat = new MemoryUnit ();
 		notInCombat.setOwningPlayerID (1);
 		notInCombat.setStatus (UnitStatusID.ALIVE);
-		trueUnits.add (notInCombat);
+		mem.getUnit ().add (notInCombat);
+
+		final ExpandedUnitDetails xuNotInCombat = mock (ExpandedUnitDetails.class);
+		when (xuNotInCombat.getControllingPlayerID ()).thenReturn (1);
+		when (unitUtils.expandUnitDetails (notInCombat, null, null, null, players, mem, db)).thenReturn (xuNotInCombat);
 		
 		final MemoryUnit inDifferentCombat = new MemoryUnit ();
 		inDifferentCombat.setCombatLocation (new MapCoordinates3DEx (21, 10, 1));
@@ -54,7 +66,11 @@ public final class TestCombatAIImpl
 		inDifferentCombat.setOwningPlayerID (1);
 		inDifferentCombat.setDoubleCombatMovesLeft (2);
 		inDifferentCombat.setStatus (UnitStatusID.ALIVE);
-		trueUnits.add (inDifferentCombat);
+		mem.getUnit ().add (inDifferentCombat);
+
+		final ExpandedUnitDetails xuInDifferentCombat = mock (ExpandedUnitDetails.class);
+		when (xuInDifferentCombat.getControllingPlayerID ()).thenReturn (1);
+		when (unitUtils.expandUnitDetails (inDifferentCombat, null, null, null, players, mem, db)).thenReturn (xuInDifferentCombat);
 		
 		final MemoryUnit noMovesLeft = new MemoryUnit ();
 		noMovesLeft.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
@@ -64,7 +80,11 @@ public final class TestCombatAIImpl
 		noMovesLeft.setOwningPlayerID (1);
 		noMovesLeft.setDoubleCombatMovesLeft (0);
 		noMovesLeft.setStatus (UnitStatusID.ALIVE);
-		trueUnits.add (noMovesLeft);
+		mem.getUnit ().add (noMovesLeft);
+
+		final ExpandedUnitDetails xuNoMovesLeft = mock (ExpandedUnitDetails.class);
+		when (xuNoMovesLeft.getControllingPlayerID ()).thenReturn (1);
+		when (unitUtils.expandUnitDetails (noMovesLeft, null, null, null, players, mem, db)).thenReturn (xuNoMovesLeft);
 		
 		final MemoryUnit deadUnit = new MemoryUnit ();
 		deadUnit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
@@ -74,15 +94,23 @@ public final class TestCombatAIImpl
 		deadUnit.setOwningPlayerID (1);
 		deadUnit.setDoubleCombatMovesLeft (2);
 		deadUnit.setStatus (UnitStatusID.DEAD);
-		trueUnits.add (deadUnit);
+		mem.getUnit ().add (deadUnit);
 
+		final ExpandedUnitDetails xuDeadUnit = mock (ExpandedUnitDetails.class);
+		when (xuDeadUnit.getControllingPlayerID ()).thenReturn (1);
+		when (unitUtils.expandUnitDetails (deadUnit, null, null, null, players, mem, db)).thenReturn (xuDeadUnit);
+		
 		final MemoryUnit landUnitInNavalCombat = new MemoryUnit ();
 		landUnitInNavalCombat.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		landUnitInNavalCombat.setCombatSide (UnitCombatSideID.ATTACKER);
 		landUnitInNavalCombat.setOwningPlayerID (1);
 		landUnitInNavalCombat.setDoubleCombatMovesLeft (2);
 		landUnitInNavalCombat.setStatus (UnitStatusID.ALIVE);
-		trueUnits.add (landUnitInNavalCombat);
+		mem.getUnit ().add (landUnitInNavalCombat);
+
+		final ExpandedUnitDetails xuLandUnitInNavalCombat = mock (ExpandedUnitDetails.class);
+		when (xuLandUnitInNavalCombat.getControllingPlayerID ()).thenReturn (1);
+		when (unitUtils.expandUnitDetails (landUnitInNavalCombat, null, null, null, players, mem, db)).thenReturn (xuLandUnitInNavalCombat);
 		
 		final MemoryUnit correctUnit = new MemoryUnit ();
 		correctUnit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
@@ -92,7 +120,11 @@ public final class TestCombatAIImpl
 		correctUnit.setOwningPlayerID (1);
 		correctUnit.setDoubleCombatMovesLeft (2);
 		correctUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnits.add (correctUnit);
+		mem.getUnit ().add (correctUnit);
+		
+		final ExpandedUnitDetails xuCorrectUnit = mock (ExpandedUnitDetails.class);
+		when (xuCorrectUnit.getControllingPlayerID ()).thenReturn (1);
+		when (unitUtils.expandUnitDetails (correctUnit, null, null, null, players, mem, db)).thenReturn (xuCorrectUnit);
 		
 		final MemoryUnit someoneElsesUnit = new MemoryUnit ();
 		someoneElsesUnit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
@@ -102,13 +134,18 @@ public final class TestCombatAIImpl
 		someoneElsesUnit.setOwningPlayerID (2);
 		someoneElsesUnit.setDoubleCombatMovesLeft (2);
 		someoneElsesUnit.setStatus (UnitStatusID.ALIVE);
-		trueUnits.add (someoneElsesUnit);
+		mem.getUnit ().add (someoneElsesUnit);
 
+		final ExpandedUnitDetails xuSomeoneElsesUnit = mock (ExpandedUnitDetails.class);
+		when (xuSomeoneElsesUnit.getControllingPlayerID ()).thenReturn (2);
+		when (unitUtils.expandUnitDetails (someoneElsesUnit, null, null, null, players, mem, db)).thenReturn (xuSomeoneElsesUnit);
+		
 		// Set up object to test
 		final CombatAIImpl ai = new CombatAIImpl ();
+		ai.setUnitUtils (unitUtils);
 		
 		// Run method
-		final List<MemoryUnit> unitsToMove = ai.listUnitsToMove (combatLocation, 1, trueUnits);
+		final List<MemoryUnit> unitsToMove = ai.listUnitsToMove (combatLocation, 1, players, mem, db);
 		
 		// Check results
 		assertEquals (1, unitsToMove.size ());

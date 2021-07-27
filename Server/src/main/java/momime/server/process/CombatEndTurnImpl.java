@@ -105,7 +105,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 					else
 					{
 						// Make random roll
-						final ConfusionEffect effect = ConfusionEffect.values () [getRandomUtils ().nextInt (ConfusionEffect.values ().length)];
+						final ConfusionEffect effect = ConfusionEffect.CASTER_CONTROLLED; // ConfusionEffect.values () [getRandomUtils ().nextInt (ConfusionEffect.values ().length)];
 						thisUnit.setConfusionEffect (effect);
 						
 						// Inform players involved; this doubles up as the damage calculation message
@@ -184,8 +184,8 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void combatEndTurn (final MapCoordinates3DEx combatLocation, final int playerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public final void combatEndTurn (final MapCoordinates3DEx combatLocation, final int playerID,
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Note we don't check the unit can normally heal damage (is not undead) because regeneration works even on undead
@@ -210,8 +210,10 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				}
 			}
 		
+		// We are only regenerating - there is no animation for it - so just pass nulls for attackingPlayer + defendingPlayer
 		if (healedUnits.size () > 0)
-			getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, playerID, healedUnits, null, null, null, null, null, players, mem.getMap (), db, fogOfWarSettings);
+			getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, null, null,
+				healedUnits, null, null, null, null, null, players, mem.getMap (), db, fogOfWarSettings);
 	}
 
 	/**

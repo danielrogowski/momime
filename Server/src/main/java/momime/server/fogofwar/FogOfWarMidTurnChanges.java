@@ -360,7 +360,8 @@ public interface FogOfWarMidTurnChanges
 	 * If the damage is enough to kill off the unit, the client will take care of this - we don't need to send a separate KillUnitMessage.
 	 * 
 	 * @param tuAttacker Server's true memory of unit that made the attack; or null if the attack isn't coming from a unit
-	 * @param attackerPlayerID Player owning tuAttacker unit; supplied in case tuAttacker is null
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit; can be null if won't be animated
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit; can be null if won't be animated
 	 * @param tuDefenders Server's true memory of unit(s) that got hit
 	 * @param attackSkillID Skill used to make the attack, e.g. for gaze or breath attacks
 	 * @param attackSpellID Spell used to make the attack
@@ -376,8 +377,8 @@ public interface FogOfWarMidTurnChanges
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void sendCombatDamageToClients (final MemoryUnit tuAttacker, final int attackerPlayerID, final List<MemoryUnit> tuDefenders,
-		final String attackSkillID, final String attackSpellID, final List<DamageResolutionTypeID> specialDamageResolutionsApplied,
+	public void sendCombatDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final List<MemoryUnit> tuDefenders, final String attackSkillID, final String attackSpellID, final List<DamageResolutionTypeID> specialDamageResolutionsApplied,
 		final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;

@@ -679,7 +679,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 								getUnitServerUtils ().healDamage (tu.getUnitDamage (), heal, false);
 						}
 						
-						getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (),
+						getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, attackingPlayer, defendingPlayer,
 							targetUnits, null, spell.getSpellID (), null, null, null, mom.getPlayers (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 					}

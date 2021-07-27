@@ -13,6 +13,8 @@ import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.EndCombatTurnMessage;
+import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.UnitUtils;
 
 /**
  * Methods dealing with combat movement and unit lists, to keep this from making CombatUI too large and complicated.
@@ -29,6 +31,9 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
 	/**
 	 * At the start of our combat turn, once all our movement has been reset, this gets called.
 	 * It builds a list of units we need to give orders during this combat turn. 
@@ -43,11 +48,16 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 		// Rebuild the list
 		unitsLeftToMoveCombat.clear ();
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-			if ((mu.getOwningPlayerID () == getClient ().getOurPlayerID ()) && (mu.getDoubleCombatMovesLeft () != null) && (mu.getDoubleCombatMovesLeft () > 0) &&
+			if ((mu.getDoubleCombatMovesLeft () != null) && (mu.getDoubleCombatMovesLeft () > 0) &&
 				(mu.getStatus () == UnitStatusID.ALIVE) && (getCombatUI ().getCombatLocation ().equals (mu.getCombatLocation ())) &&
 				(mu.getCombatPosition () != null) && (mu.getCombatHeading () != null) && (mu.getCombatSide () != null))
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, getClient ().getPlayers (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				
-				unitsLeftToMoveCombat.add (mu);
+				if (xu.getControllingPlayerID () == getClient ().getOurPlayerID ())
+					unitsLeftToMoveCombat.add (mu);
+			}
 		
 		// Ask for movement orders for the first unit
 		selectNextUnitToMoveCombat ();
@@ -169,5 +179,21 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

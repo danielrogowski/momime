@@ -1122,7 +1122,7 @@ For the players actually involved in the combat, this message will also generate
 This also gets sent to players not involved in the combat who can see one or other unit; in that situation its possible that an outside observer can see one of the units but
 not the other - in that situation one of the UnitURNs (and other values associated with that unit) will all be left null, this is why every value is optional.
 
-It is also possible that there may be no attacking unit, in the case of a player being hit by spell damage; this is why attackerPlayerID is separate + mandatory.
+It is also possible that there may be no attacking unit.
 
 Exactly one and only one of attackSkillID or attackSpellID will be filled in to denote what initiated the attack.</xsd:documentation>
 		</xsd:annotation>
@@ -1130,8 +1130,12 @@ Exactly one and only one of attackSkillID or attackSpellID will be filled in to 
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="yourCombat" type="xsd:boolean">
+						    <xsd:annotation>
+						    	<xsd:documentation>Whether it is a combat the client the msg it being sent to is involved in or not.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDirection" type="map:mapDirection" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackerDoubleCombatMovesLeft" type="momimecommon:integerMapDistance" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="attackerUnitDamage" type="momimemsgs:unitDamage" />

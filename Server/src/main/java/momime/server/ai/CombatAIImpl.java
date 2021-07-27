@@ -69,19 +69,29 @@ public final class CombatAIImpl implements CombatAI
 	/**
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param currentPlayerID AI player whose turn we are taking
-	 * @param trueUnits List of true units held on server
+	 * @param players Players list
+	 * @param mem True terrain, buildings, spells and so on as known only to the server
+	 * @param db Lookup lists built over the XML database
 	 * @return List of units this AI player needs to take actions for in combat
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	final List<MemoryUnit> listUnitsToMove (final MapCoordinates3DEx combatLocation, final int currentPlayerID,
-		final List<MemoryUnit> trueUnits)
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException 
 	{
 		final List<MemoryUnit> unitsToMove = new ArrayList<MemoryUnit> ();
-		for (final MemoryUnit tu : trueUnits)
-			if ((tu.getOwningPlayerID () == currentPlayerID) && (tu.getStatus () == UnitStatusID.ALIVE) &&
+		for (final MemoryUnit tu : mem.getUnit ())
+			if ((tu.getStatus () == UnitStatusID.ALIVE) &&
 				(combatLocation.equals (tu.getCombatLocation ())) && (tu.getCombatPosition () != null) && (tu.getCombatHeading () != null) && (tu.getCombatSide () != null) &&
 				(tu.getDoubleCombatMovesLeft () != null) && (tu.getDoubleCombatMovesLeft () > 0))
-				
-				unitsToMove.add (tu);				
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, players, mem, db);
+					
+				if (xu.getControllingPlayerID () == currentPlayerID)
+					unitsToMove.add (tu);
+			}
 		
 		return unitsToMove;
 	}
@@ -181,10 +191,13 @@ public final class CombatAIImpl implements CombatAI
 		MemoryUnit bestUnit = null;
 		Integer bestScore = null;
 		
+		// Note on owning vs controlling player ID - attacker.getControllingPlayerID () is the AI player whose turn it is, who is controlling the unit, so this is fine.
+		// But they don't want to attack their own units who might just be temporarily confused, equally if an enemy unit is confused and currently under our
+		// control, we still want to kill it - ideally we confusee units and make them kill each other!  So this is why it is not thisUnit.getControllingPlayerID ()
 		for (final MemoryUnit thisUnit : units)
-			if ((thisUnit.getOwningPlayerID () != attacker.getOwningPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && 
+			if ((thisUnit.getOwningPlayerID () != attacker.getControllingPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && 
 				(combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
-				(thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) &&
+				(thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) && (thisUnit != attacker.getMemoryUnit ()) &&
 				
 				// Check that if we select this enemy, we have a valid action to take against it - i.e. that we don't have a cunning human
 				// player box in a weak unit by surrounding it by 8 others and then get in a tizzy trying to work out a path to the unit.
@@ -348,7 +361,7 @@ public final class CombatAIImpl implements CombatAI
 			{
 				// Get a list of all unit we need to move
 				final List<MemoryUnit> unitsToMove = listUnitsToMove (combatLocation, currentPlayer.getPlayerDescription ().getPlayerID (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				if (unitsToMove.size () == 0)
 					retryCount = 100;
 				else

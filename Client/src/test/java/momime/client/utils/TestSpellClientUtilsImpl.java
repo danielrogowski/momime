@@ -355,19 +355,9 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 	@Test
 	public final void testListSavingThrowsOfSpell_BasicSavingThrow () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
-		final UnitSkillEx attr = new UnitSkillEx ();
-		attr.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Resistance"));
-		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (attr);
-		
-		final MomClient client = mock (MomClient.class);
-		when (client.getClientDB ()).thenReturn (db);
-		
 		// Mock entries from the language XML
 		final HelpScreen helpLang = new HelpScreen ();
-		helpLang.getSpellBookNoSavingThrowModifier ().add (createLanguageText (Language.ENGLISH, "Saves against UNIT_SKILL"));
+		helpLang.getSpellBookNoSavingThrowModifier ().add (createLanguageText (Language.ENGLISH, "Saves against Resistance"));
 
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		when (lang.getHelpScreen ()).thenReturn (helpLang);
@@ -377,15 +367,14 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		
 		// Spell details
 		final Spell spell = new Spell ();
+		spell.setCombatBaseDamage (0);
 		
 		final SpellValidUnitTarget target = new SpellValidUnitTarget ();
-		target.setSavingThrowSkillID ("UA01");
 		spell.getSpellValidUnitTarget ().add (target);
 
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
-		utils.setClient (client);
 		
 		// Run method
 		assertEquals ("Saves against Resistance", utils.listSavingThrowsOfSpell (spell));
@@ -396,7 +385,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListSavingThrowsOfSpell_ModifiedSavingThrow () throws Exception
+	public final void testListSavingThrowsOfSpell_ModifiedSavingThrow_NoSpellValidUnitTargetRecords () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -410,7 +399,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		
 		// Mock entries from the language XML
 		final HelpScreen helpLang = new HelpScreen ();
-		helpLang.getSpellBookSingleSavingThrowModifier ().add (createLanguageText (Language.ENGLISH, "Saves against UNIT_SKILL at SAVING_THROW_MODIFIER"));
+		helpLang.getSpellBookSingleSavingThrowModifier ().add (createLanguageText (Language.ENGLISH, "Saves against Resistance at SAVING_THROW_MODIFIER"));
 
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		when (lang.getHelpScreen ()).thenReturn (helpLang);
@@ -420,12 +409,8 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 				
 		// Spell details
 		final Spell spell = new Spell ();
+		spell.setCombatBaseDamage (5);
 		
-		final SpellValidUnitTarget target = new SpellValidUnitTarget ();
-		target.setSavingThrowSkillID ("UA01");
-		target.setSavingThrowModifier (5);
-		spell.getSpellValidUnitTarget ().add (target);
-
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
@@ -433,7 +418,53 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		utils.setTextUtils (new TextUtilsImpl ());
 		
 		// Run method
-		assertEquals ("Saves against Resistance at +5", utils.listSavingThrowsOfSpell (spell));
+		assertEquals ("Saves against Resistance at -5", utils.listSavingThrowsOfSpell (spell));
+	}
+
+	/**
+	 * Tests the listSavingThrowsOfSpell method when there is a saving throw defined, with no modifier
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testListSavingThrowsOfSpell_ModifiedSavingThrow_WithSpellValidUnitTargetRecords () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final UnitSkillEx attr = new UnitSkillEx ();
+		attr.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Resistance"));
+		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (attr);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
+		final HelpScreen helpLang = new HelpScreen ();
+		helpLang.getSpellBookSingleSavingThrowModifier ().add (createLanguageText (Language.ENGLISH, "Saves against Resistance at SAVING_THROW_MODIFIER"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+				
+		// Spell details
+		final Spell spell = new Spell ();
+		spell.setCombatBaseDamage (5);
+		
+		// Spell has some spellValidUnitTarget records because it can only be targetted against creatures from certain magic realms
+		// but this doesn't alter its saving throw modifier
+		spell.getSpellValidUnitTarget ().add (new SpellValidUnitTarget ());
+		spell.getSpellValidUnitTarget ().add (new SpellValidUnitTarget ());
+		
+		// Set up object to test
+		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
+		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
+		utils.setTextUtils (new TextUtilsImpl ());
+		
+		// Run method
+		assertEquals ("Saves against Resistance at -5", utils.listSavingThrowsOfSpell (spell));
 	}
 
 	/**
@@ -455,7 +486,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		
 		// Mock entries from the language XML
 		final HelpScreen helpLang = new HelpScreen ();
-		helpLang.getSpellBookMultipleSavingThrowModifiers ().add (createLanguageText (Language.ENGLISH, "Saves against UNIT_SKILL from SAVING_THROW_MODIFIER_MINIMUM to SAVING_THROW_MODIFIER_MAXIMUM"));
+		helpLang.getSpellBookMultipleSavingThrowModifiers ().add (createLanguageText (Language.ENGLISH, "Saves against Resistance from SAVING_THROW_MODIFIER_MINIMUM to SAVING_THROW_MODIFIER_MAXIMUM"));
 
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		when (lang.getHelpScreen ()).thenReturn (helpLang);
@@ -465,20 +496,17 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		
 		// Spell details
 		final Spell spell = new Spell ();
+		spell.setCombatBaseDamage (3);
 		
 		final SpellValidUnitTarget target1 = new SpellValidUnitTarget ();
-		target1.setSavingThrowSkillID ("UA01");
-		target1.setSavingThrowModifier (5);
+		target1.setMagicRealmAdditionalSavingThrowModifier (2);
 		spell.getSpellValidUnitTarget ().add (target1);
 
 		final SpellValidUnitTarget target2 = new SpellValidUnitTarget ();
-		target2.setSavingThrowSkillID ("UA01");
-		target2.setSavingThrowModifier (6);
+		target2.setMagicRealmAdditionalSavingThrowModifier (3);
 		spell.getSpellValidUnitTarget ().add (target2);
 
 		final SpellValidUnitTarget target3 = new SpellValidUnitTarget ();
-		target3.setSavingThrowSkillID ("UA01");
-		target3.setSavingThrowModifier (3);
 		spell.getSpellValidUnitTarget ().add (target3);
 
 		// Set up object to test
@@ -488,7 +516,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		utils.setTextUtils (new TextUtilsImpl ());
 		
 		// Run method
-		assertEquals ("Saves against Resistance from +3 to +6", utils.listSavingThrowsOfSpell (spell));
+		assertEquals ("Saves against Resistance from -3 to -6", utils.listSavingThrowsOfSpell (spell));
 	}
 	
 	/**

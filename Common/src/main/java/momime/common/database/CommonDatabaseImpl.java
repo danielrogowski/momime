@@ -273,6 +273,34 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 			if (unitDef.getUnitHasSkill ().stream ().noneMatch (s -> movementSkillsWithoutFlight.contains (s.getUnitSkillID ())))
 				throw new MomException ("Unit " + unitDef.getUnitID () + " only has Flight movement skill - it needs a secondary movement skill in case flight is cancelled");
 		}
+		
+		// Check all attack and curse spells specify their base damage / saving throw modifier
+		// It is vaild for curses to not define base damage - this means no save is possible, e.g. Web
+		for (final Spell spellDef : getSpell ())
+		{
+			if ((spellDef.getCombatCastingCost () != null) && (spellDef.getCombatCastingCost () > 0) && (spellDef.getCombatBaseDamage () == null) &&
+				(spellDef.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
+				(spellDef.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.ZEROES_AMMO))	// Warp wood is an exception as it really does no damage
+				
+				throw new MomException ("Spell " + spellDef.getSpellID () + " is an attack spell, but has no base damage / saving throw modifier defined");
+			
+			if ((spellDef.getCombatBaseDamage () == null) &&
+				((spellDef.getCombatMaxDamage () != null) || (spellDef.getCombatAdditionalDamagePointsPerMana () != null) || (spellDef.getCombatManaPerAdditionalDamagePoint () != null))) 
+
+				throw new MomException ("Spell " + spellDef.getSpellID () + " has no combat base damage defined, but has combat additional damage defined");
+
+			if ((spellDef.getOverlandBaseDamage () == null) &&
+				((spellDef.getOverlandMaxDamage () != null) || (spellDef.getOverlandAdditionalDamagePointsPerMana () != null) || (spellDef.getOverlandManaPerAdditionalDamagePoint () != null))) 
+
+				throw new MomException ("Spell " + spellDef.getSpellID () + " has no overland base damage defined, but has overland additional damage defined");
+			
+			// No SpellValidUnitTarget records should specify an additional saving throw modifier if the base dmg doesn't specify one
+			if (spellDef.getCombatBaseDamage () == null)
+				for (final SpellValidUnitTarget target : spellDef.getSpellValidUnitTarget ())
+					if (target.getMagicRealmAdditionalSavingThrowModifier () != null)
+						
+						throw new MomException ("Spell " + spellDef.getSpellID () + " has no combat base damage defined, but has magic realm/lifeform type additional saving throw penalties defined");
+		}
 
 		// Check all buildings and units to find the most expensive one
 		mostExpensiveConstructionCost = 0;

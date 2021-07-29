@@ -16,6 +16,7 @@ import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.process.AttackResolutionUnit;
@@ -40,6 +41,23 @@ public interface DamageCalculator
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public void sendDamageCalculationMessage (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final DamageCalculationData msg)
+		throws JAXBException, XMLStreamException;
+	
+	/**
+	 * Sends header about one attack that's about to take place or one spell that's about to be cast in comat
+	 * 
+	 * @param attacker Unit making the attack; or null if the attack isn't coming from a unit
+	 * @param defenders Unit(s) being hit; some attacks can hit multiple units such as Flame Strike
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackSkillID The skill being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
+	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
+	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void sendDamageHeader (final MemoryUnit attacker, final List<MemoryUnit> defenders,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String attackSkillID, final Spell spell, final PlayerServerDetails castingPlayer)
 		throws JAXBException, XMLStreamException;
 	
 	/**

@@ -1104,6 +1104,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <attackWithoutUnit language="en">
             <text>ATTACKER_NAME's ATTACK_TYPE hits for up to POTENTIAL_HITS of DAMAGE_TYPE:</text>
         </attackWithoutUnit>
+        <attackCurse language="en">
+            <text>ATTACKER_NAME's ATTACK_TYPE requires resistance roll with POTENTIAL_HITS modifier to avoid being affected:</text>
+        </attackCurse>
         <attackChanceOfDeath language="en">
             <text>ATTACKER_NAME's ATTACK_TYPE has POTENTIAL_HITS% chance of killing defender:</text>
         </attackChanceOfDeath>
@@ -4284,13 +4287,13 @@ Bonus Or +GOLD_BONUS%</text>
             <text>Saving throw: None - spell effects cannot be resisted</text>
         </spellBookNoSavingThrow>
         <spellBookNoSavingThrowModifier language="en">
-            <text>Saving throw: Saves against UNIT_SKILL</text>
+            <text>Saving throw: Unmodified resistance roll</text>
         </spellBookNoSavingThrowModifier>
         <spellBookSingleSavingThrowModifier language="en">
-            <text>Saving throw: Saves against UNIT_SKILL with a SAVING_THROW_MODIFIER saving throw modifier</text>
+            <text>Saving throw: Roll against resistance with a SAVING_THROW_MODIFIER saving throw modifier</text>
         </spellBookSingleSavingThrowModifier>
         <spellBookMultipleSavingThrowModifiers language="en">
-            <text>Saving throw: Saves against UNIT_SKILL with a saving throw modifier between SAVING_THROW_MODIFIER_MINIMUM and SAVING_THROW_MODIFIER_MAXIMUM</text>
+            <text>Saving throw: Roll against resistance with a saving throw modifier between SAVING_THROW_MODIFIER_MINIMUM and SAVING_THROW_MODIFIER_MAXIMUM</text>
         </spellBookMultipleSavingThrowModifiers>
         <spellUpkeepWithoutChanneler language="en">
             <text>UPKEEP_VALUE PRODUCTION_TYPE</text>

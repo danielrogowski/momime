@@ -334,6 +334,13 @@ public final class CommonDatabaseConstants
 	/** Special hero item bonus ID for the ability to cast a spell a number of times in combat for free */
 	public final static String HERO_ITEM_BONUS_ID_SPELL_CHARGES = "IB65";
 	
+	// damage resolution types
+	
+	/** All damage resolution types where some kind of roll or check is made against the target's resistance, rather than conventional damage */
+	public final static List<DamageResolutionTypeID> RESISTANCE_BASED_DAMAGE = Arrays.asList
+		(DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE,
+			DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, 	DamageResolutionTypeID.RESISTANCE_ROLLS, DamageResolutionTypeID.DISINTEGRATE);
+	
 	// spells
 	
 	/** Disrupt Wall spell */

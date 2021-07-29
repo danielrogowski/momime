@@ -17,7 +17,6 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.database.AttackResolution;
 import momime.common.database.AttackResolutionStep;
-import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
@@ -29,7 +28,6 @@ import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.UnitStatusID;
-import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationWallData;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
@@ -108,25 +106,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		// We send this a couple of times for different parts of the calculation, so initialize it here
-		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
-		damageCalculationMsg.setAttackSkillID (attackSkillID);
-
-		if ((defenders.size () > 0) && ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
-			damageCalculationMsg.setDefenderUnitURN (defenders.get (0).getUnitURN ());
-		
-		if (spell != null)
-			damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
-
-		if (attacker != null)
-		{
-			damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
-			damageCalculationMsg.setAttackerPlayerID (attacker.getOwningPlayerID ());
-		}
-		else
-			damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
-		
-		getDamageCalculator ().sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		getDamageCalculator ().sendDamageHeader (attacker, defenders, attackingPlayer, defendingPlayer, attackSkillID, spell, castingPlayer);
 		
 		// Make the units face each other
 		if (attackerDirection != null)
@@ -266,7 +246,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// can see the units fighting (who will update the damage immediately).
 		// This also sends the number of combat movement points the attacker has left.
 		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, attackingPlayer, defendingPlayer,
-			defenders, damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackSpellID (),
+			defenders, attackSkillID, (spell == null) ? null : spell.getSpellID (),
 			specialDamageResolutionsApplied, wreckTilePosition, sendWrecked, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
@@ -377,6 +357,45 @@ public final class DamageProcessorImpl implements DamageProcessor
 		return combatEnded;
 	}
 
+	/**
+	 * When we are trying to curse a unit, for example with Confusion or Black Sleep, handles making the resistance roll to see if they are affected or not
+	 * 
+	 * @param attacker Unit casting the spell; or null if wizard is casting
+	 * @param defender Unit we are trying to curse
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param spell The spell being cast
+	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt
+	 * @param castingPlayer The player casting the spell
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void makeResistanceRoll (final MemoryUnit attacker, final MemoryUnit defender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final MomSessionVariables mom)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender);
+		
+		getDamageCalculator ().sendDamageHeader (attacker, defenders, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+	
+		// Spell might be being cast by a unit, or a hero casting a spell imbued in an item
+		final ExpandedUnitDetails xuAttackerPreliminary = (attacker == null) ? null : 
+			getUnitUtils ().expandUnitDetails (attacker, null, null, null,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		
+		final AttackDamage damage = getDamageCalculator ().attackFromSpell
+			(spell, variableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB ());
+		
+		System.out.println (damage);
+	}
+	
 	/**
 	 * @param combatLocation Location that combat is taking place
 	 * @param combatSide Which side to count

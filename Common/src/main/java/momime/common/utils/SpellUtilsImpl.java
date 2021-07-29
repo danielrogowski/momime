@@ -331,25 +331,13 @@ public final class SpellUtilsImpl implements SpellUtils
 	@Override
 	public final boolean spellCanTargetMagicRealmLifeformType (final Spell spell, final String targetMagicRealmLifeformTypeID)
 	{
-		boolean targetIsValidForThisSpell = false;
-		boolean anyTargetEntryFound = false;
+		// If there's no records defined, then a unit of any magic realm is a valid target
+		boolean targetIsValidForThisSpell = (spell.getSpellValidUnitTarget ().size () == 0);
 
-		// Have to do them all in order to build up List, even if we find a matching one early on
-		for (final SpellValidUnitTarget spellValidUnitTarget : spell.getSpellValidUnitTarget ())
-		{
-			final String magicRealmLifeformTypeID = spellValidUnitTarget.getTargetMagicRealmID ();
-			if (magicRealmLifeformTypeID != null)
-			{
-				anyTargetEntryFound = true;
-
-				if (targetMagicRealmLifeformTypeID.equals (magicRealmLifeformTypeID))
+		if (!targetIsValidForThisSpell)
+			for (final SpellValidUnitTarget spellValidUnitTarget : spell.getSpellValidUnitTarget ())
+				if (spellValidUnitTarget.getTargetMagicRealmID ().equals (targetMagicRealmLifeformTypeID))
 					targetIsValidForThisSpell = true;
-			}
-		}
-
-		// If there are no targets defined, this means the spell can be used on any type of target
-		if (!anyTargetEntryFound)
-			targetIsValidForThisSpell = true;
 
 		return targetIsValidForThisSpell;
 	}
@@ -365,10 +353,10 @@ public final class SpellUtilsImpl implements SpellUtils
 		SpellValidUnitTarget found = null;
 		final Iterator<SpellValidUnitTarget> iter = spell.getSpellValidUnitTarget ().iterator ();
 		
-		while (((found == null) || (found.getTargetMagicRealmID () == null)) && (iter.hasNext ()))
+		while ((found == null) && (iter.hasNext ()))
 		{
 			final SpellValidUnitTarget spellValidUnitTarget = iter.next ();
-			if ((targetMagicRealmLifeformTypeID.equals (spellValidUnitTarget.getTargetMagicRealmID ())) || (spellValidUnitTarget.getTargetMagicRealmID () == null))
+			if (targetMagicRealmLifeformTypeID.equals (spellValidUnitTarget.getTargetMagicRealmID ()))
 				found = spellValidUnitTarget;
 		}
 

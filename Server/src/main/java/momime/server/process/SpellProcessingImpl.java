@@ -422,23 +422,39 @@ public final class SpellProcessingImpl implements SpellProcessing
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
 				(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
 			{
-				// What effects doesn't the unit already have - can cast Warp Creature multiple times
-				final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					spell, castingPlayer.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
+				final boolean addUnitSpell;
+				if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+					addUnitSpell = true;
+				else if (spell.getCombatBaseDamage () == null)		// No saving throw is allowed, e.g. Web
+					addUnitSpell = true;
+				else
+				{
+					getDamageProcessor ().makeResistanceRoll ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
+						targetUnit, attackingPlayer, defendingPlayer, spell, variableDamage, castingPlayer, mom);
+					
+					addUnitSpell = true;
+				}
 				
-				if ((unitSpellEffects == null) || (unitSpellEffects.size () == 0))
-					throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " on unit URN " + targetUnit.getUnitURN () +
-						" but unitSpellEffectIDs list came back empty");
-				
-				// Pick an actual effect at random
-				final UnitSpellEffect unitSpellEffect = unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ()));
-				final Integer useVariableDamage = ((unitSpellEffect.isStoreSkillValueAsVariableDamage () != null) && (unitSpellEffect.isStoreSkillValueAsVariableDamage ()) &&
-					(unitSpellEffect.getUnitSkillValue () != null) && (unitSpellEffect.getUnitSkillValue () > 0)) ? unitSpellEffect.getUnitSkillValue () : variableDamage;
-				
-				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
-					castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (),
-					true, null, null, useVariableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				if (addUnitSpell)
+				{
+					// What effects doesn't the unit already have - can cast Warp Creature multiple times
+					final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						spell, castingPlayer.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
+					
+					if ((unitSpellEffects == null) || (unitSpellEffects.size () == 0))
+						throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " on unit URN " + targetUnit.getUnitURN () +
+							" but unitSpellEffectIDs list came back empty");
+					
+					// Pick an actual effect at random
+					final UnitSpellEffect unitSpellEffect = unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ()));
+					final Integer useVariableDamage = ((unitSpellEffect.isStoreSkillValueAsVariableDamage () != null) && (unitSpellEffect.isStoreSkillValueAsVariableDamage ()) &&
+						(unitSpellEffect.getUnitSkillValue () != null) && (unitSpellEffect.getUnitSkillValue () > 0)) ? unitSpellEffect.getUnitSkillValue () : variableDamage;
+					
+					getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
+						castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (),
+						true, null, null, useVariableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				}
 			}
 			
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))

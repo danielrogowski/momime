@@ -1198,10 +1198,6 @@
 			<xsd:selector xpath="spell/spellValidUnitTarget" />
 			<xsd:field xpath="@targetMagicRealmID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:unitSkillPK" name="spellValidUnitTargetFKunitSkill">
-			<xsd:selector xpath="spell/spellValidUnitTarget" />
-			<xsd:field xpath="savingThrowSkillID" />
-		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:combatTileBorderPK" name="spellValidBorderTargetFKcombatTileBorder">
 			<xsd:selector xpath="spell/spellValidBorderTarget" />
 			<xsd:field xpath="." />
@@ -3277,7 +3273,13 @@ spell upkeep, but cannot switch off the spell that's costing the upkeep)</xsd:do
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageResolutionTypeID" type="momimecommon:damageResolutionTypeID" nxe:label="Damage Res. Type" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="combatBaseDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Base Dmg" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatBaseDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Base Dmg" nxe:gridwidth="100">
+		        <xsd:annotation>
+		        	<xsd:documentation>If spell causes direct damage, this is the amount of damage is causes.
+If spell causes resistance rolls (e.g. petrify or confusion) then this is the saving throw modifier; 0 means base resistance roll with no modifier.
+If spell is curse and there is no base damage defined then no resist roll is possible, the target is automatically cursed.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatMaxDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Max Dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatManaPerAdditionalDamagePoint" type="momimecommon:spellCastingCost" nxe:label="Combat MP per +1 dmg" nxe:gridwidth="100">
 		        <xsd:annotation>
@@ -3415,22 +3417,17 @@ variableDamage slot instead.  Used to store HP of webs.</xsd:documentation>
 Can have different saving throw depending on the type of unit.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowSkillID" type="momimecommon:unitSkillID" nxe:label="Saving Throw rolls against Target Skill" nxe:showmaincolumn="false">
-				<xsd:annotation>
-					<xsd:appinfo>
-						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowModifier" type="momimecommon:savingThrowModifier" nxe:label="Saving Throw Modifier" nxe:gridwidth="150" />
-		</xsd:sequence>
-		<xsd:attribute name="targetMagicRealmID" type="momimecommon:pickID" use="optional" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmAdditionalSavingThrowModifier" type="momimecommon:savingThrowModifier" nxe:label="Saving Throw Modifier" nxe:gridwidth="150">
 			<xsd:annotation>
-				<xsd:documentation>If targetMagicRealmID is filled in on any spellValidUnitTarget records under a spell, then the spell can only be cast on units of the specified unit type(s).  e.g. Chaos Channels can only be cast on Normal Units or Heroes, and the
-saving throw elements (if present) describe what attribute and penalty each type of unit gets to make saving throw against.  (If no saving throw defined, the target gets no chance to save!)
-This is to model spells which have different saving throws for different types of unit, e.g. Dispel Evil and Holy Word have much more severe saving throws against Undead than other types of unit.
-
-If targetMagicRealmID is ommitted, the spell can be cast on all types of unit and has the same saving throw (if any) against all types of unit.</xsd:documentation>
+				<xsd:documentation>Additional saving throw penalty that applies to targets of the specified magic realm, on top of the basic saving throw modifier in the combatBaseDamage field.
+So this is only used in unusual situations where different targets have different saving throws, e.g. Dispel Evil or Holy Word..</xsd:documentation>
+			</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="targetMagicRealmID" type="momimecommon:pickID" use="required" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:documentation>If any spellValidUnitTarget records exist under a spell, then the spell can only be cast on units of the specified unit type(s).
+If there are no spellValidUnitTarget records, the spell can be cast on all types of unit and has the same saving throw (specified in combatBaseDamage) against all types of unit.</xsd:documentation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 				</xsd:appinfo>

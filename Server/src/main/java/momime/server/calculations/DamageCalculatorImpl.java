@@ -13,20 +13,24 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.DamageType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitSkill;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
+import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SpellUtils;
@@ -87,6 +91,46 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			if (defendingPlayer.getPlayerDescription ().isHuman ())
 				defendingPlayer.getConnection ().sendMessageToClient (wrapper);
 		}
+	}
+
+	/**
+	 * Sends header about one attack that's about to take place or one spell that's about to be cast in comat
+	 * 
+	 * @param attacker Unit making the attack; or null if the attack isn't coming from a unit
+	 * @param defenders Unit(s) being hit; some attacks can hit multiple units such as Flame Strike
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackSkillID The skill being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
+	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
+	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void sendDamageHeader (final MemoryUnit attacker, final List<MemoryUnit> defenders,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String attackSkillID, final Spell spell, final PlayerServerDetails castingPlayer)
+		throws JAXBException, XMLStreamException
+	{
+		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
+		damageCalculationMsg.setAttackSkillID (attackSkillID);
+
+		if ((defenders.size () > 0) && ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT) ||
+			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES)))
+			
+			damageCalculationMsg.setDefenderUnitURN (defenders.get (0).getUnitURN ());
+		
+		if (spell != null)
+			damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
+
+		if (attacker != null)
+		{
+			damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
+			damageCalculationMsg.setAttackerPlayerID (attacker.getOwningPlayerID ());
+		}
+		else
+			damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+		
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 	}
 	
 	/**
@@ -289,15 +333,13 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Work out damage done - note this isn't applicable to all types of attack, e.g. Warp Wood has no attack value, so we might get null here
 		Integer damage = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
-		final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "attackFromSpell");
+		final DamageType damageType = (spell.getAttackSpellDamageTypeID () == null) ? null : db.findDamageType (spell.getAttackSpellDamageTypeID (), "attackFromSpell");
 
 		// For spells that roll against resistance, add on any -spell save from hero items
 		// RESISTANCE_ROLLS is intentionally excluded, as for that "damage" a.k.a. "potentialHits" is the number of rolls to me - so can't modify this by the saving throw penalty
 		if ((castingUnit != null) && (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY)) &&
-			((spell.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE) ||
-				(spell.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE) ||
-				(spell.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE) ||
-				(spell.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.DISINTEGRATE)))
+			((CommonDatabaseConstants.RESISTANCE_BASED_DAMAGE.contains (spell.getAttackSpellDamageResolutionTypeID ())) ||
+				(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES)))
 			
 			damage = ((damage == null) ? 0 : damage) + castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY);
 		
@@ -307,8 +349,11 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
 		damageCalculationMsg.setPotentialHits (damage);
 		damageCalculationMsg.setDamageTypeID (spell.getAttackSpellDamageTypeID ());
-		damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
 		damageCalculationMsg.setDamageResolutionTypeID (spell.getAttackSpellDamageResolutionTypeID ());
+		
+		if (damageType != null)
+			damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
+		
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 
 		// Fill in the damage object
@@ -667,15 +712,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		{
 			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
 				(attackDamage.getSpell (), defender.getModifiedUnitMagicRealmLifeformType ().getPickID ());
-			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getSavingThrowModifier () != null) &&
-				(magicRealmLifeformTypeTarget.getSavingThrowModifier () != 0))
-			{
-				if (!CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE.equals (magicRealmLifeformTypeTarget.getSavingThrowSkillID ()))
-					throw new MomException ("calculateEachFigureResistOrDieDamage from spell " + attackDamage.getSpell ().getSpellID () +
-						" has a saving throw modifier that rolls against a stat other than resistance");
+			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != null) &&
+				(magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != 0))
 				
-				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getSavingThrowModifier ();
-			}
+				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier ();
 		}
 		
 		// Work out the target's effective resistance score, reduced by any saving throw modifier
@@ -743,15 +783,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		{
 			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
 				(attackDamage.getSpell (), defender.getModifiedUnitMagicRealmLifeformType ().getPickID ());
-			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getSavingThrowModifier () != null) &&
-				(magicRealmLifeformTypeTarget.getSavingThrowModifier () != 0))
-			{
-				if (!CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE.equals (magicRealmLifeformTypeTarget.getSavingThrowSkillID ()))
-					throw new MomException ("calculateSingleFigureResistOrDieDamage from spell " + attackDamage.getSpell ().getSpellID () +
-						" has a saving throw modifier that rolls against a stat other than resistance");
+			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != null) &&
+				(magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != 0))
 				
-				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getSavingThrowModifier ();
-			}
+				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier ();
 		}
 		
 		// Work out the target's effective resistance score, reduced by any saving throw modifier

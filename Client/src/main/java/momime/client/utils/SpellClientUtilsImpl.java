@@ -103,13 +103,12 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	{
 		final StringBuilder magicRealms = new StringBuilder ();
 		for (final SpellValidUnitTarget target : spell.getSpellValidUnitTarget ())
-			if (target.getTargetMagicRealmID () != null)
-			{
-				final String magicRealmPlural = getLanguageHolder ().findDescription
-					(getClient ().getClientDB ().findPick (target.getTargetMagicRealmID (), "listValidMagicRealmLifeformTypeTargetsOfSpell").getUnitMagicRealmPlural ());
-				
-				magicRealms.append (System.lineSeparator () + magicRealmPlural);
-			}
+		{
+			final String magicRealmPlural = getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findPick (target.getTargetMagicRealmID (), "listValidMagicRealmLifeformTypeTargetsOfSpell").getUnitMagicRealmPlural ());
+			
+			magicRealms.append (System.lineSeparator () + magicRealmPlural);
+		}
 		
 		final String result = magicRealms.toString ();
 		return result;
@@ -125,45 +124,50 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	@Override
 	public final String listSavingThrowsOfSpell (final Spell spell) throws MomException, RecordNotFoundException
 	{
-		final List<Integer> savingThrowModifiers = new ArrayList<Integer> ();
-		String unitSkillID = null;
-		
-		// Just because there are some ValidUnitTarget entries doesn't necessarily mean the spell gives a saving throw,
-		// the records may just be indicating that the spell can only be used on e.g. chaos+death creatures
+		final List<Integer> additionalSavingThrowModifiers = new ArrayList<Integer> ();
+
+		// See if spell has any additional saving throw modifiers vs certain magic realms, e.g. Dispel Evil or Holy Word
 		for (final SpellValidUnitTarget target : spell.getSpellValidUnitTarget ())
 		{
-			// unitSkillID must be the same for all of them
-			if (unitSkillID == null)
-				unitSkillID = target.getSavingThrowSkillID ();
-			else if (!unitSkillID.equals (target.getSavingThrowSkillID ()))
-				throw new MomException ("listSavingThrowsOfSpell can't generate text for spell " + spell.getSpellID () +
-					" because it has saving throws defined against different unit skills");
-			
-			if (target.getSavingThrowModifier () != null)
-				savingThrowModifiers.add (target.getSavingThrowModifier ());
+			final int additionalSavingThrowModifier = (target.getMagicRealmAdditionalSavingThrowModifier () == null) ? 0 : target.getMagicRealmAdditionalSavingThrowModifier ();
+			if (!additionalSavingThrowModifiers.contains (additionalSavingThrowModifier))
+				additionalSavingThrowModifiers.add (additionalSavingThrowModifier);
 		}
 		
 		final String result;
-		if (unitSkillID == null)
+		
+		// Spell allows no saving throw at all, e.g. Web
+		if (spell.getCombatBaseDamage () == null)
 			result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookNoSavingThrow ());
+		
+		// Resistance roll, but there's no modifiers at all
+		else if ((spell.getCombatBaseDamage () == 0) &&
+			((additionalSavingThrowModifiers.size () == 0) || ((additionalSavingThrowModifiers.size () == 1) && (additionalSavingThrowModifiers.get (0) == 0))))
+			
+			result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookNoSavingThrowModifier ());
+		
+		// Resistance roll with some penalty, but the penalty is always the same
+		else if (additionalSavingThrowModifiers.size () <= 1)
+		{
+			int savingThrowModifier = spell.getCombatBaseDamage ();
+			if (additionalSavingThrowModifiers.size () == 1)
+				savingThrowModifier = savingThrowModifier + additionalSavingThrowModifiers.get (0);
+			
+			result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookSingleSavingThrowModifier ()).replaceAll
+				("SAVING_THROW_MODIFIER", getTextUtils ().intToStrPlusMinus (-savingThrowModifier));
+		}
+		
+		// Resistance roll with penalty that varies depending on the magic realm/lifeform type of the target
 		else
 		{
-			final String unitSkillDescription = getLanguageHolder ().findDescription (getClient ().getClientDB ().findUnitSkill (unitSkillID, "listSavingThrowsOfSpell").getUnitSkillDescription ());
-			if (savingThrowModifiers.size () == 0)
-				result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookNoSavingThrowModifier ()).replaceAll
-					("UNIT_SKILL", (unitSkillDescription != null) ? unitSkillDescription : unitSkillID);
-			else if (savingThrowModifiers.size () == 1)
-				result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookSingleSavingThrowModifier ()).replaceAll
-					("UNIT_SKILL", (unitSkillDescription != null) ? unitSkillDescription : unitSkillID).replaceAll
-					("SAVING_THROW_MODIFIER", getTextUtils ().intToStrPlusMinus (savingThrowModifiers.get (0)));
-			else
-			{
-				Collections.sort (savingThrowModifiers);
-				result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookMultipleSavingThrowModifiers ()).replaceAll
-					("UNIT_SKILL", (unitSkillDescription != null) ? unitSkillDescription : unitSkillID).replaceAll
-					("SAVING_THROW_MODIFIER_MINIMUM", getTextUtils ().intToStrPlusMinus (savingThrowModifiers.get (0))).replaceAll
-					("SAVING_THROW_MODIFIER_MAXIMUM", getTextUtils ().intToStrPlusMinus (savingThrowModifiers.get (savingThrowModifiers.size () - 1)));
-			}
+			Collections.sort (additionalSavingThrowModifiers);
+			
+			final int savingThrowModifierMin = spell.getCombatBaseDamage () + additionalSavingThrowModifiers.get (0);
+			final int savingThrowModifierMax = spell.getCombatBaseDamage () + additionalSavingThrowModifiers.get (additionalSavingThrowModifiers.size () - 1);
+			
+			result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookMultipleSavingThrowModifiers ()).replaceAll
+				("SAVING_THROW_MODIFIER_MINIMUM", getTextUtils ().intToStrPlusMinus (-savingThrowModifierMin)).replaceAll
+				("SAVING_THROW_MODIFIER_MAXIMUM", getTextUtils ().intToStrPlusMinus (-savingThrowModifierMax));
 		}
 		
 		return result;

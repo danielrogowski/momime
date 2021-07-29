@@ -15,6 +15,9 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.utils.UnitUtils;
@@ -51,6 +54,12 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
 	
+	/** Spell the attack is coming from */
+	private Spell spellDef;
+	
+	/** Unit skill the attack is coming from */
+	private UnitSkillEx unitSkillDef;
+	
 	/**
 	 * These damage calculations can live in the history for a long time, easily after the unit(s) in question have been destroyed
 	 * and potentially even after the player(s) who own the unit(s) have been kicked out of the game.
@@ -76,6 +85,12 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		else
 		    setAttackingPlayer (getMultiplayerSessionUtils ().findPlayerWithID
 			    (getClient ().getPlayers (), getAttackerPlayerID (), "DamageCalculationAttackDataEx-ap"));
+		
+		// Attack from a spell or unit skill?
+		if (getAttackSpellID () != null)
+			spellDef = getClient ().getClientDB ().findSpell (getAttackSpellID (), "DamageCalculationAttackDataEx-s");
+		else
+			unitSkillDef = getClient ().getClientDB ().findUnitSkill (getAttackSkillID (), "DamageCalculationAttackDataEx-u");
 	}
 	
 	/**
@@ -87,63 +102,67 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 	{
 		// Either a unit skill ID or a unit attribute ID
 		final String attackType;
-		if (getAttackSpellID () != null)
-			attackType = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getAttackSpellID (), "getText").getSpellName ());
+		if (spellDef != null)
+			attackType = getLanguageHolder ().findDescription (spellDef.getSpellName ());
 		else
-			attackType = getLanguageHolder ().findDescription (getClient ().getClientDB ().findUnitSkill (getAttackSkillID (), "getText").getUnitSkillDescription ());
+			attackType = getLanguageHolder ().findDescription (unitSkillDef.getUnitSkillDescription ());
 
 		// Now work out the rest of the text
 		final List<LanguageText> languageText;
-		switch (getDamageResolutionTypeID ())
-		{
-			case CHANCE_OF_DEATH:
-				languageText = getLanguages ().getCombatDamage ().getAttackChanceOfDeath ();
-				break;
-
-			case ZEROES_AMMO:
-				languageText = getLanguages ().getCombatDamage ().getAttackZeroesAmmo ();
-				break;
-
-			// Leave saving throw modifier as positive on here, so the text can say "destroys any with resistance 9 + 2 or less"
-			case DISINTEGRATE:
-				languageText = getLanguages ().getCombatDamage ().getAttackDisintegrate ();
-				break;
-
-			// Potential hits here is the number of rolls, not a saving throw modifier, so leave positive
-			case RESISTANCE_ROLLS:
-				languageText = getLanguages ().getCombatDamage ().getAttackResistanceRolls ();
-				break;
-
-			case FEAR:
-				languageText = getLanguages ().getCombatDamage ().getAttackFear ();
-				if (getPotentialHits () != null)
-					setPotentialHits (-getPotentialHits ());
-				break;
-				
-			case EACH_FIGURE_RESIST_OR_DIE:
-				languageText = getLanguages ().getCombatDamage ().getAttackEachFigureResistOrDie ();
-				if (getPotentialHits () != null)
-					setPotentialHits (-getPotentialHits ());
-				break;
-
-			case SINGLE_FIGURE_RESIST_OR_DIE:
-				languageText = getLanguages ().getCombatDamage ().getAttackSingleFigureResistOrDie ();
-				if (getPotentialHits () != null)
-					setPotentialHits (-getPotentialHits ());
-				break;
-
-			case RESIST_OR_TAKE_DAMAGE:
-				languageText = getLanguages ().getCombatDamage ().getAttackResistOrTakeDamage ();
-				if (getPotentialHits () != null)
-					setPotentialHits (-getPotentialHits ());
-				break;
-				
-			default:
-				if ((getAttackerUnitURN () != null) && (getAttackerFigures () != null))
-					languageText = getLanguages ().getCombatDamage ().getAttackWithUnit ();
-				else
-					languageText = getLanguages ().getCombatDamage ().getAttackWithoutUnit ();
-		}
+		
+		if ((spellDef != null) && (spellDef.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
+			languageText = getLanguages ().getCombatDamage ().getAttackCurse ();
+		else
+			switch (getDamageResolutionTypeID ())
+			{
+				case CHANCE_OF_DEATH:
+					languageText = getLanguages ().getCombatDamage ().getAttackChanceOfDeath ();
+					break;
+	
+				case ZEROES_AMMO:
+					languageText = getLanguages ().getCombatDamage ().getAttackZeroesAmmo ();
+					break;
+	
+				// Leave saving throw modifier as positive on here, so the text can say "destroys any with resistance 9 + 2 or less"
+				case DISINTEGRATE:
+					languageText = getLanguages ().getCombatDamage ().getAttackDisintegrate ();
+					break;
+	
+				// Potential hits here is the number of rolls, not a saving throw modifier, so leave positive
+				case RESISTANCE_ROLLS:
+					languageText = getLanguages ().getCombatDamage ().getAttackResistanceRolls ();
+					break;
+	
+				case FEAR:
+					languageText = getLanguages ().getCombatDamage ().getAttackFear ();
+					if (getPotentialHits () != null)
+						setPotentialHits (-getPotentialHits ());
+					break;
+					
+				case EACH_FIGURE_RESIST_OR_DIE:
+					languageText = getLanguages ().getCombatDamage ().getAttackEachFigureResistOrDie ();
+					if (getPotentialHits () != null)
+						setPotentialHits (-getPotentialHits ());
+					break;
+	
+				case SINGLE_FIGURE_RESIST_OR_DIE:
+					languageText = getLanguages ().getCombatDamage ().getAttackSingleFigureResistOrDie ();
+					if (getPotentialHits () != null)
+						setPotentialHits (-getPotentialHits ());
+					break;
+	
+				case RESIST_OR_TAKE_DAMAGE:
+					languageText = getLanguages ().getCombatDamage ().getAttackResistOrTakeDamage ();
+					if (getPotentialHits () != null)
+						setPotentialHits (-getPotentialHits ());
+					break;
+					
+				default:
+					if ((getAttackerUnitURN () != null) && (getAttackerFigures () != null))
+						languageText = getLanguages ().getCombatDamage ().getAttackWithUnit ();
+					else
+						languageText = getLanguages ().getCombatDamage ().getAttackWithoutUnit ();
+			}
 		
 		String text = "     " + getLanguageHolder ().findDescription (languageText).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll

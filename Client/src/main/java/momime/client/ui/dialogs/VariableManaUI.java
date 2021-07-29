@@ -35,7 +35,6 @@ import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.LanguageText;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -213,12 +212,7 @@ public final class VariableManaUI extends MomClientDialogUI
 				if (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
 					languageText = getLanguages ().getVariableMana ().getDispel ();
 				else
-					languageText = ((getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE) ||
-						(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE) ||
-						(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.RESISTANCE_ROLLS) ||
-						(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE) ||
-						(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.DISINTEGRATE)) ?
-								
+					languageText = CommonDatabaseConstants.RESISTANCE_BASED_DAMAGE.contains (getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID ()) ?
 						getLanguages ().getVariableMana ().getResistance () : getLanguages ().getVariableMana ().getDamage ();
 				
 				leftLabel.setText (getLanguageHolder ().findDescription (languageText).replaceAll

@@ -93,51 +93,60 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 		
 		// Now work out main text
 		final List<LanguageText> languageText;
-		switch (getDamageResolutionTypeID ())
+		if (getDamageResolutionTypeID () == null)
 		{
-			case RESISTANCE_ROLLS:
-				languageText = getLanguages ().getCombatDamage ().getDefenceResistanceRolls ();
-				break;
-			
-			case CHANCE_OF_DEATH:
-				if (getFinalHits () == 0)
-					languageText = getLanguages ().getCombatDamage ().getDefenceChanceOfDeathSurvives ();
-				else
-					languageText = getLanguages ().getCombatDamage ().getDefenceChanceOfDeathDies ();
-				break;
-
-			case DISINTEGRATE:
-				if (getFinalHits () == 0)
-					languageText = getLanguages ().getCombatDamage ().getDefenceDisintegrateSurvives ();
-				else
-					languageText = getLanguages ().getCombatDamage ().getDefenceDisintegrateDies ();
-				break;
-				
-			case EACH_FIGURE_RESIST_OR_DIE:
-				languageText = getLanguages ().getCombatDamage ().getDefenceEachFigureResistOrDie ();
-				break;
-
-			case SINGLE_FIGURE_RESIST_OR_DIE:
-				if (getFinalHits () == 0)
-					languageText = getLanguages ().getCombatDamage ().getDefenceSingleFigureResistOrDieSurvives ();
-				else
-					languageText = getLanguages ().getCombatDamage ().getDefenceSingleFigureResistOrDieDies ();
-				break;
-
-			case RESIST_OR_TAKE_DAMAGE:
-				languageText = getLanguages ().getCombatDamage ().getDefenceResistOrTakeDamage ();
-				break;
-
-			case FEAR:
-				languageText = getLanguages ().getCombatDamage ().getDefenceFear ();
-				break;
-				
-			default:
-				if (getModifiedDefenceStrength () == null)
-					languageText = getLanguages ().getCombatDamage ().getDefenceStatisticsAutomatic ();		// hits strike automatically, i.e. doom damage
-				else
-					languageText = getLanguages ().getCombatDamage ().getDefenceStatistics ();
+			// This only happens when making a resistance roll
+			if (getFinalHits () > 0)
+				languageText = getLanguages ().getCombatDamage ().getDefenceCursed ();
+			else
+				languageText = getLanguages ().getCombatDamage ().getDefenceResistsCurse ();
 		}
+		else
+			switch (getDamageResolutionTypeID ())
+			{
+				case RESISTANCE_ROLLS:
+					languageText = getLanguages ().getCombatDamage ().getDefenceResistanceRolls ();
+					break;
+				
+				case CHANCE_OF_DEATH:
+					if (getFinalHits () == 0)
+						languageText = getLanguages ().getCombatDamage ().getDefenceChanceOfDeathSurvives ();
+					else
+						languageText = getLanguages ().getCombatDamage ().getDefenceChanceOfDeathDies ();
+					break;
+	
+				case DISINTEGRATE:
+					if (getFinalHits () == 0)
+						languageText = getLanguages ().getCombatDamage ().getDefenceDisintegrateSurvives ();
+					else
+						languageText = getLanguages ().getCombatDamage ().getDefenceDisintegrateDies ();
+					break;
+					
+				case EACH_FIGURE_RESIST_OR_DIE:
+					languageText = getLanguages ().getCombatDamage ().getDefenceEachFigureResistOrDie ();
+					break;
+	
+				case SINGLE_FIGURE_RESIST_OR_DIE:
+					if (getFinalHits () == 0)
+						languageText = getLanguages ().getCombatDamage ().getDefenceSingleFigureResistOrDieSurvives ();
+					else
+						languageText = getLanguages ().getCombatDamage ().getDefenceSingleFigureResistOrDieDies ();
+					break;
+	
+				case RESIST_OR_TAKE_DAMAGE:
+					languageText = getLanguages ().getCombatDamage ().getDefenceResistOrTakeDamage ();
+					break;
+	
+				case FEAR:
+					languageText = getLanguages ().getCombatDamage ().getDefenceFear ();
+					break;
+					
+				default:
+					if (getModifiedDefenceStrength () == null)
+						languageText = getLanguages ().getCombatDamage ().getDefenceStatisticsAutomatic ();		// hits strike automatically, i.e. doom damage
+					else
+						languageText = getLanguages ().getCombatDamage ().getDefenceStatistics ();
+			}
 		
 		String text = "          " + getLanguageHolder ().findDescription (languageText).replaceAll
 			("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ())).replaceAll

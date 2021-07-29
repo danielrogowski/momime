@@ -679,6 +679,62 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	}
 
 	/**
+	 * Doesn't actually do any damage - just makes a resistance roll and returns true/false for whether the unit failed the roll or not.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @return Whether the defender failed the resistance roll or not, i.e. true if something bad happens
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final boolean calculateResistanceRoll (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+	{
+		// Store values straight into the message
+		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
+
+		// Set up defender stats
+		damageCalculationMsg.setDefenderFigures (defender.calculateAliveFigureCount ());
+		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)));
+
+		// Is there a saving throw modifier?
+		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		
+		// Is there an additional saving throw modifier because of the magic realm/lifeform type of the target?
+		// (Dispel Evil and Holy Word have an additional -5 modifier against Undead)
+		if (attackDamage.getSpell () != null)
+		{
+			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
+				(attackDamage.getSpell (), defender.getModifiedUnitMagicRealmLifeformType ().getPickID ());
+			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != null) &&
+				(magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != 0))
+				
+				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier ();
+		}
+		
+		// Work out the target's effective resistance score, reduced by any saving throw modifier
+		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
+		
+		// Make resistance roll
+		final boolean failed = (getRandomUtils ().nextInt (10) >= damageCalculationMsg.getModifiedDefenceStrength ());
+		
+		// Store and send final totals
+		final int hits = failed ? 1 : 0;
+		damageCalculationMsg.setActualHits (hits);		
+		damageCalculationMsg.setFinalHits (hits);
+		
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		return failed;
+	}
+	
+	/**
 	 * Rolls the number of actual hits for "each figure resist or die" damage, where each figure has to make a resistance roll.  Used for stoning gaze and many others.
 	 * 
 	 * @param defender Unit being hit
@@ -846,7 +902,20 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)));
 
 		// Is there a saving throw modifier?
-		final int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		
+		// Is there an additional saving throw modifier because of the magic realm/lifeform type of the target?
+		// (Dispel Evil and Holy Word have an additional -5 modifier against Undead)
+		if (attackDamage.getSpell () != null)
+		{
+			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
+				(attackDamage.getSpell (), defender.getModifiedUnitMagicRealmLifeformType ().getPickID ());
+			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != null) &&
+				(magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != 0))
+				
+				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier ();
+		}
+		
 		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
 		
 		// Make resistance roll
@@ -938,7 +1007,20 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setUnmodifiedDefenceStrength (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE));
 
 		// Is there a saving throw modifier?
-		final int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+
+		// Is there an additional saving throw modifier because of the magic realm/lifeform type of the target?
+		// (Dispel Evil and Holy Word have an additional -5 modifier against Undead)
+		if (attackDamage.getSpell () != null)
+		{
+			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
+				(attackDamage.getSpell (), defender.getModifiedUnitMagicRealmLifeformType ().getPickID ());
+			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != null) &&
+				(magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != 0))
+				
+				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier ();
+		}
+		
 		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
 
 		// Unit either takes no damage, or dies outright

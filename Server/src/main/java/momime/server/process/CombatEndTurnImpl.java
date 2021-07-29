@@ -105,7 +105,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 					else
 					{
 						// Make random roll
-						final ConfusionEffect effect = ConfusionEffect.CASTER_CONTROLLED; // ConfusionEffect.values () [getRandomUtils ().nextInt (ConfusionEffect.values ().length)];
+						final ConfusionEffect effect = ConfusionEffect.values () [getRandomUtils ().nextInt (ConfusionEffect.values ().length)];
 						thisUnit.setConfusionEffect (effect);
 						
 						// Inform players involved; this doubles up as the damage calculation message

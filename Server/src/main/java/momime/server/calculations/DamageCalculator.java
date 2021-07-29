@@ -236,6 +236,21 @@ public interface DamageCalculator
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
 
 	/**
+	 * Doesn't actually do any damage - just makes a resistance roll and returns true/false for whether the unit failed the roll or not.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @return Whether the defender failed the resistance roll or not, i.e. true if something bad happens
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public boolean calculateResistanceRoll (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+	
+	/**
 	 * Rolls the number of actual hits for "single figure resist or die" damage, where only one figure has to make a resistance roll.  Used for stoning touch.
 	 * 
 	 * @param defender Unit being hit

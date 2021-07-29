@@ -368,6 +368,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt
 	 * @param castingPlayer The player casting the spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether the defender failed the resistance roll or not, i.e. true if something bad happens
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
@@ -375,7 +376,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void makeResistanceRoll (final MemoryUnit attacker, final MemoryUnit defender,
+	public final boolean makeResistanceRoll (final MemoryUnit attacker, final MemoryUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
@@ -386,14 +387,32 @@ public final class DamageProcessorImpl implements DamageProcessor
 		getDamageCalculator ().sendDamageHeader (attacker, defenders, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
 	
 		// Spell might be being cast by a unit, or a hero casting a spell imbued in an item
-		final ExpandedUnitDetails xuAttackerPreliminary = (attacker == null) ? null : 
+		final ExpandedUnitDetails xuUnitMakingAttack = (attacker == null) ? null : 
 			getUnitUtils ().expandUnitDetails (attacker, null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
-		final AttackDamage damage = getDamageCalculator ().attackFromSpell
-			(spell, variableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB ());
+		// Work out base saving throw plus any modifiers from hero items with -spell save
+		final AttackDamage potentialDamage = getDamageCalculator ().attackFromSpell
+			(spell, variableDamage, castingPlayer, xuUnitMakingAttack, attackingPlayer, defendingPlayer, mom.getServerDB ());
 		
-		System.out.println (damage);
+		// Make the actual roll
+		// Now we know all the details about the type of attack, we can properly generate stats of the
+		// unit being attacked, since it might have bonuses against certain kinds of incoming attack so
+		// can't just generate its details using nulls for the attack details
+		final List<ExpandedUnitDetails> xuUnitsMakingAttack;
+		if (xuUnitMakingAttack == null)
+			xuUnitsMakingAttack = null;
+		else
+		{
+			xuUnitsMakingAttack = new ArrayList<ExpandedUnitDetails> ();
+			xuUnitsMakingAttack.add (xuUnitMakingAttack);
+		}
+		
+		final ExpandedUnitDetails xuUnitBeingAttacked = getUnitUtils ().expandUnitDetails (defender, xuUnitsMakingAttack,
+			potentialDamage.getAttackFromSkillID (), potentialDamage.getAttackFromMagicRealmID (),
+			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		
+		return getDamageCalculator ().calculateResistanceRoll (xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);	
 	}
 	
 	/**

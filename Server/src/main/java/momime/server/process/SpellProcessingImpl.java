@@ -428,12 +428,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				else if (spell.getCombatBaseDamage () == null)		// No saving throw is allowed, e.g. Web
 					addUnitSpell = true;
 				else
-				{
-					getDamageProcessor ().makeResistanceRoll ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
+					addUnitSpell = getDamageProcessor ().makeResistanceRoll ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
 						targetUnit, attackingPlayer, defendingPlayer, spell, variableDamage, castingPlayer, mom);
-					
-					addUnitSpell = true;
-				}
 				
 				if (addUnitSpell)
 				{

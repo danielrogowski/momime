@@ -1146,6 +1146,12 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <defenceStatisticsAutomatic language="en">
             <text>ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, FINAL_HITS hit(s) damage HP.</text>
         </defenceStatisticsAutomatic>
+        <defenceCursed language="en">
+            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, fails resistance roll and is cursed.</text>
+        </defenceCursed>
+        <defenceResistsCurse language="en">
+            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, passes resistance roll and avoids curse.</text>
+        </defenceResistsCurse>
         <defenceChanceOfDeathDies language="en">
             <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME dies.</text>
         </defenceChanceOfDeathDies>

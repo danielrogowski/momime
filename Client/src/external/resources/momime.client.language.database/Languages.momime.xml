@@ -1147,7 +1147,7 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>MODIFIED_DEFENCE_STRENGTH (increased from UNMODIFIED_DEFENCE_STRENGTH)</text>
         </defenceStrengthIncreased>
         <defenceStatistics language="en">
-            <text>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, defence DEFENCE_STRENGTH, FINAL_HITS hit(s) damage HP.</text>
+            <text>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, defence DEFENCE_STRENGTH with CHANCE_TO_DEFEND% block, FINAL_HITS hit(s) damage HP.</text>
         </defenceStatistics>
         <defenceStatistics language="fr">
             <text>DEFENDER_NAME subit ACTUAL_DAMAGE points de dégâts - Chacun des DEFENDER_FIGURES personnages se défend avec DEFENCE_STRENGTH * CHANCE_TO_DEFEND% de chance de bloquer = AVERAGE_BLOCK dégâts bloqués en moyenne - Dégâts réellement bloqués par chaque personnage = ACTUAL_BLOCK</text>

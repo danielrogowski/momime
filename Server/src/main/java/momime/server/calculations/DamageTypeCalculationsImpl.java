@@ -1,5 +1,6 @@
 package momime.server.calculations;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -11,6 +12,7 @@ import momime.common.database.DamageType;
 import momime.common.database.DamageTypeImmunity;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomCombatTile;
@@ -54,11 +56,25 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 		if (damageType.getEnhancedVersion () != null)
 		{
 			// Do we have a unit type or weapon grade that grants the enhanced version?
+			// Simply being a hero, chaos channeled unit or undead makes attacks negate Weapon Immunity
 			final Pick magicRealm = attacker.getModifiedUnitMagicRealmLifeformType ();
 			boolean enhanced = (magicRealm.isEnhancesDamageType () != null) && (magicRealm.isEnhancesDamageType ());
 			
+			// Any weapon grade other than normal weapons also negate Weapon Immunity
 			if ((!enhanced) && (attacker.getWeaponGrade () != null))
 				enhanced = attacker.getWeaponGrade ().isEnhancesDamageType ();
+			
+			// Lastly check for any skills that negate Weapon Immunity, e.g. Eldritch Weapon
+			if (!enhanced)
+			{
+				final Iterator<String> iter = attacker.listModifiedSkillIDs ().iterator ();
+				while ((!enhanced) && (iter.hasNext ()))
+				{
+					final UnitSkillEx unitSkill = db.findUnitSkill (iter.next (), "determineSkillDamageType");
+					if ((unitSkill.isEnhancesDamageType () != null) && (unitSkill.isEnhancesDamageType ()))
+						enhanced = true;
+				}
+			}
 			
 			if (enhanced)
 				damageType = db.findDamageType (damageType.getEnhancedVersion (), "determineSkillDamageType-E");

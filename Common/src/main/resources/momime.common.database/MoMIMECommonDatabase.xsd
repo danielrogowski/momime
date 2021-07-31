@@ -2623,6 +2623,12 @@ that normally block movement across them (i.e. stone walls).  Completely impassa
 Melee, ranged, thrown can, but fire breath for example also deals "single figure" damage, but cannot.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="enhancesDamageType" type="xsd:boolean" nxe:label="Enhances Damage Type?" nxe:gridwidth="200"> 
+				<xsd:annotation>
+					<xsd:documentation>Basically this indicates whether this skill negates Weapon Immunity for regular attacks,
+e.g. Eldritch Weapon is not an attack in itself, but upgrades the unit's regular attacks.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="damagePerFigure" type="momimecommon:damagePerFigureID" nxe:label="Damage Per Figure" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:documentation>False if the unit attacks as a whole (so a damaged unit deals the same damage as a fully healed unit); true if each figure

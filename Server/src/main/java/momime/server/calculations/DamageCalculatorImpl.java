@@ -499,7 +499,8 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)));
 		damageCalculationMsg.setModifiedDefenceStrength (defenderDefenceStrength);
 
-		damageCalculationMsg.setChanceToDefend (Math.max (0, 3 + (!defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK) ? 0 :
+		// Can't reduce chance below 10%
+		damageCalculationMsg.setChanceToDefend (Math.max (1, 3 + (!defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK) ? 0 :
 			defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK))));
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
 		
@@ -551,7 +552,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)));
 		damageCalculationMsg.setModifiedDefenceStrength (getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attacker, attackDamage, 1,
 			combatLocation, combatMap, trueBuildings, db));
-		damageCalculationMsg.setChanceToDefend (Math.max (0, 3 + (!defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK) ? 0 :
+		
+		// Can't reduce chance below 10%
+		damageCalculationMsg.setChanceToDefend (Math.max (1, 3 + (!defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK) ? 0 :
 			defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK))));
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
 

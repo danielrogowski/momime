@@ -383,6 +383,18 @@
 						<xsd:selector xpath="terrainImpassable" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellTargettingNoRangedAttackPK">
+						<xsd:selector xpath="noRangedAttack" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingInvalidRangedAttackTypePK">
+						<xsd:selector xpath="invalidRangedAttackType" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingNoAmmunitionPK">
+						<xsd:selector xpath="noAmmunition" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="spellTargettingCancelTitlePK">
 						<xsd:selector xpath="cancelTitle" />
 						<xsd:field xpath="@language" />
@@ -2688,6 +2700,9 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemiesHere" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cellFull" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="terrainImpassable" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noRangedAttack" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidRangedAttackType" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noAmmunition" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelText" />
 		</xsd:sequence>

@@ -2505,6 +2505,11 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 			<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackTypeDetailedDescription" type="momimecommon:description" nxe:label="Detailed Description" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeDescription" type="momimecommon:languageText" nxe:label="Description" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="mithrilAndAdamantiumVersions" type="xsd:boolean" nxe:label="Mithril/Adam?" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="wooden" type="xsd:boolean" nxe:label="Wooden?">
+				<xsd:annotation>
+					<xsd:documentation>Literally this is "Can it be affected by Warp Wood spell".  Magic attacks and large boulders have false here.  Bows and slingshots have true.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeID" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>

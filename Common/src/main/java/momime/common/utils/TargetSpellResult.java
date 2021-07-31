@@ -75,5 +75,14 @@ public enum TargetSpellResult
 	CELL_FULL,
 	
 	/** Can't summon on impassable terrain */
-	TERRAIN_IMPASSABLE;
+	TERRAIN_IMPASSABLE,
+	
+	/** Target has no ranged attack (Warp wood) */
+	NO_RANGED_ATTACK,
+
+	/** Target doesn't have right kind of RAT for this spell (Warp wood) */
+	INVALID_RANGED_ATTACK_TYPE,
+	
+	/** Target has no ammunition left (Warp wood) */
+	NO_AMMUNITION;
 }

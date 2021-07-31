@@ -371,6 +371,19 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     						result = TargetSpellResult.VALID_TARGET;
 	    			}
 	    			
+	    			// Warp wood has special validation
+	    			else if (spell.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.ZEROES_AMMO)
+	    			{
+	    				if (!targetUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+	    					result = TargetSpellResult.NO_RANGED_ATTACK;
+	    				else if (!targetUnit.getRangedAttackType ().isWooden ())
+	    					result = TargetSpellResult.INVALID_RANGED_ATTACK_TYPE;
+	    				else if (targetUnit.getAmmoRemaining () <= 0)
+	    					result = TargetSpellResult.NO_AMMUNITION;
+	    				else
+	    					result = TargetSpellResult.VALID_TARGET;
+	    			}
+	    			
 					// Combat attack spell that rolls against something other than resistance, so always a valid target
 	    			else
     	    			result = TargetSpellResult.VALID_TARGET;

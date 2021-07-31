@@ -69,6 +69,19 @@ public final class SpellTargettingEx extends SpellTargetting
 			case NOTHING_TO_DISPEL:
 				languageText = getNoEnemySpellsUnit ();
 				break;
+				
+			case NO_RANGED_ATTACK:
+				languageText = getNoRangedAttack ();
+				break;
+				
+			case INVALID_RANGED_ATTACK_TYPE:
+				languageText = getInvalidRangedAttackType ();
+				break;
+				
+			case NO_AMMUNITION:
+				languageText = getNoAmmunition ();
+				break;
+				
 			 
 			default:
 				throw new MomException ("NewTurnMessagesEx.getUnitLanguageText doesn't know what to do with enum value " + targetSpellResult);

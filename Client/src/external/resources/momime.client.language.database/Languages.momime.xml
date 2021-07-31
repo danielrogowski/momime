@@ -1073,8 +1073,17 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>There are already the maximum number of units here.</text>
         </cellFull>
         <terrainImpassable language="en">
-            <text>The SPELL_NAME cannot be summoned on this type of terrain..</text>
+            <text>The SPELL_NAME cannot be summoned on this type of terrain.</text>
         </terrainImpassable>
+        <noRangedAttack language="en">
+            <text>SPELL_NAME can only be used against units who have a ranged attack.</text>
+        </noRangedAttack>
+        <invalidRangedAttackType language="en">
+            <text>SPELL_NAME cannot be used against units whose ranged attack is magical or boulders.</text>
+        </invalidRangedAttackType>
+        <noAmmunition language="en">
+            <text>This unit already has no ammunition left.</text>
+        </noAmmunition>
         <cancelTitle language="en">
             <text>Cancel Spell</text>
         </cancelTitle>

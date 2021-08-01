@@ -154,7 +154,11 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 			}
 			catch (final Exception e)
 			{
-				log.warn ("Server XML database \"" + thisXmlFile.getKey () + "\" can't be used because of: " + e.getMessage ());
+				String msg = e.getMessage ();
+				if ((msg == null) && (e.getCause () != null) && (e.getCause ().getMessage () != null))
+					msg = e.getCause ().getMessage ();
+				
+				log.warn ("Server XML database \"" + thisXmlFile.getKey () + "\" can't be used because of: " + msg);
 			}
 
 		if (newGameDatabase.getMomimeXmlDatabase ().size () == 0)

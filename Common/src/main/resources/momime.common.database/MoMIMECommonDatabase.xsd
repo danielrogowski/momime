@@ -2753,19 +2753,15 @@ possible to define one skill that adds say +2 defence to ourselves, but +1 to al
 Used for Resistance to All and Holy Bonus.  Note in the original MoM, such skills only worked inside combat.</xsd:documentation>
         		</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="addsToSkillDivisor" type="momimecommon:skillDivisor" nxe:label="Skill Level Divisor" nxe:gridwidth="100">
+			<xsd:element minOccurs="1" maxOccurs="1" name="addsToSkillValueType" type="momimecommon:addsToSkillValueType" nxe:label="Value type" nxe:gridwidth="100">
 		        <xsd:annotation>
-        			<xsd:documentation>This is for hero skills, where the amount of bonus added depends on the level of the hero.  It is 1 for most hero skills,
-e.g. Agility adds Level / 1 to the hero's Defence score; the exception is Blademaster which only adds Level / 2 to the hero's +to Hit score.
-If addsToSkillID is non-null, either addsToSkillDivisor or addsToSkillFixed must be filled in, but not both.  If both are null, the amount of the
-bonus is taken from the numeric value of the skill, e.g. "Resistance to Others 2".</xsd:documentation>
+        			<xsd:documentation>Defines the way that addsToSkillValue is applied to the current skill value.</xsd:documentation>
         		</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="addsToSkillFixed" type="momimecommon:unitSkillValue" nxe:label="Skill Fixed Bonus" nxe:gridwidth="100">
+			<xsd:element minOccurs="0" maxOccurs="1" name="addsToSkillValue" type="momimecommon:unitSkillValue" nxe:label="Value" nxe:gridwidth="100">
 		        <xsd:annotation>
-        			<xsd:documentation>This is typically for spell effects, where a fixed amount is added to another skill, e.g. Holy Armour adds +2 to Defence.
-If addsToSkillID is non-null, either addsToSkillDivisor or addsToSkillFixed must be filled in, but not both.  If both are null, the amount of the
-bonus is taken from the numeric value of the skill, e.g. "Resistance to Others 2".</xsd:documentation>
+        			<xsd:documentation>Value that skill is modified by.  The way the value is added in is set by addsToSkillValueType, see description of enum values there.
+If this value is null, the amount of the bonus is taken from the numeric value of the skill, e.g. "Resistance to Others 2".</xsd:documentation>
         		</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="onlyAppliesToMagicRealmID" type="momimecommon:pickID" nxe:label="Only applies to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
@@ -5262,6 +5258,28 @@ then use the movement codes of the unit stack(s) being carried to see if they wo
 		</xsd:restriction>
 	</xsd:simpleType>
 	
+	<xsd:simpleType name="addsToSkillValueType">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Skill value is modified by +/- a fixed amount - this is usual setting, e.g. Holy Armour adds +2 defence</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ADD_FIXED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="H"><xsd:annotation>
+				<xsd:documentation>Skill value of one skill, divided by the divisor value, is added to another skill.
+This is used a lot in hero skills, e.g. Blademaster increases the hero's chance to hit by +1 per 2 levels of experience so has a divisor of 2.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ADD_DIVISOR" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="L"><xsd:annotation>
+				<xsd:documentation>Skill value is locked to this exact value, regardless of previous modifiers, e.g. Shatter sets melee strength to exactly 1.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="LOCK" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Skill value is divided by this value, so 2 means halve the skill value, e.g. Warp Creature halves melee strength.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DIVIDE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 <!-- Moved from server XSD -->
 
 	<xsd:simpleType name="fame">

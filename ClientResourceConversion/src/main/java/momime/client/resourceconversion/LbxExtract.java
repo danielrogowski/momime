@@ -89,10 +89,8 @@ public final class LbxExtract
 			}
 		} */
 		
-		for (int n = 0; n <= 9 ; n++)
-			convertImage ("CMBTFX.LBX", 13, n, "spells\\SP005\\cast-frame" + (n+1));
-		
-		convertImage ("RESOURCE.LBX", 82, 0, "spells\\SP005\\combat-overlay");
+		for (int n = 0; n <= 7 ; n++)
+			convertImage ("RESOURCE.LBX", 79, n, "spells\\SP088\\overlay-frame" + (n+1));
 		
 		System.out.println ("All done!");
 	} 

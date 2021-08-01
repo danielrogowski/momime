@@ -23,6 +23,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.database.AddsToSkill;
+import momime.common.database.AddsToSkillValueType;
 import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatAreaEffectSkillBonus;
@@ -1231,7 +1232,8 @@ public final class TestUnitUtilsImpl
 		{
 			final AddsToSkill heroSkillBonus = new AddsToSkill ();
 			heroSkillBonus.setAddsToSkillID ("US00" + n);
-			heroSkillBonus.setAddsToSkillDivisor ((n <= 2) ? 1 : 2);
+			heroSkillBonus.setAddsToSkillValue ((n <= 2) ? 1 : 2);
+			heroSkillBonus.setAddsToSkillValueType (AddsToSkillValueType.ADD_DIVISOR);
 			
 			final UnitSkillEx heroSkill = new UnitSkillEx ();
 			heroSkill.setUnitSkillID ("HS0" + n);
@@ -1389,9 +1391,10 @@ public final class TestUnitUtilsImpl
 		{
 			final AddsToSkill bonusSkillBonus = new AddsToSkill ();
 			bonusSkillBonus.setAddsToSkillID ("US00" + n);
+			bonusSkillBonus.setAddsToSkillValueType (AddsToSkillValueType.ADD_FIXED);
 			
 			if (n == 1)
-				bonusSkillBonus.setAddsToSkillFixed (2);
+				bonusSkillBonus.setAddsToSkillValue (2);
 			
 			if (n == 3)
 				bonusSkillBonus.setAffectsEntireStack (true);
@@ -1737,7 +1740,8 @@ public final class TestUnitUtilsImpl
 		{
 			final AddsToSkill bonusSkillBonus = new AddsToSkill ();
 			bonusSkillBonus.setAddsToSkillID ("US00" + n);
-			bonusSkillBonus.setAddsToSkillFixed (n);
+			bonusSkillBonus.setAddsToSkillValue (n);
+			bonusSkillBonus.setAddsToSkillValueType (AddsToSkillValueType.ADD_FIXED);
 			
 			switch (n)
 			{

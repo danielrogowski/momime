@@ -451,6 +451,20 @@ public final class SpellProcessingImpl implements SpellProcessing
 						castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (),
 						true, null, null, useVariableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 				}
+				else
+				{
+					// Even though not adding a spell, still have to tell the client to show animation for the failed spell
+					final ShowSpellAnimationMessage anim = new ShowSpellAnimationMessage ();
+					anim.setSpellID (spell.getSpellID ());
+					anim.setCastInCombat (true);
+					anim.setCombatTargetUnitURN (targetUnit.getUnitURN ());
+
+					if (attackingPlayer.getPlayerDescription ().isHuman ())
+						attackingPlayer.getConnection ().sendMessageToClient (anim);
+
+					if (defendingPlayer.getPlayerDescription ().isHuman ())
+						defendingPlayer.getConnection ().sendMessageToClient (anim);
+				}
 			}
 			
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))

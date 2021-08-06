@@ -630,7 +630,12 @@
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityViewElementSet" type="momimecommon:cityViewElementSet" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityViewElement" type="momimecommon:cityViewElement" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileType" type="momimecommon:combatTileType" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorder" type="momimecommon:combatTileBorder" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorder" type="momimecommon:combatTileBorder">
+					<xsd:key name="borderDamageNegatedBySkillPK">
+						<xsd:selector xpath="borderDamageNegatedBySkill" />
+						<xsd:field xpath="." />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatMapElement" type="momimecommon:combatMapElement" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileSet" type="momimecommon:tileSet">
 					<xsd:key name="smoothingSystemPK">
@@ -1390,6 +1395,21 @@
 			<xsd:selector xpath="aiUnitCategory" />
 			<xsd:field xpath="unitSkillID" />
 		</xsd:keyref>
+		
+		<!-- Combat tile borders dealing damage (Wall of Fire), new for 0.9.9.5 -->
+		
+		<xsd:keyref refer="momimecommon:damageTypePK" name="combatTileBorderFKdamageType">
+			<xsd:selector xpath="combatTileBorder" />
+			<xsd:field xpath="borderDamageTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:pickPK" name="combatTileBorderFKpick">
+			<xsd:selector xpath="combatTileBorder" />
+			<xsd:field xpath="borderDamageRealm" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="combatTileBorderFKunitSkill">
+			<xsd:selector xpath="combatTileBorder/borderDamageNegatedBySkill" />
+			<xsd:field xpath="." />
+		</xsd:keyref>		
 		
 		<!-- Moved from graphics XSD -->
 		<xsd:keyref refer="momimecommon:citySizePK" name="cityImageFKcitySize">
@@ -3473,6 +3493,29 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatTileBorderDescription" type="momimecommon:description" nxe:label="Combat Tile Border Description" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="blocksMovement" type="momimecommon:combatTileBorderBlocksMovementID" nxe:label="Blocks movement?" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="defenceBonus" type="momimecommon:unitSkillValue" nxe:label="Defence Bonus" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="borderDamageTypeID" type="momimecommon:damageTypeID" nxe:label="Border Damage Type" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>damageTypeName</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="borderDamageResolutionTypeID" type="momimecommon:damageResolutionTypeID" nxe:label="Border Damage Res. Type" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="borderDamage" type="momimecommon:unitSkillValue" nxe:label="Border Damage" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="borderDamageRealm" type="momimecommon:pickID" nxe:label="Border Damage Realm" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="borderDamageNegatedBySkill" type="momimecommon:unitSkillID" nxe:label="Grants skill">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+		        </xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="combatTileBorderID" type="momimecommon:combatTileBorderID" use="required" nxe:label="Combat Tile Border ID" nxe:gridwidth="150" />
 	</xsd:complexType>

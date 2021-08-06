@@ -429,6 +429,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="unitSkillDirectAccess" class="momime.server.utils.UnitSkillDirectAccessImpl" />
+
+	<bean id="combatMapServerUtils" class="momime.server.utils.CombatMapServerUtilsImpl">
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+	</bean>
 	
 	<!-- Calculations -->
 	
@@ -485,7 +489,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="combatMapGenerator" class="momime.server.mapgenerator.CombatMapGeneratorImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	
@@ -619,6 +623,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 
 	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">
@@ -688,6 +693,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatEndTurn" ref="combatEndTurn" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
+		<property name="combatHandling" ref="combatHandling" />
+	</bean>
+
+	<bean id="combatHandling" class="momime.server.process.CombatHandlingImpl">
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 
 	<bean id="combatEndTurn" class="momime.server.process.CombatEndTurnImpl">
@@ -841,7 +851,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="combatSpellAI" class="momime.server.ai.CombatSpellAIImpl">
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
-		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />

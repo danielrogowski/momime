@@ -53,6 +53,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.HeroItemServerUtils;
 
 /**
@@ -106,6 +107,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * Client wants to cast a spell, either overland or in combat
@@ -422,7 +426,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "There is already a unit in the chosen location so you cannot summon there.";
 				
 				else if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&
-					(getCombatMapUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
+					(getCombatMapServerUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
 					
 					msg = "You already have the maximum number of units in combat so cannot summon any more.";
@@ -863,5 +867,21 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

@@ -44,6 +44,7 @@ import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.utils.CombatMapServerUtilsImpl;
 import momime.unittests.mapstorage.StoredCombatMap;
 
 /**
@@ -156,10 +157,10 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		final MemoryGridCell mc = trueTerrain.getMap ().getPlane ().get (1).getRow ().get (15).getCell ().get (20);
 		
 		// Set up class
-		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		final CombatMapServerUtilsImpl utils = new CombatMapServerUtilsImpl ();
 		
 		final CombatMapGeneratorImpl mapGen = new CombatMapGeneratorImpl ();
-		mapGen.setCombatMapUtils (utils);
+		mapGen.setCombatMapServerUtils (utils);
 		mapGen.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
 		
@@ -365,10 +366,8 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		final RandomUtils random = new RandomUtilsImpl ();
 		
 		// Set up class
-		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
-		
 		final CombatMapGeneratorImpl mapGen = new CombatMapGeneratorImpl ();
-		mapGen.setCombatMapUtils (utils);
+		mapGen.setCombatMapServerUtils (new CombatMapServerUtilsImpl ());
 		mapGen.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
 		mapGen.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
 		mapGen.setRandomUtils (random);
@@ -398,6 +397,8 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		final MapAreaOfCombatTiles map = mapGen.generateCombatMap (sd.getCombatMapSize (), db, fow, combatMapLocation);
 
 		// We can't 'test' the output, only that the generation doesn't fail, but interesting to dump the maps to the standard output
+		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
+		
 		System.out.println ("Combat map:");
 		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)
 		{

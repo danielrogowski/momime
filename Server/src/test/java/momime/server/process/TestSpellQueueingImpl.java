@@ -60,6 +60,7 @@ import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * Tests the SpellQueueingImpl class
@@ -1941,7 +1942,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation)).thenReturn (null);
 		
 		// Number of units already here
-		when (combatMapUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (9);
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (9);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1951,6 +1953,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, combatTargetLocation, null, null, mom);
@@ -2074,7 +2077,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation)).thenReturn (null);
 		
 		// Number of units already here
-		when (combatMapUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (8);
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (8);
 		
 		// Combat terrain cell
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -2089,6 +2093,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
 		proc.setUnitCalculations (unitCalc);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, combatTargetLocation, null, null, mom);
@@ -2214,7 +2219,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation)).thenReturn (null);
 		
 		// Number of units already here
-		when (combatMapUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (9);
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (9);
 		
 		// Combat terrain cell
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -2232,6 +2238,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setSpellProcessing (spellProcessing);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, combatTargetLocation, null, null, mom);

@@ -135,6 +135,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
+	/** More methods dealing with executing combats */
+	private CombatHandling combatHandling;
+	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
 	 * city wall corners and the main feature (node, temple, tower of wizardry, etc. on the defender side).
@@ -1249,8 +1252,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// Work this out once only
 			final boolean ignoresCombatTerrain = tu.unitIgnoresCombatTerrain (mom.getServerDB ());
 			
-			// Send direction messages to the client, reducing the unit's movement with each step
-			// (so that's why we do this even if both players are AI)
+			// Walk through each step of the move, send direction messages to the client, reducing the unit's movement, and checking what they're crossing over
 			int dirNo = 0;
 			while ((!blocked) && (dirNo < directions.size ()))
 			{
@@ -1277,6 +1279,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 				else
 				{
 					// Good, no invisible unit here, so can make the move
+					// Test for crossing wall of fire
+					getCombatHandling ().crossCombatBorder (tu, combatLocation, combatCell.getCombatMap (), (MapCoordinates2DEx) msg.getMoveFrom (), movePath,
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
+					
 					// How much movement did it take us to walk into this cell?
 					// Units that ignore combat terrain always spend a fixed amount per move, so don't even bother calling the method
 					reduceMovementRemaining (tu.getMemoryUnit (), ignoresCombatTerrain ? 2 : getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
@@ -1335,6 +1341,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 				case MELEE_UNIT:
 				case MELEE_WALL:
 				case MELEE_UNIT_AND_WALL:
+					getCombatHandling ().crossCombatBorder (tu, combatLocation, combatCell.getCombatMap (), tu.getCombatPosition (), moveTo,
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
+					
 					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
 						attackWalls ? 2 : null, attackWalls ? moveTo : null,
 						movementDirections [moveTo.getY ()] [moveTo.getX ()],
@@ -1659,5 +1668,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
 	{
 		fogOfWarMidTurnMultiChanges = obj;
+	}
+
+	/**
+	 * @return More methods dealing with executing combats
+	 */
+	public final CombatHandling getCombatHandling ()
+	{
+		return combatHandling;
+	}
+
+	/**
+	 * @param h More methods dealing with executing combats
+	 */
+	public final void setCombatHandling (final CombatHandling h)
+	{
+		combatHandling = h;
 	}
 }

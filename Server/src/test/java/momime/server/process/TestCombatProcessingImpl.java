@@ -3518,11 +3518,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (xu.unitIgnoresCombatTerrain (db)).thenReturn (false);
 
 		// Set up object to test
+		final CombatHandling combatHandling = mock (CombatHandling.class);
+		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatHandling (combatHandling);
 		
 		// Run method
 		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, MoveUnitInCombatReason.MANUAL, movementDirections, movementTypes, mom));
@@ -3884,6 +3887,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		// Set up object to test
 		final DamageProcessor damageProcessor = mock (DamageProcessor.class);
+		final CombatHandling combatHandling = mock (CombatHandling.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
@@ -3891,6 +3895,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitCalculations (unitCalc);
 		proc.setUnitUtils (unitUtils);
 		proc.setDamageProcessor (damageProcessor);
+		proc.setCombatHandling (combatHandling);
 		
 		// Run method
 		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, MoveUnitInCombatReason.MANUAL, movementDirections, movementTypes, mom));

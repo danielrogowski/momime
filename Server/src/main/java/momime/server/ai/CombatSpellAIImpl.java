@@ -20,7 +20,6 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -29,6 +28,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.SpellQueueing;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -42,8 +42,8 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
-	/** Combat map utils */
-	private CombatMapUtils combatMapUtils;
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -102,7 +102,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 			// Can't summon (including raise dead-type spells) if already max number of units
 			case SUMMONING:
 				if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&
-					(getCombatMapUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
+					(getCombatMapServerUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
 					
 					valid = false;
@@ -243,19 +243,19 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	}
 
 	/**
-	 * @return Combat map utils
+	 * @return Methods dealing with combat maps that are only needed on the server
 	 */
-	public final CombatMapUtils getCombatMapUtils ()
+	public final CombatMapServerUtils getCombatMapServerUtils ()
 	{
-		return combatMapUtils;
+		return combatMapServerUtils;
 	}
-	
+
 	/**
-	 * @param utils Combat map utils
+	 * @param u Methods dealing with combat maps that are only needed on the server
 	 */
-	public final void setCombatMapUtils (final CombatMapUtils utils)
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
 	{
-		combatMapUtils = utils;
+		combatMapServerUtils = u;
 	}
 
 	/**

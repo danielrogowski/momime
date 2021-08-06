@@ -21,11 +21,11 @@ import momime.common.messages.MapRowOfCombatTiles;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
-import momime.common.utils.CombatMapUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * Server only class which contains all the code for generating a random combat map
@@ -41,8 +41,8 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
-	/** Combat map utils */
-	private CombatMapUtils combatMapUtils;
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -257,7 +257,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				if (element.getCombatTileTypeID () != null)
 				{
 					final CombatTileType ctt = db.findCombatTileType (element.getCombatTileTypeID (), "placeCombatMapElements");
-					getCombatMapUtils ().setCombatTileTypeForLayer (combatTile, ctt.getCombatMapLayer (), element.getCombatTileTypeID ());
+					getCombatMapServerUtils ().setCombatTileTypeForLayer (combatTile, ctt.getCombatMapLayer (), element.getCombatTileTypeID ());
 				}
 				
 				// Place borders
@@ -330,19 +330,19 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	}
 	
 	/**
-	 * @return Combat map utils
+	 * @return Methods dealing with combat maps that are only needed on the server
 	 */
-	public final CombatMapUtils getCombatMapUtils ()
+	public final CombatMapServerUtils getCombatMapServerUtils ()
 	{
-		return combatMapUtils;
+		return combatMapServerUtils;
 	}
 
 	/**
-	 * @param utils Combat map utils
+	 * @param u Methods dealing with combat maps that are only needed on the server
 	 */
-	public final void setCombatMapUtils (final CombatMapUtils utils)
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
 	{
-		combatMapUtils = utils;
+		combatMapServerUtils = u;
 	}
 
 	/**

@@ -152,12 +152,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	/** City walls building ID */
 	private String cityWallsBuildingID;
 
-	/** Wall of fire spell ID */
-	private String wallOfFireSpellID;
-	
-	/** Wall of fire border ID */
-	private String wallOfFireBorderID;
-
 	/**
 	 * Builds all the hash maps to enable finding records faster
 	 */
@@ -343,25 +337,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 			log.warn ("No building ID found that gives a defence bonus");
 		else
 			log.info ("Building ID that grants defence bonus (city walls) = " + cityWallsBuildingID);
-		
-		// Find spell ID for wall of fire by looking for borders that do damage
-		final List<String> combatTileBorderIDsWhichDoDamage = getCombatTileBorder ().stream ().filter
-			(b -> (b.getBorderDamage () != null) && (b.getBorderDamage () > 0)).map (b -> b.getCombatTileBorderID ()).collect (Collectors.toList ());
-		
-		wallOfFireBorderID = combatTileBorderIDsWhichDoDamage.stream ().findAny ().orElse (null);
-		
-		if (wallOfFireBorderID == null)
-			log.warn ("No border ID found that gives damaging combat tile borders");
-		else
-			log.info ("Border ID that gives damaging combat tile borders (wall of fire) = " + wallOfFireBorderID);
-
-		wallOfFireSpellID = getCombatMapElement ().stream ().filter
-			(e -> (combatTileBorderIDsWhichDoDamage.contains (e.getCombatTileBorderID ())) && (e.getSpellID () != null)).map (e -> e.getSpellID ()).findAny ().orElse (null);
-
-		if (wallOfFireSpellID == null)
-			log.warn ("No spell ID found that gives damaging combat tile borders");
-		else
-			log.info ("Spell ID that gives damaging combat tile borders (wall of fire) = " + wallOfFireSpellID);
 	}
 	
 	/**
@@ -1167,24 +1142,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	public final String getCityWallsBuildingID ()
 	{
 		return cityWallsBuildingID;
-	}
-	
-	/**
-	 * @return Wall of fire spell ID
-	 */
-	@Override
-	public final String getWallOfFireSpellID ()
-	{
-		return wallOfFireSpellID;
-	}
-	
-	/**
-	 * @return Wall of fire border ID
-	 */
-	@Override
-	public final String getWallOfFireBorderID ()
-	{
-		return wallOfFireBorderID;
 	}
 	
 	/**

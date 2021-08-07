@@ -698,6 +698,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="combatHandling" class="momime.server.process.CombatHandlingImpl">
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="damageProcessor" ref="damageProcessor" />
 	</bean>
 
 	<bean id="combatEndTurn" class="momime.server.process.CombatEndTurnImpl">

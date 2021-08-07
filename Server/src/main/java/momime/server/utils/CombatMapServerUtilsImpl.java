@@ -9,6 +9,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -91,7 +92,9 @@ public final class CombatMapServerUtilsImpl implements CombatMapServerUtils
 		final boolean withinWallOfFire;
 		
 		// First, the city actually has to have wall of fire
-		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueSpells, null, db.getWallOfFireSpellID (), null, null, combatLocation, null) == null)
+		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueSpells, null, CommonDatabaseConstants.SPELL_ID_WALL_OF_FIRE,
+			null, null, combatLocation, null) == null)
+			
 			withinWallOfFire = false;
 		else
 		{

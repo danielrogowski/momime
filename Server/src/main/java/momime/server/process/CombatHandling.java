@@ -1,15 +1,18 @@
 package momime.server.process;
 
-import java.util.List;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
-import momime.common.database.CommonDatabase;
+import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapAreaOfCombatTiles;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.server.MomSessionVariables;
 
 /**
  * More methods dealing with executing combats
@@ -22,14 +25,20 @@ public interface CombatHandling
 	 * @param xu Unit that is moving across a border
 	 * @param combatLocation Location where the combat is taking place
 	 * @param combatMap Combat scenery
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param moveFrom Cell being moved from
 	 * @param moveTo Cell moving into
-	 * @param trueSpells True spell details held on server
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If we can't find one of the border definitions
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether the final unit on one side of combat burned itself to death hence letting the other side win
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void crossCombatBorder (final ExpandedUnitDetails xu, final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
-		final MapCoordinates2DEx moveFrom, final MapCoordinates2DEx moveTo,
-		final List<MemoryMaintainedSpell> trueSpells, final CommonDatabase db)
-		throws RecordNotFoundException;
+	public boolean crossCombatBorder (final ExpandedUnitDetails xu, final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final MapCoordinates2DEx moveFrom, final MapCoordinates2DEx moveTo, final MomSessionVariables mom)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

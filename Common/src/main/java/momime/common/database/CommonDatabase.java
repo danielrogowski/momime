@@ -548,14 +548,4 @@ public interface CommonDatabase
 	 * @return City walls building ID
 	 */
 	public String getCityWallsBuildingID ();
-
-	/**
-	 * @return Wall of fire spell ID
-	 */
-	public String getWallOfFireSpellID ();
-
-	/**
-	 * @return Wall of fire border ID
-	 */
-	public String getWallOfFireBorderID ();
 }

@@ -1180,6 +1180,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Ranged attacks always reduce movement remaining to zero and never result in the unit actually moving.
 		// The value gets sent to the client by resolveAttack below.
+		boolean combatEnded = false;
 		boolean blocked = false;
 		if (RANGED_ATTACKS.contains (movementTypes [moveTo.getY ()] [moveTo.getX ()]))
 			tu.setDoubleCombatMovesLeft (0);
@@ -1254,7 +1255,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// Walk through each step of the move, send direction messages to the client, reducing the unit's movement, and checking what they're crossing over
 			int dirNo = 0;
-			while ((!blocked) && (dirNo < directions.size ()))
+			while ((!blocked) && (!combatEnded) && (dirNo < directions.size ()))
 			{
 				final int d = directions.get (dirNo);
 				
@@ -1280,8 +1281,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 				{
 					// Good, no invisible unit here, so can make the move
 					// Test for crossing wall of fire
-					getCombatHandling ().crossCombatBorder (tu, combatLocation, combatCell.getCombatMap (), (MapCoordinates2DEx) msg.getMoveFrom (), movePath,
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
+					combatEnded = getCombatHandling ().crossCombatBorder (tu, combatLocation, combatCell.getCombatMap (),
+						attackingPlayer, defendingPlayer, (MapCoordinates2DEx) msg.getMoveFrom (), movePath, mom);
 					
 					// How much movement did it take us to walk into this cell?
 					// Units that ignore combat terrain always spend a fixed amount per move, so don't even bother calling the method
@@ -1301,29 +1302,31 @@ public final class CombatProcessingImpl implements CombatProcessing
 				}
 			}
 		
-			// If the unit it making an attack, that takes half its total movement
-			if ((!blocked) && (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE))
-				reduceMovementRemaining (tu.getMemoryUnit (), tu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+			if (!combatEnded)
+			{
+				// If the unit it making an attack, that takes half its total movement
+				if ((!blocked) && (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE))
+					reduceMovementRemaining (tu.getMemoryUnit (), tu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+				
+				// Actually put the units in that location on the server
+				tu.setCombatPosition (movePath);
 			
-			// Actually put the units in that location on the server
-			tu.setCombatPosition (movePath);
-		
-			// Update attacker's memory on server
-			final MapCoordinates2DEx movePathAttackersMemory = new MapCoordinates2DEx (movePath);
-			
-			final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-			getUnitUtils ().findUnitURN (tu.getUnitURN (), attackerPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A").setCombatPosition (movePathAttackersMemory);
-
-			// Update defender's memory on server
-			final MapCoordinates2DEx movePathDefendersMemory = new MapCoordinates2DEx (movePath);
-			
-			final MomPersistentPlayerPrivateKnowledge defenderPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-			getUnitUtils ().findUnitURN (tu.getUnitURN (), defenderPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-D").setCombatPosition (movePathDefendersMemory);
+				// Update attacker's memory on server
+				final MapCoordinates2DEx movePathAttackersMemory = new MapCoordinates2DEx (movePath);
+				
+				final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+				getUnitUtils ().findUnitURN (tu.getUnitURN (), attackerPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A").setCombatPosition (movePathAttackersMemory);
+	
+				// Update defender's memory on server
+				final MapCoordinates2DEx movePathDefendersMemory = new MapCoordinates2DEx (movePath);
+				
+				final MomPersistentPlayerPrivateKnowledge defenderPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+				getUnitUtils ().findUnitURN (tu.getUnitURN (), defenderPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-D").setCombatPosition (movePathDefendersMemory);
+			}
 		}
 		
 		// Anything special to do?
-		boolean combatEnded = false;
-		if (!blocked)
+		if ((!blocked) && (!combatEnded))
 		{
 			final CombatMoveType combatMoveType = movementTypes [moveTo.getY ()] [moveTo.getX ()];
 			final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
@@ -1341,13 +1344,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 				case MELEE_UNIT:
 				case MELEE_WALL:
 				case MELEE_UNIT_AND_WALL:
-					getCombatHandling ().crossCombatBorder (tu, combatLocation, combatCell.getCombatMap (), tu.getCombatPosition (), moveTo,
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
+					combatEnded = getCombatHandling ().crossCombatBorder (tu, combatLocation, combatCell.getCombatMap (),
+						attackingPlayer, defendingPlayer, tu.getCombatPosition (), moveTo, mom);
 					
-					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
-						attackWalls ? 2 : null, attackWalls ? moveTo : null,
-						movementDirections [moveTo.getY ()] [moveTo.getX ()],
-						CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
+					if (!combatEnded)
+						combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
+							attackWalls ? 2 : null, attackWalls ? moveTo : null,
+							movementDirections [moveTo.getY ()] [moveTo.getX ()],
+							CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 					break;
 					
 				case RANGED_UNIT:

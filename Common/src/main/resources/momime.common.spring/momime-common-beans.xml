@@ -318,12 +318,15 @@
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
+
+	<bean id="expandUnitDetailsUtils" class="momime.common.utils.ExpandUnitDetailsUtilsImpl" />
 	
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="unitDetailsUtils" ref="unitDetailsUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="expandUnitDetailsUtils" ref="expandUnitDetailsUtils" />
 	</bean>
 	
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl">

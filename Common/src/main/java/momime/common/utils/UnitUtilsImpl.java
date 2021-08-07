@@ -82,6 +82,9 @@ public final class UnitUtilsImpl implements UnitUtils
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
+	/** Sections broken out from the big expandUnitDetails method to make it more manageable */
+	private ExpandUnitDetailsUtils expandUnitDetailsUtils;
+	
 	/**
 	 * @param unitURN Unit URN to search for
 	 * @param units List of units to search through
@@ -519,130 +522,15 @@ public final class UnitUtilsImpl implements UnitUtils
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
-				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (addsToSkill.getAddsToSkillID ());
-				if ((components != null) && ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.ADD_FIXED) ||
-					(addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.ADD_DIVISOR)))
-				{
-					final boolean haveRequiredSkill;
-					if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
-						haveRequiredSkill = (enemyUnits != null) && (enemyUnits.size () == 1) && (enemyUnits.get (0).hasModifiedSkill (skillDef.getUnitSkillID ()));
-					else
-						haveRequiredSkill = (addsToSkill.isAffectsEntireStack () ? unitStackSkills : modifiedSkillValues).containsKey (skillDef.getUnitSkillID ());
+				final boolean haveRequiredSkill;
+				if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
+					haveRequiredSkill = (enemyUnits != null) && (enemyUnits.size () == 1) && (enemyUnits.get (0).hasModifiedSkill (skillDef.getUnitSkillID ()));
+				else
+					haveRequiredSkill = (addsToSkill.isAffectsEntireStack () ? unitStackSkills : modifiedSkillValues).containsKey (skillDef.getUnitSkillID ());
 					
-					if (haveRequiredSkill)
-					{
-						// If we have no info about the kind of attack being made, or this isn't in reference to an attack at all, then discount the bonus
-						// if it has any restrictions that depend on the kind of incoming attack, even if we match those restrictions.
-						// This is to stop the bonus from Large Shield showing on the unit info screen.
-						if ((attackFromSkillID == null) && (attackFromMagicRealmID == null) &&
-							((addsToSkill.getOnlyVersusAttacksFromSkillID () != null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID () != null)))
-						{
-							// Ignore
-						}
-						
-						// If the bonus only applies in combat, and we aren't in combat, then ignore it.
-						else if ((addsToSkill.isOnlyInCombat () != null) && (addsToSkill.isOnlyInCombat ()) && (!isInCombat))
-						{
-							// Ignore
-						}
-						
-						// If the bonus only applies to specific magic realms then ignore it if doesn't match
-						else if ((addsToSkill.getOnlyAppliesToMagicRealmID () != null) && (!addsToSkill.getOnlyAppliesToMagicRealmID ().equals (magicRealmLifeformType.getPickID ())))
-						{
-							// Ignore
-						}
-						
-						else
-						{
-							// Deal with negative checks first, so the "if" below doesn't get too complicated; the value here is irrelevant if onlyVersusAttacksFromSkillID is null
-							// NB. attackFromSkillID of "null" (i.e. spell based attacks) are considered as not matching the required skill ID
-							// which is what we want - so Large Shield DOES give its bonus against incoming spell attacks such as Fire Bolt
-							boolean onlyVersusAttacksFromSkillIDCheckPasses = (addsToSkill.getOnlyVersusAttacksFromSkillID () != null) &&
-								(addsToSkill.getOnlyVersusAttacksFromSkillID ().equals (attackFromSkillID));
-							if ((addsToSkill.isNegateOnlyVersusAttacksFromSkillID () != null) && (addsToSkill.isNegateOnlyVersusAttacksFromSkillID ()))
-								onlyVersusAttacksFromSkillIDCheckPasses = !onlyVersusAttacksFromSkillIDCheckPasses;
-							
-							// Does the skill only apply to particular ranged attack types, and incoming skill IDs or incoming attacks of only particular magic realms?
-							// (This deals with all conditional bonuses, such as Resist Elements, Large Shield or Flame Blade)
-							if (((addsToSkill.getRangedAttackTypeID () == null) || (addsToSkill.getRangedAttackTypeID ().equals (mu.getUnitDefinition ().getRangedAttackType ()))) &&
-								((addsToSkill.getOnlyVersusAttacksFromSkillID () == null) || (onlyVersusAttacksFromSkillIDCheckPasses)) &&
-								((addsToSkill.getOnlyVersusAttacksFromMagicRealmID () == null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID ().equals (attackFromMagicRealmID))))
-							{
-								// How is the bonus calculated - fixed value, value from the skill, etc
-								UnitSkillComponent component;
-								if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
-									component = UnitSkillComponent.PENALTIES;
-								else
-									component = addsToSkill.isAffectsEntireStack () ? UnitSkillComponent.STACK : UnitSkillComponent.SPELL_EFFECTS;
-								
-								// Any fixed bonuses from one skill to another?  e.g. Holy Armour gives +2 to defence
-								final int bonus;
-								if ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.ADD_FIXED) && (addsToSkill.getAddsToSkillValue () != null))
-									bonus = addsToSkill.getAddsToSkillValue ();
-								
-								else
-								{
-									// For other kinds, we must have a value for the skill - e.g. Constitution 1 or Holy Bonus 2
-									int multiplier;
-									if (addsToSkill.isAffectsEntireStack ())
-										multiplier = unitStackSkills.get (skillDef.getUnitSkillID ());
-									else
-									{
-										multiplier = 0;
-										final Map<UnitSkillComponent, Integer> totalComponents = modifiedSkillValues.get (skillDef.getUnitSkillID ());
-										if (totalComponents != null)
-											for (final Entry<UnitSkillComponent, Integer> c : totalComponents.entrySet ())
-												if (c.getValue () == null)
-													throw new MomException ("expandUnitDetails on " + unit.getUnitID () + " trying to sum addsFromSkill ID " + skillDef.getUnitSkillID () + " for bonuses but the " + c.getKey () + " component is null");
-												else
-													multiplier = multiplier + c.getValue ();
-									}
-									
-									if (multiplier <= 0)
-										bonus = 0;
-									
-									// Use already calculated highest value from the stack
-									else if ((addsToSkill.isAffectsEntireStack ()) && (addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.ADD_DIVISOR) &&
-										(addsToSkill.getAddsToSkillValue () != null))
-									{
-										component = UnitSkillComponent.STACK;
-										
-										// Multiplier has already been set to highest (level + 1) * (normal=2 or super=3) for highest value in the stack, see getBasicOrHeroSkillValue
-										bonus = multiplier / (addsToSkill.getAddsToSkillValue () * 2);
-									}
-									
-									// Any bonuses from hero skills? (Might gives +melee, Constitution gives +hit points, Agility gives +defence, and so on)
-									else if ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.ADD_DIVISOR) && (addsToSkill.getAddsToSkillValue () != null))
-									{
-										component = UnitSkillComponent.HERO_SKILLS;
-										if (mu.getModifiedExperienceLevel () != null)
-										{
-											// Multiplier will either equal 1 or 2, indicating whether we have the regular or super version of the skill - change this to be 2 for regular or 3 for super
-											multiplier++;
-											
-											// Now can do the calculation
-											bonus = ((mu.getModifiedExperienceLevel ().getLevelNumber () + 1) * multiplier) / (addsToSkill.getAddsToSkillValue () * 2);
-										}
-										else
-											bonus = 0;
-									}
-									
-									
-									// Neither divisor nor fixed value specified, so the value must come from the skill itself
-									else
-										bonus = multiplier;
-								}
-								
-								if (bonus != 0)
-								{
-									Integer bonusValue = components.get (component);
-									bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus;
-									components.put (component, bonusValue);
-								}
-							}
-						}
-					}
-				}
+				if (haveRequiredSkill)
+					getExpandUnitDetailsUtils ().addSkillBonus (mu, skillDef.getUnitSkillID (), addsToSkill, modifiedSkillValues, unitStackSkills,
+						attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID ());
 			}
 		
 		// STEP 15 - Hero items - numeric bonuses (dealt with valueless skills above)
@@ -1506,5 +1394,21 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Sections broken out from the big expandUnitDetails method to make it more manageable
+	 */
+	public final ExpandUnitDetailsUtils getExpandUnitDetailsUtils ()
+	{
+		return expandUnitDetailsUtils;
+	}
+
+	/**
+	 * @param u Sections broken out from the big expandUnitDetails method to make it more manageable
+	 */
+	public final void setExpandUnitDetailsUtils (final ExpandUnitDetailsUtils u)
+	{
+		expandUnitDetailsUtils = u;
 	}
 }

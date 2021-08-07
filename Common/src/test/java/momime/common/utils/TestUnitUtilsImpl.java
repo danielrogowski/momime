@@ -1302,6 +1302,7 @@ public final class TestUnitUtilsImpl
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setUnitDetailsUtils (unitDetailsUtils);
 		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());		// Until these unit tests are made more modular
 
 		// Test every experience level
 		for (int expLevel = 0; expLevel <= 8; expLevel++)
@@ -1469,6 +1470,7 @@ public final class TestUnitUtilsImpl
 		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setUnitDetailsUtils (unitDetailsUtils);
+		utils.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());		// Until these unit tests are made more modular
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
@@ -1836,6 +1838,7 @@ public final class TestUnitUtilsImpl
 		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setUnitDetailsUtils (unitDetailsUtils);
+		utils.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());		// Until these unit tests are made more modular
 		
 		// If we specify nothing about the type of incoming attack, then only the RAT-based bonus can apply
 		final ExpandedUnitDetails details1 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);

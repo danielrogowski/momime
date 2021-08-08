@@ -23,6 +23,7 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
+import momime.common.utils.ExpandUnitDetailsUtilsImpl;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.UnitDetailsUtilsImpl;
@@ -200,6 +201,7 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		unitUtils.setUnitDetailsUtils (unitDetailsUtils);
+		unitUtils.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());
 		
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();
 		unitServerUtils.setUnitUtils (unitUtils);
@@ -255,6 +257,7 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 		unitUtils.setUnitDetailsUtils (unitDetailsUtils);
+		unitUtils.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());
 		
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();
 		unitServerUtils.setUnitUtils (unitUtils);

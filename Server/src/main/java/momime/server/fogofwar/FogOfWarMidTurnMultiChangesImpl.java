@@ -15,7 +15,6 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -276,8 +275,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
-	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @param sd Session description
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
@@ -286,7 +284,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 */
 	@Override
 	public final void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings, final CoordinateSystem overlandMapCoordinateSystem)
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Find the best Armsmaster at each map cell and all the healers
@@ -317,9 +315,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			}
 		
 		// Add +3 heal at every city
-		for (int plane = 0; plane < overlandMapCoordinateSystem.getDepth (); plane++)
-			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
-				for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
+		for (int plane = 0; plane < sd.getOverlandMapSize ().getDepth (); plane++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					final MemoryGridCell mc = trueMap.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
 					final OverlandMapCityData cityData = mc.getCityData ();
@@ -407,11 +405,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 						if (heroSkillValue != null)
 							getUnitSkillDirectAccess ().setDirectSkillValue (thisUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp + heroSkillValue);
 					}
+					
+					// Switch off Heroism if the unit now has 120 exp naturally
+					getUnitServerUtils ().checkIfNaturallyElite (thisUnit, trueMap, players, db, sd);
 				}
 
 				// Inform any clients who know about this unit
 				if (sendMsg)
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, sd.getFogOfWarSetting (), fowMessages);
 			}
 		
 		// Send out client updates

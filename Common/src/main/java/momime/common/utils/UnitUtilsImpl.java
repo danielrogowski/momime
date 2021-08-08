@@ -234,7 +234,7 @@ public final class UnitUtilsImpl implements UnitUtils
 					(((unitCombatLocation == null) && (thisUnit.getCombatLocation () == null)) ||
 					((unitCombatLocation != null) && (unitCombatLocation.equals (thisUnit.getCombatLocation ())))))
 				{
-					final MinimalUnitDetails thisMU = getUnitDetailsUtils ().expandMinimalUnitDetails (thisUnit, players, mem.getCombatAreaEffect (), db);		
+					final MinimalUnitDetails thisMU = getUnitDetailsUtils ().expandMinimalUnitDetails (thisUnit, players, mem, db);		
 					unitStack.add (thisMU);
 					unitStackUnitURNs.add (thisMU.getUnitURN ());
 					
@@ -246,7 +246,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		if (mu == null)
 		{
-			mu = getUnitDetailsUtils ().expandMinimalUnitDetails (unit, players, mem.getCombatAreaEffect (), db);
+			mu = getUnitDetailsUtils ().expandMinimalUnitDetails (unit, players, mem, db);
 			unitStack.add (mu);
 			if (mu.isMemoryUnit ())
 				unitStackUnitURNs.add (mu.getUnitURN ());

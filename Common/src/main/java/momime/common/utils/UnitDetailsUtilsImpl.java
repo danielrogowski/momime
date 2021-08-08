@@ -9,14 +9,18 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
+import momime.common.database.AddsToSkill;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
-import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 
@@ -39,7 +43,7 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 	 * 
 	 * @param unit Unit to expand skill list for
 	 * @param players Players list
-	 * @param combatAreaEffects List of known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return List of all skills this unit has, with skills granted from other skills and skills granted from spells merged into the list
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
@@ -48,7 +52,7 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 	 */
 	@Override
 	public final MinimalUnitDetails expandMinimalUnitDetails (final AvailableUnit unit,
-		final List<? extends PlayerPublicDetails> players, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// STEP 1 - First just copy the skills from the unit into a map
@@ -67,7 +71,7 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 		
 		// STEP 3 - Find the unit's experience level
 		// Experience can never be increased by spells, combat area effects, weapon grades, etc. etc. therefore safe to do this from the basic skill value on the unmerged list
-		final Integer experienceSkillValue = basicSkillValues.get (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		Integer experienceSkillValue = basicSkillValues.get (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		final ExperienceLevel basicExpLvl;
 		final ExperienceLevel modifiedExpLvl;
 		if (experienceSkillValue == null)
@@ -77,6 +81,33 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 		}
 		else
 		{
+			// Check to see if the unit has heroism cast on it
+			// This is a special case from all the other "adds to skill" modifiers as it has to happen way earlier
+			if (unit instanceof MemoryUnit)
+			{
+				final int unitURN = ((MemoryUnit) unit).getUnitURN ();
+				for (final MemoryMaintainedSpell thisSpell : mem.getMaintainedSpell ())
+					if ((thisSpell.getUnitURN () != null) && (thisSpell.getUnitURN () == unitURN) && (thisSpell.getUnitSkillID () != null))
+					{
+						final UnitSkillEx unitSkill = db.findUnitSkill (thisSpell.getUnitSkillID (), "expandMinimalUnitDetails");
+						for (final AddsToSkill addsToSkill : unitSkill.getAddsToSkill ())
+							if (addsToSkill.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE))
+								switch (addsToSkill.getAddsToSkillValueType ())
+								{
+									case ADD_FIXED:
+										experienceSkillValue = experienceSkillValue + addsToSkill.getAddsToSkillValue ();
+										break;
+										
+									case LOCK:
+										experienceSkillValue = addsToSkill.getAddsToSkillValue ();
+										break;
+										
+									default:
+										// Either kind of divide makes no sense for this
+								}
+					}
+			}
+			
 			// Check all experience levels defined under the unit type
 			// This checks them all so we aren't relying on them being defined in the correct orer
 			ExperienceLevel levelFromExperience = null;
@@ -101,7 +132,7 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 				levelIncludingBonuses++;
 
 			// Does the player have the Crusade CAE?
-			if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (combatAreaEffects, null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, unit.getOwningPlayerID ()) != null)
+			if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mem.getCombatAreaEffect (), null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, unit.getOwningPlayerID ()) != null)
 				levelIncludingBonuses++;
 
 			// Now we have to ensure that the level we've attained actually exists, this is fine for units but a hero might reach Demi-God naturally,

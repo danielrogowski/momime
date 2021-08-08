@@ -21,6 +21,7 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AddsToSkill;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
@@ -38,6 +39,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -822,6 +824,48 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				
 				((MomTransientPlayerPrivateKnowledge) owningPlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (ntm);
 			}
+		}
+	}
+
+	/**
+	 * Checks for units naturally reaching 120 exp with Heroism cast on them, in which case we automatically switch off the spell
+	 * 
+	 * @param mu Unit to check
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void checkIfNaturallyElite (final MemoryUnit mu, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+	{
+		final int exp = getUnitSkillDirectAccess ().getDirectSkillValue (mu.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		if (exp > 0)
+		{
+			final List<MemoryMaintainedSpell> spellsToRemove = new ArrayList<MemoryMaintainedSpell> ();
+			
+			// Look for any spells cast on the unit that give less exp than the unit already has naturally
+			for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
+				if ((thisSpell.getUnitURN () != null) && (thisSpell.getUnitURN () == mu.getUnitURN ()) && (thisSpell.getUnitSkillID () != null))
+				{
+					final UnitSkillEx unitSkill = db.findUnitSkill (thisSpell.getUnitSkillID (), "checkIfNaturallyElite");
+					for (final AddsToSkill addsToSkill : unitSkill.getAddsToSkill ())
+						if ((addsToSkill.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
+							(exp >= addsToSkill.getAddsToSkillValue ()))
+							
+							spellsToRemove.add (thisSpell);
+				}
+			
+			// Remove them in a separate loop to avoid concurrent list modification
+			for (final MemoryMaintainedSpell thisSpell : spellsToRemove)
+				getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, thisSpell.getSpellURN (), players, db, sd);
 		}
 	}
 	

@@ -201,6 +201,24 @@ public interface UnitServerUtils
 	public void checkIfHeroGainedALevel (final int unitURN, final UnitType unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue);
 
 	/**
+	 * Checks for units naturally reaching 120 exp with Heroism cast on them, in which case we automatically switch off the spell
+	 * 
+	 * @param mu Unit to check
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void checkIfNaturallyElite (final MemoryUnit mu, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
+	
+	/**
 	 * This is used for the AI picking where to target ion combat summoning spells like Fire Elemental.  As such it has to work the same way
 	 * a human player targets spells, in that the AI player is not allowed to know the location of any invisible units it cannot see.  It may
 	 * therefore pick a location which actually has a unit in it.  The spell casting code then deals with this.

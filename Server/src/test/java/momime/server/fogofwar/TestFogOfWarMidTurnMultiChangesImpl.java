@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -365,17 +364,20 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (db.findPick ("LTN", "healUnitsAndGainExperience")).thenReturn (magicRealm);
 
 		// Session description
-		final CoordinateSystem overlandMapCoordinateSystem = createOverlandMapCoordinateSystem ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();	
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setOverlandMapSize (overlandMapSize);
+		sd.setFogOfWarSetting (fogOfWarSettings);
 		
 		// Server memory
-		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapCoordinateSystem);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
 		// Other lists and objects just needed for mocks
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		
 		// Normal unit that has taken 2 kinds of damage
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -499,7 +501,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setUnitUtils (unitUtils);
 		
 		// Run method
-		multi.healUnitsAndGainExperience (units, 0, trueMap, players, db, fogOfWarSettings, overlandMapCoordinateSystem);
+		multi.healUnitsAndGainExperience (units, 0, trueMap, players, db, sd);
 		
 		// Check results
 		verify (unitServerUtils, times (1)).healDamage (unit1.getUnitDamage (), 2, false);		// 5% of 24 is 1.2, then round up

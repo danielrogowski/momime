@@ -9,7 +9,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
-import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.FogOfWarMemory;
 
 /**
  * Methods for working out minimal unit details
@@ -21,7 +21,7 @@ public interface UnitDetailsUtils
 	 * 
 	 * @param unit Unit to expand skill list for
 	 * @param players Players list
-	 * @param combatAreaEffects List of known combat area effects
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return List of all skills this unit has, with skills granted from other skills and skills granted from spells merged into the list
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
@@ -29,6 +29,6 @@ public interface UnitDetailsUtils
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public MinimalUnitDetails expandMinimalUnitDetails (final AvailableUnit unit,
-		final List<? extends PlayerPublicDetails> players, final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

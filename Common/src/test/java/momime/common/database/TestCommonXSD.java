@@ -89,6 +89,7 @@ public final class TestCommonXSD
 		unboundedEntities.remove ("attackResolutionStep");				// Ordered list of steps to take to resolve the combat, valid for same step can be repeated twice for Haste 
 		unboundedEntities.remove ("smoothingReduction");				// Ordered list of rules to apply to bitmasks, so there's no key, all rules get evaluated
 		unboundedEntities.remove ("addsToSkill");							// This is really a list of rules - the same attribute can be specified twice, e.g. see Resist Elements
+		unboundedEntities.remove ("addsToSkill");							// There's 2 of these, one for unit skills and one for weapon grades
 		unboundedEntities.remove ("combatAreaEffectSkillBonus");	// Not unique without effectMagicRealm as some bonuses apply to 2 magic realms, but effectMagicRealm is optional
 		unboundedEntities.remove ("heroItemSlot");							// Ordered list of 3 slots.  Mage type heroes tend to have 2 accessory slots, so the type of item isn't unique.
 		unboundedEntities.remove ("smoothedTile");						// Bitmasks are intentionally not unique, so there can be multiple options for rendering the same tile

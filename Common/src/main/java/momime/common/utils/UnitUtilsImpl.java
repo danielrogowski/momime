@@ -457,22 +457,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		// STEP 11 - Add bonuses from weapon grades
 		if (weaponGrade != null)
-			for (final UnitSkillAndValue bonus : weaponGrade.getWeaponGradeSkillBonus ())
-			{
-				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonus.getUnitSkillID ());
-				if ((components != null) && (bonus.getUnitSkillValue () != null))
-				{
-					// Only certain types of ranged attack get bonuses from Mithril and Adamantium weapons - e.g. bows do, magical blasts do not
-					final boolean weaponGradeBonusApplies;
-					if (bonus.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
-						weaponGradeBonusApplies = (rangedAttackType == null) ? false : rangedAttackType.isMithrilAndAdamantiumVersions ();
-					else
-						weaponGradeBonusApplies = true;
-					
-					if (weaponGradeBonusApplies)
-						components.put (UnitSkillComponent.WEAPON_GRADE, bonus.getUnitSkillValue ());
-				}
-			}
+			for (final AddsToSkill addsToSkill : weaponGrade.getAddsToSkill ())
+				getExpandUnitDetailsUtils ().addSkillBonus (mu, null, addsToSkill, UnitSkillComponent.WEAPON_GRADE, modifiedSkillValues, unitStackSkills,
+					attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID ());
 
 		// STEP 12 - Add bonuses from experience
 		if (mu.getModifiedExperienceLevel () != null)
@@ -529,7 +516,7 @@ public final class UnitUtilsImpl implements UnitUtils
 					haveRequiredSkill = (addsToSkill.isAffectsEntireStack () ? unitStackSkills : modifiedSkillValues).containsKey (skillDef.getUnitSkillID ());
 					
 				if (haveRequiredSkill)
-					getExpandUnitDetailsUtils ().addSkillBonus (mu, skillDef.getUnitSkillID (), addsToSkill, modifiedSkillValues, unitStackSkills,
+					getExpandUnitDetailsUtils ().addSkillBonus (mu, skillDef.getUnitSkillID (), addsToSkill, null, modifiedSkillValues, unitStackSkills,
 						attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID ());
 			}
 		

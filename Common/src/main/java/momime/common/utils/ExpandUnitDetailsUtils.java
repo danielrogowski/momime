@@ -20,6 +20,7 @@ public interface ExpandUnitDetailsUtils
 	 * @param unitSkillID If this bonus is being added because one skill gives a bonus to another skill, this is the skill the bonus is being granted FROM
 	 * 	null if this bonus is being granted from something other than a skill, e.g. a weapon grade 
 	 * @param addsToSkill The details of the skill the bonus is applied TO and any associated conditions
+	 * @param overrideComponent Component to add these bonuses as; null means work it out based on whether its a + or - and whether it affects whole stack or not
 	 * @param modifiedSkillValues Map of skill values calculated for the unit so far
 	 * @param unitStackSkills List of all skills that any unit stacked with the unit we are calculating has; if a numeric skill then indicates the highest value from the stack
 	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
@@ -29,7 +30,7 @@ public interface ExpandUnitDetailsUtils
 	 * @param magicRealmLifeformTypeID Calculated lifeform type for this unit, e.g. regular unit, or it has been chaos channeled
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public void addSkillBonus (final MinimalUnitDetails mu, final String unitSkillID, final AddsToSkill addsToSkill,
+	public void addSkillBonus (final MinimalUnitDetails mu, final String unitSkillID, final AddsToSkill addsToSkill, final UnitSkillComponent overrideComponent,
 		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues, final Map<String, Integer> unitStackSkills,
 		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID)
 		throws MomException;

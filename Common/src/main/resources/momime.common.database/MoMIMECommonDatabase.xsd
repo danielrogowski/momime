@@ -460,12 +460,7 @@
 						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimecommon:weaponGrade">
-					<xsd:key name="weaponGradeSkillBonusPK">
-						<xsd:selector xpath="weaponGradeSkillBonus" />
-						<xsd:field xpath="@unitSkillID" />
-					</xsd:key>
-				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimecommon:weaponGrade" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimecommon:combatAreaEffect">
 					<xsd:key name="combatAreaEffectDescriptionPK">
 						<xsd:selector xpath="combatAreaEffectDescription" />
@@ -1090,9 +1085,25 @@
 			<xsd:selector xpath="unit/unitPrerequisite" />
 			<xsd:field xpath="." />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:unitSkillPK" name="weaponGradeSkillBonusFKunitSkill">
-			<xsd:selector xpath="weaponGrade/weaponGradeSkillBonus" />
-			<xsd:field xpath="@unitSkillID" />
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="weaponGradeSkillBonusFKunitSkill1">
+			<xsd:selector xpath="weaponGrade/addsToSkill" />
+			<xsd:field xpath="addsToSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="weaponGradeSkillBonusFKunitSkill2">
+			<xsd:selector xpath="weaponGrade/addsToSkill" />
+			<xsd:field xpath="onlyVersusAttacksFromSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:pickPK" name="weaponGradeSkillBonusFKpick1">
+			<xsd:selector xpath="weaponGrade/addsToSkill" />
+			<xsd:field xpath="onlyVersusAttacksFromMagicRealmID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:pickPK" name="weaponGradeSkillBonusFKpick2">
+			<xsd:selector xpath="weaponGrade/addsToSkill" />
+			<xsd:field xpath="onlyAppliesToMagicRealmID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:rangedAttackTypePK" name="weaponGradeSkillBonusFKrangedAttackType">
+			<xsd:selector xpath="weaponGrade/addsToSkill" />
+			<xsd:field xpath="rangedAttackTypeID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:combatAreaEffectPK" name="tileTypeAreaEffectFKcombatAreaEffect">
 			<xsd:selector xpath="tileType/tileTypeAreaEffect" />
@@ -2504,7 +2515,6 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackTypeDetailedDescription" type="momimecommon:description" nxe:label="Detailed Description" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeDescription" type="momimecommon:languageText" nxe:label="Description" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="mithrilAndAdamantiumVersions" type="xsd:boolean" nxe:label="Mithril/Adam?" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="wooden" type="xsd:boolean" nxe:label="Wooden?">
 				<xsd:annotation>
 					<xsd:documentation>Literally this is "Can it be affected by Warp Wood spell".  Magic attacks and large boulders have false here.  Bows and slingshots have true.</xsd:documentation>
@@ -2571,7 +2581,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 					<xsd:documentation>Basically this indicates whether this weapon grade can punch through Weapon Immunity.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGradeSkillBonus" type="momimecommon:unitSkillAndValue" nxe:singular="Skill Bonus" nxe:plural="Skill Bonuses" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="addsToSkill" type="momimecommon:addsToSkill" />
 		</xsd:sequence>
 		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120" />
 	</xsd:complexType>

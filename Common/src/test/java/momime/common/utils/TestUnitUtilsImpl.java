@@ -749,17 +749,17 @@ public final class TestUnitUtilsImpl
 		
 		// RAT definition
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
-		rat.setMithrilAndAdamantiumVersions (true);
 		when (db.findRangedAttackType (eq ("RAT01"), anyString ())).thenReturn (rat);
 		
 		// Weapon grade definition
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		for (final String bonusSkillID : new String [] {"US001", CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK})
 		{
-			final UnitSkillAndValue weaponGradeBonus = new UnitSkillAndValue ();
-			weaponGradeBonus.setUnitSkillID (bonusSkillID);
-			weaponGradeBonus.setUnitSkillValue (2);
-			weaponGrade.getWeaponGradeSkillBonus ().add (weaponGradeBonus);
+			final AddsToSkill weaponGradeBonus = new AddsToSkill ();
+			weaponGradeBonus.setAddsToSkillID (bonusSkillID);
+			weaponGradeBonus.setAddsToSkillValue (2);
+			weaponGradeBonus.setAddsToSkillValueType (AddsToSkillValueType.ADD_FIXED);
+			weaponGrade.getAddsToSkill ().add (weaponGradeBonus);
 		}
 		
 		when (db.findWeaponGrade (eq (2), anyString ())).thenReturn (weaponGrade);
@@ -820,6 +820,7 @@ public final class TestUnitUtilsImpl
 		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setUnitDetailsUtils (unitDetailsUtils);
+		utils.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());		// Until these unit tests are made more modular
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, enemyUnits, null, null, players, mem, db);
@@ -902,17 +903,21 @@ public final class TestUnitUtilsImpl
 		
 		// RAT definition
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
-		rat.setMithrilAndAdamantiumVersions (false);		// <---
 		when (db.findRangedAttackType (eq ("RAT01"), anyString ())).thenReturn (rat);
 		
 		// Weapon grade definition
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		for (final String bonusSkillID : new String [] {"US001", CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK})
 		{
-			final UnitSkillAndValue weaponGradeBonus = new UnitSkillAndValue ();
-			weaponGradeBonus.setUnitSkillID (bonusSkillID);
-			weaponGradeBonus.setUnitSkillValue (2);
-			weaponGrade.getWeaponGradeSkillBonus ().add (weaponGradeBonus);
+			final AddsToSkill weaponGradeBonus = new AddsToSkill ();
+			weaponGradeBonus.setAddsToSkillID (bonusSkillID);
+			weaponGradeBonus.setAddsToSkillValue (2);
+			weaponGradeBonus.setAddsToSkillValueType (AddsToSkillValueType.ADD_FIXED);
+			
+			if (bonusSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+				weaponGradeBonus.setRangedAttackTypeID ("RAT02");		// <---
+			
+			weaponGrade.getAddsToSkill ().add (weaponGradeBonus);
 		}
 		
 		when (db.findWeaponGrade (eq (2), anyString ())).thenReturn (weaponGrade);
@@ -979,6 +984,7 @@ public final class TestUnitUtilsImpl
 		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		utils.setUnitDetailsUtils (unitDetailsUtils);
+		utils.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());		// Until these unit tests are made more modular
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);

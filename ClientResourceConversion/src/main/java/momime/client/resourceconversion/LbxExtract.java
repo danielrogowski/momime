@@ -90,7 +90,7 @@ public final class LbxExtract
 		} */
 		
 		for (int n = 0; n <= 7 ; n++)
-			convertImage ("RESOURCE.LBX", 79, n, "spells\\SP088\\overlay-frame" + (n+1));
+			convertImage ("RESOURCE.LBX", 80, n, "spells\\SP162\\overlay-frame" + (n+1));
 		
 		System.out.println ("All done!");
 	} 

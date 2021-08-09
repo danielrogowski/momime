@@ -82,6 +82,9 @@ public final class SpellTargettingEx extends SpellTargetting
 				languageText = getNoAmmunition ();
 				break;
 				
+			case TOO_MUCH_EXPERIENCE:
+				languageText = getTooMuchExperience ();
+				break;
 			 
 			default:
 				throw new MomException ("NewTurnMessagesEx.getUnitLanguageText doesn't know what to do with enum value " + targetSpellResult);

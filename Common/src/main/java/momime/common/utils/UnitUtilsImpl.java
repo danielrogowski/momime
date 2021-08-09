@@ -1320,6 +1320,36 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 	
 	/**
+	 * Used to stop casting Heroism on units that already have 120 exp naturally
+	 * 
+	 * @param xu Unit to test
+	 * @param unitSpellEffects List of unit skills to test
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit skills give a boost to experience, but the unit already has that much experience naturally
+	 * @throws RecordNotFoundException If we can't find definition for one of the skills
+	 * @throws MomException If the unit doesn't have an experience value (but checks for this, so should never happen)
+	 */
+	@Override
+	public final boolean isExperienceBonusAndWeAlreadyHaveTooMuch (final ExpandedUnitDetails xu, final List<UnitSpellEffect> unitSpellEffects, final CommonDatabase db)
+		throws RecordNotFoundException, MomException
+	{
+		boolean result = false;
+		
+		for (final UnitSpellEffect effect : unitSpellEffects)
+		{
+			final UnitSkillEx unitSkill = db.findUnitSkill (effect.getUnitSkillID (), "isExperienceBonusAndWeAlreadyHaveTooMuch");
+			for (final AddsToSkill addsToSkill : unitSkill.getAddsToSkill ())
+				if ((addsToSkill.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
+					(xu.hasBasicSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
+					(xu.getBasicSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE) >= addsToSkill.getAddsToSkillValue ()))
+					
+					result = true;
+		}
+		
+		return result;
+	}
+	
+	/**
 	 * @return Player pick utils
 	 */
 	public final PlayerPickUtils getPlayerPickUtils ()

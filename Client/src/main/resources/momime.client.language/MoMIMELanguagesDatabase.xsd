@@ -395,6 +395,10 @@
 						<xsd:selector xpath="noAmmunition" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellTargettingTooMuchExperiencePK">
+						<xsd:selector xpath="tooMuchExperience" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="spellTargettingCancelTitlePK">
 						<xsd:selector xpath="cancelTitle" />
 						<xsd:field xpath="@language" />
@@ -2703,6 +2707,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noRangedAttack" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidRangedAttackType" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noAmmunition" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="tooMuchExperience" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelText" />
 		</xsd:sequence>

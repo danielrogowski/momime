@@ -319,6 +319,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		
     		else if (!getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell, targetUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ()))
     			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
+
+    		else if ((unitSpellEffectRequired) && (getUnitUtils ().isExperienceBonusAndWeAlreadyHaveTooMuch (targetUnit, unitSpellEffects, db)))
+    			result = TargetSpellResult.TOO_MUCH_EXPERIENCE;
     		
     		// combatBaseDamage being not null is what identifies a special unit spell to be a healing spell
     		else if ((healingSpell) && (getUnitUtils ().getTotalDamageTaken (targetUnit.getUnitDamage ()) == 0)) 

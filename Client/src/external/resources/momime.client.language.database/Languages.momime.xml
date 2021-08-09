@@ -1084,6 +1084,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <noAmmunition language="en">
             <text>This unit already has no ammunition left.</text>
         </noAmmunition>
+        <tooMuchExperience language="en">
+            <text>This unit has already attained Elite or Commander experience level.</text>
+        </tooMuchExperience>
         <cancelTitle language="en">
             <text>Cancel Spell</text>
         </cancelTitle>

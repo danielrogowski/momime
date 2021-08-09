@@ -84,5 +84,8 @@ public enum TargetSpellResult
 	INVALID_RANGED_ATTACK_TYPE,
 	
 	/** Target has no ammunition left (Warp wood) */
-	NO_AMMUNITION;
+	NO_AMMUNITION,
+	
+	/** Target already has too much experience (Heroism) */
+	TOO_MUCH_EXPERIENCE;
 }

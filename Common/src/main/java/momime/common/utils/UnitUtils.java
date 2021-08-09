@@ -10,9 +10,12 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
+import momime.common.database.AddsToSkill;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -269,4 +272,17 @@ public interface UnitUtils
 	 */
 	public boolean isUnitImmuneToSpellEffects (final ExpandedUnitDetails xu, final List<UnitSpellEffect> unitSpellEffects, final CommonDatabase db)
 		throws RecordNotFoundException;
+
+	/**
+	 * Used to stop casting Heroism on units that already have 120 exp naturally
+	 * 
+	 * @param xu Unit to test
+	 * @param unitSpellEffects List of unit skills to test
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit skills give a boost to experience, but the unit already has that much experience naturally
+	 * @throws RecordNotFoundException If we can't find definition for one of the skills
+	 * @throws MomException If the unit doesn't have an experience value (but checks for this, so should never happen)
+	 */
+	public boolean isExperienceBonusAndWeAlreadyHaveTooMuch (final ExpandedUnitDetails xu, final List<UnitSpellEffect> unitSpellEffects, final CommonDatabase db)
+		throws RecordNotFoundException, MomException;
 }

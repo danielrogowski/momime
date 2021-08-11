@@ -102,7 +102,7 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 				break;
 
 			case "SPELL_REDUCTION":
-				text = "-" + getCurrentSpell ().getUnrestReduction ();
+				text = getTextUtils ().intToStrPlusMinus (-getCurrentSpell ().getUnrestReduction ());
 				break;
 				
 			default:

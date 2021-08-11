@@ -243,7 +243,8 @@ public final class TestCityViewUI extends ClientTestData
 		
 		final CityGrowthRateBreakdown cityGrowthBreakdown = new CityGrowthRateBreakdown ();
 		cityGrowthBreakdown.setCappedTotal (70);
-		when (calc.calculateCityGrowthRate (players, terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), maxCitySize, difficultyLevel, db)).thenReturn (cityGrowthBreakdown);
+		when (calc.calculateCityGrowthRate (players, terrain, fow.getBuilding (), fow.getMaintainedSpell (),
+			new MapCoordinates3DEx (20, 10, 0), maxCitySize, difficultyLevel, db)).thenReturn (cityGrowthBreakdown);
 		
 		// Display at least some landscape
 		final CityViewElement landscape = new CityViewElement ();

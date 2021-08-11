@@ -4714,9 +4714,10 @@ This is used to model the special -2 adjustment that Klackons get.  This is a li
 	<xsd:simpleType name="buildingUnrestReduction">
         <xsd:annotation>
         	<xsd:documentation>Number of (1000s of) people who are calmed by the presence of a particular type of building.
-This is a reduction value - so an Oracle with a calming effect of 2 is stored as +2 (a reduction of 2).</xsd:documentation>
+This is a reduction value - so an Oracle with a calming effect of 2 is stored as +2 (a reduction of 2).
+A negative value increases unrest (Dark Rituals).</xsd:documentation>
         </xsd:annotation>
-		<xsd:restriction base="xsd:unsignedShort" />
+		<xsd:restriction base="xsd:int" />
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="experiencePoints">

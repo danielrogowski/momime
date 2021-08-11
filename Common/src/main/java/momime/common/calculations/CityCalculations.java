@@ -92,6 +92,7 @@ public interface CityCalculations
 	 * @param players Players list
 	 * @param map Known terrain
 	 * @param buildings Known buildings
+	 * @param spells Known spells
 	 * @param cityLocation Location of the city to calculate for
 	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
 	 * @param difficultyLevel Chosen difficulty level, from session description
@@ -101,7 +102,8 @@ public interface CityCalculations
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
 	public CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
+		final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation,
+		final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 
 	/**

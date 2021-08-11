@@ -421,7 +421,8 @@ public final class CityViewUI extends MomClientFrameUI
 		
 			final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
 				(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize,
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), maxCitySize,
 				getClient ().getSessionDescription ().getDifficultyLevel (), getClient ().getClientDB ());
 
 			final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
@@ -1196,7 +1197,8 @@ public final class CityViewUI extends MomClientFrameUI
 				// Growth rate
 				final CityGrowthRateBreakdown cityGrowthBreakdown = getCityCalculations ().calculateCityGrowthRate
 					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize,
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), maxCitySize,
 					getClient ().getSessionDescription ().getDifficultyLevel (), getClient ().getClientDB ());
 			
 				final int cityGrowth = cityGrowthBreakdown.getCappedTotal ();

@@ -184,6 +184,12 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			
 			if (growing.getHousingPercentageBonus () > 0)
 				getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getHousing ()));
+
+			if (growing.getDarkRitualsPercentagLoss () > 0)
+				getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getDarkRituals ()));
+
+			if ((growing.getHousingPercentageBonus () > 0) || (growing.getDarkRitualsPercentagLoss () > 0))
+				getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getPercentageModifiers ()));
 			
 			// Special boost for AI players
 			if (growing.getDifficultyLevelMultiplier () != 100)

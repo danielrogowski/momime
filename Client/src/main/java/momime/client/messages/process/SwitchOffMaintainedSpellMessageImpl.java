@@ -120,6 +120,7 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 			{
 				getMagicSlidersUI ().spellsChanged ();
 				
+				// Update fame if cancelled Just Cause
 				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
 				{
 					final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID

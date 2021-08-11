@@ -592,15 +592,18 @@ public final class TestCityProcessingImpl extends ServerTestData
 		// City growth rate
 		final CityGrowthRateBreakdown humanGrowthRate = new CityGrowthRateBreakdown ();
 		humanGrowthRate.setCappedTotal (650);
-		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), humanLocation, humanCityMaxSize, difficultyLevel, db)).thenReturn (humanGrowthRate);
+		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			humanLocation, humanCityMaxSize, difficultyLevel, db)).thenReturn (humanGrowthRate);
 
 		final CityGrowthRateBreakdown aiGrowthRate = new CityGrowthRateBreakdown ();
 		aiGrowthRate.setCappedTotal (250);
-		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), aiLocation, aiCityMaxSize, difficultyLevel, db)).thenReturn (aiGrowthRate);
+		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			aiLocation, aiCityMaxSize, difficultyLevel, db)).thenReturn (aiGrowthRate);
 		
 		final CityGrowthRateBreakdown raidersGrowthRate = new CityGrowthRateBreakdown ();
 		raidersGrowthRate.setCappedTotal (400);
-		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), raidersLocation, raidersCityMaxSize, difficultyLevel, db)).thenReturn (raidersGrowthRate);
+		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			raidersLocation, raidersCityMaxSize, difficultyLevel, db)).thenReturn (raidersGrowthRate);
 
 		// Rebels in each city
 		final CityUnrestBreakdown humanRebels = new CityUnrestBreakdown ();

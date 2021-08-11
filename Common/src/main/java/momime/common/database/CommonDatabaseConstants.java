@@ -354,6 +354,9 @@ public final class CommonDatabaseConstants
 	
 	/** Block travel between planes */
 	public final static String SPELL_ID_PLANAR_SEAL = "SP135"; 
+
+	/** Dark Rituals spell */
+	public final static String SPELL_ID_DARK_RITUALS = "SP163";	
 	
 	/** Summoning circle spell */
 	public final static String SPELL_ID_SUMMONING_CIRCLE = "SP203";
@@ -366,7 +369,7 @@ public final class CommonDatabaseConstants
 	
 	/** Spell of Return has a lot of special rules - we are always blocked from casting it even when banished (server auto casts it for us), and can never cancel casting it */
 	public final static String SPELL_ID_SPELL_OF_RETURN = "SP214";
-	
+
 	// client graphics
 
 	/** Tile set for the overland map */

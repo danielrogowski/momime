@@ -1272,8 +1272,14 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>Łącznie = TOTAL_GROWTH_RATE ludzi na turę</text>
         </cityGrowthRateTotal>
         <housing language="en">
-            <text>Housing setting adds HOUSING_PERCENTAGE% * TOTAL_GROWTH_RATE = HOUSING_MODIFIER, for overall total of TOTAL_GROWTH_RATE_INCLUDING_HOUSING people per turn</text>
+            <text>Housing setting increases growth by HOUSING_PERCENTAGE%</text>
         </housing>
+        <darkRituals language="en">
+            <text>Dark Rituals reduces growth by DARK_RITUALS_PERCENTAGE%</text>
+        </darkRituals>
+        <percentageModifiers language="en">
+            <text>PERCENTAGE_MODIFIERS_PERCENTAGE% * TOTAL_GROWTH_RATE = PERCENTAGE_MODIFIERS, for overall total of TOTAL_GROWTH_RATE_INCLUDING_PERCENTAGE_MODIFIERS people per turn</text>
+        </percentageModifiers>
         <difficultyLevelMultiplier language="en">
             <text>AI player gets difficulty level multiplier TOTAL_GROWTH_RATE_INCLUDING_HOUSING * AI_POPULATION_GROWTH_RATE_MULTIPLIER% = TOTAL_GROWTH_RATE_ADJUSTED_FOR_DIFFICULTY_LEVEL</text>
         </difficultyLevelMultiplier>

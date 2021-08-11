@@ -254,6 +254,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		// Update other screens
 		getMagicSlidersUI ().spellsChanged ();
 		
+		// Update fame if cast Just Cause
 		if (getAddSpellMessage ().getMaintainedSpell ().getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
 			getWizardsUI ().wizardUpdated (player);
 		

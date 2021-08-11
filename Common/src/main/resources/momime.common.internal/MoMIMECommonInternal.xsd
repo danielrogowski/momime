@@ -56,14 +56,19 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 							<xsd:documentation>If city production is set to "Housing", this is the percentage bonus calculated from the number of workers and types of buildings present</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="1" maxOccurs="1" name="housingModifier" type="momimecommon:percentage">
+					<xsd:element minOccurs="1" maxOccurs="1" name="darkRitualsPercentagLoss" type="momimecommon:percentage">
 						<xsd:annotation>
-							<xsd:documentation>Housing modifier = Total growth rate * Housing percentage bonus, rounded down to the nearest 10</xsd:documentation>
+							<xsd:documentation>If city has Dark Rituals cast on it, this is fixed at 25%</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRateIncludingHousingModifier" type="momimecommon:cityPopulationGrowthRate">
+					<xsd:element minOccurs="1" maxOccurs="1" name="percentageModifiers" type="momimecommon:percentage">
 						<xsd:annotation>
-							<xsd:documentation>Total growth rate + Housing Modifier</xsd:documentation>
+							<xsd:documentation>Percentage modifiers = Total growth rate * (Housing bonus - Dark Rituals loss) , rounded down to the nearest 10</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRateIncludingPercentageModifiers" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Total growth rate + Percentage modifiers</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevelMultiplier" type="momimecommon:uncappedPercentage">
@@ -73,7 +78,7 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRateAdjustedForDifficultyLevel" type="momimecommon:cityPopulationGrowthRate">
 						<xsd:annotation>
-							<xsd:documentation>Total growth rate including housing modifier, multiplied up according to difficulty level for AI players</xsd:documentation>
+							<xsd:documentation>Total growth rate including percentage modifiers, multiplied up according to difficulty level for AI players</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>
@@ -124,7 +129,7 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="unrestReduction" type="momimecommon:buildingUnrestReduction">
 				<xsd:annotation>
-					<xsd:documentation>How much unrest the spell reduces - stored as a positive value.</xsd:documentation>
+					<xsd:documentation>How much unrest the spell reduces - a positive value is a beneficial reduction to unrest; a negative value increases unrest.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>

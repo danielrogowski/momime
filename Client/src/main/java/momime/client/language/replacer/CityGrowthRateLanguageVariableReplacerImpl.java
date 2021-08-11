@@ -82,21 +82,41 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 					text = null;
 				break;
 				
-			case "HOUSING_MODIFIER":
+			case "DARK_RITUALS_PERCENTAGE":
 				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
 				{
 					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
-					text = getTextUtils ().intToStrPlusMinus (growing.getHousingModifier ());
+					text = Integer.valueOf (growing.getDarkRitualsPercentagLoss ()).toString ();
+				}
+				else
+					text = null;
+				break;
+
+			case "PERCENTAGE_MODIFIERS_PERCENTAGE":
+				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
+				{
+					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
+					text = Integer.valueOf (growing.getHousingPercentageBonus () - growing.getDarkRitualsPercentagLoss ()).toString ();
 				}
 				else
 					text = null;
 				break;
 				
-			case "TOTAL_GROWTH_RATE_INCLUDING_HOUSING":
+			case "PERCENTAGE_MODIFIERS":
 				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
 				{
 					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
-					text = getTextUtils ().intToStrPlusMinus (growing.getTotalGrowthRateIncludingHousingModifier ());
+					text = getTextUtils ().intToStrPlusMinus (growing.getPercentageModifiers ());
+				}
+				else
+					text = null;
+				break;
+				
+			case "TOTAL_GROWTH_RATE_INCLUDING_PERCENTAGE_MODIFIERS":
+				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
+				{
+					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
+					text = getTextUtils ().intToStrPlusMinus (growing.getTotalGrowthRateIncludingPercentageModifiers ());
 				}
 				else
 					text = null;

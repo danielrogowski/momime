@@ -405,6 +405,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @param players Players list
 	 * @param map Known terrain
 	 * @param buildings Known buildings
+	 * @param spells Known spells
 	 * @param cityLocation Location of the city to calculate for
 	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
 	 * @param difficultyLevel Chosen difficulty level, from session description
@@ -415,7 +416,8 @@ public final class CityCalculationsImpl implements CityCalculations
 	 */
 	@Override
 	public final CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
+		final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation,
+		final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
@@ -478,24 +480,35 @@ public final class CityCalculationsImpl implements CityCalculations
 							housingPercentage = housingPercentage + housingPercentageBonus;
 					}
 				
-				// Now can add it on
 				growing.setHousingPercentageBonus (housingPercentage);
-				growing.setHousingModifier ((growing.getTotalGrowthRate () * housingPercentage / 1000) * 10);
-				growing.setTotalGrowthRateIncludingHousingModifier (growing.getTotalGrowthRate () + growing.getHousingModifier ());
+			}
+			
+			// Dark rituals
+			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_DARK_RITUALS,
+				null, null, cityLocation, null) != null)
+				
+				growing.setDarkRitualsPercentagLoss (25);
+			
+			// Add on (or substract) percentage modifiers
+			final int percentageBonuses = growing.getHousingPercentageBonus () - growing.getDarkRitualsPercentagLoss ();
+			if (percentageBonuses != 0)
+			{
+				growing.setPercentageModifiers ((growing.getTotalGrowthRate () * percentageBonuses / 1000) * 10);
+				growing.setTotalGrowthRateIncludingPercentageModifiers (growing.getTotalGrowthRate () + growing.getPercentageModifiers ());
 			}
 			else
-				growing.setTotalGrowthRateIncludingHousingModifier (growing.getTotalGrowthRate ());
+				growing.setTotalGrowthRateIncludingPercentageModifiers (growing.getTotalGrowthRate ());
 			
 			// AI players get a special bonus
 			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");
 			final MomPersistentPlayerPublicKnowledge cityOwnerPub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
-			if ((cityOwner.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingHousingModifier () <= 0))
+			if ((cityOwner.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingPercentageModifiers () <= 0))
 				growing.setDifficultyLevelMultiplier (100);
 			else
 				growing.setDifficultyLevelMultiplier (PlayerKnowledgeUtils.isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier () :
 					difficultyLevel.getAiRaidersPopulationGrowthRateMultiplier ());
 
-			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingHousingModifier () * growing.getDifficultyLevelMultiplier ()) / 100);
+			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingPercentageModifiers () * growing.getDifficultyLevelMultiplier ()) / 100);
 			growing.setInitialTotal (growing.getTotalGrowthRateAdjustedForDifficultyLevel ());
 			breakdown = growing;
 		}
@@ -674,6 +687,18 @@ public final class CityCalculationsImpl implements CityCalculations
 			final CityUnrestBreakdownSpell spellBreakdown = new CityUnrestBreakdownSpell ();
 			spellBreakdown.setSpellID (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE);
 			spellBreakdown.setUnrestReduction (1);
+			breakdown.getSpellReducingUnrest ().add (spellBreakdown);
+		}
+		
+		// Unrest increase from spells
+		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_DARK_RITUALS,
+			null, null, cityLocation, null) != null)
+		{
+			spellsUnrestReduction--;
+			
+			final CityUnrestBreakdownSpell spellBreakdown = new CityUnrestBreakdownSpell ();
+			spellBreakdown.setSpellID (CommonDatabaseConstants.SPELL_ID_DARK_RITUALS);
+			spellBreakdown.setUnrestReduction (-1);
 			breakdown.getSpellReducingUnrest ().add (spellBreakdown);
 		}
 

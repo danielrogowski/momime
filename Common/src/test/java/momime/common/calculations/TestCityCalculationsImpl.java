@@ -1911,6 +1911,9 @@ public final class TestCityCalculationsImpl
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -1943,7 +1946,7 @@ public final class TestCityCalculationsImpl
 		// c) people eating food
 		// d) gold from taxes
 		final CityProductionBreakdownsEx baseNoPeople = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, false, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, false, false, db);
 		assertEquals (4, baseNoPeople.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, baseNoPeople.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (8, baseNoPeople.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -1971,7 +1974,7 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, baseNoPeople.getProductionType ().get (3).getConsumptionAmount ());
 
 		final CityProductionBreakdownsEx baseWithPeople = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (4, baseWithPeople.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, baseWithPeople.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, baseWithPeople.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2015,7 +2018,7 @@ public final class TestCityCalculationsImpl
 		when (playerPickUtils.countPicksOfType (ppk.getPick (), "B", true, db)).thenReturn (8);
 
 		final CityProductionBreakdownsEx fortress = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (5, fortress.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, fortress.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, fortress.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2053,7 +2056,7 @@ public final class TestCityCalculationsImpl
 		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (2, 2, 1), "BL02")).thenReturn (new MemoryBuilding ());
 
 		final CityProductionBreakdownsEx sawmill = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (6, sawmill.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, sawmill.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, sawmill.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2097,7 +2100,7 @@ public final class TestCityCalculationsImpl
 		map.getPlane ().get (1).getRow ().get (1).getCell ().get (3).getTerrainData ().setMapFeatureID ("MF03");
 
 		final CityProductionBreakdownsEx minerals = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (6, minerals.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, minerals.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, minerals.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2140,7 +2143,7 @@ public final class TestCityCalculationsImpl
 		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (2, 2, 1), "BL03")).thenReturn (new MemoryBuilding ());
 		
 		final CityProductionBreakdownsEx minersGuild = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, minersGuild.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, minersGuild.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, minersGuild.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2183,7 +2186,7 @@ public final class TestCityCalculationsImpl
 		cityData.setCityRaceID ("RC02");
 
 		final CityProductionBreakdownsEx dwarves = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, dwarves.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, dwarves.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, dwarves.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2226,7 +2229,7 @@ public final class TestCityCalculationsImpl
 		cityData.setCityRaceID ("RC03");
 
 		final CityProductionBreakdownsEx highElves = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, highElves.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, highElves.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, highElves.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2281,7 +2284,7 @@ public final class TestCityCalculationsImpl
 		pd.setHuman (false);
 
 		final CityProductionBreakdownsEx aiHighElves = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, aiHighElves.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, aiHighElves.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (40, aiHighElves.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2341,7 +2344,7 @@ public final class TestCityCalculationsImpl
 		cityData.setNumberOfRebels (1);		// 6 -1 -1 -1 = 3 workers
 
 		final CityProductionBreakdownsEx shrunk = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, shrunk.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, shrunk.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (16, shrunk.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2391,7 +2394,7 @@ public final class TestCityCalculationsImpl
 		}
 
 		final CityProductionBreakdownsEx maxSize = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, maxSize.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, maxSize.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (36, maxSize.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2438,7 +2441,7 @@ public final class TestCityCalculationsImpl
 		
 		cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_TRADE_GOODS);
 		final CityProductionBreakdownsEx tradeGoods = calc.calculateAllCityProductions
-			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+			(players, map, buildings, spells, cityLocation, "TR01", sd, true, false, db);
 		assertEquals (7, tradeGoods.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, tradeGoods.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (36, tradeGoods.getProductionType ().get (0).getDoubleProductionAmount ());
@@ -2549,6 +2552,9 @@ public final class TestCityCalculationsImpl
 		// Buildings
 		final List<MemoryBuilding> memoryBuildings = new ArrayList<MemoryBuilding> ();
 		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
 		// Put 3 of the 'food' tiles, 5 of the 'both' files and 3 of the 'production' tiles
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (overlandMapSize);
 		
@@ -2572,7 +2578,8 @@ public final class TestCityCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// At the moment there's space for 7,000 people, so the gold trade bonus from the tile type is 30 so this is less than the 36 cap
-		final CityProductionBreakdownsEx prod1 = calc.calculateAllCityProductions (players, map, memoryBuildings, new MapCoordinates3DEx (2, 2, 0), "TR01", sd, false, true, db);
+		final CityProductionBreakdownsEx prod1 = calc.calculateAllCityProductions (players, map, memoryBuildings, spells,
+			new MapCoordinates3DEx (2, 2, 0), "TR01", sd, false, true, db);
 		assertEquals (3, prod1.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, prod1.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (14, prod1.getProductionType ().get (0).getPercentageBonus ());
@@ -2584,7 +2591,8 @@ public final class TestCityCalculationsImpl
 		// Increase the gold trade bonus to 40, so it gets capped at 36
 		bothTile.setGoldBonus (40);
 
-		final CityProductionBreakdownsEx prod2 = calc.calculateAllCityProductions (players, map, memoryBuildings, new MapCoordinates3DEx (2, 2, 0), "TR01", sd, false, true, db);
+		final CityProductionBreakdownsEx prod2 = calc.calculateAllCityProductions (players, map, memoryBuildings, spells,
+			new MapCoordinates3DEx (2, 2, 0), "TR01", sd, false, true, db);
 		assertEquals (3, prod2.getProductionType ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, prod2.getProductionType ().get (0).getProductionTypeID ());
 		assertEquals (14, prod2.getProductionType ().get (0).getPercentageBonus ());
@@ -2799,6 +2807,9 @@ public final class TestCityCalculationsImpl
 
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2824,7 +2835,7 @@ public final class TestCityCalculationsImpl
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// 20 production - 17 consumption = 3
-		assertEquals (3, calc.calculateSingleCityProduction (players, map, buildings, cityLocation,
+		assertEquals (3, calc.calculateSingleCityProduction (players, map, buildings, spells, cityLocation,
 			"TR01", sd, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS));
 	}
 

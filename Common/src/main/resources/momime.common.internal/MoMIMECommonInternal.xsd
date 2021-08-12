@@ -382,6 +382,18 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:complexType name="cityProductionBreakdownSpell">
+		<xsd:annotation>
+			<xsd:documentation>This is used pretty rarely.  Upkeep from spells cast on the city isn't counted as city consumption as the upkeep from all spells
+is just handled in one hit in "recalculateAmountsPerTurn" no matter what the spell is cast on.  This is only used for things like Dark Rituals where
+the spell itself actually generates a resource for the city.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmount" type="momimecommon:doubledProductionValue" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 	<xsd:complexType name="cityProductionBreakdown">
 		<xsd:annotation>
 			<xsd:documentation>Stores all the production, production % bonus and/or consumption values along with totals for a single production type.</xsd:documentation>
@@ -393,6 +405,7 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="populationTaskProduction" type="momimeinternal:cityProductionBreakdownPopulationTask" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypeProduction" type="momimeinternal:cityProductionBreakdownPickType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingBreakdown" type="momimeinternal:cityProductionBreakdownBuilding" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellBreakdown" type="momimeinternal:cityProductionBreakdownSpell" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="fortressPlane" type="momimecommon:planeNumber" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmountFortressPlane" type="momimecommon:doubledProductionValue">
 				<xsd:annotation>

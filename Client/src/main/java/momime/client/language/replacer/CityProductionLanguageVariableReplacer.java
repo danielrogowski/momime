@@ -5,6 +5,7 @@ import momime.common.internal.CityProductionBreakdownBuilding;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
 import momime.common.internal.CityProductionBreakdownPopulationTask;
+import momime.common.internal.CityProductionBreakdownSpell;
 import momime.common.internal.CityProductionBreakdownTileType;
 
 /**
@@ -32,6 +33,11 @@ public interface CityProductionLanguageVariableReplacer extends BreakdownLanguag
 	 */
 	public void setCurrentBuilding (final CityProductionBreakdownBuilding building);
 
+	/**
+	 * @param spell Spell specific breakdown
+	 */
+	public void setCurrentSpell (final CityProductionBreakdownSpell spell);
+	
 	/**
 	 * @param pickType Pick type specific breakdown
 	 */

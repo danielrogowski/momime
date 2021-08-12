@@ -48,6 +48,7 @@ import momime.common.internal.CityProductionBreakdownBuilding;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
 import momime.common.internal.CityProductionBreakdownPopulationTask;
+import momime.common.internal.CityProductionBreakdownSpell;
 import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
@@ -838,13 +839,16 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @param building The building to calculate for
 	 * @param picks The list of spell picks belonging to the player who owns the city that this building is in
 	 * @param db Lookup lists built over the XML database
+	 * @return Production (magic power) from religious buildings
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	final void addProductionAndConsumptionFromBuilding (final CityProductionBreakdownsEx productionValues,
+	final int addProductionAndConsumptionFromBuilding (final CityProductionBreakdownsEx productionValues,
 		final Building building, final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
+		int doubleTotalFromReligiousBuildings = 0;
+		
 		// Go through each type of production/consumption from this building
 		for (final BuildingPopulationProductionModifier thisProduction : building.getBuildingPopulationProductionModifier ())
 
@@ -864,7 +868,8 @@ public final class CityCalculationsImpl implements CityCalculations
 				{
 					// Bonus from retorts?
 					final int totalReligiousBuildingBonus;
-					if ((picks != null) && (building.isBuildingUnrestReductionImprovedByRetorts () != null) && (building.isBuildingUnrestReductionImprovedByRetorts ()))
+					final boolean isReligiousBuilding = ((picks != null) && (building.isBuildingUnrestReductionImprovedByRetorts () != null) && (building.isBuildingUnrestReductionImprovedByRetorts ()));
+					if (isReligiousBuilding)
 						totalReligiousBuildingBonus = getPlayerPickUtils ().totalReligiousBuildingBonus (picks, db);
 					else
 						totalReligiousBuildingBonus = 0;
@@ -881,6 +886,10 @@ public final class CityCalculationsImpl implements CityCalculations
 					
 					if (totalReligiousBuildingBonus > 0)
 						buildingBreakdown.getPickIdContributingToReligiousBuildingBonus ().addAll (getPlayerPickUtils ().pickIdsContributingToReligiousBuildingBonus (picks, db));
+					
+					// Need this even if religious building bonus is 0
+					if (isReligiousBuilding)
+						doubleTotalFromReligiousBuildings = doubleTotalFromReligiousBuildings + amountAfterReligiousBuildingBonus;
 				}
 
 				// Consumption?
@@ -919,6 +928,8 @@ public final class CityCalculationsImpl implements CityCalculations
 					breakdown.setPercentageBonus (breakdown.getPercentageBonus () + buildingBreakdown.getPercentageBonus ());
 				}
 			}
+		
+		return doubleTotalFromReligiousBuildings;
 	}
 	
 	/**
@@ -1016,6 +1027,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @param players Pre-locked players list
 	 * @param map Known terrain
 	 * @param buildings List of known buildings
+	 * @param spells List of known spells
 	 * @param cityLocation Location of the city to calculate for; NB. It must be possible to call this on a map location which is not yet a city, so the AI can consider potential sites
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
@@ -1031,7 +1043,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 */
 	@Override
 	public final CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
 		final boolean calculatePotential, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
@@ -1104,6 +1116,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		}
 
 		// Production from and Maintenance of buildings
+		int doubleTotalFromReligiousBuildings = 0;
 		for (final Building thisBuilding : db.getBuilding ())
 			
 			// If calculatePotential is true, assume we've built everything
@@ -1124,8 +1137,21 @@ public final class CityCalculationsImpl implements CityCalculations
 				// Regular building
 				// Do not count buildings with a pending sale
 				else if (!thisBuilding.getBuildingID ().equals (mc.getBuildingIdSoldThisTurn ()))
-					addProductionAndConsumptionFromBuilding (productionValues, thisBuilding, cityOwnerPicks, db);
+					doubleTotalFromReligiousBuildings = doubleTotalFromReligiousBuildings + addProductionAndConsumptionFromBuilding (productionValues, thisBuilding, cityOwnerPicks, db);
 			}
+		
+		// Dark rituals
+		if ((doubleTotalFromReligiousBuildings > 0) && (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, null,
+			CommonDatabaseConstants.SPELL_ID_DARK_RITUALS, null, null, cityLocation, null) != null))
+		{
+			final CityProductionBreakdownSpell spellBreakdown = new CityProductionBreakdownSpell ();
+			spellBreakdown.setSpellID (CommonDatabaseConstants.SPELL_ID_DARK_RITUALS);
+			spellBreakdown.setDoubleProductionAmount (doubleTotalFromReligiousBuildings);
+			
+			final CityProductionBreakdown magicPowerBreakdown = productionValues.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+			magicPowerBreakdown.getSpellBreakdown ().add (spellBreakdown);
+			magicPowerBreakdown.setDoubleProductionAmount (magicPowerBreakdown.getDoubleProductionAmount () + doubleTotalFromReligiousBuildings);
+		}
 
 		// Maintenance cost of city enchantment spells
 		// Left this out - its commented out in the Delphi code as well due to the fact that
@@ -1243,6 +1269,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @param players Pre-locked players list
 	 * @param map Known terrain
 	 * @param buildings List of known buildings
+	 * @param spells List of known spells
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
@@ -1256,7 +1283,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 */
 	@Override
 	public final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd,
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
@@ -1264,7 +1291,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// This is a right pain - ideally we want a cut down routine that scans only for this production type - however the Miners' Guild really
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
 		// So just do this the long way and then throw away all the other results
-		final CityProductionBreakdownsEx productionValues = calculateAllCityProductions (players, map, buildings, cityLocation, taxRateID, sd,
+		final CityProductionBreakdownsEx productionValues = calculateAllCityProductions (players, map, buildings, spells, cityLocation, taxRateID, sd,
 			includeProductionAndConsumptionFromPopulation, false, db);		// calculatePotential fixed at false
 
 		final CityProductionBreakdown singleProductionValue = productionValues.findProductionType (productionTypeID);

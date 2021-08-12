@@ -112,7 +112,7 @@ public final class CityAIImpl implements CityAI
 	{
 		Integer thisCityQuality;
 		
-		final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions (null, knownMap, null, cityLocation, null, sd, false, true, db);
+		final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions (null, knownMap, null, null, cityLocation, null, sd, false, true, db);
 		final CityProductionBreakdown foodProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		final int maxCitySize = (foodProduction != null) ? foodProduction.getCappedProductionAmount () : 0;
 		
@@ -327,7 +327,7 @@ public final class CityAIImpl implements CityAI
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 						rationsNeeded = rationsNeeded - getCityCalculations ().calculateSingleCityProduction (players, trueMap.getMap (),
-							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, db,
+							trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, true, db,
 							CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 					}
 				}
@@ -723,7 +723,8 @@ public final class CityAIImpl implements CityAI
 									// Found something we could rush buy - now how much production does this city generate by itself?
 									final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 									final int thisProductionPerTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), priv.getFogOfWarMemory ().getMap (),
-										priv.getFogOfWarMemory ().getBuilding (), cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), true, mom.getServerDB (),
+										priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMaintainedSpell (),
+										cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), true, mom.getServerDB (),
 										CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 									
 									if ((lowestProductionPerTurn == null) || (thisProductionPerTurn < lowestProductionPerTurn))

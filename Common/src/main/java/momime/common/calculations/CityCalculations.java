@@ -140,6 +140,7 @@ public interface CityCalculations
 	 * @param players Pre-locked players list
 	 * @param map Known terrain
 	 * @param buildings List of known buildings
+	 * @param spells List of known spells
 	 * @param cityLocation Location of the city to calculate for; NB. It must be possible to call this on a map location which is not yet a city, so the AI can consider potential sites
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
@@ -154,7 +155,7 @@ public interface CityCalculations
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
 		final boolean calculatePotential, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
@@ -163,6 +164,7 @@ public interface CityCalculations
 	 * @param players Pre-locked players list
 	 * @param map Known terrain
 	 * @param buildings List of known buildings
+	 * @param spells List of known spells
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
@@ -175,7 +177,7 @@ public interface CityCalculations
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd,
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;

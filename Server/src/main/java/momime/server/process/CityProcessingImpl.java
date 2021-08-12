@@ -256,7 +256,8 @@ public final class CityProcessingImpl implements CityProcessing
 				cityCell.getTerrainData ().setRoadTileTypeID (roadTileTypeID);
 				
 				// Do initial calculations on the city
-				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db);
+				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (),
+					gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, sd, db);
 
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 
@@ -433,7 +434,8 @@ public final class CityProcessingImpl implements CityProcessing
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 						final CityProductionBreakdownsEx cityProductions = getCityCalculations ().calculateAllCityProductions
-							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, false, db);
+							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (),
+								cityLocation, priv.getTaxRateID (), sd, true, false, db);
 
 						// Use calculated values to determine construction rate
 						if ((cityData.getCurrentlyConstructingBuildingID () != null) || (cityData.getCurrentlyConstructingUnitID () != null))
@@ -558,7 +560,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 							// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change
 							getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers
-								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db);
+								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, sd, db);
 
 							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
 								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (),
@@ -655,7 +657,8 @@ public final class CityProcessingImpl implements CityProcessing
 				getMemoryBuildingUtils ().goldFromSellingBuilding (building));
 
 			// The sold building might have been producing rations or stemming unrest so had better recalculate everything
-			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
+			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (),
+				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db);
 
 			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (),
 				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
@@ -800,7 +803,8 @@ public final class CityProcessingImpl implements CityProcessing
 		tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 		
 		// AI players generate more resources - which includes rations - so minimum farmers can actually change when a city changes owner
-		getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
+		getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (),
+			trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db);
 		
 		// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
 		tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels

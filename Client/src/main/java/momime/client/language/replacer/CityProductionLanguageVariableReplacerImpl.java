@@ -7,6 +7,7 @@ import momime.common.internal.CityProductionBreakdownBuilding;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
 import momime.common.internal.CityProductionBreakdownPopulationTask;
+import momime.common.internal.CityProductionBreakdownSpell;
 import momime.common.internal.CityProductionBreakdownTileType;
 
 /**
@@ -25,6 +26,9 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	
 	/** Building specific breakdown */
 	private CityProductionBreakdownBuilding currentBuilding;
+	
+	/** Spell specific breakdown */
+	private CityProductionBreakdownSpell currentSpell;
 	
 	/** Pick type specific breakdown */
 	private CityProductionBreakdownPickType currentPickType;
@@ -272,7 +276,16 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 			case "BUILDING_CONSUMPTION":
 				text = Integer.valueOf (getCurrentBuilding ().getConsumptionAmount ()).toString ();
 				break;
+				
+			// Dependant on current spell
+			case "SPELL_NAME":
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getCurrentSpell ().getSpellID (), "determineVariableValue").getSpellName ());
+				break;
 
+			case "SPELL_PRODUCTION":
+				text = getTextUtils ().halfIntToStr (getCurrentSpell ().getDoubleProductionAmount ());
+				break;
+				
 			// Dependant on current pick type
 			case "PICK_TYPE":
 				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPickType
@@ -363,6 +376,23 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	public final void setCurrentBuilding (final CityProductionBreakdownBuilding building)
 	{
 		currentBuilding = building;
+	}
+
+	/**
+	 * @return Spell specific breakdown
+	 */
+	public final CityProductionBreakdownSpell getCurrentSpell ()
+	{
+		return currentSpell;
+	}
+
+	/**
+	 * @param s Spell specific breakdown
+	 */
+	@Override
+	public final void setCurrentSpell (final CityProductionBreakdownSpell s)
+	{
+		currentSpell = s;
 	}
 
 	/**

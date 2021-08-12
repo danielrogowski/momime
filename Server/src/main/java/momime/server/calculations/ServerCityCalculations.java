@@ -13,6 +13,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 
@@ -50,6 +51,7 @@ public interface ServerCityCalculations
 	 * @param players Pre-locked list of players in the game
 	 * @param map True terrain
 	 * @param buildings True list of buildings
+	 * @param spells True list of spells
 	 * @param cityLocation Location of the city to update
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
@@ -58,8 +60,8 @@ public interface ServerCityCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 */
 	public void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
+		final MapCoordinates3DEx cityLocation, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**

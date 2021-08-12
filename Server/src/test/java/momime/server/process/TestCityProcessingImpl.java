@@ -393,7 +393,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Check calcs were done
 		verify (serverCityCalc, times (4)).calculateCitySizeIDAndMinimumFarmers (eq (players), eq (trueTerrain), eq (trueMap.getBuilding ()),
-			any (MapCoordinates3DEx.class), eq (sd), eq (db));
+			eq (trueMap.getMaintainedSpell ()), any (MapCoordinates3DEx.class), eq (sd), eq (db));
 		
 		verify (serverCityCalc, times (4)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
@@ -565,7 +565,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final CityProductionBreakdownsEx humanCityProductions = new CityProductionBreakdownsEx ();
 		humanCityProductions.getProductionType ().add (humanCityMaxSizeContainer);
 		humanCityProductions.getProductionType ().add (humanProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), humanLocation, "TR01", sd, true, false, db)).thenReturn (humanCityProductions);
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			humanLocation, "TR01", sd, true, false, db)).thenReturn (humanCityProductions);
 
 		final CityProductionBreakdown aiCityMaxSizeContainer = new CityProductionBreakdown ();
 		aiCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -576,7 +577,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final CityProductionBreakdownsEx aiCityProductions = new CityProductionBreakdownsEx ();
 		aiCityProductions.getProductionType ().add (aiCityMaxSizeContainer);
 		aiCityProductions.getProductionType ().add (aiProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), aiLocation, "TR02", sd, true, false, db)).thenReturn (aiCityProductions);
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			aiLocation, "TR02", sd, true, false, db)).thenReturn (aiCityProductions);
 		
 		final CityProductionBreakdown raidersCityMaxSizeContainer = new CityProductionBreakdown ();
 		raidersCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -587,7 +589,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final CityProductionBreakdownsEx raidersCityProductions = new CityProductionBreakdownsEx ();
 		raidersCityProductions.getProductionType ().add (raidersCityMaxSizeContainer);
 		raidersCityProductions.getProductionType ().add (raidersProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), raidersLocation, "TR03", sd, true, false, db)).thenReturn (raidersCityProductions);
+		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			raidersLocation, "TR03", sd, true, false, db)).thenReturn (raidersCityProductions);
 		
 		// City growth rate
 		final CityGrowthRateBreakdown humanGrowthRate = new CityGrowthRateBreakdown ();
@@ -675,7 +678,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Check calcs were done
 		verify (serverCityCalc, times (3)).calculateCitySizeIDAndMinimumFarmers (eq (players), eq (trueTerrain), eq (trueMap.getBuilding ()),
-			any (MapCoordinates3DEx.class), eq (sd), eq (db));
+			eq (trueMap.getMaintainedSpell ()), any (MapCoordinates3DEx.class), eq (sd), eq (db));
 		
 		verify (serverCityCalc, times (3)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
@@ -775,7 +778,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, granary.getBuildingURN (), true, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
-		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
+		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
+			trueMap.getMaintainedSpell (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
 	}
@@ -872,7 +876,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, granary.getBuildingURN (), false, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
-		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
+		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
+			trueMap.getMaintainedSpell (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
 	}
@@ -969,7 +974,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, granary.getBuildingURN (), true, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
-		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
+		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
+			trueMap.getMaintainedSpell (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
 	}

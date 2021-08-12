@@ -239,7 +239,8 @@ public final class TestCityViewUI extends ClientTestData
 		productions.getProductionType ().add (rationsProd);
 		productions.getProductionType ().add (goldProd);
 		
-		when (calc.calculateAllCityProductions (client.getPlayers (), terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), "TR01", sd, true, false, db)).thenReturn (productions);
+		when (calc.calculateAllCityProductions (client.getPlayers (), terrain, fow.getBuilding (), fow.getMaintainedSpell (),
+			new MapCoordinates3DEx (20, 10, 0), "TR01", sd, true, false, db)).thenReturn (productions);
 		
 		final CityGrowthRateBreakdown cityGrowthBreakdown = new CityGrowthRateBreakdown ();
 		cityGrowthBreakdown.setCappedTotal (70);

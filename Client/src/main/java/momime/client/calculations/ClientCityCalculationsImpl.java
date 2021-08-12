@@ -33,6 +33,7 @@ import momime.common.internal.CityProductionBreakdownBuilding;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
 import momime.common.internal.CityProductionBreakdownPopulationTask;
+import momime.common.internal.CityProductionBreakdownSpell;
 import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
@@ -303,6 +304,13 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			// Consumption from buildings, mainly gold maintenance
 			if (buildingProduction.getConsumptionAmount () > 0)
 				consumptionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getBuildingConsumption ())));
+		}
+		
+		// Production from spells
+		for (final CityProductionBreakdownSpell spellProduction : calc.getSpellBreakdown ())
+		{
+			getProductionReplacer ().setCurrentSpell (spellProduction);
+			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSpell ())));
 		}
 		
 		// Production from how many books we have at our wizards' fortress

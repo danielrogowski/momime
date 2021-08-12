@@ -21,6 +21,7 @@ import momime.common.database.RacePopulationTask;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -108,6 +109,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	 * @param players Pre-locked list of players in the game
 	 * @param map True terrain
 	 * @param buildings True list of buildings
+	 * @param spells True list of spells
 	 * @param cityLocation Location of the city to update
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
@@ -117,8 +119,8 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	 */
 	@Override
 	public final void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
+		final MapCoordinates3DEx cityLocation, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
@@ -148,7 +150,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
 		final int rationsNeeded = (cityData.getCityPopulation () / 1000) - getCityCalculations ().calculateSingleCityProduction
-			(players, map, buildings, cityLocation, priv.getTaxRateID (), sd, false,
+			(players, map, buildings, spells, cityLocation, priv.getTaxRateID (), sd, false,
 				db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 
 		// See if we need any farmers at all

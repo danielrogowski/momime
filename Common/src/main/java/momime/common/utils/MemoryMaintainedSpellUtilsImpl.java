@@ -249,6 +249,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * In Delphi code this is named isUnitValidTargetForCombatSpell, but took "combat" word out here since its used for validating overland targets as well.
 	 * 
 	 * @param spell Spell being cast
+	 * @param overrideSpellBookSection Usually null; filled in when a spell is of one type, but has a specially coded secondary effect of another type
+	 *		For example Wall of Fire is a city enchantment for placing it, but then when we roll for damage we have to treat it like an attack spell 
 	 * @param combatLocation The location that the combat is taking place; null for targetting overland spells
 	 * @param castingPlayerID Player casting the spell
 	 * @param castingUnit Unit casting the spell, if its a hero casting a spell or using a spell imbued into an item, or a creature like Giant Spiders casting web; null if wizard casting
@@ -262,16 +264,17 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
-	public final TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation,
+	public final TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final SpellBookSectionID overrideSpellBookSection, final MapCoordinates3DEx combatLocation,
 		final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage, final ExpandedUnitDetails targetUnit,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
     	final TargetSpellResult result;
     	final int targetUnitURN = targetUnit.getUnitURN ();
+    	final SpellBookSectionID useSpellBookSection = (overrideSpellBookSection != null) ? overrideSpellBookSection : spell.getSpellBookSectionID ();
     	
     	// Simpify identifying some kinds of spells so don't have to repeat this all over the place
-    	final boolean raiseDead = (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null);
-    	final boolean healingSpell = (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null);
+    	final boolean raiseDead = (useSpellBookSection == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null);
+    	final boolean healingSpell = (useSpellBookSection == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null);
     	
     	// If we're trying to cast a combat spell, then the unit must be in the right combat
     	if ((combatLocation != null) && ((!combatLocation.equals (targetUnit.getCombatLocation ())) ||
@@ -288,12 +291,12 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
        		result = TargetSpellResult.UNIT_NOT_DEAD;
     	
     	// Casting something beneficial on an enemy unit
-    	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
+    	else if (((useSpellBookSection == SpellBookSectionID.UNIT_ENCHANTMENTS) || (useSpellBookSection == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
     		(targetUnit.getOwningPlayerID () != castingPlayerID))
     		result = TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY; 
 
     	// Casting something nasty on a friendly unit
-    	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) || (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)) &&
+    	else if (((useSpellBookSection == SpellBookSectionID.UNIT_CURSES) || (useSpellBookSection == SpellBookSectionID.ATTACK_SPELLS)) &&
     		(targetUnit.getOwningPlayerID () == castingPlayerID))
     		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
     	
@@ -304,8 +307,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else
     	{
     		// Now check unitSpellEffectIDs
-    		final boolean unitSpellEffectRequired = (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
-    			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES);
+    		final boolean unitSpellEffectRequired = (useSpellBookSection == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+    			(useSpellBookSection == SpellBookSectionID.UNIT_CURSES);
     		
     		final List<UnitSpellEffect> unitSpellEffects = listUnitSpellEffectsNotYetCastOnUnit (mem.getMaintainedSpell (), spell, castingPlayerID, targetUnitURN);
     		if ((unitSpellEffectRequired) && (unitSpellEffects == null))
@@ -335,12 +338,12 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			final List<String> spellsImmuneToDispelling = db.getSpell ().stream ().filter
     				(s -> (s.isImmuneToDispelling () != null) && (s.isImmuneToDispelling ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
     			
-	    		if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&
+	    		if ((useSpellBookSection == SpellBookSectionID.DISPEL_SPELLS) &&
 	    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == targetUnitURN) &&
 	    				(s.getCastingPlayerID () != castingPlayerID) && (!spellsImmuneToDispelling.contains (s.getSpellID ())))))
 	    			result = TargetSpellResult.NOTHING_TO_DISPEL;
 	    		
-	    		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
+	    		else if ((useSpellBookSection != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
 	    			result = TargetSpellResult.VALID_TARGET;
 	    		
 	    		else

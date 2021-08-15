@@ -26,7 +26,7 @@ public final class DamageCalculationConfusionDataEx extends DamageCalculationCon
 	/** Confused unit */
 	private MemoryUnit unit;
 	
-	/** Player who owns the attacking unit */
+	/** Player who owns the confused unit */
 	private PlayerPublicDetails owningPlayer;
 	
 	/** Player who owns the confusion spell */
@@ -123,7 +123,7 @@ public final class DamageCalculationConfusionDataEx extends DamageCalculationCon
 	}
 	
 	/**
-	 * @return Player who owns the attacking unit
+	 * @return Player who owns the confused unit
 	 */
 	public final PlayerPublicDetails getOwningPlayer ()
 	{
@@ -131,7 +131,7 @@ public final class DamageCalculationConfusionDataEx extends DamageCalculationCon
 	}
 	
 	/**
-	 * @param o Player who owns the attacking unit
+	 * @param o Player who owns the confused unit
 	 */
 	public final void setOwningPlayer (final PlayerPublicDetails o)
 	{

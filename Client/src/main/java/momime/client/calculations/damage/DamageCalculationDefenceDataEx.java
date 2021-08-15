@@ -141,6 +141,13 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 					languageText = getLanguages ().getCombatDamage ().getDefenceFear ();
 					break;
 					
+				case TERROR:
+					if (getFinalHits () > 0)
+						languageText = getLanguages ().getCombatDamage ().getDefenceTerrified ();
+					else
+						languageText = getLanguages ().getCombatDamage ().getDefenceResistsTerror ();
+					break;
+					
 				default:
 					if (getModifiedDefenceStrength () == null)
 						languageText = getLanguages ().getCombatDamage ().getDefenceStatisticsAutomatic ();		// hits strike automatically, i.e. doom damage

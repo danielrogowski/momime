@@ -31,6 +31,7 @@ public interface UnitCalculations
 	 *
 	 * @param playerID Player whose units to update 
 	 * @param combatLocation Where the combat is taking place
+	 * @param terrifiedUnitURNs List of units who failed their resistance roll against Terror spell and so cannot move this turn
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -39,7 +40,7 @@ public interface UnitCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public List<ExpandedUnitDetails> resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation,
+	public List<ExpandedUnitDetails> resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation, final List<Integer> terrifiedUnitURNs,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 

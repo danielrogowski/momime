@@ -14,6 +14,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
@@ -23,6 +24,8 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.ConfusionEffect;
 import momime.common.messages.FogOfWarMemory;
@@ -31,8 +34,12 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationConfusionData;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.ServerGridCellEx;
@@ -70,9 +77,14 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
 	
+	/** Memory CAE utils */
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
 	/**
-	 * Makes any rolls necessary at the start of a combat turn.  Note what this means by "combat turn" is different than what combatEndTurn below means.
-	 * Here we mean before EITHER player has taken their turn, i.e. immediately before the defender gets a turn.
+	 * Makes any rolls necessary at the start of either player's combat turn, i.e. immediately before the defender gets a turn.
 	 * 
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
@@ -85,7 +97,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void combatStartTurn (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
+	public final void combatBeforeEitherTurn (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
 		final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -166,6 +178,69 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 						}
 					}
 				}
+	}
+	
+	/**
+	 * Deals with any processing at the start of one player's turn in combat, before their movement is initialized.
+	 * 
+	 * @param combatLocation The location the combat is taking place
+	 * @param playerID Which player is about to have their combat turn
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return List of units frozen in terror who will not get any movement allocation this turn
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final List<Integer> startCombatTurn (final MapCoordinates3DEx combatLocation, final int playerID,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		// Work out the other player in combat
+		final PlayerServerDetails castingPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer;
+		
+		// Does opposing player have terror cast on this combat?
+		final Spell terrorDef = db.findSpell (CommonDatabaseConstants.SPELL_ID_TERROR, "startCombatTurn");
+		final String combatAreaEffectID = terrorDef.getSpellHasCombatEffect ().get (0);
+		
+		final List<ExpandedUnitDetails> unitsToRoll = new ArrayList<ExpandedUnitDetails> ();
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		
+		if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mem.getCombatAreaEffect (), combatLocation, combatAreaEffectID, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
+			for (final MemoryUnit thisUnit : mem.getUnit ())
+				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+					(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+				{
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (), players, mem, db);
+					
+					// attackSpellDamageResolutionTypeID = R on Terror spell def just to make the resistance check in isUnitValidTargetForSpell take effect
+					if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+						(terrorDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+							null, null, xu, mem, db) == TargetSpellResult.VALID_TARGET))
+						
+						unitsToRoll.add (xu);
+				}
+		
+		// Only bother to send the damage calculation header if there's at least one unit that has to make a roll
+		final List<Integer> terrifiedUnitURNs = new ArrayList<Integer> ();
+		if (unitsToRoll.size () > 0)
+		{
+			getDamageCalculator ().sendDamageHeader (null, defenders, attackingPlayer, defendingPlayer, null, terrorDef, castingPlayer);
+			final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell (terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, db);
+			
+			for (final ExpandedUnitDetails xu : unitsToRoll)
+				if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage))
+					terrifiedUnitURNs.add (xu.getUnitURN ());
+		}
+		
+		return terrifiedUnitURNs;
 	}
 	
 	/**
@@ -342,5 +417,37 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	public final void setCombatProcessing (final CombatProcessing proc)
 	{
 		combatProcessing = proc;
+	}
+
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

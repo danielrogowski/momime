@@ -503,6 +503,7 @@ e.g. as a result of casting Wall of Fire/Darkness in combat.</xsd:documentation>
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="terrifiedUnitURN" type="momimemsgs:unitURN" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

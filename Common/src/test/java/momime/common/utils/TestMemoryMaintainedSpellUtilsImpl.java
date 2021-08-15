@@ -640,7 +640,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -681,7 +681,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -725,7 +725,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -769,7 +769,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -814,7 +814,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -858,7 +858,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.RAISING_ENEMY, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.RAISING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -903,7 +903,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (mock (UnitUtils.class));
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -951,7 +951,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (mock (UnitUtils.class));
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -995,7 +995,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1042,7 +1042,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1086,7 +1086,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1126,7 +1126,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell (spell, null, 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1177,7 +1177,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell (spell, null, 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1222,7 +1222,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1269,7 +1269,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1317,7 +1317,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (mock (UnitUtils.class));
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1361,7 +1361,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1408,7 +1408,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1455,7 +1455,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1498,7 +1498,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1552,7 +1552,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1600,7 +1600,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (mock (UnitUtils.class));
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1647,7 +1647,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1691,7 +1691,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1732,7 +1732,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1776,7 +1776,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1820,7 +1820,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1864,7 +1864,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -1908,7 +1908,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -1959,7 +1959,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -2004,7 +2004,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -2055,7 +2055,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -2100,7 +2100,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -2147,7 +2147,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -2195,7 +2195,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, 4, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, 4, xu, fow, db));
 	}
 	
 	/**
@@ -2241,7 +2241,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -2290,7 +2290,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2336,7 +2336,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2385,7 +2385,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2434,7 +2434,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2483,7 +2483,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -2532,7 +2532,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2579,7 +2579,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNDAMAGED, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNDAMAGED, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2627,7 +2627,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.PERMANENTLY_DAMAGED, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.PERMANENTLY_DAMAGED, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2670,7 +2670,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2710,7 +2710,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2753,7 +2753,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -2796,7 +2796,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2839,7 +2839,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2882,7 +2882,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -2931,7 +2931,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -2980,7 +2980,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -3025,7 +3025,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 
 	/**
@@ -3073,7 +3073,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -3122,7 +3122,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -3165,7 +3165,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setSpellUtils (spellUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -3213,30 +3213,30 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Dead unit
 		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, null, xu, fow, db));
+			(spell, null, null, 1, null, null, xu, fow, db));
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
 	
 		// Enchanting enemy unit
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		when (xu.getOwningPlayerID ()).thenReturn (2);
 		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, null, xu, fow, db));
+			(spell, null, null, 1, null, null, xu, fow, db));
 		
 		// Healing enemy unit
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, null, xu, fow, db));
+			(spell, null, null, 1, null, null, xu, fow, db));
 		
 		// Cursing own uint
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_CURSES);
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, null, xu, fow, db));
+			(spell, null, null, 1, null, null, xu, fow, db));
 		
 		// Spell has no effects defined
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, null, xu, fow, db));
+			(spell, null, null, 1, null, null, xu, fow, db));
 		
 		// All effects already cast on this unit
 		final UnitSpellEffect effectA = new UnitSpellEffect ();
@@ -3251,7 +3251,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		fow.getMaintainedSpell ().add (existingEffectA);
 
 		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, null, xu, fow, db));
+			(spell, null, null, 1, null, null, xu, fow, db));
 		
 		// Invalid magic realm/lifeform type
 		final UnitSpellEffect effectB = new UnitSpellEffect ();
@@ -3261,16 +3261,16 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		magicRealm.setPickID ("X");
 		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (false);
 		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, null, xu, fow, db));
+			(spell, null, null, 1, null, null, xu, fow, db));
 		
 		// Valid target overland
 		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (true);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, null, xu, fow, db));
+			(spell, null, null, 1, null, null, xu, fow, db));
 		
 		// Currently the unit has combat location + side, but not heading + position, so its s land unit in a naval combat and can't fight, and can't be targetted
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 		
 		// Combat non-attack spell
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (5, 6));
@@ -3279,61 +3279,61 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 
 		// Combat attack spell that rolls against something other than resistance
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
 
 		// Immune to the type of damage
 		when (xu.isUnitImmuneToDamageType (damageType)).thenReturn (true);
 		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
 		when (xu.isUnitImmuneToDamageType (damageType)).thenReturn (false);
 		
 		// Combat attack spell that rolls against resistance, but its resistance is really high
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
 		
 		// Spell gives -1 modifier, but its still not enough
 		spell.setCombatBaseDamage (1);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
 		
 		// Spell gives variable modifier, and we're setting it to -2 - still not enough
 		spell.setCombatMaxDamage (5);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, 2, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, 2, xu, fow, db));
 
 		// Upping it to a -3 modifier is enough
 		spell.setCombatMaxDamage (5);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, 3, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, 3, xu, fow, db));
 		
 		// Unit is in a different combat
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 11, 1), 2, null, 3, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 11, 1), 2, null, 3, xu, fow, db));
 		
 		// Healing spell
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		assertEquals (TargetSpellResult.UNDAMAGED, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 
 		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (5);
 		assertEquals (TargetSpellResult.PERMANENTLY_DAMAGED, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 
 		when (unitUtils.getHealableDamageTaken (unit.getUnitDamage ())).thenReturn (5);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 		
 		// Dispel magic
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
 		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 		
 		final MemoryMaintainedSpell spell1 = new MemoryMaintainedSpell ();
 		spell1.setUnitURN (xu.getUnitURN ());
@@ -3346,7 +3346,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		fow.getMaintainedSpell ().add (spell2);
 
 		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 
 		final MemoryMaintainedSpell spell3 = new MemoryMaintainedSpell ();
 		spell3.setUnitURN (xu.getUnitURN ());
@@ -3354,7 +3354,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		fow.getMaintainedSpell ().add (spell3);
 
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**

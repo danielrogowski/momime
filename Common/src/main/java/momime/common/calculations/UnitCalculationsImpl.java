@@ -80,6 +80,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 *
 	 * @param playerID Player whose units to update 
 	 * @param combatLocation Where the combat is taking place
+	 * @param terrifiedUnitURNs List of units who failed their resistance roll against Terror spell and so cannot move this turn
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -89,7 +90,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final List<ExpandedUnitDetails> resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation,
+	public final List<ExpandedUnitDetails> resetUnitCombatMovement (final int playerID, final MapCoordinates3DEx combatLocation, final List<Integer> terrifiedUnitURNs,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
@@ -113,13 +114,15 @@ public final class UnitCalculationsImpl implements UnitCalculations
 						
 					if (webbed)
 						thisUnit.setDoubleCombatMovesLeft (0);
-					else
-					{
-						if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CONFUSION)) && (CONFUSION_NOT_PLAYER_CONTROLLED.contains (thisUnit.getConfusionEffect ())))
-							thisUnit.setDoubleCombatMovesLeft (0);
-						else						
-							thisUnit.setDoubleCombatMovesLeft (2 * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
-					}
+					
+					else if (terrifiedUnitURNs.contains (thisUnit.getUnitURN ()))
+						thisUnit.setDoubleCombatMovesLeft (0);
+					
+					else if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CONFUSION)) && (CONFUSION_NOT_PLAYER_CONTROLLED.contains (thisUnit.getConfusionEffect ())))
+						thisUnit.setDoubleCombatMovesLeft (0);
+					
+					else						
+						thisUnit.setDoubleCombatMovesLeft (2 * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 					
 					if (webbed)
 						webbedUnits.add (xu);

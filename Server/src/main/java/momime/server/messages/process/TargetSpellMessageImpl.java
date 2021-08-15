@@ -168,7 +168,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-							(spell, null, sender.getPlayerDescription ().getPlayerID (), null, null, xu,
+							(spell, null, null, sender.getPlayerDescription ().getPlayerID (), null, null, xu,
 							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (reason == TargetSpellResult.VALID_TARGET)

@@ -4933,6 +4933,10 @@ which is why it is last in the list, so it will only be healed when all healable
 				<xsd:documentation>Each figure must resist or can make no further attacks during this attack resolution (fear)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="FEAR" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="X"><xsd:annotation>
+				<xsd:documentation>Unit must resist or gets no movement points this turn (terror)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="TERROR" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 

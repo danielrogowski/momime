@@ -554,7 +554,7 @@ public final class CombatUI extends MomClientFrameUI
 											variableDamage = null;
 										
 										validTarget = (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-											(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
+											(getSpellBeingTargetted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
 												xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 												getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
 									}
@@ -1102,7 +1102,7 @@ public final class CombatUI extends MomClientFrameUI
 										variableDamage = null;
 									
 									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
+										(getSpellBeingTargetted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
 										 xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)

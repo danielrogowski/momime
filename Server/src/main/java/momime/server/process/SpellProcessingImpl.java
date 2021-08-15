@@ -665,7 +665,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
 							xuCombatCastingUnit, variableDamage, xu, mom.getGeneralServerKnowledge ().getTrueMap (),
 							mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							

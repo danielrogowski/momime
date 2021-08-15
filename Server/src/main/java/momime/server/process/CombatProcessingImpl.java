@@ -646,13 +646,19 @@ public final class CombatProcessingImpl implements CombatProcessing
 				// Sequence is always (start new turn) - defender - attacker - (start new turn) - defender - attacker,
 				// so if its about to be the defender's turn, then take care of any start new turn things, like rolling for confusion
 				if (tc.getCombatCurrentPlayerID ().equals (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ()))
-					getCombatEndTurn ().combatStartTurn ((PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (),
+					getCombatEndTurn ().combatBeforeEitherTurn ((PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (),
 						combatLocation, mom);
+				
+				// Roll for which units will be terrified and cannot move this turn
+				final List<Integer> terrifiedUnitURNs = getCombatEndTurn ().startCombatTurn (combatLocation, tc.getCombatCurrentPlayerID (),
+					(PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (),
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				// Tell all human players involved in the combat who the new player is
 				final SetCombatPlayerMessage msg = new SetCombatPlayerMessage ();
 				msg.setCombatLocation (combatLocation);
 				msg.setPlayerID (tc.getCombatCurrentPlayerID ());
+				msg.getTerrifiedUnitURN ().addAll (terrifiedUnitURNs);
 				
 				if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().isHuman ())
 					((PlayerServerDetails) combatPlayers.getDefendingPlayer ()).getConnection ().sendMessageToClient (msg);
@@ -662,7 +668,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				
 				// Give this player all their movement for this turn
 				final List<ExpandedUnitDetails> webbedUnits = getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayerID (), combatLocation,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					terrifiedUnitURNs, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				getFogOfWarMidTurnMultiChanges ().processWebbedUnits (webbedUnits,
 					mom.getGeneralServerKnowledge (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());

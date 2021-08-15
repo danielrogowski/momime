@@ -615,7 +615,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, players, trueMap, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 	}
 
 	/**
@@ -730,7 +730,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, players, trueMap, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 	}
 
 	/**
@@ -848,8 +848,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (1)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, players, trueMap, db);
-		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, players, trueMap, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 	}
 	
 	/**
@@ -952,8 +952,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
-		verify (unitCalc, times (2)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, players, trueMap, db);
-		verify (unitCalc, times (2)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, players, trueMap, db);
+		verify (unitCalc, times (2)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
+		verify (unitCalc, times (2)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 	}
 	
 	/**

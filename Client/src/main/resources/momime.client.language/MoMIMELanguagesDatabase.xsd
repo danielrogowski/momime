@@ -473,6 +473,10 @@
 						<xsd:selector xpath="attackFear" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="combatDamageAttackTerrorPK">
+						<xsd:selector xpath="attackTerror" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="combatDamageDefenceStrengthReducedPK">
 						<xsd:selector xpath="defenceStrengthReduced" />
 						<xsd:field xpath="@language" />
@@ -495,6 +499,14 @@
 					</xsd:key>
 					<xsd:key name="combatDamageDefenceResistsCursePK">
 						<xsd:selector xpath="defenceResistsCurse" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceTerrifiedPK">
+						<xsd:selector xpath="defenceTerrified" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceResistsTerrorPK">
+						<xsd:selector xpath="defenceResistsTerror" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="combatDamageDefenceChanceOfDeathDiesPK">
@@ -2743,12 +2755,15 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackResistanceRolls" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackDisintegrate" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackFear" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackTerror" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStrengthReduced" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStrengthIncreased" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStatistics" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStatisticsAutomatic" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceCursed" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceResistsCurse" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceTerrified" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceResistsTerror" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceChanceOfDeathDies" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceChanceOfDeathSurvives" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceEachFigureResistOrDie" />

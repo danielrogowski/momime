@@ -339,7 +339,8 @@ public final class CommonDatabaseConstants
 	/** All damage resolution types where some kind of roll or check is made against the target's resistance, rather than conventional damage */
 	public final static List<DamageResolutionTypeID> RESISTANCE_BASED_DAMAGE = Arrays.asList
 		(DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE,
-			DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, 	DamageResolutionTypeID.RESISTANCE_ROLLS, DamageResolutionTypeID.DISINTEGRATE);
+			DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, 	DamageResolutionTypeID.RESISTANCE_ROLLS, DamageResolutionTypeID.DISINTEGRATE,
+			DamageResolutionTypeID.FEAR, DamageResolutionTypeID.TERROR);
 	
 	// spells
 	
@@ -357,6 +358,9 @@ public final class CommonDatabaseConstants
 
 	/** Dark Rituals spell */
 	public final static String SPELL_ID_DARK_RITUALS = "SP163";	
+	
+	/** Terror spell */
+	public final static String SPELL_ID_TERROR = "SP168";
 	
 	/** Summoning circle spell */
 	public final static String SPELL_ID_SUMMONING_CIRCLE = "SP203";

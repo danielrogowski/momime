@@ -15,6 +15,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
@@ -75,7 +76,7 @@ public final class CombatHandlingImpl implements CombatHandling
 			final Spell spellDef = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_WALL_OF_FIRE, "crossCombatBorder");
 						
 			// Specify 0 for castingPlayerID, since we can hurt ourselves
-			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spellDef, combatLocation, 0, null, null, xu,
+			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spellDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, 0, null, null, xu,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 			{
 				final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();

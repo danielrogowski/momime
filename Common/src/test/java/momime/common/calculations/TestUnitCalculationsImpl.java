@@ -161,7 +161,7 @@ public final class TestUnitCalculationsImpl
 		
 		// Run method
 		final MapCoordinates3DEx loc = new MapCoordinates3DEx (20, 10, 1);
-		calc.resetUnitCombatMovement (1, loc, players, fow, db);
+		calc.resetUnitCombatMovement (1, loc, new ArrayList<Integer> (), players, fow, db);
 
 		// Check results
 		assertEquals (2, u1.getDoubleCombatMovesLeft ().intValue ());

@@ -198,6 +198,9 @@ public final class CommonDatabaseConstants
 	/** Crusade */
 	public final static String COMBAT_AREA_EFFECT_CRUSADE = "CSE158";
 	
+	/** Mana leak */
+	public final static String COMBAT_AREA_EFFECT_ID_MANA_LEAK = "CSE170";
+	
 	// unit types
 
 	/** Units summoned from spells */

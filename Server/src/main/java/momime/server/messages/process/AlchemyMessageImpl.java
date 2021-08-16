@@ -93,7 +93,7 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), toProductionTypeID, toValue);
 
 			// Send updated amounts to client
-			getServerResourceCalculations ().sendGlobalProductionValues (sender, null);
+			getServerResourceCalculations ().sendGlobalProductionValues (sender, null, false);
 		}
 	}
 

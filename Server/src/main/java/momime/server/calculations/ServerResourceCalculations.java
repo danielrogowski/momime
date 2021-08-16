@@ -24,10 +24,11 @@ public interface ServerResourceCalculations
 	 *
 	 * @param player Player whose values to send
 	 * @param castingSkillRemainingThisCombat Only specified when this is called as a result of a combat spell being cast by the wizard, thereby reducing skill and mana
+	 * @param spellCastThisCombatTurn True if castingSkillRemainingThisCombat is set because we cast a spell (it can also be set because of Mana Leak, so need false here)
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat)
+	public void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat, final boolean spellCastThisCombatTurn)
 		throws JAXBException, XMLStreamException;
 
 	/**

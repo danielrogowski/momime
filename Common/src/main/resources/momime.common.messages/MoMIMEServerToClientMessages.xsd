@@ -339,6 +339,12 @@ When the wizard casts a spell in combat, this message is resent with the casting
 Therefore this value being non-null also implies that the wizard cannot cast another spell during this combat turn - it is set to null in all other situations.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="1" name="spellCastThisCombatTurn" type="xsd:boolean">
+						    <xsd:annotation>
+    							<xsd:documentation>Usually castingSkillRemainingThisCombat being set implies the wizard cast a spell, and so cannot cast another
+spell this combat turn.  But it can also be set when their MP pool is reduced by Mana Leak.  So this value explicitly states whether they've cast a spell or not.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>						
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="resourceValue" type="momimemsgs:momResourceValue" />
 					</xsd:sequence>
 				</xsd:extension>

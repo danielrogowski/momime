@@ -713,6 +713,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 	</bean>
 	
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">

@@ -651,8 +651,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				
 				// Roll for which units will be terrified and cannot move this turn
 				final List<Integer> terrifiedUnitURNs = getCombatEndTurn ().startCombatTurn (combatLocation, tc.getCombatCurrentPlayerID (),
-					(PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (),
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					(PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), mom);
 				
 				// Tell all human players involved in the combat who the new player is
 				final SetCombatPlayerMessage msg = new SetCombatPlayerMessage ();

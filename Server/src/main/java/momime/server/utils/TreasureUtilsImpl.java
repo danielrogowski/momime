@@ -701,7 +701,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		
 		// Resend resource values if we gained some gold/mana
 		if (reward.getResource ().size () > 0)
-			getServerResourceCalculations ().sendGlobalProductionValues (player, null);
+			getServerResourceCalculations ().sendGlobalProductionValues (player, null, false);
 	}
 
 	/**

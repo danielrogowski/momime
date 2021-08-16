@@ -518,7 +518,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// We were charged skill for it
 		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
-		verify (serverResourceCalc, times (1)).sendGlobalProductionValues (attackingPlayer, 35);
+		verify (serverResourceCalc, times (1)).sendGlobalProductionValues (attackingPlayer, 35, true);
 		
 		// Can't cast another
 		assertTrue (gc.isSpellCastThisCombatTurn ());
@@ -635,7 +635,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// We were charged skill for it
 		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
-		verify (serverResourceCalc, times (1)).sendGlobalProductionValues (attackingPlayer, 35);
+		verify (serverResourceCalc, times (1)).sendGlobalProductionValues (attackingPlayer, 35, true);
 		
 		// Can't cast another
 		assertTrue (gc.isSpellCastThisCombatTurn ());
@@ -777,7 +777,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// We were charged skill for it
 		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
-		verify (serverResourceCalc, times (1)).sendGlobalProductionValues (attackingPlayer, 35);
+		verify (serverResourceCalc, times (1)).sendGlobalProductionValues (attackingPlayer, 35, true);
 		
 		// Can't cast another
 		assertTrue (gc.isSpellCastThisCombatTurn ());

@@ -8,7 +8,6 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -47,9 +46,7 @@ public interface CombatEndTurn
 	 * @param playerID Which player is about to have their combat turn
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return List of units frozen in terror who will not get any movement allocation this turn
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
@@ -58,8 +55,7 @@ public interface CombatEndTurn
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public List<Integer> startCombatTurn (final MapCoordinates3DEx combatLocation, final int playerID,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**

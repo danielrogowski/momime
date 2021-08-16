@@ -287,11 +287,13 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * 
 	 * @param player Player whose values to send
 	 * @param castingSkillRemainingThisCombat Only specified when this is called as a result of a combat spell being cast by the wizard, thereby reducing skill and mana
+	 * @param spellCastThisCombatTurn True if castingSkillRemainingThisCombat is set because we cast a spell (it can also be set because of Mana Leak, so need false here)
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat) throws JAXBException, XMLStreamException
+	public final void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat, final boolean spellCastThisCombatTurn)
+		throws JAXBException, XMLStreamException
 	{
 		if (player.getPlayerDescription ().isHuman ())
 		{
@@ -302,6 +304,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			msg.getResourceValue ().addAll (priv.getResourceValue ());
 			msg.setOverlandCastingSkillRemainingThisTurn (trans.getOverlandCastingSkillRemainingThisTurn ());
 			msg.setCastingSkillRemainingThisCombat (castingSkillRemainingThisCombat);
+			
+			if (spellCastThisCombatTurn)
+				msg.setSpellCastThisCombatTurn (spellCastThisCombatTurn);
 	
 			player.getConnection ().sendMessageToClient (msg);
 		}
@@ -696,7 +701,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 					else if (player.getPlayerDescription ().isHuman ())
 
 						// No need to send values during start phase, since the start phase calls recalculateGlobalProductionValues () for a second time with DuringStartPhase set to False
-						sendGlobalProductionValues (player, null);
+						sendGlobalProductionValues (player, null, false);
 				}
 			}
 	}

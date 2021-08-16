@@ -388,7 +388,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		
 		// Run test
-		calc.sendGlobalProductionValues (player, 17);
+		calc.sendGlobalProductionValues (player, 17, false);
 		assertEquals (1, msgs.getMessages ().size ());
 		
 		final UpdateGlobalEconomyMessage msg = (UpdateGlobalEconomyMessage) msgs.getMessages ().get (0);

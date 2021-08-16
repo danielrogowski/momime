@@ -378,7 +378,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 
 		// All ok - deduct money & send to client
 		getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -offer.getCost ());
-		getServerResourceCalculations ().sendGlobalProductionValues (player, null);
+		getServerResourceCalculations ().sendGlobalProductionValues (player, null, false);
 		
 		// Mark offer as accepted
 		if (player.getPlayerDescription ().isHuman ())

@@ -85,11 +85,13 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 			cityView.recheckRushBuyEnabled ();
 		
 		// Update remaining casting skill and MP in the combat we're in.
-		// Also the only reason this value is ever non-null is if our wizard casts a combat spell, so stop us from casting another one this turn
+		// Usually this value is ever non-null is if our wizard casts a combat spell, so stop us from casting another one this turn, but Mana Leak is an exception
 		if ((getCombatUI ().isVisible ()) && (getCastingSkillRemainingThisCombat () != null))
 		{
 			getCombatUI ().updateRemainingCastingSkill (getCastingSkillRemainingThisCombat ());
-			getCombatUI ().setSpellCastThisCombatTurn (true);
+			
+			if ((isSpellCastThisCombatTurn () != null) && (isSpellCastThisCombatTurn ()))
+				getCombatUI ().setSpellCastThisCombatTurn (true);
 		}
 		
 		// Update fame, if we're looking at ourselves

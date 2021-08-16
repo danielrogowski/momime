@@ -14,7 +14,6 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
@@ -30,17 +29,20 @@ import momime.common.messages.CombatMapSize;
 import momime.common.messages.ConfusionEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationConfusionData;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.UnitServerUtils;
@@ -82,6 +84,12 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+
+	/** Resource calculations */
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * Makes any rolls necessary at the start of either player's combat turn, i.e. immediately before the defender gets a turn.
@@ -187,9 +195,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 * @param playerID Which player is about to have their combat turn
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return List of units frozen in terror who will not get any movement allocation this turn
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
@@ -199,31 +205,33 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 */
 	@Override
 	public final List<Integer> startCombatTurn (final MapCoordinates3DEx combatLocation, final int playerID,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Work out the other player in combat
 		final PlayerServerDetails castingPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer;
 		
 		// Does opposing player have terror cast on this combat?
-		final Spell terrorDef = db.findSpell (CommonDatabaseConstants.SPELL_ID_TERROR, "startCombatTurn");
+		final Spell terrorDef = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_TERROR, "startCombatTurn");
 		final String combatAreaEffectID = terrorDef.getSpellHasCombatEffect ().get (0);
 		
 		final List<ExpandedUnitDetails> unitsToRoll = new ArrayList<ExpandedUnitDetails> ();
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		
-		if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mem.getCombatAreaEffect (), combatLocation, combatAreaEffectID, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
-			for (final MemoryUnit thisUnit : mem.getUnit ())
+		if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
+			combatAreaEffectID, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
+			
+			for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 					(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (), players, mem, db);
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					// attackSpellDamageResolutionTypeID = R on Terror spell def just to make the resistance check in isUnitValidTargetForSpell take effect
 					if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 						(terrorDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-							null, null, xu, mem, db) == TargetSpellResult.VALID_TARGET))
+							null, null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 						
 						unitsToRoll.add (xu);
 				}
@@ -233,11 +241,74 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		if (unitsToRoll.size () > 0)
 		{
 			getDamageCalculator ().sendDamageHeader (null, defenders, attackingPlayer, defendingPlayer, null, terrorDef, castingPlayer);
-			final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell (terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, db);
+			final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell (terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB ());
 			
 			for (final ExpandedUnitDetails xu : unitsToRoll)
 				if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage))
 					terrifiedUnitURNs.add (xu.getUnitURN ());
+		}
+		
+		// Does opposing player have mana leak cast on this combat?
+		if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
+			CommonDatabaseConstants.COMBAT_AREA_EFFECT_ID_MANA_LEAK, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
+		{
+			for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+					(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+				{
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					if (xu.getControllingPlayerID () == playerID)
+					{
+						// Units with their own MP pool
+						if (thisUnit.getManaRemaining () > 0)
+						{
+							thisUnit.setManaRemaining (Math.max (0, thisUnit.getManaRemaining () - 5));
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+						}
+						
+						// Units with magical ranged attacks
+						else if ((thisUnit.getAmmoRemaining () > 0) && (xu.getRangedAttackType ().getMagicRealmID () != null))
+						{
+							thisUnit.setAmmoRemaining (thisUnit.getAmmoRemaining () - 1);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+						}
+					}
+				}
+			
+			// Enemy wizard
+			final PlayerServerDetails thisPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? attackingPlayer : defendingPlayer;
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			final int mana = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+			if (mana > 0)
+			{
+				final int subtractMana = Math.min (5, mana);
+				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -subtractMana);
+				
+				// We have to re-send the remaining casting skill with the message, since the client doesn't record it, and by sending
+				// it the client can correctly work out if the reduced MP is below the remaining casting skill and means the player can now cast less
+				if (thisPlayer.getPlayerDescription ().isHuman ())
+				{
+					final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+
+					Integer sendSkillValue = null;
+					if (thisPlayer == defendingPlayer)
+					{
+						if (gc.getCombatDefenderCastingSkillRemaining () != null)
+							sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
+					}
+					else if (thisPlayer == attackingPlayer)
+					{
+						if (gc.getCombatAttackerCastingSkillRemaining () != null)
+							sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
+					}
+					
+					getServerResourceCalculations ().sendGlobalProductionValues (thisPlayer, sendSkillValue, false);
+				}
+			}
 		}
 		
 		return terrifiedUnitURNs;
@@ -449,5 +520,37 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final ServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

@@ -804,7 +804,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			// Send both values to client
 			if (sendSkillValue != null)
-				getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
+				getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue, true);
 			
 			// Only allow casting one spell each combat turn
 			gc.setSpellCastThisCombatTurn (true);

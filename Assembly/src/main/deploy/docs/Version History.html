@@ -37,8 +37,65 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.9.4</b></td>
-			<td align=left><b>16 Jul 2021</b></td>
+			<td align=left><b>Current version: 0.9.9.5</b></td>
+			<td align=left><b>17 Aug 2021</b></td>
+			<td align=left>
+				<b>Common spells that now work correctly:</b>
+				<ul>
+					<li>Web worked partially before, now
+					<ul>
+						<li>Added casting animation, sound, and image overlay
+						<li>HP of web displayed on unit info, and unit being stuck in it and damaging HP of the web each turn until it frees itself
+						<li>Non-corporeal units are immune to web
+						<li>Webs cannot be dispelled
+					</ul>
+					<li>Resist magic no longer displays +5 crosses on unit info as it doesn't apply in all situations; stopped benefit applying to poison damage
+					<li>Floating Islands can be summoned to any ocean tile and will not participate in any combats
+					<li>Confusion was castable before but had no effect, now
+					<ul>
+						<li>Units with Illusions Immunity or True Sight are immune to Confusion
+						<li>Rolls at the start of each combat turn to decide whether the unit does nothing, moves randomly, is controlled by the unit owner, or is controlled by the enemy
+					</ul>
+					<li>Warp Wood worked partially before but fixed up when it is and isn't valid to use
+					<li>Eldritch Weapon giving -1 to block to enemy unit now works; also negates Weapon Immunity (also applied to Flame Blade)
+					<li>Shatter now reduces most attacks to strength 1, and added animation on top of shattered units
+					<li>All 3 penalties from Warp Creature now work correctly
+					<li>Wall of Fire now works correctly and burns non-flying units if they move from outside the wall to inside, or try to attack across it
+					<li>+1 to hit from Holy Weapon now only applies to melee attacks, physical ranged attacks, and thrown weapons (and so it no longer shows on unit info screen)
+					<li>Heroism exp bonus now works correctly, is automatically dispelled when unit reaches 120 exp naturally, and cannot be cast on units who already have 120 exp
+					<li>Added animation for units affected by Weakness, and the -2 to ranged attack now only affects regular bows/slings, not boulder or magical ranged attacks
+					<li>Dark rituals now generates unrest and magic power, and reduces population growth
+					<li>Black sleep had minor adjustment to the way it negates movement and defence
+					<li>Terror now zeroes out movement allocation if the unit fails its resistance roll each combat turn
+					<li>Mana Leak now drains enemy wizard's MP, caster units' MP and ammunition of units with ranged magical attacks
+				</ul>
+
+				<b>New features or fixes applicable to multiple spells:</b>
+				<ul>
+					<li>Now get saving throw to resist unit curses, for example confusion or black sleep
+					<li>All unit curses with the exception of Web are now blocked by Magic Immunity
+					<li>Clarified the way saving throw modifiers to resistance based spells and attacks are held and fixed up this data on a lot of spells
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>After a successful Spell Binding, the client would have 2 copies of the spell, one with the old owner and one with the new owner
+					<li>Saving throw modifiers which are increased for specific magic realm creatures (e.g. Dispel Evil or Holy Word being more potent vs undead) are now applied consistently across all damage types
+					<li>Chance to Block cannot be reduced below 10% (though not sure if this is even possible)
+					<li>Stopped being able to cast Immolation on units that have it naturally (Doom Bats) for double effect
+					<li>+1 to hit from Magical, Mithril or Adamantium weapons now only applies to melee attacks, physical ranged attacks, and thrown weapons (and so it no longer shows on unit info screen)
+				</ul>
+				
+				<b>Text updates:</b>
+				<ul>
+					<li>Re-added in damage calculator showing Chance to Block on damage rolls, so you can see bonuses/penalities like High Prayer, Lucky or Eldritch Weapon are working correctly.
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>Current version: 0.9.9.4</td>
+			<td align=left>16 Jul 2021</td>
+			<td align=left>
 				<b>Unit skills that now work correctly:</b>
 				<ul>
 					<li>Healer
@@ -82,6 +139,7 @@
 		<tr>
 			<td align=left>0.9.9.3</td>
 			<td align=left>30 Jun 2021</td>
+			<td align=left>
 				<b>Unit skills that now work correctly:</b>
 				<ul>
 					<li>Invisible units in combat now appear semi-transparent if they can be seen (for example if you have a unit in adjacent cell or any unit in combat with True Sight) or completely hidden if you cannot see them

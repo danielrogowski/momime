@@ -1,7 +1,7 @@
-title MoM IME Server XML Editor ${momime.editors.version}
+title MoM IME Server XML Editor ${project.version}
 
 set javapath=
 if exist ..\jre\bin\java.exe set javapath=..\jre\bin\
 
 for /F %%a in (..\lib\classpaths\editors-classpath-windows.txt) do set libcp=%%a
-%javapath%java -Xmx1024m -classpath ..\lib\momime-editors-${momime.editors.version}.jar;%libcp% momime.editors.server.ServerEditor
+%javapath%java -Xmx1024m -classpath ..\lib\momime-editors-${project.version}.jar;%libcp% momime.editors.server.ServerEditor

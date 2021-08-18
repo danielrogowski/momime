@@ -1,1 +1,1 @@
-java -Xmx1024m -classpath ../lib/momime-editors-${momime.editors.version}.jar:$(cat ../lib/classpaths/editors-classpath-unix.txt) momime.editors.server.ServerEditor
+java -Xmx1024m -classpath ../lib/momime-editors-${project.version}.jar:$(cat ../lib/classpaths/editors-classpath-unix.txt) momime.editors.server.ServerEditor

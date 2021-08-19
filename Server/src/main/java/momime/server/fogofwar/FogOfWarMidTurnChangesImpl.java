@@ -466,7 +466,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			(ServerGridCellEx) trueMap.getMap ().getPlane ().get (trueUnit.getCombatLocation ().getZ ()).getRow ().get
 				(trueUnit.getCombatLocation ().getY ()).getCell ().get (trueUnit.getCombatLocation ().getX ());
 
-		if (trueUnit.getCombatLocation () != null)
+		if ((trueUnit.getCombatLocation () != null) && (untransmittedAction != KillUnitActionID.PERMANENT_DAMAGE))
 			trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
 			{
 				gc.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());

@@ -166,7 +166,16 @@ public final class SpellQueueingImpl implements SpellQueueing
 			((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
 			(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
 				(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
-			msg = "You must specify a unit target when casting this spell in combat.";
+		{
+			if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) && (spell.getSpellValidBorderTarget ().size () > 0) &&
+				(combatTargetLocation != null))
+			{
+				// Cracks call can also be aimed at walls, so this is fine
+				msg = null;
+			}
+			else
+				msg = "You must specify a unit target when casting this spell in combat.";
+		}
 
 		else if ((combatLocation != null) && (combatTargetLocation == null) &&
 			(spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
@@ -373,11 +382,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 			{
 				// Do nothing - more serious message already generated
 			}
-			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
+			else if ((combatTargetUnitURN != null) &&
+				((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
 				((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null)) ||
 				(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
 					(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) &&
-					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
+					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
 			{
 				// (Note overland spells tend to have a lot less validation since we don't pick targets until they've completed casting - so the checks are done then)
 				// Verify that the chosen unit is a valid target for unit enchantments/curses (we checked above that a unit has chosen)
@@ -447,7 +457,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 				else if (combatAreaEffectIDs.size () == 0)
 					msg = "You have already cast all possible effects of this combat enchantment";
 			}
-			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS)
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS) ||	// Earth to Mud or Disrupt Wall
+				((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) && (spell.getSpellValidBorderTarget ().size () > 0) &&
+					(combatTargetLocation != null)))		// Cracks Call when targetted at a wall instead of a unit
 			{
 				// Check location is valid 
 				if (!getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatTargetLocation, gc.getCombatMap ()))

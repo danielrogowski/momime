@@ -73,6 +73,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.SmoothedTile;
 import momime.common.database.SmoothedTileTypeEx;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileSetEx;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
@@ -523,7 +524,7 @@ public final class CombatUI extends MomClientFrameUI
 								 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
 								 getClient ().getSessionDescription ().getCombatMapSize ());
 							
-							final boolean validTarget;
+							boolean validTarget;
 							switch (getSpellBeingTargetted ().getSpellBookSectionID ())
 							{
 								// Summoning spell - valid as long as there isn't a unit here
@@ -538,7 +539,12 @@ public final class CombatUI extends MomClientFrameUI
 								case SPECIAL_UNIT_SPELLS:
 								case DISPEL_SPELLS:
 									if (xu == null)
-										validTarget = false;
+									{
+										// Cracks call can also be aimed at walls
+										validTarget = (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
+											(getSpellBeingTargetted ().getSpellValidBorderTarget ().size () > 0) &&
+											(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), moveToLocation, getCombatTerrain ()));
+									}
 									else
 									{
 										final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargetted ().getSpellRealm (),
@@ -557,6 +563,12 @@ public final class CombatUI extends MomClientFrameUI
 											(getSpellBeingTargetted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
 												xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 												getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
+										
+										// Cracks call can also be aimed at walls even if the unit is flying
+										if ((!validTarget) && (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
+											(getSpellBeingTargetted ().getSpellValidBorderTarget ().size () > 0))
+											
+											validTarget = (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), moveToLocation, getCombatTerrain ()));
 									}
 									break;
 									
@@ -1045,7 +1057,7 @@ public final class CombatUI extends MomClientFrameUI
 					{
 						// Left clicking to target a spell
 						final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt
-							(getCombatLocation (), moveToLocation, getClient ().getOurPlayerID (), getClient ().getPlayers (),
+							(getCombatLocation (), combatCoords, getClient ().getOurPlayerID (), getClient ().getPlayers (),
 							 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
 							 getClient ().getSessionDescription ().getCombatMapSize ());
 						
@@ -1087,7 +1099,18 @@ public final class CombatUI extends MomClientFrameUI
 							case ATTACK_SPELLS:
 							case SPECIAL_UNIT_SPELLS:
 							case DISPEL_SPELLS:
-								if (xu != null)
+								if (xu == null)
+								{
+									// Cracks call can also be aimed at walls
+									if ((getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
+										(getSpellBeingTargetted ().getSpellValidBorderTarget ().size () > 0) &&
+										(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), combatCoords, getCombatTerrain ())))
+									{
+										msg.setCombatTargetLocation (combatCoords);
+										isValidTarget = true;
+									}
+								}
+								else
 								{
 									final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargetted ().getSpellRealm (),
 										getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
@@ -1101,7 +1124,7 @@ public final class CombatUI extends MomClientFrameUI
 									else
 										variableDamage = null;
 									
-									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+									TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 										(getSpellBeingTargetted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
 										 xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
@@ -1110,9 +1133,19 @@ public final class CombatUI extends MomClientFrameUI
 										isValidTarget = true;
 										msg.setCombatTargetUnitURN (xu.getUnitURN ());
 									}
+									
+									// Cracks call can also be aimed at walls even if the unit is flying
+									else if ((getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
+										(getSpellBeingTargetted ().getSpellValidBorderTarget ().size () > 0) &&
+										(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), combatCoords, getCombatTerrain ())))
+									{
+										msg.setCombatTargetLocation (combatCoords);
+										isValidTarget = true;
+										validTarget = TargetSpellResult.VALID_TARGET;		// Just so we don't display error below
+									}
 	
 									// If we can't target on this unit, tell the player why not
-									else
+									if (validTarget != TargetSpellResult.VALID_TARGET)
 									{
 										final String spellName = getLanguageHolder ().findDescription
 											(getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "CombatUI").getSpellName ());
@@ -1134,7 +1167,7 @@ public final class CombatUI extends MomClientFrameUI
 								
 							// Combat spells targetted at a location have their own method too
 							case SPECIAL_COMBAT_SPELLS:
-								if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), moveToLocation, getCombatTerrain ()))
+								if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), combatCoords, getCombatTerrain ()))
 								{
 									msg.setCombatTargetLocation (combatCoords);
 									isValidTarget = true;

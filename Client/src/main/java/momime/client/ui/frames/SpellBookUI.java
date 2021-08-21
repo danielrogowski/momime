@@ -34,7 +34,6 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -48,6 +47,7 @@ import momime.client.ui.components.HideableComponent;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.dialogs.VariableManaUI;
+import momime.client.utils.MemoryMaintainedSpellClientUtils;
 import momime.client.utils.SpellSorter;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
@@ -135,6 +135,9 @@ public final class SpellBookUI extends MomClientFrameUI
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Methods for working with spells that are only needed on the client */
+	private MemoryMaintainedSpellClientUtils memoryMaintainedSpellClientUtils;
 	
 	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
 	private final static int SPELLS_PER_PAGE = 4;
@@ -780,6 +783,12 @@ public final class SpellBookUI extends MomClientFrameUI
 							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatUI ().getCombatLocation (), getClient ().getClientDB ()).stream ().anyMatch
 								(cae -> !cae.getCastingPlayerID ().equals (getClient ().getOurPlayerID ())));
 				
+				// Cracks call can also be aimed at walls
+				if ((!found) && (sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getSpellValidBorderTarget ().size () > 0))
+					found = getMemoryMaintainedSpellClientUtils ().isAnyCombatLocationValidTargetForSpell (spell,
+						getCombatUI ().getCombatTerrain (), getClient ().getSessionDescription ().getCombatMapSize ());
+				
+				// If no valid targets then tell player and don't allow casting it
 				proceed = found;
 				if (!proceed)
 				{
@@ -795,22 +804,9 @@ public final class SpellBookUI extends MomClientFrameUI
 			// Similar for spells targetted at a location
 			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.SPECIAL_COMBAT_SPELLS))
 			{
-				boolean found = false;
-				int y = 0;
-				while ((!found) && (y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight ()))
-				{
-					int x = 0;
-					while ((!found) && (x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth ()))
-					{
-						if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (x, y), getCombatUI ().getCombatTerrain ()))
-							found = true;
-						else
-							x++;
-					}
-					y++;
-				}
-
-				proceed = found;
+				proceed = getMemoryMaintainedSpellClientUtils ().isAnyCombatLocationValidTargetForSpell (spell,
+					getCombatUI ().getCombatTerrain (), getClient ().getSessionDescription ().getCombatMapSize ());
+				
 				if (!proceed)
 				{
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
@@ -1668,6 +1664,22 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+	
+	/**
+	 * @return Methods for working with spells that are only needed on the client
+	 */
+	public final MemoryMaintainedSpellClientUtils getMemoryMaintainedSpellClientUtils ()
+	{
+		return memoryMaintainedSpellClientUtils;
+	}
+
+	/**
+	 * @param u Methods for working with spells that are only needed on the client
+	 */
+	public final void setMemoryMaintainedSpellClientUtils (final MemoryMaintainedSpellClientUtils u)
+	{
+		memoryMaintainedSpellClientUtils = u;
 	}
 	
 	/**

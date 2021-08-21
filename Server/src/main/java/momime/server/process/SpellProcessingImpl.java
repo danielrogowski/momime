@@ -501,7 +501,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			// Spells aimed at a location
-			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS)
+			// Include here Cracks Call when it is aimed ONLY at a wall segment.  If its aimed at a unit that also happens to be standing
+			// adjacent to a wall segment, that is resolved differently in the ATTACK_SPELLS section below.
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS) ||
+				((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) && (spell.getSpellValidBorderTarget ().size () > 0) &&
+				(targetLocation != null) && (targetUnit == null)))
 			{
 				if (spell.getSpellValidBorderTarget ().size () > 0)
 				{
@@ -689,10 +693,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if ((targetUnits.size () > 0) || (targetSpells.size () > 0) || (targetCAEs.size () > 0))
 				{
 					if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
+					{
+						// If its Cracks Call, is there a wall segment to attack in addition to the unit we're attacking?
+						Integer wreckTileChance = null;
+						MapCoordinates2DEx wreckTilePosition = null;
+						if ((spell.getSpellValidBorderTarget ().size () > 0) && (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell
+							(spell, (MapCoordinates2DEx) targetUnit.getCombatPosition (), gc.getCombatMap ())))
+						{
+							wreckTileChance = 1;
+							wreckTilePosition = (MapCoordinates2DEx) targetUnit.getCombatPosition ();
+						}
+								
 						combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
 							targetUnits, attackingPlayer, defendingPlayer,
-							null, null, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
-					
+							wreckTileChance, wreckTilePosition, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+					}
 					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null))
 					{
 						// Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,

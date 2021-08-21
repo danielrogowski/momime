@@ -980,6 +980,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="heroItemClientUtils" class="momime.client.utils.HeroItemClientUtilsImpl" />
+
+	<bean id="memoryMaintainedSpellClientUtils" class="momime.client.utils.MemoryMaintainedSpellClientUtilsImpl">
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+	</bean>	
 	
 	<!-- Language variable replacers -->
 	
@@ -1358,6 +1362,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="createArtifactUI" ref="createArtifactUI" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryMaintainedSpellClientUtils" ref="memoryMaintainedSpellClientUtils" />		
 	</bean>
 
 	<bean id="combatLayoutMain" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

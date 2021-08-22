@@ -333,6 +333,10 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else if ((healingSpell) && (getUnitUtils ().getHealableDamageTaken (targetUnit.getUnitDamage ()) == 0))
     			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
+    		else if ((healingSpell) && ((targetUnit.getModifiedUnitMagicRealmLifeformType ().isHealEachTurn () == null) ||
+    			(!targetUnit.getModifiedUnitMagicRealmLifeformType ().isHealEachTurn ())))
+    			result = TargetSpellResult.UNHEALABLE_LIFEFORM_TYPE;
+    		
     		else
     		{
     			final List<String> spellsImmuneToDispelling = db.getSpell ().stream ().filter

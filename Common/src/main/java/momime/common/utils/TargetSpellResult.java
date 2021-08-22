@@ -53,6 +53,9 @@ public enum TargetSpellResult
 	/** Trying to heal a unit that has taken only permanent damage */
 	PERMANENTLY_DAMAGED,
 	
+	/** Trying to heal a Death or Undead creature */
+	UNHEALABLE_LIFEFORM_TYPE,
+	
 	/** Trying to dispel a target that has no enemy spells cast on it */
 	NOTHING_TO_DISPEL,
 	

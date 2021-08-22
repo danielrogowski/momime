@@ -66,6 +66,10 @@ public final class SpellTargettingEx extends SpellTargetting
 				languageText = getPermanentlyDamaged ();
 				break;
 				
+			case UNHEALABLE_LIFEFORM_TYPE:
+				languageText = getUnhealableLifeformType ();
+				break;
+				
 			case NOTHING_TO_DISPEL:
 				languageText = getNoEnemySpellsUnit ();
 				break;

@@ -1043,8 +1043,11 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>This unit has taken no damage.</text>
         </undamaged>
         <permanentlyDamaged language="en">
-            <text>This unit has suffered permanent damage that cannot be healed inside combat.</text>
+            <text>This unit has suffered permanent damage that cannot be healed normally.</text>
         </permanentlyDamaged>
+        <unhealableLifeformType language="en">
+            <text>This type of unit cannot be healed.</text>
+        </unhealableLifeformType>
         <noEnemySpellsUnit language="en">
             <text>This unit has no enchantments or curses cast by an enemy wizard for you to try to dispel.</text>
         </noEnemySpellsUnit>

@@ -2274,6 +2274,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		final Pick normalUnits = new Pick ();
 		normalUnits.setPickID ("LTN");
+		normalUnits.setHealEachTurn (true);
 		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -2465,9 +2466,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
+		final Pick undeadUnits = new Pick ();
+		undeadUnits.setPickID ("LTU");
+		undeadUnits.setHealEachTurn (false);
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (undeadUnits);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.getTotalDamageTaken (xu.getUnitDamage ())).thenReturn (2);
@@ -2475,7 +2477,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Correct lifeform type?
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
+		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTU")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
@@ -2483,7 +2485,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setUnitUtils (unitUtils);
 
 		// Run method
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
+		assertEquals (TargetSpellResult.UNHEALABLE_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**
@@ -3182,6 +3184,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (db.findDamageType ("DT01", "isUnitValidTargetForSpell")).thenReturn (damageType);
 		
 		final Pick magicRealm = new Pick ();
+		magicRealm.setHealEachTurn (true);
 		
 		// Set up other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();

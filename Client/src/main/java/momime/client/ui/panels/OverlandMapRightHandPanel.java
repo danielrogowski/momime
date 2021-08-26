@@ -845,7 +845,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 				
 				final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "OverlandMapRightHandPanel");
-				String target = getLanguageHolder ().findDescription (section.getSpellTargetPrompt ());
+				final List<LanguageText> prompt = ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ())) ?
+					section.getSpellTargetStackPrompt () : section.getSpellTargetPrompt ();
+						
+				String target = getLanguageHolder ().findDescription (prompt);
 				
 				target = target.replaceAll ("SPELL_NAME", spellName);
 				

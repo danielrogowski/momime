@@ -618,6 +618,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		spell.setResurrectedHealthPercentage (50);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RAISE_DEAD);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -638,6 +642,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -662,6 +667,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		spell.setResurrectedHealthPercentage (50);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RAISE_DEAD);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
@@ -679,6 +688,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -703,6 +713,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		spell.setResurrectedHealthPercentage (50);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RAISE_DEAD);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
@@ -723,6 +737,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -747,6 +762,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		spell.setResurrectedHealthPercentage (50);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RAISE_DEAD);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -767,6 +786,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -792,6 +812,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setResurrectedHealthPercentage (50);
 		spell.setResurrectEnemyUnits (true);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RAISE_DEAD);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -812,6 +836,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -836,6 +861,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		spell.setResurrectedHealthPercentage (50);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RAISE_DEAD);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -856,6 +885,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.RAISING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -883,6 +913,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -901,6 +935,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (mock (UnitUtils.class));
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
@@ -928,6 +963,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -949,6 +988,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (mock (UnitUtils.class));
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -976,6 +1016,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -993,6 +1037,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1020,6 +1065,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
@@ -1040,6 +1089,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1067,6 +1117,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -1084,6 +1138,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
@@ -1107,6 +1162,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -1124,6 +1183,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
@@ -1158,6 +1218,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -1175,6 +1239,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
@@ -1201,6 +1266,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final UnitSpellEffect effect = new UnitSpellEffect ();
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
+	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
 		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -1220,6 +1289,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setUnitUtils (mock (UnitUtils.class));
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, null, 1, null, null, xu, fow, db));
@@ -1247,6 +1317,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1267,6 +1341,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1294,6 +1369,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_CURSES);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1315,6 +1394,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (mock (UnitUtils.class));
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1342,6 +1422,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_CURSES);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -1359,6 +1443,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1386,6 +1471,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_CURSES);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
@@ -1406,6 +1495,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1433,6 +1523,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_CURSES);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1453,6 +1547,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1476,6 +1571,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_CURSES);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_CURSES);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1496,6 +1595,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1530,6 +1630,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_CURSES);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1550,6 +1654,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1577,6 +1682,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_CURSES);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1598,6 +1707,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (mock (UnitUtils.class));
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1625,6 +1735,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect.setUnitSkillID ("US001");
 		spell.getUnitSpellEffect ().add (effect);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_CURSES);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1645,6 +1759,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1669,6 +1784,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1689,6 +1808,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1713,6 +1833,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -1730,6 +1854,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1754,6 +1879,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
@@ -1774,6 +1903,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1798,6 +1928,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1818,6 +1952,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1842,6 +1977,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1862,6 +2001,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1886,6 +2026,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1906,6 +2050,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1936,6 +2081,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		spell.setAttackSpellDamageTypeID ("DT01");
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -1957,6 +2106,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -1981,6 +2131,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2002,6 +2156,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2031,6 +2186,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
 		spell.setAttackSpellDamageTypeID ("DT01");
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2053,6 +2212,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2076,6 +2236,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
+
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
 		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -2098,6 +2262,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2124,6 +2289,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE);
 		spell.setCombatBaseDamage (4);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2145,6 +2314,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2172,6 +2342,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setCombatBaseDamage (1);
 		spell.setCombatMaxDamage (6);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2193,6 +2367,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, 4, xu, fow, db));
@@ -2218,6 +2393,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.CHANCE_OF_DEATH);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_UNITS_AND_WALLS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2239,6 +2418,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2263,6 +2443,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		spell.setCombatBaseDamage (5);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.HEALING);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2289,6 +2473,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2313,6 +2498,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		spell.setCombatBaseDamage (5);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.HEALING);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -2335,6 +2524,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2359,6 +2549,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		spell.setCombatBaseDamage (5);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.HEALING);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
@@ -2384,6 +2578,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2408,6 +2603,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		spell.setCombatBaseDamage (5);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.HEALING);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2433,6 +2632,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2457,6 +2657,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		spell.setCombatBaseDamage (5);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.HEALING);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2483,6 +2687,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNHEALABLE_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2507,6 +2712,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		spell.setCombatBaseDamage (5);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.HEALING);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2532,6 +2741,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2556,6 +2766,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		spell.setCombatBaseDamage (5);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.HEALING);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2579,6 +2793,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNDAMAGED, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2603,6 +2818,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		spell.setCombatBaseDamage (5);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.HEALING);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2627,6 +2846,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setUnitUtils (unitUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.PERMANENTLY_DAMAGED, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2650,6 +2870,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RECALL);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2670,6 +2894,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2693,6 +2918,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RECALL);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -2710,6 +2939,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2733,6 +2963,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RECALL);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
@@ -2753,6 +2987,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2776,6 +3011,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RECALL);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2796,6 +3035,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2818,6 +3058,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RECALL);
 	
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -2839,6 +3083,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2862,6 +3107,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.RECALL);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2882,6 +3131,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2910,7 +3160,11 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
-	
+
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2931,6 +3185,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -2959,7 +3214,11 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
-	
+
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -2980,6 +3239,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -3008,6 +3268,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
@@ -3025,6 +3289,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -3053,6 +3318,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
@@ -3073,6 +3342,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -3102,6 +3372,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -3122,6 +3396,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
@@ -3145,6 +3420,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
 	
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
@@ -3165,199 +3444,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
 		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell (spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
-	}
-	
-	/**
-	 * Tests the isUnitValidTargetForSpell method
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testIsUnitValidTargetForSpell () throws Exception
-	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final DamageType damageType = new DamageType ();
-		when (db.findDamageType ("DT01", "isUnitValidTargetForSpell")).thenReturn (damageType);
-		
-		final Pick magicRealm = new Pick ();
-		magicRealm.setHealEachTurn (true);
-		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
-		// Spell
-		final Spell spell = new Spell ();
-		spell.setSpellID ("SP001");
-		spell.setAttackSpellDamageTypeID ("DT01");
-
-		// Intended target
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-
-		final MemoryUnit unit = new MemoryUnit ();
-		
-		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (xu.getMemoryUnit ()).thenReturn (unit);
-		when (xu.getUnitURN ()).thenReturn (10);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
-		
-		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (12);
-		
-		// Set up object to test
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		
-		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
-		utils.setUnitUtils (unitUtils);
-		
-		// Dead unit
-		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell
-			(spell, null, null, 1, null, null, xu, fow, db));
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-	
-		// Enchanting enemy unit
-		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
-		when (xu.getOwningPlayerID ()).thenReturn (2);
-		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell
-			(spell, null, null, 1, null, null, xu, fow, db));
-		
-		// Healing enemy unit
-		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
-		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell
-			(spell, null, null, 1, null, null, xu, fow, db));
-		
-		// Cursing own uint
-		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_CURSES);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
-		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell
-			(spell, null, null, 1, null, null, xu, fow, db));
-		
-		// Spell has no effects defined
-		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
-		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell
-			(spell, null, null, 1, null, null, xu, fow, db));
-		
-		// All effects already cast on this unit
-		final UnitSpellEffect effectA = new UnitSpellEffect ();
-		effectA.setUnitSkillID ("A");
-		spell.getUnitSpellEffect ().add (effectA);
-
-		final MemoryMaintainedSpell existingEffectA = new MemoryMaintainedSpell ();
-		existingEffectA.setSpellID ("SP001");
-		existingEffectA.setCastingPlayerID (1);
-		existingEffectA.setUnitSkillID ("A");
-		existingEffectA.setUnitURN (10);
-		fow.getMaintainedSpell ().add (existingEffectA);
-
-		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell
-			(spell, null, null, 1, null, null, xu, fow, db));
-		
-		// Invalid magic realm/lifeform type
-		final UnitSpellEffect effectB = new UnitSpellEffect ();
-		effectB.setUnitSkillID ("B");
-		spell.getUnitSpellEffect ().add (effectB);
-
-		magicRealm.setPickID ("X");
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (false);
-		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell
-			(spell, null, null, 1, null, null, xu, fow, db));
-		
-		// Valid target overland
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (true);
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, null, null, 1, null, null, xu, fow, db));
-		
-		// Currently the unit has combat location + side, but not heading + position, so its s land unit in a naval combat and can't fight, and can't be targetted
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
-		
-		// Combat non-attack spell
-		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (5, 6));
-		when (xu.getCombatHeading ()).thenReturn (1);
-		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
-		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
-		
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
-
-		// Combat attack spell that rolls against something other than resistance
-		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
-		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
-
-		// Immune to the type of damage
-		when (xu.isUnitImmuneToDamageType (damageType)).thenReturn (true);
-		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
-		when (xu.isUnitImmuneToDamageType (damageType)).thenReturn (false);
-		
-		// Combat attack spell that rolls against resistance, but its resistance is really high
-		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
-		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
-		
-		// Spell gives -1 modifier, but its still not enough
-		spell.setCombatBaseDamage (1);
-		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, null, xu, fow, db));
-		
-		// Spell gives variable modifier, and we're setting it to -2 - still not enough
-		spell.setCombatMaxDamage (5);
-		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, 2, xu, fow, db));
-
-		// Upping it to a -3 modifier is enough
-		spell.setCombatMaxDamage (5);
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 2, null, 3, xu, fow, db));
-		
-		// Unit is in a different combat
-		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 11, 1), 2, null, 3, xu, fow, db));
-		
-		// Healing spell
-		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
-		assertEquals (TargetSpellResult.UNDAMAGED, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
-
-		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (5);
-		assertEquals (TargetSpellResult.PERMANENTLY_DAMAGED, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
-
-		when (unitUtils.getHealableDamageTaken (unit.getUnitDamage ())).thenReturn (5);
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
-		
-		// Dispel magic
-		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
-		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
-		
-		final MemoryMaintainedSpell spell1 = new MemoryMaintainedSpell ();
-		spell1.setUnitURN (xu.getUnitURN ());
-		spell1.setCastingPlayerID (1);
-		fow.getMaintainedSpell ().add (spell1);
-
-		final MemoryMaintainedSpell spell2 = new MemoryMaintainedSpell ();
-		spell2.setUnitURN (999);
-		spell2.setCastingPlayerID (2);
-		fow.getMaintainedSpell ().add (spell2);
-
-		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
-
-		final MemoryMaintainedSpell spell3 = new MemoryMaintainedSpell ();
-		spell3.setUnitURN (xu.getUnitURN ());
-		spell3.setCastingPlayerID (2);
-		fow.getMaintainedSpell ().add (spell3);
-
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, null, new MapCoordinates3DEx (20, 10, 1), 1, null, null, xu, fow, db));
 	}
 	
 	/**

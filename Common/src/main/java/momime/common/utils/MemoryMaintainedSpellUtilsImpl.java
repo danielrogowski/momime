@@ -51,6 +51,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
 	
+	/** Kind of spell utils */
+	private KindOfSpellUtils kindOfSpellUtils;
+	
 	/**
 	 * Searches for a maintained spell in a list
 	 *
@@ -273,8 +276,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	final SpellBookSectionID useSpellBookSection = (overrideSpellBookSection != null) ? overrideSpellBookSection : spell.getSpellBookSectionID ();
     	
     	// Simpify identifying some kinds of spells so don't have to repeat this all over the place
-    	final boolean raiseDead = (useSpellBookSection == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null);
-    	final boolean healingSpell = (useSpellBookSection == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null);
+    	final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, overrideSpellBookSection);
     	
     	// If we're trying to cast a combat spell, then the unit must be in the right combat
     	if ((combatLocation != null) && ((!combatLocation.equals (targetUnit.getCombatLocation ())) ||
@@ -283,11 +285,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		result = TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT;
     	
     	// For anything other than raise dead-type spell, target unit must be alive
-    	else if ((!raiseDead) && (targetUnit.getStatus () != UnitStatusID.ALIVE))
+    	else if ((kind != KindOfSpell.RAISE_DEAD) && (targetUnit.getStatus () != UnitStatusID.ALIVE))
     		result = TargetSpellResult.UNIT_DEAD;
 
     	// For raise dead-type spells, target unit must be dead
-    	else if ((raiseDead) && (targetUnit.getStatus () != UnitStatusID.DEAD))
+    	else if ((kind == KindOfSpell.RAISE_DEAD) && (targetUnit.getStatus () != UnitStatusID.DEAD))
        		result = TargetSpellResult.UNIT_NOT_DEAD;
     	
     	// Casting something beneficial on an enemy unit
@@ -301,7 +303,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
     	
     	// Trying to raise dead an enemy unit with a spell that doesn't explicitly allow this
-    	else if ((raiseDead) && ((spell.isResurrectEnemyUnits () == null) || (!spell.isResurrectEnemyUnits ())) && (targetUnit.getOwningPlayerID () != castingPlayerID))
+    	else if ((kind == KindOfSpell.RAISE_DEAD) && ((spell.isResurrectEnemyUnits () == null) ||
+    		(!spell.isResurrectEnemyUnits ())) && (targetUnit.getOwningPlayerID () != castingPlayerID))
     		result = TargetSpellResult.RAISING_ENEMY;
     	
     	else
@@ -327,13 +330,13 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			result = TargetSpellResult.TOO_MUCH_EXPERIENCE;
     		
     		// combatBaseDamage being not null is what identifies a special unit spell to be a healing spell
-    		else if ((healingSpell) && (getUnitUtils ().getTotalDamageTaken (targetUnit.getUnitDamage ()) == 0)) 
+    		else if ((kind == KindOfSpell.HEALING) && (getUnitUtils ().getTotalDamageTaken (targetUnit.getUnitDamage ()) == 0)) 
     			result = TargetSpellResult.UNDAMAGED;
 
-    		else if ((healingSpell) && (getUnitUtils ().getHealableDamageTaken (targetUnit.getUnitDamage ()) == 0))
+    		else if ((kind == KindOfSpell.HEALING) && (getUnitUtils ().getHealableDamageTaken (targetUnit.getUnitDamage ()) == 0))
     			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
-    		else if ((healingSpell) && ((targetUnit.getModifiedUnitMagicRealmLifeformType ().isHealEachTurn () == null) ||
+    		else if ((kind == KindOfSpell.HEALING) && ((targetUnit.getModifiedUnitMagicRealmLifeformType ().isHealEachTurn () == null) ||
     			(!targetUnit.getModifiedUnitMagicRealmLifeformType ().isHealEachTurn ())))
     			result = TargetSpellResult.UNHEALABLE_LIFEFORM_TYPE;
     		
@@ -342,6 +345,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			final List<String> spellsImmuneToDispelling = db.getSpell ().stream ().filter
     				(s -> (s.isImmuneToDispelling () != null) && (s.isImmuneToDispelling ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
     			
+    			// We're in a method that specifically deals with targeting units, so we don't have to worry about Disenchant Area
+    			// also being able to target spells cast at the location, or Disjunction targeting overland enchantments
 	    		if ((useSpellBookSection == SpellBookSectionID.DISPEL_SPELLS) &&
 	    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == targetUnitURN) &&
 	    				(s.getCastingPlayerID () != castingPlayerID) && (!spellsImmuneToDispelling.contains (s.getSpellID ())))))
@@ -701,5 +706,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
+	}
+
+	/**
+	 * @return Kind of spell utils
+	 */
+	public final KindOfSpellUtils getKindOfSpellUtils ()
+	{
+		return kindOfSpellUtils;
+	}
+
+	/**
+	 * @param k Kind of spell utils
+	 */
+	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
+	{
+		kindOfSpellUtils = k;
 	}
 }

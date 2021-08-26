@@ -15,10 +15,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -79,6 +81,7 @@ import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -902,20 +905,73 @@ public final class OverlandMapUI extends MomClientFrameUI
 								case UNIT_ENCHANTMENTS:
 								case SPECIAL_UNIT_SPELLS:
 								{
-									// Find our units at this map location
+									// Find our units at this map location, and also check if they're valid targets
 									final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+									final List<ExpandedUnitDetails> validUnits = new ArrayList<ExpandedUnitDetails> ();
+									final Set<TargetSpellResult> invalidReasons = new HashSet<TargetSpellResult> ();
+									
 									for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 										if ((mapLocation.equals (unit.getUnitLocation ())) && (unit.getStatus () == UnitStatusID.ALIVE) &&
 											(unit.getOwningPlayerID () == getClient ().getOurPlayerID ()))
-											
+										{
 											units.add (unit);
+											
+											final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+												getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+											
+											final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+												getClient ().getOurPlayerID (), null, null, xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+												getClient ().getClientDB ());
+											
+											if (validTarget == TargetSpellResult.VALID_TARGET)												
+												validUnits.add (xu);
+											else
+												invalidReasons.add (validTarget);
+										}
 									
 									if (units.size () > 0)
 									{
-										final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
-										unitRowDisplay.setUnits (units);
-										unitRowDisplay.setTargetSpellID (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
-										unitRowDisplay.setVisible (true);
+										if ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ()))
+										{
+											if (validUnits.size () > 0)
+											{
+												// Aim spell at all units in this location
+												final TargetSpellMessage msg = new TargetSpellMessage ();
+												msg.setSpellID (spell.getSpellID ());
+												msg.setOverlandTargetLocation (mapLocation);
+												getClient ().getServerConnection ().sendMessageToServer (msg);
+												
+												// Close out the "Target Spell" right hand panel
+												getOverlandMapProcessing ().updateMovementRemaining ();
+											}
+											else
+											{
+												// There's units here, but none are suitable targets so reject it
+												final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
+												final StringBuilder text = new StringBuilder ();
+												for (final TargetSpellResult invalidReason : invalidReasons)
+												{
+													if (text.length () > 0)
+														text.append (System.lineSeparator ());
+													
+													text.append (getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getUnitLanguageText (invalidReason)).replaceAll
+														("SPELL_NAME", spellName));
+												}
+												
+												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+												msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
+												msg.setText (text.toString ());
+												msg.setVisible (true);												
+											}
+										}
+										else
+										{
+											// Pick a specific unit
+											final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
+											unitRowDisplay.setUnits (units);
+											unitRowDisplay.setTargetSpellID (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
+											unitRowDisplay.setVisible (true);
+										}
 									}
 									
 									break;

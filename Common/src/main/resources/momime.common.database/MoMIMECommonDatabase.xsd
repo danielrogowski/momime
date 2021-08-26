@@ -486,6 +486,10 @@
 						<xsd:selector xpath="spellTargetPrompt" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellTargetStackPromptPK">
+						<xsd:selector xpath="spellTargetStackPrompt" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimecommon:spell">
 					<xsd:key name="summonedUnitPK">
@@ -3196,6 +3200,7 @@ this value each time a dispel attempt is made (counter magic).</xsd:documentatio
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellBookSectionName" type="momimecommon:languageText" nxe:label="Name" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellTargetPrompt" type="momimecommon:languageText" nxe:label="Targeting prompt" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellTargetStackPrompt" type="momimecommon:languageText" nxe:label="Targeting stack prompt" />
 		</xsd:sequence>
 		<xsd:attribute name="spellBookSectionID" type="momimecommon:spellBookSectionID" use="required" nxe:label="Spell Book Section ID" nxe:gridwidth="150" />
 	</xsd:complexType>
@@ -3281,6 +3286,7 @@ spell upkeep, but cannot switch off the spell that's costing the upkeep)</xsd:do
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="overlandTargetsEntireStack" type="xsd:boolean" nxe:label="Target entire stack?" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellCombatTarget" type="momimecommon:attackSpellCombatTargetID" nxe:label="Atk Spell Combat Target" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageTypeID" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
@@ -4640,7 +4646,8 @@ otherwise its a standard summoning spell</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC09"><xsd:annotation>
-				<xsd:documentation>Special spells targetted at our own units; if combatBaseDamage is set then its a healing spell, otherwise its a recall spell; spellValidUnitTarget entries apply</xsd:documentation>
+				<xsd:documentation>Special spells targetted at our own units; if combatBaseDamage is set then its a healing spell, otherwise its a recall spell; spellValidUnitTarget entries apply.
+If its an overland spell then its automatically a healing spell.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_UNIT_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC10"><xsd:annotation>

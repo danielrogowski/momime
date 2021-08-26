@@ -26,7 +26,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.MemoryBuilding;
@@ -40,6 +39,8 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KindOfSpell;
+import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -111,6 +112,9 @@ public final class SpellAIImpl implements SpellAI
 	
 	/** Methods relating to casting spells in combat */
 	private CombatSpellAI combatSpellAI;
+	
+	/** Kind of spell utils */
+	private KindOfSpellUtils kindOfSpellUtils;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -594,11 +598,10 @@ public final class SpellAIImpl implements SpellAI
 		final WeightedChoicesImpl<CombatAISpellChoice> choices = new WeightedChoicesImpl<CombatAISpellChoice> ();
 		choices.setRandomUtils (getRandomUtils ());
 		
+		// Ignore "recall" spells then the AI would then have to understand its likelehood of losing a combat, and there's nothing like this yet
 		for (final Spell spell : mom.getServerDB ().getSpell ())
 			if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) &&
-					
-				// Ignore "recall" spells then the AI would then have to understand its likelehood of losing a combat, and there's nothing like this yet
-				((spell.getSpellBookSectionID () != SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getCombatBaseDamage () != null)))
+				(getKindOfSpellUtils ().determineKindOfSpell (spell, null) != KindOfSpell.RECALL))
 			{
 				// A lot of this is lifted from the same validation that requestCastSpell does
 				boolean knowSpell;
@@ -1013,5 +1016,21 @@ public final class SpellAIImpl implements SpellAI
 	public final void setCombatSpellAI (final CombatSpellAI ai)
 	{
 		combatSpellAI = ai;
+	}
+
+	/**
+	 * @return Kind of spell utils
+	 */
+	public final KindOfSpellUtils getKindOfSpellUtils ()
+	{
+		return kindOfSpellUtils;
+	}
+
+	/**
+	 * @param k Kind of spell utils
+	 */
+	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
+	{
+		kindOfSpellUtils = k;
 	}
 }

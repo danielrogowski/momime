@@ -767,6 +767,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="combatSpellAI" ref="combatSpellAI" />
+		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 	</bean>
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">

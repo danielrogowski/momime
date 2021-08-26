@@ -294,6 +294,7 @@
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />
@@ -364,5 +365,7 @@
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
+
+	<bean id="kindOfSpellUtils" class="momime.common.utils.KindOfSpellUtilsImpl" />
 
 </beans>

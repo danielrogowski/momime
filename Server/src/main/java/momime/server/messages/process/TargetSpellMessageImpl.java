@@ -1,6 +1,7 @@
 package momime.server.messages.process;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -22,6 +23,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.ExpandedUnitDetails;
@@ -146,54 +148,100 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
 				(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS))
 			{
-				// Find the unit we're aiming at
-				if (getOverlandTargetLocation () != null)
-					error = "You chose a location as the target for a unit spell";
-
-				else if (getOverlandTargetSpellURN () != null)
-					error = "You chose a spell as the target for a unit spell";
-				
-				else if (getOverlandTargetUnitURN () == null)
-					error = "You didn't provide a target for a unit spell";
-				
-				else
+				if ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ()))
 				{
-					unit = getUnitUtils ().findUnitURN (getOverlandTargetUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-					if (unit == null)
-						error = "Could not find the unit you're trying to target the spell on";
+					// Target entire stack
+					if (getOverlandTargetUnitURN () != null)
+						error = "You chose a unit as the target for a unit stack spell";
+					
+					else if (getOverlandTargetSpellURN () != null)
+						error = "You chose a spell as the target for a unit stack spell";
+					
+					else if (getOverlandTargetLocation () == null)
+						error = "You didn't provide a target for a unit stack spell";
+
 					else
 					{
-						// Common routine used by both the client and server does the guts of the validation work
-						xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+						final List<ExpandedUnitDetails> validUnits = new ArrayList<ExpandedUnitDetails> ();
 						
-						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-							(spell, null, null, sender.getPlayerDescription ().getPlayerID (), null, null, xu,
-							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-						
-						if (reason == TargetSpellResult.VALID_TARGET)
-						{
-							// If its a unit enchantment, now pick which skill ID we'll actually get
-							if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+						for (final MemoryUnit mu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+							if ((getOverlandTargetLocation ().equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) &&
+								(mu.getOwningPlayerID () == sender.getPlayerDescription ().getPlayerID ()))
 							{
-								final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
-									(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), getOverlandTargetUnitURN ());
-								if ((unitSpellEffects == null) || (unitSpellEffects.size () == 0))
-									error = "Unit is supposedly a valid target, yet couldn't find any unitSkillIDs to use";
-								else
+								units.add (mu);
+								
+								final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+									mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+								
+								if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+									sender.getPlayerDescription ().getPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
+									mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)												
+									
+									validUnits.add (thisTarget);
+							}
+						
+						if (units.size () == 0)
+							error = "You have no units at this location to target the spell on";
+						
+						else if (validUnits.size () == 0)
+							error = "None of the units here are suitable targets for this spell";
+						
+						else
+							error = null;
+					}
+				}
+				else
+				{
+					// Target individual unit
+					if (getOverlandTargetLocation () != null)
+						error = "You chose a location as the target for a unit spell";
+	
+					else if (getOverlandTargetSpellURN () != null)
+						error = "You chose a spell as the target for a unit spell";
+					
+					else if (getOverlandTargetUnitURN () == null)
+						error = "You didn't provide a target for a unit spell";
+					
+					else
+					{
+						unit = getUnitUtils ().findUnitURN (getOverlandTargetUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+						if (unit == null)
+							error = "Could not find the unit you're trying to target the spell on";
+						else
+						{
+							// Common routine used by both the client and server does the guts of the validation work
+							xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
+								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+							
+							final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+								(spell, null, null, sender.getPlayerDescription ().getPlayerID (), null, null, xu,
+								mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+							
+							if (reason == TargetSpellResult.VALID_TARGET)
+							{
+								// If its a unit enchantment, now pick which skill ID we'll actually get
+								if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 								{
-									// Yay
-									error = null;
-									unitSkillID = unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID ();
+									final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+										(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), getOverlandTargetUnitURN ());
+									if ((unitSpellEffects == null) || (unitSpellEffects.size () == 0))
+										error = "Unit is supposedly a valid target, yet couldn't find any unitSkillIDs to use";
+									else
+									{
+										// Yay
+										error = null;
+										unitSkillID = unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID ();
+									}
 								}
+								else
+									// Special unit spells don't need to pick a skill ID, so they're just OK
+									error = null;
 							}
 							else
-								// Special unit spells don't need to pick a skill ID, so they're just OK
-								error = null;
+								// Using the enum name isn't that great, but the client will already have performed this validation so should never see any message generated here anyway
+								error = "This unit is not a valid target for this spell for reason " + reason;
 						}
-						else
-							// Using the enum name isn't that great, but the client will already have performed this validation so should never see any message generated here anyway
-							error = "This unit is not a valid target for this spell for reason " + reason;
 					}
 				}
 			}

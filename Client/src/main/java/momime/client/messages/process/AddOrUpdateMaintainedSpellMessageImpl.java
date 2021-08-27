@@ -153,19 +153,22 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
 				{
 					getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedUnitURN (getMaintainedSpell ().getUnitURN ());
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
 					
 					// Redraw the NTMs
 					getNewTurnMessagesUI ().languageChanged ();
 				}
 				
 				// Is there an animation to display for it?
-				if ((getMaintainedSpell ().getUnitURN () != null) && (isNewlyCast ()))
+				if (((getMaintainedSpell ().getUnitURN () != null) || (getMaintainedSpell ().getCityLocation () != null)) && (isNewlyCast ()))
 				{
 					anim = null;
 					if (spell.getCombatCastAnimation () != null)
 					{
-						final MemoryUnit spellTargetUnit = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl");
+						final MemoryUnit spellTargetUnit = (getMaintainedSpell ().getUnitURN () != null) ? getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl") : null;
+						final MapCoordinates3DEx spellTargetLocation = (MapCoordinates3DEx)
+							((spellTargetUnit != null) ? spellTargetUnit.getUnitLocation () : getMaintainedSpell ().getCityLocation ());
 						
 						anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
 		
@@ -191,25 +194,25 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 							else
 								anim = null;
 						}
-						else
+						else if (spellTargetLocation != null)
 						{
 							// Show anim on OverlandMapUI - is the unit in a tower?
 							final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-								(spellTargetUnit.getUnitLocation ().getZ ()).getRow ().get (spellTargetUnit.getUnitLocation ().getY ()).getCell ().get
-								(spellTargetUnit.getUnitLocation ().getX ());
+								(spellTargetLocation.getZ ()).getRow ().get (spellTargetLocation.getY ()).getCell ().get
+								(spellTargetLocation.getX ());
 							
 							if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
 								getOverlandMapUI ().setOverlandCastAnimationPlane (null);
 							else
-								getOverlandMapUI ().setOverlandCastAnimationPlane (spellTargetUnit.getUnitLocation ().getZ ());
+								getOverlandMapUI ().setOverlandCastAnimationPlane (spellTargetLocation.getZ ());
 							
 							final TileSetEx overlandMapTileSet = getClient ().getClientDB ().findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
 		
 							final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
 							final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();
 		
-							getOverlandMapUI ().setOverlandCastAnimationX (adjustX + (overlandMapTileSet.getTileWidth () * spellTargetUnit.getUnitLocation ().getX ()));
-							getOverlandMapUI ().setOverlandCastAnimationY (adjustY + (overlandMapTileSet.getTileHeight () * spellTargetUnit.getUnitLocation ().getY ()));
+							getOverlandMapUI ().setOverlandCastAnimationX (adjustX + (overlandMapTileSet.getTileWidth () * spellTargetLocation.getX ()));
+							getOverlandMapUI ().setOverlandCastAnimationY (adjustY + (overlandMapTileSet.getTileHeight () * spellTargetLocation.getY ()));
 							
 							getOverlandMapUI ().setOverlandCastAnimationFrame (0);
 							getOverlandMapUI ().setOverlandCastAnimation (anim);

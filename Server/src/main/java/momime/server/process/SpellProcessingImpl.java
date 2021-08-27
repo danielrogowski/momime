@@ -65,6 +65,8 @@ import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KindOfSpell;
+import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -183,6 +185,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Casting for each type of spell */
 	private SpellCasting spellCasting;
+	
+	/** Kind of spell utils */
+	private KindOfSpellUtils kindOfSpellUtils;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -397,6 +402,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 		
 		if (passesCounteringAttempts)
 		{
+			final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
+			
 			// Combat enchantments
 			if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
 			{
@@ -503,11 +510,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// Spells aimed at a location
 			// Include here Cracks Call when it is aimed ONLY at a wall segment.  If its aimed at a unit that also happens to be standing
 			// adjacent to a wall segment, that is resolved differently in the ATTACK_SPELLS section below.
-			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS) ||
-				((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) && (spell.getSpellValidBorderTarget ().size () > 0) &&
-				(targetLocation != null) && (targetUnit == null)))
+			else if ((kind == KindOfSpell.EARTH_TO_MUD) || (kind == KindOfSpell.ATTACK_WALLS) ||
+				((kind == KindOfSpell.ATTACK_UNITS_AND_WALLS) && (targetLocation != null) && (targetUnit == null)))
 			{
-				if (spell.getSpellValidBorderTarget ().size () > 0)
+				if ((kind == KindOfSpell.ATTACK_WALLS) || (kind == KindOfSpell.ATTACK_UNITS_AND_WALLS))
 				{
 					// Wreck one tile
 					gc.getCombatMap ().getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).setWrecked (true);
@@ -552,7 +558,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			// Raise dead
-			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (targetUnit != null))
+			else if (kind == KindOfSpell.RAISE_DEAD)
 			{
 				// Even though we're summoning the unit into a combat, the location of the unit might not be
 				// the same location as the combat - if its the attacker summoning a unit, it needs to go in the
@@ -611,7 +617,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			// Combat summons
-			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+			else if (kind == KindOfSpell.SUMMONING)
 			{
 				// Pick an actual unit at random
 				if (spell.getSummonedUnit ().size () > 0)
@@ -708,7 +714,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							targetUnits, attackingPlayer, defendingPlayer,
 							wreckTileChance, wreckTilePosition, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
 					}
-					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null))
+					else if (kind == KindOfSpell.HEALING)
 					{
 						// Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,
 						// and handles showing the animation for us, so its convenient to reuse it for this.  Effectively we're just applying negative damage...
@@ -724,7 +730,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							targetUnits, null, spell.getSpellID (), null, null, null, mom.getPlayers (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 					}
-					else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)
+					else if (kind == KindOfSpell.RECALL)
 					{
 						// Recall spells - first we need the location of the wizards' summoning circle 'building' to know where we're recalling them to
 						final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (castingPlayer.getPlayerDescription ().getPlayerID (),
@@ -949,6 +955,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	{
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), maintainedSpell.getCastingPlayerID (), "targetOverlandSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+		final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
 		
 		if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
@@ -971,7 +978,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			getFogOfWarMidTurnChanges ().sendTransientSpellToClients (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 
-			if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)
+			if (kind == KindOfSpell.RECALL)
 			{
 				// Recall spells - first we need the location of the wizards' summoning circle 'building' to know where we're recalling them to
 				final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (castingPlayer.getPlayerDescription ().getPlayerID (),
@@ -987,6 +994,30 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 				}
+			}
+			
+			else if (kind == KindOfSpell.HEALING)
+			{
+				// Nature's Cures - heal every unit at the location
+				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
+						(tu.getOwningPlayerID () == maintainedSpell.getCastingPlayerID ()))
+					{
+						final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						
+						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+						{
+							// Heal this unit
+							final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
+							getUnitServerUtils ().healDamage (tu.getUnitDamage (), dmg, false);
+							
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+						}
+					}
 			}
 			
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
@@ -1760,5 +1791,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setSpellCasting (final SpellCasting c)
 	{
 		spellCasting = c;
+	}
+
+	/**
+	 * @return Kind of spell utils
+	 */
+	public final KindOfSpellUtils getKindOfSpellUtils ()
+	{
+		return kindOfSpellUtils;
+	}
+
+	/**
+	 * @param k Kind of spell utils
+	 */
+	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
+	{
+		kindOfSpellUtils = k;
 	}
 }

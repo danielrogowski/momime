@@ -910,13 +910,13 @@ public final class OverlandMapUI extends MomClientFrameUI
 									final List<ExpandedUnitDetails> validUnits = new ArrayList<ExpandedUnitDetails> ();
 									final Set<TargetSpellResult> invalidReasons = new HashSet<TargetSpellResult> ();
 									
-									for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-										if ((mapLocation.equals (unit.getUnitLocation ())) && (unit.getStatus () == UnitStatusID.ALIVE) &&
-											(unit.getOwningPlayerID () == getClient ().getOurPlayerID ()))
+									for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+										if ((mapLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) &&
+											(mu.getOwningPlayerID () == getClient ().getOurPlayerID ()))
 										{
-											units.add (unit);
+											units.add (mu);
 											
-											final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+											final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 												getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 											
 											final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,

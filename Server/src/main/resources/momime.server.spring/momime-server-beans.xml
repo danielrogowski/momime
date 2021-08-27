@@ -606,6 +606,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="spellDispelling" ref="spellDispelling" />
 		<property name="spellCasting" ref="spellCasting" />
+		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

@@ -14,9 +14,12 @@ import com.ndg.utils.Holder;
 import momime.client.MomClient;
 import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
+import momime.client.ui.components.HideableComponent;
+import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.UnitInfoUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
@@ -49,6 +52,9 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	
 	/** Combat map processing */
 	private CombatMapProcessing combatMapProcessing;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -104,9 +110,15 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 			getUnitUtils ().copyUnitValues (getMemoryUnit (), oldUnit, true);
 			
 			// Update any unit info screen that may be open
-			UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (oldUnit.getUnitURN ());
+			final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (oldUnit.getUnitURN ());
 			if (unitInfo != null)
 				unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
+			
+			// Update any unit buttons that may be showing it
+			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+				if ((!button.isHidden ()) && (button.getComponent ().getUnit () != null) &&
+					(button.getComponent ().getUnit ().getUnit () == oldUnit))
+					button.repaint ();
 			
 			// If its our unit, and it expended all its combat movement, then trigger next unit to move
 			if (selectNextCombatUnit)
@@ -232,5 +244,21 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	public final void setCombatMapProcessing (final CombatMapProcessing proc)
 	{
 		combatMapProcessing = proc;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

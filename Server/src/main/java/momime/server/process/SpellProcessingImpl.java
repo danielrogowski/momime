@@ -2,6 +2,7 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,13 +25,13 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
-import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellValidTileTypeTarget;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
@@ -45,7 +46,6 @@ import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
-import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageCreateArtifact;
 import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -86,7 +86,6 @@ import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapArea;
 import momime.server.mapgenerator.CombatMapGenerator;
-import momime.server.utils.CityServerUtils;
 import momime.server.utils.HeroItemServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -159,9 +158,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Operations for processing combat maps */
 	private MapAreaOperations2D<MomCombatTile> combatMapOperations;
 
-	/** Server-only city utils */
-	private CityServerUtils cityServerUtils;
-	
 	/** City calculations */
 	private CityCalculations cityCalculations;
 	
@@ -188,6 +184,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Kind of spell utils */
 	private KindOfSpellUtils kindOfSpellUtils;
+	
+	/** City processing methods */
+	private CityProcessing cityProcessing;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -1047,7 +1046,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, mom);
 			
-			else if (spell.getSpellRadius () == null)
+			else if (kind == KindOfSpell.CORRUPTION)
 			{
 				// Corruption
 				final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -1057,43 +1056,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 					mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 				
-				// Is the corrupted tile within range of a city?
-				final MapCoordinates3DEx cityLocation = getCityServerUtils ().findCityWithinRadius (targetLocation,
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
-				if (cityLocation != null)
-				{
-					// City probably isn't owned by the person who cast the spell
-					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-						(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-					if (cityData.getCurrentlyConstructingBuildingID () != null)
-					{
-						final Building buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "targetCorruption");
-						if (!getCityCalculations ().buildingPassesTileTypeRequirements (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), cityLocation,
-							buildingDef, mom.getSessionDescription ().getOverlandMapSize ()))
-						{
-							// City can no longer proceed with their current construction project
-							cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-								mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
-
-							// If it is a human player then we need to let them know that this has happened
-							final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetCorruption");
-							if (cityOwner.getPlayerDescription ().isHuman ())
-							{
-								final NewTurnMessageConstructBuilding abortConstruction = new NewTurnMessageConstructBuilding ();
-								abortConstruction.setMsgType (NewTurnMessageTypeID.ABORT_BUILDING);
-								abortConstruction.setBuildingID (buildingDef.getBuildingID ());
-								abortConstruction.setCityLocation (cityLocation);
-								((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (abortConstruction);
-								
-								getPlayerMessageProcessing ().sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);
-							}
-						}
-					}
-				}
+				getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, mom.getGeneralPublicKnowledge (),
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}
 			
-			else if (spell.getTileTypeID () != null)
+			else if (kind == KindOfSpell.ENCHANT_ROAD)
 			{
 				// Enchant road - first just get a list of all coordinates we need to process
 				final List<MapCoordinates3DEx> roadCells = new ArrayList<MapCoordinates3DEx> ();
@@ -1119,7 +1086,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 			}
 			
-			else
+			else if (kind == KindOfSpell.EARTH_LORE)
 			{
 				// Earth lore
 				getFogOfWarProcessing ().canSeeRadius (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
@@ -1128,6 +1095,37 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayer, mom.getPlayers (),
 					"earthLore", mom.getSessionDescription (), mom.getServerDB ());
+			}
+			
+			else if (kind == KindOfSpell.CHANGE_TILE_TYPE)
+			{
+				// Change Terrain or Raise Volcano
+				final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+				
+				final Iterator<SpellValidTileTypeTarget> iter = spell.getSpellValidTileTypeTarget ().iterator ();				
+				boolean found = false;
+				while ((!found) && (iter.hasNext ()))
+				{
+					final SpellValidTileTypeTarget thisTileType = iter.next ();
+					if (thisTileType.getTileTypeID ().equals (terrainData.getTileTypeID ()))
+					{
+						if (thisTileType.getChangeToTileTypeID () == null)
+							throw new MomException ("Spell " + spell.getSpellID () + " is a change terrain type spell but has no tile type defined to change from " + thisTileType.getTileTypeID ());
+						
+						terrainData.setTileTypeID (thisTileType.getChangeToTileTypeID ());
+						found = true;
+					}
+				}
+				
+				if (found)
+				{
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+
+					getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, mom.getGeneralPublicKnowledge (),
+						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				}
 			}
 		}
 
@@ -1650,22 +1648,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	}
 
 	/**
-	 * @return Server-only city utils
-	 */
-	public final CityServerUtils getCityServerUtils ()
-	{
-		return cityServerUtils;
-	}
-
-	/**
-	 * @param utils Server-only city utils
-	 */
-	public final void setCityServerUtils (final CityServerUtils utils)
-	{
-		cityServerUtils = utils;
-	}
-
-	/**
 	 * @return City calculations
 	 */
 	public final CityCalculations getCityCalculations ()
@@ -1807,5 +1789,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
 	{
 		kindOfSpellUtils = k;
+	}
+
+	/**
+	 * @return City processing methods
+	 */
+	public final CityProcessing getCityProcessing ()
+	{
+		return cityProcessing;
+	}
+
+	/**
+	 * @param obj City processing methods
+	 */
+	public final void setCityProcessing (final CityProcessing obj)
+	{
+		cityProcessing = obj;
 	}
 }

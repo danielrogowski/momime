@@ -597,7 +597,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="combatMapOperations" ref="combatMapOperations" />
-		<property name="cityServerUtils" ref="cityServerUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
@@ -607,6 +606,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellDispelling" ref="spellDispelling" />
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
+		<property name="cityProcessing" ref="cityProcessing" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

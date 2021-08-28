@@ -40,6 +40,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -1047,6 +1048,62 @@ public final class CityProcessingImpl implements CityProcessing
 		if (wizardsFortress != null)
 			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, players, (MapCoordinates3DEx) wizardsFortress.getCityLocation (),
 				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, null, null, null, sd, db);
+	}
+
+	/**
+	 * Certain buildings require certain tile types to construct them, e.g. a Sawmill can only be constructed if there is a forest tile.
+	 * So this method rechecks that city construction is still valid after there's been a change to an overland tile.
+	 * 
+	 * @param targetLocation Location where terrain was changed
+	 * @param gpk Public knowledge structure; can pass this as null if messageType = null
+	 * @param trueMap True map details
+	 * @param players List of players in this session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation, final MomGeneralPublicKnowledge gpk,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		final MapCoordinates3DEx cityLocation = getCityServerUtils ().findCityWithinRadius (targetLocation,
+			trueMap.getMap (), sd.getOverlandMapSize ());
+		if (cityLocation != null)
+		{
+			// City probably isn't owned by the person who cast the spell
+			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get
+				(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			if (cityData.getCurrentlyConstructingBuildingID () != null)
+			{
+				final Building buildingDef = db.findBuilding (cityData.getCurrentlyConstructingBuildingID (), "targetCorruption");
+				if (!getCityCalculations ().buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation,
+					buildingDef, sd.getOverlandMapSize ()))
+				{
+					// City can no longer proceed with their current construction project
+					cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (),
+						players, cityLocation, sd.getFogOfWarSetting ());
+
+					// If it is a human player then we need to let them know that this has happened
+					final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "targetCorruption");
+					if (cityOwner.getPlayerDescription ().isHuman ())
+					{
+						final NewTurnMessageConstructBuilding abortConstruction = new NewTurnMessageConstructBuilding ();
+						abortConstruction.setMsgType (NewTurnMessageTypeID.ABORT_BUILDING);
+						abortConstruction.setBuildingID (buildingDef.getBuildingID ());
+						abortConstruction.setCityLocation (cityLocation);
+						((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (abortConstruction);
+						
+						getPlayerMessageProcessing ().sendNewTurnMessages (gpk, players, null);
+					}
+				}
+			}
+		}
 	}
 	
 	/**

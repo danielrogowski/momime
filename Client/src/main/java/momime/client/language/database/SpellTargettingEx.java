@@ -156,12 +156,8 @@ public final class SpellTargettingEx extends SpellTargetting
 				languageText = getCannotSeeLocation ();
 				break;
 				
-			case MUST_TARGET_LAND:
-				languageText = getMustTargetLand ();
-				break;
-				
 			case INVALID_TILE_TYPE:
-				languageText = getCannotTargetNodes ();
+				languageText = getInvalidTileType ();
 				break;
 			 
 			case NOTHING_TO_DISPEL:

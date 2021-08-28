@@ -47,6 +47,9 @@ public enum KindOfSpell
 	/** Earth lore */
 	EARTH_LORE,
 	
+	/** Change Terrain or Raise Volcano */
+	CHANGE_TILE_TYPE,
+	
 	/** Corruption */
 	CORRUPTION,
 	

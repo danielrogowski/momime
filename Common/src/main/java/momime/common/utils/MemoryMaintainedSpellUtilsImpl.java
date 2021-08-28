@@ -19,7 +19,6 @@ import momime.common.database.DamageType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.TileType;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -431,9 +430,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		throws RecordNotFoundException
 	{
     	final TargetSpellResult result;
-    	
     	final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-    	
+
     	// Do easy checks first
     	if (fow.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()) != FogOfWarStateID.CAN_SEE)
     		result = TargetSpellResult.CANNOT_SEE_TARGET;
@@ -495,10 +493,15 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-    	final TargetSpellResult result;
-
+    	final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get
+    		(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+    	
+    	// Simpify identifying some kinds of spells so don't have to repeat this all over the place
+    	final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
+    	
     	// Earth Lore and Enchant Road can always be targeted anywhere, even in blackness where we've never seen before
-    	if (spell.getSpellRadius () != null)
+		TargetSpellResult result;
+    	if ((kind == KindOfSpell.EARTH_LORE) || (kind == KindOfSpell.ENCHANT_ROAD))
     		result = TargetSpellResult.VALID_TARGET;
     	
     	// Every other kind of spell must be targetted at a location we can see - you can't blindy throw Disenchant Area or
@@ -506,75 +509,69 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else if (fow.getPlane ().get (targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()) != FogOfWarStateID.CAN_SEE)
     		result = TargetSpellResult.CANNOT_SEE_TARGET;
     	
-    	else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS)
+    	// Can only target certain tile types?
+    	else if (spell.getSpellValidTileTypeTarget ().size () > 0)
     	{
-    		// Cannot corrupt water tiles
-	    	final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get
-	    		(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
 	    	if ((terrainData == null) || (terrainData.getTileTypeID () == null))
-	    		result = TargetSpellResult.MUST_TARGET_LAND;
-	    	
-	    	else if (terrainData.getCorrupted () != null)
-	    		result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
-	    	
+	    		result = TargetSpellResult.INVALID_TILE_TYPE;
+	    	else if (spell.getSpellValidTileTypeTarget ().stream ().anyMatch (t -> t.getTileTypeID ().equals (terrainData.getTileTypeID ())))
+	    		result = TargetSpellResult.VALID_TARGET;
 	    	else
-	    	{
-	    		final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "isOverlandLocationValidTargetForSpell");
-	    		if ((tileType.isLand () == null) || (!tileType.isLand ()))
-	    			result = TargetSpellResult.MUST_TARGET_LAND;
-	    		
-	    		// Cannot cast corruption on nodes
-	    		else if (tileType.getMagicRealmID () != null)
-	    			result = TargetSpellResult.INVALID_TILE_TYPE;
-	    		
-	    		else
-	    			result = TargetSpellResult.VALID_TARGET;
-	    	}
+	    		result = TargetSpellResult.INVALID_TILE_TYPE;
     	}
-    	
-    	// This is only used for Floating Island
-    	else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
-    	{
-    		if (getUnitUtils ().findFirstAliveEnemyAtLocation (mem.getUnit (), targetLocation.getX (), targetLocation.getY (), targetLocation.getZ (), castingPlayerID) != null)
-    			result = TargetSpellResult.ENEMIES_HERE;
-
-    		else if (getUnitUtils ().countAliveEnemiesAtLocation (mem.getUnit (), targetLocation.getX (), targetLocation.getY (), targetLocation.getZ (), 0) > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
-    			result = TargetSpellResult.CELL_FULL;
-    		
-    		else
-   			{
-    			final AvailableUnit unit = new AvailableUnit ();
-				unit.setOwningPlayerID (castingPlayerID);
-				unit.setUnitID (spell.getSummonedUnit ().get (0));
-				
-				getUnitUtils ().initializeUnitSkills (unit, null, db);
-
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
-
-				final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get
-					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
-				
-    			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db) == null)
-    				result = TargetSpellResult.TERRAIN_IMPASSABLE;
-    			
-	    		else
-	    			result = TargetSpellResult.VALID_TARGET;
-   			}
-    	}
-    	
     	else
-    	{
-    		// Get a list of units at the location (ours as well)
-    		final List<Integer> unitURNs = mem.getUnit ().stream ().filter (u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
-    		
-    		// Now look for any spells cast by somebody else either targetted directly on the location, or on a unit at the location
-    		if (mem.getMaintainedSpell ().stream ().anyMatch (s -> (s.getCastingPlayerID () != castingPlayerID) &&
-    			((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))))
-    			
-    			result = TargetSpellResult.VALID_TARGET;
-    		else
-    			result = TargetSpellResult.NOTHING_TO_DISPEL;
-    	}
+    		result = TargetSpellResult.VALID_TARGET;
+    	
+    	// If valid so far, then do checks for specific kinds of spells
+    	if (result == TargetSpellResult.VALID_TARGET)
+   		{
+    		if (kind == KindOfSpell.CORRUPTION)
+	    	{
+		    	if (terrainData.getCorrupted () != null)
+		    		result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
+	    	}
+	    	
+	    	// This is only used for Floating Island
+	    	else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+	    	{
+	    		if (getUnitUtils ().findFirstAliveEnemyAtLocation (mem.getUnit (), targetLocation.getX (), targetLocation.getY (), targetLocation.getZ (), castingPlayerID) != null)
+	    			result = TargetSpellResult.ENEMIES_HERE;
+	
+	    		else if (getUnitUtils ().countAliveEnemiesAtLocation (mem.getUnit (), targetLocation.getX (), targetLocation.getY (), targetLocation.getZ (), 0) > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
+	    			result = TargetSpellResult.CELL_FULL;
+	    		
+	    		else
+	   			{
+	    			final AvailableUnit unit = new AvailableUnit ();
+					unit.setOwningPlayerID (castingPlayerID);
+					unit.setUnitID (spell.getSummonedUnit ().get (0));
+					
+					getUnitUtils ().initializeUnitSkills (unit, null, db);
+	
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+	
+	    			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db) == null)
+	    				result = TargetSpellResult.TERRAIN_IMPASSABLE;
+	    			
+		    		else
+		    			result = TargetSpellResult.VALID_TARGET;
+	   			}
+	    	}
+	    	
+	    	else if (kind == KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS)
+	    	{
+	    		// Get a list of units at the location (ours as well)
+	    		final List<Integer> unitURNs = mem.getUnit ().stream ().filter (u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
+	    		
+	    		// Now look for any spells cast by somebody else either targetted directly on the location, or on a unit at the location
+	    		if (mem.getMaintainedSpell ().stream ().anyMatch (s -> (s.getCastingPlayerID () != castingPlayerID) &&
+	    			((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))))
+	    			
+	    			result = TargetSpellResult.VALID_TARGET;
+	    		else
+	    			result = TargetSpellResult.NOTHING_TO_DISPEL;
+	    	}
+   		}
     	
     	return result;
 	}

@@ -62,9 +62,6 @@ public enum TargetSpellResult
 	/** Spell can only be targetted against locations that we can actually see */
 	CANNOT_SEE_TARGET,
 	
-	/** Spell can only be targetted at land tiles */
-	MUST_TARGET_LAND,
-	
 	/** Spell cannot be targetted at certain tile types */
 	INVALID_TILE_TYPE,
 	

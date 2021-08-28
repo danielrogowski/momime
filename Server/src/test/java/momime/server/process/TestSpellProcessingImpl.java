@@ -43,6 +43,8 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KindOfSpell;
+import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -452,6 +454,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (caeUtils.listCombatEffectsNotYetCastAtLocation (trueMap.getCombatAreaEffect (), spell,
 			7, new MapCoordinates3DEx (15, 25, 1))).thenReturn (combatAreaEffectIDs);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.COMBAT_ENCHANTMENTS);
+		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
@@ -506,6 +512,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setMemoryCombatAreaEffectUtils (caeUtils);
 		proc.setSpellUtils (spellUtils);
 		proc.setSpellDispelling (spellDispelling);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
@@ -567,6 +574,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.listUnitSpellEffectsNotYetCastOnUnit (trueMap.getMaintainedSpell (), spell, 7, targetUnit.getUnitURN ())).thenReturn (effects);
+
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
@@ -622,6 +633,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setSpellUtils (spellUtils);
 		proc.setSpellDispelling (spellDispelling);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, mom);
@@ -675,6 +687,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// It summons one of 5 possible units
 		for (int n = 1; n <= 5; n++)
 			spell.getSummonedUnit ().add ("UN00" + n);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
@@ -764,6 +780,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellUtils (spellUtils);
 		proc.setSpellDispelling (spellDispelling);
 		proc.setUnitServerUtils (unitServerUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, mom);

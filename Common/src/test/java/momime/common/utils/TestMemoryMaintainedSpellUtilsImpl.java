@@ -25,6 +25,7 @@ import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellValidTileTypeTarget;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSpellEffect;
@@ -3552,11 +3553,22 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellRadius (10);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.EARTH_LORE);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, null, null, null, null, null));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, null, null, null));
 	}
 	
 	/**
@@ -3569,15 +3581,25 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Spell being targetted
 		final Spell spell = new Spell ();
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CORRUPTION);
+		
 		// Visible area
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
 		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), null, fow, null, null));
+		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
 	}
 	
 	/**
@@ -3590,6 +3612,14 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Spell being targetted
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+		
+		final SpellValidTileTypeTarget validTileType = new SpellValidTileTypeTarget ();
+		validTileType.setTileTypeID ("TT01");
+		spell.getSpellValidTileTypeTarget ().add (validTileType);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CORRUPTION);
 		
 		// Visible area
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -3604,9 +3634,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
-		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
+		assertEquals (TargetSpellResult.INVALID_TILE_TYPE, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
 	}
 
 	/**
@@ -3619,6 +3650,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Spell being targetted
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CORRUPTION);
 		
 		// Visible area
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -3639,6 +3674,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
 		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isOverlandLocationValidTargetForSpell
@@ -3646,51 +3682,11 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 
 	/**
-	 * Tests the testIsOverlandLocationValidTargetForSpell method on a sea tile
+	 * Tests the testIsOverlandLocationValidTargetForSpell method on wrong kind of tile
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsOverlandLocationValidTargetForSpell_Corrupt_Sea () throws Exception
-	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final TileTypeEx ocean = new TileTypeEx ();
-		when (db.findTileType ("TT01", "isOverlandLocationValidTargetForSpell")).thenReturn (ocean);
-		
-		// Spell being targetted
-		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
-		
-		// Visible area
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
-		
-		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		
-		// Map
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID ("TT01");
-		
-		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
-		
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		mem.setMap (map);
-		
-		// Set up object to test
-		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		
-		// Any location is valid
-		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
-	}
-
-	/**
-	 * Tests the testIsOverlandLocationValidTargetForSpell method on a node
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testIsOverlandLocationValidTargetForSpell_Corrupt_Node () throws Exception
+	public final void testIsOverlandLocationValidTargetForSpell_Corrupt_InvalidTileType () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -3703,6 +3699,14 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Spell being targetted
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
+
+		final SpellValidTileTypeTarget validTileType = new SpellValidTileTypeTarget ();
+		validTileType.setTileTypeID ("TT01");
+		spell.getSpellValidTileTypeTarget ().add (validTileType);
+		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CORRUPTION);
 		
 		// Visible area
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -3713,7 +3717,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Map
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID ("TT01");
+		terrainData.setTileTypeID ("TT02");
 		
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
@@ -3722,6 +3726,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
 		assertEquals (TargetSpellResult.INVALID_TILE_TYPE, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
@@ -3745,6 +3750,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.CORRUPTION);
+		
 		// Visible area
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
@@ -3763,6 +3772,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, db));
@@ -3779,17 +3789,24 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
 		// Visible area
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
 		
 		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 
-		// Spells and units
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
 		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
@@ -3806,15 +3823,22 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
 		// Visible area
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
 		
 		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 
-		// Spells and units
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Spells and units
 		final MemoryMaintainedSpell citySpell = new MemoryMaintainedSpell ();
 		citySpell.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		citySpell.setCastingPlayerID (3);
@@ -3823,6 +3847,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));
@@ -3839,15 +3864,22 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
 		
+		// Kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS);
+		
 		// Visible area
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
 		
 		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
 
-		// Spells and units
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Spells and units
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitURN (8);
 		unit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
@@ -3861,6 +3893,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Any location is valid
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null, null));

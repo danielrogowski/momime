@@ -78,6 +78,8 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 					kind = KindOfSpell.ENCHANT_ROAD;
 				else if (spell.getSpellRadius () != null)
 					kind = KindOfSpell.EARTH_LORE;
+				else if ((spell.getSpellValidTileTypeTarget ().size () > 0) && (spell.getSpellValidTileTypeTarget ().get (0).getChangeToTileTypeID () != null))
+					kind = KindOfSpell.CHANGE_TILE_TYPE;
 				else
 					kind = KindOfSpell.CORRUPTION;
 				break;

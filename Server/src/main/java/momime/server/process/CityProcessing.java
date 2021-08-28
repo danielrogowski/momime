@@ -13,6 +13,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.messages.MomGeneralServerKnowledge;
@@ -196,5 +197,25 @@ public interface CityProcessing
 	 */
 	public void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+
+	/**
+	 * Certain buildings require certain tile types to construct them, e.g. a Sawmill can only be constructed if there is a forest tile.
+	 * So this method rechecks that city construction is still valid after there's been a change to an overland tile.
+	 * 
+	 * @param targetLocation Location where terrain was changed
+	 * @param gpk Public knowledge structure; can pass this as null if messageType = null
+	 * @param trueMap True map details
+	 * @param players List of players in this session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation, final MomGeneralPublicKnowledge gpk,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

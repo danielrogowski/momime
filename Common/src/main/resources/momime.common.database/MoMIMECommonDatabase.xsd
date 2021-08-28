@@ -517,6 +517,10 @@
 						<xsd:selector xpath="spellValidUnitTarget" />
 						<xsd:field xpath="@targetMagicRealmID" />
 					</xsd:unique>
+					<xsd:key name="spellValidTileTypeTargetPK">
+						<xsd:selector xpath="spellValidTileTypeTarget" />
+						<xsd:field xpath="@tileTypeID" />
+					</xsd:key>
 					<xsd:key name="spellValidBorderTargetPK">
 						<xsd:selector xpath="spellValidBorderTarget" />
 						<xsd:field xpath="." />
@@ -1160,6 +1164,14 @@
 		<xsd:keyref refer="momimecommon:tileTypePK" name="spellFKtileType">
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="tileTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:tileTypePK" name="spellValidTileTypeTargetFKtileType1">
+			<xsd:selector xpath="spell/spellValidTileTypeTarget" />
+			<xsd:field xpath="@tileTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:tileTypePK" name="spellValidTileTypeTargetFKtileType2">
+			<xsd:selector xpath="spell/spellValidTileTypeTarget" />
+			<xsd:field xpath="changeToTileTypeID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:animationPK" name="spellFKanimationFly">
 			<xsd:selector xpath="spell" />
@@ -3399,6 +3411,7 @@ Technically one is chosen at random when the spell is cast, however there's no s
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpellEffect" type="momimecommon:unitSpellEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidUnitTarget" type="momimecommon:spellValidUnitTarget" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidTileTypeTarget" type="momimecommon:spellValidTileTypeTarget" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellUpkeep" type="momimecommon:productionTypeAndUndoubledValue" nxe:label="Upkeep" nxe:plural="Upkeep">
 		        <xsd:annotation>
 		        	<xsd:documentation>Defines the upkeep a particular spells costs each turn, typically an amount of mana.</xsd:documentation>
@@ -3456,6 +3469,17 @@ If there are no spellValidUnitTarget records, the spell can be cast on all types
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="spellValidTileTypeTarget" nxe:singular="Valid Tile Type Target" nxe:plural="Valid Tile Type Targets">
+        <xsd:annotation>
+        	<xsd:documentation>Some spells can only be cast on certain types of overland terrain, e.g. Change Terrain and Raise Volcano.
+Also specifies the type of terrain it gets changed to.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="changeToTileTypeID" type="momimecommon:tileTypeID" nxe:label="Change to Tile Type" nxe:showmaincolumn="false" />
+		</xsd:sequence>
+		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Target Tile Type" nxe:showmaincolumn="false" />
 	</xsd:complexType>
 
 	<xsd:complexType name="combatTileType" nxe:singular="Combat Tile Type" nxe:plural="Combat Tile Types" nxe:submenu="Combat Map">
@@ -4652,7 +4676,8 @@ If its an overland spell then its automatically a healing spell.</xsd:documentat
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC10"><xsd:annotation>
 				<xsd:documentation>Special spells targetted at a location on the overland map, can be any map tile, doesn't have to be targetted on a particular unit/city.
-If tileTypeID+spellRadius is filled in, this is Enchant Road.  If only spellRadius is filled in, this is Earth Lore.  If both values are null, this is Corruption.</xsd:documentation>
+If tileTypeID+spellRadius is filled in, this is Enchant Road.  If only spellRadius is filled in, this is Earth Lore.  If it has spellValidTileTypeTarget records
+with changeToTileTypeID values, this is a change terrain-type spell.  If none of above are true, this is Corruption.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_OVERLAND_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC11"><xsd:annotation>

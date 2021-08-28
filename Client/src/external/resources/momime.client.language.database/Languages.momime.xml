@@ -1060,15 +1060,12 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <cannotSeeCity language="en">
             <text>SPELL_NAME can only be targetted at cities you can see.</text>
         </cannotSeeCity>
-        <mustTargetLand language="en">
-            <text>SPELL_NAME can only be targetted at land tiles.</text>
-        </mustTargetLand>
         <locationAlreadyCorrupted language="en">
             <text>This location already has SPELL_NAME cast on it.</text>
         </locationAlreadyCorrupted>
-        <cannotTargetNodes language="en">
-            <text>SPELL_NAME cannot be targetted at nodes.</text>
-        </cannotTargetNodes>
+        <invalidTileType language="en">
+            <text>SPELL_NAME cannot be targeted at this type of tile.</text>
+        </invalidTileType>
         <enemiesHere language="en">
             <text>You cannot summon on top of enemy units.</text>
         </enemiesHere>

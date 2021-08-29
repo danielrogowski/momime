@@ -28,6 +28,7 @@ import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -1114,6 +1115,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 							throw new MomException ("Spell " + spell.getSpellID () + " is a change terrain type spell but has no tile type defined to change from " + thisTileType.getTileTypeID ());
 						
 						terrainData.setTileTypeID (thisTileType.getChangeToTileTypeID ());
+						
+						if ((thisTileType.isMineralDestroyed () != null) && (thisTileType.isMineralDestroyed ()) && (terrainData.getMapFeatureID () != null))
+						{
+							// Minerals are destroyed, but not lairs
+							final MapFeatureEx mapFeature = mom.getServerDB ().findMapFeature (terrainData.getMapFeatureID (), "targetOverlandSpell");
+							if (mapFeature.getMapFeatureMagicRealm ().size () == 0)
+								terrainData.setMapFeatureID (null);
+						}
+						
 						found = true;
 					}
 				}

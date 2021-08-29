@@ -3478,6 +3478,7 @@ Also specifies the type of terrain it gets changed to.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="changeToTileTypeID" type="momimecommon:tileTypeID" nxe:label="Change to Tile Type" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="mineralDestroyed" type="xsd:boolean" nxe:label="Destroys minerals?" nxe:showmaincolumn="false" />
 		</xsd:sequence>
 		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Target Tile Type" nxe:showmaincolumn="false" />
 	</xsd:complexType>

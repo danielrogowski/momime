@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -32,8 +33,10 @@ import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.AnimationController;
 import momime.common.database.CityViewElement;
+import momime.common.database.LanguageText;
 import momime.common.database.UnitEx;
 import momime.common.messages.NewTurnMessageConstructUnit;
+import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 
 /**
@@ -148,7 +151,13 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 		{
 			final UnitEx oldUnit = getClient ().getClientDB ().findUnit (getUnitID (), "NewTurnMessageConstructUnitEx");
 			
-			constructionCompletedLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getNewTurnMessages ().getConstructionCompleted ()).replaceAll
+			final List<LanguageText> languageText;
+			if (getMsgType () == NewTurnMessageTypeID.ABORT_UNIT)
+				languageText = getLanguages ().getNewTurnMessages ().getConstructionAborted ();
+			else
+				languageText = getLanguages ().getNewTurnMessages ().getConstructionCompleted ();
+			
+			constructionCompletedLabel.setText (getLanguageHolder ().findDescription (languageText).replaceAll
 				("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
 				("OLD_CONSTRUCTION", getLanguageHolder ().findDescription (oldUnit.getUnitName ())));
 			

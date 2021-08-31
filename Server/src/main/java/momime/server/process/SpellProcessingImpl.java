@@ -1057,7 +1057,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 					mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 				
-				getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, mom.getGeneralPublicKnowledge (),
+				getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation,
 					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}
 			
@@ -1124,6 +1124,23 @@ public final class SpellProcessingImpl implements SpellProcessing
 								terrainData.setMapFeatureID (null);
 						}
 						
+						if (thisTileType.getBuildingsDestroyedChance () != null)
+						{
+							// Every building here has a chance of being destroyed
+							final List<MemoryBuilding> destroyedBuildings = new ArrayList<MemoryBuilding> ();
+							for (final MemoryBuilding thisBuilding : mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ())
+								if ((thisBuilding.getCityLocation ().equals (targetLocation)) &&
+									(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
+									(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) &&
+									(getRandomUtils ().nextInt (100) < thisTileType.getBuildingsDestroyedChance ()))
+									
+									destroyedBuildings.add (thisBuilding);
+							
+							if (destroyedBuildings.size () > 0)
+								getCityProcessing ().destroyBuildings (mom.getGeneralServerKnowledge ().getTrueMap (),
+									mom.getPlayers (), destroyedBuildings, spell, castingPlayer, mom.getSessionDescription (), mom.getServerDB ());
+						}
+						
 						found = true;
 					}
 				}
@@ -1133,7 +1150,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 
-					getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, mom.getGeneralPublicKnowledge (),
+					getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 				}
 			}

@@ -12,8 +12,9 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MomGeneralPublicKnowledge;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.messages.MomGeneralServerKnowledge;
@@ -112,6 +113,30 @@ public interface CityProcessing
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
+	 * Similar to sellBuilding above, but the building was being destroyed by some spell or other action, so the owner doesn't get gold for it and
+	 * the need to be notified about it as well.  Also it handles destroying multiple buildings all at once, potentially in different cities owned by
+	 * different players.
+	 * 
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param buildingsToDestroy List of buildings to destroy, from server's true list
+	 * @param destroyedBySpell What kind of spell destroyed the buildings
+	 * @param castingPlayer Who cast the spell that destroyed the buildings
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void destroyBuildings (final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
+		final Spell destroyedBySpell, final PlayerServerDetails castingPlayer,
+		final MomSessionDescription sd, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	
+	/**
 	 * Changes a player's tax rate, currently only clients can change their tax rate, but the AI should use this method too.
 	 * Although this is currently only used by human players, kept it separate from ChangeTaxRateMessageImpl in anticipation of AI players using it
 	 * 
@@ -204,7 +229,6 @@ public interface CityProcessing
 	 * So this method rechecks that city construction is still valid after there's been a change to an overland tile.
 	 * 
 	 * @param targetLocation Location where terrain was changed
-	 * @param gpk Public knowledge structure; can pass this as null if messageType = null
 	 * @param trueMap True map details
 	 * @param players List of players in this session
 	 * @param sd Session description
@@ -215,7 +239,7 @@ public interface CityProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation, final MomGeneralPublicKnowledge gpk,
+	public void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

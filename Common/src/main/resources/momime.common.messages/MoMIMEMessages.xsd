@@ -1110,6 +1110,10 @@ through lack of production, we can still look up their name to show it on the ne
 				<xsd:documentation>Completed unit</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="COMPLETED_UNIT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="V"><xsd:annotation>
+				<xsd:documentation>Abort unit</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ABORT_UNIT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="S"><xsd:annotation>
 				<xsd:documentation>Summoned unit</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SUMMONED_UNIT" /></xsd:appinfo>

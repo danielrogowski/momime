@@ -1,8 +1,10 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -30,6 +32,7 @@ import momime.common.database.Plane;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
@@ -40,7 +43,6 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -672,6 +674,103 @@ public final class CityProcessingImpl implements CityProcessing
 	}
 
 	/**
+	 * Similar to sellBuilding above, but the building was being destroyed by some spell or other action, so the owner doesn't get gold for it and
+	 * the need to be notified about it as well.  Also it handles destroying multiple buildings all at once, potentially in different cities owned by
+	 * different players.
+	 * 
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param buildingsToDestroy List of buildings to destroy, from server's true list
+	 * @param destroyedBySpell What kind of spell destroyed the buildings
+	 * @param castingPlayer Who cast the spell that destroyed the buildings
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void destroyBuildings (final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
+		final Spell destroyedBySpell, final PlayerServerDetails castingPlayer,
+		final MomSessionDescription sd, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		// Keep a list of all cities with destroyed buildings, so we only recalculate each city once
+		final Set<MapCoordinates3DEx> affectedCities = new HashSet<MapCoordinates3DEx> ();
+		
+		// Process each building
+		for (final MemoryBuilding destroyBuilding : buildingsToDestroy)
+		{
+			// City and player details
+			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (destroyBuilding.getCityLocation ().getZ ()).getRow ().get (destroyBuilding.getCityLocation ().getY ()).getCell ().get (destroyBuilding.getCityLocation ().getX ());
+			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, tc.getCityData ().getCityOwnerID (), "destroyBuildings");
+
+			// If selling a building that the current construction project needs, then cancel the current construction project on the city owner's client
+			if (((tc.getCityData ().getCurrentlyConstructingBuildingID () != null) &&
+					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (destroyBuilding.getBuildingID (), tc.getCityData ().getCurrentlyConstructingBuildingID (), db))) ||
+				((tc.getCityData ().getCurrentlyConstructingUnitID () != null) &&
+					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (destroyBuilding.getBuildingID (), tc.getCityData ().getCurrentlyConstructingUnitID (), db))))
+			{
+				// If it is a human player then we need to let them know that this has happened
+				if (cityOwner.getPlayerDescription ().isHuman ())
+				{
+					if (tc.getCityData ().getCurrentlyConstructingBuildingID () != null)
+					{
+						final NewTurnMessageConstructBuilding abortConstruction = new NewTurnMessageConstructBuilding ();
+						abortConstruction.setMsgType (NewTurnMessageTypeID.ABORT_BUILDING);
+						abortConstruction.setBuildingID (tc.getCityData ().getCurrentlyConstructingBuildingID ());
+						abortConstruction.setCityLocation (destroyBuilding.getCityLocation ());
+						((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (abortConstruction);
+					}
+
+					if (tc.getCityData ().getCurrentlyConstructingUnitID () != null)
+					{
+						final NewTurnMessageConstructUnit abortConstruction = new NewTurnMessageConstructUnit ();
+						abortConstruction.setMsgType (NewTurnMessageTypeID.ABORT_UNIT);
+						abortConstruction.setUnitID (tc.getCityData ().getCurrentlyConstructingUnitID ());
+						abortConstruction.setCityLocation (destroyBuilding.getCityLocation ());
+						((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (abortConstruction);
+					}
+				}
+				
+				// Once we've reset construction to default, this can't happen again if more buildings are destroyed in the same city, so no risk of sending abort NTM twice
+				tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+				tc.getCityData ().setCurrentlyConstructingUnitID (null);
+			}
+		
+			// Actually remove the building, both on the server and on any clients who can see the city
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyBuilding.getBuildingURN (), false, sd, db);
+			
+			// Recalculate city data later
+			affectedCities.add ((MapCoordinates3DEx) destroyBuilding.getCityLocation ());
+		}
+
+		// Recalculate all affected cities
+		for (final MapCoordinates3DEx cityLocation : affectedCities)
+		{
+			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, tc.getCityData ().getCityOwnerID (), "destroyBuildings");
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+
+			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (),
+				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db);
+	
+			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (),
+				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
+	
+			getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
+	
+			// Send the updated city stats to any clients that can see the city
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+		}
+		
+		getPlayerMessageProcessing ().sendNewTurnMessages (null, players, null);
+	}
+	
+	/**
 	 * Changes a player's tax rate, currently only clients can change their tax rate, but the AI should use this method too.
 	 * Although this is currently only used by human players, kept it separate from ChangeTaxRateMessageImpl in anticipation of AI players using it
 	 * 
@@ -1055,7 +1154,6 @@ public final class CityProcessingImpl implements CityProcessing
 	 * So this method rechecks that city construction is still valid after there's been a change to an overland tile.
 	 * 
 	 * @param targetLocation Location where terrain was changed
-	 * @param gpk Public knowledge structure; can pass this as null if messageType = null
 	 * @param trueMap True map details
 	 * @param players List of players in this session
 	 * @param sd Session description
@@ -1067,7 +1165,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation, final MomGeneralPublicKnowledge gpk,
+	public final void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -1099,7 +1197,7 @@ public final class CityProcessingImpl implements CityProcessing
 						abortConstruction.setCityLocation (cityLocation);
 						((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (abortConstruction);
 						
-						getPlayerMessageProcessing ().sendNewTurnMessages (gpk, players, null);
+						getPlayerMessageProcessing ().sendNewTurnMessages (null, players, null);
 					}
 				}
 			}

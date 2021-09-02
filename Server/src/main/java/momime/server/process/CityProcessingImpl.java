@@ -1079,18 +1079,28 @@ public final class CityProcessingImpl implements CityProcessing
 				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defeatedUnit, KillUnitActionID.LACK_OF_PRODUCTION, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			
-			// Unown any nodes the wizard had captured
+			// Unown any nodes the wizard had captured and volcanoes the wizard raised
 			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
 						final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						boolean terrainUpdated = false;
 						if ((terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()))
 						{
 							terrainData.setNodeOwnerID (null);
+							terrainUpdated = true;
+						}
+
+						if ((terrainData.getVolcanoOwnerID () != null) && (terrainData.getVolcanoOwnerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()))
+						{
+							terrainData.setVolcanoOwnerID (null);
+							terrainUpdated = true;
+						}
+						
+						if (terrainUpdated)
 							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
 								new MapCoordinates3DEx (x, y, z), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
-						}
 					}
 			
 			// If it was a human player, convert them to AI and possibly end the session

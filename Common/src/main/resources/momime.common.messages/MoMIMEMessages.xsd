@@ -589,6 +589,7 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
 When corruption is cast this gets set to 5.  Each turn a unit spends purifying the location reduces the value by 1.  When it reaches 0, it is set back to null again.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="volcanoOwnerID" type="mps:playerID" />
         </xsd:sequence>
 	</xsd:complexType>
 

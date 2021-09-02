@@ -148,6 +148,9 @@ public final class CommonDatabaseConstants
 	/** Swamp tiles */
 	public final static String TILE_TYPE_SWAMP = "TT05";
 
+	/** Volcano (from Raise Volcano spell, not Chaos nodes) tiles */
+	public final static String TILE_TYPE_RAISE_VOLCANO = "TT16";
+	
 	/** Normal road */
 	public final static String TILE_TYPE_NORMAL_ROAD = "TT98";
 	

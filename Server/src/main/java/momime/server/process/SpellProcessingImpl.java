@@ -1116,6 +1116,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						terrainData.setTileTypeID (thisTileType.getChangeToTileTypeID ());
 						
+						if (thisTileType.getChangeToTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO))
+							terrainData.setVolcanoOwnerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+						
 						if ((thisTileType.isMineralDestroyed () != null) && (thisTileType.isMineralDestroyed ()) && (terrainData.getMapFeatureID () != null))
 						{
 							// Minerals are destroyed, but not lairs

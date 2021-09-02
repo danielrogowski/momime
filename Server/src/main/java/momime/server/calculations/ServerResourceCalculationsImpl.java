@@ -249,21 +249,28 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 								nodeLocations.add (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()));
 						}
 			
-			// Counts up how many node aura squares each player gets
+			// Counts up how many node aura squares and volcanoes this player has
 			int nodeAuraSquares = 0;
+			int volcanoSquares = 0;
 			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					{
 						final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 						final OverlandMapTerrainData terrainData = tc.getTerrainData ();
-						if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
+						if (terrainData != null)
 						{
-							nodeAuraSquares++;
-							
-							// Count it twice if we have the mastery to get double magic power from this node
-							if (nodeLocations.contains (tc.getAuraFromNode ()))
+							if ((terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
+							{
 								nodeAuraSquares++;
+								
+								// Count it twice if we have the mastery to get double magic power from this node
+								if (nodeLocations.contains (tc.getAuraFromNode ()))
+									nodeAuraSquares++;
+							}
+
+							if ((terrainData.getVolcanoOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getVolcanoOwnerID ())))
+								volcanoSquares++;
 						}
 					}
 			
@@ -277,6 +284,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 				final int nodeAuraMagicPower = (nodeAuraSquares * sd.getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 2;
 				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, nodeAuraMagicPower);
 			}
+			
+			if (volcanoSquares > 0)
+				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, volcanoSquares);
 		}
 
 		// We never explicitly add Mana from Magic Power, this is calculated on the fly by getResourceValueUtils ().calculateAmountPerTurnForProductionType

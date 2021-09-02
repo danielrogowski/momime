@@ -606,6 +606,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
+	<bean id="newTurnMessageDestroyBuilding" class="momime.client.newturnmessages.NewTurnMessageDestroyBuildingEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="anim" ref="anim" />
+		<property name="client" ref="client" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="utils" ref="uiUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+
 	<bean id="newTurnMessageConstructBuilding" class="momime.client.newturnmessages.NewTurnMessageConstructBuildingEx" scope="prototype">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />

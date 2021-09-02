@@ -32,7 +32,6 @@ import momime.common.database.Plane;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Spell;
 import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
@@ -49,6 +48,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageConstructUnit;
+import momime.common.messages.NewTurnMessageDestroyBuilding;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
@@ -681,8 +681,8 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param buildingsToDestroy List of buildings to destroy, from server's true list
-	 * @param destroyedBySpell What kind of spell destroyed the buildings
-	 * @param castingPlayer Who cast the spell that destroyed the buildings
+	 * @param destroyedBySpellID What kind of spell destroyed the buildings
+	 * @param castingPlayerID Who cast the spell that destroyed the buildings
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -694,7 +694,7 @@ public final class CityProcessingImpl implements CityProcessing
 	@Override
 	public final void destroyBuildings (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
-		final Spell destroyedBySpell, final PlayerServerDetails castingPlayer,
+		final String destroyedBySpellID, final int castingPlayerID,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -740,7 +740,19 @@ public final class CityProcessingImpl implements CityProcessing
 				tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 				tc.getCityData ().setCurrentlyConstructingUnitID (null);
 			}
-		
+
+			// If it is a human player then tell them about the destroyed building
+			if (cityOwner.getPlayerDescription ().isHuman ())
+			{
+				final NewTurnMessageDestroyBuilding destroyedBuilding = new NewTurnMessageDestroyBuilding ();
+				destroyedBuilding.setMsgType (NewTurnMessageTypeID.DESTROYED_BUILDING);
+				destroyedBuilding.setBuildingID (destroyBuilding.getBuildingID ());
+				destroyedBuilding.setCityLocation (destroyBuilding.getCityLocation ());
+				destroyedBuilding.setDestroyedBySpellID (destroyedBySpellID);
+				destroyedBuilding.setCastingPlayerID (castingPlayerID);
+				((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (destroyedBuilding);
+			}
+			
 			// Actually remove the building, both on the server and on any clients who can see the city
 			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyBuilding.getBuildingURN (), false, sd, db);
 			

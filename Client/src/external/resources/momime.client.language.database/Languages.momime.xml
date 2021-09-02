@@ -1728,6 +1728,12 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
         <title language="en">
             <text>Messages</text>
         </title>
+        <destroyedCategory language="en">
+            <text>Destroyed</text>
+        </destroyedCategory>
+        <buildingDestroyed language="en">
+            <text>CITY_NAME's DESTROYED_BUILDING was destroyed by PLAYER_NAME's SPELL_NAME spell</text>
+        </buildingDestroyed>
         <constructionCategory language="en">
             <text>Construction</text>
         </constructionCategory>

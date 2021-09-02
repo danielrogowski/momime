@@ -28,6 +28,11 @@ public interface NewTurnMessagesFactory
 	/**
 	 * @return NTM with injected dependencies
 	 */
+	public NewTurnMessageDestroyBuildingEx createNewTurnMessageDestroyBuilding ();
+	
+	/**
+	 * @return NTM with injected dependencies
+	 */
 	public NewTurnMessageConstructUnitEx createNewTurnMessageConstructUnit ();
 
 	/**

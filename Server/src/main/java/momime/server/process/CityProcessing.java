@@ -12,7 +12,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
@@ -120,8 +119,8 @@ public interface CityProcessing
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param buildingsToDestroy List of buildings to destroy, from server's true list
-	 * @param destroyedBySpell What kind of spell destroyed the buildings
-	 * @param castingPlayer Who cast the spell that destroyed the buildings
+	 * @param destroyedBySpellID What kind of spell destroyed the buildings
+	 * @param castingPlayerID Who cast the spell that destroyed the buildings
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -132,7 +131,7 @@ public interface CityProcessing
 	 */
 	public void destroyBuildings (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
-		final Spell destroyedBySpell, final PlayerServerDetails castingPlayer,
+		final String destroyedBySpellID, final int castingPlayerID,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	

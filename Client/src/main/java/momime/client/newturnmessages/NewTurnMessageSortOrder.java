@@ -16,29 +16,32 @@ import momime.common.database.LanguageText;
  */
 public enum NewTurnMessageSortOrder
 {
-	/** NTMs about one of our cities completing or aborting construction of a unit or building */
-	 SORT_ORDER_CONSTRUCTION (1),
+	 /** NTMs about anything being destroyed */
+	 SORT_ORDER_DESTROYED (1),
 	
+	/** NTMs about one of our cities completing or aborting construction of a unit or building */
+	 SORT_ORDER_CONSTRUCTION (2),
+	 
 	/** NTMs about us losing units/buildings/spells because we couldn't afford the maintenance to pay for them */
-	 SORT_ORDER_LACK_OF_PRODUCTION (2),
+	 SORT_ORDER_LACK_OF_PRODUCTION (3),
 	
 	/** NTMs about cities growing across a 1,000 population border */
-	 SORT_ORDER_CITY_GROWTH (3),
+	 SORT_ORDER_CITY_GROWTH (4),
 	
 	/** NTMs about cities dying across a 1,000 population border */
-	 SORT_ORDER_CITY_DEATH (4),
+	 SORT_ORDER_CITY_DEATH (5),
 	
 	/** NTMs about researching or requiring targetting our spells), or anybody casting an overland enchantment */
-	 SORT_ORDER_SPELLS (5),
+	 SORT_ORDER_SPELLS (6),
 	
 	/** NTMs about us capturing or losing nodes */
-	 SORT_ORDER_NODES (6),
+	 SORT_ORDER_NODES (7),
 	
 	/** NTMs about units */
-	SORT_ORDER_UNITS (7),
+	SORT_ORDER_UNITS (8),
 	
 	/** NTMs about offers */
-	SORT_ORDER_OFFERS (8);
+	SORT_ORDER_OFFERS (9);
 	 
 	 /** Numeric sort order */
 	 private final int sortOrder;
@@ -69,6 +72,10 @@ public enum NewTurnMessageSortOrder
 		 final List<LanguageText> languageText;
 		 switch (this)
 		 {
+			 case SORT_ORDER_DESTROYED:
+				 languageText = lang.getDestroyedCategory ();
+				 break;
+
 			 case SORT_ORDER_CONSTRUCTION:
 				 languageText = lang.getConstructionCategory ();
 				 break;

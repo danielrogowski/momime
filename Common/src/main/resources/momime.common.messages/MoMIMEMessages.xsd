@@ -247,6 +247,23 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 		</xsd:complexContent>
 	</xsd:complexType>		       
 
+	<xsd:complexType name="newTurnMessageDestroyBuilding">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM describing a building that was destroyed by a spell.
+If construction gets changed as a result, that gets sent as abort building/unit separately.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="destroyedBySpellID" type="momimecommon:spellID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="castingPlayerID" type="mps:playerID" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
 	<xsd:complexType name="newTurnMessageNode">
 	    <xsd:annotation>
     		<xsd:documentation>NTM about a node that we captured or lost.</xsd:documentation>
@@ -1105,6 +1122,10 @@ through lack of production, we can still look up their name to show it on the ne
 			<xsd:enumeration value="A"><xsd:annotation>
 				<xsd:documentation>Abort building</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ABORT_BUILDING" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Destroyed building</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DESTROYED_BUILDING" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="U"><xsd:annotation>
 				<xsd:documentation>Completed unit</xsd:documentation>

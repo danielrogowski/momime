@@ -1138,7 +1138,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 							
 							if (destroyedBuildings.size () > 0)
 								getCityProcessing ().destroyBuildings (mom.getGeneralServerKnowledge ().getTrueMap (),
-									mom.getPlayers (), destroyedBuildings, spell, castingPlayer, mom.getSessionDescription (), mom.getServerDB ());
+									mom.getPlayers (), destroyedBuildings, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
+									mom.getSessionDescription (), mom.getServerDB ());
 						}
 						
 						found = true;

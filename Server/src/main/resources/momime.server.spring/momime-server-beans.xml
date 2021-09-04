@@ -536,6 +536,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="offerGenerator" ref="offerGenerator" />
 		<property name="savePointKeepCount" value="#{serverConfig.savePointKeepCount}" />
+		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">

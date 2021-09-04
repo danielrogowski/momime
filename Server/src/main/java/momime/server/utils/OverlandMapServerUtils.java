@@ -13,6 +13,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
+import momime.common.database.FogOfWarValue;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
@@ -88,4 +89,19 @@ public interface OverlandMapServerUtils
 	 */
 	public MapCoordinates3DEx findMapLocationOfUnitsInCombat (final MapCoordinates3DEx combatLocation,
 		final UnitCombatSideID combatSide, final List<MemoryUnit> units) throws MomException;
+
+	/**
+	 * Every turn, there is a 2% chance that volcanoes will degrade into regular mountains
+	 * 
+	 * @param trueTerrain True terrain map
+	 * @param players List of players in the session
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param terrainAndNodeAurasSetting Terrain and Node Auras FOW setting from session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public void degradeVolcanoesIntoMountains (final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<PlayerServerDetails> players, final CoordinateSystem overlandMapCoordinateSystem,
+		final FogOfWarValue terrainAndNodeAurasSetting)
+		throws JAXBException, XMLStreamException;
 }

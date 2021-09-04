@@ -92,6 +92,7 @@ import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.PlayerServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -167,6 +168,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/** Offer generator */
 	private OfferGenerator offerGenerator;
 
+	/** Server-only overland map utils */
+	private OverlandMapServerUtils overlandMapServerUtils;
+	
 	/** Number of save points to keep for each session */
 	private int savePointKeepCount;
 	
@@ -778,12 +782,16 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final PlayerServerDetails currentPlayer;
+		int playerIndex;
+
 		if (loadingSavedGame)
+		{
 			currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer (L)");
+			playerIndex = getMultiplayerSessionServerUtils ().indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
+		}
 		else
 		{
 			// Find the current player
-			int playerIndex;
 			if (mom.getGeneralPublicKnowledge ().getCurrentPlayerID () == null)	// First turn
 				playerIndex = mom.getPlayers ().size () - 1;		// So we make sure we trip the turn number over
 			else
@@ -805,6 +813,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			if (playerIndex == 0)
 				saveGame (mom);
 		}
+		
+		if (playerIndex == 0)
+			getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 
 		// Start phase for the new player
 		startPhase (mom, mom.getGeneralPublicKnowledge ().getCurrentPlayerID ());
@@ -857,6 +869,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// Save the game every turn
 			saveGame (mom);
 		}
+		
+		getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 		
 		// Process everybody's start phases together
 		startPhase (mom, 0);
@@ -1650,5 +1665,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setSavePointKeepCount (final int count)
 	{
 		savePointKeepCount = count;
+	}
+
+	/**
+	 * @return Server-only overland map utils
+	 */
+	public final OverlandMapServerUtils getOverlandMapServerUtils ()
+	{
+		return overlandMapServerUtils;
+	}
+	
+	/**
+	 * @param utils Server-only overland map utils
+	 */
+	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
+	{
+		overlandMapServerUtils = utils;
 	}
 }

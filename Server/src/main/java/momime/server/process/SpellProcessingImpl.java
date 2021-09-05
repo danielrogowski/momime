@@ -1118,6 +1118,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						if (thisTileType.getChangeToTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO))
 							terrainData.setVolcanoOwnerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+						else
+							terrainData.setVolcanoOwnerID (null);
 						
 						if ((thisTileType.isMineralDestroyed () != null) && (thisTileType.isMineralDestroyed ()) && (terrainData.getMapFeatureID () != null))
 						{

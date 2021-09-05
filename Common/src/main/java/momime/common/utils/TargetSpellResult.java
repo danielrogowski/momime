@@ -29,7 +29,7 @@ public enum TargetSpellResult
 	/** There is no city at the specified location */
 	NO_CITY_HERE,
 
-	/** Spell can't be targetted on this magic realm/lifeform type of unit, e.g. Star Fires can only be targetted on Chaos+Death units */
+	/** Spell can't be targeted on this magic realm/lifeform type of unit, e.g. Star Fires can only be targeted on Chaos+Death units */
 	UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE,
 	
 	/** Spell rolls against resistance, and the target unit has too high resistance to possibly be affected by it */
@@ -38,7 +38,7 @@ public enum TargetSpellResult
 	/** The target is completely immune to this type of spell */
 	IMMUNE,
 	
-	/** Units combatLocation doesn't match the combat the spell is targetted at */
+	/** Units combatLocation doesn't match the combat the spell is targeted at */
 	UNIT_NOT_IN_EXPECTED_COMBAT,
 	
 	/** Unit's status is not ALIVE */
@@ -59,11 +59,14 @@ public enum TargetSpellResult
 	/** Trying to dispel a target that has no enemy spells cast on it */
 	NOTHING_TO_DISPEL,
 	
-	/** Spell can only be targetted against locations that we can actually see */
+	/** Spell can only be targeted against locations that we can actually see */
 	CANNOT_SEE_TARGET,
 	
-	/** Spell cannot be targetted at certain tile types */
+	/** Spell cannot be targeted at certain tile types */
 	INVALID_TILE_TYPE,
+	
+	/** Spell cannot be targeted at certain map features */
+	INVALID_MAP_FEATURE,
 	
 	/** Can only disjunct overland enchantments */
 	OVERLAND_ENCHANTMENTS_ONLY,

@@ -521,6 +521,17 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	}
     	else
     		result = TargetSpellResult.VALID_TARGET;
+
+    	// Can only target certain map features?
+    	if ((result == TargetSpellResult.VALID_TARGET) && (spell.getSpellValidMapFeatureTarget ().size () > 0))
+    	{
+	    	if ((terrainData == null) || (terrainData.getMapFeatureID () == null))
+	    		result = TargetSpellResult.INVALID_MAP_FEATURE;
+	    	else if (spell.getSpellValidMapFeatureTarget ().stream ().anyMatch (t -> t.getMapFeatureID ().equals (terrainData.getMapFeatureID ())))
+	    		result = TargetSpellResult.VALID_TARGET;
+	    	else
+	    		result = TargetSpellResult.INVALID_MAP_FEATURE;
+    	}
     	
     	// If valid so far, then do checks for specific kinds of spells
     	if (result == TargetSpellResult.VALID_TARGET)

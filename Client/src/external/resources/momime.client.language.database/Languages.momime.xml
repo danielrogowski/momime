@@ -1066,6 +1066,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <invalidTileType language="en">
             <text>SPELL_NAME cannot be targeted at this type of tile.</text>
         </invalidTileType>
+        <invalidMapFeature language="en">
+            <text>SPELL_NAME cannot be targeted at this type of map feature.</text>
+        </invalidMapFeature>
         <enemiesHere language="en">
             <text>You cannot summon on top of enemy units.</text>
         </enemiesHere>

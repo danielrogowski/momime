@@ -160,6 +160,10 @@ public final class SpellTargettingEx extends SpellTargetting
 				languageText = getInvalidTileType ();
 				break;
 			 
+			case INVALID_MAP_FEATURE:
+				languageText = getInvalidMapFeature ();
+				break;
+			 
 			case NOTHING_TO_DISPEL:
 				languageText = getNoEnemySpellsLocation ();
 				break;

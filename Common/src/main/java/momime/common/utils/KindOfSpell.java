@@ -50,6 +50,9 @@ public enum KindOfSpell
 	/** Change Terrain or Raise Volcano */
 	CHANGE_TILE_TYPE,
 	
+	/** Transmute */
+	CHANGE_MAP_FEATURE,
+	
 	/** Corruption */
 	CORRUPTION,
 	

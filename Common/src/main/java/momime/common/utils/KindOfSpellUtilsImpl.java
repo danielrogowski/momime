@@ -80,6 +80,8 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 					kind = KindOfSpell.EARTH_LORE;
 				else if ((spell.getSpellValidTileTypeTarget ().size () > 0) && (spell.getSpellValidTileTypeTarget ().get (0).getChangeToTileTypeID () != null))
 					kind = KindOfSpell.CHANGE_TILE_TYPE;
+				else if ((spell.getSpellValidMapFeatureTarget ().size () > 0) && (spell.getSpellValidMapFeatureTarget ().get (0).getChangeToMapFeatureID () != null))
+					kind = KindOfSpell.CHANGE_MAP_FEATURE;
 				else
 					kind = KindOfSpell.CORRUPTION;
 				break;

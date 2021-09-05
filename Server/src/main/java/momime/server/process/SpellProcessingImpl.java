@@ -32,6 +32,7 @@ import momime.common.database.MapFeatureEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellValidMapFeatureTarget;
 import momime.common.database.SpellValidTileTypeTarget;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
@@ -1159,6 +1160,32 @@ public final class SpellProcessingImpl implements SpellProcessing
 					getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 				}
+			}
+			
+			else if (kind == KindOfSpell.CHANGE_MAP_FEATURE)
+			{
+				// Transmute
+				final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+				
+				final Iterator<SpellValidMapFeatureTarget> iter = spell.getSpellValidMapFeatureTarget ().iterator ();				
+				boolean found = false;
+				while ((!found) && (iter.hasNext ()))
+				{
+					final SpellValidMapFeatureTarget thisMapFeature = iter.next ();
+					if (thisMapFeature.getMapFeatureID ().equals (terrainData.getMapFeatureID ()))
+					{
+						if (thisMapFeature.getChangeToMapFeatureID () == null)
+							throw new MomException ("Spell " + spell.getSpellID () + " is a change map feature spell but has no map feature defined to change from " + thisMapFeature.getMapFeatureID ());
+						
+						terrainData.setMapFeatureID (thisMapFeature.getChangeToMapFeatureID ());
+						found = true;
+					}
+				}
+				
+				if (found)
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 			}
 		}
 

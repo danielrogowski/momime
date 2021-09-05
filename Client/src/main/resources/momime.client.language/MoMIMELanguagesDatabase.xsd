@@ -371,6 +371,10 @@
 						<xsd:selector xpath="invalidTileType" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellTargettingInvalidMapFeaturePK">
+						<xsd:selector xpath="invalidMapFeature" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="spellTargettingEnemiesHerePK">
 						<xsd:selector xpath="enemiesHere" />
 						<xsd:field xpath="@language" />
@@ -2733,6 +2737,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotSeeCity" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="locationAlreadyCorrupted" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidTileType" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidMapFeature" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemiesHere" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cellFull" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="terrainImpassable" />

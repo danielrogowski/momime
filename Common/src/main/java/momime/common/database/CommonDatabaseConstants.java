@@ -299,6 +299,9 @@ public final class CommonDatabaseConstants
 	
 	/** Unit lacks graphics for multiple figures, so always just draw one */
 	public final static String UNIT_SKILL_ID_DRAW_ONE_FIGURE = "US170";
+
+	/** Hidden skill granted by Blur CSE */
+	public final static String UNIT_SKILL_ID_BLUR = "CS051";
 	
 	// hero skills
 

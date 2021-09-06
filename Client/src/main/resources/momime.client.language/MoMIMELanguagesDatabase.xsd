@@ -493,6 +493,10 @@
 						<xsd:selector xpath="defenceStatistics" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="combatDamageDefenceStatisticsBlurPK">
+						<xsd:selector xpath="defenceStatisticsBlur" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="combatDamageDefenceStatisticsAutomaticPK">
 						<xsd:selector xpath="defenceStatisticsAutomatic" />
 						<xsd:field xpath="@language" />
@@ -2772,6 +2776,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStrengthReduced" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStrengthIncreased" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStatistics" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStatisticsBlur" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStatisticsAutomatic" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceCursed" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceResistsCurse" />

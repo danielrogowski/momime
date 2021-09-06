@@ -694,6 +694,12 @@ This can be null for unusual kinds of attack, e.g. Warp Wood.</xsd:documentation
     						<xsd:documentation>How many of potentialHits actually strike the unit, i.e. chanceToHit% chance per each hit of potentialDamage.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="blurredHits" type="momimecommon:unitSkillValue">
+					    <xsd:annotation>
+    						<xsd:documentation>If the unit is blurred, the number of hits that were dodged.  0 = has blur but none were dodged.
+null = doesn't have Blur, or the attacking unit has Immunity to Illusions and so negates the effect of Blur.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="finalHits" type="momimecommon:unitSkillValue">
 					    <xsd:annotation>
     						<xsd:documentation>Final HP loss the defender suffers, after some of actualHits may have been blocked and hence do no damage.</xsd:documentation>

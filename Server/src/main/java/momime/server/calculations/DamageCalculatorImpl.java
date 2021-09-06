@@ -493,6 +493,23 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 		damageCalculationMsg.setActualHits (actualDamage);
 		
+		// If defending unit is blurred then some of those hits may not actually hit, which is done in between making attack rolls and defence rolls
+		if ((actualDamage > 0) && (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_BLUR)) &&
+			(attackDamage.getAttackFromSkillID () != null) && (attackDamage.getSpell () == null))
+		{
+			int dodgedHits = 0;
+			int remainingHits = 0;
+			
+			for (int n = 0; n < actualDamage; n++)
+				if (getRandomUtils ().nextInt (10) == 0)
+					dodgedHits++;
+				else
+					remainingHits++;
+			
+			damageCalculationMsg.setBlurredHits (dodgedHits);
+			actualDamage = remainingHits;
+		}
+		
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (defender.calculateAliveFigureCount ());
 		damageCalculationMsg.setUnmodifiedDefenceStrength (!defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE) ? 0 :

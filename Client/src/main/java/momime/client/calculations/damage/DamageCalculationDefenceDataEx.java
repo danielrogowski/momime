@@ -151,6 +151,8 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 				default:
 					if (getModifiedDefenceStrength () == null)
 						languageText = getLanguages ().getCombatDamage ().getDefenceStatisticsAutomatic ();		// hits strike automatically, i.e. doom damage
+					else if (getBlurredHits () != null)
+						languageText = getLanguages ().getCombatDamage ().getDefenceStatisticsBlur ();
 					else
 						languageText = getLanguages ().getCombatDamage ().getDefenceStatistics ();
 			}
@@ -165,6 +167,9 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 		if (getActualHits () != null)
 			text = text.replaceAll ("ACTUAL_HITS", getActualHits ().toString ());
 
+		if (getBlurredHits () != null)
+			text = text.replaceAll ("BLURRED_HITS", getBlurredHits ().toString ());
+		
 		if (getUnmodifiedDefenceStrength () != null)
 			text = text.replaceAll ("UNMODIFIED_DEFENCE_STRENGTH", getUnmodifiedDefenceStrength ().toString ());
 		

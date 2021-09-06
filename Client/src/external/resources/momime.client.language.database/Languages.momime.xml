@@ -1161,6 +1161,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <defenceStatistics language="fr">
             <text>DEFENDER_NAME subit ACTUAL_DAMAGE points de dégâts - Chacun des DEFENDER_FIGURES personnages se défend avec DEFENCE_STRENGTH * CHANCE_TO_DEFEND% de chance de bloquer = AVERAGE_BLOCK dégâts bloqués en moyenne - Dégâts réellement bloqués par chaque personnage = ACTUAL_BLOCK</text>
         </defenceStatistics>
+        <defenceStatisticsBlur language="en">
+            <text>CHANCE_TO_HIT% chance to hit, ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, Blur dodges BLURRED_HITS hit(s), defence DEFENCE_STRENGTH with CHANCE_TO_DEFEND% block, FINAL_HITS hit(s) damage HP.</text>
+        </defenceStatisticsBlur>
         <defenceStatisticsAutomatic language="en">
             <text>ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, FINAL_HITS hit(s) damage HP.</text>
         </defenceStatisticsAutomatic>

@@ -455,13 +455,45 @@ public final class UnitUtilsImpl implements UnitUtils
 				modifiedSkillValues.put (basicSkill.getKey (), components);
 			}
 		
-		// STEP 11 - Add bonuses from weapon grades
+		// STEP 11 - If we're a boat, see who has Wind Mastery cast
+		if (basicSkillValues.containsKey (CommonDatabaseConstants.UNIT_SKILL_ID_SAILING))
+		{
+			boolean ourWindMastery = false;
+			boolean enemyWindMastery = false;
+			
+			for (final MemoryMaintainedSpell thisSpell : mem.getMaintainedSpell ())
+				if (thisSpell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_WIND_MASTERY))
+					if (thisSpell.getCastingPlayerID () == unit.getOwningPlayerID ())
+						ourWindMastery = true;
+					else
+						enemyWindMastery = true;
+			
+			// If there is both, they just cancel each other out and there's no effect
+			int bonus = 0;
+			if ((ourWindMastery) && (!enemyWindMastery))
+				bonus = basicSkillValues.get (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED) / 2;
+
+			else if ((enemyWindMastery) && (!ourWindMastery))
+				bonus = -(basicSkillValues.get (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED) / 2);
+			
+			if (bonus != 0)
+			{
+				final UnitSkillComponent component = UnitSkillComponent.SPELL_EFFECTS;
+				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED);
+				
+				Integer bonusValue = components.get (component);
+				bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus;
+				components.put (component, bonusValue);
+			}
+		}
+		
+		// STEP 12 - Add bonuses from weapon grades
 		if (weaponGrade != null)
 			for (final AddsToSkill addsToSkill : weaponGrade.getAddsToSkill ())
 				getExpandUnitDetailsUtils ().addSkillBonus (mu, null, addsToSkill, UnitSkillComponent.WEAPON_GRADE, modifiedSkillValues, unitStackSkills,
 					attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID ());
 
-		// STEP 12 - Add bonuses from experience
+		// STEP 13 - Add bonuses from experience
 		if (mu.getModifiedExperienceLevel () != null)
 			for (final UnitSkillAndValue bonus : mu.getModifiedExperienceLevel ().getExperienceSkillBonus ())
 			{
@@ -470,7 +502,7 @@ public final class UnitUtilsImpl implements UnitUtils
 					components.put (UnitSkillComponent.EXPERIENCE, bonus.getUnitSkillValue ());
 			}
 		
-		// STEP 13 - Add bonuses from combat area effects
+		// STEP 14 - Add bonuses from combat area effects
 		for (final MemoryCombatAreaEffect thisCAE : mem.getCombatAreaEffect ())
 			if (doesCombatAreaEffectApplyToUnit (unit, thisCAE, db))
 			{
@@ -505,7 +537,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				}
 			}
 		
-		// STEP 14 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
+		// STEP 15 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
@@ -520,7 +552,7 @@ public final class UnitUtilsImpl implements UnitUtils
 						attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID ());
 			}
 		
-		// STEP 15 - Hero items - numeric bonuses (dealt with valueless skills above)
+		// STEP 16 - Hero items - numeric bonuses (dealt with valueless skills above)
 		if (unit instanceof MemoryUnit)
 			for (final MemoryUnitHeroItemSlot slot : ((MemoryUnit) unit).getHeroItemSlot ())
 				if (slot.getHeroItem () != null)
@@ -579,13 +611,13 @@ public final class UnitUtilsImpl implements UnitUtils
 							}
 				}
 		
-		// STEP 16 - If we falied to find any + to hit / + to block values and we have no basic value then there's no point keeping it in the list
+		// STEP 17 - If we falied to find any + to hit / + to block values and we have no basic value then there's no point keeping it in the list
 		// We know the entry has to exist and have a valid map in it from the code above, but it may be an empty map
 		for (final String unitSkillID : SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL)
 			if (modifiedSkillValues.get (unitSkillID).isEmpty ())
 				modifiedSkillValues.remove (unitSkillID);
 		
-		// STEP 17 - Apply any skill adjustments that set to a fixed value (shatter) or divide by a value (warp creature) 
+		// STEP 18 - Apply any skill adjustments that set to a fixed value (shatter) or divide by a value (warp creature) 
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
@@ -683,11 +715,11 @@ public final class UnitUtilsImpl implements UnitUtils
 				}
 			}
 		
-		// STEP 18 - Basic upkeep values - just copy from the unit definition
+		// STEP 19 - Basic upkeep values - just copy from the unit definition
 		final Map<String, Integer> basicUpkeepValues = mu.getUnitDefinition ().getUnitUpkeep ().stream ().collect
 			(Collectors.toMap (u -> u.getProductionTypeID (), u -> u.getUndoubledProductionValue ()));
 		
-		// STEP 19 - Modify upkeep values
+		// STEP 20 - Modify upkeep values
 		final Map<String, Integer> modifiedUpkeepValues;
 
 		// Upkeep for undead is zeroed for normal units and adds +50% for summoned creatures
@@ -724,7 +756,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			}));
 		}
 		
-		// STEP 20 - Work out who has control of the unit at the moment
+		// STEP 21 - Work out who has control of the unit at the moment
 		int controllingPlayerID = unit.getOwningPlayerID ();
 		if ((unit instanceof MemoryUnit) && (((MemoryUnit) unit).getConfusionEffect () == ConfusionEffect.CASTER_CONTROLLED) && (confusionSpellOwner != null))
 			controllingPlayerID = confusionSpellOwner;

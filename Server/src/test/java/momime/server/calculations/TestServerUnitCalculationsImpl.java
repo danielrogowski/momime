@@ -42,7 +42,6 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.utils.UnitServerUtils;
@@ -81,8 +80,8 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		assertEquals (1, calc.calculateUnitScoutingRange (unit, db));
 		
 		// Unit with Scouting III
-		when (unit.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING)).thenReturn (true);
-		when (unit.getModifiedSkillValue (ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING)).thenReturn (3);
+		when (unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SCOUTING)).thenReturn (true);
+		when (unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SCOUTING)).thenReturn (3);
 		assertEquals (3, calc.calculateUnitScoutingRange (unit, db));
 		
 		// Unit with two skills, one which grants Scouting II (like Flight) and one which has nothing at all to do with scouting
@@ -336,7 +335,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		when (defender.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (7, 6));
 		
 		// We do have the Long Range skill
-		when (attacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE)).thenReturn (true);
+		when (attacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE)).thenReturn (true);
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();

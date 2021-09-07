@@ -51,7 +51,6 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -553,7 +552,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		
 		final UnitSkillEx illusionaryAttackSkill = new UnitSkillEx ();
 		illusionaryAttackSkill.getNegatedBySkill ().add (immunityToIllusions);
-		when (db.findUnitSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "resolveAttack")).thenReturn (illusionaryAttackSkill);
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "resolveAttack")).thenReturn (illusionaryAttackSkill);
 
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();

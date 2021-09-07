@@ -133,4 +133,10 @@ public interface ExpandedUnitDetails extends MinimalUnitDetails
 	 * @return PlayerID of the player who currently controls the unit; may not be owningPlayerID if unit has confusion cast on it 
 	 */
 	public int getControllingPlayerID ();
+	
+	/**
+	 * @return Movement speed calculated for this unit (just a shortcut to reading this particular skill value)
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasModifiedSkill (); also if it has any null components
+	 */
+	public int getMovementSpeed () throws MomException;
 }

@@ -1311,7 +1311,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			{
 				// If the unit it making an attack, that takes half its total movement
 				if ((!blocked) && (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE))
-					reduceMovementRemaining (tu.getMemoryUnit (), tu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+					reduceMovementRemaining (tu.getMemoryUnit (), tu.getMovementSpeed ());
 				
 				// Actually put the units in that location on the server
 				tu.setCombatPosition (movePath);

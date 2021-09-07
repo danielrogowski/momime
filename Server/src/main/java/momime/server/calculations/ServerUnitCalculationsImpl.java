@@ -36,7 +36,6 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.utils.UnitServerUtils;
@@ -86,8 +85,8 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		int scoutingRange = 1;
 
 		// Actual scouting skill
-		if (unit.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING))
-			scoutingRange = Math.max (scoutingRange, unit.getModifiedSkillValue (ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING));
+		if (unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SCOUTING))
+			scoutingRange = Math.max (scoutingRange, unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SCOUTING));
 
 		// Scouting range granted by other skills (i.e. flight skills)
 		for (final String thisSkillID : unit.listModifiedSkillIDs ())
@@ -201,7 +200,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			penalty = (int) (distance / 3);
 			
 			// Long range skill?
-			if ((penalty > 1) && (attacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE)))				
+			if ((penalty > 1) && (attacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_LONG_RANGE)))				
 				penalty = 1;
 		}
 		

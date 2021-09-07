@@ -145,7 +145,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 							
 							if (!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB))
 							{
-								thisUnit.setDoubleCombatMovesLeft (2 * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+								thisUnit.setDoubleCombatMovesLeft (2 * xu.getMovementSpeed ());
 							
 								// Pick a random direction
 								final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();

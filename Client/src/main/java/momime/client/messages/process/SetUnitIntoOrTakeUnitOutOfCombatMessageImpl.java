@@ -20,7 +20,6 @@ import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.database.AnimationEx;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.TileSetEx;
 import momime.common.messages.MemoryUnit;
@@ -183,7 +182,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 			getCombatUI ().setUnitToDrawAtLocation (getCombatPosition ().getX (), getCombatPosition ().getY (), xu);
 	
 			// Give it movement this turn
-			unit.setDoubleCombatMovesLeft (2 * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+			unit.setDoubleCombatMovesLeft (2 * xu.getMovementSpeed ());
 		}
 
 		// Finally just update the values

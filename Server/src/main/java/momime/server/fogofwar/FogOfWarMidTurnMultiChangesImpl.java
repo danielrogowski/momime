@@ -1080,9 +1080,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 			{
-				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db).getModifiedSkillValue
-					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
-
+				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db).getMovementSpeed ());
+				
 				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);
 			}
 		

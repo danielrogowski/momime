@@ -112,8 +112,7 @@ public final class SpellCastingImpl implements SpellCasting
 				
 				// Let it move this turn
 				newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
-						(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 			}
 
 			// Show on new turn messages for the player who summoned it

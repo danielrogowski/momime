@@ -18,7 +18,6 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeature;
 import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
@@ -223,7 +222,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 					
-					final int unitMovementTotal = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED);
+					final int unitMovementTotal = xu.getMovementSpeed ();
 					if (unitMovementTotal < movementTotal)
 						movementTotal = unitMovementTotal;
 				}

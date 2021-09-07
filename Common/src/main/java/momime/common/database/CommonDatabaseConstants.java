@@ -240,6 +240,9 @@ public final class CommonDatabaseConstants
 	/** Movement speed skill; speed is calculated entirely separately from the -kind- of movement, via skills like Flight or Swimming */
 	public final static String UNIT_SKILL_ID_MOVEMENT_SPEED = "UA08";
 
+	/** Sailing (specifically ships, not swimming like Lizardmen) */
+	public final static String UNIT_SKILL_ID_SAILING = "USX02";
+	
 	/** Natural flight */
 	public final static String UNIT_SKILL_ID_FLIGHT = "USX04";
 	
@@ -267,18 +270,30 @@ public final class CommonDatabaseConstants
 	/** All invisibility skills */
 	public final static List<String> UNIT_SKILL_IDS_INVISIBILITY = Arrays.asList ("IS08", UNIT_SKILL_ID_INVISIBILITY, UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL);
 
+	/** Converts melee damage dealt into life stealing stored damage type (ghouls) */
+	public final static String UNIT_SKILL_ID_CREATE_UNDEAD = "US019";
+
 	/** All regeneration skills */
 	public final static List<String> UNIT_SKILL_IDS_REGENERATION = Arrays.asList ("IS01", "US024", "SS031");
-	
+
 	/** Skill for priests purifying corruption */
 	public final static String UNIT_SKILL_ID_PURIFY = "US025";
+
+	/** Converts melee and ranged damage dealt into armour piercing damage resolution type (elven lords/storm giants) */
+	public final static String UNIT_SKILL_ID_ARMOUR_PIERCING = "US028";
 	
 	/** Skill for damage dealt being returned to the attackers' HP (this is subtely different than the ability to create undead - ghouls create undead but do not recover HP from it) */
 	public final static String UNIT_SKILL_ID_LIFE_STEALING = "US031";
+
+	/** Converts melee and ranged damage dealt into illusionary damage resolution type (phantom warriors/beasts) */
+	public final static String UNIT_SKILL_ID_ILLUSIONARY_ATTACK = "US035";
 	
 	/** Skill for engineers building roads */
 	public final static String UNIT_SKILL_ID_BUILD_ROAD = "US036";
 
+	/** Scouting range */
+	public final static String UNIT_SKILL_ID_SCOUTING = "US037";
+	
 	/** Skill for magic and guardian spirits capturing nodes */	
 	public final static String UNIT_SKILL_ID_MELD_WITH_NODE = "US040";
 	
@@ -290,6 +305,9 @@ public final class CommonDatabaseConstants
 
 	/** Units converted to undead */
 	public final static String UNIT_SKILL_ID_UNDEAD = "US122";
+
+	/** Limit ranged attack distance penalty to -10% */ 
+	public final static String UNIT_SKILL_ID_LONG_RANGE = "US125";
 	
 	/** Skill whose value specifies how many ranged shots a unit can fire, used both for phys ammo like arrows and mag ammo like magicians' firebolts */ 
 	public final static String UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
@@ -352,6 +370,9 @@ public final class CommonDatabaseConstants
 			DamageResolutionTypeID.FEAR, DamageResolutionTypeID.TERROR);
 	
 	// spells
+	
+	/** Wind Mastery spell */
+	public final static String SPELL_ID_WIND_MASTERY = "SP057";
 	
 	/** Disrupt Wall spell */
 	public final static String SPELL_ID_DISRUPT_WALL = "SP082";

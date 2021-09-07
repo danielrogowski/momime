@@ -122,7 +122,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 						thisUnit.setDoubleCombatMovesLeft (0);
 					
 					else						
-						thisUnit.setDoubleCombatMovesLeft (2 * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+						thisUnit.setDoubleCombatMovesLeft (2 * xu.getMovementSpeed ());
 					
 					if (webbed)
 						webbedUnits.add (xu);

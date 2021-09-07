@@ -17,6 +17,7 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.database.AttackResolution;
 import momime.common.database.AttackResolutionStep;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
@@ -34,7 +35,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -181,7 +181,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 			{
 				// Borrow the list of immunities from the Illusionary Attack skill - I don't want to have to define immunties to damage types in the XSD just for this
 				final Iterator<NegatedBySkill> iter = mom.getServerDB ().findUnitSkill
-					(ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "resolveAttack").getNegatedBySkill ().iterator ();
+					(CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "resolveAttack").getNegatedBySkill ().iterator ();
 				while ((!downgradeIllusionaryAttack) && (iter.hasNext ()))
 				{
 					final NegatedBySkill negateIllusionaryAttack = iter.next ();

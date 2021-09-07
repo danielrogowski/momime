@@ -48,23 +48,6 @@ public final class ServerDatabaseValues
 	/** Default tax rate of 1 gold, 20% unrest */
 	public final static String TAX_RATE_DEFAULT = "TR03";
 
-	// skills
-
-	/** Converts melee damage dealt into life stealing stored damage type (ghouls) */
-	public final static String UNIT_SKILL_ID_CREATE_UNDEAD = "US019";
-
-	/** Converts melee and ranged damage dealt into armour piercing damage resolution type (elven lords/storm giants) */
-	public final static String UNIT_SKILL_ID_ARMOUR_PIERCING = "US028";
-	
-	/** Converts melee and ranged damage dealt into illusionary damage resolution type (phantom warriors/beasts) */
-	public final static String UNIT_SKILL_ID_ILLUSIONARY_ATTACK = "US035";
-	
-	/** Scouting range */
-	public final static String UNIT_SKILL_ID_SCOUTING = "US037";
-
-	/** Limit ranged attack distance penalty to -10% */ 
-	public final static String UNIT_SKILL_ID_LONG_RANGE = "US125";
-	
 	// damage types
 	
 	/** Life stealing / create undead damage */

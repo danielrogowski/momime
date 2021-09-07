@@ -227,7 +227,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 					// Firstly if the unit has the "create undead" skill, then force all damage to "life stealing" as long as the defender isn't immune to it -
 					// if they are immune to it, leave it as regular melee damage (tested in the original MoM that Ghouls can hurt Zombies).
 					DamageType damageType = null;
-					if (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_CREATE_UNDEAD))
+					if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_UNDEAD))
 					{
 						damageType = db.findDamageType (ServerDatabaseValues.DAMAGE_TYPE_ID_LIFE_STEALING, "attackFromUnitSkill");
 						if (xuDefender.isUnitImmuneToDamageType (damageType))
@@ -258,9 +258,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 						damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
 						if ((unitSkill.isDamageResolutionTypeUpgradeable () != null) && (unitSkill.isDamageResolutionTypeUpgradeable ()))
 						{
-							if (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK))
+							if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK))
 								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
-							else if (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ARMOUR_PIERCING))
+							else if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ARMOUR_PIERCING))
 								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ARMOUR_PIERCING);
 						}
 						

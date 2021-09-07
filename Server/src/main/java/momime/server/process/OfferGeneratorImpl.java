@@ -424,8 +424,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 				
 				// Let it move this turn
 				hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
-						(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 				
 				// Update amounts to show what the hero is consuming/generatnig
 				getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
@@ -463,8 +462,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 
 					// Let it move this turn
 					newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
-							(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 					
 					unitsAdded++;
 					if (unitsAdded >= unitsOffer.getUnitCount ())

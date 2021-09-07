@@ -338,6 +338,16 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	{
 		return controllingPlayerID;
 	}
+
+	/**
+	 * @return Movement speed calculated for this unit (just a shortcut to reading this particular skill value)
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasModifiedSkill (); also if it has any null components
+	 */
+	@Override
+	public final int getMovementSpeed () throws MomException
+	{
+		return getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED);
+	}
 	
 	/**
 	 * @return String representation of all class values, for debug purposes

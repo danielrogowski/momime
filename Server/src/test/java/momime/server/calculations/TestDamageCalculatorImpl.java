@@ -34,7 +34,6 @@ import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.process.AttackResolutionUnit;
 import momime.server.utils.UnitServerUtils;
 
@@ -504,7 +503,7 @@ public final class TestDamageCalculatorImpl
 
 		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has 6 figures...
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
-		when (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)).thenReturn (true);
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each

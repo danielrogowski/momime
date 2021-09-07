@@ -93,7 +93,7 @@ public final class TestUnitCalculationsImpl
 
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (u1, null, null, null, players, fow, db)).thenReturn (xu1);
-		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
+		when (xu1.getMovementSpeed ()).thenReturn (1);
 		when (xu1.getControllingPlayerID ()).thenReturn (1);
 
 		// Wrong location
@@ -108,7 +108,7 @@ public final class TestUnitCalculationsImpl
 
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (u2, null, null, null, players, fow, db)).thenReturn (xu2);
-		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
+		when (xu2.getMovementSpeed ()).thenReturn (1);
 		when (xu2.getControllingPlayerID ()).thenReturn (1);
 		
 		// No combat position
@@ -122,7 +122,7 @@ public final class TestUnitCalculationsImpl
 
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (u3, null, null, null, players, fow, db)).thenReturn (xu3);
-		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
+		when (xu3.getMovementSpeed ()).thenReturn (1);
 		when (xu3.getControllingPlayerID ()).thenReturn (1);
 		
 		// Wrong player
@@ -137,7 +137,7 @@ public final class TestUnitCalculationsImpl
 
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (u4, null, null, null, players, fow, db)).thenReturn (xu4);
-		when (xu4.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
+		when (xu4.getMovementSpeed ()).thenReturn (1);
 		when (xu4.getControllingPlayerID ()).thenReturn (2);
 		
 		// Unit B that matches
@@ -152,7 +152,7 @@ public final class TestUnitCalculationsImpl
 
 		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (u5, null, null, null, players, fow, db)).thenReturn (xu5);
-		when (xu5.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu5.getMovementSpeed ()).thenReturn (2);
 		when (xu5.getControllingPlayerID ()).thenReturn (1);
 		
 		// Set up object to test

@@ -205,9 +205,9 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		when (midTurn.determineOneCellPendingMovement (move3Stack, player2, move3, move3Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (null);	// <--
 
 		// Movement speed
-		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
-		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
-		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu1.getMovementSpeed ()).thenReturn (2);
+		when (xu2.getMovementSpeed ()).thenReturn (2);
+		when (xu3.getMovementSpeed ()).thenReturn (2);
 		
 		// Set up test object
 		final SimultaneousTurnsProcessingImpl proc = new SimultaneousTurnsProcessingImpl ();
@@ -332,9 +332,9 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		when (midTurn.determineOneCellPendingMovement (move3Stack, player2, move3, move3Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (move3Cell);
 		
 		// Movement speed
-		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
-		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
-		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu1.getMovementSpeed ()).thenReturn (2);
+		when (xu2.getMovementSpeed ()).thenReturn (2);
+		when (xu3.getMovementSpeed ()).thenReturn (2);
 		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2
 		// (This proves that it works via total, not remaining move, because then the list would be 1, 2, 2, 3, 3, 3)
@@ -476,9 +476,9 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		when (midTurn.determineOneCellPendingMovement (move3Stack, player2, move3, move3Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (move3Cell);
 
 		// Movement speed
-		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
-		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
-		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu1.getMovementSpeed ()).thenReturn (2);
+		when (xu2.getMovementSpeed ()).thenReturn (2);
+		when (xu3.getMovementSpeed ()).thenReturn (2);
 		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2
 		// (This proves that it works via total, not remaining move, because then the list would be 1, 2, 2, 3, 3, 3)

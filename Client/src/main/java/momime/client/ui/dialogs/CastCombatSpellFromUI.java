@@ -72,10 +72,10 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 	private List<CastCombatSpellFrom> castingSources;
 	
 	/** Map of casting source to actions */
-	private Map<CastCombatSpellFrom, Action> castingSourceActions = new HashMap<CastCombatSpellFrom, Action> ();
+	private final Map<CastCombatSpellFrom, Action> castingSourceActions = new HashMap<CastCombatSpellFrom, Action> ();
 	
 	/** List of buttons for each casting source */
-	private List<JButton> castingSourceButtons = new ArrayList<JButton> ();
+	private final List<JButton> castingSourceButtons = new ArrayList<JButton> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected

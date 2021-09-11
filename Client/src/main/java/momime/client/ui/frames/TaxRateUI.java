@@ -56,10 +56,10 @@ public final class TaxRateUI extends MomClientFrameUI
 	private BufferedImage buttonPressed;
 	
 	/** Map of tax rates to actions */
-	private Map<TaxRate, Action> taxRateActions = new HashMap<TaxRate, Action> ();
+	private final Map<TaxRate, Action> taxRateActions = new HashMap<TaxRate, Action> ();
 	
 	/** List of buttons for each taxRateID */
-	private List<JButton> taxRateButtons = new ArrayList<JButton> ();
+	private final List<JButton> taxRateButtons = new ArrayList<JButton> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected

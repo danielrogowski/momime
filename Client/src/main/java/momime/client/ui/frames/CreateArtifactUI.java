@@ -151,7 +151,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	private JLabel spellChargesBackground;
 	
 	/** x1 x2 x3 x4 buttons for picking number of spell charges */
-	private List<JButton> spellChargesButtons = new ArrayList<JButton> ();
+	private final List<JButton> spellChargesButtons = new ArrayList<JButton> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected

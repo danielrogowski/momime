@@ -1,7 +1,9 @@
 package momime.client.ui.frames;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -16,6 +18,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -31,6 +34,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.utils.PlayerPickClientUtils;
@@ -57,6 +61,14 @@ public final class WizardsUI extends MomClientFrameUI
 
 	/** Special inset for books */
 	private final static int NO_INSET = 0;
+	
+	/** How much to scale down the wizard portraits to fit in the gems, as a percent */
+	private final static int WIZARD_PORTRAIT_SCALE = 30;
+	
+	/** Size of wizard portraits to fit in the gems */
+	private final static Dimension SCALED_WIZARD_PORTRAIT_SIZE = new Dimension
+		((GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width * WIZARD_PORTRAIT_SCALE) / 100,
+		 (GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height* WIZARD_PORTRAIT_SCALE) / 100);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx wizardsLayout;
@@ -91,12 +103,9 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
 	
-	/** List of gem images */
-	private List<JLabel> gems;
+	/** List of gem buttons for each wizard */
+	private final List<JButton> wizardButtons = new ArrayList<JButton> ();
 	
-	/** List of wizard portrait images */
-	private List<JLabel> portraits;
-
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -121,6 +130,12 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Wizard being viewed */
 	private PlayerPublicDetails selectedWizard;
 	
+	/** Portrait of wizard being viewed */
+	private JLabel wizardPortrait;
+	
+	/** Wizards title */
+	private JLabel wizardsTitle;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -141,6 +156,9 @@ public final class WizardsUI extends MomClientFrameUI
 		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getWizardsLayout ()));
+		
+		wizardsTitle = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (wizardsTitle, "frmWizardsTitle");
 		
 		contentPane.add (getUtils ().createImageButton (closeAction,
 			MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonNormal), "frmWizardsClose");
@@ -184,47 +202,10 @@ public final class WizardsUI extends MomClientFrameUI
 			}
 		});				
 		
-		// Create all the gems and portait labels, initially with no image, because the gems get regenerated with the
-		// wizard's colour, and the portraits with the wizard's picture
-		gems = new ArrayList<JLabel> ();
-		portraits = new ArrayList<JLabel> ();
-		
-		for (int n = 1; n <= 14; n++)
-		{
-			// Must add portrait first, so it appears in front of the gem
-			final JLabel portrait = new JLabel ();
-			contentPane.add (portrait, "frmWizardsPortrait" + n);
-			portraits.add (portrait);
-
-			final JLabel gem = new JLabel ();
-			contentPane.add (gem, "frmWizardsGem" + n);
-			gems.add (gem);
-			
-			// Create actions once out here too
-			final int wizardNo = n - 1;
-			final MouseAdapter displayWizardHandler = new MouseAdapter ()
-			{
-				@Override
-				public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
-				{
-					try
-					{
-						selectedWizard = getClient ().getPlayers ().get (wizardNo);
-						
-						updateBookshelfFromPicks ();
-						updateRetortsFromPicks (-1);
-						updateWizard ();
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-				}
-			};
-			
-			portrait.addMouseListener (displayWizardHandler);
-			gem.addMouseListener (displayWizardHandler);
-		}
+		// Portrait
+		wizardPortrait = new JLabel ();
+		contentPane.add (wizardPortrait, "frmWizardsPortrait");
+		wizardPortrait.setVisible (false);
 		
 		updateWizards ();
 		
@@ -239,29 +220,38 @@ public final class WizardsUI extends MomClientFrameUI
 	 */
 	public final void updateWizards () throws IOException
 	{
-		if (gems != null)
-			for (int n = 0; n < 14; n++)
+		if (contentPane != null)
+		{
+			// Remove the old buttons
+			for (final JButton button : wizardButtons)
+				contentPane.remove (button);
+			
+			wizardButtons.clear ();
+			
+			// Create new buttons
+			int n = 0;
+			for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			{
-				final JLabel gemLabel = gems.get (n);
-				final JLabel portraitLabel = portraits.get (n);
-				
-				final PlayerPublicDetails player = (n < getClient ().getPlayers ().size ()) ? getClient ().getPlayers ().get (n) : null;
-				final MomPersistentPlayerPublicKnowledge pub = (player == null) ? null : (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				final boolean isWizard = (pub == null) ? false : PlayerKnowledgeUtils.isWizard (pub.getWizardID ());
-				
-				gemLabel.setVisible (isWizard);
-				portraitLabel.setVisible ((isWizard) && (pub.getWizardState () == WizardState.ACTIVE));
-				
-				if (isWizard)
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
 				{
-					final String gemImageName = (pub.getWizardState () == WizardState.ACTIVE) ? "/momime.client.graphics/ui/backgrounds/gem.png" :
+					final Action wizardAction = new LoggingAction ((ev) ->
+					{
+						selectedWizard = player;						
+						updateBookshelfFromPicks ();
+						updateRetortsFromPicks (-1);
+						updateWizard ();
+					});
+					
+					final String gemNormalImageName = (pub.getWizardState () == WizardState.ACTIVE) ? "/momime.client.graphics/ui/backgrounds/gem.png" :
 						"/momime.client.graphics/ui/backgrounds/gemCracked.png";
-					
-					final BufferedImage gemImage = getPlayerColourImageGenerator ().getModifiedImage (gemImageName, true, null, null, null,
-						player.getPlayerDescription ().getPlayerID (), null);
-					
-					gemLabel.setIcon (new ImageIcon (gemImage));
+					final String gemPressedImageName = "/momime.client.graphics/ui/backgrounds/gemPressed.png";
 
+					BufferedImage wizardNormalImage = getPlayerColourImageGenerator ().getModifiedImage
+						(gemNormalImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
+					BufferedImage wizardPressedImage = getPlayerColourImageGenerator ().getModifiedImage
+						(gemPressedImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
+					
 					// Find the wizard's photo
 					if (pub.getWizardState () == WizardState.ACTIVE)
 					{
@@ -272,12 +262,52 @@ public final class WizardsUI extends MomClientFrameUI
 							unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
 						else
 							throw new MomException ("Player ID " + player.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
-	
-						final Image scaledPortrait = unscaledPortrait.getScaledInstance (54, 63, Image.SCALE_SMOOTH);
-						portraitLabel.setIcon (new ImageIcon (scaledPortrait));
+		
+						final Image scaledPortrait = unscaledPortrait.getScaledInstance
+							(SCALED_WIZARD_PORTRAIT_SIZE.width, SCALED_WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH);
+						
+						// Add the wizard portrait onto the gems
+						final BufferedImage mergedNormalImage = new BufferedImage
+							(wizardNormalImage.getWidth (), wizardNormalImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+						final Graphics2D g = mergedNormalImage.createGraphics ();
+						try
+						{
+							g.drawImage (wizardNormalImage, 0, 0, null);
+							g.drawImage (scaledPortrait, (wizardNormalImage.getWidth () - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2,
+								(wizardNormalImage.getHeight () - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2, null);
+						}
+						finally
+						{
+							g.dispose ();
+						}
+						
+						final BufferedImage mergedPressedImage = new BufferedImage
+							(wizardNormalImage.getWidth (), wizardNormalImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+						final Graphics2D g2 = mergedPressedImage.createGraphics ();
+						try
+						{
+							g2.drawImage (wizardPressedImage, 0, 0, null);
+							g2.drawImage (scaledPortrait, ((wizardPressedImage.getWidth () - SCALED_WIZARD_PORTRAIT_SIZE.width) / 2) + 1,
+								((wizardPressedImage.getHeight () - SCALED_WIZARD_PORTRAIT_SIZE.height) / 2) + 1, null);
+						}
+						finally
+						{
+							g2.dispose ();
+						}
+						
+						wizardNormalImage = mergedNormalImage;
+						wizardPressedImage = mergedPressedImage;
 					}
+					
+					n++;
+					final JButton wizardButton = getUtils ().createImageButton (wizardAction, null, null, null, wizardNormalImage, wizardPressedImage, wizardNormalImage);
+					wizardButton.setEnabled (pub.getWizardState () == WizardState.ACTIVE);
+					
+					contentPane.add (wizardButton, "frmWizardsGem" + n);
+					wizardButtons.add (wizardButton);
 				}
 			}
+		}
 	}
 	
 	/**
@@ -364,10 +394,35 @@ public final class WizardsUI extends MomClientFrameUI
 	 */
 	private final void updateWizard ()
 	{
+		wizardPortrait.setVisible (false);
 		if (selectedWizard == null)
 			playerName.setText (null);
 		else
+		{
 			playerName.setText (getWizardClientUtils ().getPlayerName (selectedWizard));
+			
+			try
+			{
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) selectedWizard.getPersistentPlayerPublicKnowledge ();
+				final BufferedImage unscaledPortrait;
+				if (pub.getCustomPhoto () != null)
+					unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
+				else if (pub.getStandardPhotoID () != null)
+					unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
+				else
+					throw new MomException ("Player ID " + selectedWizard.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
+				
+				final Image scaledPortrait = unscaledPortrait.getScaledInstance
+					(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH);
+				
+				wizardPortrait.setIcon (new ImageIcon (scaledPortrait));
+				wizardPortrait.setVisible (true);
+			}
+			catch (final IOException e)
+			{
+				log.error ("Error displaying full size wizard portrait", e);
+			}
+		}
 		
 		// Can only see fame of ourselves
 		fameLabel.setVisible ((selectedWizard != null) && (selectedWizard.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())));
@@ -418,6 +473,8 @@ public final class WizardsUI extends MomClientFrameUI
 	{
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTitle ()));
 		closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
+		
+		wizardsTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTitle ()));
 		
 		updateWizard ();
 	}

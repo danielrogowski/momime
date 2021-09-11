@@ -136,6 +136,7 @@ public final class TestWizardsUI extends ClientTestData
 		wizards.setClient (client);
 		wizards.setPlayerColourImageGenerator (gen);
 		wizards.setSmallFont (CreateFontsForTests.getSmallFont ());
+		wizards.setLargeFont (CreateFontsForTests.getLargeFont ());
 
 		// Display form		
 		wizards.setVisible (true);

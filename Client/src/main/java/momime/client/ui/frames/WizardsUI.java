@@ -12,7 +12,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.Action;
@@ -42,12 +44,15 @@ import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.LanguageText;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.OverlandCastingInfo;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 
@@ -103,6 +108,9 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
 	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
 	/** List of gem buttons for each wizard */
 	private final List<JButton> wizardButtons = new ArrayList<JButton> ();
 	
@@ -136,6 +144,15 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Wizards title */
 	private JLabel wizardsTitle;
 	
+	/** List of edit boxes to show spell currently being cast */
+	private final List<JLabel> currentlyCasting = new ArrayList<JLabel> ();
+	
+	/** List of labels to show spell currently being cast */
+	private final List<JLabel> currentlyCastingLabels = new ArrayList<JLabel> ();
+	
+	/** Info about what wizards are casting, gleaned from Detect Magic spell, keyed by playerID */
+	private final Map<Integer, OverlandCastingInfo> overlandCastingInfo = new HashMap<Integer, OverlandCastingInfo> ();
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -147,6 +164,7 @@ public final class WizardsUI extends MomClientFrameUI
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/wizards.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldNormal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldPressed.png");
+		final BufferedImage detectMagicTextBox = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/detectMagicTextBox.png");
 
 		// Actions
 		closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
@@ -207,7 +225,19 @@ public final class WizardsUI extends MomClientFrameUI
 		contentPane.add (wizardPortrait, "frmWizardsPortrait");
 		wizardPortrait.setVisible (false);
 		
-		updateWizards ();
+		// Boxes where we show the spell each wizard is casting
+		for (int n = 1; n <= 14; n++)
+		{
+			final JLabel label = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+			contentPane.add (label, "frmWizardsCastingLabel" + n);
+			currentlyCastingLabels.add (label);
+
+			final JLabel box = new JLabel (new ImageIcon (detectMagicTextBox));
+			contentPane.add (box, "frmWizardsCasting" + n);
+			currentlyCasting.add (box);
+		}
+		
+		updateWizards (true);
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -216,9 +246,11 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/**
 	 * Updates all the gem images, wizard portraits, and how many gems should even be visible
+	 * 
+	 * @param calledFromInit Whether this is being called from the init method, in which case we know languageChanged will be called after
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	public final void updateWizards () throws IOException
+	public final void updateWizards (final boolean calledFromInit) throws IOException
 	{
 		if (contentPane != null)
 		{
@@ -227,6 +259,11 @@ public final class WizardsUI extends MomClientFrameUI
 				contentPane.remove (button);
 			
 			wizardButtons.clear ();
+			
+			// Do we have detect magic cast?
+			final boolean detectMagic = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPlayerID (), CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, null, null, null, null) != null);
 			
 			// Create new buttons
 			int n = 0;
@@ -299,6 +336,21 @@ public final class WizardsUI extends MomClientFrameUI
 						wizardPressedImage = mergedPressedImage;
 					}
 					
+					// Show what the wizard is casting?
+					if ((detectMagic) && (pub.getWizardState () == WizardState.ACTIVE))
+					{
+						currentlyCasting.get (n).setVisible (true);
+						currentlyCastingLabels.get (n).setVisible (true);
+						
+						// Name of spell is set in languageChanged ()
+					}
+					else
+					{
+						currentlyCasting.get (n).setVisible (false);
+						currentlyCastingLabels.get (n).setVisible (false);
+					}
+					
+					// Finally create the button
 					n++;
 					final JButton wizardButton = getUtils ().createImageButton (wizardAction, null, null, null, wizardNormalImage, wizardPressedImage, wizardNormalImage);
 					wizardButton.setEnabled (pub.getWizardState () == WizardState.ACTIVE);
@@ -307,6 +359,18 @@ public final class WizardsUI extends MomClientFrameUI
 					wizardButtons.add (wizardButton);
 				}
 			}
+			
+			// Hide controls when there's less than 14 wizards
+			while (n < 14)
+			{
+				currentlyCasting.get (n).setVisible (false);
+				currentlyCastingLabels.get (n).setVisible (false);
+				n++;
+			}
+			
+			// Need to show names of spells?
+			if ((detectMagic) && (!calledFromInit))
+				languageChanged ();
 		}
 	}
 	
@@ -477,6 +541,39 @@ public final class WizardsUI extends MomClientFrameUI
 		wizardsTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTitle ()));
 		
 		updateWizard ();
+		
+		// Update names of spells, if we can see them because of Detect Magic
+		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getOurPlayerID (), CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, null, null, null, null) != null)
+		{
+			int n = 0;
+			for (final PlayerPublicDetails player : getClient ().getPlayers ())
+			{
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+				{
+					final OverlandCastingInfo info = getOverlandCastingInfo ().get (player.getPlayerDescription ().getPlayerID ());
+					
+					try
+					{
+						final List<LanguageText> text;
+						if ((info == null) || (info.getSpellID () == null))
+							text = getLanguages ().getWizardsScreen ().getCastingNothing ();
+						else
+							text = getClient ().getClientDB ().findSpell (info.getSpellID (), "WizardsUI").getSpellName ();
+					
+						currentlyCastingLabels.get (n).setText (getLanguageHolder ().findDescription (text));
+					}
+					catch (final IOException e)
+					{
+						log.error ("Can't find name of spell to display from Detect Magic for \"" + info.getSpellID () + "\"", e);
+					}
+					
+					n++;
+				}
+			}
+		}
 	}
 	
 	/**
@@ -653,5 +750,29 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setResourceValueUtils (final ResourceValueUtils util)
 	{
 		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return Info about what wizards are casting, gleaned from Detect Magic spell, keyed by playerID
+	 */
+	public final Map<Integer, OverlandCastingInfo> getOverlandCastingInfo ()
+	{
+		return overlandCastingInfo;
 	}
 }

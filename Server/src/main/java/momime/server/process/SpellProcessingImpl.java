@@ -234,6 +234,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID, spell.getSpellID (),
 						player.getPlayerDescription ().getPlayerID (), spell.getOverlandCastingCost (), null, mom.getPlayers (), mom.getSessionDescription ());
 				}
+				
+				// If it is Detect Magic, the player now learns what spells everyone is casting overland
+				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC))
+					getSpellCasting ().sendOverlandCastingInfo (spell.getSpellID (), player, mom.getPlayers ());
 			}
 		}
 		

@@ -345,4 +345,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public PlaneShiftUnitStackMessageImpl createPlaneShiftUnitStackMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public OverlandCastingInfoMessageImpl createOverlandCastingInfoMessage ();
 }

@@ -374,6 +374,9 @@ public final class CommonDatabaseConstants
 	/** Wind Mastery spell */
 	public final static String SPELL_ID_WIND_MASTERY = "SP057";
 	
+	/** Spell Blast spell */
+	public final static String SPELL_ID_SPELL_BLAST = "SP058";
+	
 	/** Disrupt Wall spell */
 	public final static String SPELL_ID_DISRUPT_WALL = "SP082";
 	
@@ -394,6 +397,9 @@ public final class CommonDatabaseConstants
 	
 	/** Summoning circle spell */
 	public final static String SPELL_ID_SUMMONING_CIRCLE = "SP203";
+	
+	/** Detect magic spell */
+	public final static String SPELL_ID_DETECT_MAGIC = "SP206";
 	
 	/** Summon hero spell - used as a means to get a list of the heroes we can rescue from lairs/nodes/towers */
 	public final static String SPELL_ID_SUMMON_HERO = "SP208";

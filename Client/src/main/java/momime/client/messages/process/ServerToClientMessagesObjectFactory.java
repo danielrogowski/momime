@@ -40,6 +40,7 @@ import momime.common.messages.servertoclient.ObjectFactory;
 import momime.common.messages.servertoclient.OfferAcceptedMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
+import momime.common.messages.servertoclient.OverlandCastingInfoMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.PlaneShiftUnitStackMessage;
@@ -683,6 +684,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final PlaneShiftUnitStackMessage createPlaneShiftUnitStackMessage ()
 	{
 		return getFactory ().createPlaneShiftUnitStackMessage ();
+	}
+	
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final OverlandCastingInfoMessage createOverlandCastingInfoMessage ()
+	{
+		return getFactory ().createOverlandCastingInfoMessage ();
 	}
 	
 	/**

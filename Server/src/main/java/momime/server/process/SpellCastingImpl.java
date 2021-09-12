@@ -19,10 +19,16 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.OverlandCastingInfo;
+import momime.common.messages.servertoclient.OverlandCastingInfoMessage;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerUnitCalculations;
@@ -130,6 +136,50 @@ public final class SpellCastingImpl implements SpellCasting
 
 				trans.getNewTurnMessage ().add (summoningSpell);
 			}
+		}
+	}
+
+	/**
+	 * Normally the spells being cast by other wizards are private, but we get to see this info if we have Detect Magic or Spell Blast cast.
+	 * 
+	 * @param ourSpellID Which spell allows us to see the info - Detect Magic or Spell Blast
+	 * @param sendToPlayer Player who has Detect Magic or Spell Blast cast
+	 * @param players List of players in the session
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void sendOverlandCastingInfo (final String ourSpellID, final PlayerServerDetails sendToPlayer, final List<PlayerServerDetails> players)
+		throws JAXBException, XMLStreamException
+	{
+		if (sendToPlayer.getPlayerDescription ().isHuman ())
+		{
+			final OverlandCastingInfoMessage msg = new OverlandCastingInfoMessage ();
+			msg.setOurSpellID (ourSpellID);
+			
+			for (final PlayerServerDetails player : players)
+			{
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+				{
+					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+					
+					final OverlandCastingInfo info = new OverlandCastingInfo ();
+					info.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+					
+					if (priv.getQueuedSpell ().size () > 0)
+					{
+						info.setSpellID (priv.getQueuedSpell ().get (0).getQueuedSpellID ());
+						
+						if (ourSpellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST))
+							info.setManaSpentOnCasting (priv.getManaSpentOnCastingCurrentSpell ());
+					}
+					
+					msg.getOverlandCastingInfo ().add (info);
+				}
+			}
+			
+			sendToPlayer.getConnection ().sendMessageToClient (msg);
 		}
 	}
 

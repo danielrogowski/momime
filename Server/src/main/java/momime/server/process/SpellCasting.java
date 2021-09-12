@@ -1,5 +1,7 @@
 package momime.server.process;
 
+import java.util.List;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -33,4 +35,16 @@ public interface SpellCasting
 	public void castOverlandSummoningSpell (final Spell spell, final PlayerServerDetails player, final MapCoordinates3DEx summonLocation,
 		final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * Normally the spells being cast by other wizards are private, but we get to see this info if we have Detect Magic or Spell Blast cast.
+	 * 
+	 * @param ourSpellID Which spell allows us to see the info - Detect Magic or Spell Blast
+	 * @param sendToPlayer Player who has Detect Magic or Spell Blast cast
+	 * @param players List of players in the session
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void sendOverlandCastingInfo (final String ourSpellID, final PlayerServerDetails sendToPlayer, final List<PlayerServerDetails> players)
+		throws JAXBException, XMLStreamException;
 }

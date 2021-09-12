@@ -62,7 +62,7 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 		pub.setWizardState (getWizardState ());
 		
 		// Show cracked gem on wizards screen
-		getWizardsUI ().updateWizards ();
+		getWizardsUI ().updateWizards (false);
 
 		if (getWizardState () == WizardState.ACTIVE)
 		{

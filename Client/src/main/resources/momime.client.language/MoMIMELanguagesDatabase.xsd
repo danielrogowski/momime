@@ -1988,6 +1988,10 @@
 						<xsd:selector xpath="title" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="wizardsScreenCastingNothingPK">
+						<xsd:selector xpath="castingNothing" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="armyListScreen" type="momimelangs:armyListScreen">
 					<xsd:key name="armyListScreenTitlePK">
@@ -4173,6 +4177,7 @@
 	<xsd:complexType name="wizardsScreen" nxe:submenu="UI" nxe:singular="Wizards" nxe:plural="Wizards">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingNothing" />
 		</xsd:sequence>
     </xsd:complexType>
 	

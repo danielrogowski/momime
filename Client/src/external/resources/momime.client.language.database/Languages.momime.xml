@@ -4165,6 +4165,9 @@ Bonus Or +GOLD_BONUS%</text>
         <title language="en">
             <text>Wizards</text>
         </title>
+        <castingNothing language="en">
+            <text>None</text>
+        </castingNothing>
     </wizardsScreen>
     <armyListScreen>
         <title language="en">

@@ -12,6 +12,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.server.MomSessionVariables;
 
 /**
@@ -40,11 +41,12 @@ public interface SpellCasting
 	 * Normally the spells being cast by other wizards are private, but we get to see this info if we have Detect Magic or Spell Blast cast.
 	 * 
 	 * @param ourSpellID Which spell allows us to see the info - Detect Magic or Spell Blast
-	 * @param sendToPlayer Player who has Detect Magic or Spell Blast cast
+	 * @param onlyOnePlayerID If zero, will send to all players who have Detect Magic cast; if specified will send only to the specified player
 	 * @param players List of players in the session
+	 * @param spells List of known spells
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public void sendOverlandCastingInfo (final String ourSpellID, final PlayerServerDetails sendToPlayer, final List<PlayerServerDetails> players)
-		throws JAXBException, XMLStreamException;
+	public void sendOverlandCastingInfo (final String ourSpellID, final int onlyOnePlayerID, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells) throws JAXBException, XMLStreamException;
 }

@@ -537,6 +537,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="offerGenerator" ref="offerGenerator" />
 		<property name="savePointKeepCount" value="#{serverConfig.savePointKeepCount}" />
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
+		<property name="spellCasting" ref="spellCasting" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">
@@ -575,6 +576,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">

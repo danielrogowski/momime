@@ -171,6 +171,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/** Server-only overland map utils */
 	private OverlandMapServerUtils overlandMapServerUtils;
 	
+	/** Casting for each type of spell */
+	private SpellCasting spellCasting;
+	
 	/** Number of save points to keep for each session */
 	private int savePointKeepCount;
 	
@@ -681,6 +684,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		if (mom.getPlayers ().size () > 0)
 		{
+			// Send info about what everyone is casting to anybody who has Detect Magic cast
+			getSpellCasting ().sendOverlandCastingInfo (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, onlyOnePlayerID,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+			
 			// Give units their full movement back again
 			// NB. Do this after our cities may have constructed new units above
 			getFogOfWarMidTurnMultiChanges ().resetUnitOverlandMovement (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
@@ -1681,5 +1688,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
 	{
 		overlandMapServerUtils = utils;
+	}
+
+	/**
+	 * @return Casting for each type of spell
+	 */
+	public final SpellCasting getSpellCasting ()
+	{
+		return spellCasting;
+	}
+
+	/**
+	 * @param c Casting for each type of spell
+	 */
+	public final void setSpellCasting (final SpellCasting c)
+	{
+		spellCasting = c;
 	}
 }

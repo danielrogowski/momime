@@ -18,6 +18,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -28,6 +29,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.common.messages.servertoclient.OverlandCastingInfoMessage;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -58,6 +60,9 @@ public final class SpellCastingImpl implements SpellCasting
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * Processes casting a summoning spell overland, finding where there is space for the unit to go and adding it
@@ -143,44 +148,56 @@ public final class SpellCastingImpl implements SpellCasting
 	 * Normally the spells being cast by other wizards are private, but we get to see this info if we have Detect Magic or Spell Blast cast.
 	 * 
 	 * @param ourSpellID Which spell allows us to see the info - Detect Magic or Spell Blast
-	 * @param sendToPlayer Player who has Detect Magic or Spell Blast cast
+	 * @param onlyOnePlayerID If zero, will send to all players who have Detect Magic cast; if specified will send only to the specified player
 	 * @param players List of players in the session
+	 * @param spells List of known spells
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void sendOverlandCastingInfo (final String ourSpellID, final PlayerServerDetails sendToPlayer, final List<PlayerServerDetails> players)
-		throws JAXBException, XMLStreamException
+	public final void sendOverlandCastingInfo (final String ourSpellID, final int onlyOnePlayerID, final List<PlayerServerDetails> players,
+		final List<MemoryMaintainedSpell> spells) throws JAXBException, XMLStreamException
 	{
-		if (sendToPlayer.getPlayerDescription ().isHuman ())
-		{
-			final OverlandCastingInfoMessage msg = new OverlandCastingInfoMessage ();
-			msg.setOurSpellID (ourSpellID);
-			
-			for (final PlayerServerDetails player : players)
+		// Don't bother to build the message until we find at least one human player who needs it
+		OverlandCastingInfoMessage msg = null;
+
+		for (final PlayerServerDetails sendToPlayer : players)
+			if (((onlyOnePlayerID == 0) || (onlyOnePlayerID == sendToPlayer.getPlayerDescription ().getPlayerID ())) &&
+				(sendToPlayer.getPlayerDescription ().isHuman ()) &&
+				((ourSpellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST)) ||
+					(getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, sendToPlayer.getPlayerDescription ().getPlayerID (), ourSpellID, null, null, null, null) != null)))
 			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+				// Need to build message or already done?
+				if (msg == null)
 				{
-					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+					msg = new OverlandCastingInfoMessage ();
+					msg.setOurSpellID (ourSpellID);
 					
-					final OverlandCastingInfo info = new OverlandCastingInfo ();
-					info.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-					
-					if (priv.getQueuedSpell ().size () > 0)
+					for (final PlayerServerDetails player : players)
 					{
-						info.setSpellID (priv.getQueuedSpell ().get (0).getQueuedSpellID ());
-						
-						if (ourSpellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST))
-							info.setManaSpentOnCasting (priv.getManaSpentOnCastingCurrentSpell ());
+						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+						if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+						{
+							final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+							
+							final OverlandCastingInfo info = new OverlandCastingInfo ();
+							info.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+							
+							if (priv.getQueuedSpell ().size () > 0)
+							{
+								info.setSpellID (priv.getQueuedSpell ().get (0).getQueuedSpellID ());
+								
+								if (ourSpellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST))
+									info.setManaSpentOnCasting (priv.getManaSpentOnCastingCurrentSpell ());
+							}
+							
+							msg.getOverlandCastingInfo ().add (info);
+						}
 					}
-					
-					msg.getOverlandCastingInfo ().add (info);
 				}
+				
+				sendToPlayer.getConnection ().sendMessageToClient (msg);
 			}
-			
-			sendToPlayer.getConnection ().sendMessageToClient (msg);
-		}
 	}
 
 	/**
@@ -261,5 +278,21 @@ public final class SpellCastingImpl implements SpellCasting
 	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

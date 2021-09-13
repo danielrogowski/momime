@@ -19,6 +19,7 @@ import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.frames.WizardsUI;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
@@ -116,17 +117,24 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 			}
 			
 			// If we've got the magic screen loaded up, update overland enchantments
-			else
+			else if (getClient ().getClientDB ().findSpell (spell.getSpellID (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (O)").getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
 			{
 				getMagicSlidersUI ().spellsChanged ();
 				
-				// Update fame if cancelled Just Cause
-				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
+				if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
 				{
-					final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID
-						(getClient ().getPlayers (), spell.getCastingPlayerID (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (W)");				
+					// Update fame if we cancelled Just Cause
+					if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
+					{
+						final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID
+							(getClient ().getPlayers (), spell.getCastingPlayerID (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (W)");				
+						
+						getWizardsUI ().wizardUpdated (player);
+					}
 					
-					getWizardsUI ().wizardUpdated (player);
+					// Remove text boxes if it was Detect Magic
+					else if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC))
+						getWizardsUI ().updateWizards (false);
 				}
 			}
 		}

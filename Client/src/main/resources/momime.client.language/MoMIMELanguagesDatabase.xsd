@@ -274,140 +274,140 @@
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
-    			<xsd:element minOccurs="0" maxOccurs="1" name="spellTargetting" type="momimelangs:spellTargetting">
-					<xsd:key name="spellTargettingTitlePK">
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellTargeting" type="momimelangs:spellTargeting">
+					<xsd:key name="spellTargetingTitlePK">
 						<xsd:selector xpath="title" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingInvalidMagicRealmLifeformTypePK">
+					<xsd:key name="spellTargetingInvalidMagicRealmLifeformTypePK">
 						<xsd:selector xpath="invalidMagicRealmLifeformType" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingNoUnitSpellEffectIDsDefinedPK">
+					<xsd:key name="spellTargetingNoUnitSpellEffectIDsDefinedPK">
 						<xsd:selector xpath="noUnitSpellEffectIDsDefined" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingEnchantingEnemyUnitPK">
+					<xsd:key name="spellTargetingEnchantingEnemyUnitPK">
 						<xsd:selector xpath="enchantingEnemyUnit" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingCursingOwnUnitPK">
+					<xsd:key name="spellTargetingCursingOwnUnitPK">
 						<xsd:selector xpath="cursingOwnUnit" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingAlreadyHasAllPossibleUnitSpellEffectsPK">
+					<xsd:key name="spellTargetingAlreadyHasAllPossibleUnitSpellEffectsPK">
 						<xsd:selector xpath="alreadyHasAllPossibleUnitSpellEffects" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingNoCitySpellEffectIDsDefinedPK">
+					<xsd:key name="spellTargetingNoCitySpellEffectIDsDefinedPK">
 						<xsd:selector xpath="noCitySpellEffectIDsDefined" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingEnchantingEnemyCityPK">
+					<xsd:key name="spellTargetingEnchantingEnemyCityPK">
 						<xsd:selector xpath="enchantingEnemyCity" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingCursingOwnCityPK">
+					<xsd:key name="spellTargetingCursingOwnCityPK">
 						<xsd:selector xpath="cursingOwnCity" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingAlreadyHasAllPossibleCitySpellEffectsPK">
+					<xsd:key name="spellTargetingAlreadyHasAllPossibleCitySpellEffectsPK">
 						<xsd:selector xpath="alreadyHasAllPossibleCitySpellEffects" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingAlreadyHasBuildingPK">
+					<xsd:key name="spellTargetingAlreadyHasBuildingPK">
 						<xsd:selector xpath="alreadyHasBuilding" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingTooHighResistancePK">
+					<xsd:key name="spellTargetingTooHighResistancePK">
 						<xsd:selector xpath="tooHighResistance" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingImmunePK">
+					<xsd:key name="spellTargetingImmunePK">
 						<xsd:selector xpath="immune" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingUnitNotInExpectedCombatPK">
+					<xsd:key name="spellTargetingUnitNotInExpectedCombatPK">
 						<xsd:selector xpath="unitNotInExpectedCombat" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingUnitDeadPK">
+					<xsd:key name="spellTargetingUnitDeadPK">
 						<xsd:selector xpath="unitDead" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingUndamagedPK">
+					<xsd:key name="spellTargetingUndamagedPK">
 						<xsd:selector xpath="undamaged" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingPermanentlyDamagedPK">
+					<xsd:key name="spellTargetingPermanentlyDamagedPK">
 						<xsd:selector xpath="permanentlyDamaged" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingUnhealableLifeformTypePK">
+					<xsd:key name="spellTargetingUnhealableLifeformTypePK">
 						<xsd:selector xpath="unhealableLifeformType" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingNoEnemySpellsUnitPK">
+					<xsd:key name="spellTargetingNoEnemySpellsUnitPK">
 						<xsd:selector xpath="noEnemySpellsUnit" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingNoEnemySpellsLocationPK">
+					<xsd:key name="spellTargetingNoEnemySpellsLocationPK">
 						<xsd:selector xpath="noEnemySpellsLocation" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingCannotSeeLocationPK">
+					<xsd:key name="spellTargetingCannotSeeLocationPK">
 						<xsd:selector xpath="cannotSeeLocation" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingCannotSeeCityPK">
+					<xsd:key name="spellTargetingCannotSeeCityPK">
 						<xsd:selector xpath="cannotSeeCity" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingLocationAlreadyCorruptedPK">
+					<xsd:key name="spellTargetingLocationAlreadyCorruptedPK">
 						<xsd:selector xpath="locationAlreadyCorrupted" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingInvalidTileTypePK">
+					<xsd:key name="spellTargetingInvalidTileTypePK">
 						<xsd:selector xpath="invalidTileType" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingInvalidMapFeaturePK">
+					<xsd:key name="spellTargetingInvalidMapFeaturePK">
 						<xsd:selector xpath="invalidMapFeature" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingEnemiesHerePK">
+					<xsd:key name="spellTargetingEnemiesHerePK">
 						<xsd:selector xpath="enemiesHere" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingCellFullPK">
+					<xsd:key name="spellTargetingCellFullPK">
 						<xsd:selector xpath="cellFull" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingTerrainImpassablePK">
+					<xsd:key name="spellTargetingTerrainImpassablePK">
 						<xsd:selector xpath="terrainImpassable" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingNoRangedAttackPK">
+					<xsd:key name="spellTargetingNoRangedAttackPK">
 						<xsd:selector xpath="noRangedAttack" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingInvalidRangedAttackTypePK">
+					<xsd:key name="spellTargetingInvalidRangedAttackTypePK">
 						<xsd:selector xpath="invalidRangedAttackType" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingNoAmmunitionPK">
+					<xsd:key name="spellTargetingNoAmmunitionPK">
 						<xsd:selector xpath="noAmmunition" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingTooMuchExperiencePK">
+					<xsd:key name="spellTargetingTooMuchExperiencePK">
 						<xsd:selector xpath="tooMuchExperience" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingCancelTitlePK">
+					<xsd:key name="spellTargetingCancelTitlePK">
 						<xsd:selector xpath="cancelTitle" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="spellTargettingCancelTextPK">
+					<xsd:key name="spellTargetingCancelTextPK">
 						<xsd:selector xpath="cancelText" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
@@ -1992,6 +1992,10 @@
 						<xsd:selector xpath="castingNothing" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="wizardsScreenTargetWizardPK">
+						<xsd:selector xpath="targetWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="armyListScreen" type="momimelangs:armyListScreen">
 					<xsd:key name="armyListScreenTitlePK">
@@ -2719,7 +2723,7 @@
 		</xsd:sequence>
     </xsd:complexType>
 	
-	<xsd:complexType name="spellTargetting" nxe:submenu="Strings" nxe:singular="Spell targeting string" nxe:plural="Spell targeting strings">
+	<xsd:complexType name="spellTargeting" nxe:submenu="Strings" nxe:singular="Spell targeting string" nxe:plural="Spell targeting strings">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidMagicRealmLifeformType" />
@@ -4178,6 +4182,7 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingNothing" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetWizard" />
 		</xsd:sequence>
     </xsd:complexType>
 	

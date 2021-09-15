@@ -180,6 +180,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
+		<property name="spellCasting" ref="spellCasting" />
 	</bean>
 	
 	<bean id="cancelTargetSpellMessage" class="momime.server.messages.process.CancelTargetSpellMessageImpl" scope="prototype">

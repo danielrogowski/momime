@@ -334,19 +334,19 @@ public final class CombatUI extends MomClientFrameUI
 	/** MP penalty multiplier for how far this combat is from our wizard's fortress; null if we're banished and can't cast anything at all */
 	private Integer doubleRangePenalty;
 	
-	/** Cancel spell targetting */
+	/** Cancel spell targeting */
 	private Action cancelTargetSpellAction;
 	
-	/** Spell targetting prompt if we're the defender */
+	/** Spell targeting prompt if we're the defender */
 	private JTextArea targetSpellPromptDefender;
 
-	/** Cancel spell targetting if we're the defender */
+	/** Cancel spell targeting if we're the defender */
 	private JButton cancelTargetSpellDefender;
 	
-	/** Spell targetting prompt if we're the attacker */
+	/** Spell targeting prompt if we're the attacker */
 	private JTextArea targetSpellPromptAttacker;
 
-	/** Cancel spell targetting if we're the defender */
+	/** Cancel spell targeting if we're the defender */
 	private JButton cancelTargetSpellAttacker;
 	
 	/** Bitmaps for each animation frame of the combat map */
@@ -380,7 +380,7 @@ public final class CombatUI extends MomClientFrameUI
 	private MemoryUnit selectedUnitInCombat;
 	
 	/** Spell chosen from spell book that we want to cast into this combat, and need to select a target for */
-	private Spell spellBeingTargetted;
+	private Spell spellBeingTargeted;
 	
 	/** Unit being raised from the dead */
 	private MemoryUnit unitBeingRaised;
@@ -464,7 +464,7 @@ public final class CombatUI extends MomClientFrameUI
 		
 		cancelTargetSpellAction = new LoggingAction ((ev) ->
 		{
-			spellBeingTargetted = null;
+			spellBeingTargeted = null;
 			
 			targetSpellPromptDefender.setText (null);
 			cancelTargetSpellDefender.setVisible (false);
@@ -509,7 +509,7 @@ public final class CombatUI extends MomClientFrameUI
 						
 						// Show icon for whether we can move here, shoot here, target a spell here or so on
 						final String moveTypeFilename;
-						if (getSpellBeingTargetted () == null)
+						if (getSpellBeingTargeted () == null)
 						{
 							// Trying to move here
 							final CombatMoveType moveType = (movementTypes == null) ? CombatMoveType.CANNOT_MOVE :
@@ -525,7 +525,7 @@ public final class CombatUI extends MomClientFrameUI
 								 getClient ().getSessionDescription ().getCombatMapSize ());
 							
 							boolean validTarget;
-							switch (getSpellBeingTargetted ().getSpellBookSectionID ())
+							switch (getSpellBeingTargeted ().getSpellBookSectionID ())
 							{
 								// Summoning spell - valid as long as there isn't a unit here
 								case SUMMONING:
@@ -541,17 +541,17 @@ public final class CombatUI extends MomClientFrameUI
 									if (xu == null)
 									{
 										// Cracks call can also be aimed at walls
-										validTarget = (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
-											(getSpellBeingTargetted ().getSpellValidBorderTarget ().size () > 0) &&
-											(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), moveToLocation, getCombatTerrain ()));
+										validTarget = (getSpellBeingTargeted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
+											(getSpellBeingTargeted ().getSpellValidBorderTarget ().size () > 0) &&
+											(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargeted (), moveToLocation, getCombatTerrain ()));
 									}
 									else
 									{
-										final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargetted ().getSpellRealm (),
+										final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargeted ().getSpellRealm (),
 											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 										final Integer variableDamage;
-										if ((getSpellBeingTargetted ().getCombatMaxDamage () != null) &&
+										if ((getSpellBeingTargeted ().getCombatMaxDamage () != null) &&
 											(getCastingSource ().getHeroItemSlotNumber () == null) &&		// Can't put additional power into spells imbued into items
 											(getCastingSource ().getFixedSpellNumber () == null))				// or casting fixed spells like Magicians' Fireball spell
 											
@@ -560,25 +560,25 @@ public final class CombatUI extends MomClientFrameUI
 											variableDamage = null;
 										
 										validTarget = (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-											(getSpellBeingTargetted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
+											(getSpellBeingTargeted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
 												xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 												getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
 										
 										// Cracks call can also be aimed at walls even if the unit is flying
-										if ((!validTarget) && (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
-											(getSpellBeingTargetted ().getSpellValidBorderTarget ().size () > 0))
+										if ((!validTarget) && (getSpellBeingTargeted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
+											(getSpellBeingTargeted ().getSpellValidBorderTarget ().size () > 0))
 											
-											validTarget = (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), moveToLocation, getCombatTerrain ()));
+											validTarget = (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargeted (), moveToLocation, getCombatTerrain ()));
 									}
 									break;
 									
-								// Combat spells targetted at a location have their own method too
+								// Combat spells targeted at a location have their own method too
 								case SPECIAL_COMBAT_SPELLS:
-									validTarget = getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), moveToLocation, getCombatTerrain ());
+									validTarget = getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargeted (), moveToLocation, getCombatTerrain ());
 									break;
 									
 								default:
-									throw new MomException ("CombatUI doesn't know targetting rules (drawing) for spells from section " + getSpellBeingTargetted ().getSpellBookSectionID ());
+									throw new MomException ("CombatUI doesn't know targeting rules (drawing) for spells from section " + getSpellBeingTargeted ().getSpellBookSectionID ());
 							}
 							
 							moveTypeFilename = "/momime.client.graphics/ui/combat/moveType-" + (validTarget ? "spell" : "cannot") + ".png";
@@ -978,7 +978,7 @@ public final class CombatUI extends MomClientFrameUI
 		selectedUnitImage = new JLabel ();
 		bottomPanel.add (selectedUnitImage, "frmCombatCurrentUnitImage");
 		
-		// Spell targetting
+		// Spell targeting
 		targetSpellPromptDefender = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
 		bottomPanel.add (targetSpellPromptDefender, "frmCombatSelectSpellTargetDefender");
 		
@@ -1053,7 +1053,7 @@ public final class CombatUI extends MomClientFrameUI
 							}
 						}
 					}
-					else if (getSpellBeingTargetted () != null)
+					else if (getSpellBeingTargeted () != null)
 					{
 						// Left clicking to target a spell
 						final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt
@@ -1063,7 +1063,7 @@ public final class CombatUI extends MomClientFrameUI
 						
 						// Build message
 						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
-						msg.setSpellID (getSpellBeingTargetted ().getSpellID ());
+						msg.setSpellID (getSpellBeingTargeted ().getSpellID ());
 						msg.setCombatLocation (getCombatLocation ());
 						if ((getCastingSource () != null) && (getCastingSource ().getCastingUnit () != null))
 						{
@@ -1073,12 +1073,12 @@ public final class CombatUI extends MomClientFrameUI
 						}
 						
 						// Does the spell have varying cost?  Ignore this if its being cast from a hero item or a fixed spell
-						if ((getSpellBeingTargetted ().getCombatMaxDamage () != null) &&
+						if ((getSpellBeingTargeted ().getCombatMaxDamage () != null) &&
 							(msg.getCombatCastingSlotNumber () == null) && (msg.getCombatCastingFixedSpellNumber () == null))
 							msg.setVariableDamage (getVariableManaUI ().getVariableDamage ());
 									
 						boolean isValidTarget = false;
-						switch (getSpellBeingTargetted ().getSpellBookSectionID ())
+						switch (getSpellBeingTargeted ().getSpellBookSectionID ())
 						{
 							// Summoning spell - valid as long as there isn't a unit here
 							case SUMMONING:
@@ -1088,7 +1088,7 @@ public final class CombatUI extends MomClientFrameUI
 									msg.setCombatTargetLocation (combatCoords);
 									
 									// Resurrecting an existing unit?
-									if (getSpellBeingTargetted ().getResurrectedHealthPercentage () != null)
+									if (getSpellBeingTargeted ().getResurrectedHealthPercentage () != null)
 										msg.setCombatTargetUnitURN (getUnitBeingRaised ().getUnitURN ());
 								}
 								break;
@@ -1102,9 +1102,9 @@ public final class CombatUI extends MomClientFrameUI
 								if (xu == null)
 								{
 									// Cracks call can also be aimed at walls
-									if ((getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
-										(getSpellBeingTargetted ().getSpellValidBorderTarget ().size () > 0) &&
-										(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), combatCoords, getCombatTerrain ())))
+									if ((getSpellBeingTargeted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
+										(getSpellBeingTargeted ().getSpellValidBorderTarget ().size () > 0) &&
+										(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargeted (), combatCoords, getCombatTerrain ())))
 									{
 										msg.setCombatTargetLocation (combatCoords);
 										isValidTarget = true;
@@ -1112,11 +1112,11 @@ public final class CombatUI extends MomClientFrameUI
 								}
 								else
 								{
-									final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargetted ().getSpellRealm (),
+									final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargeted ().getSpellRealm (),
 										getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									final Integer variableDamage;
-									if ((getSpellBeingTargetted ().getCombatMaxDamage () != null) &&
+									if ((getSpellBeingTargeted ().getCombatMaxDamage () != null) &&
 										(getCastingSource ().getHeroItemSlotNumber () == null) &&		// Can't put additional power into spells imbued into items
 										(getCastingSource ().getFixedSpellNumber () == null))				// or casting fixed spells like Magicians' Fireball spell
 										
@@ -1125,7 +1125,7 @@ public final class CombatUI extends MomClientFrameUI
 										variableDamage = null;
 									
 									TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-										(getSpellBeingTargetted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
+										(getSpellBeingTargeted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
 										 xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
@@ -1135,9 +1135,9 @@ public final class CombatUI extends MomClientFrameUI
 									}
 									
 									// Cracks call can also be aimed at walls even if the unit is flying
-									else if ((getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
-										(getSpellBeingTargetted ().getSpellValidBorderTarget ().size () > 0) &&
-										(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), combatCoords, getCombatTerrain ())))
+									else if ((getSpellBeingTargeted ().getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
+										(getSpellBeingTargeted ().getSpellValidBorderTarget ().size () > 0) &&
+										(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargeted (), combatCoords, getCombatTerrain ())))
 									{
 										msg.setCombatTargetLocation (combatCoords);
 										isValidTarget = true;
@@ -1148,26 +1148,26 @@ public final class CombatUI extends MomClientFrameUI
 									if (validTarget != TargetSpellResult.VALID_TARGET)
 									{
 										final String spellName = getLanguageHolder ().findDescription
-											(getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "CombatUI").getSpellName ());
+											(getClient ().getClientDB ().findSpell (getSpellBeingTargeted ().getSpellID (), "CombatUI").getSpellName ());
 										
-										String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getUnitLanguageText (validTarget)).replaceAll
-											("SPELL_NAME", (spellName != null) ? spellName : getSpellBeingTargetted ().getSpellID ());
+										String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getUnitLanguageText (validTarget)).replaceAll
+											("SPELL_NAME", (spellName != null) ? spellName : getSpellBeingTargeted ().getSpellID ());
 										
-										// If spell can only be targetted on specific magic realm/lifeform types, the list them
+										// If spell can only be targeted on specific magic realm/lifeform types, the list them
 										if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
-											text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (getSpellBeingTargetted ());
+											text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (getSpellBeingTargeted ());
 										
 										final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
-										msgBox.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
+										msgBox.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
 										msgBox.setText (text);
 										msgBox.setVisible (true);
 									}
 								}
 								break;
 								
-							// Combat spells targetted at a location have their own method too
+							// Combat spells targeted at a location have their own method too
 							case SPECIAL_COMBAT_SPELLS:
-								if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), combatCoords, getCombatTerrain ()))
+								if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargeted (), combatCoords, getCombatTerrain ()))
 								{
 									msg.setCombatTargetLocation (combatCoords);
 									isValidTarget = true;
@@ -1175,14 +1175,14 @@ public final class CombatUI extends MomClientFrameUI
 								break;
 								
 							default:
-								throw new MomException ("CombatUI doesn't know targetting rules (clicking) for spells from section " + getSpellBeingTargetted ().getSpellBookSectionID ());
+								throw new MomException ("CombatUI doesn't know targeting rules (clicking) for spells from section " + getSpellBeingTargeted ().getSpellBookSectionID ());
 						}
 
 						if (isValidTarget)
 						{
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 							
-							// Just use the common routine to close out the spell targetting prompt
+							// Just use the common routine to close out the spell targeting prompt
 							cancelTargetSpellAction.actionPerformed (null);
 						}
 					}
@@ -1868,9 +1868,9 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @return spell Spell chosen from spell book that we want to cast into this combat, and need to select a target for
 	 */
-	public final Spell getSpellBeingTargetted ()
+	public final Spell getSpellBeingTargeted ()
 	{
-		return spellBeingTargetted;
+		return spellBeingTargeted;
 	}
 	
 	/**
@@ -1878,9 +1878,9 @@ public final class CombatUI extends MomClientFrameUI
 	 * @param spell Spell chosen from spell book that we want to cast into this combat, and need to select a target for
 	 * @throws RecordNotFoundException If the spell or spell book section can't be found
 	 */
-	public final void setSpellBeingTargetted (final Spell spell) throws RecordNotFoundException
+	public final void setSpellBeingTargeted (final Spell spell) throws RecordNotFoundException
 	{
-		spellBeingTargetted = spell;
+		spellBeingTargeted = spell;
 		
 		// Find all the controls to use, depending on whether we're the attacker or defender
 		final JLabel playerName;
@@ -1901,8 +1901,8 @@ public final class CombatUI extends MomClientFrameUI
 		}
 		
 		// Set up prompt
-		final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "setSpellBeingTargetted").getSpellName ());
-		final String target = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "setSpellBeingTargetted").getSpellTargetPrompt ());
+		final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getSpellBeingTargeted ().getSpellID (), "setSpellBeingTargeted").getSpellName ());
+		final String target = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "setSpellBeingTargeted").getSpellTargetPrompt ());
 		
 		spellPrompt.setText (target.replaceAll ("SPELL_NAME", spellName).replaceAll ("TARGET_TYPE",
 			getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getTargetTypeUnit ())));

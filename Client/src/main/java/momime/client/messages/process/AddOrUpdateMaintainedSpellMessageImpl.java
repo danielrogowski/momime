@@ -120,7 +120,7 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
 					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
 				{
-					getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
 					
 					// Redraw the NTMs
 					getNewTurnMessagesUI ().languageChanged ();
@@ -152,8 +152,8 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
 					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
 				{
-					getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedUnitURN (getMaintainedSpell ().getUnitURN ());
-					getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedUnitURN (getMaintainedSpell ().getUnitURN ());
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
 					
 					// Redraw the NTMs
 					getNewTurnMessagesUI ().languageChanged ();
@@ -241,10 +241,10 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
 				{
 					if (getMaintainedSpell ().getCityLocation () != null)
-						getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+						getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
 					else
-						// Just stick a value in there to stop asking about targetting disjunction spells
-						getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity (new MapCoordinates3DEx (-1, -1, -1));
+						// Just stick a value in there to stop asking about targeting disjunction spells
+						getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity (new MapCoordinates3DEx (-1, -1, -1));
 					
 					// Redraw the NTMs
 					getNewTurnMessagesUI ().languageChanged ();

@@ -801,7 +801,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				}
 			}
 			
-			// Similar for spells targetted at a location
+			// Similar for spells targeted at a location
 			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.SPECIAL_COMBAT_SPELLS))
 			{
 				proceed = getMemoryMaintainedSpellClientUtils ().isAnyCombatLocationValidTargetForSpell (spell,
@@ -891,7 +891,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))	||			// or casting fixed spells like Magicians' Fireball spell
 				((getCastType () == SpellCastType.OVERLAND) && (spell.getOverlandMaxDamage () != null)))				
 			{
-				getVariableManaUI ().setSpellBeingTargetted (spell);
+				getVariableManaUI ().setSpellBeingTargeted (spell);
 				
 				// If we've only got enough casting skill/MP to cast the spell at base cost, then don't even bother showing the variable damage form 
 				if (getVariableManaUI ().anySelectableRange ())
@@ -917,7 +917,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
 					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
 				
-				getCombatUI ().setSpellBeingTargetted (spell);
+				getCombatUI ().setSpellBeingTargeted (spell);
 			
 			// Show item crafting window for Enchant Item / Create Artifact
 			else if (spell.getHeroItemBonusMaximumCraftingCost () != null)

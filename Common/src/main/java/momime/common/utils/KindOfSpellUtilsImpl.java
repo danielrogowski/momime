@@ -1,6 +1,7 @@
 package momime.common.utils;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 
@@ -104,6 +105,13 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 				
 			case SPECIAL_SPELLS:
 				kind = KindOfSpell.SPECIAL_SPELLS;
+				break;
+				
+			case ENEMY_WIZARD_SPELLS:
+				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST))
+					kind = KindOfSpell.SPELL_BLAST;
+				else
+					kind = KindOfSpell.ENEMY_WIZARD_SPELLS;
 				break;
 				
 			default:

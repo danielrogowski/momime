@@ -3,7 +3,7 @@ package momime.client.language.database;
 import momime.client.languages.database.LanguageOption;
 import momime.client.languages.database.MomLanguages;
 import momime.client.languages.database.ObjectFactory;
-import momime.client.languages.database.SpellTargetting;
+import momime.client.languages.database.SpellTargeting;
 
 /**
  * Creates our custom extended MomLanguages when it is unmarshalled with JAXB
@@ -29,11 +29,11 @@ public final class MomLanguagesFactory extends ObjectFactory
 	}
 
 	/**
-	 * @return Custom extended SpellTargetting 
+	 * @return Custom extended SpellTargeting 
 	 */
 	@Override
-	public final SpellTargetting createSpellTargetting ()
+	public final SpellTargeting createSpellTargeting ()
 	{
-		return new SpellTargettingEx ();
+		return new SpellTargetingEx ();
 	}
 }

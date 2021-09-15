@@ -48,6 +48,7 @@ import momime.common.database.LanguageText;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
@@ -147,11 +148,20 @@ public final class WizardsUI extends MomClientFrameUI
 	/** List of edit boxes to show spell currently being cast */
 	private final List<JLabel> currentlyCasting = new ArrayList<JLabel> ();
 	
+	/** List of edit boxes to show how much MP has been put into the spells currently being cast */
+	private final List<JLabel> currentlyCastingMana = new ArrayList<JLabel> ();
+	
 	/** List of labels to show spell currently being cast */
 	private final List<JLabel> currentlyCastingLabels = new ArrayList<JLabel> ();
+
+	/** List of labels to show how much MP has been put into the spells currently being cast */
+	private final List<JLabel> currentlyCastingManaLabels = new ArrayList<JLabel> ();
 	
 	/** Info about what wizards are casting, gleaned from Detect Magic spell, keyed by playerID */
 	private final Map<Integer, OverlandCastingInfo> overlandCastingInfo = new HashMap<Integer, OverlandCastingInfo> ();
+	
+	/** Which spell is currently being targeted using this screen */
+	private Spell targetingSpell;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -235,6 +245,14 @@ public final class WizardsUI extends MomClientFrameUI
 			final JLabel box = new JLabel (new ImageIcon (detectMagicTextBox));
 			contentPane.add (box, "frmWizardsCasting" + n);
 			currentlyCasting.add (box);
+
+			final JLabel manaLabel = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+			contentPane.add (manaLabel, "frmWizardsCastingManaLabel" + n);
+			currentlyCastingManaLabels.add (manaLabel);
+
+			final JLabel manaBox = new JLabel (new ImageIcon (detectMagicTextBox));
+			contentPane.add (manaBox, "frmWizardsCastingMana" + n);
+			currentlyCastingMana.add (manaBox);
 		}
 		
 		updateWizards (true);
@@ -260,8 +278,10 @@ public final class WizardsUI extends MomClientFrameUI
 			
 			wizardButtons.clear ();
 			
-			// Do we have detect magic cast?
-			final boolean detectMagic = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			// Do we have detect magic cast or are we targeting spell blast?
+			final boolean spellBlast = (getTargetingSpell () != null) && (getTargetingSpell ().getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST));
+			
+			final boolean detectMagic = (spellBlast) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 					getClient ().getOurPlayerID (), CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, null, null, null, null) != null);
 			
@@ -350,6 +370,19 @@ public final class WizardsUI extends MomClientFrameUI
 						currentlyCastingLabels.get (n).setVisible (false);
 					}
 					
+					if ((spellBlast) && (pub.getWizardState () == WizardState.ACTIVE))
+					{
+						currentlyCastingMana.get (n).setVisible (true);
+						currentlyCastingManaLabels.get (n).setVisible (true);
+						
+						// Mana value is set in languageChanged (), because of the MP suffix
+					}
+					else
+					{
+						currentlyCastingMana.get (n).setVisible (false);
+						currentlyCastingManaLabels.get (n).setVisible (false);
+					}
+					
 					// Finally create the button
 					n++;
 					final JButton wizardButton = getUtils ().createImageButton (wizardAction, null, null, null, wizardNormalImage, wizardPressedImage, wizardNormalImage);
@@ -365,6 +398,8 @@ public final class WizardsUI extends MomClientFrameUI
 			{
 				currentlyCasting.get (n).setVisible (false);
 				currentlyCastingLabels.get (n).setVisible (false);
+				currentlyCastingMana.get (n).setVisible (false);
+				currentlyCastingManaLabels.get (n).setVisible (false);
 				n++;
 			}
 			
@@ -535,42 +570,75 @@ public final class WizardsUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTitle ()));
-		closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
-		
-		wizardsTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTitle ()));
-		
-		updateWizard ();
-		
-		// Update names of spells, if we can see them because of Detect Magic
-		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-				getClient ().getOurPlayerID (), CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, null, null, null, null) != null)
+		if (contentPane != null)
 		{
-			int n = 0;
-			for (final PlayerPublicDetails player : getClient ().getPlayers ())
+			final String title;
+			if (getTargetingSpell () != null)
+				title = getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTargetWizard ());
+			else
+				title = getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTitle ());
+			
+			getFrame ().setTitle (title);
+			wizardsTitle.setText (title);
+			
+			closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
+			
+			updateWizard ();
+			
+			// Do we have detect magic cast or are we targeting spell blast?
+			final boolean spellBlast = (getTargetingSpell () != null) && (getTargetingSpell ().getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST));
+			
+			final boolean detectMagic = (spellBlast) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getOurPlayerID (), CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, null, null, null, null) != null);
+			
+			// Update names of spells, if we can see them because of Detect Magic
+			if (detectMagic)
 			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+				int n = 0;
+				for (final PlayerPublicDetails player : getClient ().getPlayers ())
 				{
-					final OverlandCastingInfo info = getOverlandCastingInfo ().get (player.getPlayerDescription ().getPlayerID ());
-					
-					try
+					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+					if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
 					{
-						final List<LanguageText> text;
-						if ((info == null) || (info.getSpellID () == null))
-							text = getLanguages ().getWizardsScreen ().getCastingNothing ();
-						else
-							text = getClient ().getClientDB ().findSpell (info.getSpellID (), "WizardsUI").getSpellName ();
-					
-						currentlyCastingLabels.get (n).setText (getLanguageHolder ().findDescription (text));
+						final OverlandCastingInfo info = getOverlandCastingInfo ().get (player.getPlayerDescription ().getPlayerID ());
+						
+						// Spell name
+						try
+						{
+							final List<LanguageText> text;
+							if ((info == null) || (info.getSpellID () == null))
+								text = getLanguages ().getWizardsScreen ().getCastingNothing ();
+							else
+								text = getClient ().getClientDB ().findSpell (info.getSpellID (), "WizardsUI").getSpellName ();
+						
+							currentlyCastingLabels.get (n).setText (getLanguageHolder ().findDescription (text));
+						}
+						catch (final IOException e)
+						{
+							log.error ("Can't find name of spell to display from Detect Magic for \"" + info.getSpellID () + "\"", e);
+						}
+						
+						// Mana spent
+						if (spellBlast)
+						{
+							if ((info == null) || (info.getManaSpentOnCasting () == null))
+								currentlyCastingManaLabels.get (n).setText (null);
+							else
+								try
+								{
+									currentlyCastingManaLabels.get (n).setText (getTextUtils ().intToStrCommas (info.getManaSpentOnCasting ()) + " " +
+										getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
+											(CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "WizardsUI").getProductionTypeSuffix ()));
+								}
+								catch (final IOException e)
+								{
+									log.error ("Can't find mana production type to display mana spent for Spell Blast", e);
+								}
+						}
+						
+						n++;
 					}
-					catch (final IOException e)
-					{
-						log.error ("Can't find name of spell to display from Detect Magic for \"" + info.getSpellID () + "\"", e);
-					}
-					
-					n++;
 				}
 			}
 		}
@@ -774,5 +842,25 @@ public final class WizardsUI extends MomClientFrameUI
 	public final Map<Integer, OverlandCastingInfo> getOverlandCastingInfo ()
 	{
 		return overlandCastingInfo;
+	}
+
+	/**
+	 * @return Which spell is currently being targeted using this screen
+	 */
+	public final Spell getTargetingSpell ()
+	{
+		return targetingSpell;
+	}
+	
+	/**
+	 * @param s Which spell is currently being targeted using this screen
+	 */
+	public final void setTargetingSpell (final Spell s)
+	{
+		if (s != getTargetingSpell ())
+		{
+			targetingSpell = s;
+			languageChanged ();
+		}
 	}
 }

@@ -107,8 +107,8 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/** The spell we're trying to cast; null if the message box isn't about casting a spell */
 	private String castSpellID;
 	
-	/** The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targetting a spell */
-	private NewTurnMessageSpellEx cancelTargettingSpell;
+	/** The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targeting a spell */
+	private NewTurnMessageSpellEx cancelTargetingSpell;
 	
 	/** Spell we're thinking of switching off; null if the message box isn't about switching off a spell */
 	private MemoryMaintainedSpell switchOffSpell;
@@ -142,12 +142,12 @@ public final class MessageBoxUI extends MomClientDialogUI
 		
 		noAction = new LoggingAction ((ev) ->
 		{
-			// Cancel cancel targetting a spell, leaving it on the NTM list to be retargetted again, but still we have to close out the "Target Spell" right hand panel
-			if (getCancelTargettingSpell () != null)
+			// Cancel cancel targeting a spell, leaving it on the NTM list to be retargeted again, but still we have to close out the "Target Spell" right hand panel
+			if (getCancelTargetingSpell () != null)
 				getOverlandMapProcessing ().updateMovementRemaining ();
 
-			// In case targetting at an overland enchantment, reset magic screen back to normal
-			getMagicSlidersUI ().setTargettingOverlandEnchantment (false);
+			// In case targeting at an overland enchantment, reset magic screen back to normal
+			getMagicSlidersUI ().setTargetingSpell (null);
 			
 			// Close the form
 			getDialog ().dispose ();
@@ -197,25 +197,25 @@ public final class MessageBoxUI extends MomClientDialogUI
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 			
-			// Cancel targetting a spell
-			else if (getCancelTargettingSpell () != null)
+			// Cancel targeting a spell
+			else if (getCancelTargetingSpell () != null)
 			{
 				// Mark the NTM as cancelled
-				getCancelTargettingSpell ().setTargettingCancelled (true);
+				getCancelTargetingSpell ().setTargetingCancelled (true);
 				
 				// Redraw the NTMs
 				getNewTurnMessagesUI ().languageChanged ();
 				
 				// Server will have spell listed in their Maintained Spells list, so tell the server to remove it
 				final CancelTargetSpellMessage msg = new CancelTargetSpellMessage ();
-				msg.setSpellID (getCancelTargettingSpell ().getSpellID ());
+				msg.setSpellID (getCancelTargetingSpell ().getSpellID ());
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 				
 				// Close out the "Target Spell" right hand panel
 				getOverlandMapProcessing ().updateMovementRemaining ();
 				
-				// In case targetting at an overland enchantment, reset magic screen back to normal
-				getMagicSlidersUI ().setTargettingOverlandEnchantment (false);
+				// In case targeting at an overland enchantment, reset magic screen back to normal
+				getMagicSlidersUI ().setTargetingSpell (null);
 			}
 			
 			// Switch off a spell
@@ -276,7 +276,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 		contentPane.setLayout (new XmlLayoutManager (getMessageBoxLayout ()));
 		
 		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null) && (getResearchSpellID () == null) &&
-			(getCastSpellID () == null) && (getCancelTargettingSpell () == null) && (getSwitchOffSpell () == null) && (getDestroyHeroItemMessage () == null) &&
+			(getCastSpellID () == null) && (getCancelTargetingSpell () == null) && (getSwitchOffSpell () == null) && (getDestroyHeroItemMessage () == null) &&
 			(getSavedGameID () == null) && (getRemoveQueuedSpellIndex () == null)) ? 1 : 2;
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
@@ -579,19 +579,19 @@ public final class MessageBoxUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targetting a spell
+	 * @return The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targeting a spell
 	 */
-	public final NewTurnMessageSpellEx getCancelTargettingSpell ()
+	public final NewTurnMessageSpellEx getCancelTargetingSpell ()
 	{
-		return cancelTargettingSpell;
+		return cancelTargetingSpell;
 	}
 
 	/**
-	 * @param msg The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targetting a spell
+	 * @param msg The NTM telling us to target the spell that we're cancelling; null if the message box isn't about cancelling targeting a spell
 	 */
-	public final void setCancelTargettingSpell (final NewTurnMessageSpellEx msg)
+	public final void setCancelTargetingSpell (final NewTurnMessageSpellEx msg)
 	{
-		cancelTargettingSpell = msg;
+		cancelTargetingSpell = msg;
 	}
 
 	/**

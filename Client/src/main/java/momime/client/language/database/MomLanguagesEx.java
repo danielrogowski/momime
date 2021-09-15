@@ -143,7 +143,7 @@ public interface MomLanguagesEx
 	/**
 	 * @return Container for language strings
 	 */
-    public SpellTargettingEx getSpellTargetting ();
+    public SpellTargetingEx getSpellTargeting ();
 	
 	/**
 	 * @return Container for language strings

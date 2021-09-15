@@ -99,11 +99,8 @@ public final class LbxExtract
 			convertImage ("SPECFX.LBX", 11, n, "spells\\SP098\\cast-frame" + (n+1));
 		} */
 		
-		for (int n = 0; n <= 3; n++)
-		{
-			convertImage ("TERRAIN.LBX", 0, 299+n, "overland\\terrain\\arcanus\\volcano\\00000000-frame" + (n+1));
-			convertImage ("TERRAIN.LBX", 0, 1172+n, "overland\\terrain\\myrror\\volcano\\00000000-frame" + (n+1));
-		}
+		for (int n = 0; n <= 5; n++)
+			convertImage ("SPECFX.LBX", 40, n, "spells\\SP058\\cast-frame" + (n+1));
 		
 		System.out.println ("All done!");
 	} 

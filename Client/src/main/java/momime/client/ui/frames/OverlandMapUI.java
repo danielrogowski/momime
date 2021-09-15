@@ -890,11 +890,11 @@ public final class OverlandMapUI extends MomClientFrameUI
 											else
 												buildingName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (spell.getBuildingID (), "OverlandMapUI").getBuildingName ());
 											
-											final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getCityLanguageText (validTarget)).replaceAll
+											final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getCityLanguageText (validTarget)).replaceAll
 												("SPELL_NAME", spellName).replaceAll ("BUILDING_NAME", buildingName);
 											
 											final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-											msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
+											msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
 											msg.setText (text);
 											msg.setVisible (true);												
 										}
@@ -954,12 +954,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 													if (text.length () > 0)
 														text.append (System.lineSeparator ());
 													
-													text.append (getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getUnitLanguageText (invalidReason)).replaceAll
+													text.append (getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getUnitLanguageText (invalidReason)).replaceAll
 														("SPELL_NAME", spellName));
 												}
 												
 												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-												msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
+												msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
 												msg.setText (text.toString ());
 												msg.setVisible (true);												
 											}
@@ -1000,11 +1000,11 @@ public final class OverlandMapUI extends MomClientFrameUI
 									{
 										final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 										
-										final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getLocationLanguageText (validTarget)).replaceAll
+										final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getLocationLanguageText (validTarget)).replaceAll
 											("SPELL_NAME", spellName);
 										
 										final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-										msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
+										msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
 										msg.setText (text);
 										msg.setVisible (true);												
 									}

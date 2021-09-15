@@ -94,7 +94,7 @@ public final class VariableManaUI extends MomClientDialogUI
 	private JSlider slider;
 	
 	/** Spell chosen from spell book that we want to cast, and need to select MP and damage for */
-	private Spell spellBeingTargetted;
+	private Spell spellBeingTargeted;
 	
 	/** Minimum allowed value for this spell - whether this value represents MP or damage depends on getMode () */
 	private int sliderMinimum;
@@ -175,8 +175,8 @@ public final class VariableManaUI extends MomClientDialogUI
 		contentPane.add (slider, "frmVariableManaSlider");
 		
 		// Update the slider if form being displayed for the first time
-		if (getSpellBeingTargetted () != null)
-			setSpellBeingTargetted (getSpellBeingTargetted ()); 
+		if (getSpellBeingTargeted () != null)
+			setSpellBeingTargeted (getSpellBeingTargeted ()); 
 		
 		// Lock frame size
 		getDialog ().setContentPane (contentPane);
@@ -202,17 +202,17 @@ public final class VariableManaUI extends MomClientDialogUI
 	 */
 	public final void sliderPositionChanged ()
 	{
-		if ((slider != null) && (getSpellBeingTargetted () != null))
+		if ((slider != null) && (getSpellBeingTargeted () != null))
 			try
 			{
 				// The slider value is the resulting damage of the spell
 				// How this label appears depends on what kind of damage the spell does - for regular damage spells like fire bolt we want this
 				// to say e.g. "15 damage" but for Banish and Life Drain we want it to say e.g. "-4 resistance"
 				final List<LanguageText> languageText;
-				if (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
+				if (getSpellBeingTargeted ().getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
 					languageText = getLanguages ().getVariableMana ().getDispel ();
 				else
-					languageText = CommonDatabaseConstants.RESISTANCE_BASED_DAMAGE.contains (getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID ()) ?
+					languageText = CommonDatabaseConstants.RESISTANCE_BASED_DAMAGE.contains (getSpellBeingTargeted ().getAttackSpellDamageResolutionTypeID ()) ?
 						getLanguages ().getVariableMana ().getResistance () : getLanguages ().getVariableMana ().getDamage ();
 				
 				leftLabel.setText (getLanguageHolder ().findDescription (languageText).replaceAll
@@ -227,10 +227,10 @@ public final class VariableManaUI extends MomClientDialogUI
 				{
 					case CHOOSE_DAMAGE_CALC_MANA:
 						unmodifiedCost = (getCastType () == SpellCastType.COMBAT) ?
-							getSpellBeingTargetted ().getCombatCastingCost () +
-								((slider.getValue () - getSpellBeingTargetted ().getCombatBaseDamage ()) * getSpellBeingTargetted ().getCombatManaPerAdditionalDamagePoint ()) :
-							getSpellBeingTargetted ().getOverlandCastingCost () +
-								((slider.getValue () - getSpellBeingTargetted ().getOverlandBaseDamage ()) * getSpellBeingTargetted ().getOverlandManaPerAdditionalDamagePoint ());
+							getSpellBeingTargeted ().getCombatCastingCost () +
+								((slider.getValue () - getSpellBeingTargeted ().getCombatBaseDamage ()) * getSpellBeingTargeted ().getCombatManaPerAdditionalDamagePoint ()) :
+							getSpellBeingTargeted ().getOverlandCastingCost () +
+								((slider.getValue () - getSpellBeingTargeted ().getOverlandBaseDamage ()) * getSpellBeingTargeted ().getOverlandManaPerAdditionalDamagePoint ());
 						break;
 					
 					case CHOOSE_MANA_CALC_DAMAGE:
@@ -245,7 +245,7 @@ public final class VariableManaUI extends MomClientDialogUI
 				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 	
-				final int modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargetted (), unmodifiedCost,
+				final int modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargeted (), unmodifiedCost,
 					pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 				
 				// Show modified cost or not?
@@ -267,9 +267,9 @@ public final class VariableManaUI extends MomClientDialogUI
 	/**
 	 * @return Spell chosen from spell book that we want to cast, and need to select MP for
 	 */
-	public final Spell getSpellBeingTargetted ()
+	public final Spell getSpellBeingTargeted ()
 	{
-		return spellBeingTargetted;
+		return spellBeingTargeted;
 	}
 	
 	/**
@@ -277,15 +277,15 @@ public final class VariableManaUI extends MomClientDialogUI
 	 * @param spell Spell chosen from spell book that we want to cast, and need to select MP for
 	 * @throws IOException If we can't find our player, or there's a problem calculating the reduced casting cost 
 	 */
-	public final void setSpellBeingTargetted (final Spell spell) throws IOException
+	public final void setSpellBeingTargeted (final Spell spell) throws IOException
 	{
-		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "setSpellBeingTargetted");
+		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "setSpellBeingTargeted");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 		
 		// This has to work and be able to calculate the minimum+maximum damage even if the form has never been displayed
 		// so that we can handle the situation where the first variable damage spell cast is one that we don't have enough skill/MP
 		// to put any additional MP into
-		spellBeingTargetted = spell;
+		spellBeingTargeted = spell;
 		
 		switch (getMode ())
 		{
@@ -297,14 +297,14 @@ public final class VariableManaUI extends MomClientDialogUI
 			case CHOOSE_MANA_CALC_DAMAGE:
 				sliderMinimum = (getCastType () == SpellCastType.COMBAT) ? spell.getCombatCastingCost () : spell.getOverlandCastingCost ();
 				sliderMaximum = (getCastType () == SpellCastType.COMBAT) ?
-					spell.getCombatCastingCost () + (getSpellBeingTargetted ().getCombatMaxDamage () - getSpellBeingTargetted ().getCombatBaseDamage ()) /
-						getSpellBeingTargetted ().getCombatAdditionalDamagePointsPerMana () :
-					spell.getOverlandCastingCost () + (getSpellBeingTargetted ().getOverlandMaxDamage () - getSpellBeingTargetted ().getOverlandBaseDamage ()) /
-						getSpellBeingTargetted ().getOverlandAdditionalDamagePointsPerMana ();
+					spell.getCombatCastingCost () + (getSpellBeingTargeted ().getCombatMaxDamage () - getSpellBeingTargeted ().getCombatBaseDamage ()) /
+						getSpellBeingTargeted ().getCombatAdditionalDamagePointsPerMana () :
+					spell.getOverlandCastingCost () + (getSpellBeingTargeted ().getOverlandMaxDamage () - getSpellBeingTargeted ().getOverlandBaseDamage ()) /
+						getSpellBeingTargeted ().getOverlandAdditionalDamagePointsPerMana ();
 				break;
 
 			default:
-				throw new MomException ("VariableManaUI.setSpellBeingTargetted doesn't know how to set initial minimum and maximum for mode " + getMode ());
+				throw new MomException ("VariableManaUI.setSpellBeingTargeted doesn't know how to set initial minimum and maximum for mode " + getMode ());
 		}
 		
 		// We may not have enough mana (or casting skill remaining in combat) to use the spell at full power,
@@ -322,8 +322,8 @@ public final class VariableManaUI extends MomClientDialogUI
 				switch (getMode ())
 				{
 					case CHOOSE_DAMAGE_CALC_MANA:
-						unmodifiedCost = getSpellBeingTargetted ().getCombatCastingCost () +
-							((sliderMaximum - sliderMinimum) * getSpellBeingTargetted ().getCombatManaPerAdditionalDamagePoint ());
+						unmodifiedCost = getSpellBeingTargeted ().getCombatCastingCost () +
+							((sliderMaximum - sliderMinimum) * getSpellBeingTargeted ().getCombatManaPerAdditionalDamagePoint ());
 						break;
 					
 					case CHOOSE_MANA_CALC_DAMAGE:
@@ -331,13 +331,13 @@ public final class VariableManaUI extends MomClientDialogUI
 						break;
 						
 					default:
-						throw new MomException ("VariableManaUI.setSpellBeingTargetted doesn't know how to calc unmodifiedCost for mode " + getMode ());
+						throw new MomException ("VariableManaUI.setSpellBeingTargeted doesn't know how to calc unmodifiedCost for mode " + getMode ());
 				}
 					
 				// Work out the modified MP cost, reduced if we have a lot of spell books; but first check whether its the wizard casting, or a unit
 				final int modifiedCost;
 				if ((getCombatUI ().getCastingSource () == null) || (getCombatUI ().getCastingSource ().getCastingUnit () == null))
-					modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargetted (), unmodifiedCost,
+					modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargeted (), unmodifiedCost,
 						pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 				else
 					modifiedCost = unmodifiedCost;
@@ -368,16 +368,16 @@ public final class VariableManaUI extends MomClientDialogUI
 	private final VariableManaUIMode getMode () throws MomException
 	{
 		final Integer manaPerAdditionalPoint = (getCastType () == SpellCastType.COMBAT) ?
-			getSpellBeingTargetted ().getCombatManaPerAdditionalDamagePoint () : getSpellBeingTargetted ().getOverlandManaPerAdditionalDamagePoint ();
+			getSpellBeingTargeted ().getCombatManaPerAdditionalDamagePoint () : getSpellBeingTargeted ().getOverlandManaPerAdditionalDamagePoint ();
 		final Integer additionalDamagePointsPerMana = (getCastType () == SpellCastType.COMBAT) ?
-			getSpellBeingTargetted ().getCombatAdditionalDamagePointsPerMana () : getSpellBeingTargetted ().getOverlandAdditionalDamagePointsPerMana ();
+			getSpellBeingTargeted ().getCombatAdditionalDamagePointsPerMana () : getSpellBeingTargeted ().getOverlandAdditionalDamagePointsPerMana ();
 			
 		final VariableManaUIMode mode;
 		if ((manaPerAdditionalPoint == null) && (additionalDamagePointsPerMana == null))
-			throw new MomException ("VariableManaUI can't pick a mode to use for spell " + getSpellBeingTargetted ().getSpellID () + " because both values are null");
+			throw new MomException ("VariableManaUI can't pick a mode to use for spell " + getSpellBeingTargeted ().getSpellID () + " because both values are null");
 
 		else if ((manaPerAdditionalPoint != null) && (additionalDamagePointsPerMana != null))
-			throw new MomException ("VariableManaUI can't pick a mode to use for spell " + getSpellBeingTargetted ().getSpellID () + " because both values are set");
+			throw new MomException ("VariableManaUI can't pick a mode to use for spell " + getSpellBeingTargeted ().getSpellID () + " because both values are set");
 		
 		else if (manaPerAdditionalPoint != null)
 			mode = VariableManaUIMode.CHOOSE_DAMAGE_CALC_MANA;
@@ -392,27 +392,27 @@ public final class VariableManaUI extends MomClientDialogUI
 	 * Handles when we click the "OK" button to confirm the chosen variable amount of damage that we want
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If we can't find the spell being targetted
+	 * @throws RecordNotFoundException If we can't find the spell being targeted
 	 * @throws MomException If the variable settings on the spell definition are inconsistent
 	 * @throws PlayerNotFoundException If we can't find our player details in the list
 	 */
 	public final void variableDamageChosen ()
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final SpellBookSectionID sectionID = getSpellBeingTargetted ().getSpellBookSectionID ();
+		final SpellBookSectionID sectionID = getSpellBeingTargeted ().getSpellBookSectionID ();
 		
 		if ((getCastType () == SpellCastType.COMBAT) &&
 			((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
 			(sectionID == SpellBookSectionID.SUMMONING) ||
 			(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS)) &&
-				(getSpellBeingTargetted ().getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
+				(getSpellBeingTargeted ().getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
 			
-			getCombatUI ().setSpellBeingTargetted (getSpellBeingTargetted ());
+			getCombatUI ().setSpellBeingTargeted (getSpellBeingTargeted ());
 		else
 		{
 			// Tell server to cast it
 			final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
-			msg.setSpellID (getSpellBeingTargetted ().getSpellID ());
+			msg.setSpellID (getSpellBeingTargeted ().getSpellID ());
 
 			if (getCastType () == SpellCastType.COMBAT)
 			{
@@ -455,7 +455,7 @@ public final class VariableManaUI extends MomClientDialogUI
 		// So if there's no range at all, avoid reading the slider value which may be null.
 		int dmg;
 		if (!anySelectableRange ())
-			dmg = (getCastType () == SpellCastType.COMBAT) ? getSpellBeingTargetted ().getCombatBaseDamage () : getSpellBeingTargetted ().getOverlandBaseDamage ();
+			dmg = (getCastType () == SpellCastType.COMBAT) ? getSpellBeingTargeted ().getCombatBaseDamage () : getSpellBeingTargeted ().getOverlandBaseDamage ();
 		else
 			switch (getMode ())
 			{
@@ -465,16 +465,16 @@ public final class VariableManaUI extends MomClientDialogUI
 					
 				case CHOOSE_MANA_CALC_DAMAGE:
 					dmg = (getCastType () == SpellCastType.COMBAT) ? 
-						getSpellBeingTargetted ().getCombatBaseDamage () +
-							((slider.getValue () - getSpellBeingTargetted ().getCombatCastingCost ()) * getSpellBeingTargetted ().getCombatAdditionalDamagePointsPerMana ()) :
-						getSpellBeingTargetted ().getOverlandBaseDamage () +
-							((slider.getValue () - getSpellBeingTargetted ().getOverlandCastingCost ()) * getSpellBeingTargetted ().getOverlandAdditionalDamagePointsPerMana ());
+						getSpellBeingTargeted ().getCombatBaseDamage () +
+							((slider.getValue () - getSpellBeingTargeted ().getCombatCastingCost ()) * getSpellBeingTargeted ().getCombatAdditionalDamagePointsPerMana ()) :
+						getSpellBeingTargeted ().getOverlandBaseDamage () +
+							((slider.getValue () - getSpellBeingTargeted ().getOverlandCastingCost ()) * getSpellBeingTargeted ().getOverlandAdditionalDamagePointsPerMana ());
 					
 					// Dispel strength doubled if wizard is a Runemaster
 					final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
 					final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
 					
-					final SpellBookSectionID sectionID = getSpellBeingTargetted ().getSpellBookSectionID ();
+					final SpellBookSectionID sectionID = getSpellBeingTargeted ().getSpellBookSectionID ();
 					
 					if ((sectionID == SpellBookSectionID.DISPEL_SPELLS) &&
 						(getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_NODE_RUNEMASTER) > 0))

@@ -72,5 +72,11 @@ public enum KindOfSpell
 	DISPEL_UNIT_CITY_COMBAT_SPELLS,
 	
 	/** Special spells that do not require a target at all; exact effect of the spell is simply hard coded by the spellID */
-	SPECIAL_SPELLS;
+	SPECIAL_SPELLS,
+	
+	/** Spell Blast */
+	SPELL_BLAST,
+	
+	/** Spells that are targeted at enemy wizards without any other special requirements */
+	ENEMY_WIZARD_SPELLS;
 }

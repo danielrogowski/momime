@@ -134,7 +134,7 @@ public final class TestVariableManaUI extends ClientTestData
 		box.setSpellUtils (spellUtils);
 		box.setMediumFont (CreateFontsForTests.getMediumFont ());
 		box.setCombatUI (combatUI);
-		box.setSpellBeingTargetted (spell);
+		box.setSpellBeingTargeted (spell);
 		
 		// Display form		
 		box.setModal (false);
@@ -235,7 +235,7 @@ public final class TestVariableManaUI extends ClientTestData
 		box.setSpellUtils (spellUtils);
 		box.setMediumFont (CreateFontsForTests.getMediumFont ());
 		box.setCombatUI (combatUI);
-		box.setSpellBeingTargetted (spell);
+		box.setSpellBeingTargeted (spell);
 		
 		// Display form		
 		box.setModal (false);

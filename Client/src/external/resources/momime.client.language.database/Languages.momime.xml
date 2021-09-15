@@ -973,7 +973,7 @@
             <text>VALUE dispel power</text>
         </dispel>
     </variableMana>
-    <spellTargetting>
+    <spellTargeting>
         <title language="en">
             <text>Target Spell</text>
         </title>
@@ -1055,10 +1055,10 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>There are no enchantments or curses cast by an enemy wizard at this location for you to try to dispel.</text>
         </noEnemySpellsLocation>
         <cannotSeeLocation language="en">
-            <text>SPELL_NAME can only be targetted at locations you can see.</text>
+            <text>SPELL_NAME can only be targeted at locations you can see.</text>
         </cannotSeeLocation>
         <cannotSeeCity language="en">
-            <text>SPELL_NAME can only be targetted at cities you can see.</text>
+            <text>SPELL_NAME can only be targeted at cities you can see.</text>
         </cannotSeeCity>
         <locationAlreadyCorrupted language="en">
             <text>This location already has SPELL_NAME cast on it.</text>
@@ -1094,9 +1094,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>Cancel Spell</text>
         </cancelTitle>
         <cancelText language="en">
-            <text>Do you want to cancel the spell completely and lose it?  Clicking No will leave the spell untargetted so you can select a target for later in your turn; clicking Yes cancels it completely.</text>
+            <text>Do you want to cancel the spell completely and lose it?  Clicking No will leave the spell untargeted so you can select a target for later in your turn; clicking Yes cancels it completely.</text>
         </cancelText>
-    </spellTargetting>
+    </spellTargeting>
     <combatDamage>
         <title language="en">
             <text>Damage calculations</text>
@@ -4168,6 +4168,9 @@ Bonus Or +GOLD_BONUS%</text>
         <castingNothing language="en">
             <text>None</text>
         </castingNothing>
+        <targetWizard language="en">
+            <text>Select a wizard to target</text>
+        </targetWizard>
     </wizardsScreen>
     <armyListScreen>
         <title language="en">

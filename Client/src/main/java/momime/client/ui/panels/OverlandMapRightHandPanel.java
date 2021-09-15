@@ -247,13 +247,13 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Jumping to other plane */
 	private Action planeShiftAction;
 
-	/** Title for targetting spells */
+	/** Title for targeting spells */
 	private JLabel targetSpellTitle;
 	
-	/** Text saying what's being targetted */
+	/** Text saying what's being targeted */
 	private JTextArea targetSpellText;
 	
-	/** NTM about the spell being targetted */
+	/** NTM about the spell being targeted */
 	private NewTurnMessageSpellEx targetSpell;
 	
 	/** Title for surveyor */
@@ -387,9 +387,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					
 				case TARGET_SPELL:
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getCancelTitle ());
-					msg.setLanguageText (getLanguages ().getSpellTargetting ().getCancelText ());
-					msg.setCancelTargettingSpell (getTargetSpell ());
+					msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getCancelTitle ());
+					msg.setLanguageText (getLanguages ().getSpellTargeting ().getCancelText ());
+					msg.setCancelTargetingSpell (getTargetSpell ());
 					msg.setVisible (true);
 					break;
 					
@@ -837,7 +837,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		targetSpellTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getTargetSpell ()));
 		
-		// A bit more involved to set the spell targetting text correctly
+		// A bit more involved to set the spell targeting text correctly
 		if (getTargetSpell () != null)
 			try
 			{
@@ -854,20 +854,20 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
 				{
-					List<LanguageText> targetType = getLanguages ().getSpellCasting ().getTargetTypeOverlandEnchantment ();
+					List<LanguageText> targetype = getLanguages ().getSpellCasting ().getTargetTypeOverlandEnchantment ();
 					if (spell.getAttackSpellCombatTarget () != null)
 						switch (spell.getAttackSpellCombatTarget ())
 						{
 							case SINGLE_UNIT:
-								targetType = getLanguages ().getSpellCasting ().getTargetTypeUnit ();
+								targetype = getLanguages ().getSpellCasting ().getTargetTypeUnit ();
 								break;
 								
 							case ALL_UNITS:
-								targetType = getLanguages ().getSpellCasting ().getTargetTypeLocation ();
+								targetype = getLanguages ().getSpellCasting ().getTargetTypeLocation ();
 								break;
 						}
 
-					target = target.replaceAll ("TARGET_TYPE", getLanguageHolder ().findDescription (targetType));
+					target = target.replaceAll ("TARGET_TYPE", getLanguageHolder ().findDescription (targetype));
 				}
 				
 				targetSpellText.setText (target);
@@ -1448,7 +1448,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	}
 
 	/**
-	 * @return NTM about the spell being targetted
+	 * @return NTM about the spell being targeted
 	 */
 	public final NewTurnMessageSpellEx getTargetSpell ()
 	{
@@ -1456,7 +1456,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	}
 	
 	/**
-	 * @param msg NTM about the spell being targetted
+	 * @param msg NTM about the spell being targeted
 	 */
 	public final void setTargetSpell (final NewTurnMessageSpellEx msg)
 	{

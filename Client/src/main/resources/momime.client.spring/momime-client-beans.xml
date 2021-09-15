@@ -592,6 +592,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="overlandCastingInfoMessage" class="momime.client.messages.process.OverlandCastingInfoMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
 		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 
@@ -650,6 +651,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
+		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
+		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype">

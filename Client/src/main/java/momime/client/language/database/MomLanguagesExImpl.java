@@ -40,9 +40,9 @@ public final class MomLanguagesExImpl extends MomLanguages implements MomLanguag
 	 * @return Container for language strings
 	 */
 	@Override
-    public final SpellTargettingEx getSpellTargetting ()
+    public final SpellTargetingEx getSpellTargeting ()
     {
-    	return (SpellTargettingEx) super.getSpellTargetting ();
+    	return (SpellTargetingEx) super.getSpellTargeting ();
     }
 	
 	/**

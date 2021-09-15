@@ -68,7 +68,7 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 			if ((getBuildingCreationSpellCastByPlayerID () != null) && (getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ())) &&
 				(getOverlandMapRightHandPanel ().getTargetSpell () != null) && (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getBuildingCreatedFromSpellID ())))
 			{
-				getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getFirstBuilding ().getCityLocation ());
+				getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity ((MapCoordinates3DEx) getFirstBuilding ().getCityLocation ());
 				
 				// Redraw the NTMs
 				getNewTurnMessagesUI ().languageChanged ();

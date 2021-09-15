@@ -4658,7 +4658,7 @@ Movement rules start from the top layer and work down, i.e. check if there is an
 	<xsd:simpleType name="spellBookSectionID" nxe:singular="Spell Book Section">
         <xsd:annotation>
         	<xsd:documentation>Spell book sections not only define the way they're grouped in the spell book UI, but they also define the rules
-about what a spell must be targetted on.  e.g. Unit enchantments must be targetted on a friendly unit, but unit curses must be targetted on an enemy unit.</xsd:documentation>
+about what a spell must be targeted on.  e.g. Unit enchantments must be targeted on a friendly unit, but unit curses must be targeted on an enemy unit.</xsd:documentation>
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="SC01"><xsd:annotation>
@@ -4695,12 +4695,12 @@ otherwise its a standard summoning spell</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC09"><xsd:annotation>
-				<xsd:documentation>Special spells targetted at our own units; if combatBaseDamage is set then its a healing spell, otherwise its a recall spell; spellValidUnitTarget entries apply.
+				<xsd:documentation>Special spells targeted at our own units; if combatBaseDamage is set then its a healing spell, otherwise its a recall spell; spellValidUnitTarget entries apply.
 If its an overland spell then its automatically a healing spell.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_UNIT_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC10"><xsd:annotation>
-				<xsd:documentation>Special spells targetted at a location on the overland map, can be any map tile, doesn't have to be targetted on a particular unit/city.
+				<xsd:documentation>Special spells targeted at a location on the overland map, can be any map tile, doesn't have to be targeted on a particular unit/city.
 If tileTypeID+spellRadius is filled in, this is Enchant Road.  If only spellRadius is filled in, this is Earth Lore.
 If it has spellValidTileTypeTarget records with changeToTileTypeID values, this is a change terrain-type spell.
 If it has spellValidMapFeatureTarget records with changeToMapFeatureID values, this is a change map feature-type spell (Transmute).
@@ -4708,7 +4708,7 @@ If none of above are true, this is Corruption.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_OVERLAND_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC11"><xsd:annotation>
-				<xsd:documentation>Special spells targetted at a location on the combat map, can be any combat tile, doesn't have to be targetted on a particular unit;
+				<xsd:documentation>Special spells targeted at a location on the combat map, can be any combat tile, doesn't have to be targeted on a particular unit;
 the exact type of spell is currently dictated by whether there any spellValidBorderTarget records or not</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_COMBAT_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
@@ -4716,6 +4716,10 @@ the exact type of spell is currently dictated by whether there any spellValidBor
 				<xsd:documentation>Dispelling spells; if attackSpellCombatTarget is single unit then this is Dispel Magic / True; if attackSpellCombatTarget is all units then
 this is Disenchant Area / True; if cannot be cast in combat then this is Disjunction / True.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DISPEL_SPELLS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC13"><xsd:annotation>
+				<xsd:documentation>Spells targeted at enemy wizards.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ENEMY_WIZARD_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC97"><xsd:annotation>
 				<xsd:documentation>Special spells that do not require a target at all; exact effect of the spell is simply hard coded by the spellID</xsd:documentation>

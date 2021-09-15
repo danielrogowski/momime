@@ -17,6 +17,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.WizardsUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
@@ -24,11 +25,13 @@ import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.database.LanguageText;
 import momime.common.database.Spell;
-import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.clienttoserver.TargetSpellMessage;
+import momime.common.utils.KindOfSpell;
+import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -64,17 +67,26 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 	
-	/** Did we cancel targetting the spell? */
-	private boolean targettingCancelled;
+	/** Did we cancel targeting the spell? */
+	private boolean targetingCancelled;
 	
 	/** Chosen city target */
-	private MapCoordinates3DEx targettedCity;
+	private MapCoordinates3DEx targetedCity;
 	
 	/** Chosen unit target */
-	private Integer targettedUnitURN;
+	private Integer targetedUnitURN;
+	
+	/** Chosen player target */
+	private Integer targetedPlayerID;
 	
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
+	
+	/** Kind of spell utils */
+	private KindOfSpellUtils kindOfSpellUtils;
+	
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -150,30 +162,33 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 					String target = null;
 					
 					// Cancelled spell
-					if (isTargettingCancelled ())
+					if (isTargetingCancelled ())
 						languageText = (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ?
 							getLanguages ().getNewTurnMessages ().getTargetSpellCancelledLastTurn () : getLanguages ().getNewTurnMessages ().getTargetSpellCancelled ();
 							
 					// Still need to choose a target
-					else if ((getTargettedCity () == null) && (getTargettedUnitURN () == null))
+					else if ((getTargetedCity () == null) && (getTargetedUnitURN () == null) && (getTargetedPlayerID () == null))
 						languageText = getLanguages ().getNewTurnMessages ().getTargetSpell ();
 						
 					// Target chosen
 					else
 					{
 						// Does the target have a name, or is it a nameless location?
-						if ((getTargettedCity () != null) && (getTargettedCity ().getX () >= 0) && (getTargettedCity ().getY () >= 0) && (getTargettedCity ().getZ () >= 0))
+						if ((getTargetedCity () != null) && (getTargetedCity ().getX () >= 0) && (getTargetedCity ().getY () >= 0) && (getTargetedCity ().getZ () >= 0))
 						{
 							final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-								(getTargettedCity ().getZ ()).getRow ().get (getTargettedCity ().getY ()).getCell ().get (getTargettedCity ().getX ()).getCityData ();
+								(getTargetedCity ().getZ ()).getRow ().get (getTargetedCity ().getY ()).getCell ().get (getTargetedCity ().getX ()).getCityData ();
 							if (cityData != null)
 								target = cityData.getCityName ();
 						}
-						else if (getTargettedUnitURN () != null)
+						else if (getTargetedUnitURN () != null)
 						{
-							final MemoryUnit unit = getUnitUtils ().findUnitURN (getTargettedUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+							final MemoryUnit unit = getUnitUtils ().findUnitURN (getTargetedUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 							if (unit != null)
 								target = getUnitClientUtils ().getUnitName (unit, UnitNameType.A_UNIT_NAME);
+						}
+						else if (getTargetedPlayerID () != null)
+						{
 						}
 
 						// Do we know name for the target?
@@ -216,7 +231,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 		// Only applicable for "target spell"
 		final boolean answered;
 		if (getMsgType () == NewTurnMessageTypeID.TARGET_SPELL)
-			answered = (isTargettingCancelled ()) || (getTargettedCity () != null) || (getTargettedUnitURN () != null);
+			answered = (isTargetingCancelled ()) || (getTargetedCity () != null) || (getTargetedUnitURN () != null) && (getTargetedPlayerID () != null);
 		else
 			answered = true;
 		
@@ -275,7 +290,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 		
 			// Cast a city/unit enchantment/curse, so need to pick a target for it
 			case TARGET_SPELL:
-				if ((!isTargettingCancelled ()) && (getTargettedCity () == null) && (getTargettedUnitURN () == null))
+				if ((!isTargetingCancelled ()) && (getTargetedCity () == null) && (getTargetedUnitURN () == null) && (getTargetedPlayerID () == null))
 				{
 					getOverlandMapRightHandPanel ().setTargetSpell (this);
 					getOverlandMapRightHandPanel ().setTop (OverlandMapRightHandPanelTop.TARGET_SPELL);
@@ -283,11 +298,37 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 					
 					// Anything special to do for this particular spell?
 					final Spell spell = getClient ().getClientDB ().findSpell (getSpellID (), "NewTurnMessageSpellEx (C)");
-					if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) && (spell.getAttackSpellCombatTarget () == null))
+					final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
+					switch (kind)
 					{
 						// Disjunction type spell that targets an overland enchantment rather than something on the map
-						getMagicSlidersUI ().setTargettingOverlandEnchantment (true);
-						getMagicSlidersUI ().setVisible (true);
+						case DISPEL_OVERLAND_ENCHANTMENTS:
+						{
+							getMagicSlidersUI ().setTargetingSpell (spell);
+							getMagicSlidersUI ().setVisible (true);
+							break;
+						}
+						
+						// Target an enemy wizard, but we don't yet have enough info to display the UI, so first have to request it
+						case SPELL_BLAST:
+						{
+							final TargetSpellMessage msg = new TargetSpellMessage ();
+							msg.setSpellID (getSpellID ());
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+							break;
+						}
+						
+						// Spells targeted at an enemy wizard, where we don't need extra info like with spell blast
+						case ENEMY_WIZARD_SPELLS:
+						{
+							getWizardsUI ().setTargetingSpell (spell);
+							getWizardsUI ().setVisible (true);
+							break;
+						}
+
+						// This is fine, majority of targeted spells are at cities, units or overland map locations so dealt with above
+						default:
+							break;
 					}
 				}
 				break;
@@ -436,59 +477,77 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	}
 	
 	/**
-	 * @return Did we cancel targetting the spell?
+	 * @return Did we cancel targeting the spell?
 	 */
-	public final boolean isTargettingCancelled ()
+	public final boolean isTargetingCancelled ()
 	{
-		return targettingCancelled;
+		return targetingCancelled;
 	}
 
 	/**
-	 * @param cancelled Did we cancel targetting the spell?
+	 * @param cancelled Did we cancel targeting the spell?
 	 * @throws IOException If we can't find any of the resource images
 	 */
-	public final void setTargettingCancelled (final boolean cancelled) throws IOException
+	public final void setTargetingCancelled (final boolean cancelled) throws IOException
 	{
-		targettingCancelled = cancelled;
+		targetingCancelled = cancelled;
 		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 	}
 	
 	/**
 	 * @return Chosen city target
 	 */
-	public final MapCoordinates3DEx getTargettedCity ()
+	public final MapCoordinates3DEx getTargetedCity ()
 	{
-		return targettedCity;
+		return targetedCity;
 	}
 	
 	/**
 	 * @param city Chosen city target
 	 * @throws IOException If we can't find any of the resource images
 	 */
-	public final void setTargettedCity (final MapCoordinates3DEx city) throws IOException
+	public final void setTargetedCity (final MapCoordinates3DEx city) throws IOException
 	{
-		targettedCity = city;
+		targetedCity = city;
 		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 	}
 	
 	/**
 	 * @return Chosen unit target
 	 */
-	public final Integer getTargettedUnitURN ()
+	public final Integer getTargetedUnitURN ()
 	{
-		return targettedUnitURN;
+		return targetedUnitURN;
 	}
 
 	/**
 	 * @param unitURN Chosen unit target
 	 * @throws IOException If we can't find any of the resource images
 	 */
-	public final void setTargettedUnitURN (final Integer unitURN) throws IOException
+	public final void setTargetedUnitURN (final Integer unitURN) throws IOException
 	{
-		targettedUnitURN = unitURN;
+		targetedUnitURN = unitURN;
 		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 	}
 
+	/**
+	 * @return Chosen player target
+	 */
+	public final Integer getTargetedPlayerID ()
+	{
+		return targetedPlayerID;
+	}
+
+	/**
+	 * @param playerID Chosen player target
+	 * @throws IOException If we can't find any of the resource images
+	 */
+	public final void setTargetedPlayerID (final Integer playerID) throws IOException
+	{
+		targetedPlayerID = playerID;
+		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
+	}
+	
 	/**
 	 * @return Magic sliders screen
 	 */
@@ -503,5 +562,37 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	public final void setMagicSlidersUI (final MagicSlidersUI ui)
 	{
 		magicSlidersUI = ui;
+	}
+
+	/**
+	 * @return Kind of spell utils
+	 */
+	public final KindOfSpellUtils getKindOfSpellUtils ()
+	{
+		return kindOfSpellUtils;
+	}
+
+	/**
+	 * @param k Kind of spell utils
+	 */
+	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
+	{
+		kindOfSpellUtils = k;
+	}
+
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
 	}
 }

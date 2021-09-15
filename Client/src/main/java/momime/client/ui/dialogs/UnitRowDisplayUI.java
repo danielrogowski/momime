@@ -47,7 +47,7 @@ import momime.common.utils.UnitUtils;
 
 /**
  * Popup that displays each of the units in a particular map cell so we can select one.
- * Used for targetting unit enchantments on the overland map, e.g. Endurance.
+ * Used for targeting unit enchantments on the overland map, e.g. Endurance.
  */ 
 public final class UnitRowDisplayUI extends MomClientDialogUI
 {
@@ -93,7 +93,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	/** Units to display in the list */
 	private List<MemoryUnit> units;
 
-	/** The spell being targetted */
+	/** The spell being targeted */
 	private String targetSpellID;
 	
 	/** Label showing prompt text */
@@ -181,7 +181,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 				if (spell.getResurrectedHealthPercentage () != null)
 				{
 					// Its a raise dead-type spell being cast in combat - so we've picked the unit, now pick where to bring it back
-					getCombatUI ().setSpellBeingTargetted (spell);
+					getCombatUI ().setSpellBeingTargeted (spell);
 					getCombatUI ().setUnitBeingRaised (unit);
 					getDialog ().dispose ();
 				}
@@ -211,15 +211,15 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 					{
 						final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 						
-						String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getUnitLanguageText (validTarget)).replaceAll
+						String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getUnitLanguageText (validTarget)).replaceAll
 							("SPELL_NAME", (spellName != null) ? spellName : getTargetSpellID ());
 						
-						// If spell can only be targetted on specific magic realm/lifeform types, the list them
+						// If spell can only be targeted on specific magic realm/lifeform types, the list them
 						if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
 							text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (spell);
 						
 						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
+						msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
 						msg.setText (text);
 						msg.setVisible (true);												
 					}
@@ -507,7 +507,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return The spell being targetted
+	 * @return The spell being targeted
 	 */
 	public final String getTargetSpellID ()
 	{
@@ -515,7 +515,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	}
 	
 	/**
-	 * @param spellID The spell being targetted
+	 * @param spellID The spell being targeted
 	 */
 	public final void setTargetSpellID (final String spellID)
 	{

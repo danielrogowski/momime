@@ -179,8 +179,8 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** Content pane */
 	private JPanel contentPane;
 	
-	/** Whether we are in the special mode of clicking an overland enchantment to target */
-	private boolean targettingOverlandEnchantment;
+	/** Which spell is currently being targeted using this screen */
+	private Spell targetingSpell;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -506,11 +506,11 @@ public final class MagicSlidersUI extends MomClientFrameUI
 							msg.setVisible (true);
 						}
 						
-						else if (isTargettingOverlandEnchantment ())
+						else if (getTargetingSpell () != null)
 						{
 							// Left clicking on a spell owned by another player to target a disjunction-type spell at it
 							getOverlandMapUI ().targetOverlandSpellURN (spell.getSpellURN ());
-							setTargettingOverlandEnchantment (false);
+							setTargetingSpell (null);
 						}
 					}
 					catch (final Exception e)
@@ -546,7 +546,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 			researchLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getResearchLabel ()) + ":");
 			skillLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getSkillLabel ()) + ":");
 			
-			if (isTargettingOverlandEnchantment ())
+			if (getTargetingSpell () != null)
 				overlandEnchantmentsTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getTargetOverlandEnchantment ()));
 			else
 				overlandEnchantmentsTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getOverlandEnchantments ()));
@@ -949,21 +949,21 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @return Whether we are in the special mode of clicking an overland enchantment to target
+	 * @return Which spell is currently being targeted using this screen
 	 */
-	public final boolean isTargettingOverlandEnchantment ()
+	public final Spell getTargetingSpell ()
 	{
-		return targettingOverlandEnchantment;
+		return targetingSpell;
 	}
-
+	
 	/**
-	 * @param t Whether we are in the special mode of clicking an overland enchantment to target
+	 * @param s Which spell is currently being targeted using this screen
 	 */
-	public final void setTargettingOverlandEnchantment (final boolean t)
+	public final void setTargetingSpell (final Spell s)
 	{
-		if (t != isTargettingOverlandEnchantment ())
+		if (s != getTargetingSpell ())
 		{
-			targettingOverlandEnchantment = t;
+			targetingSpell = s;
 			languageChanged ();
 		}
 	}

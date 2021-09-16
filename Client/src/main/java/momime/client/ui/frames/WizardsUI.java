@@ -3,9 +3,11 @@ package momime.client.ui.frames;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -32,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -44,6 +47,7 @@ import momime.client.utils.PlayerPickClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
 import momime.common.database.Pick;
@@ -119,7 +123,7 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
-	
+
 	/** List of gem buttons for each wizard */
 	private final List<JButton> wizardButtons = new ArrayList<JButton> ();
 	
@@ -171,6 +175,18 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Which spell is currently being targeted using this screen */
 	private Spell targetingSpell;
 	
+	/** Animation to display for a spell being cast */
+	private AnimationEx wizardCastAnimation;
+	
+	/** X coord to display wizard cast animation at, in pixels */
+	private int wizardCastAnimationX;
+
+	/** Y coord to display wizard cast animation at, in pixels */
+	private int wizardCastAnimationY;
+	
+	/** Frame number to display of wizard cast animation */
+	private int wizardCastAnimationFrame;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -188,7 +204,45 @@ public final class WizardsUI extends MomClientFrameUI
 		closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
 		// Initialize the content pane
-		contentPane = getUtils ().createPanelWithBackgroundImage (background);
+		contentPane = new JPanel ()
+		{
+			/**
+			 * Draw background behind the controls
+			 */
+			@Override
+			protected final void paintComponent (final Graphics g)
+			{
+				super.paintComponent (g);
+				g.drawImage (background, 0, 0, null);
+			}
+			
+			/**
+			 * Draw animation in front of the controls
+			 */
+			@Override
+			protected final void paintChildren (final Graphics g)
+			{
+				super.paintChildren (g);
+				
+				if (getWizardCastAnimation () != null)
+				{
+					// Scale the map image up smoothly
+					final Graphics2D g2 = (Graphics2D) g;
+					g2.setRenderingHint (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+					try
+					{
+						final BufferedImage castImage = getUtils ().loadImage (getWizardCastAnimation ().getFrame ().get (getWizardCastAnimationFrame ()).getImageFile ());
+						g.drawImage (castImage, getWizardCastAnimationX (), getWizardCastAnimationY (),
+							castImage.getWidth () * 2, castImage.getHeight () * 2, null);
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+				}
+			}
+		};
 		
 		// Set up layout
 		contentPane.setLayout (new XmlLayoutManager (getWizardsLayout ()));
@@ -688,6 +742,42 @@ public final class WizardsUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * We get given the playerID of the target wizard, and need to convert that to their actual location on the screen
+	 * 
+	 * @param playerID Wizard who we're casting a spell at
+	 */
+	public final void setWizardCastAnimationPlayerID (final int playerID)
+	{
+		int n = 0;
+		for (final PlayerPublicDetails player : getClient ().getPlayers ())
+		{
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+			{
+				n++;
+				if (player.getPlayerDescription ().getPlayerID () == playerID)
+				{
+					// Look up the location of this wizard's gem in the XML layout
+					final XmlLayoutComponent gemLocation = getWizardsLayout ().findComponent ("frmWizardsGem" + n);
+					if (gemLocation != null)
+					{
+						wizardCastAnimationX = gemLocation.getLeft () - 20;
+						wizardCastAnimationY = gemLocation.getTop ();
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Repaint the panel to update any animations
+	 */
+	public final void repaintWizards ()
+	{
+		contentPane.repaint ();
+	}
+	
+	/**
 	 * @return XML layout
 	 */
 	public final XmlLayoutContainerEx getWizardsLayout ()
@@ -937,5 +1027,53 @@ public final class WizardsUI extends MomClientFrameUI
 			targetingSpell = s;
 			languageChanged ();
 		}
+	}
+
+	/**
+	 * @return Animation to display for a spell being cast
+	 */
+	public final AnimationEx getWizardCastAnimation ()
+	{
+		return wizardCastAnimation;
+	}
+	
+	/**
+	 * @param a Animation to display for a spell being cast
+	 */
+	public final void setWizardCastAnimation (final AnimationEx a)
+	{
+		wizardCastAnimation = a;
+	}
+	
+	/**
+	 * @return X coord to display wizard cast animation at, in pixels
+	 */
+	public final int getWizardCastAnimationX ()
+	{
+		return wizardCastAnimationX;
+	}
+
+	/**
+	 * @return Y coord to display wizard cast animation at, in pixels
+	 */
+	public final int getWizardCastAnimationY ()
+	{
+		return wizardCastAnimationY;
+	}
+	
+	/**
+	 * @return Frame number to display of wizard cast animation
+	 */
+	public final int getWizardCastAnimationFrame ()
+	{
+		return wizardCastAnimationFrame;
+	}
+
+	/**
+	 * @param f Frame number to display of wizard cast animation
+	 */
+	public final void setWizardCastAnimationFrame (final int f)
+	{
+		wizardCastAnimationFrame = f;
 	}
 }

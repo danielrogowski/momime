@@ -482,6 +482,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">

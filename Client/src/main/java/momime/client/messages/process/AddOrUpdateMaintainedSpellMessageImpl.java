@@ -24,6 +24,7 @@ import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
+import momime.client.ui.frames.WizardsUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.AnimationEx;
@@ -84,6 +85,9 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
+	
 	/** True for city enchantments/curses and overland enchantments */
 	private boolean animatedByOtherFrame;
 	
@@ -104,6 +108,7 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 		animatedByOtherFrame = false;
 
 		// Overland enchantments are always animated
+		anim = null;
 		switch (spell.getSpellBookSectionID ())
 		{
 			case OVERLAND_ENCHANTMENTS:
@@ -144,11 +149,10 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 					miniCityView.setVisible (true);
 				}
 				break;
-		
+
 			case UNIT_ENCHANTMENTS:
 			case UNIT_CURSES:
 			case SPECIAL_UNIT_SPELLS:
-			case ENEMY_WIZARD_SPELLS:
 				// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
 				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
 					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
@@ -156,19 +160,13 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedUnitURN (getMaintainedSpell ().getUnitURN ());
 					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
 					
-					// Just stick a value in there to stop asking about targeting wizard spells
-					if (getMaintainedSpell ().getTargetPlayerID () != null)
-						getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity (new MapCoordinates3DEx (-1, -1, -1));
-					
 					// Redraw the NTMs
 					getNewTurnMessagesUI ().languageChanged ();
 				}
 				
 				// Is there an animation to display for it?
-				if (((getMaintainedSpell ().getUnitURN () != null) || (getMaintainedSpell ().getCityLocation () != null) ||
-					(getMaintainedSpell ().getTargetPlayerID () != null)) && (isNewlyCast ()))
+				if (((getMaintainedSpell ().getUnitURN () != null) || (getMaintainedSpell ().getCityLocation () != null)) && (isNewlyCast ()))
 				{
-					anim = null;
 					if (spell.getCombatCastAnimation () != null)
 					{
 						final MemoryUnit spellTargetUnit = (getMaintainedSpell ().getUnitURN () != null) ? getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
@@ -222,6 +220,7 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 							
 							getOverlandMapUI ().setOverlandCastAnimationFrame (0);
 							getOverlandMapUI ().setOverlandCastAnimation (anim);
+							getOverlandMapUI ().repaintSceneryPanel ();
 						}
 					}
 					
@@ -257,7 +256,6 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 				}
 				
 				// Is there an animation to display for it?
-				anim = null;
 				if ((spell.getCombatCastAnimation () != null) && (getMaintainedSpell ().getCityLocation () != null) && (isNewlyCast ()))
 				{
 					anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
@@ -275,8 +273,44 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 						
 						getOverlandMapUI ().setOverlandCastAnimationFrame (0);
 						getOverlandMapUI ().setOverlandCastAnimation (anim);
+						getOverlandMapUI ().repaintSceneryPanel ();
 					}
 				
+					// See if there's a sound effect defined in the graphics XML file
+					if (spell.getSpellSoundFile () != null)
+						try
+						{
+							getSoundPlayer ().playAudioFile (spell.getSpellSoundFile ());
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
+				break;
+				
+			case ENEMY_WIZARD_SPELLS:
+				// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
+					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
+				{
+					// Just stick a value in there to stop asking about targeting wizard spells
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity (new MapCoordinates3DEx (-1, -1, -1));
+					
+					// Redraw the NTMs
+					getNewTurnMessagesUI ().languageChanged ();
+				}
+
+				// Is there an animation to display for it?
+				if ((spell.getCombatCastAnimation () != null) && (getMaintainedSpell ().getTargetPlayerID () != null) && (isNewlyCast ()))
+				{
+					anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
+					
+					// Show anim on WizardsUI
+					getWizardsUI ().setWizardCastAnimationPlayerID (getMaintainedSpell ().getTargetPlayerID ());
+					getWizardsUI ().setWizardCastAnimationFrame (0);
+					getWizardsUI ().setWizardCastAnimation (anim);
+					
 					// See if there's a sound effect defined in the graphics XML file
 					if (spell.getSpellSoundFile () != null)
 						try
@@ -319,7 +353,12 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	@Override
 	public final void tick (final int tickNumber)
 	{
-		if (getMaintainedSpell ().isCastInCombat ())
+		if (getMaintainedSpell ().getTargetPlayerID () != null)
+		{
+			getWizardsUI ().setWizardCastAnimationFrame (tickNumber - 1);
+			getWizardsUI ().repaintWizards ();
+		}
+		else if (getMaintainedSpell ().isCastInCombat ())
 			getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
 		else
 		{
@@ -407,13 +446,21 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 		// Remove the anim
 		if (anim != null)
 		{
-			if (getMaintainedSpell ().isCastInCombat ())
+			if (getMaintainedSpell ().getTargetPlayerID () != null)
+			{
+				getWizardsUI ().setWizardCastAnimation (null);
+				getWizardsUI ().repaintWizards ();
+			}
+			else if (getMaintainedSpell ().isCastInCombat ())
 			{
 				getCombatUI ().setCombatCastAnimation (null);
 				getCombatUI ().getCombatCastAnimationPositions ().clear ();
 			}
 			else
+			{
 				getOverlandMapUI ().setOverlandCastAnimation (null);
+				getOverlandMapUI ().repaintSceneryPanel ();
+			}
 		}
 
 		// If animation is being processed by another frame, then that other frame is also responsible for actually processing whatever update takes place (e.g. adding the spell).
@@ -612,5 +659,21 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
 	}
 }

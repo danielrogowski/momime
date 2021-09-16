@@ -101,13 +101,14 @@ public interface SpellProcessing
 	 * So this actually processes the actions from the spell once its target is chosen.
 	 * This assumes all necessary validation has been done to verify that the action is allowed.
 	 * 
-	 * @param spell Definition of spell being targetted
-	 * @param maintainedSpell Spell being targetted in server's true memory - at the time this is called, this is the only copy of the spell that exists
+	 * @param spell Definition of spell being targeted
+	 * @param maintainedSpell Spell being targeted in server's true memory - at the time this is called, this is the only copy of the spell that exists
 	 * 	as we can only determine which clients can "see" it once a target location has been chosen.  Even the player who cast it doesn't have a
 	 *		record of it, just a special entry on their new turn messages scroll telling them to pick a target for it.
-	 * @param targetLocation If the spell is targetted at a city or a map location, then sets that location; null for spells targetted on other things
-	 * @param targetUnit If the spell is targetted at a unit, then the true unit to aim at; null for spells targetted on other things
-	 * @param targetSpell If the spell is targetted at another spell, then the true spell to aim at; null for spells targetted on other things
+	 * @param targetPlayerID If the spell is targeted at a wizard, then which one
+	 * @param targetLocation If the spell is targeted at a city or a map location, then sets that location; null for spells targeted on other things
+	 * @param targetUnit If the spell is targeted at a unit, then the true unit to aim at; null for spells targeted on other things
+	 * @param targetSpell If the spell is targeted at another spell, then the true spell to aim at; null for spells targeted on other things
 	 * @param citySpellEffectID If spell creates a city spell effect, then which one - currently chosen at random, but supposed to be player choosable for Spell Ward
 	 * @param unitSkillID If spell creates a unit skill, then which one - chosen at random for Chaos Channels
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -117,7 +118,7 @@ public interface SpellProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell,
+	public void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell, final Integer targetPlayerID,
 		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit, final MemoryMaintainedSpell targetSpell,
 		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
@@ -126,7 +127,7 @@ public interface SpellProcessing
 	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.
 	 * But perhaps by the time we finish casting it, we no longer have a valid target or changed our minds, so this just cancels and loses the spell.
 	 * 
-	 * @param maintainedSpell Spell being targetted in server's true memory - at the time this is called, this is the only copy of the spell that exists,
+	 * @param maintainedSpell Spell being targeted in server's true memory - at the time this is called, this is the only copy of the spell that exists,
 	 * 	so its the only thing we need to clean up
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client

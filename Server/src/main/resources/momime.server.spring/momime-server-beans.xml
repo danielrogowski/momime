@@ -182,6 +182,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="spellCasting" ref="spellCasting" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 	
 	<bean id="cancelTargetSpellMessage" class="momime.server.messages.process.CancelTargetSpellMessageImpl" scope="prototype">

@@ -29,9 +29,13 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomCombatTile;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.OverlandCastingInfo;
 
 /**
  * Methods for working with list of MemoryMaintainedSpells
@@ -52,6 +56,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	
 	/** Kind of spell utils */
 	private KindOfSpellUtils kindOfSpellUtils;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -616,6 +623,53 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	}
 	
 	/**
+	 * Used for spells targeted at the Wizard themselves, like Drain Power or Spell Blast.  This is a bit awkward as the way the input params
+	 * are supplied is diffferent for client and server, so have to specify them in a way that either can provide (e.g. can't use PlayerServerDetails).
+	 * 
+	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
+	 * @param castingPriv Private info for the playing casting the spell
+	 * @param targetPlayer Player to cast the spell on
+	 * @param targetCastingInfo Info about what the player to cast the spell on is casting themselves
+	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
+	 * @throws MomException If we encounter a spell book section we don't know how to handle
+	 */
+	@Override
+	public final TargetSpellResult isWizardValidTargetForSpell (final Spell spell, final int castingPlayerID, final MomPersistentPlayerPrivateKnowledge castingPriv,
+		final PlayerPublicDetails targetPlayer, final OverlandCastingInfo targetCastingInfo) throws MomException
+	{
+    	final TargetSpellResult result;
+    	if (castingPlayerID == targetPlayer.getPlayerDescription ().getPlayerID ())
+    		result = TargetSpellResult.ATTACKING_OWN_WIZARD;
+    	
+    	else
+    	{
+    		final MomPersistentPlayerPublicKnowledge targetPub = (MomPersistentPlayerPublicKnowledge) targetPlayer.getPersistentPlayerPublicKnowledge ();
+    		if (targetPub.getWizardState () != WizardState.ACTIVE)
+    			result = TargetSpellResult.WIZARD_BANISHED_OR_DEFEATED;
+    		
+    		else if (!PlayerKnowledgeUtils.isWizard (targetPub.getWizardID ()))
+    			result = TargetSpellResult.NOT_A_WIZARD;
+    		
+    		// Above checks are only ones that apply if the spell is anything other than Spell Blast
+    		else if (getKindOfSpellUtils ().determineKindOfSpell (spell, null) == KindOfSpell.ENEMY_WIZARD_SPELLS)
+    			result = TargetSpellResult.VALID_TARGET;
+    		
+    		else if ((targetCastingInfo == null) || (targetCastingInfo.getSpellID () == null) || (targetCastingInfo.getManaSpentOnCasting () == null))
+    			result = TargetSpellResult.NO_SPELL_BEING_CAST;
+    		
+    		else if (getResourceValueUtils ().findAmountStoredForProductionType (castingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA) <
+    			targetCastingInfo.getManaSpentOnCasting ())
+    			result = TargetSpellResult.INSUFFICIENT_MANA;
+    		
+    		else
+    			result = TargetSpellResult.VALID_TARGET;
+    	}
+
+		return result;
+	}
+	
+	/**
 	 * Checks whether the specified spell can be targetted at the specified combat map location.
 	 * This is only called for spells that are targetted at a location - section SPECIAL_COMBAT_SPELLS
 	 * 
@@ -730,5 +784,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
 	{
 		kindOfSpellUtils = k;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
 	}
 }

@@ -3837,6 +3837,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Unit speed
 		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (3);
+		when (xu.getMovementSpeed ()).thenReturn (3);
 		
 		// Players' memories of unit
 		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();

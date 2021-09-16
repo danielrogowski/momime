@@ -30,9 +30,12 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 
 /**
  * Tests the WizardsUI class
@@ -117,6 +120,15 @@ public final class TestWizardsUI extends ClientTestData
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getClientDB ()).thenReturn (db);
 		
+		// Memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
 		// Image generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
 		gen.setUtils (utils);
@@ -135,6 +147,7 @@ public final class TestWizardsUI extends ClientTestData
 		wizards.setLanguageChangeMaster (langMaster);
 		wizards.setClient (client);
 		wizards.setPlayerColourImageGenerator (gen);
+		wizards.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		wizards.setSmallFont (CreateFontsForTests.getSmallFont ());
 		wizards.setLargeFont (CreateFontsForTests.getLargeFont ());
 

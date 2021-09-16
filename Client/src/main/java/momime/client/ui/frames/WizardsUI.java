@@ -39,6 +39,7 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.utils.PlayerPickClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
@@ -56,6 +57,7 @@ import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.TargetSpellResult;
 
 /**
  * Wizards screen, for checking everybodys' picks and diplomacy
@@ -111,6 +113,12 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** List of gem buttons for each wizard */
 	private final List<JButton> wizardButtons = new ArrayList<JButton> ();
@@ -298,6 +306,38 @@ public final class WizardsUI extends MomClientFrameUI
 						updateBookshelfFromPicks ();
 						updateRetortsFromPicks (-1);
 						updateWizard ();
+						
+						if (getTargetingSpell () != null)
+						{
+							// Is this wizard a valid target?
+							final OverlandCastingInfo targetOverlandCastingInfo = overlandCastingInfo.get (player.getPlayerDescription ().getPlayerID ());
+							
+							final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (getTargetingSpell (),
+								getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge (),
+								player, targetOverlandCastingInfo);
+							
+							if (validTarget == TargetSpellResult.VALID_TARGET)
+							{
+								getOverlandMapUI ().targetOverlandPlayerID (player.getPlayerDescription ().getPlayerID ());
+								setTargetingSpell (null);
+								updateWizards (false);
+							}
+							else
+							{
+								String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getWizardLanguageText (validTarget)).replaceAll
+									("SPELL_NAME", getLanguageHolder ().findDescription (getTargetingSpell ().getSpellName ())).replaceAll
+									("PLAYER_NAME", getWizardClientUtils ().getPlayerName (player));
+								
+								if ((targetOverlandCastingInfo != null) && (targetOverlandCastingInfo.getSpellID () != null))
+									text = text.replaceAll ("BLASTED_NAME", getLanguageHolder ().findDescription
+										(getClient ().getClientDB ().findSpell (targetOverlandCastingInfo.getSpellID (), "WizardsUI (T)").getSpellName ()));
+								
+								final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+								msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
+								msg.setText (text);
+								msg.setVisible (true);												
+							}
+						}
 					});
 					
 					final String gemNormalImageName = (pub.getWizardState () == WizardState.ACTIVE) ? "/momime.client.graphics/ui/backgrounds/gem.png" :
@@ -406,6 +446,9 @@ public final class WizardsUI extends MomClientFrameUI
 			// Need to show names of spells?
 			if ((detectMagic) && (!calledFromInit))
 				languageChanged ();
+			
+			contentPane.validate ();
+			contentPane.repaint ();
 		}
 	}
 	
@@ -836,6 +879,38 @@ public final class WizardsUI extends MomClientFrameUI
 		memoryMaintainedSpellUtils = utils;
 	}
 
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
+	}
+	
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+	
 	/**
 	 * @return Info about what wizards are casting, gleaned from Detect Magic spell, keyed by playerID
 	 */

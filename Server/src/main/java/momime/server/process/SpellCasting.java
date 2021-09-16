@@ -13,6 +13,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.server.MomSessionVariables;
 
 /**
@@ -49,4 +50,11 @@ public interface SpellCasting
 	 */
 	public void sendOverlandCastingInfo (final String ourSpellID, final int onlyOnePlayerID, final List<PlayerServerDetails> players,
 		final List<MemoryMaintainedSpell> spells) throws JAXBException, XMLStreamException;
+	
+	/**
+	 * @param player Player to create casting info for
+	 * @param ourSpellID Which spell allows us to see the info - Detect Magic or Spell Blast
+	 * @return Summary details about what the wizard is casting overland
+	 */
+	public OverlandCastingInfo createOverlandCastingInfo (final PlayerServerDetails player, final String ourSpellID);
 }

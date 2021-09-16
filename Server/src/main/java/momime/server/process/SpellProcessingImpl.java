@@ -935,13 +935,14 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * So this actually processes the actions from the spell once its target is chosen.
 	 * This assumes all necessary validation has been done to verify that the action is allowed.
 	 * 
-	 * @param spell Definition of spell being targetted
-	 * @param maintainedSpell Spell being targetted in server's true memory - at the time this is called, this is the only copy of the spell that exists
+	 * @param spell Definition of spell being targeted
+	 * @param maintainedSpell Spell being targeted in server's true memory - at the time this is called, this is the only copy of the spell that exists
 	 * 	as we can only determine which clients can "see" it once a target location has been chosen.  Even the player who cast it doesn't have a
 	 *		record of it, just a special entry on their new turn messages scroll telling them to pick a target for it.
-	 * @param targetLocation If the spell is targetted at a city or a map location, then sets that location; null for spells targetted on other things
-	 * @param targetUnit If the spell is targetted at a unit, then the true unit to aim at; null for spells targetted on other things
-	 * @param targetSpell If the spell is targetted at another spell, then the true spell to aim at; null for spells targetted on other things
+	 * @param targetPlayerID If the spell is targeted at a wizard, then which one
+	 * @param targetLocation If the spell is targeted at a city or a map location, then sets that location; null for spells targeted on other things
+	 * @param targetUnit If the spell is targeted at a unit, then the true unit to aim at; null for spells targeted on other things
+	 * @param targetSpell If the spell is targeted at another spell, then the true spell to aim at; null for spells targeted on other things
 	 * @param citySpellEffectID If spell creates a city spell effect, then which one - currently chosen at random, but supposed to be player choosable for Spell Ward
 	 * @param unitSkillID If spell creates a unit skill, then which one - chosen at random for Chaos Channels
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -952,7 +953,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell,
+	public final void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell, final Integer targetPlayerID,
 		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit, final MemoryMaintainedSpell targetSpell,
 		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
@@ -962,9 +963,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
 		
 		if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
+			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) ||
+			(spell.getSpellBookSectionID () == SpellBookSectionID.ENEMY_WIZARD_SPELLS))
 		{
-			// Transient spell that performs some immediate action, then the temporary untargetted spell on the server gets removed
+			// Transient spell that performs some immediate action, then the temporary untargeted spell on the server gets removed
 			// So the spell never does get added to any clients
 			// Set values on server - it'll be removed below, but we need to set these to make the visibility checks in sendTransientSpellToClients () work correctly
 			
@@ -974,11 +976,12 @@ public final class SpellProcessingImpl implements SpellProcessing
 			maintainedSpell.setCityLocation (targetLocation);
 			maintainedSpell.setUnitSkillID (unitSkillID);
 			maintainedSpell.setCitySpellEffectID (citySpellEffectID);
+			maintainedSpell.setTargetPlayerID (targetPlayerID);
 			
 			// Just remove it - don't even bother to check if any clients can see it
 			getMemoryMaintainedSpellUtils ().removeSpellURN (maintainedSpell.getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 			
-			// Tell the client to stop asking about targetting the spell, and show an animation for it - need to send this to all players that can see it!
+			// Tell the client to stop asking about targeting the spell, and show an animation for it - need to send this to all players that can see it!
 			getFogOfWarMidTurnChanges ().sendTransientSpellToClients (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 
@@ -1029,7 +1032,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final List<MemoryMaintainedSpell> targetSpells;
 				if (spell.getAttackSpellCombatTarget () == null)
 				{
-					// Disjunction is easy - just targetted at one single spell, and we've already got it
+					// Disjunction is easy - just targeted at one single spell, and we've already got it
 					targetSpells = Arrays.asList (targetSpell);
 				}
 				else
@@ -1038,7 +1041,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		    		final List<Integer> unitURNs = mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
 		    			(u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
 		    		
-		    		// Now look for any spells cast by somebody else either targetted directly on the location, or on a unit at the location
+		    		// Now look for any spells cast by somebody else either targeted directly on the location, or on a unit at the location
 		    		targetSpells = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
 		    			(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
 		    				((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))).collect (Collectors.toList ());
@@ -1047,7 +1050,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null, mom);
 			}
 
-			// The only targetted overland summoning spell is Floating Island
+			// The only targeted overland summoning spell is Floating Island
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, mom);
 			
@@ -1308,7 +1311,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.
 	 * But perhaps by the time we finish casting it, we no longer have a valid target or changed our minds, so this just cancels and loses the spell.
 	 * 
-	 * @param maintainedSpell Spell being targetted in server's true memory - at the time this is called, this is the only copy of the spell that exists,
+	 * @param maintainedSpell Spell being targeted in server's true memory - at the time this is called, this is the only copy of the spell that exists,
 	 * 	so its the only thing we need to clean up
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client

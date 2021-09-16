@@ -1208,7 +1208,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
 			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
-			when (xuSpearmen.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
+			when (xuSpearmen.getMovementSpeed ()).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
 			hellHounds.setOwningPlayerID (playerID);
@@ -1216,7 +1216,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 
 			final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
 			when (unitUtils.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
-			when (xuHellHounds.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+			when (xuHellHounds.getMovementSpeed ()).thenReturn (2);
 		}
 
 		// Set up object to test
@@ -1265,7 +1265,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
 			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
-			when (xuSpearmen.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
+			when (xuSpearmen.getMovementSpeed ()).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
 			hellHounds.setOwningPlayerID (playerID);
@@ -1273,7 +1273,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 
 			final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
 			when (unitUtils.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
-			when (xuHellHounds.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+			when (xuHellHounds.getMovementSpeed ()).thenReturn (2);
 		}
 
 		// Set up object to test

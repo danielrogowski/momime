@@ -148,6 +148,7 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 			case UNIT_ENCHANTMENTS:
 			case UNIT_CURSES:
 			case SPECIAL_UNIT_SPELLS:
+			case ENEMY_WIZARD_SPELLS:
 				// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
 				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
 					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
@@ -155,12 +156,17 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedUnitURN (getMaintainedSpell ().getUnitURN ());
 					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
 					
+					// Just stick a value in there to stop asking about targeting wizard spells
+					if (getMaintainedSpell ().getTargetPlayerID () != null)
+						getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity (new MapCoordinates3DEx (-1, -1, -1));
+					
 					// Redraw the NTMs
 					getNewTurnMessagesUI ().languageChanged ();
 				}
 				
 				// Is there an animation to display for it?
-				if (((getMaintainedSpell ().getUnitURN () != null) || (getMaintainedSpell ().getCityLocation () != null)) && (isNewlyCast ()))
+				if (((getMaintainedSpell ().getUnitURN () != null) || (getMaintainedSpell ().getCityLocation () != null) ||
+					(getMaintainedSpell ().getTargetPlayerID () != null)) && (isNewlyCast ()))
 				{
 					anim = null;
 					if (spell.getCombatCastAnimation () != null)

@@ -755,7 +755,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (unitUtils.expandUnitDetails (summonedUnit, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Mock unit speed
-		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (49);
+		when (xu.getMovementSpeed ()).thenReturn (49);
 		
 		// Counter magic
 		final SpellUtils spellUtils = mock (SpellUtils.class);

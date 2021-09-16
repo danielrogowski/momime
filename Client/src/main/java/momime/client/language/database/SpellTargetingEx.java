@@ -91,7 +91,7 @@ public final class SpellTargetingEx extends SpellTargeting
 				break;
 			 
 			default:
-				throw new MomException ("NewTurnMessagesEx.getUnitLanguageText doesn't know what to do with enum value " + targetSpellResult);
+				throw new MomException ("SpellTargetingEx.getUnitLanguageText doesn't know what to do with enum value " + targetSpellResult);
 		 }
 		 
 		 return languageText;
@@ -132,7 +132,7 @@ public final class SpellTargetingEx extends SpellTargeting
 				break;
 			 
 			default:
-				throw new MomException ("NewTurnMessagesEx.getCityLanguageText doesn't know what to do with enum value " + targetSpellResult);
+				throw new MomException ("SpellTargetingEx.getCityLanguageText doesn't know what to do with enum value " + targetSpellResult);
 		 }
 		 
 		 return languageText;
@@ -181,7 +181,44 @@ public final class SpellTargetingEx extends SpellTargeting
 				break;
 			 
 			default:
-				throw new MomException ("NewTurnMessagesEx.getLocationLanguageText doesn't know what to do with enum value " + targetSpellResult);
+				throw new MomException ("SpellTargetingEx.getLocationLanguageText doesn't know what to do with enum value " + targetSpellResult);
+		 }
+		 
+		 return languageText;
+	}
+
+	 /**
+	  * @param targetSpellResult Targeting result we want language text for
+	  * @return Language text for targeting at a location
+	  * @throws MomException If the enum value is unknown
+	  */
+	public final List<LanguageText> getWizardLanguageText (final TargetSpellResult targetSpellResult) throws MomException
+	{
+		 final List<LanguageText> languageText;
+		 switch (targetSpellResult)
+		 {
+			case ATTACKING_OWN_WIZARD:
+				languageText = getAttackingOwnWizard ();
+				break;
+
+			case NOT_A_WIZARD:
+				languageText = getNotAWizard ();
+				break;
+				
+			case WIZARD_BANISHED_OR_DEFEATED:
+				languageText = getWizardBanishedOrDefeated ();
+				break;
+				
+			case NO_SPELL_BEING_CAST:
+				languageText = getNoSpellBeingCast ();
+				break;
+			 
+			case INSUFFICIENT_MANA:
+				languageText = getInsufficientMana ();
+				break;
+			 
+			default:
+				throw new MomException ("SpellTargetingEx.getWizardLanguageText doesn't know what to do with enum value " + targetSpellResult);
 		 }
 		 
 		 return languageText;

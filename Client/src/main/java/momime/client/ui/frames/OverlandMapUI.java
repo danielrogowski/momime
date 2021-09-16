@@ -1515,6 +1515,30 @@ public final class OverlandMapUI extends MomClientFrameUI
 	}
 
 	/**
+	 * Called when player clicks a Wizard to target a spell like Spell Blast
+	 * 
+	 * @param targetPlayerID Wizard to target
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public final void targetOverlandPlayerID (final int targetPlayerID)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		final Spell spell = getClient ().getClientDB ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID (), "targetOverlandPlayerID");
+
+		final TargetSpellMessage msg = new TargetSpellMessage ();
+		msg.setSpellID (spell.getSpellID ());
+		msg.setOverlandTargetPlayerID (targetPlayerID);
+		getClient ().getServerConnection ().sendMessageToServer (msg);
+		
+		// Close out the "Target Spell" right hand panel
+		getOverlandMapProcessing ().updateMovementRemaining ();
+	}
+	
+	/**
 	 * Forces the scenery panel to be redrawn as soon as possible
 	 */
 	public final void repaintSceneryPanel ()

@@ -90,5 +90,20 @@ public enum TargetSpellResult
 	NO_AMMUNITION,
 	
 	/** Target already has too much experience (Heroism) */
-	TOO_MUCH_EXPERIENCE;
+	TOO_MUCH_EXPERIENCE,
+	
+	/** Trying to target enemy wizard spell on ourselves */
+	ATTACKING_OWN_WIZARD,
+	
+	/** Trying to target a spell at raiders or rampaging monsters */
+	NOT_A_WIZARD,
+
+	/** Trying to target a spell at a wizard who is banished or defeated */
+	WIZARD_BANISHED_OR_DEFEATED,
+	
+	/** Tried to spell blast a wizard who is not casting a spell */
+	NO_SPELL_BEING_CAST,
+	
+	/** Tried to spell blast a wizard but we don't have enough MP stored to blast their spell */
+	INSUFFICIENT_MANA;
 }

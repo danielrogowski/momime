@@ -28,6 +28,7 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
+import momime.client.ui.frames.WizardsUI;
 import momime.common.database.LanguageText;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -67,6 +68,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
+	
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
 	
 	/** OK action */
 	private Action okAction;
@@ -146,8 +150,10 @@ public final class MessageBoxUI extends MomClientDialogUI
 			if (getCancelTargetingSpell () != null)
 				getOverlandMapProcessing ().updateMovementRemaining ();
 
-			// In case targeting at an overland enchantment, reset magic screen back to normal
+			// In case targeting at an overland enchantment, reset magic screen back to normal; similar with wizards screen
 			getMagicSlidersUI ().setTargetingSpell (null);
+			getWizardsUI ().setTargetingSpell (null);
+			getWizardsUI ().updateWizards (false);
 			
 			// Close the form
 			getDialog ().dispose ();
@@ -214,8 +220,10 @@ public final class MessageBoxUI extends MomClientDialogUI
 				// Close out the "Target Spell" right hand panel
 				getOverlandMapProcessing ().updateMovementRemaining ();
 				
-				// In case targeting at an overland enchantment, reset magic screen back to normal
+				// In case targeting at an overland enchantment, reset magic screen back to normal; similar with targeting at wizards
 				getMagicSlidersUI ().setTargetingSpell (null);
+				getWizardsUI ().setTargetingSpell (null);
+				getWizardsUI ().updateWizards (false);
 			}
 			
 			// Switch off a spell
@@ -432,6 +440,22 @@ public final class MessageBoxUI extends MomClientDialogUI
 	public final void setMagicSlidersUI (final MagicSlidersUI ui)
 	{
 		magicSlidersUI = ui;
+	}
+	
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
 	}
 	
 	/**

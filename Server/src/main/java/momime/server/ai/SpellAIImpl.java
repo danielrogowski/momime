@@ -555,7 +555,7 @@ public final class SpellAIImpl implements SpellAI
 			}
 			
 			// Target it
-			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, targetLocation, targetUnit, targetSpell, citySpellEffectID, unitSkillID, mom);
+			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, null, targetLocation, targetUnit, targetSpell, citySpellEffectID, unitSkillID, mom);
 		}
 	}
 

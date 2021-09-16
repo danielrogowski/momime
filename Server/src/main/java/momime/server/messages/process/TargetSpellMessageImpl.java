@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -66,6 +67,9 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	
 	/** Casting for each type of spell */
 	private SpellCasting spellCasting;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -368,7 +372,23 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 			
 			else
 			{
-				error = "Server code for casting enemy wizard spells not yet written";
+				// Common routine used by both the client and server does the guts of the validation work
+				final PlayerServerDetails targetPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
+					(mom.getPlayers (), getOverlandTargetPlayerID ());
+				
+				if (targetPlayer == null)
+					error = "Could not find the wizard you're trying to target the spell on";
+				else
+				{
+					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (spell, sender.getPlayerDescription ().getPlayerID (), priv,
+						targetPlayer, getSpellCasting ().createOverlandCastingInfo (targetPlayer, spell.getSpellID ()));
+
+					if (reason == TargetSpellResult.VALID_TARGET)
+						error = null;
+					else
+						// Using the enum name isn't that great, but the client will already have performed this validation so should never see any message generated here anyway
+						error = "This wizard is not a valid target for this spell for reason " + reason;
+				}
 			}				
 		}
 		
@@ -391,8 +411,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 		
 		else
-			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, (MapCoordinates3DEx) getOverlandTargetLocation (), unit, targetSpell,
-				citySpellEffectID, unitSkillID, mom);
+			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, getOverlandTargetPlayerID (),
+				(MapCoordinates3DEx) getOverlandTargetLocation (), unit, targetSpell, citySpellEffectID, unitSkillID, mom);
 	}		
 
 	/**
@@ -505,5 +525,21 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	public final void setSpellCasting (final SpellCasting c)
 	{
 		spellCasting = c;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

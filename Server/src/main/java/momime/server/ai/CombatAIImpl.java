@@ -357,7 +357,7 @@ public final class CombatAIImpl implements CombatAI
 			
 			// Let units move more than once, but only safe way to do this is to call listUnitsToMove each time as units may be killed, scrubbed from memory, etc
 			int retryCount = 0;
-			while (retryCount < 10)
+			while ((retryCount < 10) && (mom.getPlayers ().size () > 0))
 			{
 				// Get a list of all unit we need to move
 				final List<MemoryUnit> unitsToMove = listUnitsToMove (combatLocation, currentPlayer.getPlayerDescription ().getPlayerID (),

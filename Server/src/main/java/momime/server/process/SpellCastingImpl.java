@@ -177,27 +177,35 @@ public final class SpellCastingImpl implements SpellCasting
 					{
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 						if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
-						{
-							final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-							
-							final OverlandCastingInfo info = new OverlandCastingInfo ();
-							info.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-							
-							if (priv.getQueuedSpell ().size () > 0)
-							{
-								info.setSpellID (priv.getQueuedSpell ().get (0).getQueuedSpellID ());
-								
-								if (ourSpellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST))
-									info.setManaSpentOnCasting (priv.getManaSpentOnCastingCurrentSpell ());
-							}
-							
-							msg.getOverlandCastingInfo ().add (info);
-						}
+							msg.getOverlandCastingInfo ().add (createOverlandCastingInfo (player, ourSpellID));
 					}
 				}
 				
 				sendToPlayer.getConnection ().sendMessageToClient (msg);
 			}
+	}
+	
+	/**
+	 * @param player Player to create casting info for
+	 * @param ourSpellID Which spell allows us to see the info - Detect Magic or Spell Blast
+	 * @return Summary details about what the wizard is casting overland
+	 */
+	@Override
+	public final OverlandCastingInfo createOverlandCastingInfo (final PlayerServerDetails player, final String ourSpellID)
+	{
+		final OverlandCastingInfo info = new OverlandCastingInfo ();
+		info.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+		
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		if (priv.getQueuedSpell ().size () > 0)
+		{
+			info.setSpellID (priv.getQueuedSpell ().get (0).getQueuedSpellID ());
+			
+			if (ourSpellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST))
+				info.setManaSpentOnCasting (priv.getManaSpentOnCastingCurrentSpell ());
+		}
+		
+		return info;
 	}
 
 	/**

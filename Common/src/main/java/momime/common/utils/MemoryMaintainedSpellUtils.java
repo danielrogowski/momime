@@ -19,6 +19,8 @@ import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.servertoclient.OverlandCastingInfo;
 
 /**
  * Methods for working with list of MemoryMaintainedSpells
@@ -182,6 +184,21 @@ public interface MemoryMaintainedSpellUtils
 	 */
 	public TargetSpellResult isSpellValidTargetForSpell (final int castingPlayerID, final MemoryMaintainedSpell targetSpell, final CommonDatabase db)
 		throws RecordNotFoundException;
+
+	/**
+	 * Used for spells targeted at the Wizard themselves, like Drain Power or Spell Blast.  This is a bit awkward as the way the input params
+	 * are supplied is diffferent for client and server, so have to specify them in a way that either can provide (e.g. can't use PlayerServerDetails).
+	 * 
+	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
+	 * @param castingPriv Private info for the playing casting the spell
+	 * @param targetPlayer Player to cast the spell on
+	 * @param targetCastingInfo Info about what the player to cast the spell on is casting themselves
+	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
+	 * @throws MomException If we encounter a spell book section we don't know how to handle
+	 */
+	public TargetSpellResult isWizardValidTargetForSpell (final Spell spell, final int castingPlayerID, final MomPersistentPlayerPrivateKnowledge castingPriv,
+		final PlayerPublicDetails targetPlayer, final OverlandCastingInfo targetCastingInfo) throws MomException;
 	
 	/**
 	 * Checks whether the specified spell can be targetted at the specified combat map location.

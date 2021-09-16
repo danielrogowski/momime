@@ -1090,6 +1090,21 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <tooMuchExperience language="en">
             <text>This unit has already attained Elite or Commander experience level.</text>
         </tooMuchExperience>
+        <attackingOwnWizard language="en">
+            <text>You cannot cast SPELL_NAME on yourself.</text>
+        </attackingOwnWizard>
+        <notAWizard language="en">
+            <text>SPELL_NAME can only be targeted at wizards, not raiders or monsters.</text>
+        </notAWizard>
+        <wizardBanishedOrDefeated language="en">
+            <text>You cannot cast spells at wizards who are banished or defeated.</text>
+        </wizardBanishedOrDefeated>
+        <noSpellBeingCast language="en">
+            <text>PLAYER_NAME is not casting any overland spell to blast.</text>
+        </noSpellBeingCast>
+        <insufficientMana language="en">
+            <text>You do not have enough mana stored to blast PLAYER_NAME's BLASTED_NAME spell.</text>
+        </insufficientMana>
         <cancelTitle language="en">
             <text>Cancel Spell</text>
         </cancelTitle>

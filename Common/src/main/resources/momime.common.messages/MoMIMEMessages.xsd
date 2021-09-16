@@ -701,6 +701,12 @@ Spell Ward is SP072, but it provides one of the effects SE072C,D,L,N,S (player's
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellURN" type="momimemsgs:spellURN" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="targetPlayerID" type="mps:playerID">
+			    <xsd:annotation>
+    				<xsd:documentation>No maintained spells are targeted on wizards, but the one time broadcast of a transient spell might need to fill this in
+so the client knows which wizard portrait to show the animation over.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" />

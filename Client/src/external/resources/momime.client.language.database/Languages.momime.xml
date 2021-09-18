@@ -1899,6 +1899,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
         <offerItemRejected language="en">
             <text>You rejected buying ITEM_NAME for COST gold</text>
         </offerItemRejected>
+        <spellBlast language="en">
+            <text>PLAYER_NAME's BLASTING_SPELL spell has caused your SPELL_NAME spell to fizzle.</text>
+        </spellBlast>
     </newTurnMessages>
     <mainMenuScreen>
         <longTitle language="en">

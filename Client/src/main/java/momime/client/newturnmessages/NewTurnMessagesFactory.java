@@ -84,4 +84,9 @@ public interface NewTurnMessagesFactory
 	 * @return NTM with injected dependencies
 	 */
 	public NewTurnMessageOfferItemEx createNewTurnMessageOfferItem ();
+
+	/**
+	 * @return NTM with injected dependencies
+	 */
+	public NewTurnMessageSpellBlastEx createNewTurnMessageSpellBlast ();
 }

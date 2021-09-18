@@ -275,7 +275,9 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	}
 	
 	/**
-	 * Clicking on population changes brings up the city screen
+	 * Clicking on research messages brings up spell book so we can pick next spell to research.
+	 * Clicking on targeting messages sets up overland map UI to target the spell.
+	 * 
 	 * @throws Exception If there is a problem
 	 */
 	@Override

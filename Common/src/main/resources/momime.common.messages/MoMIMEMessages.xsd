@@ -350,6 +350,21 @@ If construction gets changed as a result, that gets sent as abort building/unit 
 		</xsd:complexContent>
 	</xsd:complexType>		       
 
+	<xsd:complexType name="newTurnMessageSpellBlast">
+	    <xsd:annotation>
+    		<xsd:documentation>NTM about a spell we were casting overland getting blasted / fizzling due to an enemy wizard spell.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="blastedBySpellID" type="momimecommon:spellID" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="blastedByPlayerID" type="mps:playerID" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
 	<xsd:complexType name="newTurnMessageHeroGainedALevel">
 	    <xsd:annotation>
     		<xsd:documentation>A hero gained a level.</xsd:documentation>
@@ -1193,6 +1208,10 @@ through lack of production, we can still look up their name to show it on the ne
 			<xsd:enumeration value="E"><xsd:annotation>
 				<xsd:documentation>Offer item to buy (merchant)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="OFFER_ITEM" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Spell fizzled (was targeted by Spell Blast or Suppress Magic)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SPELL_BLAST" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

@@ -741,6 +741,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
+	<bean id="newTurnMessageSpellBlast" class="momime.client.newturnmessages.NewTurnMessageSpellBlastEx" scope="prototype">
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
+	</bean>
+
 	<!-- Create extended versions of damage calculations which include method to work out the text to display -->
 
 	<bean id="damageCalculationHeaderData" class="momime.client.calculations.damage.DamageCalculationHeaderDataEx" scope="prototype">

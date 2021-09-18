@@ -12,6 +12,7 @@ import momime.common.messages.NewTurnMessageOfferItem;
 import momime.common.messages.NewTurnMessageOfferUnits;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageSpell;
+import momime.common.messages.NewTurnMessageSpellBlast;
 import momime.common.messages.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
@@ -158,6 +159,15 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	public final NewTurnMessageOfferItem createNewTurnMessageOfferItem ()
 	{
 		return getNewTurnMessagesFactory ().createNewTurnMessageOfferItem ();
+	}
+
+	/**
+	 * @return Custom extended NTM
+	 */
+	@Override
+	public final NewTurnMessageSpellBlast createNewTurnMessageSpellBlast ()
+	{
+		return getNewTurnMessagesFactory ().createNewTurnMessageSpellBlast ();
 	}
 	
 	/**

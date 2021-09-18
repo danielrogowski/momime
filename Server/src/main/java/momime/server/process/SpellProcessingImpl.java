@@ -50,6 +50,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageCreateArtifact;
 import momime.common.messages.NewTurnMessageSpell;
+import momime.common.messages.NewTurnMessageSpellBlast;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
@@ -63,8 +64,10 @@ import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.AnimationID;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.PlayAnimationMessage;
+import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
+import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
@@ -1192,6 +1195,44 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (found)
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+			}
+			
+			else if (kind == KindOfSpell.SPELL_BLAST)
+			{
+				final PlayerServerDetails targetPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), targetPlayerID, "targetOverlandSpell (T)");
+				final MomPersistentPlayerPrivateKnowledge targetPriv = (MomPersistentPlayerPrivateKnowledge) targetPlayer.getPersistentPlayerPrivateKnowledge ();
+				final MomTransientPlayerPrivateKnowledge targetTrans = (MomTransientPlayerPrivateKnowledge) targetPlayer.getTransientPlayerPrivateKnowledge ();
+				
+				if (targetPriv.getQueuedSpell ().size () > 0)
+				{
+					final int blastingCost = targetPriv.getManaSpentOnCastingCurrentSpell ();
+
+					// Remove on client
+					if (targetPlayer.getPlayerDescription ().isHuman ())
+					{
+						final NewTurnMessageSpellBlast ntm = new NewTurnMessageSpellBlast ();
+						ntm.setMsgType (NewTurnMessageTypeID.SPELL_BLAST);
+						ntm.setSpellID (targetPriv.getQueuedSpell ().get (0).getQueuedSpellID ());
+						ntm.setBlastedBySpellID (spell.getSpellID ());
+						ntm.setBlastedByPlayerID (maintainedSpell.getCastingPlayerID ());
+						
+						targetTrans.getNewTurnMessage ().add (ntm);
+						getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null);
+						
+						final RemoveQueuedSpellMessage removeSpellMessage = new RemoveQueuedSpellMessage ();
+						removeSpellMessage.setQueuedSpellIndex (0);
+						targetPlayer.getConnection ().sendMessageToClient (removeSpellMessage);
+						
+						targetPlayer.getConnection ().sendMessageToClient (new UpdateManaSpentOnCastingCurrentSpellMessage ());
+					}
+					
+					// Remove on server
+					targetPriv.getQueuedSpell ().remove (0);
+					targetPriv.setManaSpentOnCastingCurrentSpell (0);
+					
+					// Charge additional MP
+					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -blastingCost);;
+				}
 			}
 		}
 

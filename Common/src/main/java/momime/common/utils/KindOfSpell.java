@@ -8,6 +8,9 @@ public enum KindOfSpell
 	/** Summoning spell that "summons" dead units back to life */
 	RAISE_DEAD,
 	
+	/** Summoning spell that "summons" an item */
+	CREATE_ARTIFACT,
+	
 	/** Normal summoning spell */
 	SUMMONING,
 	

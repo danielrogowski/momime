@@ -42,6 +42,8 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
@@ -89,6 +91,9 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 
 	/** Combat UI */
 	private CombatUI combatUI;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
 	
 	/** Units to display in the list */
 	private List<MemoryUnit> units;
@@ -178,9 +183,10 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			// Unit image/button
 			final Action selectAction = new LoggingAction ((ev) ->
 			{
-				if (spell.getResurrectedHealthPercentage () != null)
+				// If its a raise dead-type spell in combat then we've picked the unit, now pick where to bring it back
+				if ((spell.getResurrectedHealthPercentage () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
 				{
-					// Its a raise dead-type spell being cast in combat - so we've picked the unit, now pick where to bring it back
+					// We've picked the unit, now pick where to bring it back
 					getCombatUI ().setSpellBeingTargeted (spell);
 					getCombatUI ().setUnitBeingRaised (unit);
 					getDialog ().dispose ();
@@ -467,11 +473,11 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
+	 * @param u MemoryMaintainedSpell utils
 	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils u)
 	{
-		memoryMaintainedSpellUtils = spellUtils;
+		memoryMaintainedSpellUtils = u;
 	}
 
 	/**
@@ -552,5 +558,21 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
 	}
 }

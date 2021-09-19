@@ -483,6 +483,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 	</bean>
 
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">
@@ -654,6 +655,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype">
@@ -2028,6 +2031,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
 	<bean id="heroItemInfoLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

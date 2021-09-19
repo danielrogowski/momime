@@ -399,8 +399,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * When we summon a hero, we don't 'add' it, the unit object already exists - but we still need to perform similar updates
 	 * to addUnitOnServerAndClients to set the unit's location, see the area it can see, status and tell clients to update the same
 	 *
-	 * Although not written yet, this will also be used for bringing dead regular units back to life with the Raise Dead spell
-	 *
 	 * @param trueUnit The unit to set to alive
 	 * @param locationToAddUnit Location to add the new unit, must be filled in
 	 * @param unitOwner Player who will own the new unit, note the reason this has to be passed in separately is because the players list is allowed to be null

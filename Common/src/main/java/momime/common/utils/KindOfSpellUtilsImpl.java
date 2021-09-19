@@ -30,6 +30,8 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 			case SUMMONING:
 				if (spell.getResurrectedHealthPercentage () != null)
 					kind = KindOfSpell.RAISE_DEAD;
+				else if (spell.getHeroItemBonusMaximumCraftingCost () != null)
+					kind = KindOfSpell.CREATE_ARTIFACT;
 				else
 					kind = KindOfSpell.SUMMONING;
 				break;

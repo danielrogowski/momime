@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -15,7 +16,10 @@ import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.frames.MagicSlidersUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.SpellBookUI;
 import momime.client.ui.frames.WizardsUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -30,8 +34,11 @@ import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -87,6 +94,12 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	
 	/** Wizards UI */
 	private WizardsUI wizardsUI;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -231,7 +244,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 		// Only applicable for "target spell"
 		final boolean answered;
 		if (getMsgType () == NewTurnMessageTypeID.TARGET_SPELL)
-			answered = (isTargetingCancelled ()) || (getTargetedCity () != null) || (getTargetedUnitURN () != null) && (getTargetedPlayerID () != null);
+			answered = (isTargetingCancelled ()) || (getTargetedCity () != null) || (getTargetedUnitURN () != null) || (getTargetedPlayerID () != null);
 		else
 			answered = true;
 		
@@ -325,6 +338,45 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 						{
 							getWizardsUI ().setTargetingSpell (spell);
 							getWizardsUI ().setVisible (true);
+							break;
+						}
+						
+						// Resurrection needs to prompt with a list of heroes who have died
+						case RAISE_DEAD:
+						{
+							final List<MemoryUnit> deadUnits = new ArrayList<MemoryUnit> ();
+							for (final MemoryUnit thisUnit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+							{
+								final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+									getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+								
+								if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+									(spell, null, null, getClient ().getOurPlayerID (), null, null, xu,
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
+									
+									deadUnits.add (thisUnit);
+							};						
+									
+							if (deadUnits.size () == 0)
+							{
+								final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getSpellID (), "NewTurnMessageSpellEx (C)").getSpellName ());
+								
+								final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+								msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+								msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getNoDeadHeroesToBeResurrected ()).replaceAll
+									("SPELL_NAME", spellName));
+
+								msg.setVisible (true);
+								
+								// They still have to hit "cancel" on the overland map RHP to cancel targeting it fully
+							}
+							else
+							{
+								final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
+								unitRowDisplay.setUnits (deadUnits);
+								unitRowDisplay.setTargetSpellID (spell.getSpellID ());
+								unitRowDisplay.setVisible (true);
+							}
 							break;
 						}
 
@@ -596,5 +648,37 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	public final void setWizardsUI (final WizardsUI ui)
 	{
 		wizardsUI = ui;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

@@ -4119,6 +4119,9 @@ Bonus Or +GOLD_BONUS%</text>
         <noDeadUnitsToBeRaised language="en">
             <text>No suitable units have died yet this combat that could be brought back with a SPELL_NAME spell.</text>
         </noDeadUnitsToBeRaised>
+        <noDeadHeroesToBeResurrected language="en">
+            <text>No heroes died that could be brought back with a SPELL_NAME spell.</text>
+        </noDeadHeroesToBeResurrected>
     </spellBookScreen>
     <selectAdvisorScreen>
         <title language="en">

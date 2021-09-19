@@ -93,6 +93,7 @@ import momime.server.mapgenerator.CombatMapArea;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.HeroItemServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
+import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -216,6 +217,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
 		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
+		final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
 
 		// Overland enchantments
 		if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
@@ -246,7 +248,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 		
 		// Enchant item / Create artifact
-		else if ((sectionID == SpellBookSectionID.SUMMONING) && (heroItem != null))
+		else if (kind == KindOfSpell.CREATE_ARTIFACT)
 		{
 			// Put new item in mom.getPlayers ()' bank on the server
 			final NumberedHeroItem numberedHeroItem = getHeroItemServerUtils ().createNumberedHeroItem (heroItem, mom.getGeneralServerKnowledge ());
@@ -270,7 +272,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 
 		// Summoning, except Floating Island where you need to pick a target
-		else if ((sectionID == SpellBookSectionID.SUMMONING) && ((spell.isSummonAnywhere () == null) || (!spell.isSummonAnywhere ())))
+		else if ((kind == KindOfSpell.SUMMONING) && ((spell.isSummonAnywhere () == null) || (!spell.isSummonAnywhere ())))
 		{
 			// Find the location of the wizards' summoning circle 'building'
 			final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
@@ -284,7 +286,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else if ((sectionID == SpellBookSectionID.CITY_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
 			(sectionID == SpellBookSectionID.CITY_CURSES) || (sectionID == SpellBookSectionID.UNIT_CURSES) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
 			(sectionID == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS) ||
-			(sectionID == SpellBookSectionID.SUMMONING) || (sectionID == SpellBookSectionID.ENEMY_WIZARD_SPELLS))
+			(sectionID == SpellBookSectionID.SUMMONING) || (sectionID == SpellBookSectionID.ENEMY_WIZARD_SPELLS) || (kind == KindOfSpell.RAISE_DEAD))
 		{
 			// Add it on server - note we add it without a target chosen and without adding it on any
 			// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.
@@ -984,6 +986,33 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// Just remove it - don't even bother to check if any clients can see it
 			getMemoryMaintainedSpellUtils ().removeSpellURN (maintainedSpell.getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 			
+			// If resurrecting a dead hero, we need to figure out where its going to appear and move its location and set it back to alive first
+			// otherwise its still at the location where it died, which makes sendTransientSpellToClients have a hard time knowing who should
+			// see the spell effect on the map
+			if (kind == KindOfSpell.RAISE_DEAD)
+			{
+				final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (maintainedSpell.getCastingPlayerID (),
+					CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+
+				if (summoningCircleLocation != null)
+				{
+					final UnitAddLocation resurrectLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
+						((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), targetUnit.getUnitID (), maintainedSpell.getCastingPlayerID (),
+							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					
+					if (resurrectLocation.getUnitLocation () != null)
+					{
+						targetUnit.getUnitDamage ().clear ();
+						
+						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, resurrectLocation.getUnitLocation (),
+							castingPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());				}
+					
+						// Let it move this turn
+						targetUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
+					}
+			}
+			
 			// Tell the client to stop asking about targeting the spell, and show an animation for it - need to send this to all players that can see it!
 			getFogOfWarMidTurnChanges ().sendTransientSpellToClients (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
@@ -1054,7 +1083,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 
 			// The only targeted overland summoning spell is Floating Island
-			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+			else if (kind == KindOfSpell.SUMMONING)
 				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, mom);
 			
 			else if (kind == KindOfSpell.CORRUPTION)

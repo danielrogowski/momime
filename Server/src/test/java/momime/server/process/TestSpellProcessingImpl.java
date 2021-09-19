@@ -83,6 +83,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		
 		// Isn't researched yet
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
@@ -94,6 +96,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Set up test object
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setSpellUtils (utils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, null, null);
@@ -161,6 +164,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		spell.setSpellID ("SP001");
 		spell.setOverlandCastingCost (22);
 		
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		
 		// It grants one of 5 possible effects
 		for (int n = 1; n <= 5; n++)
 			spell.getSpellHasCombatEffect ().add ("CSE00" + n);
@@ -186,6 +191,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellUtils (utils);
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setRandomUtils (randomUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, null, mom);
@@ -264,6 +270,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		spell.setSpellID ("SP001");
 		spell.setOverlandCastingCost (22);
 		
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
@@ -283,6 +291,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setSpellUtils (utils);
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, null, mom);
@@ -342,6 +351,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
@@ -356,6 +367,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setSpellUtils (utils);
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, null, mom);

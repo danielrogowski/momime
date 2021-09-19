@@ -171,7 +171,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		}
 		
 		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS))
+			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (kind == KindOfSpell.RAISE_DEAD))
 		{
 			if ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ()))
 			{

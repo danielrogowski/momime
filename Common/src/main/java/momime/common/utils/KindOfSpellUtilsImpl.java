@@ -68,7 +68,10 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 				break;
 				
 			case SPECIAL_UNIT_SPELLS:
-				if ((spell.getCombatBaseDamage () != null) || ((spell.getOverlandCastingCost () != null) &&
+				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_PLANE_SHIFT))
+					kind = KindOfSpell.PLANE_SHIFT;
+				
+				else if ((spell.getCombatBaseDamage () != null) || ((spell.getOverlandCastingCost () != null) &&
 					(spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ())))
 					
 					kind = KindOfSpell.HEALING;

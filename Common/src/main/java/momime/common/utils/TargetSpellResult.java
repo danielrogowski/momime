@@ -105,5 +105,8 @@ public enum TargetSpellResult
 	NO_SPELL_BEING_CAST,
 	
 	/** Tried to spell blast a wizard but we don't have enough MP stored to blast their spell */
-	INSUFFICIENT_MANA;
+	INSUFFICIENT_MANA,
+	
+	/** Can't cast plane shift on any units while planar seal is in effect */
+	PLANAR_SEAL;
 }

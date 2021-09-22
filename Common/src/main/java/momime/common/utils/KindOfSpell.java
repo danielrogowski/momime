@@ -44,6 +44,9 @@ public enum KindOfSpell
 	/** Spells that teleport our units back to our fortress */
 	RECALL,
 	
+	/** Shift entire stack to the other plane */
+	PLANE_SHIFT,
+	
 	/** Enchant road */
 	ENCHANT_ROAD,
 	

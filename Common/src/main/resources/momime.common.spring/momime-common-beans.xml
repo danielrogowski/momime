@@ -297,6 +297,7 @@
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />

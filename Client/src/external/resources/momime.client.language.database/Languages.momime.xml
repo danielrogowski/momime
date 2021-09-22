@@ -1105,6 +1105,12 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <insufficientMana language="en">
             <text>You do not have enough mana stored to blast PLAYER_NAME's BLASTED_NAME spell.</text>
         </insufficientMana>
+        <planeShiftTower language="en">
+            <text>Towers of Wizardry and the units inside them exist simultaneously on both planes, so it is unnecessary to plane shift units inside a tower.</text>
+        </planeShiftTower>
+        <planarSeal language="en">
+            <text>No travel between planes is possible while Planar Seal is in effect.</text>
+        </planarSeal>
         <cancelTitle language="en">
             <text>Cancel Spell</text>
         </cancelTitle>

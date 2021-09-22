@@ -60,6 +60,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
 	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
+	
 	/**
 	 * Searches for a maintained spell in a list
 	 *
@@ -312,6 +315,16 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else if ((kind == KindOfSpell.RAISE_DEAD) && ((spell.isResurrectEnemyUnits () == null) ||
     		(!spell.isResurrectEnemyUnits ())) && (targetUnit.getOwningPlayerID () != castingPlayerID))
     		result = TargetSpellResult.RAISING_ENEMY;
+    	
+    	// Trying to plane shift while planar seal is in effect
+    	else if ((kind == KindOfSpell.PLANE_SHIFT) && (findMaintainedSpell
+			(mem.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null))
+    		result = TargetSpellResult.PLANAR_SEAL;
+    	
+    	// Trying to plane shift while standing in a tower
+    	else if ((kind == KindOfSpell.PLANE_SHIFT) && (getMemoryGridCellUtils ().isTerrainTowerOfWizardry
+    		(mem.getMap ().getPlane ().get (targetUnit.getUnitLocation ().getZ ()).getRow ().get (targetUnit.getUnitLocation ().getY ()).getCell ().get (targetUnit.getUnitLocation ().getX ()).getTerrainData ())))
+    		result = TargetSpellResult.INVALID_MAP_FEATURE;
     	
     	else
     	{
@@ -800,5 +813,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setResourceValueUtils (final ResourceValueUtils util)
 	{
 		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
 	}
 }

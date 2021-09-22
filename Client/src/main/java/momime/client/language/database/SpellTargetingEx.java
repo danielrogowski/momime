@@ -89,6 +89,14 @@ public final class SpellTargetingEx extends SpellTargeting
 			case TOO_MUCH_EXPERIENCE:
 				languageText = getTooMuchExperience ();
 				break;
+				
+			case INVALID_MAP_FEATURE:
+				languageText = getPlaneShiftTower ();
+				break;
+				
+			case PLANAR_SEAL:
+				languageText = getPlanarSeal ();
+				break;
 			 
 			default:
 				throw new MomException ("SpellTargetingEx.getUnitLanguageText doesn't know what to do with enum value " + targetSpellResult);

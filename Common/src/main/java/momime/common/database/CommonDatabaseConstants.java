@@ -386,6 +386,9 @@ public final class CommonDatabaseConstants
 	/** Just Cause spell */
 	public final static String SPELL_ID_JUST_CAUSE = "SP127";
 	
+	/** Shift entire stack to the other plane */
+	public final static String SPELL_ID_PLANE_SHIFT = "SP132";
+	
 	/** Block travel between planes */
 	public final static String SPELL_ID_PLANAR_SEAL = "SP135"; 
 

@@ -76,7 +76,10 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 		}
 		
 		// Don't show anything when raiders have been defeated
-		else if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+		else if (!PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+			getClient ().finishCustomDurationMessage (this);
+		
+		else
 		{
 			// Animation of wizard getting zapped
 			final boolean isDefeated = (getWizardState () == WizardState.DEFEATED);

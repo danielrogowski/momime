@@ -1263,6 +1263,29 @@ public final class SpellProcessingImpl implements SpellProcessing
 					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -blastingCost);;
 				}
 			}
+			
+			else if (kind == KindOfSpell.PLANE_SHIFT)
+			{
+				final List<ExpandedUnitDetails> planeShiftUnits = new ArrayList<ExpandedUnitDetails> ();
+				
+				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
+						(tu.getOwningPlayerID () == maintainedSpell.getCastingPlayerID ()))
+					{
+						final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						
+						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							
+							planeShiftUnits.add (thisTarget);
+					}
+				
+				if (planeShiftUnits.size () > 0)
+					getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (planeShiftUnits,
+						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+			}
 		}
 
 		else if (spell.getBuildingID () == null)

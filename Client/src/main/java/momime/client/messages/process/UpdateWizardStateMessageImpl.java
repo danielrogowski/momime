@@ -74,7 +74,9 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 			miniCityView.setUpdateWizardStateMessage (this);
 			miniCityView.setVisible (true);
 		}
-		else
+		
+		// Don't show anything when raiders have been defeated
+		else if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
 		{
 			// Animation of wizard getting zapped
 			final boolean isDefeated = (getWizardState () == WizardState.DEFEATED);

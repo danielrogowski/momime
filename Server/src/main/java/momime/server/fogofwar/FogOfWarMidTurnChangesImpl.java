@@ -794,101 +794,104 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
+		boolean killed = false;
+		
 		// Get the spell details before we remove it
-		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (spellURN, trueMap.getMaintainedSpell (), "switchOffMaintainedSpellOnServerAndClients");
-		
-		// Switch off on server
-		getMemoryMaintainedSpellUtils ().removeSpellURN (spellURN, trueMap.getMaintainedSpell ());
-
-		// Build the message ready to send it to whoever could see the spell
-		final SwitchOffMaintainedSpellMessage msg = new SwitchOffMaintainedSpellMessage ();
-		msg.setSpellURN (spellURN);
-
-		// Check which players could see the spell
-		for (final PlayerServerDetails player : players)
+		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (spellURN, trueMap.getMaintainedSpell ());
+		if (trueSpell != null)
 		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, trueMap.getMap (), trueMap.getUnit (), player, db, sd.getFogOfWarSetting ()))
+			// Switch off on server
+			getMemoryMaintainedSpellUtils ().removeSpellURN (spellURN, trueMap.getMaintainedSpell ());
+	
+			// Build the message ready to send it to whoever could see the spell
+			final SwitchOffMaintainedSpellMessage msg = new SwitchOffMaintainedSpellMessage ();
+			msg.setSpellURN (spellURN);
+	
+			// Check which players could see the spell
+			for (final PlayerServerDetails player : players)
 			{
-				// Update player's memory on server
-				getMemoryMaintainedSpellUtils ().removeSpellURN (spellURN, priv.getFogOfWarMemory ().getMaintainedSpell ());
-
-				// Update on client
-				if (player.getPlayerDescription ().isHuman ())
-					player.getConnection ().sendMessageToClient (msg);
-			}
-		}
-		
-		// Does the spell generate a CAE? e.g. Heavenly Light and Cloud of Shadow; if so then remove it
-		if (trueSpell.getCitySpellEffectID () != null)
-		{
-			final CitySpellEffect citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "switchOffMaintainedSpellOnServerAndClients");
-			if (citySpellEffect.getCombatAreaEffectID () != null)
-			{
-				final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
-					(trueMap.getCombatAreaEffect (), (MapCoordinates3DEx) trueSpell.getCityLocation (), citySpellEffect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
-				
-				if (trueCAE != null)
-					removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, trueMap.getMap (), trueMap.getUnit (), player, db, sd.getFogOfWarSetting ()))
+				{
+					// Update player's memory on server
+					getMemoryMaintainedSpellUtils ().removeSpellURN (spellURN, priv.getFogOfWarMemory ().getMaintainedSpell ());
+	
+					// Update on client
+					if (player.getPlayerDescription ().isHuman ())
+						player.getConnection ().sendMessageToClient (msg);
+				}
 			}
 			
-			// The only spells with a citySpellEffectID that can be cast in combat are Wall of Fire / Wall of Darkness.
-			// If these get cancelled, we need to regnerate the combat map.
-			else
+			// Does the spell generate a CAE? e.g. Heavenly Light and Cloud of Shadow; if so then remove it
+			if (trueSpell.getCitySpellEffectID () != null)
 			{
-				final Spell spellDef = db.findSpell (trueSpell.getSpellID (), "switchOffMaintainedSpellOnServerAndClients");
-				if (((spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)) &&
-					spellDef.getCombatCastingCost () != null)
+				final CitySpellEffect citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "switchOffMaintainedSpellOnServerAndClients");
+				if (citySpellEffect.getCombatAreaEffectID () != null)
 				{
-					final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-						((MapCoordinates3DEx) trueSpell.getCityLocation (), trueMap.getUnit (), players);
-					if (combatPlayers.bothFound ())
-					{
-						final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
-						final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
+					final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
+						(trueMap.getCombatAreaEffect (), (MapCoordinates3DEx) trueSpell.getCityLocation (), citySpellEffect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
 					
-						final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
-							(trueSpell.getCityLocation ().getZ ()).getRow ().get (trueSpell.getCityLocation ().getY ()).getCell ().get (trueSpell.getCityLocation ().getX ());
+					if (trueCAE != null)
+						removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
+				}
+				
+				// The only spells with a citySpellEffectID that can be cast in combat are Wall of Fire / Wall of Darkness.
+				// If these get cancelled, we need to regnerate the combat map.
+				else
+				{
+					final Spell spellDef = db.findSpell (trueSpell.getSpellID (), "switchOffMaintainedSpellOnServerAndClients");
+					if (((spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)) &&
+						spellDef.getCombatCastingCost () != null)
+					{
+						final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
+							((MapCoordinates3DEx) trueSpell.getCityLocation (), trueMap.getUnit (), players);
+						if (combatPlayers.bothFound ())
+						{
+							final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
+							final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
 						
-						getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), db, trueMap, (MapCoordinates3DEx) trueSpell.getCityLocation ());
-						
-						// Send the updated map
-						final UpdateCombatMapMessage combatMapMsg = new UpdateCombatMapMessage ();
-						combatMapMsg.setCombatLocation (trueSpell.getCityLocation ());
-						combatMapMsg.setCombatTerrain (gc.getCombatMap ());
-						
-						if (attackingPlayer.getPlayerDescription ().isHuman ())
-							attackingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
-
-						if (defendingPlayer.getPlayerDescription ().isHuman ())
-							defendingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
+							final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
+								(trueSpell.getCityLocation ().getZ ()).getRow ().get (trueSpell.getCityLocation ().getY ()).getCell ().get (trueSpell.getCityLocation ().getX ());
+							
+							getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), db, trueMap, (MapCoordinates3DEx) trueSpell.getCityLocation ());
+							
+							// Send the updated map
+							final UpdateCombatMapMessage combatMapMsg = new UpdateCombatMapMessage ();
+							combatMapMsg.setCombatLocation (trueSpell.getCityLocation ());
+							combatMapMsg.setCombatTerrain (gc.getCombatMap ());
+							
+							if (attackingPlayer.getPlayerDescription ().isHuman ())
+								attackingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
+	
+							if (defendingPlayer.getPlayerDescription ().isHuman ())
+								defendingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
+						}
 					}
 				}
 			}
-		}
-		
-		// If spell was cast on a unit, then see if removing the spell killed it
-		// e.g. Unit has 5 HP, cast Lionheart on it in combat gives +3 so now has 8 HP.  Unit takes 6 HP damage, then wins the combat.
-		// Lionheart gets cancelled so now unit has -1 HP.
-		boolean killed = false;
-		if (trueSpell.getUnitURN () != null)
-		{
-			final MemoryUnit mu = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellOnServerAndClients");
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, trueMap, db);
-			if (xu.calculateAliveFigureCount () <= 0)
+			
+			// If spell was cast on a unit, then see if removing the spell killed it
+			// e.g. Unit has 5 HP, cast Lionheart on it in combat gives +3 so now has 8 HP.  Unit takes 6 HP damage, then wins the combat.
+			// Lionheart gets cancelled so now unit has -1 HP.
+			if (trueSpell.getUnitURN () != null)
 			{
-				killed = true;
-
-				// Work out if this is happening in combat or not
-				final KillUnitActionID action = (mu.getCombatLocation () == null) ? KillUnitActionID.HEALABLE_OVERLAND_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
-				
-				killUnitOnServerAndClients (mu, action, trueMap, players, sd.getFogOfWarSetting (), db);
+				final MemoryUnit mu = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellOnServerAndClients");
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, trueMap, db);
+				if (xu.calculateAliveFigureCount () <= 0)
+				{
+					killed = true;
+	
+					// Work out if this is happening in combat or not
+					final KillUnitActionID action = (mu.getCombatLocation () == null) ? KillUnitActionID.HEALABLE_OVERLAND_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
+					
+					killUnitOnServerAndClients (mu, action, trueMap, players, sd.getFogOfWarSetting (), db);
+				}
 			}
+	
+			// The removed spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
+			final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffMaintainedSpellOnServerAndClients");
+			getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, castingPlayer, players, "switchOffMaintainedSpellOnServerAndClients", sd, db);
 		}
-
-		// The removed spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
-		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffMaintainedSpellOnServerAndClients");
-		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, castingPlayer, players, "switchOffMaintainedSpellOnServerAndClients", sd, db);
 		
 		return killed;
 	}

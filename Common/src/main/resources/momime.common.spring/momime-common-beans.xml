@@ -367,6 +367,7 @@
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="kindOfSpellUtils" class="momime.common.utils.KindOfSpellUtilsImpl" />

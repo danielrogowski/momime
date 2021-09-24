@@ -27,6 +27,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -51,6 +52,9 @@ public final class UnitMovementImpl implements UnitMovement
 	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * @param playerID Player whose units to count
@@ -187,12 +191,13 @@ public final class UnitMovementImpl implements UnitMovement
 	 * @param cellTransportCapacity Count of the number of free transport spaces at every map cell
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
 	 * @param doubleMovementRates Movement rate calculated for this unit stack to enter every possible tile type
+	 * @param towersImpassable If true then towers of wizardry are impassable (planar seal); if false can move onto them or attack them normally
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return Movement cost for the unit stack to enter every map cell
 	 */
 	final Integer [] [] [] calculateDoubleMovementToEnterTile (final UnitStack unitStack, final Set<String> unitStackSkills, final MapVolumeOfMemoryGridCells terrain,
-		final int [] [] [] cellTransportCapacity, final int [] [] [] ourUnitCountAtLocation, final Map<String, Integer> doubleMovementRates,
+		final int [] [] [] cellTransportCapacity, final int [] [] [] ourUnitCountAtLocation, final Map<String, Integer> doubleMovementRates, final boolean towersImpassable,
 		final CoordinateSystem sys, final CommonDatabase db)
 	{
 		final Integer [] [] [] doubleMovementToEnterTile = new Integer [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
@@ -200,45 +205,50 @@ public final class UnitMovementImpl implements UnitMovement
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
 				{
-					// If cell will be full, leave it as null = impassable
+					// If cell will be overfull, leave it as null = impassable
 					if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
 					{
 						final OverlandMapTerrainData terrainData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
-						Integer movementRate = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, true));
 						
-						// If the cell is otherwise impassable to us (i.e. land units trying to walk onto water) but there's enough space in a transport there, then allow it
-						if ((movementRate == null) && (cellTransportCapacity != null) && (cellTransportCapacity [z] [y] [x] > 0))
+						// If planar seal cast, then towers are impassable
+						if ((!towersImpassable) || (!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData)))
 						{
-							// Work out how many spaces we -need-
-							// Can't do this up front because it varies depending on whether the terrain being moved to is impassable to each kind of unit in the stack
-							int spaceRequired = 0;
-							boolean impassableToTransport = false;
-							for (final ExpandedUnitDetails thisUnit : unitStack.getUnits ())
-							{															
-								final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills,
-									getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
-								
-								// Count space granted by transports
-								final Integer unitTransportCapacity = thisUnit.getUnitDefinition ().getTransportCapacity ();
-								if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
-								{
-									if (impassable)
-										impassableToTransport = true;
-									else
-										spaceRequired = spaceRequired - unitTransportCapacity;
-								}
-								
-								// Count space taken up by units already in transports
-								else if (impassable)									
-									spaceRequired++;
-							}							
+							Integer movementRate = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, true));
 							
-							// If the cell is impassable to one of our transports then the free space is irrelevant, we just can't go there
-							if ((!impassableToTransport) && (cellTransportCapacity [z] [y] [x] >= spaceRequired))
-								movementRate = 2;
+							// If the cell is otherwise impassable to us (i.e. land units trying to walk onto water) but there's enough space in a transport there, then allow it
+							if ((movementRate == null) && (cellTransportCapacity != null) && (cellTransportCapacity [z] [y] [x] > 0))
+							{
+								// Work out how many spaces we -need-
+								// Can't do this up front because it varies depending on whether the terrain being moved to is impassable to each kind of unit in the stack
+								int spaceRequired = 0;
+								boolean impassableToTransport = false;
+								for (final ExpandedUnitDetails thisUnit : unitStack.getUnits ())
+								{															
+									final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills,
+										getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
+									
+									// Count space granted by transports
+									final Integer unitTransportCapacity = thisUnit.getUnitDefinition ().getTransportCapacity ();
+									if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
+									{
+										if (impassable)
+											impassableToTransport = true;
+										else
+											spaceRequired = spaceRequired - unitTransportCapacity;
+									}
+									
+									// Count space taken up by units already in transports
+									else if (impassable)									
+										spaceRequired++;
+								}							
+								
+								// If the cell is impassable to one of our transports then the free space is irrelevant, we just can't go there
+								if ((!impassableToTransport) && (cellTransportCapacity [z] [y] [x] >= spaceRequired))
+									movementRate = 2;
+							}
+							
+							doubleMovementToEnterTile [z] [y] [x] = movementRate;
 						}
-						
-						doubleMovementToEnterTile [z] [y] [x] = movementRate;
 					}
 				}
 		
@@ -405,8 +415,11 @@ public final class UnitMovementImpl implements UnitMovement
 		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getOverlandMapSize ());
 
 		// Now we can work out the movement cost of entering every tile, taking into account the tiles we can't enter because we'll have too many units there
+		final boolean planarSeal = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(map.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null);
+		
 		final Integer [] [] [] doubleMovementToEnterTile = calculateDoubleMovementToEnterTile (unitStack, unitStackSkills,
-			map.getMap (), cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, sd.getOverlandMapSize (), db);
+			map.getMap (), cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, planarSeal, sd.getOverlandMapSize (), db);
 		
 		// Initialize all the map areas
 		for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
@@ -495,5 +508,21 @@ public final class UnitMovementImpl implements UnitMovement
 	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

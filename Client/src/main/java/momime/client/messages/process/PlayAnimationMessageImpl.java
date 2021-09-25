@@ -61,12 +61,14 @@ public final class PlayAnimationMessageImpl extends PlayAnimationMessage impleme
 				spellOfMasteryStartUI.setCastingWizard (player);
 				spellOfMasteryStartUI.setPlayAnimationMessage (this);
 				spellOfMasteryStartUI.setVisible (true);
+				break;
 				
 			case FINISHED_SPELL_OF_MASTERY:
 				final SpellOfMasteryEndUI spellOfMasteryEndUI = getPrototypeFrameCreator ().createSpellOfMasteryEnd ();
 				spellOfMasteryEndUI.setCastingWizard (player);
 				spellOfMasteryEndUI.setPlayAnimationMessage (this);
 				spellOfMasteryEndUI.setVisible (true);
+				break;
 				
 			default:
 				// Its just an animation, don't throw a major exception for it

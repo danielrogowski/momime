@@ -2023,7 +2023,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		trueSpell.setCastingPlayerID (4);
 		
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
-		when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), trueMap.getMaintainedSpell (), "switchOffMaintainedSpellOnServerAndClients")).thenReturn (trueSpell);
+		when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), trueMap.getMaintainedSpell ())).thenReturn (trueSpell);
 
 		// Players can see the spell or not, and be human/AI, so create 4 players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();

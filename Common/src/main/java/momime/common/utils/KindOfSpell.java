@@ -80,7 +80,8 @@ public enum KindOfSpell
 	/** Special spells that do not require a target at all; exact effect of the spell is simply hard coded by the spellID */
 	SPECIAL_SPELLS,
 	
-	/** Spell Blast */
+	/** Spell Blast - this is separate from regular enemy wizard spells as it has additional validation rules -
+	 * 	the wizard must be casting a spell, and we must have enough MP to blast it */
 	SPELL_BLAST,
 	
 	/** Spells that are targeted at enemy wizards without any other special requirements */

@@ -315,6 +315,7 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 				anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
 				
 				// Show anim on WizardsUI
+				getWizardsUI ().setVisible (true);
 				getWizardsUI ().setWizardCastAnimationPlayerID (getMaintainedSpell ().getTargetPlayerID ());
 				getWizardsUI ().setWizardCastAnimationFrame (0);
 				getWizardsUI ().setWizardCastAnimation (anim);

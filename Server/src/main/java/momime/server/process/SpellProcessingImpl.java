@@ -1264,6 +1264,23 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 			}
 			
+			else if (kind == KindOfSpell.ENEMY_WIZARD_SPELLS)
+			{
+				// For now this is just Drain Power
+				final PlayerServerDetails targetPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), targetPlayerID, "targetOverlandSpell (T)");
+				final MomPersistentPlayerPrivateKnowledge targetPriv = (MomPersistentPlayerPrivateKnowledge) targetPlayer.getPersistentPlayerPrivateKnowledge ();
+				
+				final int mana = getResourceValueUtils ().findAmountStoredForProductionType (targetPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+				final int roll = getRandomUtils ().nextInt (101) + 50;
+				final int manaLost = Math.min (mana, roll);
+				
+				if (manaLost > 0)
+				{
+					getResourceValueUtils ().addToAmountStored (targetPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -manaLost);
+					getServerResourceCalculations ().sendGlobalProductionValues (targetPlayer, null, false);
+				}
+			}
+			
 			else if (kind == KindOfSpell.PLANE_SHIFT)
 			{
 				final List<ExpandedUnitDetails> planeShiftUnits = new ArrayList<ExpandedUnitDetails> ();

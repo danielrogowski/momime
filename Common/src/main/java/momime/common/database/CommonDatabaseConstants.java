@@ -349,6 +349,9 @@ public final class CommonDatabaseConstants
 	/** Confusion (unit rolls random action each combat turn) */
 	public final static String UNIT_SKILL_ID_CONFUSION = "SC046";
 	
+	/** Possession (unit is under permanent control of caster) */
+	public final static String UNIT_SKILL_ID_POSSESSION = "SC172";
+	
 	/**
 	 * Special code used for hero item bonuses, meaning "type(s) of attack appropriate for the type of weapon", so is used to differentiate
 	 * that for example an Sword of Illuisonary Attack being wielded by a hero with a Thrown Attack affects his regular melee hits only, and not

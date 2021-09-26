@@ -273,6 +273,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		// STEP 3 - Add in skills from spells - we must do this next since some skills from spells may grant other skills, e.g. Invulerability spell effect grants Weapon Immunity
 		Integer confusionSpellOwner = null;
+		Integer possessionSpellOwner = null;
 		for (final MemoryMaintainedSpell thisSpell : mem.getMaintainedSpell ())
 			if ((thisSpell.getUnitURN () != null) && (unitStackUnitURNs.contains (thisSpell.getUnitURN ())) && (thisSpell.getUnitSkillID () != null))
 			{
@@ -303,6 +304,9 @@ public final class UnitUtilsImpl implements UnitUtils
 					// If we find a confusion spell cast on the unit, remember who cast it
 					if (thisSpell.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CONFUSION))
 						confusionSpellOwner = thisSpell.getCastingPlayerID ();
+
+					if (thisSpell.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_POSSESSION))
+						possessionSpellOwner = thisSpell.getCastingPlayerID ();
 				}
 				
 				// List the skill in the unit stack skills?
@@ -760,6 +764,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		int controllingPlayerID = unit.getOwningPlayerID ();
 		if ((unit instanceof MemoryUnit) && (((MemoryUnit) unit).getConfusionEffect () == ConfusionEffect.CASTER_CONTROLLED) && (confusionSpellOwner != null))
 			controllingPlayerID = confusionSpellOwner;
+		
+		else if (possessionSpellOwner != null)
+			controllingPlayerID = possessionSpellOwner;
 		
 		// Finally can build the unit object
 		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, mu.getUnitDefinition (), unitType, mu.getOwningPlayer (), magicRealmLifeformType,

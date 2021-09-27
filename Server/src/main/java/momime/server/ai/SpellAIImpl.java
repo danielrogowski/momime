@@ -374,7 +374,7 @@ public final class SpellAIImpl implements SpellAI
 										mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 									if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
 										(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu,
-											priv.getFogOfWarMemory (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+											priv.getFogOfWarMemory (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 										
 										validTargetFound = true;
 								}
@@ -506,7 +506,7 @@ public final class SpellAIImpl implements SpellAI
 						mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 					if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
 						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu,
-							priv.getFogOfWarMemory (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+							priv.getFogOfWarMemory (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 					{
 						int thisUnitRating = getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 						

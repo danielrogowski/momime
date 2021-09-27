@@ -118,7 +118,7 @@ public final class TestSpellCastingImpl
 		casting.setUnitUtils (unitUtils);
 		
 		// Run test
-		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), mom);
+		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);
 
 		// Prove that unit got added
 		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
@@ -232,7 +232,7 @@ public final class TestSpellCastingImpl
 		casting.setUnitUtils (unitUtils);
 		
 		// Run test
-		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), mom);
+		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);
 
 		// Prove that unit got updated, not added
 		verify (midTurn, times (0)).addUnitOnServerAndClients (gsk, "UN008", new MapCoordinates3DEx (15, 25, 0), null, null, null,

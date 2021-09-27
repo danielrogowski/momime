@@ -1078,6 +1078,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <terrainImpassable language="en">
             <text>The SPELL_NAME cannot be summoned on this type of terrain.</text>
         </terrainImpassable>
+        <changeUnitTerrainImpassable language="en">
+            <text>SPELL_NAME cannot be cast on units on this type of terrain.</text>
+        </changeUnitTerrainImpassable>
         <noRangedAttack language="en">
             <text>SPELL_NAME can only be used against units who have a ranged attack.</text>
         </noRangedAttack>

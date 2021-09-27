@@ -77,7 +77,7 @@ public final class CombatHandlingImpl implements CombatHandling
 						
 			// Specify 0 for castingPlayerID, since we can hurt ourselves
 			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spellDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, 0, null, null, xu,
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 			{
 				final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
 				targetUnits.add (xu.getMemoryUnit ());

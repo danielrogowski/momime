@@ -97,6 +97,10 @@ public final class SpellTargetingEx extends SpellTargeting
 			case PLANAR_SEAL:
 				languageText = getPlanarSeal ();
 				break;
+				
+			case TERRAIN_IMPASSABLE:
+				languageText = getChangeUnitTerrainImpassable ();
+				break;
 			 
 			default:
 				throw new MomException ("SpellTargetingEx.getUnitLanguageText doesn't know what to do with enum value " + targetSpellResult);

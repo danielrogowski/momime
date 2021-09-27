@@ -921,7 +921,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 											
 											final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
 												getClient ().getOurPlayerID (), null, null, xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-												getClient ().getClientDB ());
+												getClient ().getPlayers (), getClient ().getClientDB ());
 											
 											if (validTarget == TargetSpellResult.VALID_TARGET)												
 												validUnits.add (xu);

@@ -45,7 +45,10 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 				break;
 				
 			case UNIT_ENCHANTMENTS:
-				kind = KindOfSpell.UNIT_ENCHANTMENTS;
+				if (spell.getSummonedUnit ().size () > 0)
+					kind = KindOfSpell.CHANGE_UNIT_ID;
+				else
+					kind = KindOfSpell.UNIT_ENCHANTMENTS;
 				break;
 				
 			case COMBAT_ENCHANTMENTS:

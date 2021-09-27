@@ -200,7 +200,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 						(spell, null, null, getClient ().getOurPlayerID (), null, null, xu,
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getPlayers (), getClient ().getClientDB ());
 					
 					if (validTarget == TargetSpellResult.VALID_TARGET)
 					{

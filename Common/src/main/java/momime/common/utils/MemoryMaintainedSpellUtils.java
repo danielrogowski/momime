@@ -121,6 +121,7 @@ public interface MemoryMaintainedSpellUtils
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param targetUnit Unit to cast the spell on
 	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -129,7 +130,8 @@ public interface MemoryMaintainedSpellUtils
 	 */
 	public TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final SpellBookSectionID overrideSpellBookSection, final MapCoordinates3DEx combatLocation,
 		final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage, final ExpandedUnitDetails targetUnit,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException; 
+		final FogOfWarMemory mem, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException; 
 
 	/**
 	 * Checks whether the specified spell can be targetted at the specified city.  There's lots of validation to do for this, and the

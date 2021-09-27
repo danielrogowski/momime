@@ -20,7 +20,10 @@ public enum KindOfSpell
 	/** City enchantments, no subdivision of spell book section */
 	CITY_ENCHANTMENTS,
 	
-	/** Unit enchantments, no subdivision of spell book section */
+	/** Unit enchantment that acts like a summoning spell, by killing off the existing unit and summoning a new one (Lycanthropy) */
+	CHANGE_UNIT_ID,
+	
+	/** Unit enchantments other than Lycanthropy*/
 	UNIT_ENCHANTMENTS,
 	
 	/** Combat enchantments, no subdivision of spell book section */

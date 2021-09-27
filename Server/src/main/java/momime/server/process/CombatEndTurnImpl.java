@@ -231,7 +231,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 					// attackSpellDamageResolutionTypeID = R on Terror spell def just to make the resistance check in isUnitValidTargetForSpell take effect
 					if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 						(terrorDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-							null, null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+							null, null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 						
 						unitsToRoll.add (xu);
 				}

@@ -1550,7 +1550,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, null, combatLocation, attackingPd.getPlayerID (), null, null, xu,
-			trueMap, db)).thenReturn (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY);
+			trueMap, players, db)).thenReturn (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1682,7 +1682,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, null, combatLocation, attackingPd.getPlayerID (), null, null, xu,
-			trueMap, db)).thenReturn (TargetSpellResult.VALID_TARGET);
+			trueMap, players, db)).thenReturn (TargetSpellResult.VALID_TARGET);
 		
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);

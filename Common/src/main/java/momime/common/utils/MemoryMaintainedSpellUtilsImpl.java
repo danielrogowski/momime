@@ -269,6 +269,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param targetUnit Unit to cast the spell on
 	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -278,7 +279,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	@Override
 	public final TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final SpellBookSectionID overrideSpellBookSection, final MapCoordinates3DEx combatLocation,
 		final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage, final ExpandedUnitDetails targetUnit,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
+		final FogOfWarMemory mem, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
     	final TargetSpellResult result;
     	final int targetUnitURN = targetUnit.getUnitURN ();
@@ -329,7 +331,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else
     	{
     		// Now check unitSpellEffectIDs
-    		final boolean unitSpellEffectRequired = (useSpellBookSection == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+    		final boolean unitSpellEffectRequired = (kind == KindOfSpell.UNIT_ENCHANTMENTS) ||
     			(useSpellBookSection == SpellBookSectionID.UNIT_CURSES);
     		
     		final List<UnitSpellEffect> unitSpellEffects = listUnitSpellEffectsNotYetCastOnUnit (mem.getMaintainedSpell (), spell, castingPlayerID, targetUnitURN);
@@ -358,6 +360,28 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else if ((kind == KindOfSpell.HEALING) && ((targetUnit.getModifiedUnitMagicRealmLifeformType ().isHealEachTurn () == null) ||
     			(!targetUnit.getModifiedUnitMagicRealmLifeformType ().isHealEachTurn ())))
     			result = TargetSpellResult.UNHEALABLE_LIFEFORM_TYPE;
+    		
+    		else if (kind == KindOfSpell.CHANGE_UNIT_ID)
+    		{
+    			// Test that the place where the old unit is is valid terrain for the new kind of unit
+    			// Ignoring complicated situations here like, what if the old unit is being transported on a ship, or what if its stacked with a unit who has Wind Walking
+    			final AvailableUnit unit = new AvailableUnit ();
+				unit.setOwningPlayerID (castingPlayerID);
+				unit.setUnitID (spell.getSummonedUnit ().get (0));
+				
+				getUnitUtils ().initializeUnitSkills (unit, null, db);
+
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+
+		    	final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (targetUnit.getUnitLocation ().getZ ()).getRow
+	    			().get (targetUnit.getUnitLocation ().getY ()).getCell ().get (targetUnit.getUnitLocation ().getX ()).getTerrainData ();
+				
+    			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db) == null)
+    				result = TargetSpellResult.TERRAIN_IMPASSABLE;
+    			
+	    		else
+	    			result = TargetSpellResult.VALID_TARGET;
+    		}
     		
     		else
     		{

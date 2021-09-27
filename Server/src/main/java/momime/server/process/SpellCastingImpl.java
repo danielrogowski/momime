@@ -70,6 +70,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @param spell Summoning spell
 	 * @param player Player who is casting it
 	 * @param summonLocation Location where the unit will appear (or try to)
+	 * @param sendNewTurnMessage Notify player about the summoned unit on NTM scroll?
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -79,7 +80,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 */
 	@Override
 	public final void castOverlandSummoningSpell (final Spell spell, final PlayerServerDetails player, final MapCoordinates3DEx summonLocation,
-		final MomSessionVariables mom)
+		final boolean sendNewTurnMessage, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -127,7 +128,7 @@ public final class SpellCastingImpl implements SpellCasting
 			}
 
 			// Show on new turn messages for the player who summoned it
-			if (player.getPlayerDescription ().isHuman ())
+			if ((sendNewTurnMessage) && (player.getPlayerDescription ().isHuman ()))
 			{
 				final NewTurnMessageSummonUnit summoningSpell = new NewTurnMessageSummonUnit ();
 				summoningSpell.setMsgType (NewTurnMessageTypeID.SUMMONED_UNIT);

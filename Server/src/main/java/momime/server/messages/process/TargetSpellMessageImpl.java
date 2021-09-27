@@ -211,7 +211,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 							
 							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
 								sender.getPlayerDescription ().getPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
-								mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)												
+								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)												
 								
 								validUnits.add (thisTarget);
 						}
@@ -254,12 +254,12 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						
 						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 							(spell, null, null, sender.getPlayerDescription ().getPlayerID (), null, null, xu,
-							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB ());
 						
 						if (reason == TargetSpellResult.VALID_TARGET)
 						{
 							// If its a unit enchantment, now pick which skill ID we'll actually get
-							if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+							if (kind == KindOfSpell.UNIT_ENCHANTMENTS)
 							{
 								final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
 									(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), getOverlandTargetUnitURN ());
@@ -273,7 +273,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 								}
 							}
 							else
-								// Special unit spells don't need to pick a skill ID, so they're just OK
+								// Special unit spells and Lycanthrophy don't need to pick a skill ID, so they're just OK
 								error = null;
 						}
 						else

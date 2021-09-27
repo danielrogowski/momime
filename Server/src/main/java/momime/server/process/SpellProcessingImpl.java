@@ -88,6 +88,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapArea;
 import momime.server.mapgenerator.CombatMapGenerator;
@@ -279,7 +280,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 
 			if (summoningCircleLocation != null)
-				getSpellCasting ().castOverlandSummoningSpell (spell, player, (MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), mom);
+				getSpellCasting ().castOverlandSummoningSpell (spell, player, (MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), true, mom);
 		}
 
 		// Any kind of overland spell that needs the player to choose a target
@@ -686,7 +687,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
 							xuCombatCastingUnit, variableDamage, xu, mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
 							targetUnits.add (thisUnit);
 					}
@@ -969,7 +970,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		
 		if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.ENEMY_WIZARD_SPELLS))
+			(spell.getSpellBookSectionID () == SpellBookSectionID.ENEMY_WIZARD_SPELLS) || (kind == KindOfSpell.CHANGE_UNIT_ID))
 		{
 			// Transient spell that performs some immediate action, then the temporary untargeted spell on the server gets removed
 			// So the spell never does get added to any clients
@@ -989,6 +990,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// If resurrecting a dead hero, we need to figure out where its going to appear and move its location and set it back to alive first
 			// otherwise its still at the location where it died, which makes sendTransientSpellToClients have a hard time knowing who should
 			// see the spell effect on the map
+
 			if (kind == KindOfSpell.RAISE_DEAD)
 			{
 				final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (maintainedSpell.getCastingPlayerID (),
@@ -1047,7 +1049,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{
 							// Heal this unit
 							final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
@@ -1084,7 +1086,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 			// The only targeted overland summoning spell is Floating Island
 			else if (kind == KindOfSpell.SUMMONING)
-				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, mom);
+				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, true, mom);
 			
 			else if (kind == KindOfSpell.CORRUPTION)
 			{
@@ -1294,7 +1296,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
 							planeShiftUnits.add (thisTarget);
 					}
@@ -1302,6 +1304,18 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (planeShiftUnits.size () > 0)
 					getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (planeShiftUnits,
 						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+			}
+			
+			else if (kind == KindOfSpell.CHANGE_UNIT_ID)
+			{
+				final MapCoordinates3DEx unitLocation = (MapCoordinates3DEx) targetUnit.getUnitLocation ();
+				
+				// Kill the old unit
+				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (targetUnit, KillUnitActionID.PERMANENT_DAMAGE,
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+				
+				// Create new unit
+				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, unitLocation, false, mom);
 			}
 		}
 

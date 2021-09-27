@@ -621,7 +621,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			if (modifiedSkillValues.get (unitSkillID).isEmpty ())
 				modifiedSkillValues.remove (unitSkillID);
 		
-		// STEP 18 - Apply any skill adjustments that set to a fixed value (shatter) or divide by a value (warp creature) 
+		// STEP 18 - Apply any skill adjustments that set to a fixed value (shatter), divide by a value (warp creature) or multiply by a value (berserk) 
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
@@ -630,7 +630,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				// Note the value != null check is here, isn't in the bonuses block above, because we assume we won't get skills like "shatter 1" vs "shatter 2"
 				// which set the level of penalty
 				if ((components != null) && (addsToSkill.getAddsToSkillValue () != null) && ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.LOCK) ||
-					(addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.DIVIDE)))
+					(addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.DIVIDE) || (addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.MULTIPLY)))
 				{
 					final boolean haveRequiredSkill;
 					if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
@@ -697,12 +697,16 @@ public final class UnitUtilsImpl implements UnitUtils
 									newValue = addsToSkill.getAddsToSkillValue ();
 								
 								// Divide by a value?
-								else
+								else if (addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.DIVIDE)
 									newValue = currentSkillValue / addsToSkill.getAddsToSkillValue ();
+								
+								// Multiply by a value?
+								else
+									newValue = currentSkillValue * addsToSkill.getAddsToSkillValue ();
 
-								// Never make it better
+								// LOCK and DIVIDE are used as penalties, so never allow these to improve an already bad stat
 								final int bonus;
-								if (currentSkillValue < newValue)
+								if ((currentSkillValue < newValue) && (addsToSkill.getAddsToSkillValueType () != AddsToSkillValueType.MULTIPLY))
 									bonus = 0;
 								else
 									bonus = newValue - currentSkillValue;

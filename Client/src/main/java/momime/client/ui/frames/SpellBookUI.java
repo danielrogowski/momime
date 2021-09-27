@@ -768,7 +768,8 @@ public final class SpellBookUI extends MomClientFrameUI
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 						(spell, null, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), castingUnit, null, xu,
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getPlayers (),
+							getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
 						
 						found = true;
 				}
@@ -852,7 +853,8 @@ public final class SpellBookUI extends MomClientFrameUI
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 						(spell, null, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), castingUnit, null, xu,
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getPlayers (),
+							getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
 						
 						deadUnits.add (thisUnit);
 				};						

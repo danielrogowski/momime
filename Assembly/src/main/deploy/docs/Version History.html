@@ -37,8 +37,55 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.9.5</b></td>
-			<td align=left><b>17 Aug 2021</b></td>
+			<td align=left><b>Current version: 0.9.9.6</b></td>
+			<td align=left><b>28 Sep 2021</b></td>
+			<td align=left>
+				<b>Uncommon spells that now work correctly:</b>
+				<ul>
+					<li>Detect Magic
+					<li>Flying and Non-corporeal units are now immune to Cracks Call; also Cracks Call now destroys sections of city wall and can be targeted directly on city walls
+					<li>Nature's Cures
+					<li>Change Terrain
+					<li>Transmute
+					<li>Blur
+					<li>Vertigo worked before, but updated so the blue swirl stays showing on the affected unit after casting
+					<li>Wind Mastery, and also updated description to be more accurate
+					<li>Raise Volcano
+					<li>Spell Blast
+					<li>Resurrection
+					<li>Planar Seal; also updated help text as the way this affects Towers of Wizardry is different from the original MoM
+					<li>Drain Power
+					<li>Possession
+					<li>Lycanthrophy
+					<li>Berserk
+					<li>Walls of Darkness
+				</ul>
+
+				<b>New features or fixes applicable to multiple spells:</b>
+				<ul>
+					<li>Hero items held by heroes killed by permanent damage (cracks call, petrify, disintegrate, stoning touch, etc) are lost rather than awarded to the winner of the combat
+				</ul>
+				
+				<b>Other new features:</b>
+				<ul>
+					<li>Wizards (F9) screen redesigned to accomodate Detect Magic, Spell Blast and other spells that require picking an enemy wizard to target
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Healing and Mass Healing now cannot be used on Death creatures or Undead (as per MoM wiki)
+					<li>Stopped client trying to show animation for "Raiders have been defeated" when their last city is taken
+					<li>Fixed batch files to run the editors which had broken version numbers in them
+					<li>Fixed more ways a game can end so the server ends the session cleanly
+					<li>Fixed sound effect for Earth Lore
+					<li>Fixed bug when someone starts casting Spell of Mastery, it would show the animation for it, and immediately show the animation for them finishing casting it and winning the game
+						(though game wouldn't end until they really did finish casting it and the animation would play again)
+				</ul>
+			</tr>
+		<tr>
+		<tr>
+			<td align=left>0.9.9.5</td>
+			<td align=left>17 Aug 2021</td>
 			<td align=left>
 				<b>Common spells that now work correctly:</b>
 				<ul>
@@ -93,7 +140,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td align=left>Current version: 0.9.9.4</td>
+			<td align=left>0.9.9.4</td>
 			<td align=left>16 Jul 2021</td>
 			<td align=left>
 				<b>Unit skills that now work correctly:</b>
@@ -143,8 +190,8 @@
 				<b>Unit skills that now work correctly:</b>
 				<ul>
 					<li>Invisible units in combat now appear semi-transparent if they can be seen (for example if you have a unit in adjacent cell or any unit in combat with True Sight) or completely hidden if you cannot see them
-					<li>Completely hidden units cannot be targetted by spells; semi-transparent units may be
-					<li>Both completely hidden units and semi-transparent units cannot be targetted by ranged attacks unless the attacker has True Sight/Illusions Immunity (another unit being able to see the enemy is not sufficient)
+					<li>Completely hidden units cannot be targeted by spells; semi-transparent units may be
+					<li>Both completely hidden units and semi-transparent units cannot be targeted by ranged attacks unless the attacker has True Sight/Illusions Immunity (another unit being able to see the enemy is not sufficient)
 					<li>Semi-transparent units are at -1 to hit with melee attacks or counterattacks
 					<li>Invisible units are hidden on the overland map, even if there are adjacent units with True Sight
 					<li>Teleporting

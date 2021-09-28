@@ -276,6 +276,9 @@ public final class CommonDatabaseConstants
 	/** All regeneration skills */
 	public final static List<String> UNIT_SKILL_IDS_REGENERATION = Arrays.asList ("IS01", "US024", "SS031");
 
+	/** All true sight skills */
+	public final static List<String> UNIT_SKILL_IDS_TRUE_SIGHT = Arrays.asList ("IS03", "US010", "SS131");
+	
 	/** Skill for priests purifying corruption */
 	public final static String UNIT_SKILL_ID_PURIFY = "US025";
 
@@ -400,6 +403,9 @@ public final class CommonDatabaseConstants
 	
 	/** Terror spell */
 	public final static String SPELL_ID_TERROR = "SP168";
+	
+	/** Wall of Darkness spell */
+	public final static String SPELL_ID_WALL_OF_DARKNESS = "SP178";
 	
 	/** Summoning circle spell */
 	public final static String SPELL_ID_SUMMONING_CIRCLE = "SP203";

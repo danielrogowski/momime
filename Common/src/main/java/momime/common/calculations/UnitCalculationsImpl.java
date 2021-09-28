@@ -43,6 +43,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 
@@ -74,6 +75,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
+
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * Gives all units full movement back again for their combat turn
@@ -915,22 +919,38 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		// Now check if we can fire missile attacks at any enemies
 		if (canMakeRangedAttack (unitBeingMoved))
 		{
-			for (final ExpandedUnitDetails xu : directlyVisibleEnemyUnits)
-			{
-				final int x = xu.getCombatPosition ().getX ();
-				final int y = xu.getCombatPosition ().getY ();
-				
-				// If the unit is invisible, we have to have True Sight / Illusions Immunity to be able to make a ranged attack against it.
-				// Simply being able to see it, or even standing right next to it, isn't enough.
-				
-				// Firing a missle weapon always uses up all of our movement so mark this for the sake of it - although MovementDistances
-				// isn't actually used to reduce the movement a unit has left in this fashion
-				movementTypes [y] [x] = CombatMoveType.RANGED_UNIT;
-				doubleMovementDistances [y] [x] = 999;
-			}
+			// Are we able to range attack units inside wall of darkness?  We either have to have true sight, or be inside wall of darkness ourselves.
+			// Note we'll get false here if there simply is no Wall of Darkness in this combat, but then will get false when we check target units too.
+			boolean attackTargetsInsideWallOfDarkness = getCombatMapUtils ().isWithinWallOfDarkness (combatLocation,
+				unitBeingMoved.getCombatPosition (), combatMap, fogOfWarMemory.getMaintainedSpell (), db);
 			
-			// Can also ranged attack wall segments
-			if (borderTargetIDs != null)
+			for (final String trueSightSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_TRUE_SIGHT)
+				if (unitBeingMoved.hasModifiedSkill (trueSightSkillID))
+					attackTargetsInsideWallOfDarkness = true;
+			
+			// Now each visible unit is targetable
+			for (final ExpandedUnitDetails xu : directlyVisibleEnemyUnits)
+				if ((attackTargetsInsideWallOfDarkness) || (!getCombatMapUtils ().isWithinWallOfDarkness (combatLocation,
+					xu.getCombatPosition (), combatMap, fogOfWarMemory.getMaintainedSpell (), db)))
+				{
+					final int x = xu.getCombatPosition ().getX ();
+					final int y = xu.getCombatPosition ().getY ();
+					
+					// If the unit is invisible, we have to have True Sight / Illusions Immunity to be able to make a ranged attack against it.
+					// Simply being able to see it, or even standing right next to it, isn't enough (expandUnitDetails above dealt with this).
+					
+					// Firing a missle weapon always uses up all of our movement so mark this for the sake of it - although MovementDistances
+					// isn't actually used to reduce the movement a unit has left in this fashion
+					movementTypes [y] [x] = CombatMoveType.RANGED_UNIT;
+					doubleMovementDistances [y] [x] = 999;
+				}
+			
+			// Can also ranged attack wall segments.
+			// The wall of darkness is on the outside of the stone walls, so they're protected by it and we can only range attack the stone walls
+			// if we have true sight, are inside the city hitting the stone walls from the other side, or there is no wall of darkness in effect.
+			if ((borderTargetIDs != null) && ((attackTargetsInsideWallOfDarkness) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+				(fogOfWarMemory.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_WALL_OF_DARKNESS, null, null, combatLocation, null) == null)))
+				
 				for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
 					for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
 					{
@@ -1122,5 +1142,21 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

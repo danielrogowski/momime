@@ -12,8 +12,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
@@ -29,6 +31,9 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * @param tile Tile to search
@@ -135,6 +140,40 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 		
 		return withinCityWalls;
 	}
+
+	/**
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatPosition Location of the unit within the combat map
+	 * @param combatMap Combat scenery
+	 * @param trueSpells True list of spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the specified location is within wall of darkness (if there even is a wall of darkness here)
+	 */
+	@Override
+	public final boolean isWithinWallOfDarkness (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryMaintainedSpell> trueSpells, final CommonDatabase db)
+	{
+		final boolean withinWallOfDarkness;
+
+		// First, the city actually has to have wall of darkness
+		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueSpells, null, CommonDatabaseConstants.SPELL_ID_WALL_OF_DARKNESS,
+			null, null, combatLocation, null) == null)
+		
+			withinWallOfDarkness = false;
+		else
+		{
+			// Get the specific tile where the unit is
+			final MomCombatTile combatTile = combatMap.getRow ().get (combatPosition.getY ()).getCell ().get (combatPosition.getX ());
+			
+			// See if any of the layers have a tile that identifies this location as being within the city (this is flagged on road tiles)
+			final List<String> cityTiles = db.getCombatTileType ().stream ().filter
+				(t -> (t.isInsideCity () != null) && (t.isInsideCity ())).map (t -> t.getCombatTileTypeID ()).collect (Collectors.toList ());
+			
+			withinWallOfDarkness = combatTile.getTileLayer ().stream ().anyMatch (l -> cityTiles.contains (l.getCombatTileTypeID ()));
+		}
+		
+		return withinWallOfDarkness;
+	}
 	
 	/**
 	 * @return Session utils
@@ -166,5 +205,21 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

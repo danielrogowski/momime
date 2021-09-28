@@ -11,6 +11,7 @@ import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 
@@ -50,4 +51,15 @@ public interface CombatMapUtils
 	 */
 	public boolean isWithinCityWalls (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
 		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db);
+	
+	/**
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatPosition Location of the unit within the combat map
+	 * @param combatMap Combat scenery
+	 * @param trueSpells True list of spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the specified location is within wall of darkness (if there even is a wall of darkness here)
+	 */
+	public boolean isWithinWallOfDarkness (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryMaintainedSpell> trueSpells, final CommonDatabase db);
 }

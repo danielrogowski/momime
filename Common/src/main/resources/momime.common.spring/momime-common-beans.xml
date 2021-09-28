@@ -282,6 +282,7 @@
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="memoryBuildingUtils" class="momime.common.utils.MemoryBuildingUtilsImpl" />
@@ -336,6 +337,7 @@
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl">
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="pendingMovementUtils" class="momime.common.utils.PendingMovementUtilsImpl" />

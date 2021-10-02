@@ -3310,8 +3310,8 @@ spell upkeep, but cannot switch off the spell that's costing the upkeep)</xsd:do
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="overlandTargetsEntireStack" type="xsd:boolean" nxe:label="Target entire stack?" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellCombatTarget" type="momimecommon:attackSpellCombatTargetID" nxe:label="Atk Spell Combat Target" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellOverlandTarget" type="momimecommon:attackSpellTargetID" nxe:label="Atk Spell Overland Target" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellCombatTarget" type="momimecommon:attackSpellTargetID" nxe:label="Atk Spell Combat Target" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageTypeID" type="momimecommon:damageTypeID" nxe:label="Damage Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -4899,10 +4899,10 @@ However we still need to record negative skill modification values, e.g. True Li
 	
 <!-- Attack spells and proper attack resolution, new for 0.9.6 -->
 	
-	<xsd:simpleType name="attackSpellCombatTargetID">
+	<xsd:simpleType name="attackSpellTargetID">
 	    <xsd:annotation>
-			<xsd:documentation>For attack spells that can be used in combat, specifies whether the spell hits a
-single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strike)</xsd:documentation>
+			<xsd:documentation>Specifies whether the spell hits a single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. Flame Strike in
+combat or Ice Storm overland).</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="S"><xsd:annotation>
@@ -4910,8 +4910,12 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SINGLE_UNIT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="A"><xsd:annotation>
-				<xsd:documentation>Spell automatically hits all enemy units in combat (e.g. flame strike)</xsd:documentation>
+				<xsd:documentation>Spell automatically hits all enemy units in combat (e.g. flame strike) or all units in the map cell if overland</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ALL_UNITS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Spell can be aimed at cities only, and hits all units and all buildings inside (e.g. earthquake)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ALL_UNITS_AND_BUILDINGS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

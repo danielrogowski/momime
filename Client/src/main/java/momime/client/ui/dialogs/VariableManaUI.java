@@ -33,7 +33,7 @@ import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.SpellBookUI;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
-import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
 import momime.common.database.RecordNotFoundException;
@@ -405,7 +405,7 @@ public final class VariableManaUI extends MomClientDialogUI
 			((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
 			(sectionID == SpellBookSectionID.SUMMONING) ||
 			(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS)) &&
-				(getSpellBeingTargeted ().getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
+				(getSpellBeingTargeted ().getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT))))
 			
 			getCombatUI ().setSpellBeingTargeted (getSpellBeingTargeted ());
 		else

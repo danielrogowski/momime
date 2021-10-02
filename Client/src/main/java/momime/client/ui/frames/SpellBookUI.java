@@ -52,7 +52,7 @@ import momime.client.utils.SpellSorter;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
-import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
 import momime.common.database.Pick;
@@ -775,7 +775,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				}
 				
 				// Disenchant Area / True will also affect spells at the location that aren't cast on units, like Wall of Fire or Heavenly Light
-				if ((!found) && (sectionID == SpellBookSectionID.DISPEL_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.ALL_UNITS))
+				if ((!found) && (sectionID == SpellBookSectionID.DISPEL_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.ALL_UNITS))
 					found = (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().stream ().anyMatch
 						(s -> (s.getCastingPlayerID () != getClient ().getOurPlayerID ()) && (getCombatUI ().getCombatLocation ().equals (s.getCityLocation ())))) ||
 					
@@ -917,7 +917,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
 				(sectionID == SpellBookSectionID.SUMMONING) || (sectionID == SpellBookSectionID.SPECIAL_COMBAT_SPELLS) ||
 				(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
-					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
+					(spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT))))
 				
 				getCombatUI ().setSpellBeingTargeted (spell);
 			

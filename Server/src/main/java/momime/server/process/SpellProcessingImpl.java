@@ -24,7 +24,7 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
@@ -678,7 +678,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
 				final List<MemoryMaintainedSpell> targetSpells = new ArrayList<MemoryMaintainedSpell> ();
 				final List<MemoryCombatAreaEffect> targetCAEs = new ArrayList<MemoryCombatAreaEffect> ();
-				if (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)
+				if (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT)
 					targetUnits.add (targetUnit);
 				else
 				{
@@ -775,7 +775,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						anim.setCastInCombat (true);
 						anim.setCombatTargetLocation (targetLocation);
 						
-						if ((spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT) && (targetUnits.size () > 0))
+						if ((spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT) && (targetUnits.size () > 0))
 							anim.setCombatTargetUnitURN (targetUnits.get (0).getUnitURN ());
 	
 						if (attackingPlayer.getPlayerDescription ().isHuman ())

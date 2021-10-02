@@ -1,6 +1,7 @@
 package momime.common.utils;
 
 import momime.common.MomException;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -75,7 +76,7 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 					kind = KindOfSpell.PLANE_SHIFT;
 				
 				else if ((spell.getCombatBaseDamage () != null) || ((spell.getOverlandCastingCost () != null) &&
-					(spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ())))
+					(spell.getAttackSpellOverlandTarget () != null) && (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS)))
 					
 					kind = KindOfSpell.HEALING;
 				else

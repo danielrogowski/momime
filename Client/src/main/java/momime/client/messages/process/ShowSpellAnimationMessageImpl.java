@@ -19,7 +19,7 @@ import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.frames.CombatUI;
 import momime.common.database.AnimationEx;
-import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.Pick;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -97,7 +97,7 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 			
 			// Disenchant Area / True flash the screen white/blue just like adding a CAE
 			// Maybe need to loosen these conditions if we need to use this for other spells later on
-			else if ((spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.ALL_UNITS) && (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
+			else if ((spell.getAttackSpellCombatTarget () == AttackSpellTargetID.ALL_UNITS) && (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
 			{
 				if (spell.getSpellRealm () != null)
 				{

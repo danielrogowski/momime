@@ -66,6 +66,7 @@ import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.common.MomException;
 import momime.common.ai.ZoneAI;
 import momime.common.database.AnimationEx;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
@@ -949,7 +950,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 								
 								if (units.size () > 0)
 								{
-									if ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ()))
+									if ((spell.getAttackSpellOverlandTarget () != null) && (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS))
 									{
 										if (validUnits.size () > 0)
 										{

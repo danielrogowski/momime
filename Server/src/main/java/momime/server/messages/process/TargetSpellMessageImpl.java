@@ -17,6 +17,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.random.RandomUtils;
 
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSpellEffect;
@@ -173,7 +174,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (kind == KindOfSpell.ATTACK_UNITS) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (kind == KindOfSpell.RAISE_DEAD))
 		{
-			if ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ()))
+			if ((spell.getAttackSpellOverlandTarget () != null) && (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS))
 			{
 				// Target entire stack
 				if (getOverlandTargetUnitURN () != null)

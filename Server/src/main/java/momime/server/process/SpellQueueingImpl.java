@@ -18,7 +18,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
@@ -165,7 +165,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		else if ((combatLocation != null) && (combatTargetUnitURN == null) &&
 			((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
 			(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
-				(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
+				(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) && (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT))))
 		{
 			if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) && (spell.getSpellValidBorderTarget ().size () > 0) &&
 				(combatTargetLocation != null))
@@ -387,7 +387,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null)) ||
 				(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
 					(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) &&
-					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
+					(spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT))))
 			{
 				// (Note overland spells tend to have a lot less validation since we don't pick targets until they've completed casting - so the checks are done then)
 				// Verify that the chosen unit is a valid target for unit enchantments/curses (we checked above that a unit has chosen)

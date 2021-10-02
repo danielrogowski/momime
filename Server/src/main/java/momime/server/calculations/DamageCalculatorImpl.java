@@ -13,7 +13,7 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -115,7 +115,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
 		damageCalculationMsg.setAttackSkillID (attackSkillID);
 
-		if ((defenders.size () > 0) && ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT) ||
+		if ((defenders.size () > 0) && ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES)))
 			
 			damageCalculationMsg.setDefenderUnitURN (defenders.get (0).getUnitURN ());

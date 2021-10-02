@@ -58,6 +58,7 @@ import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
 import momime.common.database.LanguageText;
@@ -845,7 +846,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 				
 				final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "OverlandMapRightHandPanel");
-				final List<LanguageText> prompt = ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ())) ?
+				final List<LanguageText> prompt = ((spell.getAttackSpellOverlandTarget () != null) && (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS)) ?
 					section.getSpellTargetStackPrompt () : section.getSpellTargetPrompt ();
 						
 				String target = getLanguageHolder ().findDescription (prompt);
@@ -854,20 +855,21 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
 				{
-					List<LanguageText> targetype = getLanguages ().getSpellCasting ().getTargetTypeOverlandEnchantment ();
+					List<LanguageText> targetType = getLanguages ().getSpellCasting ().getTargetTypeOverlandEnchantment ();
 					if (spell.getAttackSpellCombatTarget () != null)
 						switch (spell.getAttackSpellCombatTarget ())
 						{
 							case SINGLE_UNIT:
-								targetype = getLanguages ().getSpellCasting ().getTargetTypeUnit ();
+								targetType = getLanguages ().getSpellCasting ().getTargetTypeUnit ();
 								break;
 								
 							case ALL_UNITS:
-								targetype = getLanguages ().getSpellCasting ().getTargetTypeLocation ();
+							case ALL_UNITS_AND_BUILDINGS:
+								targetType = getLanguages ().getSpellCasting ().getTargetTypeLocation ();
 								break;
 						}
 
-					target = target.replaceAll ("TARGET_TYPE", getLanguageHolder ().findDescription (targetype));
+					target = target.replaceAll ("TARGET_TYPE", getLanguageHolder ().findDescription (targetType));
 				}
 				
 				targetSpellText.setText (target);

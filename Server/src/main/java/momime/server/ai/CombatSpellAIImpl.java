@@ -13,7 +13,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.WeightedChoices;
 
 import momime.common.MomException;
-import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -134,7 +134,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 				if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
 					(spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) ||
 					(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
-						(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
+						(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) && (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT)))
 					
 					targetCount = null;		// Targetted at a specific unit, so do not keep a count of targets
 				else

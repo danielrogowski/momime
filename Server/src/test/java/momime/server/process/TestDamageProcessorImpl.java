@@ -25,7 +25,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.database.AttackResolution;
 import momime.common.database.AttackResolutionStep;
-import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -492,7 +492,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
-		spell.setAttackSpellCombatTarget (AttackSpellCombatTargetID.SINGLE_UNIT);
+		spell.setAttackSpellCombatTarget (AttackSpellTargetID.SINGLE_UNIT);
 		
 		// Damage from spell
 		final DamageCalculator calc = mock (DamageCalculator.class);
@@ -652,7 +652,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
-		spell.setAttackSpellCombatTarget (AttackSpellCombatTargetID.ALL_UNITS);
+		spell.setAttackSpellCombatTarget (AttackSpellTargetID.ALL_UNITS);
 		
 		// Damage from spell
 		final DamageCalculator calc = mock (DamageCalculator.class);

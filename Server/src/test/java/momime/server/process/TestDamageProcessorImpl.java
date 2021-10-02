@@ -46,6 +46,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
@@ -217,7 +218,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, null, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
+		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
 			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
@@ -390,7 +391,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, null, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
+		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
@@ -497,7 +498,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final DamageCalculator calc = mock (DamageCalculator.class);
 		final DamageType damageType = new DamageType (); 
 		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
-		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
+		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db, SpellCastType.COMBAT)).thenReturn (spellDamage);
 
 		// Damage taken
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1);
@@ -529,7 +530,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, spellDamage, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
+		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
 			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
@@ -657,7 +658,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final DamageCalculator calc = mock (DamageCalculator.class);
 		final DamageType damageType = new DamageType ();
 		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
-		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
+		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db, SpellCastType.COMBAT)).thenReturn (spellDamage);
 
 		// Damage taken
 		when (xuDefender1.calculateAliveFigureCount ()).thenReturn (1);
@@ -704,7 +705,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, spellDamage, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
+		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
 			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent

@@ -56,7 +56,7 @@ public interface AttackResolutionProcessing
 	 * @param defender Unit being attacked
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
-	 * @param combatLocation Location the combat is taking place
+	 * @param combatLocation Location the combat is taking place; null if its damage from an overland spell
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
 	 * @param commonPotentialDamageToDefenders This damage is applied to the defender if any "null" entries are encountered in the steps list (used for spell damage)
 	 * @param players Players list

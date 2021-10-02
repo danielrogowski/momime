@@ -1123,7 +1123,9 @@ hit units at once, so that the animation shows all units being hit at once, rath
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defenderDirection" type="map:mapDirection" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="defenderDirection" type="map:mapDirection">
+			    <xsd:annotation><xsd:documentation>May be null if the damage is an overland attack and the unit isn't even in combat, so has no direction.</xsd:documentation></xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="defenderUnitDamage" type="momimemsgs:unitDamage" />
 		</xsd:sequence>
 	</xsd:complexType>

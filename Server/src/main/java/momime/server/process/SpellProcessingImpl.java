@@ -77,6 +77,7 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
@@ -287,6 +288,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else if ((sectionID == SpellBookSectionID.CITY_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
 			(sectionID == SpellBookSectionID.CITY_CURSES) || (sectionID == SpellBookSectionID.UNIT_CURSES) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
 			(sectionID == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS) ||
+			(sectionID == SpellBookSectionID.ATTACK_SPELLS) ||
 			(sectionID == SpellBookSectionID.SUMMONING) || (sectionID == SpellBookSectionID.ENEMY_WIZARD_SPELLS) || (kind == KindOfSpell.RAISE_DEAD))
 		{
 			// Add it on server - note we add it without a target chosen and without adding it on any
@@ -448,7 +450,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					addUnitSpell = true;
 				else
 					addUnitSpell = getDamageProcessor ().makeResistanceRoll ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
-						targetUnit, attackingPlayer, defendingPlayer, spell, variableDamage, castingPlayer, mom);
+						targetUnit, attackingPlayer, defendingPlayer, spell, variableDamage, castingPlayer, SpellCastType.COMBAT, mom);
 				
 				if (addUnitSpell)
 				{
@@ -736,7 +738,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 								getUnitServerUtils ().healDamage (tu.getUnitDamage (), heal, false);
 						}
 						
-						getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, attackingPlayer, defendingPlayer,
+						getFogOfWarMidTurnChanges ().sendDamageToClients (null, attackingPlayer, defendingPlayer,
 							targetUnits, null, spell.getSpellID (), null, null, null, mom.getPlayers (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 					}
@@ -970,7 +972,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 		
 		if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.ENEMY_WIZARD_SPELLS) || (kind == KindOfSpell.CHANGE_UNIT_ID))
+			(spell.getSpellBookSectionID () == SpellBookSectionID.ENEMY_WIZARD_SPELLS) || (kind == KindOfSpell.CHANGE_UNIT_ID) ||
+			(spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS))
 		{
 			// Transient spell that performs some immediate action, then the temporary untargeted spell on the server gets removed
 			// So the spell never does get added to any clients
@@ -1316,6 +1319,33 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				// Create new unit
 				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, unitLocation, false, mom);
+			}
+			
+			else if (kind == KindOfSpell.ATTACK_UNITS)
+			{
+				final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+				PlayerServerDetails defendingPlayer = null;
+				
+				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE))
+					{
+						final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						
+						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+						{
+							targetUnits.add (tu);
+							
+							if (defendingPlayer == null)
+								defendingPlayer = (PlayerServerDetails) thisTarget.getOwningPlayer ();
+						}
+					}
+				
+				if (targetUnits.size () > 0)
+					getDamageProcessor ().resolveAttack (null, targetUnits, castingPlayer, defendingPlayer,
+						null, null, null, null, spell, maintainedSpell.getVariableDamage (), castingPlayer, null, mom);
 			}
 		}
 

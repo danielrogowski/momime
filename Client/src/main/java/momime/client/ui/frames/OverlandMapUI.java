@@ -70,6 +70,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileSetEx;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
@@ -82,6 +83,8 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KindOfSpell;
+import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -167,9 +170,15 @@ public final class OverlandMapUI extends MomClientFrameUI
 	
 	/** Zone AI */
 	private ZoneAI zoneAI;
+
+	/** UI for displaying damage calculations */
+	private DamageCalculationsUI damageCalculationsUI;
 	
 	/** Operations for 3D boolean map areas */
 	private BooleanMapAreaOperations3D booleanMapAreaOperations3D;
+
+	/** Kind of spell utils */
+	private KindOfSpellUtils kindOfSpellUtils;
 	
 	/** Unit stack that's in the middle of moving from one cell to another */
 	private MoveUnitStackOverlandMessageImpl unitStackMoving;
@@ -287,6 +296,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 		final BufferedImage topBarOptionsNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/optionsNormal.png");
 		final BufferedImage topBarOptionsPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/optionsPressed.png");
 
+		final BufferedImage calculatorButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/calculatorNormal.png");
+		final BufferedImage calculatorButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/calculatorPressed.png");
+		
 		// Actions
 		gameAction = new LoggingAction ((ev) -> {});
 		spellsAction = new LoggingAction ((ev) -> getSpellBookUI ().setVisible (true));
@@ -755,6 +767,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 				sceneryPanel.repaint ();
 			}
 		});
+
+		final Action toggleDamageCalculationsAction = new LoggingAction
+			((ev) -> getDamageCalculationsUI ().setVisible (!getDamageCalculationsUI ().isVisible ()));
 		
 		// Set up the row of gold buttons along the top
 		mapButtonBar.setLayout (new GridBagLayout ());
@@ -787,21 +802,24 @@ public final class OverlandMapUI extends MomClientFrameUI
 		mapButtonBar.add (getUtils ().createImageButton (infoAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
 			topBarInfoNormal, topBarInfoPressed, topBarInfoNormal), getUtils ().createConstraintsNoFill (9, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
+		mapButtonBar.add (getUtils ().createImageButton (toggleDamageCalculationsAction, null, null, null,
+			calculatorButtonNormal, calculatorButtonPressed, calculatorButtonNormal), getUtils ().createConstraintsNoFill (10, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		
 		mapButtonBar.add (getUtils ().createImageButton (zoomInAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
-			topBarZoomInNormal, topBarZoomInPressed, topBarZoomInNormal), getUtils ().createConstraintsNoFill (10, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+			topBarZoomInNormal, topBarZoomInPressed, topBarZoomInNormal), getUtils ().createConstraintsNoFill (11, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			
 		mapButtonBar.add (getUtils ().createImageButton (zoomOutAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
-			topBarZoomOutNormal, topBarZoomOutPressed, topBarZoomOutNormal), getUtils ().createConstraintsNoFill (11, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+			topBarZoomOutNormal, topBarZoomOutPressed, topBarZoomOutNormal), getUtils ().createConstraintsNoFill (12, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 			
 		mapButtonBar.add (getUtils ().createImageButton (optionsAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (),
-			topBarOptionsNormal, topBarOptionsPressed, topBarOptionsNormal), getUtils ().createConstraintsNoFill (12, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+			topBarOptionsNormal, topBarOptionsPressed, topBarOptionsNormal), getUtils ().createConstraintsNoFill (13, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
-		final GridBagConstraints turnLabelConstraints = getUtils ().createConstraintsNoFill (13, 0, 1, 1, INSET, GridBagConstraintsNoFill.EAST);
+		final GridBagConstraints turnLabelConstraints = getUtils ().createConstraintsNoFill (14, 0, 1, 1, INSET, GridBagConstraintsNoFill.EAST);
 		turnLabelConstraints.weightx = 1;		// Right justify the label
 		turnLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		mapButtonBar.add (turnLabel, turnLabelConstraints);
 
-		mapButtonBar.add (Box.createRigidArea (new Dimension (7, 0)), getUtils ().createConstraintsNoFill (14, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		mapButtonBar.add (Box.createRigidArea (new Dimension (7, 0)), getUtils ().createConstraintsNoFill (15, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		
 		// Stop frame being shrunk smaller than this
 		getFrame ().setContentPane (contentPane);
@@ -856,135 +874,20 @@ public final class OverlandMapUI extends MomClientFrameUI
 						else if (getOverlandMapRightHandPanel ().getTop () == OverlandMapRightHandPanelTop.TARGET_SPELL)
 						{
 							final Spell spell = getClient ().getClientDB ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID (), "OverlandMapUI");
-							switch (spell.getSpellBookSectionID ())
-							{
-								case CITY_ENCHANTMENTS:
-								case CITY_CURSES:
-									// If there isn't even a city here then don't even display a message
-									if (mc.getCityData () != null)
-									{
-										// Use common routine to do all the validation
-										final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
-											(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
-											getClient ().getOurPlayerID (), mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-											getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (),
-											getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ());
-										
-										if (validTarget == TargetSpellResult.VALID_TARGET)
-										{
-											final TargetSpellMessage msg = new TargetSpellMessage ();
-											msg.setSpellID (spell.getSpellID ());
-											msg.setOverlandTargetLocation (mapLocation);
-											getClient ().getServerConnection ().sendMessageToServer (msg);
-											
-											// Close out the "Target Spell" right hand panel
-											getOverlandMapProcessing ().updateMovementRemaining ();
-										}
-										else
-										{
-											final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
-											
-											final String buildingName;
-											if (spell.getBuildingID () == null)
-												buildingName = "";
-											else
-												buildingName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (spell.getBuildingID (), "OverlandMapUI").getBuildingName ());
-											
-											final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getCityLanguageText (validTarget)).replaceAll
-												("SPELL_NAME", spellName).replaceAll ("BUILDING_NAME", buildingName);
-											
-											final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-											msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
-											msg.setText (text);
-											msg.setVisible (true);												
-										}
-									}
-									break;
+							final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
 							
-								// NB. There are no overland unit curses
-								case UNIT_ENCHANTMENTS:
-								case SPECIAL_UNIT_SPELLS:
-								{
-									// Find our units at this map location, and also check if they're valid targets
-									final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-									final List<ExpandedUnitDetails> validUnits = new ArrayList<ExpandedUnitDetails> ();
-									final Set<TargetSpellResult> invalidReasons = new HashSet<TargetSpellResult> ();
-									
-									for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-										if ((mapLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) &&
-											(mu.getOwningPlayerID () == getClient ().getOurPlayerID ()))
-										{
-											units.add (mu);
-											
-											final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
-												getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-											
-											final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
-												getClient ().getOurPlayerID (), null, null, xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-												getClient ().getPlayers (), getClient ().getClientDB ());
-											
-											if (validTarget == TargetSpellResult.VALID_TARGET)												
-												validUnits.add (xu);
-											else
-												invalidReasons.add (validTarget);
-										}
-									
-									if (units.size () > 0)
-									{
-										if ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ()))
-										{
-											if (validUnits.size () > 0)
-											{
-												// Aim spell at all units in this location
-												final TargetSpellMessage msg = new TargetSpellMessage ();
-												msg.setSpellID (spell.getSpellID ());
-												msg.setOverlandTargetLocation (mapLocation);
-												getClient ().getServerConnection ().sendMessageToServer (msg);
-												
-												// Close out the "Target Spell" right hand panel
-												getOverlandMapProcessing ().updateMovementRemaining ();
-											}
-											else
-											{
-												// There's units here, but none are suitable targets so reject it
-												final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
-												final StringBuilder text = new StringBuilder ();
-												for (final TargetSpellResult invalidReason : invalidReasons)
-												{
-													if (text.length () > 0)
-														text.append (System.lineSeparator ());
-													
-													text.append (getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getUnitLanguageText (invalidReason)).replaceAll
-														("SPELL_NAME", spellName));
-												}
-												
-												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-												msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
-												msg.setText (text.toString ());
-												msg.setVisible (true);												
-											}
-										}
-										else
-										{
-											// Pick a specific unit
-											final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
-											unitRowDisplay.setUnits (units);
-											unitRowDisplay.setTargetSpellID (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
-											unitRowDisplay.setVisible (true);
-										}
-									}
-									
-									break;
-								}
-
-								case SPECIAL_OVERLAND_SPELLS:
-								case DISPEL_SPELLS:
-								case SUMMONING:
+							// Spells aimed at cities
+							if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
+							{
+								// If there isn't even a city here then don't even display a message
+								if (mc.getCityData () != null)
 								{
 									// Use common routine to do all the validation
-									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, getClient ().getOurPlayerID (),
-										mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
+									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
+										(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
+										getClient ().getOurPlayerID (), mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (),
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
 									{
@@ -1000,21 +903,130 @@ public final class OverlandMapUI extends MomClientFrameUI
 									{
 										final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 										
-										final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getLocationLanguageText (validTarget)).replaceAll
-											("SPELL_NAME", spellName);
+										final String buildingName;
+										if (spell.getBuildingID () == null)
+											buildingName = "";
+										else
+											buildingName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (spell.getBuildingID (), "OverlandMapUI").getBuildingName ());
+										
+										final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getCityLanguageText (validTarget)).replaceAll
+											("SPELL_NAME", spellName).replaceAll ("BUILDING_NAME", buildingName);
 										
 										final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 										msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
 										msg.setText (text);
 										msg.setVisible (true);												
 									}
-									
-									break;
 								}
-								
-								default:
-									throw new MomException ("Clicking on the overland map to target a spell, but don't know what to do with spells from section " + spell.getSpellBookSectionID ());
 							}
+							
+							// Spells aimed at units
+							else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
+								(kind == KindOfSpell.ATTACK_UNITS))
+							{
+								// Find units at this map location, and also check if they're valid targets
+								final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+								final List<ExpandedUnitDetails> validUnits = new ArrayList<ExpandedUnitDetails> ();
+								final Set<TargetSpellResult> invalidReasons = new HashSet<TargetSpellResult> ();
+								
+								for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+									if ((mapLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
+									{
+										units.add (mu);
+										
+										final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+										
+										final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+											getClient ().getOurPlayerID (), null, null, xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+											getClient ().getPlayers (), getClient ().getClientDB ());
+										
+										if (validTarget == TargetSpellResult.VALID_TARGET)												
+											validUnits.add (xu);
+										else
+											invalidReasons.add (validTarget);
+									}
+								
+								if (units.size () > 0)
+								{
+									if ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ()))
+									{
+										if (validUnits.size () > 0)
+										{
+											// Aim spell at all units in this location
+											final TargetSpellMessage msg = new TargetSpellMessage ();
+											msg.setSpellID (spell.getSpellID ());
+											msg.setOverlandTargetLocation (mapLocation);
+											getClient ().getServerConnection ().sendMessageToServer (msg);
+											
+											// Close out the "Target Spell" right hand panel
+											getOverlandMapProcessing ().updateMovementRemaining ();
+										}
+										else
+										{
+											// There's units here, but none are suitable targets so reject it
+											final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
+											final StringBuilder text = new StringBuilder ();
+											for (final TargetSpellResult invalidReason : invalidReasons)
+											{
+												if (text.length () > 0)
+													text.append (System.lineSeparator ());
+												
+												text.append (getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getUnitLanguageText (invalidReason)).replaceAll
+													("SPELL_NAME", spellName));
+											}
+											
+											final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+											msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
+											msg.setText (text.toString ());
+											msg.setVisible (true);												
+										}
+									}
+									else
+									{
+										// Pick a specific unit
+										final UnitRowDisplayUI unitRowDisplay = getPrototypeFrameCreator ().createUnitRowDisplay ();
+										unitRowDisplay.setUnits (units);
+										unitRowDisplay.setTargetSpellID (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
+										unitRowDisplay.setVisible (true);
+									}
+								}
+							}
+							
+							// Spells aimed at a location
+							else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
+								(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
+							{
+								// Use common routine to do all the validation
+								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, getClient ().getOurPlayerID (),
+									mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
+								
+								if (validTarget == TargetSpellResult.VALID_TARGET)
+								{
+									final TargetSpellMessage msg = new TargetSpellMessage ();
+									msg.setSpellID (spell.getSpellID ());
+									msg.setOverlandTargetLocation (mapLocation);
+									getClient ().getServerConnection ().sendMessageToServer (msg);
+									
+									// Close out the "Target Spell" right hand panel
+									getOverlandMapProcessing ().updateMovementRemaining ();
+								}
+								else
+								{
+									final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
+									
+									final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getLocationLanguageText (validTarget)).replaceAll
+										("SPELL_NAME", spellName);
+									
+									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+									msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
+									msg.setText (text);
+									msg.setVisible (true);												
+								}
+							}
+							else
+								throw new MomException ("Clicking on the overland map to target a spell, but don't know what to do with spells from section " + spell.getSpellBookSectionID ());
 						}
 						
 						// Left clicking on a space to move a stack of units to - can only do this if its our turn
@@ -1883,6 +1895,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @return UI for displaying damage calculations
+	 */
+	public final DamageCalculationsUI getDamageCalculationsUI ()
+	{
+		return damageCalculationsUI;
+	}
+
+	/**
+	 * @param ui UI for displaying damage calculations
+	 */
+	public final void setDamageCalculationsUI (final DamageCalculationsUI ui)
+	{
+		damageCalculationsUI = ui;
+	}
+	
+	/**
 	 * @return Operations for 3D boolean map areas
 	 */
 	public final BooleanMapAreaOperations3D getBooleanMapAreaOperations3D ()
@@ -1896,6 +1924,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setBooleanMapAreaOperations3D (final BooleanMapAreaOperations3D op)
 	{
 		booleanMapAreaOperations3D = op;
+	}
+
+	/**
+	 * @return Kind of spell utils
+	 */
+	public final KindOfSpellUtils getKindOfSpellUtils ()
+	{
+		return kindOfSpellUtils;
+	}
+
+	/**
+	 * @param k Kind of spell utils
+	 */
+	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
+	{
+		kindOfSpellUtils = k;
 	}
 	
 	/**

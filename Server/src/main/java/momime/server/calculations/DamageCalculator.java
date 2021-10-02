@@ -19,6 +19,7 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.SpellCastType;
 import momime.server.process.AttackResolutionUnit;
 
 /**
@@ -94,6 +95,7 @@ public interface DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param db Lookup lists built over the XML database
+	 * @param castType Whether spell is being cast in combat or overland
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -101,7 +103,7 @@ public interface DamageCalculator
 	 * @throws MomException If there is a problem with the game logic
 	 */
 	public AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final ExpandedUnitDetails castingUnit,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db, final SpellCastType castType)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException;
 	
 	/**

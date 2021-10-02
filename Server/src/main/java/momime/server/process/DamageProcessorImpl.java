@@ -31,6 +31,7 @@ import momime.common.messages.MomCombatTile;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationWallData;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
@@ -89,7 +90,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
-	 * @param combatLocation Where the combat is taking place
+	 * @param combatLocation Where the combat is taking place; null if its damage from an overland spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the attack resulted in the combat ending
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -131,10 +132,11 @@ public final class DamageProcessorImpl implements DamageProcessor
 			commonPotentialDamageToDefenders = null;
 		else
 			commonPotentialDamageToDefenders = getDamageCalculator ().attackFromSpell
-				(spell, variableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB ());
+				(spell, variableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
+					(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT);
 		
 		// Process our attack against each defender
-		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+		final ServerGridCellEx tc = (combatLocation == null) ? null : (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
@@ -245,7 +247,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// This includes both players involved in the combat (who will queue this up as an animation), and players who aren't involved in the combat but
 		// can see the units fighting (who will update the damage immediately).
 		// This also sends the number of combat movement points the attacker has left.
-		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, attackingPlayer, defendingPlayer,
+		// Must pass attacking/defendingPlayer as null if this is not combat damage, so overland damage isn't animated on clients.
+		getFogOfWarMidTurnChanges ().sendDamageToClients (attacker,
+			(combatLocation == null) ? null : attackingPlayer, (combatLocation == null) ? null : defendingPlayer,
 			defenders, attackSkillID, (spell == null) ? null : spell.getSpellID (),
 			specialDamageResolutionsApplied, wreckTilePosition, sendWrecked, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
@@ -367,6 +371,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param spell The spell being cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt
 	 * @param castingPlayer The player casting the spell
+	 * @param castType Whether spell is being cast in combat or overland
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the defender failed the resistance roll or not, i.e. true if something bad happens
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -378,7 +383,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	@Override
 	public final boolean makeResistanceRoll (final MemoryUnit attacker, final MemoryUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final MomSessionVariables mom)
+		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final SpellCastType castType, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
@@ -393,7 +398,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		
 		// Work out base saving throw plus any modifiers from hero items with -spell save
 		final AttackDamage potentialDamage = getDamageCalculator ().attackFromSpell
-			(spell, variableDamage, castingPlayer, xuUnitMakingAttack, attackingPlayer, defendingPlayer, mom.getServerDB ());
+			(spell, variableDamage, castingPlayer, xuUnitMakingAttack, attackingPlayer, defendingPlayer, mom.getServerDB (), castType);
 		
 		// Make the actual roll
 		// Now we know all the details about the type of attack, we can properly generate stats of the

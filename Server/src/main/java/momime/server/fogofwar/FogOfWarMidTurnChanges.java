@@ -377,7 +377,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void sendCombatDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public void sendDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<MemoryUnit> tuDefenders, final String attackSkillID, final String attackSpellID, final List<DamageResolutionTypeID> specialDamageResolutionsApplied,
 		final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)

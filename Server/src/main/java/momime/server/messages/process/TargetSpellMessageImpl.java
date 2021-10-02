@@ -170,7 +170,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 			}				
 		}
 		
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (kind == KindOfSpell.ATTACK_UNITS) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (kind == KindOfSpell.RAISE_DEAD))
 		{
 			if ((spell.isOverlandTargetsEntireStack () != null) && (spell.isOverlandTargetsEntireStack ()))
@@ -201,8 +201,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					final List<ExpandedUnitDetails> validUnits = new ArrayList<ExpandedUnitDetails> ();
 					
 					for (final MemoryUnit mu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-						if ((getOverlandTargetLocation ().equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) &&
-							(mu.getOwningPlayerID () == sender.getPlayerDescription ().getPlayerID ()))
+						if ((getOverlandTargetLocation ().equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
 						{
 							units.add (mu);
 							

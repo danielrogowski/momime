@@ -33,6 +33,7 @@ import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseValues;
@@ -320,6 +321,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param db Lookup lists built over the XML database
+	 * @param castType Whether spell is being cast in combat or overland
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -328,11 +330,18 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final ExpandedUnitDetails castingUnit,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db, final SpellCastType castType)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
 		// Work out damage done - note this isn't applicable to all types of attack, e.g. Warp Wood has no attack value, so we might get null here
-		Integer damage = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
+		Integer damage;
+		if (variableDamage != null)
+			damage = variableDamage;
+		else if (castType == SpellCastType.COMBAT)
+			damage = spell.getCombatBaseDamage ();
+		else
+			damage = spell.getOverlandBaseDamage ();
+		
 		final DamageType damageType = (spell.getAttackSpellDamageTypeID () == null) ? null : db.findDamageType (spell.getAttackSpellDamageTypeID (), "attackFromSpell");
 
 		// For spells that roll against resistance, add on any -spell save from hero items

@@ -15,6 +15,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryUnit;
+import momime.common.utils.SpellCastType;
 import momime.server.MomSessionVariables;
 
 /**
@@ -38,7 +39,7 @@ public interface DamageProcessor
 	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
-	 * @param combatLocation Where the combat is taking place
+	 * @param combatLocation Where the combat is taking place; null if its damage from an overland spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the attack resulted in the combat ending
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -64,6 +65,7 @@ public interface DamageProcessor
 	 * @param spell The spell being cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt
 	 * @param castingPlayer The player casting the spell
+	 * @param castType Whether spell is being cast in combat or overland
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the defender failed the resistance roll or not, i.e. true if something bad happens
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -74,7 +76,7 @@ public interface DamageProcessor
 	 */
 	public boolean makeResistanceRoll (final MemoryUnit attacker, final MemoryUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final MomSessionVariables mom)
+		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final SpellCastType castType, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
 	/**

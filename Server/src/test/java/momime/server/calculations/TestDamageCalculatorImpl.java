@@ -32,6 +32,7 @@ import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.process.AttackResolutionUnit;
@@ -592,7 +593,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		final PlayerServerDetails castingPlayer = attackingPlayer;
-		final AttackDamage dmg = calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db);
+		final AttackDamage dmg = calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db, SpellCastType.COMBAT);
 		
 		// Check results
 		assertEquals (12, dmg.getPotentialHits ().intValue ());
@@ -661,7 +662,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		final PlayerServerDetails castingPlayer = attackingPlayer;
-		final AttackDamage dmg = calc.attackFromSpell (spell, 20, castingPlayer, null, attackingPlayer, defendingPlayer, db);
+		final AttackDamage dmg = calc.attackFromSpell (spell, 20, castingPlayer, null, attackingPlayer, defendingPlayer, db, SpellCastType.COMBAT);
 		
 		// Check results
 		assertEquals (20, dmg.getPotentialHits ().intValue ());

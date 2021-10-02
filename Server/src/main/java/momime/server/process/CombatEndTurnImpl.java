@@ -37,6 +37,7 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellCastType;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -241,7 +242,8 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		if (unitsToRoll.size () > 0)
 		{
 			getDamageCalculator ().sendDamageHeader (null, defenders, attackingPlayer, defendingPlayer, null, terrorDef, castingPlayer);
-			final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell (terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB ());
+			final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell
+				(terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT);
 			
 			for (final ExpandedUnitDetails xu : unitsToRoll)
 				if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage))
@@ -358,7 +360,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		
 		// We are only regenerating - there is no animation for it - so just pass nulls for attackingPlayer + defendingPlayer
 		if (healedUnits.size () > 0)
-			getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, null, null,
+			getFogOfWarMidTurnChanges ().sendDamageToClients (null, null, null,
 				healedUnits, null, null, null, null, null, players, mem.getMap (), db, fogOfWarSettings);
 	}
 

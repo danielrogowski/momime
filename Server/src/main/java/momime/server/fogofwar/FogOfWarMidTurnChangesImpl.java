@@ -1214,7 +1214,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param attackSkillID Skill used to make the attack, e.g. for gaze or breath attacks
 	 * @param attackSpellID Spell used to make the attack
 	 * @param specialDamageResolutionsApplied List of special damage resolutions done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
-	 * @param wreckTilePosition If the tile was successfully wrecked, this is the position within the combat map of the wrecked tile; if no atk was made or it failed then null
+	 * @param wreckTilePosition If the tile was attacked directly with Wall Crusher skill, the location of the tile that was attacked
 	 * @param wrecked If the tile was attacked directly with Wall Crusher skill, whether the attempt was successful or not
 	 * @param players List of players in the session
 	 * @param trueTerrain True terrain map
@@ -1226,7 +1226,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void sendCombatDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public final void sendDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<MemoryUnit> tuDefenders, final String attackSkillID, final String attackSpellID, final List<DamageResolutionTypeID> specialDamageResolutionsApplied,
 		final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
@@ -1256,7 +1256,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if ((tuAttacker != null) && (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tuAttacker, trueTerrain, thisPlayer, db, fogOfWarSettings)))
 			{
 				// Update player's memory of attacker on server
-				final MemoryUnit muAttacker = getUnitUtils ().findUnitURN (tuAttacker.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-a");
+				final MemoryUnit muAttacker = getUnitUtils ().findUnitURN (tuAttacker.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendDamageToClients-a");
 				muAttacker.setCombatHeading (tuAttacker.getCombatHeading ());
 				muAttacker.setDoubleCombatMovesLeft (tuAttacker.getDoubleCombatMovesLeft ());
 
@@ -1284,7 +1284,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tuDefender, trueTerrain, thisPlayer, db, fogOfWarSettings))
 				{
 					// Update player's memory of defender on server
-					final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-d");
+					final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendDamageToClients-d");
 					muDefender.setCombatHeading (tuDefender.getCombatHeading ());
 
 					muDefender.getUnitDamage ().clear ();

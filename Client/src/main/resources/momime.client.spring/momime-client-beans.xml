@@ -1316,8 +1316,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="zoneAI" ref="zoneAI" />
+		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
+		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 	</bean>
 
 	<bean id="magicSlidersLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

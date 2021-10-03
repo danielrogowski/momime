@@ -454,6 +454,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="cityCalculations" ref="cityCalculations" />
 	</bean>
 
 	<bean id="addOrUpdateUnitMessage" class="momime.client.messages.process.AddOrUpdateUnitMessageImpl" scope="prototype">
@@ -1905,6 +1907,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityViewPanel" ref="cityViewPanel" />									<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 

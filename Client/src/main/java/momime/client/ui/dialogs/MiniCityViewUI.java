@@ -27,6 +27,7 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.messages.process.AddBuildingMessageImpl;
 import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
+import momime.client.messages.process.DestroyBuildingMessageImpl;
 import momime.client.messages.process.UpdateWizardStateMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.ChangeConstructionUI;
@@ -38,6 +39,7 @@ import momime.common.database.LanguageText;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.servertoclient.RenderCityData;
+import momime.common.utils.MemoryBuildingUtils;
 
 /**
  * Mini city screen, used to show spells and random effects.
@@ -71,7 +73,10 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
-	
+
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
+
 	/** The city being viewed, note this is optional and will be null when displaying Spell of Return animation */
 	private MapCoordinates3DEx cityLocation;
 
@@ -89,6 +94,9 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	
 	/** Building that we're displaying this popup for; null if we're not displaying a building */
 	private AddBuildingMessageImpl addBuildingMessage;
+
+	/** Building that we're showing being destroying; null if we're not destroying a building */
+	private DestroyBuildingMessageImpl destroyBuildingMessage;
 
 	/** Update wizard state message */
 	private UpdateWizardStateMessageImpl updateWizardStateMessage;
@@ -139,6 +147,9 @@ public final class MiniCityViewUI extends MomClientDialogUI
 						if (getAddBuildingMessage () != null)
 							getClient ().finishCustomDurationMessage (getAddBuildingMessage ());
 						
+						if (getDestroyBuildingMessage () != null)
+							getClient ().finishCustomDurationMessage (getDestroyBuildingMessage ());
+						
 						if (getUpdateWizardStateMessage () != null)
 							getClient ().finishCustomDurationMessage (getUpdateWizardStateMessage ());
 						
@@ -181,6 +192,8 @@ public final class MiniCityViewUI extends MomClientDialogUI
 			spellID = getAddSpellMessage ().getMaintainedSpell ().getSpellID ();
 		else if (getAddBuildingMessage () != null)
 			spellID = getAddBuildingMessage ().getBuildingsCreatedFromSpellID ();
+		else if (getDestroyBuildingMessage () != null)
+			spellID = getDestroyBuildingMessage ().getBuildingsDestroyedBySpellID ();
 		else if (getUpdateWizardStateMessage () != null)
 			spellID = CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN; 
 		
@@ -276,6 +289,18 @@ public final class MiniCityViewUI extends MomClientDialogUI
 				getRenderCityData ().getBuildingID ().add (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
 		}
 		
+		// Destroy buildings
+		if (getDestroyBuildingMessage () != null)
+			for (final Integer buildingURN : getDestroyBuildingMessage ().getBuildingURN ())
+			{
+				final MemoryBuilding building = getMemoryBuildingUtils ().findBuildingURN
+					(buildingURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "MiniCityViewUI (d)");
+				
+				getMemoryBuildingUtils ().removeBuildingURN (buildingURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ());
+				
+				getRenderCityData ().getBuildingID ().remove (building.getBuildingID ());
+			}
+		
 		if (getCityLocation () != null)
 		{
 			// If we've got a city screen open showing where the spell or building was added, may need to set up animation to display it
@@ -336,6 +361,11 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		{
 			spellID = getAddBuildingMessage ().getBuildingsCreatedFromSpellID ();
 			castingPlayerID = getAddBuildingMessage ().getBuildingCreationSpellCastByPlayerID ();
+		}
+		else if (getDestroyBuildingMessage () != null)
+		{
+			spellID = getDestroyBuildingMessage ().getBuildingsDestroyedBySpellID ();
+			castingPlayerID = getDestroyBuildingMessage ().getBuildingDestructionSpellCastByPlayerID ();
 		}
 		else if (getUpdateWizardStateMessage () != null)
 		{
@@ -500,6 +530,22 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	}
 	
 	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param mbu Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils mbu)
+	{
+		memoryBuildingUtils = mbu;
+	}
+	
+	/**
 	 * @return The city being viewed, note this is optional and will be null when displaying Spell of Return animation
 	 */
 	public final MapCoordinates3DEx getCityLocation ()
@@ -561,6 +607,22 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	public final void setAddBuildingMessage (final AddBuildingMessageImpl msg)
 	{
 		addBuildingMessage = msg;
+	}
+
+	/**
+	 * @return Building that we're showing being destroying; null if we're not destroying a building
+	 */
+	public final DestroyBuildingMessageImpl getDestroyBuildingMessage ()
+	{
+		return destroyBuildingMessage;
+	}
+
+	/**
+	 * @param msg Building that we're showing being destroying; null if we're not destroying a building
+	 */
+	public final void setDestroyBuildingMessage (final DestroyBuildingMessageImpl msg)
+	{
+		destroyBuildingMessage = msg;
 	}
 
 	/**

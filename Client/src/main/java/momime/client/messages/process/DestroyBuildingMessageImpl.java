@@ -14,13 +14,17 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 
 import momime.client.MomClient;
+import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.utils.MemoryBuildingUtils;
 
@@ -47,6 +51,12 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
 	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** City calculations */
+	private CityCalculations cityCalculations;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -67,6 +77,23 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 				
 				// Redraw the NTMs
 				getNewTurnMessagesUI ().languageChanged ();
+			}
+			
+			// If we cast it OR its our city, then display a popup window for it.
+			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getBuildingDestructionSpellLocation ().getZ ()).getRow ().get (getBuildingDestructionSpellLocation ().getY ()).getCell ().get (getBuildingDestructionSpellLocation ().getX ()).getCityData ();
+			
+			if (((getBuildingDestructionSpellCastByPlayerID () != null) && (getBuildingDestructionSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
+				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ())))
+			{
+				animated = true;
+				
+				final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
+				miniCityView.setCityLocation ((MapCoordinates3DEx) getBuildingDestructionSpellLocation ());
+				miniCityView.setRenderCityData (getCityCalculations ().buildRenderCityData ((MapCoordinates3DEx) getBuildingDestructionSpellLocation (),
+					getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ()));						
+				miniCityView.setDestroyBuildingMessage (this);
+				miniCityView.setVisible (true);
 			}
 		}
 		
@@ -222,5 +249,37 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
 	{
 		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
 	}
 }

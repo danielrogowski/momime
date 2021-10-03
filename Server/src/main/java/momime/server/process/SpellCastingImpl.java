@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -29,8 +30,10 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.common.messages.servertoclient.OverlandCastingInfoMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerUnitCalculations;
@@ -63,6 +66,9 @@ public final class SpellCastingImpl implements SpellCasting
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Damage processor */
+	private DamageProcessor damageProcessor;
 	
 	/**
 	 * Processes casting a summoning spell overland, finding where there is space for the unit to go and adding it
@@ -208,6 +214,50 @@ public final class SpellCastingImpl implements SpellCasting
 		
 		return info;
 	}
+	
+	/**
+	 * Processes casting an attack spell overland that hits all units in a stack (that are valid targets)
+	 * 
+	 * @param castingPlayer Player who cast the attack spell
+	 * @param spell Which attack spell they cast
+	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
+	 * @param targetLocation Location where the spell is aimed
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
+		final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+		PlayerServerDetails defendingPlayer = null;
+		
+		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+			if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE))
+			{
+				final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+					castingPlayer.getPlayerDescription ().getPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+				{
+					targetUnits.add (tu);
+					
+					if (defendingPlayer == null)
+						defendingPlayer = (PlayerServerDetails) thisTarget.getOwningPlayer ();
+				}
+			}
+		
+		if (targetUnits.size () > 0)
+			getDamageProcessor ().resolveAttack (null, targetUnits, castingPlayer, defendingPlayer,
+				null, null, null, null, spell, variableDamage, castingPlayer, null, mom);
+	}
 
 	/**
 	 * @return Unit utils
@@ -303,5 +353,21 @@ public final class SpellCastingImpl implements SpellCasting
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Damage processor
+	 */
+	public final DamageProcessor getDamageProcessor ()
+	{
+		return damageProcessor;
+	}
+
+	/**
+	 * @param proc Damage processor
+	 */
+	public final void setDamageProcessor (final DamageProcessor proc)
+	{
+		damageProcessor = proc;
 	}
 }

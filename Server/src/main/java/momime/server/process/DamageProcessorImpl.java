@@ -299,8 +299,13 @@ public final class DamageProcessorImpl implements DamageProcessor
 				{
 					tc.setAttackerSpecialFameLost (tc.getAttackerSpecialFameLost () + xuAttackingPlayerUnit.calculateFameLostForUnitDying ());
 					
-					final KillUnitActionID action = (getUnitServerUtils ().whatKilledUnit (attackingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT) ?
-						KillUnitActionID.PERMANENT_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
+					final KillUnitActionID action;
+					if (getUnitServerUtils ().whatKilledUnit (attackingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT)
+						action = KillUnitActionID.PERMANENT_DAMAGE;
+					else if (combatLocation != null)
+						action = KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
+					else
+						action = KillUnitActionID.HEALABLE_OVERLAND_DAMAGE;
 					
 					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, action,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
@@ -331,22 +336,29 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyDefendingPlayerUnitsSurvived = true;
 				else
 				{
-					tc.setDefenderSpecialFameLost (tc.getDefenderSpecialFameLost () + xuDefendingPlayerUnit.calculateFameLostForUnitDying ());
+					if ((tc != null) && (tc.getDefenderSpecialFameLost () != null))
+						tc.setDefenderSpecialFameLost (tc.getDefenderSpecialFameLost () + xuDefendingPlayerUnit.calculateFameLostForUnitDying ());
 					
-					final KillUnitActionID action = (getUnitServerUtils ().whatKilledUnit (defendingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT) ?
-						KillUnitActionID.PERMANENT_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
+					final KillUnitActionID action;
+					if (getUnitServerUtils ().whatKilledUnit (defendingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT)
+						action = KillUnitActionID.PERMANENT_DAMAGE;
+					else if (combatLocation != null)
+						action = KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
+					else
+						action = KillUnitActionID.HEALABLE_OVERLAND_DAMAGE;
 					
 					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, action,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 					
-					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,
-						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+					if (combatLocation != null)
+						getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,
+							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
 			}
 			
 			// If the defender is now wiped out, this is the last record we will ever have of who the defending player was, so we have to deal with tidying up the combat now.
 			// If attacker was also wiped out then we've already done this - the defender won by default.
-			if ((!combatEnded) && (!anyDefendingPlayerUnitsSurvived) &&
+			if ((!combatEnded) && (!anyDefendingPlayerUnitsSurvived) && (combatLocation != null) &&
 				(countUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0))
 			{
 				combatEnded = true;

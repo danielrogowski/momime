@@ -1322,37 +1322,16 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			else if (kind == KindOfSpell.ATTACK_UNITS)
-			{
-				final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
-				PlayerServerDetails defendingPlayer = null;
-				
-				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE))
-					{
-						final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
-							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
-						{
-							targetUnits.add (tu);
-							
-							if (defendingPlayer == null)
-								defendingPlayer = (PlayerServerDetails) thisTarget.getOwningPlayer ();
-						}
-					}
-				
-				if (targetUnits.size () > 0)
-					getDamageProcessor ().resolveAttack (null, targetUnits, castingPlayer, defendingPlayer,
-						null, null, null, null, spell, maintainedSpell.getVariableDamage (), castingPlayer, null, mom);
-			}
+				getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), targetLocation, mom);
 		}
 		
 		else if (kind == KindOfSpell.ATTACK_UNITS_AND_BUILDINGS)
 		{
 			// Earthquake attacking both units and buildings
 			// The unit deaths we just send.  The buildings being destroyed control the animation on the client.
+			getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), targetLocation, mom);
+			
+			// Now do the buildings
 			final List<MemoryBuilding> destroyedBuildings = new ArrayList<MemoryBuilding> ();
 			for (final MemoryBuilding thisBuilding : mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ())
 				if ((thisBuilding.getCityLocation ().equals (targetLocation)) &&

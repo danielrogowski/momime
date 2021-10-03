@@ -580,6 +580,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="damageProcessor" ref="damageProcessor" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">

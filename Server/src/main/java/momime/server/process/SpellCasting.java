@@ -58,4 +58,22 @@ public interface SpellCasting
 	 * @return Summary details about what the wizard is casting overland
 	 */
 	public OverlandCastingInfo createOverlandCastingInfo (final PlayerServerDetails player, final String ourSpellID);
+	
+	/**
+	 * Processes casting an attack spell overland that hits all units in a stack (that are valid targets)
+	 * 
+	 * @param castingPlayer Player who cast the attack spell
+	 * @param spell Which attack spell they cast
+	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
+	 * @param targetLocation Location where the spell is aimed
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
+		final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

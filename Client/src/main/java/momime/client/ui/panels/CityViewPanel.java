@@ -81,7 +81,7 @@ public final class CityViewPanel extends JPanel
 		String elementSetsDone = "";
 		
 		for (final CityViewElement element : getClient ().getClientDB ().getCityViewElement ())
-			if (drawElement (element, elementSetsDone))
+			if (drawElement (element, elementSetsDone) == DrawCityViewElement.YES)
 			{
 				// Register it, if its an animation
 				getAnim ().registerRepaintTrigger (element.getCityViewAnimation (), this, AnimationContainer.COMMON_XML);
@@ -140,7 +140,7 @@ public final class CityViewPanel extends JPanel
 							{
 								final CityViewElement element = iter.next ();
 	
-								if (drawElement (element, elementSetsDoneClick))
+								if (drawElement (element, elementSetsDoneClick) == DrawCityViewElement.YES)
 								{
 									// Ignore anything that isn't a building - we don't care if the e.g. river or some spell effect gets clicked on
 									if (element.getBuildingID () != null)
@@ -208,13 +208,19 @@ public final class CityViewPanel extends JPanel
 		String elementSetsDone = "";
 		
 		for (final CityViewElement element : getClient ().getClientDB ().getCityViewElement ())
-			if (drawElement (element, elementSetsDone))
+		{
+			final DrawCityViewElement draw = drawElement (element, elementSetsDone);
+			if (draw != DrawCityViewElement.NO)
 			{
 				// Draw it
 				try
 				{
-					final BufferedImage image = getAnim ().loadImageOrAnimationFrame (element.getCityViewImageFile (), element.getCityViewAnimation (),
-						true, AnimationContainer.COMMON_XML);
+					final BufferedImage image;
+					if (draw == DrawCityViewElement.RUBBLE)
+						image = getUtils ().loadImage ("/momime.client.graphics/cityView/buildings/rubble.png");
+					else
+						image = getAnim ().loadImageOrAnimationFrame (element.getCityViewImageFile (), element.getCityViewAnimation (),
+							true, AnimationContainer.COMMON_XML);
 					
 					g.drawImage (image, element.getLocationX (), element.getLocationY (),
 						image.getWidth () * element.getSizeMultiplier (), image.getHeight () * element.getSizeMultiplier (),
@@ -229,6 +235,7 @@ public final class CityViewPanel extends JPanel
 				if (element.getCityViewElementSetID () != null)
 					elementSetsDone = elementSetsDone + element.getCityViewElementSetID ();
 			}
+		}
 		
 		// Need to show a pending sale?
 		if (getCityLocation () != null)
@@ -255,16 +262,20 @@ public final class CityViewPanel extends JPanel
 	 * @param elementSetsDone List of element sets that we already drew an element for
 	 * @return Whether this element should be drawn, depending on what buildings etc. are in this city
 	 */
-	final boolean drawElement (final CityViewElement element, final String elementSetsDone)
+	final DrawCityViewElement drawElement (final CityViewElement element, final String elementSetsDone)
 	{
+		final DrawCityViewElement draw;
+
 		// Some special "buildings" list trade goods have no coordinates and hence are never drawn in the city view
-		return ((element.getLocationX () != null) && (element.getLocationY () != null) &&
+		if ((element.getLocationX () == null) || (element.getLocationY () == null))
+			draw = DrawCityViewElement.NO;
 		
-			// Once we've drawn an item from an element set, we never draw anything else from the same set 
-			((element.getCityViewElementSetID () == null) || (!elementSetsDone.contains (element.getCityViewElementSetID ()))) &&
+		// Once we've drawn an item from an element set, we never draw anything else from the same set
+		else if ((element.getCityViewElementSetID () != null) && (elementSetsDone.contains (element.getCityViewElementSetID ())))
+			draw = DrawCityViewElement.NO;
 			
-			// Plane matches?
-			((element.getPlaneNumber () == null) || (element.getPlaneNumber () == getRenderCityData ().getPlaneNumber ())) &&
+		// Plane matches?
+		else if (((element.getPlaneNumber () == null) || (element.getPlaneNumber () == getRenderCityData ().getPlaneNumber ())) &&
 			
 			// Terrain matches?
 			((element.getTileTypeID () == null) || (getRenderCityData ().getAdjacentTileTypeID ().contains (element.getTileTypeID ()))) &&
@@ -273,7 +284,18 @@ public final class CityViewPanel extends JPanel
 			((element.getBuildingID () == null) || (getRenderCityData ().getBuildingID ().contains (element.getBuildingID ()))) &&
 				
 			// Spell matches?
-			((element.getCitySpellEffectID () == null) || (getRenderCityData ().getCitySpellEffectID ().contains (element.getCitySpellEffectID ()))));
+			((element.getCitySpellEffectID () == null) || (getRenderCityData ().getCitySpellEffectID ().contains (element.getCitySpellEffectID ()))))
+			
+			draw = DrawCityViewElement.YES;
+		
+		// Rubbled building?
+		else if ((element.getBuildingID () != null) && (getRenderCityData ().getRubbleBuildingID ().contains (element.getBuildingID ())))
+			draw = DrawCityViewElement.RUBBLE;
+		
+		else
+			draw = DrawCityViewElement.NO;
+		
+		return draw;
 	}
 	
 	/**

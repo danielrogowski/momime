@@ -99,8 +99,10 @@ public final class LbxExtract
 			convertImage ("SPECFX.LBX", 11, n, "spells\\SP098\\cast-frame" + (n+1));
 		} */
 		
-		for (int n = 0; n <= 29; n++)
-			convertImage ("SPECFX.LBX", 10, n, "spells\\SP025\\cast-frame" + (n+1));
+		//for (int n = 0; n <= 29; n++)
+			//convertImage ("SPECFX.LBX", 10, n, "spells\\SP025\\cast-frame" + (n+1));
+		
+		convertImage ("CITYSCAP.LBX", 107, 0, "cityView\\buildings\\rubble");
 		
 		System.out.println ("All done!");
 	} 

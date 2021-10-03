@@ -1395,6 +1395,11 @@ potentially know nothing about.  So making a single data structure that's used f
 		    		<xsd:documentation>List of buildings in the city, not including the Wizard's Fortress and Summoning Circle which are about to be added.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rubbleBuildingID" type="momimecommon:buildingID">
+			    <xsd:annotation>
+		    		<xsd:documentation>List of buildings to show as rubble instead of the actual building.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectID" type="momimecommon:citySpellEffectID" />
 		</xsd:sequence>
 	</xsd:complexType>

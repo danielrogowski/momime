@@ -299,6 +299,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 				getMemoryBuildingUtils ().removeBuildingURN (buildingURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ());
 				
 				getRenderCityData ().getBuildingID ().remove (building.getBuildingID ());
+				getRenderCityData ().getRubbleBuildingID ().add (building.getBuildingID ());
 			}
 		
 		if (getCityLocation () != null)

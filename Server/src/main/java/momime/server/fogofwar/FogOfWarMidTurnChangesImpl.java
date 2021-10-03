@@ -1000,7 +1000,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param players List of players in the session, this can be passed in null for when buildings are being added to the map pre-game
 	 * @param cityLocation Location of the city to add the building(s) to
 	 * @param buildingIDs List of building IDs to create, mandatory
-	 * @param buildingCreatedFromSpellID The spell that resulted in the creation of this building (e.g. casting Wall of Stone creates City Walls); null if building was constructed in the normal way
+	 * @param buildingsCreatedFromSpellID The spell that resulted in the creation of this building (e.g. casting Wall of Stone creates City Walls); null if building was constructed in the normal way
 	 * @param buildingCreationSpellCastByPlayerID The player who cast the spell that resulted in the creation of this building; null if building was constructed in the normal way
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -1013,7 +1013,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	@Override
 	public final void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
 		final MapCoordinates3DEx cityLocation, final List<String> buildingIDs,
-		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
+		final String buildingsCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -1035,7 +1035,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			msg.getBuilding ().add (trueBuilding);
 		}
 
-		msg.setBuildingsCreatedFromSpellID (buildingCreatedFromSpellID);
+		msg.setBuildingsCreatedFromSpellID (buildingsCreatedFromSpellID);
 		msg.setBuildingCreationSpellCastByPlayerID (buildingCreationSpellCastByPlayerID);
 
 		// Check which players can see the building
@@ -1071,6 +1071,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param buildingURNs Which buildings to remove
 	 * @param updateBuildingSoldThisTurn If true, tells client to update the buildingSoldThisTurn flag, which will prevents this city from selling a 2nd building this turn
+	 * @param buildingsDestroyedBySpellID The spell that resulted in destroying these building(s), e.g. Earthquake; null if buildings destroyed for any other reason
+	 * @param buildingDestructionSpellCastByPlayerID The player who cast the spell that resulted in the destruction of these buildings; null if not from a spell
+	 * @param buildingDestructionSpellLocation The location the spell was targeted - need this because it might have destroyed 0 buildings; null if not from a spell
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -1082,6 +1085,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	@Override
 	public final void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final List<Integer> buildingURNs, final boolean updateBuildingSoldThisTurn,
+		final String buildingsDestroyedBySpellID, final Integer buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -1090,7 +1094,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<MapCoordinates3DEx> cityLocations = new ArrayList<MapCoordinates3DEx> ();
 		for (final Integer buildingURN : buildingURNs)
 		{
-			final MemoryBuilding trueBuilding = getMemoryBuildingUtils ().findBuildingURN (buildingURNs.get (0), trueMap.getBuilding (), "destroyBuildingOnServerAndClients");
+			final MemoryBuilding trueBuilding = getMemoryBuildingUtils ().findBuildingURN (buildingURN, trueMap.getBuilding (), "destroyBuildingOnServerAndClients");
 			trueBuildings.add (trueBuilding);
 			
 			final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) trueBuilding.getCityLocation ();
@@ -1099,6 +1103,11 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			
 			getMemoryBuildingUtils ().removeBuildingURN (buildingURN, trueMap.getBuilding ());
 		}		
+		
+		// Find who's city was targeted
+		final Integer targetedCityOwnerID = (buildingDestructionSpellLocation == null ) ? null : 
+			trueMap.getMap ().getPlane ().get (buildingDestructionSpellLocation.getZ ()) .getRow ().get
+				(buildingDestructionSpellLocation.getY ()).getCell ().get (buildingDestructionSpellLocation.getX ()).getCityData ().getCityOwnerID ();
 		
 		// Deal with each player individually - as the buildings may be in different cities, the lists we send to each player might be different
 		for (final PlayerServerDetails player : players)
@@ -1114,8 +1123,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
 				{
 					// Remove from player's memory on server
-					for (final Integer buildingURN : buildingURNs)
-						getMemoryBuildingUtils ().removeBuildingURN (buildingURN, priv.getFogOfWarMemory ().getBuilding ());
+					getMemoryBuildingUtils ().removeBuildingURN (trueBuilding.getBuildingURN (), priv.getFogOfWarMemory ().getBuilding ());
 	
 					// Send to client
 					if (msg != null)
@@ -1124,9 +1132,16 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 
 			// Send completed message
-			if ((msg != null) && (msg.getBuildingURN ().size () > 0))
+			// Usually don't bother sending an empty list, but if this is a from a spell that failed to actually destroy any buildings, then still have to
+			if ((msg != null) && ((msg.getBuildingURN ().size () > 0) ||
+				((buildingDestructionSpellCastByPlayerID != null) && (buildingDestructionSpellCastByPlayerID.equals (player.getPlayerDescription ().getPlayerID ()))) ||
+				((targetedCityOwnerID != null) && (targetedCityOwnerID.equals (player.getPlayerDescription ().getPlayerID ())))))
 			{
 				msg.setUpdateBuildingSoldThisTurn (updateBuildingSoldThisTurn);
+				msg.setBuildingsDestroyedBySpellID (buildingsDestroyedBySpellID);
+				msg.setBuildingDestructionSpellCastByPlayerID (buildingDestructionSpellCastByPlayerID);
+				msg.setBuildingDestructionSpellLocation (buildingDestructionSpellLocation);
+				
 				player.getConnection ().sendMessageToClient (msg);
 			}
 		}

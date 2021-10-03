@@ -11,12 +11,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
@@ -25,7 +27,7 @@ import momime.common.utils.MemoryBuildingUtils;
 /**
  * Server sends this to clients to tell them about a building destroyed (or sold) from a city
  */
-public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage implements BaseServerToClientMessage
+public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage implements CustomDurationServerToClientMessage
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (DestroyBuildingMessageImpl.class);
@@ -39,6 +41,12 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+
+	/** New turn messages UI */
+	private NewTurnMessagesUI newTurnMessagesUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -47,10 +55,31 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		processOneUpdate ();
+		// If its a city spell like Earthquake, show an animation for it and don't even remove the buildings yet - the animation handles that as well
+		boolean animated = false;
+		if (getBuildingDestructionSpellLocation () != null)
+		{
+			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+			if ((getBuildingDestructionSpellCastByPlayerID () != null) && (getBuildingDestructionSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ())) &&
+				(getOverlandMapRightHandPanel ().getTargetSpell () != null) && (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getBuildingsDestroyedBySpellID ())))
+			{
+				getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity ((MapCoordinates3DEx) getBuildingDestructionSpellLocation ());
+				
+				// Redraw the NTMs
+				getNewTurnMessagesUI ().languageChanged ();
+			}
+		}
 		
-		// Building may have been city walls and so affect the overland map view
-		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+		if (!animated)
+		{
+			processOneUpdate ();
+			
+			// Building may have been city walls and so affect the overland map view
+			getOverlandMapUI ().regenerateOverlandMapBitmaps ();
+			
+			// Don't halt processing of messages
+			getClient ().finishCustomDurationMessage (this);
+		}
 	}
 
 	/**
@@ -65,6 +94,9 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 			// Grab details about the building before we remove it
 			final MemoryBuilding building = getMemoryBuildingUtils ().findBuildingURN
 				(thisBuildingURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "DestroyBuildingMessageImpl");
+			
+			if (!cityLocations.contains (building.getCityLocation ()))
+				cityLocations.add ((MapCoordinates3DEx) building.getCityLocation ());
 			
 			// Remove building
 			getMemoryBuildingUtils ().removeBuildingURN (thisBuildingURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ());
@@ -102,6 +134,14 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 					log.error (e, e);
 				}
 		}
+	}
+	
+	/**
+	 * Nothing to do here when the message completes, because its all handled in MiniCityViewUI
+	 */
+	@Override
+	public final void finish ()
+	{
 	}
 	
 	/**
@@ -150,5 +190,37 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils mbu)
 	{
 		memoryBuildingUtils = mbu;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
+	}
+
+	/**
+	 * @return New turn messages UI
+	 */
+	public final NewTurnMessagesUI getNewTurnMessagesUI ()
+	{
+		return newTurnMessagesUI;
+	}
+
+	/**
+	 * @param ui New turn messages UI
+	 */
+	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
+	{
+		newTurnMessagesUI = ui;
 	}
 }

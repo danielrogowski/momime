@@ -777,7 +777,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());
 		assertEquals (3, cityData.getNumberOfRebels ());
 		
-		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, sd, db);
+		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, null, null, null, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
 			trueMap.getMaintainedSpell (), cityLocation, sd, db);
@@ -875,7 +875,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertNull (tc.getBuildingIdSoldThisTurn ());		// Isn't updated because it was a forced sale
 		assertEquals (3, cityData.getNumberOfRebels ());
 		
-		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), false, sd, db);
+		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), false, null, null, null, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
 			trueMap.getMaintainedSpell (), cityLocation, sd, db);
@@ -973,7 +973,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());
 		assertEquals (3, cityData.getNumberOfRebels ());
 		
-		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, sd, db);
+		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, null, null, null, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
 			trueMap.getMaintainedSpell (), cityLocation, sd, db);

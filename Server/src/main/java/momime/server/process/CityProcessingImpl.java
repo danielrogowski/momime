@@ -653,7 +653,7 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 
 			// Actually remove the building, both on the server and on any clients who can see the city
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (buildingURN), voluntarySale, sd, db);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (buildingURN), voluntarySale, null, null, null, sd, db);
 
 			// Give gold from selling it
 			final Building building = db.findBuilding (buildingID, "sellBuilding");
@@ -682,8 +682,9 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param buildingsToDestroy List of buildings to destroy, from server's true list
-	 * @param destroyedBySpellID What kind of spell destroyed the buildings
-	 * @param castingPlayerID Who cast the spell that destroyed the buildings
+	 * @param buildingsDestroyedBySpellID The spell that resulted in destroying these building(s), e.g. Earthquake; null if buildings destroyed for any other reason
+	 * @param buildingDestructionSpellCastByPlayerID The player who cast the spell that resulted in the destruction of these buildings; null if not from a spell
+	 * @param buildingDestructionSpellLocation The location the spell was targeted - need this because it might have destroyed 0 buildings; null if not from a spell
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -695,7 +696,7 @@ public final class CityProcessingImpl implements CityProcessing
 	@Override
 	public final void destroyBuildings (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
-		final String destroyedBySpellID, final int castingPlayerID,
+		final String buildingsDestroyedBySpellID, final int buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -749,8 +750,8 @@ public final class CityProcessingImpl implements CityProcessing
 				destroyedBuilding.setMsgType (NewTurnMessageTypeID.DESTROYED_BUILDING);
 				destroyedBuilding.setBuildingID (destroyBuilding.getBuildingID ());
 				destroyedBuilding.setCityLocation (destroyBuilding.getCityLocation ());
-				destroyedBuilding.setDestroyedBySpellID (destroyedBySpellID);
-				destroyedBuilding.setCastingPlayerID (castingPlayerID);
+				destroyedBuilding.setDestroyedBySpellID (buildingsDestroyedBySpellID);
+				destroyedBuilding.setCastingPlayerID (buildingDestructionSpellCastByPlayerID);
 				((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (destroyedBuilding);
 			}
 			
@@ -760,7 +761,8 @@ public final class CityProcessingImpl implements CityProcessing
 
 		// Actually remove the building, both on the server and on any clients who can see the city
 		final List<Integer> destroyBuildingURNs = buildingsToDestroy.stream ().map (b -> b.getBuildingURN ()).collect (Collectors.toList ());
-		getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyBuildingURNs, false, sd, db);
+		getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyBuildingURNs, false,
+			buildingsDestroyedBySpellID, buildingDestructionSpellCastByPlayerID, buildingDestructionSpellLocation, sd, db);
 		
 		// Recalculate all affected cities
 		for (final MapCoordinates3DEx cityLocation : affectedCities)
@@ -895,7 +897,7 @@ public final class CityProcessingImpl implements CityProcessing
 		}
 		
 		if (destroyedBuildingURNs.size () > 0)
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyedBuildingURNs, false, sd, db);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyedBuildingURNs, false, null, null, null, sd, db);
 		
 		// Deal with spells cast on the city:
 		// 1) Any spells the defender had cast on the city must be enchantments - which unfortunately we don't get - so cancel these
@@ -1051,7 +1053,7 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			if (summoningCircle != null)
 				getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-					Arrays.asList (summoningCircle.getBuildingURN ()), false, mom.getSessionDescription (), mom.getServerDB ());
+					Arrays.asList (summoningCircle.getBuildingURN ()), false, null, null, null, mom.getSessionDescription (), mom.getServerDB ());
 		}
 		
 		// Clean up defeated wizards

@@ -1187,7 +1187,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							
 							if (destroyedBuildings.size () > 0)
 								getCityProcessing ().destroyBuildings (mom.getGeneralServerKnowledge ().getTrueMap (),
-									mom.getPlayers (), destroyedBuildings, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
+									mom.getPlayers (), destroyedBuildings, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), null,
 									mom.getSessionDescription (), mom.getServerDB ());
 						}
 						
@@ -1348,6 +1348,25 @@ public final class SpellProcessingImpl implements SpellProcessing
 						null, null, null, null, spell, maintainedSpell.getVariableDamage (), castingPlayer, null, mom);
 			}
 		}
+		
+		else if (kind == KindOfSpell.ATTACK_UNITS_AND_BUILDINGS)
+		{
+			// Earthquake attacking both units and buildings
+			// The unit deaths we just send.  The buildings being destroyed control the animation on the client.
+			final List<MemoryBuilding> destroyedBuildings = new ArrayList<MemoryBuilding> ();
+			for (final MemoryBuilding thisBuilding : mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ())
+				if ((thisBuilding.getCityLocation ().equals (targetLocation)) &&
+					(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
+					(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) &&
+					(getRandomUtils ().nextInt (100) < 15))
+					
+					destroyedBuildings.add (thisBuilding);
+
+			// Have to do this even if 0 buildings got destroyed, as this is how the client knows to show the animation and clean up the NTM
+			getCityProcessing ().destroyBuildings (mom.getGeneralServerKnowledge ().getTrueMap (),
+				mom.getPlayers (), destroyedBuildings, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), targetLocation,
+				mom.getSessionDescription (), mom.getServerDB ());
+		}
 
 		else if (spell.getBuildingID () == null)
 		{
@@ -1422,7 +1441,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// Remove old buildings if we found any
 				if (buildingURNsToDestroy.size () > 0)
 					getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-						mom.getPlayers (), buildingURNsToDestroy, false, mom.getSessionDescription (), mom.getServerDB ());
+						mom.getPlayers (), buildingURNsToDestroy, false, null, null, null, mom.getSessionDescription (), mom.getServerDB ());
 			}
 
 			// Is the building that the spell is adding the same as what was being constructed?  If so then reset construction.
@@ -1454,7 +1473,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 			}
 
-			// First create the building(s) on the server
+			// Finally actually create the building(s)
 			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
 				mom.getPlayers (), targetLocation, buildingIDsToAdd, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
 				mom.getSessionDescription (), mom.getServerDB ());

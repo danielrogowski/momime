@@ -263,7 +263,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			(b -> cityLocation.equals (b.getCityLocation ())).map (b -> b.getBuildingURN ()).collect (Collectors.toList ());
 
 		if (buildingURNs.size () > 0)
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, buildingURNs, false, sd, db);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, buildingURNs, false, null, null, null, sd, db);
 	}
 	
 	/**

@@ -928,6 +928,12 @@ come into view (i.e. sent as part of 'visible area changed').</xsd:documentation
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="buildingsDestroyedBySpellID" type="momimecommon:spellID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="buildingDestructionSpellCastByPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="buildingDestructionSpellLocation" type="map:mapCoordinates3D">
+						    <xsd:annotation>
+			    				<xsd:documentation>If we cast Earthquake and it fails to actually destroy any buildings, the client still needs to know where the
+attempt was made so it can display the animation and clean up the targeting NTM.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingURN" type="momimemsgs:buildingURN" />
 					</xsd:sequence>
 				</xsd:extension>

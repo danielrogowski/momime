@@ -62,7 +62,7 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		// If its a city spell, show an animation for it and don't even add the spell yet - the animation handles that as well
+		// If its a city spell, show an animation for it and don't even add the building yet - the animation handles that as well
 		boolean animated = false;
 		if (getBuildingsCreatedFromSpellID () != null)
 		{
@@ -114,8 +114,7 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 			getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 	
 			// Don't halt processing of messages
-			getClient ().finishCustomDurationMessage (this);
-			
+			getClient ().finishCustomDurationMessage (this);			
 		}
 	}
 

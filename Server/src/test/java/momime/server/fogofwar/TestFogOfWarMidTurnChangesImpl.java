@@ -2494,7 +2494,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		midTurn.destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (trueBuilding.getBuildingURN ()), false, sd, db);
+		midTurn.destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (trueBuilding.getBuildingURN ()), false, null, null, null, sd, db);
 		
 		// Prove that building got removed from server's true map
 		verify (buildingUtils, times (1)).removeBuildingURN (trueBuilding.getBuildingURN (), trueMap.getBuilding ());

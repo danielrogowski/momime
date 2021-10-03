@@ -486,7 +486,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) && (cityData.getCityOwnerID () != castingPlayerID))
     		result = TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY; 
 
-    	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES) && (cityData.getCityOwnerID () == castingPlayerID))
+    	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES) || (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS))
+    		&& (cityData.getCityOwnerID () == castingPlayerID))
     		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
     	
     	// Is it a spell that creates a building?
@@ -497,6 +498,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else
     			result = TargetSpellResult.VALID_TARGET;
     	}
+    	
+    	// Attack spells don't need citySpellEffectIDs, so at this point those are done
+    	else if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
+    		result = TargetSpellResult.VALID_TARGET;
+    	
     	else
     	{
     		// Now check citySpellEffectIDs

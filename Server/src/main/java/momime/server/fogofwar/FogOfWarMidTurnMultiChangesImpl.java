@@ -34,7 +34,6 @@ import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -260,13 +259,11 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		// Better copy the list of buildings, since we'll be removing them as we go along
-		final List<MemoryBuilding> copyOfBuildingsList = new ArrayList<MemoryBuilding> ();
-		copyOfBuildingsList.addAll (trueMap.getBuilding ());
-		
-		for (final MemoryBuilding trueBuilding : copyOfBuildingsList)
-			if (cityLocation.equals (trueBuilding.getCityLocation ()))
-				getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, trueBuilding.getBuildingURN (), false, sd, db);
+		final List<Integer> buildingURNs = trueMap.getBuilding ().stream ().filter
+			(b -> cityLocation.equals (b.getCityLocation ())).map (b -> b.getBuildingURN ()).collect (Collectors.toList ());
+
+		if (buildingURNs.size () > 0)
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, buildingURNs, false, sd, db);
 	}
 	
 	/**

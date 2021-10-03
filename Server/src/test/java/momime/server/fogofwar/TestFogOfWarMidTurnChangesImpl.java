@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -2194,7 +2195,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		midTurn.addBuildingOnServerAndClients (gsk, players, new MapCoordinates3DEx (20, 10, 1), "BL03", null, null, null, sd, db);
+		midTurn.addBuildingOnServerAndClients (gsk, players, new MapCoordinates3DEx (20, 10, 1), Arrays.asList ("BL03"), null, null, sd, db);
 		
 		// Prove that building got added to server's true map
 		assertEquals (1, trueMap.getBuilding ().size ());
@@ -2231,11 +2232,11 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 					assertEquals (1, conn.getMessages ().size ());
 					
 					final AddBuildingMessage msg = (AddBuildingMessage) conn.getMessages ().get (0);
-					assertEquals (new MapCoordinates3DEx (20, 10, 1), msg.getFirstBuilding ().getCityLocation ());
-					assertEquals ("BL03", msg.getFirstBuilding ().getBuildingID ());
-					assertEquals (1, msg.getFirstBuilding ().getBuildingURN ());
-					assertNull (msg.getSecondBuilding ());
-					assertNull (msg.getBuildingCreatedFromSpellID ());
+					assertEquals (1, msg.getBuilding ().size ());
+					assertEquals (new MapCoordinates3DEx (20, 10, 1), msg.getBuilding ().get (0).getCityLocation ());
+					assertEquals ("BL03", msg.getBuilding ().get (0).getBuildingID ());
+					assertEquals (1, msg.getBuilding ().get (0).getBuildingURN ());
+					assertNull (msg.getBuildingsCreatedFromSpellID ());
 					assertNull (msg.getBuildingCreationSpellCastByPlayerID ());
 				}
 			}
@@ -2337,7 +2338,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		midTurn.addBuildingOnServerAndClients (gsk, players, new MapCoordinates3DEx (20, 10, 1), "BL03", "BL04", "SP001", 2, sd, db);
+		midTurn.addBuildingOnServerAndClients (gsk, players, new MapCoordinates3DEx (20, 10, 1), Arrays.asList ("BL03", "BL04"), "SP001", 2, sd, db);
 		
 		// Prove that both buildings got added to server's true map
 		assertEquals (2, trueMap.getBuilding ().size ());
@@ -2380,13 +2381,14 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 					assertEquals (1, conn.getMessages ().size ());
 					
 					final AddBuildingMessage msg = (AddBuildingMessage) conn.getMessages ().get (0);
-					assertEquals (new MapCoordinates3DEx (20, 10, 1), msg.getFirstBuilding ().getCityLocation ());
-					assertEquals ("BL03", msg.getFirstBuilding ().getBuildingID ());
-					assertEquals (1, msg.getFirstBuilding ().getBuildingURN ());
-					assertEquals (new MapCoordinates3DEx (20, 10, 1), msg.getSecondBuilding ().getCityLocation ());
-					assertEquals ("BL04", msg.getSecondBuilding ().getBuildingID ());
-					assertEquals (2, msg.getSecondBuilding ().getBuildingURN ());
-					assertEquals ("SP001", msg.getBuildingCreatedFromSpellID ());
+					assertEquals (2, msg.getBuilding ().size ());
+					assertEquals (new MapCoordinates3DEx (20, 10, 1), msg.getBuilding ().get (0).getCityLocation ());
+					assertEquals ("BL03", msg.getBuilding ().get (0).getBuildingID ());
+					assertEquals (1, msg.getBuilding ().get (0).getBuildingURN ());
+					assertEquals (new MapCoordinates3DEx (20, 10, 1), msg.getBuilding ().get (1).getCityLocation ());
+					assertEquals ("BL04", msg.getBuilding ().get (1).getBuildingID ());
+					assertEquals (2, msg.getBuilding ().get (1).getBuildingURN ());
+					assertEquals ("SP001", msg.getBuildingsCreatedFromSpellID ());
 					assertEquals (2, msg.getBuildingCreationSpellCastByPlayerID ().intValue ());
 				}
 			}
@@ -2492,7 +2494,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		midTurn.destroyBuildingOnServerAndClients (trueMap, players, trueBuilding.getBuildingURN (), false, sd, db);
+		midTurn.destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (trueBuilding.getBuildingURN ()), false, sd, db);
 		
 		// Prove that building got removed from server's true map
 		verify (buildingUtils, times (1)).removeBuildingURN (trueBuilding.getBuildingURN (), trueMap.getBuilding ());
@@ -2518,7 +2520,8 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 					assertEquals (1, conn.getMessages ().size ());
 					
 					final DestroyBuildingMessage msg = (DestroyBuildingMessage) conn.getMessages ().get (0);
-					assertEquals (trueBuilding.getBuildingURN (), msg.getBuildingURN ());
+					assertEquals (1, msg.getBuildingURN ().size ());
+					assertEquals (trueBuilding.getBuildingURN (), msg.getBuildingURN ().get (0).intValue ());
 					assertFalse (msg.isUpdateBuildingSoldThisTurn ());
 				}
 			}

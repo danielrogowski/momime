@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -337,8 +338,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), sd, db);
 		
 		// Check results
-		verify (single, times (0)).destroyBuildingOnServerAndClients (trueMap, players, 1, false, sd, db);
-		verify (single, times (1)).destroyBuildingOnServerAndClients (trueMap, players, 2, false, sd, db);
+		verify (single, times (1)).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (2), false, sd, db);
 	}
 	
 	/**

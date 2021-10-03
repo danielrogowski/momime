@@ -846,8 +846,15 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 				
 				final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "OverlandMapRightHandPanel");
-				final List<LanguageText> prompt = ((spell.getAttackSpellOverlandTarget () != null) && (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS)) ?
-					section.getSpellTargetStackPrompt () : section.getSpellTargetPrompt ();
+				
+				// Earthquake is an attack spell, but targeted at a city, so borrow the prompt text from city curses to save defining it twice
+				final List<LanguageText> prompt;
+				if ((spell.getAttackSpellOverlandTarget () != null) && (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS_AND_BUILDINGS))
+					prompt = getClient ().getClientDB ().findSpellBookSection (SpellBookSectionID.CITY_CURSES, "OverlandMapRightHandPanel (CC)").getSpellTargetPrompt ();
+				else if ((spell.getAttackSpellOverlandTarget () != null) && (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS))
+					prompt = section.getSpellTargetStackPrompt ();
+				else
+					prompt = section.getSpellTargetPrompt ();
 						
 				String target = getLanguageHolder ().findDescription (prompt);
 				

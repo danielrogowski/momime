@@ -71,6 +71,9 @@ public enum KindOfSpell
 	/** Spell is targeted only at walls */
 	ATTACK_WALLS,
 	
+	/** Spell hits both units and buildings (earthquake) so must be targeted at a city, it can't hit units just walking around the map */
+	ATTACK_UNITS_AND_BUILDINGS,
+	
 	/** Dispel spells that take over the spell */
 	SPELL_BINDING,
 	

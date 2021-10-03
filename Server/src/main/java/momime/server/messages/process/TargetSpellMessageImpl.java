@@ -120,7 +120,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		}
 		
 		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
+			(spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES) || (kind == KindOfSpell.ATTACK_UNITS_AND_BUILDINGS))
 		{
 			// Find the city we're aiming at
 			if (getOverlandTargetUnitURN () != null)
@@ -150,19 +150,24 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 				if (reason == TargetSpellResult.VALID_TARGET)
 				{
-					// Looks ok but weird if at this point we can't find a free skill ID
-					final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
-						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getOverlandTargetLocation ());
-					if ((spell.getBuildingID () == null) && ((citySpellEffectIDs == null) || (citySpellEffectIDs.size () == 0)))
-						error = "City is supposedly a valid target, yet couldn't find any citySpellEffectIDs to use or a building to create";
+					// Do we need to pick a citySpellEffectID?
+					if (kind == KindOfSpell.ATTACK_UNITS_AND_BUILDINGS)
+						error = null;
 					else
 					{
-						// Must be a valid target
-						// Choose an effect at random, unless this is a spell that creates a building
-						// In future this will need to be made choosable for Spell Ward
-						error = null;
-						if ((citySpellEffectIDs != null) && (citySpellEffectIDs.size () > 0))
-							citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
+						final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
+							(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getOverlandTargetLocation ());
+						if ((spell.getBuildingID () == null) && ((citySpellEffectIDs == null) || (citySpellEffectIDs.size () == 0)))
+							error = "City is supposedly a valid target, yet couldn't find any citySpellEffectIDs to use or a building to create";
+						else
+						{
+							// Must be a valid target
+							// Choose an effect at random, unless this is a spell that creates a building
+							// In future this will need to be made choosable for Spell Ward
+							error = null;
+							if ((citySpellEffectIDs != null) && (citySpellEffectIDs.size () > 0))
+								citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
+						}
 					}
 				}
 				else

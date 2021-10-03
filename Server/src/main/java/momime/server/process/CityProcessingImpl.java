@@ -1,6 +1,7 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -278,7 +279,7 @@ public final class CityProcessingImpl implements CityProcessing
 					// Wizards always get the same buildings (this also adds their Fortress & Summoning Circle)
 					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
-							getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, thisBuilding.getBuildingID (), null, null, null, sd, db);
+							getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, Arrays.asList (thisBuilding.getBuildingID ()), null, null, sd, db);
 				}
 				else
 				{
@@ -297,7 +298,7 @@ public final class CityProcessingImpl implements CityProcessing
 									ok = false;
 							
 							if (ok)
-								getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, thisBuilding.getBuildingID (), null, null, null, sd, db);
+								getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, Arrays.asList (thisBuilding.getBuildingID ()), null, null, sd, db);
 						}
 				}
 
@@ -488,7 +489,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 											// Now actually add the building - this will trigger the messages to be sent to the clients
 											getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, players, cityLocation,
-												building.getBuildingID (), null, null, null, sd, db);
+												Arrays.asList (building.getBuildingID ()), null, null, sd, db);
 										}
 
 										// Did we construct a unit?
@@ -652,7 +653,7 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 
 			// Actually remove the building, both on the server and on any clients who can see the city
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, buildingURN, voluntarySale, sd, db);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (buildingURN), voluntarySale, sd, db);
 
 			// Give gold from selling it
 			final Building building = db.findBuilding (buildingID, "sellBuilding");
@@ -753,13 +754,14 @@ public final class CityProcessingImpl implements CityProcessing
 				((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (destroyedBuilding);
 			}
 			
-			// Actually remove the building, both on the server and on any clients who can see the city
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyBuilding.getBuildingURN (), false, sd, db);
-			
 			// Recalculate city data later
 			affectedCities.add ((MapCoordinates3DEx) destroyBuilding.getCityLocation ());
 		}
 
+		// Actually remove the building, both on the server and on any clients who can see the city
+		final List<Integer> destroyBuildingURNs = buildingsToDestroy.stream ().map (b -> b.getBuildingURN ()).collect (Collectors.toList ());
+		getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyBuildingURNs, false, sd, db);
+		
 		// Recalculate all affected cities
 		for (final MapCoordinates3DEx cityLocation : affectedCities)
 		{
@@ -884,16 +886,16 @@ public final class CityProcessingImpl implements CityProcessing
 		final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
 		// Destroy enemy wizards' fortress and/or summoning circle
-		final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, CommonDatabaseConstants.BUILDING_FORTRESS);
-		final MemoryBuilding summoningCircle = getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
+		final List<Integer> destroyedBuildingURNs = new ArrayList<Integer> ();
+		for (final String buildingID : new String [] {CommonDatabaseConstants.BUILDING_FORTRESS, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE})
+		{
+			final MemoryBuilding destroyedBuilding = getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, buildingID);
+			if (destroyedBuilding != null)
+				destroyedBuildingURNs.add (destroyedBuilding.getBuildingURN ());
+		}
 		
-		if (wizardsFortress != null)
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players,
-				wizardsFortress.getBuildingURN (), false, sd, db);
-
-		if (summoningCircle != null)
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players,
-				summoningCircle.getBuildingURN (), false, sd, db);
+		if (destroyedBuildingURNs.size () > 0)
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyedBuildingURNs, false, sd, db);
 		
 		// Deal with spells cast on the city:
 		// 1) Any spells the defender had cast on the city must be enchantments - which unfortunately we don't get - so cancel these
@@ -1049,7 +1051,7 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			if (summoningCircle != null)
 				getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-					summoningCircle.getBuildingURN (), false, mom.getSessionDescription (), mom.getServerDB ());
+					Arrays.asList (summoningCircle.getBuildingURN ()), false, mom.getSessionDescription (), mom.getServerDB ());
 		}
 		
 		// Clean up defeated wizards
@@ -1168,7 +1170,7 @@ public final class CityProcessingImpl implements CityProcessing
 		
 		if (wizardsFortress != null)
 			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, players, (MapCoordinates3DEx) wizardsFortress.getCityLocation (),
-				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, null, null, null, sd, db);
+				Arrays.asList (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE), null, null, sd, db);
 	}
 
 	/**

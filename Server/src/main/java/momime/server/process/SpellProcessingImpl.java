@@ -973,7 +973,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.ENEMY_WIZARD_SPELLS) || (kind == KindOfSpell.CHANGE_UNIT_ID) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS))
+			(kind == KindOfSpell.ATTACK_UNITS))
 		{
 			// Transient spell that performs some immediate action, then the temporary untargeted spell on the server gets removed
 			// So the spell never does get added to any clients
@@ -1386,37 +1386,43 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			// Spell that creates a building instead of an effect, like "Wall of Stone" or "Move Fortress"
 			// Is it a type of building where we only ever have one of them, and need to remove the existing one?
-			String secondBuildingID = null;
+			final List<String> buildingIDsToAdd = new ArrayList<String> ();
+			buildingIDsToAdd.add (spell.getBuildingID ());
+			
 			if ((spell.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) ||
 				(spell.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)))
 			{
+				final List<Integer> buildingURNsToDestroy = new ArrayList<Integer> ();
+				
 				// Find & remove the main building for this spell
-				final MemoryBuilding destroyBuildingLocation = getMemoryBuildingUtils ().findCityWithBuilding
+				final MemoryBuilding mainDestroyedBuilding = getMemoryBuildingUtils ().findCityWithBuilding
 					(castingPlayer.getPlayerDescription ().getPlayerID (), spell.getBuildingID (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 				
-				if (destroyBuildingLocation != null)
-					getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-						mom.getPlayers (), destroyBuildingLocation.getBuildingURN (), false, mom.getSessionDescription (), mom.getServerDB ());
-					
+				if (mainDestroyedBuilding != null)
+					buildingURNsToDestroy.add (mainDestroyedBuilding.getBuildingURN ());
+				
 				// Move summoning circle as well if its in the same place as the wizard's fortress
 				if (spell.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS))
 				{
-					final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding
+					final MemoryBuilding secondaryDestroyedBuilding = getMemoryBuildingUtils ().findCityWithBuilding
 						(castingPlayer.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 						
-					if ((summoningCircleLocation != null) && (summoningCircleLocation.equals (destroyBuildingLocation)))
-						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getPlayers (), summoningCircleLocation.getBuildingURN (),
-							false, mom.getSessionDescription (), mom.getServerDB ());
-
+					if ((secondaryDestroyedBuilding != null) && (secondaryDestroyedBuilding.getCityLocation ().equals (mainDestroyedBuilding.getCityLocation ())))
+						buildingURNsToDestroy.add (secondaryDestroyedBuilding.getBuildingURN ());
+					
 					// Place a summoning circle as well if we just destroyed it OR if we never had one in the first place (Spell of Return)
-					if ((summoningCircleLocation == null) ||
-						((summoningCircleLocation != null) && (summoningCircleLocation.equals (destroyBuildingLocation))))
+					if ((secondaryDestroyedBuilding == null) ||
+						((secondaryDestroyedBuilding != null) && (secondaryDestroyedBuilding.getCityLocation ().equals (mainDestroyedBuilding.getCityLocation ()))))
 						
-						secondBuildingID = CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE;
+						buildingIDsToAdd.add (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
 				}
+				
+				// Remove old buildings if we found any
+				if (buildingURNsToDestroy.size () > 0)
+					getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+						mom.getPlayers (), buildingURNsToDestroy, false, mom.getSessionDescription (), mom.getServerDB ());
 			}
 
 			// Is the building that the spell is adding the same as what was being constructed?  If so then reset construction.
@@ -1450,7 +1456,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 			// First create the building(s) on the server
 			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
-				mom.getPlayers (), targetLocation, spell.getBuildingID (), secondBuildingID, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
+				mom.getPlayers (), targetLocation, buildingIDsToAdd, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
 				mom.getSessionDescription (), mom.getServerDB ());
 			
 			// Remove the maintained spell on the server (clients would never have gotten it to begin with)

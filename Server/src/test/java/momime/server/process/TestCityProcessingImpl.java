@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -409,11 +410,11 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Check buildings were added.
 		// Note players intentionally left as null so that building is only added on the server.
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, humanLocation, "BL01", null, null, null, sd, db);
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, aiLocation, "BL01", null, null, null, sd, db);
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersArcanusLocation, "BL02", null, null, null, sd, db);
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersMyrrorLocation, "BL02", null, null, null, sd, db);
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersMyrrorLocation, "BL03", null, null, null, sd, db);
+		verify (midTurn).addBuildingOnServerAndClients (gsk, null, humanLocation, Arrays.asList ("BL01"), null, null, sd, db);
+		verify (midTurn).addBuildingOnServerAndClients (gsk, null, aiLocation, Arrays.asList ("BL01"), null, null, sd, db);
+		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersArcanusLocation, Arrays.asList ("BL02"), null, null, sd, db);
+		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersMyrrorLocation, Arrays.asList ("BL02"), null, null, sd, db);
+		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersMyrrorLocation, Arrays.asList ("BL03"), null, null, sd, db);
 	}
 	
 	/**
@@ -664,7 +665,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, aiCity.getCurrentlyConstructingBuildingID ());
 		assertEquals (0, aiCity.getProductionSoFar ().intValue ());
 		
-		verify (midTurn, times (1)).addBuildingOnServerAndClients (gsk, players, aiLocation, "BL01", null, null, null, sd, db);
+		verify (midTurn, times (1)).addBuildingOnServerAndClients (gsk, players, aiLocation, Arrays.asList ("BL01"), null, null, sd, db);
 		
 		// Check raiders city
 		assertEquals (9000, raidersCity.getCityPopulation ());		// Not 9100, because its over the special Raiders cap
@@ -776,7 +777,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());
 		assertEquals (3, cityData.getNumberOfRebels ());
 		
-		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, granary.getBuildingURN (), true, sd, db);
+		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
 			trueMap.getMaintainedSpell (), cityLocation, sd, db);
@@ -874,7 +875,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertNull (tc.getBuildingIdSoldThisTurn ());		// Isn't updated because it was a forced sale
 		assertEquals (3, cityData.getNumberOfRebels ());
 		
-		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, granary.getBuildingURN (), false, sd, db);
+		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), false, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
 			trueMap.getMaintainedSpell (), cityLocation, sd, db);
@@ -972,7 +973,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());
 		assertEquals (3, cityData.getNumberOfRebels ());
 		
-		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, granary.getBuildingURN (), true, sd, db);
+		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
 			trueMap.getMaintainedSpell (), cityLocation, sd, db);

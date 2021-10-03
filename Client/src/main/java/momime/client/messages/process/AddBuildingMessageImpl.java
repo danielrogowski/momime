@@ -1,9 +1,17 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.ui.dialogs.MiniCityViewUI;
@@ -17,12 +25,6 @@ import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddBuildingMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 
 /**
  * Server sends this to clients to tell them about a building added to a city
@@ -62,38 +64,43 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	{
 		// If its a city spell, show an animation for it and don't even add the spell yet - the animation handles that as well
 		boolean animated = false;
-		if (getBuildingCreatedFromSpellID () != null)
+		if (getBuildingsCreatedFromSpellID () != null)
 		{
-			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
-			if ((getBuildingCreationSpellCastByPlayerID () != null) && (getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ())) &&
-				(getOverlandMapRightHandPanel ().getTargetSpell () != null) && (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getBuildingCreatedFromSpellID ())))
+			// Find which city(s) were changed
+			final List<MapCoordinates3DEx> cityLocations = getBuilding ().stream ().map (b -> (MapCoordinates3DEx) b.getCityLocation ()).distinct ().collect (Collectors.toList ());		
+			for (final MapCoordinates3DEx cityLocation : cityLocations)
 			{
-				getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity ((MapCoordinates3DEx) getFirstBuilding ().getCityLocation ());
-				
-				// Redraw the NTMs
-				getNewTurnMessagesUI ().languageChanged ();
-			}
-			
-			// If we cast it OR its our city, then display a popup window for it.
-			// Exception is Spell of Return - this adds buildings, and has a animation to display, but we need to display that even if we cannot
-			// see the city where the wizard is returning to (in which case we won't get the AddBuildingMessage).
-			// So that's handled from the UpdateWizardState message and not here.
-			if (!getBuildingCreatedFromSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
-			{
-				final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-					(getFirstBuilding ().getCityLocation ().getZ ()).getRow ().get (getFirstBuilding ().getCityLocation ().getY ()).getCell ().get (getFirstBuilding ().getCityLocation ().getX ()).getCityData ();
-				
-				if (((getBuildingCreationSpellCastByPlayerID () != null) && (getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
-					((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ())))
+				// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+				if ((getBuildingCreationSpellCastByPlayerID () != null) && (getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ())) &&
+					(getOverlandMapRightHandPanel ().getTargetSpell () != null) && (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getBuildingsCreatedFromSpellID ())))
 				{
-					animated = true;
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargetedCity (cityLocation);
 					
-					final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
-					miniCityView.setCityLocation ((MapCoordinates3DEx) getFirstBuilding ().getCityLocation ());
-					miniCityView.setRenderCityData (getCityCalculations ().buildRenderCityData ((MapCoordinates3DEx) getFirstBuilding ().getCityLocation (),
-						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ()));						
-					miniCityView.setBuildingMessage (this);
-					miniCityView.setVisible (true);
+					// Redraw the NTMs
+					getNewTurnMessagesUI ().languageChanged ();
+				}
+				
+				// If we cast it OR its our city, then display a popup window for it.
+				// Exception is Spell of Return - this adds buildings, and has a animation to display, but we need to display that even if we cannot
+				// see the city where the wizard is returning to (in which case we won't get the AddBuildingMessage).
+				// So that's handled from the UpdateWizardState message and not here.
+				if (!getBuildingsCreatedFromSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
+				{
+					final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+					
+					if (((getBuildingCreationSpellCastByPlayerID () != null) && (getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
+						((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ())))
+					{
+						animated = true;
+						
+						final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
+						miniCityView.setCityLocation (cityLocation);
+						miniCityView.setRenderCityData (getCityCalculations ().buildRenderCityData (cityLocation,
+							getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ()));						
+						miniCityView.setAddBuildingMessage (this);
+						miniCityView.setVisible (true);
+					}
 				}
 			}
 		}
@@ -118,33 +125,36 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	public final void processOneUpdate ()
 	{
 		// Add building(s)
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (firstBuilding);
-		if (getSecondBuilding () != null)
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (secondBuilding);
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().addAll (getBuilding ());
+
+		// Find which city(s) were changed
+		final List<MapCoordinates3DEx> cityLocations = getBuilding ().stream ().map (b -> (MapCoordinates3DEx) b.getCityLocation ()).distinct ().collect (Collectors.toList ());		
+		for (final MapCoordinates3DEx cityLocation : cityLocations)
+		{
+			// If we've got a city screen open showing this location, need to rebuild RenderCityData
+			final CityViewUI cityView = getClient ().getCityViews ().get (cityLocation.toString ());
+			if (cityView != null)
+				try
+				{
+					cityView.cityDataChanged ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}		
 		
-		// If we've got a city screen open showing this location, need to rebuild RenderCityData
-		final CityViewUI cityView = getClient ().getCityViews ().get (getFirstBuilding ().getCityLocation ().toString ());
-		if (cityView != null)
-			try
-			{
-				cityView.cityDataChanged ();
-			}
-			catch (final Exception e)
-			{
-				log.error (e, e);
-			}		
-		
-		// Addition of a building will alter what we can construct in that city, if we've got the change construction screen open
-		final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getFirstBuilding ().getCityLocation ().toString ());
-		if (changeConstruction != null)
-			try
-			{
-				changeConstruction.updateWhatCanBeConstructed ();
-			}
-			catch (final Exception e)
-			{
-				log.error (e, e);
-			}		
+			// Addition of a building will alter what we can construct in that city, if we've got the change construction screen open
+			final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (cityLocation.toString ());
+			if (changeConstruction != null)
+				try
+				{
+					changeConstruction.updateWhatCanBeConstructed ();
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+		}
 	}
 	
 	/**

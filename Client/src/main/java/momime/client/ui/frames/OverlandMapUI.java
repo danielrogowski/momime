@@ -878,7 +878,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 							final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
 							
 							// Spells aimed at cities
-							if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
+							if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) ||
+								(spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES) || (kind == KindOfSpell.ATTACK_UNITS_AND_BUILDINGS))
 							{
 								// If there isn't even a city here then don't even display a message
 								if (mc.getCityData () != null)

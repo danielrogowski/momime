@@ -17,7 +17,6 @@ import momime.client.MomClient;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
-import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -85,22 +84,16 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getAddBuilding ().size () > 0)
 		{
 			final AddBuildingMessageImpl proc = getFactory ().createAddBuildingMessage ();
-			for (final MemoryBuilding thisBuilding : getAddBuilding ())
-			{
-				proc.setFirstBuilding (thisBuilding);
-				proc.processOneUpdate ();
-			}
+			proc.getBuilding ().addAll (getAddBuilding ());
+			proc.processOneUpdate ();
 		}
 		
 		// Buildings destroyed or gone out of view
 		if (getDestroyBuilding ().size () > 0)
 		{
 			final DestroyBuildingMessageImpl proc = getFactory ().createDestroyBuildingMessage ();
-			for (final Integer thisBuildingURN : getDestroyBuilding ())
-			{
-				proc.setBuildingURN (thisBuildingURN);
-				proc.processOneUpdate ();
-			}
+			proc.getBuildingURN ().addAll (getDestroyBuilding ());
+			proc.processOneUpdate ();
 		}
 		
 		// Units added, changed or come into view

@@ -36,6 +36,7 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
 import momime.common.database.Spell;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.servertoclient.RenderCityData;
 
 /**
@@ -87,7 +88,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	private AddOrUpdateMaintainedSpellMessageImpl addSpellMessage;
 	
 	/** Building that we're displaying this popup for; null if we're not displaying a building */
-	private AddBuildingMessageImpl buildingMessage;
+	private AddBuildingMessageImpl addBuildingMessage;
 
 	/** Update wizard state message */
 	private UpdateWizardStateMessageImpl updateWizardStateMessage;
@@ -135,8 +136,8 @@ public final class MiniCityViewUI extends MomClientDialogUI
 						if (getAddSpellMessage () != null)
 							getClient ().finishCustomDurationMessage (getAddSpellMessage ());
 		
-						if (getBuildingMessage () != null)
-							getClient ().finishCustomDurationMessage (getBuildingMessage ());
+						if (getAddBuildingMessage () != null)
+							getClient ().finishCustomDurationMessage (getAddBuildingMessage ());
 						
 						if (getUpdateWizardStateMessage () != null)
 							getClient ().finishCustomDurationMessage (getUpdateWizardStateMessage ());
@@ -178,8 +179,8 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		String spellID = null;
 		if (getAddSpellMessage () != null)
 			spellID = getAddSpellMessage ().getMaintainedSpell ().getSpellID ();
-		else if (getBuildingMessage () != null)
-			spellID = getBuildingMessage ().getBuildingCreatedFromSpellID ();
+		else if (getAddBuildingMessage () != null)
+			spellID = getAddBuildingMessage ().getBuildingsCreatedFromSpellID ();
 		else if (getUpdateWizardStateMessage () != null)
 			spellID = CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN; 
 		
@@ -256,20 +257,13 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		}
 		
 		// May be up to two buildings to add
-		if (getBuildingMessage () != null)
+		if (getAddBuildingMessage () != null)
 		{
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (getBuildingMessage ().getFirstBuilding ());
-			
-			if (!getRenderCityData ().getBuildingID ().contains (getBuildingMessage ().getFirstBuilding ().getBuildingID ()))
-				getRenderCityData ().getBuildingID ().add (getBuildingMessage ().getFirstBuilding ().getBuildingID ());
-			
-			if (getBuildingMessage ().getSecondBuilding () != null)
-			{
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (getBuildingMessage ().getSecondBuilding ());
-				
-				if (!getRenderCityData ().getBuildingID ().contains (getBuildingMessage ().getSecondBuilding ().getBuildingID ()))
-					getRenderCityData ().getBuildingID ().add (getBuildingMessage ().getSecondBuilding ().getBuildingID ());
-			}
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().addAll (getAddBuildingMessage ().getBuilding ());
+
+			for (final MemoryBuilding thisBuilding : getAddBuildingMessage ().getBuilding ())
+				if (!getRenderCityData ().getBuildingID ().contains (thisBuilding.getBuildingID ()))
+					getRenderCityData ().getBuildingID ().add (thisBuilding.getBuildingID ());
 		}
 		
 		// Don't really add the buildings, just show them in the display
@@ -338,10 +332,10 @@ public final class MiniCityViewUI extends MomClientDialogUI
 			citySpellEffectID = getAddSpellMessage ().getMaintainedSpell ().getCitySpellEffectID ();
 			castingPlayerID = getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ();
 		}
-		else if (getBuildingMessage () != null)
+		else if (getAddBuildingMessage () != null)
 		{
-			spellID = getBuildingMessage ().getBuildingCreatedFromSpellID ();
-			castingPlayerID = getBuildingMessage ().getBuildingCreationSpellCastByPlayerID ();
+			spellID = getAddBuildingMessage ().getBuildingsCreatedFromSpellID ();
+			castingPlayerID = getAddBuildingMessage ().getBuildingCreationSpellCastByPlayerID ();
 		}
 		else if (getUpdateWizardStateMessage () != null)
 		{
@@ -556,17 +550,17 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/**
 	 * @return Building that we're displaying this popup for; null if we're not displaying a building
 	 */
-	public final AddBuildingMessageImpl getBuildingMessage ()
+	public final AddBuildingMessageImpl getAddBuildingMessage ()
 	{
-		return buildingMessage;
+		return addBuildingMessage;
 	}
 	
 	/**
 	 * @param msg Building that we're displaying this popup for; null if we're not displaying a building
 	 */
-	public final void setBuildingMessage (final AddBuildingMessageImpl msg)
+	public final void setAddBuildingMessage (final AddBuildingMessageImpl msg)
 	{
-		buildingMessage = msg;
+		addBuildingMessage = msg;
 	}
 
 	/**

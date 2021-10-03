@@ -67,6 +67,8 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 			case ATTACK_SPELLS:
 				if (spell.getSpellValidBorderTarget ().size () > 0)
 					kind = KindOfSpell.ATTACK_UNITS_AND_WALLS;
+				else if ((spell.getAttackSpellOverlandTarget () != null) && (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS_AND_BUILDINGS))
+					kind = KindOfSpell.ATTACK_UNITS_AND_BUILDINGS;
 				else
 					kind = KindOfSpell.ATTACK_UNITS;
 				break;

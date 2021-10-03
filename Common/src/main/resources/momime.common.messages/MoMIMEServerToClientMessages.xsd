@@ -892,19 +892,13 @@ and just as types so that they can be included in the massive fogOfWarVisibleAre
 	
 	<xsd:element name="addBuildingMessage">
 	    <xsd:annotation>
-    		<xsd:documentation>Server sends this to clients to tell them about a building added to a city.</xsd:documentation>
+    		<xsd:documentation>Server sends this to clients to tell them about a building (or multiple) added to a city.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="firstBuilding" type="momimemsgs:memoryBuilding" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="secondBuilding" type="momimemsgs:memoryBuilding">
-						    <xsd:annotation>
-			    				<xsd:documentation>Only situation where a this is specified is when we cast Move Fortress and move the summoning circle at the same time.</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-						<xsd:element minOccurs="0" maxOccurs="1" name="buildingCreatedFromSpellID" type="momimecommon:spellID">
+						<xsd:element minOccurs="0" maxOccurs="1" name="buildingsCreatedFromSpellID" type="momimecommon:spellID">
 						    <xsd:annotation>
 			    				<xsd:documentation>This is used to say when buildings have been added by casting spells (Wall of Stone, Summoning Circle
 or Move Fortress), however this is only ever set as the building is added (i.e. sent as an individual message), never if the building has simply
@@ -912,6 +906,7 @@ come into view (i.e. sent as part of 'visible area changed').</xsd:documentation
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="buildingCreationSpellCastByPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="building" type="momimemsgs:memoryBuilding" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -926,12 +921,14 @@ come into view (i.e. sent as part of 'visible area changed').</xsd:documentation
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="buildingURN" type="momimemsgs:buildingURN" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="updateBuildingSoldThisTurn" type="xsd:boolean">
 						    <xsd:annotation>
 			    				<xsd:documentation>This will be true for buildings that are sold (rather than destroyed), so the client knows to not allow another sale this turn</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="1" name="buildingsDestroyedBySpellID" type="momimecommon:spellID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="buildingDestructionSpellCastByPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingURN" type="momimemsgs:buildingURN" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

@@ -298,8 +298,7 @@ public interface FogOfWarMidTurnChanges
 	 * @param gsk Server knowledge structure to add the building(s) to
 	 * @param players List of players in the session, this can be passed in null for when buildings are being added to the map pre-game
 	 * @param cityLocation Location of the city to add the building(s) to
-	 * @param firstBuildingID First building ID to create, mandatory
-	 * @param secondBuildingID Second building ID to create; this is usually null, it is mainly here for casting Move Fortress, which creates both a Fortress + Summoning circle at the same time
+	 * @param buildingIDs List of building IDs to create, mandatory
 	 * @param buildingCreatedFromSpellID The spell that resulted in the creation of this building (e.g. casting Wall of Stone creates City Walls); null if building was constructed in the normal way
 	 * @param buildingCreationSpellCastByPlayerID The player who cast the spell that resulted in the creation of this building; null if building was constructed in the normal way
 	 * @param db Lookup lists built over the XML database
@@ -311,7 +310,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx cityLocation, final String firstBuildingID, final String secondBuildingID,
+		final MapCoordinates3DEx cityLocation, final List<String> buildingIDs,
 		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
@@ -319,7 +318,7 @@ public interface FogOfWarMidTurnChanges
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
-	 * @param buildingURN Which building to remove
+	 * @param buildingURNs Which buildings to remove
 	 * @param updateBuildingSoldThisTurn If true, tells client to update the buildingSoldThisTurn flag, which will prevents this city from selling a 2nd building this turn
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -330,7 +329,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final int buildingURN, final boolean updateBuildingSoldThisTurn,
+		final List<PlayerServerDetails> players, final List<Integer> buildingURNs, final boolean updateBuildingSoldThisTurn,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	

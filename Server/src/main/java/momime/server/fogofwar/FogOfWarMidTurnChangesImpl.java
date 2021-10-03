@@ -999,8 +999,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param gsk Server knowledge structure to add the building(s) to
 	 * @param players List of players in the session, this can be passed in null for when buildings are being added to the map pre-game
 	 * @param cityLocation Location of the city to add the building(s) to
-	 * @param firstBuildingID First building ID to create, mandatory
-	 * @param secondBuildingID Second building ID to create; this is usually null, it is mainly here for casting Move Fortress, which creates both a Fortress + Summoning circle at the same time
+	 * @param buildingIDs List of building IDs to create, mandatory
 	 * @param buildingCreatedFromSpellID The spell that resulted in the creation of this building (e.g. casting Wall of Stone creates City Walls); null if building was constructed in the normal way
 	 * @param buildingCreationSpellCastByPlayerID The player who cast the spell that resulted in the creation of this building; null if building was constructed in the normal way
 	 * @param db Lookup lists built over the XML database
@@ -1013,46 +1012,30 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx cityLocation, final String firstBuildingID, final String secondBuildingID,
+		final MapCoordinates3DEx cityLocation, final List<String> buildingIDs,
 		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		// First add on server
-		final MemoryBuilding firstTrueBuilding;
-		if (firstBuildingID == null)
-			firstTrueBuilding = null;
-		else
-		{
-			firstTrueBuilding = new MemoryBuilding ();
-			firstTrueBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
-			firstTrueBuilding.setBuildingID (firstBuildingID);
-			firstTrueBuilding.setBuildingURN (gsk.getNextFreeBuildingURN ());
-			
-			gsk.setNextFreeBuildingURN (gsk.getNextFreeBuildingURN () + 1);
-			gsk.getTrueMap ().getBuilding ().add (firstTrueBuilding);
-		}
-
-		final MemoryBuilding secondTrueBuilding;
-		if (secondBuildingID == null)
-			secondTrueBuilding = null;
-		else
-		{
-			secondTrueBuilding = new MemoryBuilding ();
-			secondTrueBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
-			secondTrueBuilding.setBuildingID (secondBuildingID);
-			secondTrueBuilding.setBuildingURN (gsk.getNextFreeBuildingURN ());
-
-			gsk.setNextFreeBuildingURN (gsk.getNextFreeBuildingURN () + 1);
-			gsk.getTrueMap ().getBuilding ().add (secondTrueBuilding);
-		}
-
 		// Build the message ready to send it to whoever can see the building
 		// This is done here rather in a method on FogOfWarDuplication because its a bit weird where we can have two buildings but both are optional
 		final AddBuildingMessage msg = new AddBuildingMessage ();
-		msg.setFirstBuilding (firstTrueBuilding);
-		msg.setSecondBuilding (secondTrueBuilding);
-		msg.setBuildingCreatedFromSpellID (buildingCreatedFromSpellID);
+		
+		// First add on server
+		for (final String buildingID : buildingIDs)
+		{
+			final MemoryBuilding trueBuilding = new MemoryBuilding ();
+			trueBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
+			trueBuilding.setBuildingID (buildingID);
+			trueBuilding.setBuildingURN (gsk.getNextFreeBuildingURN ());
+			
+			gsk.setNextFreeBuildingURN (gsk.getNextFreeBuildingURN () + 1);
+			gsk.getTrueMap ().getBuilding ().add (trueBuilding);
+			
+			msg.getBuilding ().add (trueBuilding);
+		}
+
+		msg.setBuildingsCreatedFromSpellID (buildingCreatedFromSpellID);
 		msg.setBuildingCreationSpellCastByPlayerID (buildingCreationSpellCastByPlayerID);
 
 		// Check which players can see the building
@@ -1065,11 +1048,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
 				{
 					// Add into player's memory on server
-					if (firstTrueBuilding != null)
-						getFogOfWarDuplication ().copyBuilding (firstTrueBuilding, priv.getFogOfWarMemory ().getBuilding ());
-	
-					if (secondTrueBuilding != null)
-						getFogOfWarDuplication ().copyBuilding (secondTrueBuilding, priv.getFogOfWarMemory ().getBuilding ());
+					for (final MemoryBuilding trueBuilding : msg.getBuilding ())
+						getFogOfWarDuplication ().copyBuilding (trueBuilding, priv.getFogOfWarMemory ().getBuilding ());
 	
 					// Send to client
 					if (player.getPlayerDescription ().isHuman ())
@@ -1089,7 +1069,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
-	 * @param buildingURN Which building to remove
+	 * @param buildingURNs Which buildings to remove
 	 * @param updateBuildingSoldThisTurn If true, tells client to update the buildingSoldThisTurn flag, which will prevents this city from selling a 2nd building this turn
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -1101,42 +1081,70 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final int buildingURN, final boolean updateBuildingSoldThisTurn,
+		final List<PlayerServerDetails> players, final List<Integer> buildingURNs, final boolean updateBuildingSoldThisTurn,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		// Get the building details before we remove it
-		final MemoryBuilding trueBuilding = getMemoryBuildingUtils ().findBuildingURN (buildingURN, trueMap.getBuilding (), "destroyBuildingOnServerAndClients");
-		final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) trueBuilding.getCityLocation ();
+		// Grab the details of all the buldings before we destroy them on the server
+		final List<MemoryBuilding> trueBuildings = new ArrayList<MemoryBuilding> ();
+		final List<MapCoordinates3DEx> cityLocations = new ArrayList<MapCoordinates3DEx> ();
+		for (final Integer buildingURN : buildingURNs)
+		{
+			final MemoryBuilding trueBuilding = getMemoryBuildingUtils ().findBuildingURN (buildingURNs.get (0), trueMap.getBuilding (), "destroyBuildingOnServerAndClients");
+			trueBuildings.add (trueBuilding);
+			
+			final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) trueBuilding.getCityLocation ();
+			if (!cityLocations.contains (cityLocation))
+				cityLocations.add (cityLocation);
+			
+			getMemoryBuildingUtils ().removeBuildingURN (buildingURN, trueMap.getBuilding ());
+		}		
 		
-		// Destroy on server
-		getMemoryBuildingUtils ().removeBuildingURN (buildingURN, trueMap.getBuilding ());
-
-		// Build the message ready to send it to whoever can see the building
-		final DestroyBuildingMessage msg = new DestroyBuildingMessage ();
-		msg.setBuildingURN (buildingURN);
-		msg.setUpdateBuildingSoldThisTurn (updateBuildingSoldThisTurn);
-
-		// Check which players could see the building
+		// Deal with each player individually - as the buildings may be in different cities, the lists we send to each player might be different
 		for (final PlayerServerDetails player : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-			if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
-			{
-				// Remove from player's memory on server
-				getMemoryBuildingUtils ().removeBuildingURN (buildingURN, priv.getFogOfWarMemory ().getBuilding ());
 
-				// Send to client
-				if (player.getPlayerDescription ().isHuman ())
-					player.getConnection ().sendMessageToClient (msg);
+			final DestroyBuildingMessage msg = player.getPlayerDescription ().isHuman () ? new DestroyBuildingMessage () : null;
+
+			for (final MemoryBuilding trueBuilding : trueBuildings)
+			{
+				final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) trueBuilding.getCityLocation ();
+				final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+				if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+				{
+					// Remove from player's memory on server
+					for (final Integer buildingURN : buildingURNs)
+						getMemoryBuildingUtils ().removeBuildingURN (buildingURN, priv.getFogOfWarMemory ().getBuilding ());
+	
+					// Send to client
+					if (msg != null)
+						msg.getBuildingURN ().add (trueBuilding.getBuildingURN ());
+				}
+			}
+
+			// Send completed message
+			if ((msg != null) && (msg.getBuildingURN ().size () > 0))
+			{
+				msg.setUpdateBuildingSoldThisTurn (updateBuildingSoldThisTurn);
+				player.getConnection ().sendMessageToClient (msg);
 			}
 		}
 
-		// The destroyed building might be an Oracle, so recalculate fog of war
-		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "destroyBuildingOnServerAndClients");
-		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, cityOwner, players, "destroyBuildingOnServerAndClients", sd, db);
+		// The destroyed building might be an Oracle, so recalculate fog of war - first figure out who's cities were affected
+		final List<Integer> cityOwners = new ArrayList<Integer> ();
+		for (final MapCoordinates3DEx cityLocation : cityLocations)
+		{
+			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			if (!cityOwners.contains (cityData.getCityOwnerID ()))
+				cityOwners.add (cityData.getCityOwnerID ());
+		}
+		
+		for (final Integer cityOwnerID : cityOwners)
+		{
+			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityOwnerID, "destroyBuildingOnServerAndClients");
+			getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, cityOwner, players, "destroyBuildingOnServerAndClients", sd, db);
+		}
 	}
 
 	/**

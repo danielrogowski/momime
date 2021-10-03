@@ -3,6 +3,7 @@ package momime.client.ui.dialogs;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -20,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.random.RandomUtils;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
@@ -34,6 +36,7 @@ import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
 import momime.common.database.Spell;
@@ -77,6 +80,9 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
 	/** The city being viewed, note this is optional and will be null when displaying Spell of Return animation */
 	private MapCoordinates3DEx cityLocation;
 
@@ -110,6 +116,12 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/** Timer to delay the building or spell being added */
 	private Timer timer;
 	
+	/** Timer for Earthquake effect */
+	private Timer earthquakeTimer;
+	
+	/** Tick counter for earthquake effect */
+	private int earthquakeTicks;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -128,6 +140,12 @@ public final class MiniCityViewUI extends MomClientDialogUI
 			@Override
 			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
 			{
+				if (timer != null)
+					timer.stop ();
+
+				if (earthquakeTimer != null)
+					earthquakeTimer.stop ();
+				
 				try
 				{
 					getCityViewPanel ().cityViewClosing ();
@@ -231,6 +249,10 @@ public final class MiniCityViewUI extends MomClientDialogUI
 								// The added spell/building might need an additional animation set up for it
 								getCityViewPanel ().init ();
 								getCityViewPanel ().repaint ();		// In case it isn't an animation, still need to force a repaint
+								
+								// Start Earthquake shake effect
+								if (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS_AND_BUILDINGS)
+									earthquakeAnimation ();
 							}
 							catch (final Exception e)
 							{
@@ -320,6 +342,29 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		}
 		
 		added = true;
+	}
+	
+	/**
+	 * Starts animation jiggling the dialog box around
+	 */
+	private final void earthquakeAnimation ()
+	{
+		final Point dialogStartLocation = getDialog ().getLocation ();
+		earthquakeTicks = 0;
+		
+		earthquakeTimer = new Timer (25, (ev) ->
+		{
+			// Shake very little at start, build up to maximum in the middle, then ease off again
+			final int range = (earthquakeTicks < 50) ? earthquakeTicks : (100 - earthquakeTicks);
+			if (range > 0)
+				getDialog ().setLocation (dialogStartLocation.x + getRandomUtils ().nextInt ((range * 2) + 1) - range,
+					dialogStartLocation.y + getRandomUtils ().nextInt ((range * 2) + 1) - range);
+			
+			earthquakeTicks++;
+			if (earthquakeTicks >= 100)
+				earthquakeTimer.stop ();
+		});
+		earthquakeTimer.start ();
 	}
 
 	/**
@@ -544,6 +589,22 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils mbu)
 	{
 		memoryBuildingUtils = mbu;
+	}
+	
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 	
 	/**

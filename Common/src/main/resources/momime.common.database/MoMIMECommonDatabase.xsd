@@ -3820,11 +3820,13 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectHelpText" type="momimecommon:languageText" nxe:label="Help text" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" nxe:label="CAE" nxe:showmaincolumn="false">
 				<xsd:annotation>
+					<xsd:documentation>Used for Heavenly Light / Cloud of Shadow.</xsd:documentation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>combatAreaEffectDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element >
+			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectExperience" type="momimecommon:experiencePoints" nxe:label="Experience Granted" nxe:gridwidth="120" />
 		</xsd:sequence>
 		<xsd:attribute name="citySpellEffectID" type="momimecommon:citySpellEffectID" use="required" nxe:label="City Spell Effect ID" nxe:gridwidth="110" />
 	</xsd:complexType>

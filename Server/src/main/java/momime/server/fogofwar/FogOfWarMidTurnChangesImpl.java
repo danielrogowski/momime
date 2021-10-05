@@ -368,7 +368,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}
 		else if (buildingsLocation != null)
 		{
-			startingExperience = getMemoryBuildingUtils ().experienceFromBuildings (gsk.getTrueMap ().getBuilding (), buildingsLocation, db);
+			startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
+				(gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), buildingsLocation, db);
+			
 			weaponGrade = getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 				(gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMap (), buildingsLocation, unitOwnerPPK.getPick (), sd.getOverlandMapSize (), db);
 		}

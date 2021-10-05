@@ -29,6 +29,7 @@ import momime.common.database.Unit;
 import momime.common.database.UnitEx;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.OverlandMapCityData;
 
 /**
@@ -632,10 +633,13 @@ public final class TestMemoryBuildingUtilsImpl
 			memBuilding.setCityLocation (new MapCoordinates3DEx (15, 10, 1));
 			memBuildings.add (memBuilding);
 		}
+		
+		// Set up list of spells
+		final List<MemoryMaintainedSpell> memSpells = new ArrayList<MemoryMaintainedSpell> ();
 
 		// Do test
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertEquals (0, utils.experienceFromBuildings (memBuildings, new MapCoordinates3DEx (15, 10, 1), db));
+		assertEquals (0, utils.experienceFromBuildings (memBuildings, memSpells, new MapCoordinates3DEx (15, 10, 1), db));
 	}
 
 	/**
@@ -664,9 +668,12 @@ public final class TestMemoryBuildingUtilsImpl
 		memBuilding.setCityLocation (new MapCoordinates3DEx (15, 10, 1));
 		memBuildings.add (memBuilding);
 
+		// Set up list of spells
+		final List<MemoryMaintainedSpell> memSpells = new ArrayList<MemoryMaintainedSpell> ();
+
 		// Do test
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertEquals (0, utils.experienceFromBuildings (memBuildings, new MapCoordinates3DEx (16, 10, 1), db));
+		assertEquals (0, utils.experienceFromBuildings (memBuildings, memSpells, new MapCoordinates3DEx (16, 10, 1), db));
 	}
 
 	/**
@@ -695,9 +702,12 @@ public final class TestMemoryBuildingUtilsImpl
 		memBuilding.setCityLocation (new MapCoordinates3DEx (15, 10, 1));
 		memBuildings.add (memBuilding);
 
+		// Set up list of spells
+		final List<MemoryMaintainedSpell> memSpells = new ArrayList<MemoryMaintainedSpell> ();
+
 		// Do test
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertEquals (10, utils.experienceFromBuildings (memBuildings, new MapCoordinates3DEx (15, 10, 1), db));
+		assertEquals (10, utils.experienceFromBuildings (memBuildings, memSpells, new MapCoordinates3DEx (15, 10, 1), db));
 	}
 
 	/**
@@ -729,9 +739,12 @@ public final class TestMemoryBuildingUtilsImpl
 			memBuildings.add (memBuilding);
 		}
 
+		// Set up list of spells
+		final List<MemoryMaintainedSpell> memSpells = new ArrayList<MemoryMaintainedSpell> ();
+
 		// Do test
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		assertEquals (20, utils.experienceFromBuildings (memBuildings, new MapCoordinates3DEx (15, 10, 1), db));
+		assertEquals (20, utils.experienceFromBuildings (memBuildings, memSpells, new MapCoordinates3DEx (15, 10, 1), db));
 	}
 
 	/**

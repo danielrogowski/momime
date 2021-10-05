@@ -177,7 +177,8 @@ public final class UnitAIImpl implements UnitAI
 							unit.setUnitLocation (cityLocation);
 
 							// Need to get experience and weapon grade right so we tend to construct units in cities with e.g. a Fighters' or Alchemists' Guild
-							final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings (priv.getFogOfWarMemory ().getBuilding (), cityLocation, db);
+							final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
+								(priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMaintainedSpell (), cityLocation, db);
 							
 							unit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 								(priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMap (), cityLocation, pub.getPick (), sd.getOverlandMapSize (), db));

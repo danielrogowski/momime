@@ -277,7 +277,8 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				try
 				{
 					final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), getClient ().getClientDB ());
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), getClient ().getClientDB ());
 
 					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) getMultiplayerSessionUtils ().findPlayerWithID
 						(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener").getPersistentPlayerPublicKnowledge ();

@@ -13,6 +13,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.OverlandMapCityData;
 
 /**
@@ -251,21 +252,31 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 	/**
 	 * Checks to see if this city contains any buildings that grant free experience to units constructed there (Fighters' Guild or War College)
 	 * @param buildingsList List of buildings to search through
+	 * @param spellsList List of spells to search through
 	 * @param cityLocation Location of the city to test
 	 * @param db Lookup lists built over the XML database
 	 * @return Number of free experience points units constructed here will have
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	@Override
-	public final int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
+	public final int experienceFromBuildings (final List<MemoryBuilding> buildingsList, final List<MemoryMaintainedSpell> spellsList,
 		final MapCoordinates3DEx cityLocation, final CommonDatabase db) throws RecordNotFoundException
 	{
 		// Check all buildings at this location
 		int result = 0;
 		for (final MemoryBuilding thisBuilding : buildingsList)
-			if (thisBuilding.getCityLocation ().equals (cityLocation))
+			if (cityLocation.equals (thisBuilding.getCityLocation ()))
 			{
 				final Integer exp = db.findBuilding (thisBuilding.getBuildingID (), "experienceFromBuildings").getBuildingExperience ();
+				if (exp != null)
+					result = Math.max (result, exp);
+			}
+		
+		// Check all spells at this location
+		for (final MemoryMaintainedSpell thisSpell : spellsList)
+			if ((cityLocation.equals (thisSpell.getCityLocation ())) && (thisSpell.getCitySpellEffectID () != null))
+			{
+				final Integer exp = db.findCitySpellEffect (thisSpell.getCitySpellEffectID (), "experienceFromBuildings").getCitySpellEffectExperience ();
 				if (exp != null)
 					result = Math.max (result, exp);
 			}

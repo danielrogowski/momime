@@ -2,6 +2,8 @@ package momime.common.utils;
 
 import java.util.List;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
 import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
@@ -9,8 +11,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
+import momime.common.messages.MemoryMaintainedSpell;
 
 /**
  * Methods for working with list of MemoryBuildings
@@ -116,12 +117,13 @@ public interface MemoryBuildingUtils
 	/**
 	 * Checks to see if this city contains any buildings that grant free experience to units constructed there (Fighters' Guild or War College)
 	 * @param buildingsList List of buildings to search through
+	 * @param spellsList List of spells to search through
 	 * @param cityLocation Location of the city to test
 	 * @param db Lookup lists built over the XML database
 	 * @return Number of free experience points units constructed here will have
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
-	public int experienceFromBuildings (final List<MemoryBuilding> buildingsList,
+	public int experienceFromBuildings (final List<MemoryBuilding> buildingsList, final List<MemoryMaintainedSpell> spellsList,
 		final MapCoordinates3DEx cityLocation, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**

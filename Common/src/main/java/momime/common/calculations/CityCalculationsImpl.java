@@ -680,30 +680,12 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 		}
 		
-		// Unrest reduction from spells
+		// Unrest reduction / increase from spells
 		int spellsUnrestReduction = 0;
-		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, cityData.getCityOwnerID (), CommonDatabaseConstants.SPELL_ID_JUST_CAUSE,
-			null, null, null, null) != null)
-		{
-			spellsUnrestReduction++;
-			
-			final CityUnrestBreakdownSpell spellBreakdown = new CityUnrestBreakdownSpell ();
-			spellBreakdown.setSpellID (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE);
-			spellBreakdown.setUnrestReduction (1);
-			breakdown.getSpellReducingUnrest ().add (spellBreakdown);
-		}
-		
-		// Unrest increase from spells
-		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_DARK_RITUALS,
-			null, null, cityLocation, null) != null)
-		{
-			spellsUnrestReduction--;
-			
-			final CityUnrestBreakdownSpell spellBreakdown = new CityUnrestBreakdownSpell ();
-			spellBreakdown.setSpellID (CommonDatabaseConstants.SPELL_ID_DARK_RITUALS);
-			spellBreakdown.setUnrestReduction (-1);
-			breakdown.getSpellReducingUnrest ().add (spellBreakdown);
-		}
+		if (spells != null)
+			for (final MemoryMaintainedSpell spell : spells)
+				if (cityLocation.equals (spell.getCityLocation ()))
+					spellsUnrestReduction = spellsUnrestReduction + addUnrestReductionFromSpell (breakdown, spell, db);
 
 		// Subtract pacifying effects of non-summoned units
 		for (final MemoryUnit thisUnit : units)
@@ -941,13 +923,13 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @param spell The spell to calculate for
 	 * @param doubleTotalFromReligiousBuildings Double magic power value generated from religious buildings, including bonuses from Divine/Infernal Power
 	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
+	 * @throws RecordNotFoundException If the definition for the spell can't be found in the db
 	 */
 	final void addProductionFromSpell (final CityProductionBreakdownsEx productionValues, final MemoryMaintainedSpell spell,
 		final int doubleTotalFromReligiousBuildings, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		// Dark rituals depends on which buildings are/aren't religious, so just hard code it
+		// Dark rituals depends on which buildings are/aren't religious, so that's awkward to model in the XML so just write it as a special case
 		if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DARK_RITUALS))
 		{
 			if (doubleTotalFromReligiousBuildings > 0)
@@ -1071,6 +1053,49 @@ public final class CityCalculationsImpl implements CityCalculations
 				breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + copyMapFeature.getDoubleModifiedProductionAmountAllFeatures ());
 			}
 		}
+	}
+	
+	/**
+	 * Adds on unrest reduction (or penalty) from a spell
+	 * 
+	 * @param breakdown Unrest breakdown to add to
+	 * @param spell The spell to calculate for
+	 * @param db Lookup lists built over the XML database
+	 * @return Unrest reduction provided by this spell, so +ve number reduces unrest, and a -ve number is a penalty that increases unrest
+	 * @throws RecordNotFoundException If the definition for the spell can't be found in the db
+	 */
+	final int addUnrestReductionFromSpell (final CityUnrestBreakdown breakdown, final MemoryMaintainedSpell spell, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		int spellsUnrestReduction = 0;
+		
+		// Just Cause is a bit of a special case as it provides unrest reduction without having a city spell effect, soi have to do from the spell directly
+		if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
+		{
+			spellsUnrestReduction = 1;
+			
+			final CityUnrestBreakdownSpell spellBreakdown = new CityUnrestBreakdownSpell ();
+			spellBreakdown.setSpellID (spell.getSpellID ());
+			spellBreakdown.setUnrestReduction (1);
+			breakdown.getSpellReducingUnrest ().add (spellBreakdown);
+		}
+		
+		// Other spells use data from XML to specify bonuses
+		else if (spell.getCitySpellEffectID () != null)
+		{
+			final CitySpellEffect effect = db.findCitySpellEffect (spell.getCitySpellEffectID (), "addUnrestReductionFromSpell");
+			if ((effect.getCitySpellEffectUnrestReduction () != null) && (effect.getCitySpellEffectUnrestReduction () != 0))
+			{
+				spellsUnrestReduction = effect.getCitySpellEffectUnrestReduction ();
+				
+				final CityUnrestBreakdownSpell spellBreakdown = new CityUnrestBreakdownSpell ();
+				spellBreakdown.setSpellID (spell.getSpellID ());
+				spellBreakdown.setUnrestReduction (effect.getCitySpellEffectUnrestReduction ());
+				breakdown.getSpellReducingUnrest ().add (spellBreakdown);
+			}
+		}
+		
+		return spellsUnrestReduction;
 	}
 	
 	/**

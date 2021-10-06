@@ -1501,6 +1501,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <percentageBonusFromBuilding language="pl">
             <text>BUILDING_NAME daje PERCENTAGE_VALUE% PRODUCTION_TYPE premię</text>
         </percentageBonusFromBuilding>
+        <percentageBonusFromSpell language="en">
+            <text>SPELL_NAME gives SPELL_PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</text>
+        </percentageBonusFromSpell>
         <goldTradeBonusFromTileType language="en">
             <text>GOLD_TRADE_BONUS_TILE_TYPE% gold trade bonus from river/ocean</text>
         </goldTradeBonusFromTileType>

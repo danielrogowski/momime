@@ -391,6 +391,7 @@ the spell itself actually generates a resource for the city.</xsd:documentation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmount" type="momimecommon:doubledProductionValue" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageBonus" type="momimecommon:percentage" />
 		</xsd:sequence>
 	</xsd:complexType>
 

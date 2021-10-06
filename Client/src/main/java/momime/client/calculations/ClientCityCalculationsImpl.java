@@ -310,7 +310,12 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		for (final CityProductionBreakdownSpell spellProduction : calc.getSpellBreakdown ())
 		{
 			getProductionReplacer ().setCurrentSpell (spellProduction);
-			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSpell ())));
+			
+			if (spellProduction.getDoubleProductionAmount () > 0)
+				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSpell ())));
+			
+			if (spellProduction.getPercentageBonus () > 0)
+				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getPercentageBonusFromSpell ())));
 		}
 		
 		// Production from how many books we have at our wizards' fortress

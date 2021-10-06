@@ -286,6 +286,10 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				text = getTextUtils ().halfIntToStr (getCurrentSpell ().getDoubleProductionAmount ());
 				break;
 				
+			case "SPELL_PERCENTAGE_VALUE":
+				text = Integer.valueOf (getCurrentSpell ().getPercentageBonus ()).toString ();
+				break;
+				
 			// Dependant on current pick type
 			case "PICK_TYPE":
 				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPickType

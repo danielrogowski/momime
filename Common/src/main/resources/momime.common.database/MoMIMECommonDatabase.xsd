@@ -544,6 +544,10 @@
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimecommon:movementRateRule" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimecommon:citySpellEffect">
+					<xsd:key name="citySpellEffectProductionModifierPK">
+						<xsd:selector xpath="citySpellEffectProductionModifier" />
+						<xsd:field xpath="@productionTypeID" />
+					</xsd:key>
 					<xsd:key name="citySpellEffectNamePK">
 						<xsd:selector xpath="citySpellEffectName" />
 						<xsd:field xpath="@language" />
@@ -1330,6 +1334,10 @@
 		<xsd:keyref refer="momimecommon:combatAreaEffectPK" name="citySpellEffectFKcombatAreaEffect">
 			<xsd:selector xpath="citySpellEffect" />
 			<xsd:field xpath="combatAreaEffectID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:productionTypePK" name="citySpellEffectProductionModifierFKproductionType">
+			<xsd:selector xpath="citySpellEffect/citySpellEffectProductionModifier" />
+			<xsd:field xpath="@productionTypeID" />
 		</xsd:keyref>
 		
 		<!-- Combat attack resolution, for dealing with exactly what happens if e.g. we have first strike and enemy unit has haste, new for 0.9.6.2 -->
@@ -3827,8 +3835,25 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element >
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectExperience" type="momimecommon:experiencePoints" nxe:label="Experience Granted" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectProductionModifier" type="momimecommon:citySpellEffectProductionModifier" />
 		</xsd:sequence>
 		<xsd:attribute name="citySpellEffectID" type="momimecommon:citySpellEffectID" use="required" nxe:label="City Spell Effect ID" nxe:gridwidth="110" />
+	</xsd:complexType>
+
+	<xsd:complexType name="citySpellEffectProductionModifier" nxe:singular="City Spell Effect Production Modifier" nxe:plural="City Spell Effect Production Modifiers">
+        <xsd:annotation>
+        	<xsd:documentation>Defines production bonuses from city spell effects, like prosperity giving +100% gold.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="percentageBonus" type="momimecommon:percentage" nxe:label="Percentage Bonus" nxe:gridwidth="120" />
+		</xsd:sequence>
+		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="combatMapElement" nxe:singular="Combat Map Element" nxe:plural="Combat Map Elements" nxe:submenu="Combat Map">

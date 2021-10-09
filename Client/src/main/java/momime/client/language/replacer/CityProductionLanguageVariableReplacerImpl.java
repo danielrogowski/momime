@@ -119,12 +119,24 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				text = Integer.valueOf (getBreakdown ().getPercentageBonus ()).toString ();
 				break;
 				
+			case "PERCENTAGE_PENALTY":
+				text = Integer.valueOf (getBreakdown ().getPercentagePenalty ()).toString ();
+				break;
+				
 			case "PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS":
 				text = Integer.valueOf (getBreakdown ().getModifiedProductionAmount () - getBreakdown ().getBaseProductionAmount ()).toString ();
+				break;
+
+			case "PRODUCTION_LOSS_FROM_PERCENTAGE_PENALTY":
+				text = Integer.valueOf (getBreakdown ().getModifiedProductionAmount () - getBreakdown ().getPenalizedProductionAmount ()).toString ();
 				break;
 				
 			case "PRODUCTION_TOTAL":
 				text = Integer.valueOf (getBreakdown ().getModifiedProductionAmount ()).toString ();
+				break;
+				
+			case "PRODUCTION_TOTAL_AFTER_PENALTY":
+				text = Integer.valueOf (getBreakdown ().getPenalizedProductionAmount ()).toString ();
 				break;
 				
 			// AI players
@@ -288,6 +300,10 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				
 			case "SPELL_PERCENTAGE_VALUE":
 				text = Integer.valueOf (getCurrentSpell ().getPercentageBonus ()).toString ();
+				break;
+				
+			case "SPELL_PERCENTAGE_PENALTY":
+				text = Integer.valueOf (-getCurrentSpell ().getPercentageBonus ()).toString ();
 				break;
 				
 			// Dependant on current pick type

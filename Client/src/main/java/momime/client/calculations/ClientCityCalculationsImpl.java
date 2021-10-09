@@ -223,6 +223,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		final List<String> productionBreakdowns = new ArrayList<String> ();
 		final List<String> consumptionBreakdowns = new ArrayList<String> ();
 		final List<String> percentageBonuses = new ArrayList<String> ();
+		final List<String> percentagePenalties = new ArrayList<String> ();
 		
 		// Production from farmers/workers/rebels
 		for (final CityProductionBreakdownPopulationTask populationTaskProduction : calc.getPopulationTaskProduction ())
@@ -311,11 +312,13 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		{
 			getProductionReplacer ().setCurrentSpell (spellProduction);
 			
-			if (spellProduction.getDoubleProductionAmount () > 0)
+			if (spellProduction.getDoubleProductionAmount () != 0)
 				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSpell ())));
 			
 			if (spellProduction.getPercentageBonus () > 0)
 				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getPercentageBonusFromSpell ())));
+			else if (spellProduction.getPercentageBonus () < 0)
+				percentagePenalties.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getPercentagePenaltyFromSpell ())));
 		}
 		
 		// Production from how many books we have at our wizards' fortress
@@ -363,7 +366,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		// Did we get 0, 1 or many sources of production?
 		int netEffectCount = 0;
 		final StringBuilder text = new StringBuilder ();
-		if ((productionBreakdowns.size () > 0) && (calc.getDoubleProductionAmount () > 0))
+		if (productionBreakdowns.size () > 0)
 		{
 			netEffectCount++;
 			
@@ -395,7 +398,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 				}
 			
 			// Percentage bonuses - put in a list first so we can test whether we get 0, 1 or many entries here
-			if ((percentageBonuses.size () > 0) && (calc.getPercentageBonus () > 0))
+			if (percentageBonuses.size () > 0)
 			{
 				// Heading
 				getProductionReplacer ().addLine (text, null);
@@ -409,6 +412,21 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentageBonusTotal ()));
 			}
 			
+			// Percentage Penalties - put in a list first so we can test whether we get 0, 1 or many entries here
+			if (percentagePenalties.size () > 0)
+			{
+				// Heading
+				getProductionReplacer ().addLine (text, null);
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentagePenaltyHeading ()));
+				
+				// Detail line(s)
+				for (final String line : percentagePenalties)
+					getProductionReplacer ().addLine (text, line);
+				
+				// Total
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentagePenaltyTotal ()));
+			}
+			
 			// Special boost for AI players
 			if (calc.getDifficultyLevelMultiplier () != 100)
 				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getDifficultyLevelMultiplier ()));
@@ -419,7 +437,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		}
 		
 		// Did we get 0, 1 or many sources of consumption?
-		if ((consumptionBreakdowns.size () > 0) && (calc.getConsumptionAmount () > 0))
+		if (consumptionBreakdowns.size () > 0)
 		{
 			if (netEffectCount > 0)
 				getProductionReplacer ().addLine (text, null);

@@ -958,7 +958,11 @@ public final class CityCalculationsImpl implements CityCalculations
 					
 					final CityProductionBreakdown breakdown = productionValues.findProductionType (thisProduction.getProductionTypeID ());
 					breakdown.getSpellBreakdown ().add (spellBreakdown);
-					breakdown.setPercentageBonus (breakdown.getPercentageBonus () + spellBreakdown.getPercentageBonus ());
+					
+					if (spellBreakdown.getPercentageBonus () > 0)
+						breakdown.setPercentageBonus (breakdown.getPercentageBonus () + spellBreakdown.getPercentageBonus ());
+					else
+						breakdown.setPercentagePenalty (breakdown.getPercentagePenalty () - spellBreakdown.getPercentageBonus ());
 				}
 			}
 		}
@@ -1311,9 +1315,13 @@ public final class CityCalculationsImpl implements CityCalculations
 						"\" which has an unknown rounding direction");
 			}
 
-			// Add on % bonus
+			// Add on % bonus, rounding down
 			thisProduction.setModifiedProductionAmount (thisProduction.getBaseProductionAmount () +
 				((thisProduction.getBaseProductionAmount () * thisProduction.getPercentageBonus ()) / 100));
+			
+			// Subtract off % penalty, rounding up
+			thisProduction.setPenalizedProductionAmount (thisProduction.getModifiedProductionAmount () -
+				((thisProduction.getModifiedProductionAmount () * thisProduction.getPercentagePenalty ()) / 100));
 			
 			// AI players get a special bonus
 			if ((cityOwner != null) && (!cityOwner.getPlayerDescription ().isHuman ()) && (productionType.isDifficultyLevelMultiplierApplies ()))
@@ -1325,7 +1333,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			else
 				thisProduction.setDifficultyLevelMultiplier (100);
 			
-			thisProduction.setTotalAdjustedForDifficultyLevel ((thisProduction.getModifiedProductionAmount () * thisProduction.getDifficultyLevelMultiplier ()) / 100); 
+			thisProduction.setTotalAdjustedForDifficultyLevel ((thisProduction.getPenalizedProductionAmount () * thisProduction.getDifficultyLevelMultiplier ()) / 100); 
 
 			// Stop max city size going over the game set maximum
 			final int cap = (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)) ? difficultyLevel.getCityMaxSize () : Integer.MAX_VALUE;

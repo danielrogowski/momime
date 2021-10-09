@@ -753,6 +753,10 @@
 						<xsd:selector xpath="productionPercentageBonusHeading" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="cityProductionProductionPercentagePenaltyHeadingPK">
+						<xsd:selector xpath="productionPercentagePenaltyHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="cityProductionPercentageBonusFromSingleTilePK">
 						<xsd:selector xpath="percentageBonusFromSingleTile" />
 						<xsd:field xpath="@language" />
@@ -767,6 +771,10 @@
 					</xsd:key>
 					<xsd:key name="cityProductionPercentageBonusFromSpellPK">
 						<xsd:selector xpath="percentageBonusFromSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionPercentagePenaltyFromSpellPK">
+						<xsd:selector xpath="percentagePenaltyFromSpell" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="cityProductionGoldTradeBonusFromTileTypePK">
@@ -791,6 +799,10 @@
 					</xsd:key>
 					<xsd:key name="cityProductionProductionPercentageBonusTotalPK">
 						<xsd:selector xpath="productionPercentageBonusTotal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionPercentagePenaltyTotalPK">
+						<xsd:selector xpath="productionPercentagePenaltyTotal" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="cityProductionDifficultyLevelMultiplierPK">
@@ -2902,16 +2914,19 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="roundingUp" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="roundingDown" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPercentageBonusHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPercentagePenaltyHeading" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentageBonusFromSingleTile" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentageBonusFromMultipleTiles" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentageBonusFromBuilding" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentageBonusFromSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentagePenaltyFromSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusFromTileType" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusFromRoads" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusFromRace" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusUncapped" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusCapped" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPercentageBonusTotal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPercentagePenaltyTotal" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="difficultyLevelMultiplier" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionCapped" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="consumptionMainHeading" />

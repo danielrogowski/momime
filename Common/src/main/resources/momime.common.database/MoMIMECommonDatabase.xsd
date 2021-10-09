@@ -3846,7 +3846,7 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
         	<xsd:documentation>Defines production bonuses from city spell effects, like prosperity giving +100% gold.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="percentageBonus" type="momimecommon:percentage" nxe:label="Percentage Bonus" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="percentageBonus" type="momimecommon:uncappedPercentage" nxe:label="Percentage Bonus" nxe:gridwidth="120" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -4445,7 +4445,7 @@ Ordering of this list is very significant.
         <xsd:annotation>
         	<xsd:documentation>Percentage values that can take any value.</xsd:documentation>
         </xsd:annotation>
-		<xsd:restriction base="xsd:unsignedShort" />
+		<xsd:restriction base="xsd:int" />
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="doubledProductionValue">

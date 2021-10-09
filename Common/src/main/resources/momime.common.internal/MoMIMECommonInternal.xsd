@@ -488,6 +488,16 @@ the spell itself actually generates a resource for the city.</xsd:documentation>
 					<xsd:documentation>baseProductionAmount with % bonus from percentageBonus added in, rounded down.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentagePenalty" type="momimecommon:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Percentage penalty that gets taken away from modifiedProductionAmount.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="penalizedProductionAmount" type="momimecommon:undoubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>modifiedProductionAmount with % penalty from percentagePenalty taken off, rounded up.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevelMultiplier" type="momimecommon:uncappedPercentage">
 				<xsd:annotation>
 					<xsd:documentation>Percentage that final total is modified by to give AI players a bonus</xsd:documentation>

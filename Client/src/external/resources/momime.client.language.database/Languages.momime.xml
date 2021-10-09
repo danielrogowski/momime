@@ -1486,6 +1486,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <productionPercentageBonusHeading language="fr">
             <text>Pourcentage de Bonus</text>
         </productionPercentageBonusHeading>
+        <productionPercentagePenaltyHeading language="en">
+            <text>Percentage Penalties</text>
+        </productionPercentagePenaltyHeading>
         <percentageBonusFromSingleTile language="en">
             <text>TILE_TYPE gives PERCENTAGE_ALL_TILES% PRODUCTION_TYPE bonus</text>
         </percentageBonusFromSingleTile>
@@ -1504,6 +1507,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <percentageBonusFromSpell language="en">
             <text>SPELL_NAME gives SPELL_PERCENTAGE_VALUE% PRODUCTION_TYPE bonus</text>
         </percentageBonusFromSpell>
+        <percentagePenaltyFromSpell language="en">
+            <text>SPELL_NAME gives SPELL_PERCENTAGE_PENALTY% PRODUCTION_TYPE penalty</text>
+        </percentagePenaltyFromSpell>
         <goldTradeBonusFromTileType language="en">
             <text>GOLD_TRADE_BONUS_TILE_TYPE% gold trade bonus from river/ocean</text>
         </goldTradeBonusFromTileType>
@@ -1531,11 +1537,11 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <productionPercentageBonusTotal language="fr">
             <text>PERCENTAGE_BONUS% du UNMODIFIED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS pour un total de PRODUCTION_AMOUNT</text>
         </productionPercentageBonusTotal>
-        <productionPercentageBonusTotal language="pl">
-            <text>PERCENTAGE_BONUS% of UNMODIFIED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS for a total of PRODUCTION_AMOUNT</text>
-        </productionPercentageBonusTotal>
+        <productionPercentagePenaltyTotal language="en">
+            <text>PERCENTAGE_PENALTY% of PRODUCTION_TOTAL = PRODUCTION_LOSS_FROM_PERCENTAGE_PENALTY for a reduction to PRODUCTION_TOTAL_AFTER_PENALTY</text>
+        </productionPercentagePenaltyTotal>
         <difficultyLevelMultiplier language="en">
-            <text>AI player gets difficulty level multiplier PRODUCTION_TOTAL * AI_PRODUCTION_RATE_MULTIPLIER% = TOTAL_ADJUSTED_FOR_DIFFICULTY_LEVEL</text>
+            <text>AI player gets difficulty level multiplier PRODUCTION_TOTAL_AFTER_PENALTY * AI_PRODUCTION_RATE_MULTIPLIER% = TOTAL_ADJUSTED_FOR_DIFFICULTY_LEVEL</text>
         </difficultyLevelMultiplier>
         <productionCapped language="en">
             <text>However value is capped at PRODUCTION_CAPPED</text>

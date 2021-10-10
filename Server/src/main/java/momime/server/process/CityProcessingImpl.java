@@ -25,6 +25,7 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
@@ -101,6 +102,9 @@ public final class CityProcessingImpl implements CityProcessing
 	/** City calculations */
 	private CityCalculations cityCalculations;
 
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
+	
 	/** Server-only city calculations */
 	private ServerCityCalculations serverCityCalculations;
 	
@@ -437,7 +441,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
-						final CityProductionBreakdownsEx cityProductions = getCityCalculations ().calculateAllCityProductions
+						final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions
 							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (),
 								cityLocation, priv.getTaxRateID (), sd, true, false, db);
 
@@ -1278,6 +1282,22 @@ public final class CityProcessingImpl implements CityProcessing
 		cityCalculations = calc;
 	}
 
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param calc City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations calc)
+	{
+		cityProductionCalculations = calc;
+	}
+	
 	/**
 	 * @return Server-only city calculations
 	 */

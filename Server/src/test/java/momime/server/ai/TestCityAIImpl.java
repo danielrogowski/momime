@@ -18,6 +18,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.CityCalculationsImpl;
+import momime.common.calculations.CityProductionCalculationsImpl;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Wizard;
@@ -78,8 +79,12 @@ public final class TestCityAIImpl extends ServerTestData
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setBooleanMapAreaOperations2D (booleanMapAreaOperations2D);
 		
+		final CityProductionCalculationsImpl prod = new CityProductionCalculationsImpl ();
+		prod.setCityCalculations (calc);
+		
 		final CityAIImpl ai = new CityAIImpl ();
 		ai.setCityCalculations (calc);
+		ai.setCityProductionCalculations (prod);
 		ai.setCoordinateSystemUtils (coordinateSystemUtils);
 		
 		final MapCoordinates3DEx ocean = ai.chooseCityLocation (map, map, 0, false, sd, db, null);

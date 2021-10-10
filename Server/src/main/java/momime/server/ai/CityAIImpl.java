@@ -26,6 +26,7 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.AiBuildingTypeID;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
@@ -75,6 +76,9 @@ public final class CityAIImpl implements CityAI
 	/** City calculations */
 	private CityCalculations cityCalculations;
 
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
+	
 	/** Server-only city calculations */
 	private ServerCityCalculations serverCityCalculations;
 
@@ -112,7 +116,7 @@ public final class CityAIImpl implements CityAI
 	{
 		Integer thisCityQuality;
 		
-		final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions (null, knownMap, null, null, cityLocation, null, sd, false, true, db);
+		final CityProductionBreakdownsEx productions = getCityProductionCalculations ().calculateAllCityProductions (null, knownMap, null, null, cityLocation, null, sd, false, true, db);
 		final CityProductionBreakdown foodProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		final int maxCitySize = (foodProduction != null) ? foodProduction.getCappedProductionAmount () : 0;
 		
@@ -868,6 +872,22 @@ public final class CityAIImpl implements CityAI
 		cityCalculations = calc;
 	}
 
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param calc City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations calc)
+	{
+		cityProductionCalculations = calc;
+	}
+	
 	/**
 	 * @return Server-only city calculations
 	 */

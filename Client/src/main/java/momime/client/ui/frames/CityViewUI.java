@@ -65,6 +65,7 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.CityViewElement;
@@ -120,6 +121,9 @@ public final class CityViewUI extends MomClientFrameUI
 	/** City calculations */
 	private CityCalculations cityCalculations;
 
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
+	
 	/** Client city calculations */
 	private ClientCityCalculations clientCityCalculations;
 	
@@ -393,7 +397,7 @@ public final class CityViewUI extends MomClientFrameUI
 		// Explain the max size calculation
 		maximumPopulationAction = new LoggingAction ((ev) ->
 		{
-			final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
+			final CityProductionBreakdown breakdown = getCityProductionCalculations ().calculateAllCityProductions
 				(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
@@ -1061,7 +1065,7 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		// Display all productions which have graphics, i.e. Rations / Production / Gold / Power / Research
 		int ypos = 0;
-		for (final CityProductionBreakdown thisProduction : getCityCalculations ().calculateAllCityProductions
+		for (final CityProductionBreakdown thisProduction : getCityProductionCalculations ().calculateAllCityProductions
 			(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
@@ -1075,7 +1079,7 @@ public final class CityViewUI extends MomClientFrameUI
 				// Explain this production calculation
 				final Action productionAction = new LoggingAction ((ev) ->
 				{
-					final CityProductionBreakdown breakdown = getCityCalculations ().calculateAllCityProductions
+					final CityProductionBreakdown breakdown = getCityProductionCalculations ().calculateAllCityProductions
 						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
@@ -1186,7 +1190,7 @@ public final class CityViewUI extends MomClientFrameUI
 				raceLabel.setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "CityViewUI").getRaceNameSingular ()));
 			
 				// Max city size
-				final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions
+				final CityProductionBreakdownsEx productions = getCityProductionCalculations ().calculateAllCityProductions
 					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
@@ -1419,6 +1423,22 @@ public final class CityViewUI extends MomClientFrameUI
 		cityCalculations = calc;
 	}
 
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
+	}
+	
 	/**
 	 * @return Client city calculations
 	 */

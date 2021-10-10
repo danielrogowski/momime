@@ -36,6 +36,7 @@ import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CitySize;
 import momime.common.database.CityViewElement;
@@ -216,7 +217,7 @@ public final class TestCityViewUI extends ClientTestData
 		when (client.getPlayers ()).thenReturn (players);
 		
 		// City production
-		final CityCalculations calc = mock (CityCalculations.class);
+		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
 		
 		final int maxCitySize = 20;
 		
@@ -239,9 +240,11 @@ public final class TestCityViewUI extends ClientTestData
 		productions.getProductionType ().add (rationsProd);
 		productions.getProductionType ().add (goldProd);
 		
-		when (calc.calculateAllCityProductions (client.getPlayers (), terrain, fow.getBuilding (), fow.getMaintainedSpell (),
+		when (prod.calculateAllCityProductions (client.getPlayers (), terrain, fow.getBuilding (), fow.getMaintainedSpell (),
 			new MapCoordinates3DEx (20, 10, 0), "TR01", sd, true, false, db)).thenReturn (productions);
-		
+
+		// City calculations
+		final CityCalculations calc = mock (CityCalculations.class);
 		final CityGrowthRateBreakdown cityGrowthBreakdown = new CityGrowthRateBreakdown ();
 		cityGrowthBreakdown.setCappedTotal (70);
 		when (calc.calculateCityGrowthRate (players, terrain, fow.getBuilding (), fow.getMaintainedSpell (),
@@ -296,6 +299,7 @@ public final class TestCityViewUI extends ClientTestData
 		cityView.setCityViewPanel (panel);
 		cityView.setClient (client);
 		cityView.setCityCalculations (calc);
+		cityView.setCityProductionCalculations (prod);
 		cityView.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		cityView.setWizardClientUtils (wizardClientUtils);
 		cityView.setAnim (anim);

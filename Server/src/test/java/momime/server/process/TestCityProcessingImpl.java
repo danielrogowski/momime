@@ -27,6 +27,7 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -555,7 +556,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		raidersCell.setCityData (raidersCity);
 		
 		// City production
-		final CityCalculations cityCalc = mock (CityCalculations.class);
+		final CityProductionCalculations cityProd = mock (CityProductionCalculations.class);
 		
 		final CityProductionBreakdown humanCityMaxSizeContainer = new CityProductionBreakdown ();
 		humanCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -566,7 +567,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final CityProductionBreakdownsEx humanCityProductions = new CityProductionBreakdownsEx ();
 		humanCityProductions.getProductionType ().add (humanCityMaxSizeContainer);
 		humanCityProductions.getProductionType ().add (humanProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityProd.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			humanLocation, "TR01", sd, true, false, db)).thenReturn (humanCityProductions);
 
 		final CityProductionBreakdown aiCityMaxSizeContainer = new CityProductionBreakdown ();
@@ -578,7 +579,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final CityProductionBreakdownsEx aiCityProductions = new CityProductionBreakdownsEx ();
 		aiCityProductions.getProductionType ().add (aiCityMaxSizeContainer);
 		aiCityProductions.getProductionType ().add (aiProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityProd.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			aiLocation, "TR02", sd, true, false, db)).thenReturn (aiCityProductions);
 		
 		final CityProductionBreakdown raidersCityMaxSizeContainer = new CityProductionBreakdown ();
@@ -590,10 +591,12 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final CityProductionBreakdownsEx raidersCityProductions = new CityProductionBreakdownsEx ();
 		raidersCityProductions.getProductionType ().add (raidersCityMaxSizeContainer);
 		raidersCityProductions.getProductionType ().add (raidersProduction);
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityProd.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			raidersLocation, "TR03", sd, true, false, db)).thenReturn (raidersCityProductions);
 		
 		// City growth rate
+		final CityCalculations cityCalc = mock (CityCalculations.class);
+
 		final CityGrowthRateBreakdown humanGrowthRate = new CityGrowthRateBreakdown ();
 		humanGrowthRate.setCappedTotal (650);
 		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
@@ -636,6 +639,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setCityCalculations (cityCalc);
+		proc.setCityProductionCalculations (cityProd);
 		proc.setServerCityCalculations (serverCityCalc);
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setUnitServerUtils (unitServerUtils);

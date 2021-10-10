@@ -17,7 +17,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
-import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -92,8 +92,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
-	/** City calculations */
-	private CityCalculations cityCalculations;
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
 
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -202,7 +202,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 						// Calculate all productions from this city
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
-						for (final CityProductionBreakdown cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
+						for (final CityProductionBreakdown cityProduction : getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
 							trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, true, false, db).getProductionType ())
 						{
 							int cityProductionValue = 0;
@@ -813,19 +813,19 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	}
 
 	/**
-	 * @return City calculations
+	 * @return City production calculations
 	 */
-	public final CityCalculations getCityCalculations ()
+	public final CityProductionCalculations getCityProductionCalculations ()
 	{
-		return cityCalculations;
+		return cityProductionCalculations;
 	}
 
 	/**
-	 * @param calc City calculations
+	 * @param calc City production calculations
 	 */
-	public final void setCityCalculations (final CityCalculations calc)
+	public final void setCityProductionCalculations (final CityProductionCalculations calc)
 	{
-		cityCalculations = calc;
+		cityProductionCalculations = calc;
 	}
 
 	/**

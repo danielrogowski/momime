@@ -1648,6 +1648,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="citiesListCellRenderer" ref="citiesListCellRenderer" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
@@ -1872,6 +1873,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />

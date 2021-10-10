@@ -24,8 +24,8 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
-import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
@@ -160,12 +160,12 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Set up test object
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		final CityCalculations cityCalc = mock (CityCalculations.class);
+		final CityProductionCalculations cityCalc = mock (CityProductionCalculations.class);
 
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
-		calc.setCityCalculations (cityCalc);
+		calc.setCityProductionCalculations (cityCalc);
 		calc.setUnitServerUtils (mock (UnitServerUtils.class));
 		
 		// Use real resource value utils, so we don't have to mock every possible value of addToAmountPerTurn

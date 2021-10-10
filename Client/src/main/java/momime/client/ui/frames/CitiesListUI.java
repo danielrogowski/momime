@@ -48,6 +48,7 @@ import momime.client.utils.CitiesListSorter;
 import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Unit;
@@ -94,6 +95,9 @@ public final class CitiesListUI extends MomClientFrameUI
 	
 	/** City calculations */
 	private CityCalculations cityCalculations;
+	
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -388,7 +392,7 @@ public final class CitiesListUI extends MomClientFrameUI
 						if ((cityData != null) && (cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ()))
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
-							final CityProductionBreakdownsEx cityProductions = getCityCalculations ().calculateAllCityProductions
+							final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions
 								(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), cityLocation,
@@ -617,6 +621,22 @@ public final class CitiesListUI extends MomClientFrameUI
 		cityCalculations = calc;
 	}
 
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
+	}
+	
 	/**
 	 * @return Prototype frame creator
 	 */

@@ -29,8 +29,8 @@ import momime.client.languages.database.Simple;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.CitiesListCellRenderer;
 import momime.client.utils.WizardClientUtils;
-import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -190,10 +190,10 @@ public final class TestCitiesListUI extends ClientTestData
 		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, terrain, fow.getBuilding ())).thenReturn (fortress);
 		
 		// Production
-		final CityCalculations cityCalculations = mock (CityCalculations.class);
+		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
 		
 		final CityProductionBreakdownsEx cityProductions = new CityProductionBreakdownsEx ();
-		when (cityCalculations.calculateAllCityProductions
+		when (prod.calculateAllCityProductions
 			(eq (players), eq (terrain), eq (fow.getBuilding ()), eq (fow.getMaintainedSpell ()),
 				any (MapCoordinates3DEx.class), eq ("TR01"), eq (sd), eq (true), eq (false), eq (db))).thenReturn (cityProductions);
 		
@@ -236,7 +236,7 @@ public final class TestCitiesListUI extends ClientTestData
 		cities.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		cities.setWizardClientUtils (wizardClientUtils);
 		cities.setMemoryBuildingUtils (memoryBuildingUtils);
-		cities.setCityCalculations (cityCalculations);
+		cities.setCityProductionCalculations (prod);
 		cities.setMiniMapBitmapGenerator (gen);
 		cities.setCitiesListCellRenderer (renderer);
 		

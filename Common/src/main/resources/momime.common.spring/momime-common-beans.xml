@@ -265,6 +265,14 @@
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
+	</bean>
+
+	<bean id="cityProductionCalculations" class="momime.common.calculations.CityProductionCalculationsImpl">
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
 	</bean>
 	
 	<bean id="skillCalculations" class="momime.common.calculations.SkillCalculationsImpl" />

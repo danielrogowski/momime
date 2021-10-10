@@ -1896,6 +1896,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSwitchedOffFromLackOfProduction" type="momimecommon:languageText" nxe:label="Spell switched off from lack of production" nxe:plural="Spells switched off from lack of production" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cannotEndTurnDueToLackOfProduction" type="momimecommon:languageText" nxe:label="Cannot end turn due to lack of production" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="roundingDirectionID" type="momimecommon:roundingDirectionID" nxe:label="Rounding Direction for production from Cities" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="productionAmountBucketID" type="momimecommon:productionAmountBucketID" nxe:label="Default bucket" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="percentage" type="xsd:boolean" nxe:label="Percentage?" nxe:gridwidth="80" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevelMultiplierApplies" type="xsd:boolean" nxe:label="AI Difficulty Level Multiplier applies?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="enforceProduction" type="momimecommon:enforceProductionID" nxe:label="Enforce?" nxe:showmaincolumn="false" />
@@ -2471,6 +2472,7 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingHelpText" type="momimecommon:languageText" nxe:label="Help text" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReduction" type="momimecommon:buildingUnrestReduction" nxe:label="Unrest Reduction" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReductionImprovedByRetorts" type="xsd:boolean" nxe:label="Unrest reduction improved by DivP/InfP?" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="overrideProductionAmountBucketID" type="momimecommon:productionAmountBucketID" nxe:label="Override production bucket" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateBonus" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Bonus" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="housingPercentageBonus" type="momimecommon:percentage" nxe:label="Housing %" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="healingRateBonus" type="momimecommon:healingRate" nxe:label="Healing Rate" nxe:gridwidth="100" />
@@ -4559,6 +4561,22 @@ Ordering of this list is very significant.
 			<xsd:enumeration value="S"><xsd:annotation>
 				<xsd:documentation>Stored amount cannot go below zero</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="STORED_AMOUNT_CANNOT_GO_BELOW_ZERO" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="productionAmountBucketID" nxe:singular="Enforce Production ID">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Normal setting.  Production amounts are totalled up, and then any percentage bonuses or penalties are applied to the total.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BEFORE_PERCENTAGE_BONUSES" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Percentage bonuses are applied, and production amounts are added on after.
+This only makes sense if there is some exception to this setting (either specified in XML or hard coded) that puts *something* into the "before" bucket.
+So then production amount = (before * (1 + percentage bonus - percentage penalty)) + after.
+This is needed to make the overly complicated food and rations calculations accurate.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="AFTER_PERCENTAGE_BONUSES" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

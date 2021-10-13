@@ -397,23 +397,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		{
 			netEffectCount++;
 			
-			// If there are no befores, then any percentage bonuses or penalties are irrelevant, so scrub them out
-			// (they won't be displayed anyway, but clearing these lists might enable the afters to be moved into the before list below).
-			// So is the overfarming rule, but if we're generating no production, that isn't going to kick in anyway.
-			if (productionBeforeBreakdowns.size () == 0)
-			{
-				percentageBonuses.clear ();
-				percentagePenalties.clear ();
-			}
-			
-			// If there are no % bonuses or penalties and no overfarming rule, move any afters into the befores list
-			if ((percentageBonuses.size () == 0) && (percentagePenalties.size () == 0) && (calc.getFoodProductionFromTerrainTiles () == null) &&
-				(productionAfterBreakdowns.size () > 0))
-			{
-				productionBeforeBreakdowns.addAll (productionAfterBreakdowns);
-				productionAfterBreakdowns.clear ();
-			}			
-			
 			// Output the befores, and any percentage bonuses or penalties that apply to them
 			if (productionBeforeBreakdowns.size () > 0)
 			{
@@ -482,17 +465,20 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getOverfarmingRuleHeading ()));
 					
 					// Adjustment
-					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getOverfarmingRuleLine1 ()));
-					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getOverfarmingRuleLine2 ()));
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getOverfarmingRuleLine ()));
 				}
 			}
 			
 			// Output the afters (note because of pre-cleaning done to the lists, this can only happen if we have befores AND afters AND some percentage bonuses or penalties)
 			if (productionAfterBreakdowns.size () > 0)
 			{
-				// Heading
+				// Heading - if there weren't any "before"s, then use that heading instead so it doesn't say "Additional"
 				getProductionReplacer ().addLine (text, null);
-				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionAfterHeading ()));
+				
+				if (productionBeforeBreakdowns.size () > 0)
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionAfterHeading ()));
+				else
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionBeforeHeading ()));
 
 				// Detail line(s)
 				for (final String line : productionAfterBreakdowns)

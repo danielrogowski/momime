@@ -1546,12 +1546,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <overfarmingRuleHeading language="en">
         	<text>Overfarming Rule</text>
         </overfarmingRuleHeading>
-        <overfarmingRuleLine1 language="en">
-        	<text>Terrain around the city is only providing FOOD_FROM_TERRAIN food.  Trying to produce PRODUCTION_TOTAL_AFTER_PENALTY - FOOD_FROM_TERRAIN = OVERFARMING_AMOUNT in excess of this,</text>
-        </overfarmingRuleLine1>
-        <overfarmingRuleLine2 language="en">
-        	<text>so due to overfarming inefficiency only generate OVERFARMING_AMOUNT / 2 = OVERFARMING_PRODUCTION_GAINED for a total of FOOD_FROM_TERRAIN + OVERFARMING_PRODUCTION_GAINED = PRODUCTION_TOTAL_AFTER_OVERFARMING</text>
-        </overfarmingRuleLine2>
+        <overfarmingRuleLine language="en">
+        	<text>Terrain around the city is only providing FOOD_FROM_TERRAIN food.  Trying to produce PRODUCTION_TOTAL_AFTER_PENALTY - FOOD_FROM_TERRAIN = OVERFARMING_AMOUNT in excess of this, so due to overfarming inefficiency only generate OVERFARMING_AMOUNT / 2 = OVERFARMING_PRODUCTION_GAINED for a total of FOOD_FROM_TERRAIN + OVERFARMING_PRODUCTION_GAINED = PRODUCTION_TOTAL_AFTER_OVERFARMING</text>
+        </overfarmingRuleLine>
         <baseTotal language="en">
             <text>Total PRODUCTION_TYPE = PRODUCTION_AMOUNT_BASE_TOTAL</text>
         </baseTotal>

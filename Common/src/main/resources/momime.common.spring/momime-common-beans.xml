@@ -258,6 +258,8 @@
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
+	<bean id="cityProductionUtils" class="momime.common.utils.CityProductionUtilsImpl" />
+
 	<bean id="cityCalculations" class="momime.common.calculations.CityCalculationsImpl">
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
@@ -266,6 +268,7 @@
 		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
+		<property name="cityProductionUtils" ref="cityProductionUtils" />
 	</bean>
 
 	<bean id="cityProductionCalculations" class="momime.common.calculations.CityProductionCalculationsImpl">
@@ -273,6 +276,7 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="cityProductionUtils" ref="cityProductionUtils" />
 	</bean>
 	
 	<bean id="skillCalculations" class="momime.common.calculations.SkillCalculationsImpl" />

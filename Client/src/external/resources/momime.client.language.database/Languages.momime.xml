@@ -1357,9 +1357,12 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <title language="en">
             <text>PRODUCTION_TYPE production in CITY_SIZE_AND_NAME</text>
         </title>
-        <productionMainHeading language="en">
+        <productionBeforeHeading language="en">
             <text>PRODUCTION</text>
-        </productionMainHeading>
+        </productionBeforeHeading>
+        <productionAfterHeading language="en">
+            <text>Additional Production</text>
+        </productionAfterHeading>
         <productionFromSinglePopulation language="en">
             <text>TASK_NAME_SINGULAR producing PRODUCTION_ALL_PEOPLE_DOING_TASK PRODUCTION_TYPE</text>
         </productionFromSinglePopulation>
@@ -1430,10 +1433,10 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>BUILDING_NAME produces BUILDING_UNMODIFIED_PRODUCTION PRODUCTION_TYPE +RELIGIOUS_PERCENTAGE_BONUS% bonus from RETORT_LIST = BUILDING_MODIFIED_PRODUCTION PRODUCTION_TYPE</text>
         </productionFromBuildingWithReligiousRetortBonus>
         <productionFromBuildingWithReligiousRetortBonus language="fr">
-            <text>BUILDING_NAME fournit UNMODIFIED_PRODUCTION_AMOUNT PRODUCTION_TYPE + PERCENTAGE_BONUS% bonus de la cornue = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+            <text>BUILDING_NAME fournit BUILDING_UNMODIFIED_PRODUCTION PRODUCTION_TYPE + PERCENTAGE_BONUS% bonus de la cornue = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </productionFromBuildingWithReligiousRetortBonus>
         <productionFromBuildingWithReligiousRetortBonus language="pl">
-            <text>BUILDING_NAME produkuje UNMODIFIED_PRODUCTION_AMOUNT PRODUCTION_TYPE +PERCENTAGE_BONUS% premii z retort = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+            <text>BUILDING_NAME produkuje BUILDING_UNMODIFIED_PRODUCTION PRODUCTION_TYPE +PERCENTAGE_BONUS% premii z retort = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </productionFromBuildingWithReligiousRetortBonus>
         <productionFromSpell language="en">
             <text>SPELL_NAME produces SPELL_PRODUCTION PRODUCTION_TYPE</text>
@@ -1457,28 +1460,28 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>BUILDING_NAME będący na PLANE_NAME produkuje PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </productionFromFortressPlane>
         <roundingTotalBefore language="en">
-            <text>Total PRODUCTION_TYPE = UNMODIFIED_PRODUCTION_AMOUNT</text>
+            <text>Total PRODUCTION_TYPE = PRODUCTION_AMOUNT_BEFORE_PERCENTAGES</text>
         </roundingTotalBefore>
         <roundingTotalBefore language="fr">
-            <text>PRODUCTION_TYPE totale = UNMODIFIED_PRODUCTION_AMOUNT</text>
+            <text>PRODUCTION_TYPE totale = PRODUCTION_AMOUNT_BEFORE_PERCENTAGES</text>
         </roundingTotalBefore>
         <roundingUp language="en">
             <text>Rounded up = ROUNDED_PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </roundingUp>
         <roundingUp language="fr">
-            <text>Arrondi = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+            <text>Arrondi = ROUNDED_PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </roundingUp>
         <roundingUp language="pl">
-            <text>Rounded up = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+            <text>Rounded up = ROUNDED_PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </roundingUp>
         <roundingDown language="en">
             <text>Rounded down = ROUNDED_PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </roundingDown>
         <roundingDown language="fr">
-            <text>Troncature = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+            <text>Troncature = ROUNDED_PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </roundingDown>
         <roundingDown language="pl">
-            <text>Rounded down = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
+            <text>Rounded down = ROUNDED_PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </roundingDown>
         <productionPercentageBonusHeading language="en">
             <text>Percentage Bonuses</text>
@@ -1532,16 +1535,28 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>However trade bonus is capped at CURRENT_POPULATION_DIV_1000 * 3% = CAP_VALUE%</text>
         </goldTradeBonusCapped>
         <productionPercentageBonusTotal language="en">
-            <text>PERCENTAGE_BONUS% of ROUNDED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS for a total of PRODUCTION_TOTAL</text>
+            <text>PERCENTAGE_BONUS% of ROUNDED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS for a total of PRODUCTION_TOTAL_AFTER_BONUS</text>
         </productionPercentageBonusTotal>
         <productionPercentageBonusTotal language="fr">
-            <text>PERCENTAGE_BONUS% du UNMODIFIED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS pour un total de PRODUCTION_AMOUNT</text>
+            <text>PERCENTAGE_BONUS% du ROUNDED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS pour un total de PRODUCTION_TOTAL_AFTER_BONUS</text>
         </productionPercentageBonusTotal>
         <productionPercentagePenaltyTotal language="en">
-            <text>PERCENTAGE_PENALTY% of PRODUCTION_TOTAL = PRODUCTION_LOSS_FROM_PERCENTAGE_PENALTY for a reduction to PRODUCTION_TOTAL_AFTER_PENALTY</text>
+            <text>PERCENTAGE_PENALTY% of PRODUCTION_TOTAL_AFTER_BONUS = PRODUCTION_LOSS_FROM_PERCENTAGE_PENALTY for a reduction to PRODUCTION_TOTAL_AFTER_PENALTY</text>
         </productionPercentagePenaltyTotal>
+        <overfarmingRuleHeading language="en">
+        	<text>Overfarming Rule</text>
+        </overfarmingRuleHeading>
+        <overfarmingRuleLine1 language="en">
+        	<text>Terrain around the city is only providing FOOD_FROM_TERRAIN food.  Trying to produce PRODUCTION_TOTAL_AFTER_PENALTY - FOOD_FROM_TERRAIN = OVERFARMING_AMOUNT in excess of this,</text>
+        </overfarmingRuleLine1>
+        <overfarmingRuleLine2 language="en">
+        	<text>so due to overfarming inefficiency only generate OVERFARMING_AMOUNT / 2 = OVERFARMING_PRODUCTION_GAINED for a total of FOOD_FROM_TERRAIN + OVERFARMING_PRODUCTION_GAINED = PRODUCTION_TOTAL_AFTER_OVERFARMING</text>
+        </overfarmingRuleLine2>
+        <baseTotal language="en">
+            <text>Total PRODUCTION_TYPE = PRODUCTION_AMOUNT_BASE_TOTAL</text>
+        </baseTotal>
         <difficultyLevelMultiplier language="en">
-            <text>AI player gets difficulty level multiplier PRODUCTION_TOTAL_AFTER_PENALTY * AI_PRODUCTION_RATE_MULTIPLIER% = TOTAL_ADJUSTED_FOR_DIFFICULTY_LEVEL</text>
+            <text>AI player gets difficulty level multiplier PRODUCTION_AMOUNT_BASE_TOTAL * AI_PRODUCTION_RATE_MULTIPLIER% = TOTAL_ADJUSTED_FOR_DIFFICULTY_LEVEL</text>
         </difficultyLevelMultiplier>
         <productionCapped language="en">
             <text>However value is capped at PRODUCTION_CAPPED</text>

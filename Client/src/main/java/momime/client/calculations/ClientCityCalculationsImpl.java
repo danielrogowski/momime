@@ -1,8 +1,10 @@
 package momime.client.calculations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,6 +23,7 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionAmountBucketID;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
@@ -32,6 +35,7 @@ import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityProductionBreakdownBuilding;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
+import momime.common.internal.CityProductionBreakdownPlane;
 import momime.common.internal.CityProductionBreakdownPopulationTask;
 import momime.common.internal.CityProductionBreakdownSpell;
 import momime.common.internal.CityProductionBreakdownTileType;
@@ -220,10 +224,16 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		getProductionReplacer ().setBreakdown (calc);
 		
 		// List out into blocks of production, % bonuses and consumption - so we can test whether each block contains 0, 1 or many entries
-		final List<String> productionBreakdowns = new ArrayList<String> ();
+		final List<String> productionBeforeBreakdowns = new ArrayList<String> ();
+		final List<String> productionAfterBreakdowns = new ArrayList<String> ();
 		final List<String> consumptionBreakdowns = new ArrayList<String> ();
 		final List<String> percentageBonuses = new ArrayList<String> ();
 		final List<String> percentagePenalties = new ArrayList<String> ();
+		
+		// Try to make a shorthand way of picking the right production bucket so don't have to have ternaries all over the place
+		final Map<ProductionAmountBucketID, List<String>> buckets = new HashMap<ProductionAmountBucketID, List<String>> ();
+		buckets.put (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionBeforeBreakdowns);
+		buckets.put (ProductionAmountBucketID.AFTER_PERCENTAGE_BONUSES, productionAfterBreakdowns);
 		
 		// Production from farmers/workers/rebels
 		for (final CityProductionBreakdownPopulationTask populationTaskProduction : calc.getPopulationTaskProduction ())
@@ -231,14 +241,16 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			getProductionReplacer ().setCurrentPopulationTask (populationTaskProduction);
 			
 			if (populationTaskProduction.getCount () == 1)
-				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSinglePopulation ())));
+				buckets.get (populationTaskProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+					(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSinglePopulation ())));
 			else
-				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMultiplePopulation ())));
+				buckets.get (populationTaskProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+					(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMultiplePopulation ())));
 		}
 		
 		// Production from population irrespective of what task they're performing (taxes)
 		if (calc.getDoubleProductionAmountAllPopulation () > 0)
-			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldFromTaxes ())));
+			productionBeforeBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldFromTaxes ())));
 		
 		// Consumption from population irrespective of what task they're performing (eating rations)
 		if (calc.getConsumptionAmountAllPopulation () > 0)
@@ -252,9 +264,11 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			if (tileTypeProduction.getDoubleProductionAmountAllTiles () > 0)
 			{
 				if (tileTypeProduction.getCount () == 1)
-					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSingleTile ())));
+					buckets.get (tileTypeProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+						(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSingleTile ())));
 				else
-					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMultipleTiles ())));
+					buckets.get (tileTypeProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+						(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMultipleTiles ())));
 			}
 			
 			// % bonus from terrain tiles (production)
@@ -273,15 +287,19 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			getProductionReplacer ().setCurrentMapFeature (mapFeatureProduction);
 			
 			if (mapFeatureProduction.getCount () == 1)
-				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSingleMapFeature ())));
+				buckets.get (mapFeatureProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+					(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSingleMapFeature ())));
 			else
-				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMultipleMapFeatures ())));
+				buckets.get (mapFeatureProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+					(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMultipleMapFeatures ())));
 
 			if (mapFeatureProduction.getRaceMineralBonusMultiplier () > 1)
-				productionBreakdowns.add (INDENT + getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMapFeatureRaceBonus ())));
+				buckets.get (mapFeatureProduction.getProductionAmountBucketID ()).add (INDENT + getProductionReplacer ().replaceVariables
+					(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMapFeatureRaceBonus ())));
 		
 			if (mapFeatureProduction.getBuildingMineralPercentageBonus () > 0)
-				productionBreakdowns.add (INDENT + getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMapFeatureBuildingBonus ())));
+				buckets.get (mapFeatureProduction.getProductionAmountBucketID ()).add (INDENT + getProductionReplacer ().replaceVariables
+					(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMapFeatureBuildingBonus ())));
 		}
 		
 		for (final CityProductionBreakdownBuilding buildingProduction : calc.getBuildingBreakdown ())
@@ -293,9 +311,11 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			{
 				// Shrines etc. generate +50% more power if wizard has Divine or Infernal Power retort
 				if (buildingProduction.getReligiousBuildingPercentageBonus () == 0)
-					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromBuildingWithoutReligiousRetortBonus ())));
+					buckets.get (buildingProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+						(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromBuildingWithoutReligiousRetortBonus ())));
 				else
-					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromBuildingWithReligiousRetortBonus ())));
+					buckets.get (buildingProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+						(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromBuildingWithReligiousRetortBonus ())));
 			}
 			
 			// % bonus from buildings, e.g. Marketplace generating +25% gold
@@ -313,7 +333,8 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			getProductionReplacer ().setCurrentSpell (spellProduction);
 			
 			if (spellProduction.getDoubleProductionAmount () != 0)
-				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSpell ())));
+				buckets.get (spellProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+					(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSpell ())));
 			
 			if (spellProduction.getPercentageBonus () > 0)
 				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getPercentageBonusFromSpell ())));
@@ -325,15 +346,20 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		for (final CityProductionBreakdownPickType pickTypeProduction : calc.getPickTypeProduction ())
 		{
 			getProductionReplacer ().setCurrentPickType (pickTypeProduction);
-			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromFortressPicks ())));
+			buckets.get (pickTypeProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+				(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromFortressPicks ())));
 		}
 		
 		// Production from what plane our wizards' fortress is on
-		if (calc.getDoubleProductionAmountFortressPlane () > 0)
-			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromFortressPlane ())));
+		for (final CityProductionBreakdownPlane planeProduction : calc.getPlaneProduction ())
+		{
+			getProductionReplacer ().setCurrentPlane (planeProduction);
+			buckets.get (planeProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+				(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromFortressPlane ())));
+		}			
 		
 		// Gold trade bonus
-		if (calc.getDoubleProductionAmount () > 0)
+		if (calc.getProductionAmountBeforePercentages () > 0)
 		{
 			int goldTradeBonusCount = 0;
 			if (calc.getTradePercentageBonusFromTileType () > 0)
@@ -363,69 +389,118 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldTradeBonusCapped ())));
 		}
 		
-		// Did we get 0, 1 or many sources of production?
+		// "before" productions, and any percentage bonuses or penalties apply to the "before" values,
+		// so only bother to include those too if we actually have some "before" values
 		int netEffectCount = 0;
 		final StringBuilder text = new StringBuilder ();
-		if (productionBreakdowns.size () > 0)
+		if ((productionBeforeBreakdowns.size () > 0) || (productionAfterBreakdowns.size () > 0))
 		{
 			netEffectCount++;
 			
-			// Heading
-			getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionMainHeading ()));
+			// If there are no befores, then any percentage bonuses or penalties are irrelevant, so scrub them out
+			// (they won't be displayed anyway, but clearing these lists might enable the afters to be moved into the before list below).
+			// So is the overfarming rule, but if we're generating no production, that isn't going to kick in anyway.
+			if (productionBeforeBreakdowns.size () == 0)
+			{
+				percentageBonuses.clear ();
+				percentagePenalties.clear ();
+			}
 			
-			// Detail line(s)
-			for (final String line : productionBreakdowns)
-				getProductionReplacer ().addLine (text, line);
+			// If there are no % bonuses or penalties and no overfarming rule, move any afters into the befores list
+			if ((percentageBonuses.size () == 0) && (percentagePenalties.size () == 0) && (calc.getFoodProductionFromTerrainTiles () == null) &&
+				(productionAfterBreakdowns.size () > 0))
+			{
+				productionBeforeBreakdowns.addAll (productionAfterBreakdowns);
+				productionAfterBreakdowns.clear ();
+			}			
 			
-			// Total
-			if (productionBreakdowns.size ()  > 1)
-				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRoundingTotalBefore ()));
-			
-			// Rounding - roundingDirectionID only gets set if the production wasn't an exact multiple of 2
-			if (calc.getRoundingDirectionID () != null)
-				switch (calc.getRoundingDirectionID ())
-				{
-					case ROUND_UP:
-						getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRoundingUp ()));
-						break;
-					
-					case ROUND_DOWN:
-						getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRoundingDown ()));
-						break;
+			// Output the befores, and any percentage bonuses or penalties that apply to them
+			if (productionBeforeBreakdowns.size () > 0)
+			{
+				// Heading
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionBeforeHeading ()));
+				
+				// Detail line(s)
+				for (final String line : productionBeforeBreakdowns)
+					getProductionReplacer ().addLine (text, line);
+				
+				// Total
+				if (productionBeforeBreakdowns.size ()  > 1)
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRoundingTotalBefore ()));
+				
+				// Rounding - roundingDirectionID only gets set if the production wasn't an exact multiple of 2
+				if (calc.getRoundingDirectionID () != null)
+					switch (calc.getRoundingDirectionID ())
+					{
+						case ROUND_UP:
+							getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRoundingUp ()));
+							break;
 						
-					default:
-						throw new MomException ("describeCityProductionCalculation encountered a roundingDirectionID which wasn't up or down = " + calc.getRoundingDirectionID ());
+						case ROUND_DOWN:
+							getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRoundingDown ()));
+							break;
+							
+						default:
+							throw new MomException ("describeCityProductionCalculation encountered a roundingDirectionID which wasn't up or down = " + calc.getRoundingDirectionID ());
+					}
+				
+				// Percentage bonuses - put in a list first so we can test whether we get 0, 1 or many entries here
+				if (percentageBonuses.size () > 0)
+				{
+					// Heading
+					getProductionReplacer ().addLine (text, null);
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentageBonusHeading ()));
+					
+					// Detail line(s)
+					for (final String line : percentageBonuses)
+						getProductionReplacer ().addLine (text, line);
+					
+					// Total
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentageBonusTotal ()));
 				}
+				
+				// Percentage Penalties - put in a list first so we can test whether we get 0, 1 or many entries here
+				if (percentagePenalties.size () > 0)
+				{
+					// Heading
+					getProductionReplacer ().addLine (text, null);
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentagePenaltyHeading ()));
+					
+					// Detail line(s)
+					for (final String line : percentagePenalties)
+						getProductionReplacer ().addLine (text, line);
+					
+					// Total
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentagePenaltyTotal ()));
+				}
+				
+				// Overfarming rule?
+				if (calc.getFoodProductionFromTerrainTiles () != null)
+				{
+					// Heading
+					getProductionReplacer ().addLine (text, null);
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getOverfarmingRuleHeading ()));
+					
+					// Adjustment
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getOverfarmingRuleLine1 ()));
+					getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getOverfarmingRuleLine2 ()));
+				}
+			}
 			
-			// Percentage bonuses - put in a list first so we can test whether we get 0, 1 or many entries here
-			if (percentageBonuses.size () > 0)
+			// Output the afters (note because of pre-cleaning done to the lists, this can only happen if we have befores AND afters AND some percentage bonuses or penalties)
+			if (productionAfterBreakdowns.size () > 0)
 			{
 				// Heading
 				getProductionReplacer ().addLine (text, null);
-				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentageBonusHeading ()));
-				
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionAfterHeading ()));
+
 				// Detail line(s)
-				for (final String line : percentageBonuses)
+				for (final String line : productionAfterBreakdowns)
 					getProductionReplacer ().addLine (text, line);
 				
 				// Total
-				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentageBonusTotal ()));
-			}
-			
-			// Percentage Penalties - put in a list first so we can test whether we get 0, 1 or many entries here
-			if (percentagePenalties.size () > 0)
-			{
-				// Heading
-				getProductionReplacer ().addLine (text, null);
-				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentagePenaltyHeading ()));
-				
-				// Detail line(s)
-				for (final String line : percentagePenalties)
-					getProductionReplacer ().addLine (text, line);
-				
-				// Total
-				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentagePenaltyTotal ()));
-			}
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getBaseTotal ()));
+			}			
 			
 			// Special boost for AI players
 			if (calc.getDifficultyLevelMultiplier () != 100)

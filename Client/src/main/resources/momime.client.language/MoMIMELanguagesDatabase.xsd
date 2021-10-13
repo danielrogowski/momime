@@ -677,8 +677,12 @@
 						<xsd:selector xpath="title" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="cityProductionProductionMainHeadingPK">
-						<xsd:selector xpath="productionMainHeading" />
+					<xsd:key name="cityProductionProductionBeforeHeadingPK">
+						<xsd:selector xpath="productionBeforeHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionAfterHeadingPK">
+						<xsd:selector xpath="productionAfterHeading" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="cityProductionProductionFromSinglePopulationPK">
@@ -803,6 +807,22 @@
 					</xsd:key>
 					<xsd:key name="cityProductionProductionPercentagePenaltyTotalPK">
 						<xsd:selector xpath="productionPercentagePenaltyTotal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionOverfarmingRuleHeadingPK">
+						<xsd:selector xpath="overfarmingRuleHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionOverfarmingRuleLine1PK">
+						<xsd:selector xpath="overfarmingRuleLine1" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionOverfarmingRuleLine2PK">
+						<xsd:selector xpath="overfarmingRuleLine2" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionBaseTotalPK">
+						<xsd:selector xpath="baseTotal" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="cityProductionDifficultyLevelMultiplierPK">
@@ -2895,7 +2915,8 @@
 	<xsd:complexType name="cityProduction" nxe:submenu="Cities" nxe:singular="City production string" nxe:plural="City production strings">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionMainHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionBeforeHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionAfterHeading" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSinglePopulation" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMultiplePopulation" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldFromTaxes" />
@@ -2927,6 +2948,10 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusCapped" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPercentageBonusTotal" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPercentagePenaltyTotal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="overfarmingRuleHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="overfarmingRuleLine1" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="overfarmingRuleLine2" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="baseTotal" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="difficultyLevelMultiplier" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionCapped" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="consumptionMainHeading" />

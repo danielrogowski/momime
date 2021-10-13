@@ -4,7 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -19,7 +24,6 @@ import com.ndg.map.areas.operations.MapAreaOperations2DImpl;
 import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -27,6 +31,7 @@ import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.BuildingRequiresTileType;
+import momime.common.database.CitySpellEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
@@ -36,6 +41,7 @@ import momime.common.database.OverlandMapSize;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
+import momime.common.database.ProductionAmountBucketID;
 import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RaceEx;
@@ -51,6 +57,7 @@ import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
@@ -62,6 +69,8 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.RenderCityData;
+import momime.common.utils.CityProductionUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
@@ -134,11 +143,148 @@ public final class TestCityCalculationsImpl
 	}
 
 	/**
-	 * Tests the calculateGoldTradeBonus method
+	 * Tests the calculateGoldTradeBonus method when no trade bonus is earned from any source
 	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
 	 */
 	@Test
-	public final void testCalculateGoldTradeBonus () throws RecordNotFoundException
+	public final void testCalculateGoldTradeBonus_None () throws RecordNotFoundException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileTypeEx adjacentTileType = new TileTypeEx ();
+		adjacentTileType.setGoldBonus (10);
+		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// Terrain
+		final OverlandMapTerrainData adjacentTerrain = new OverlandMapTerrainData ();
+		adjacentTerrain.setTileTypeID ("TT02");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (adjacentTerrain);
+		
+		// Call method
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		calc.calculateGoldTradeBonus (breakdown, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
+		
+		// Check results
+		assertEquals (0, breakdown.getTradePercentageBonusFromTileType ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRoads ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRace ());
+		assertEquals (0, breakdown.getTradePercentageBonusUncapped ());
+		assertEquals (0, breakdown.getTotalPopulation ());
+		assertEquals (0, breakdown.getTradePercentageBonusCapped ());
+		assertEquals (0, breakdown.getPercentageBonus ());
+	}
+	
+	/**
+	 * Tests the calculateGoldTradeBonus method when a trade bonus is earned from the adjacent tile, but it doesn't apply because there's no population yet
+	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
+	 */
+	@Test
+	public final void testCalculateGoldTradeBonus_Adjacent () throws RecordNotFoundException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileTypeEx adjacentTileType = new TileTypeEx ();
+		adjacentTileType.setGoldBonus (10);
+		adjacentTileType.setGoldBonusSurroundingTiles (true);
+		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// Terrain
+		final OverlandMapTerrainData adjacentTerrain = new OverlandMapTerrainData ();
+		adjacentTerrain.setTileTypeID ("TT02");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (adjacentTerrain);
+		
+		// Call method
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		calc.calculateGoldTradeBonus (breakdown, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
+		
+		// Check results
+		assertEquals (10, breakdown.getTradePercentageBonusFromTileType ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRoads ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRace ());
+		assertEquals (10, breakdown.getTradePercentageBonusUncapped ());
+		assertEquals (0, breakdown.getTotalPopulation ());
+		assertEquals (0, breakdown.getTradePercentageBonusCapped ());
+		assertEquals (0, breakdown.getPercentageBonus ());
+	}
+	
+	/**
+	 * Tests the calculateGoldTradeBonus method when a trade bonus is earned from the adjacent tile, but is capped by a low population
+	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
+	 */
+	@Test
+	public final void testCalculateGoldTradeBonus_Capped () throws RecordNotFoundException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileTypeEx adjacentTileType = new TileTypeEx ();
+		adjacentTileType.setGoldBonus (10);
+		adjacentTileType.setGoldBonusSurroundingTiles (true);
+		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
+
+		final TileTypeEx uninterestingTileType = new TileTypeEx ();
+		when (db.findTileType ("TT03", "calculateGoldTradeBonus")).thenReturn (uninterestingTileType);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// Terrain
+		final OverlandMapTerrainData adjacentTerrain = new OverlandMapTerrainData ();
+		adjacentTerrain.setTileTypeID ("TT02");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (adjacentTerrain);
+
+		final OverlandMapTerrainData centreTerrain = new OverlandMapTerrainData ();
+		centreTerrain.setTileTypeID ("TT03");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (centreTerrain);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (3456);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Call method
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		calc.calculateGoldTradeBonus (breakdown, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
+		
+		// Check results
+		assertEquals (10, breakdown.getTradePercentageBonusFromTileType ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRoads ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRace ());
+		assertEquals (10, breakdown.getTradePercentageBonusUncapped ());
+		assertEquals (3, breakdown.getTotalPopulation ());
+		assertEquals (9, breakdown.getTradePercentageBonusCapped ());
+		assertEquals (9, breakdown.getPercentageBonus ());
+	}
+	
+	/**
+	 * Tests the calculateGoldTradeBonus method when a better trade bonus is earned from the centre tile, but is capped by a low population
+	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
+	 */
+	@Test
+	public final void testCalculateGoldTradeBonus_Centre () throws RecordNotFoundException
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -149,14 +295,178 @@ public final class TestCityCalculationsImpl
 		
 		final TileTypeEx adjacentTileType = new TileTypeEx ();
 		adjacentTileType.setGoldBonus (10);
+		adjacentTileType.setGoldBonusSurroundingTiles (true);
 		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
 
-		final TileTypeEx uninterestingTileType = new TileTypeEx ();
-		when (db.findTileType ("TT03", "calculateGoldTradeBonus")).thenReturn (uninterestingTileType);
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// Terrain
+		final OverlandMapTerrainData adjacentTerrain = new OverlandMapTerrainData ();
+		adjacentTerrain.setTileTypeID ("TT02");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (adjacentTerrain);
+
+		final OverlandMapTerrainData centreTerrain = new OverlandMapTerrainData ();
+		centreTerrain.setTileTypeID ("TT01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (centreTerrain);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (3456);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Call method
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		calc.calculateGoldTradeBonus (breakdown, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
+		
+		// Check results
+		assertEquals (20, breakdown.getTradePercentageBonusFromTileType ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRoads ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRace ());
+		assertEquals (20, breakdown.getTradePercentageBonusUncapped ());
+		assertEquals (3, breakdown.getTotalPopulation ());
+		assertEquals (9, breakdown.getTradePercentageBonusCapped ());
+		assertEquals (9, breakdown.getPercentageBonus ());
+	}
+	
+	/**
+	 * Tests the calculateGoldTradeBonus method when a better trade bonus is earned from the centre tile, and there's enough population to support it
+	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
+	 */
+	@Test
+	public final void testCalculateGoldTradeBonus_Uncapped () throws RecordNotFoundException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileTypeEx centreTileType = new TileTypeEx ();
+		centreTileType.setGoldBonus (20);
+		when (db.findTileType ("TT01", "calculateGoldTradeBonus")).thenReturn (centreTileType);
+		
+		final TileTypeEx adjacentTileType = new TileTypeEx ();
+		adjacentTileType.setGoldBonus (10);
+		adjacentTileType.setGoldBonusSurroundingTiles (true);
+		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// Terrain
+		final OverlandMapTerrainData adjacentTerrain = new OverlandMapTerrainData ();
+		adjacentTerrain.setTileTypeID ("TT02");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (adjacentTerrain);
+
+		final OverlandMapTerrainData centreTerrain = new OverlandMapTerrainData ();
+		centreTerrain.setTileTypeID ("TT01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (centreTerrain);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (11789);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Call method
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		calc.calculateGoldTradeBonus (breakdown, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
+		
+		// Check results
+		assertEquals (20, breakdown.getTradePercentageBonusFromTileType ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRoads ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRace ());
+		assertEquals (20, breakdown.getTradePercentageBonusUncapped ());
+		assertEquals (11, breakdown.getTotalPopulation ());
+		assertEquals (20, breakdown.getTradePercentageBonusCapped ());
+		assertEquals (20, breakdown.getPercentageBonus ());
+	}
+	
+	/**
+	 * Tests the calculateGoldTradeBonus method when there's a terrain bonus earned but no race bonus
+	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
+	 */
+	@Test
+	public final void testCalculateGoldTradeBonus_NoRaceBonus () throws RecordNotFoundException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileTypeEx centreTileType = new TileTypeEx ();
+		centreTileType.setGoldBonus (20);
+		when (db.findTileType ("TT01", "calculateGoldTradeBonus")).thenReturn (centreTileType);
+		
+		final TileTypeEx adjacentTileType = new TileTypeEx ();
+		adjacentTileType.setGoldBonus (10);
+		adjacentTileType.setGoldBonusSurroundingTiles (true);
+		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
+
 		final RaceEx uninterestingRace = new RaceEx ();
 		when (db.findRace ("RC01", "calculateGoldTradeBonus")).thenReturn (uninterestingRace);
 		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// Terrain
+		final OverlandMapTerrainData adjacentTerrain = new OverlandMapTerrainData ();
+		adjacentTerrain.setTileTypeID ("TT02");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (adjacentTerrain);
+
+		final OverlandMapTerrainData centreTerrain = new OverlandMapTerrainData ();
+		centreTerrain.setTileTypeID ("TT01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (centreTerrain);
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (11789);
+		cityData.setCityRaceID ("RC01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Call method
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		calc.calculateGoldTradeBonus (breakdown, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
+		
+		// Check results
+		assertEquals (20, breakdown.getTradePercentageBonusFromTileType ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRoads ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRace ());
+		assertEquals (20, breakdown.getTradePercentageBonusUncapped ());
+		assertEquals (11, breakdown.getTotalPopulation ());
+		assertEquals (20, breakdown.getTradePercentageBonusCapped ());
+		assertEquals (20, breakdown.getPercentageBonus ());
+	}
+	
+	/**
+	 * Tests the calculateGoldTradeBonus method when there's a terrain bonus earned but no race bonus
+	 * @throws RecordNotFoundException If we encounter a tile type or race that we cannot find in the cache
+	 */
+	@Test
+	public final void testCalculateGoldTradeBonus_WithRaceBonus () throws RecordNotFoundException
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileTypeEx centreTileType = new TileTypeEx ();
+		centreTileType.setGoldBonus (20);
+		when (db.findTileType ("TT01", "calculateGoldTradeBonus")).thenReturn (centreTileType);
+		
+		final TileTypeEx adjacentTileType = new TileTypeEx ();
+		adjacentTileType.setGoldBonus (10);
+		adjacentTileType.setGoldBonusSurroundingTiles (true);
+		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
+
 		final RaceEx nomads = new RaceEx ();
 		nomads.setGoldTradeBonus (50);
 		when (db.findRace ("RC02", "calculateGoldTradeBonus")).thenReturn (nomads);
@@ -169,152 +479,58 @@ public final class TestCityCalculationsImpl
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
-		// Prove that gold bonus from adjacent tile type doesn't count, since adjacent flag isn't set
-		// Also prove it doesn't fall over with no city details or race
+		// Terrain
 		final OverlandMapTerrainData adjacentTerrain = new OverlandMapTerrainData ();
 		adjacentTerrain.setTileTypeID ("TT02");
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (adjacentTerrain);
-		
-		final CityProductionBreakdown breakdown1 = new CityProductionBreakdown ();
-		calc.calculateGoldTradeBonus (breakdown1, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
-		assertEquals (0, breakdown1.getTradePercentageBonusFromTileType ());
-		assertEquals (0, breakdown1.getTradePercentageBonusFromRoads ());
-		assertEquals (0, breakdown1.getTradePercentageBonusFromRace ());
-		assertEquals (0, breakdown1.getTradePercentageBonusUncapped ());
-		assertEquals (0, breakdown1.getTotalPopulation ());
-		assertEquals (0, breakdown1.getTradePercentageBonusCapped ());
-		assertEquals (0, breakdown1.getPercentageBonus ());
-		
-		// Set the adjacent flag, prove it now gets counted
-		adjacentTileType.setGoldBonusSurroundingTiles (true);
-		
-		final CityProductionBreakdown breakdown2 = new CityProductionBreakdown ();
-		calc.calculateGoldTradeBonus (breakdown2, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
-		assertEquals (10, breakdown2.getTradePercentageBonusFromTileType ());
-		assertEquals (0, breakdown2.getTradePercentageBonusFromRoads ());
-		assertEquals (0, breakdown2.getTradePercentageBonusFromRace ());
-		assertEquals (10, breakdown2.getTradePercentageBonusUncapped ());
-		assertEquals (0, breakdown2.getTotalPopulation ());
-		assertEquals (0, breakdown2.getTradePercentageBonusCapped ());
-		assertEquals (0, breakdown2.getPercentageBonus ());
-		
-		// Put the city on an uninteresting tile type, and give it some people
+
 		final OverlandMapTerrainData centreTerrain = new OverlandMapTerrainData ();
-		centreTerrain.setTileTypeID ("TT03");
+		centreTerrain.setTileTypeID ("TT01");
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (centreTerrain);
 		
+		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityPopulation (3456);
+		cityData.setCityPopulation (11789);
+		cityData.setCityRaceID ("RC02");
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		final CityProductionBreakdown breakdown3 = new CityProductionBreakdown ();
-		calc.calculateGoldTradeBonus (breakdown3, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
-		assertEquals (10, breakdown3.getTradePercentageBonusFromTileType ());
-		assertEquals (0, breakdown3.getTradePercentageBonusFromRoads ());
-		assertEquals (0, breakdown3.getTradePercentageBonusFromRace ());
-		assertEquals (10, breakdown3.getTradePercentageBonusUncapped ());
-		assertEquals (3, breakdown3.getTotalPopulation ());
-		assertEquals (9, breakdown3.getTradePercentageBonusCapped ());
-		assertEquals (9, breakdown3.getPercentageBonus ());
+		// Call method
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		calc.calculateGoldTradeBonus (breakdown, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
 		
-		// Put the city on a better tile type, but still cap at 3 people
-		centreTerrain.setTileTypeID ("TT01");
-
-		final CityProductionBreakdown breakdown4 = new CityProductionBreakdown ();
-		calc.calculateGoldTradeBonus (breakdown4, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
-		assertEquals (20, breakdown4.getTradePercentageBonusFromTileType ());
-		assertEquals (0, breakdown4.getTradePercentageBonusFromRoads ());
-		assertEquals (0, breakdown4.getTradePercentageBonusFromRace ());
-		assertEquals (20, breakdown4.getTradePercentageBonusUncapped ());
-		assertEquals (3, breakdown4.getTotalPopulation ());
-		assertEquals (9, breakdown4.getTradePercentageBonusCapped ());
-		assertEquals (9, breakdown4.getPercentageBonus ());
-		
-		// Increase the cap high enough to get the full bonus
-		cityData.setCityPopulation (11789);
-
-		final CityProductionBreakdown breakdown5 = new CityProductionBreakdown ();
-		calc.calculateGoldTradeBonus (breakdown5, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
-		assertEquals (20, breakdown5.getTradePercentageBonusFromTileType ());
-		assertEquals (0, breakdown5.getTradePercentageBonusFromRoads ());
-		assertEquals (0, breakdown5.getTradePercentageBonusFromRace ());
-		assertEquals (20, breakdown5.getTradePercentageBonusUncapped ());
-		assertEquals (11, breakdown5.getTotalPopulation ());
-		assertEquals (20, breakdown5.getTradePercentageBonusCapped ());
-		assertEquals (20, breakdown5.getPercentageBonus ());
-		
-		// Give the city an uninteresting race
-		cityData.setCityRaceID ("RC01");
-
-		final CityProductionBreakdown breakdown6 = new CityProductionBreakdown ();
-		calc.calculateGoldTradeBonus (breakdown6, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
-		assertEquals (20, breakdown6.getTradePercentageBonusFromTileType ());
-		assertEquals (0, breakdown6.getTradePercentageBonusFromRoads ());
-		assertEquals (0, breakdown6.getTradePercentageBonusFromRace ());
-		assertEquals (20, breakdown6.getTradePercentageBonusUncapped ());
-		assertEquals (11, breakdown6.getTotalPopulation ());
-		assertEquals (20, breakdown6.getTradePercentageBonusCapped ());
-		assertEquals (20, breakdown6.getPercentageBonus ());
-		
-		// Give them a race with a trade bonus
-		cityData.setCityRaceID ("RC02");
-
-		final CityProductionBreakdown breakdown7 = new CityProductionBreakdown ();
-		calc.calculateGoldTradeBonus (breakdown7, map, new MapCoordinates3DEx (20, 10, 1), null, sys, db);
-		assertEquals (20, breakdown7.getTradePercentageBonusFromTileType ());
-		assertEquals (0, breakdown7.getTradePercentageBonusFromRoads ());
-		assertEquals (50, breakdown7.getTradePercentageBonusFromRace ());
-		assertEquals (70, breakdown7.getTradePercentageBonusUncapped ());
-		assertEquals (11, breakdown7.getTotalPopulation ());
-		assertEquals (33, breakdown7.getTradePercentageBonusCapped ());
-		assertEquals (33, breakdown7.getPercentageBonus ());
+		// Check results
+		assertEquals (20, breakdown.getTradePercentageBonusFromTileType ());
+		assertEquals (0, breakdown.getTradePercentageBonusFromRoads ());
+		assertEquals (50, breakdown.getTradePercentageBonusFromRace ());
+		assertEquals (70, breakdown.getTradePercentageBonusUncapped ());
+		assertEquals (11, breakdown.getTotalPopulation ());
+		assertEquals (33, breakdown.getTradePercentageBonusCapped ());
+		assertEquals (33, breakdown.getPercentageBonus ());
 	}
 
 	/**
-	 * Tests the buildingPassesTileTypeRequirements method, where the building requires the tiles within 2 spaces of the city
+	 * Tests the buildingPassesTileTypeRequirements method, where the building has no tile type requirement so just automatically passes
 	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
 	@Test
-	public final void testBuildingPassesTileTypeRequirements_DistanceTwo () throws RecordNotFoundException
+	public final void testBuildingPassesTileTypeRequirements_NoRequirements () throws RecordNotFoundException
 	{
 		// Building we're trying to place
-		final BuildingRequiresTileType buildingRequiresTileType = new BuildingRequiresTileType ();
-		buildingRequiresTileType.setDistance (2);
-		buildingRequiresTileType.setTileTypeID ("TT01");
-		
 		final Building building = new Building ();
-		building.getBuildingRequiresTileType ().add (buildingRequiresTileType);
-
-		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
-
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
+		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
-		// Building which has no pre-requisites
-		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation, new Building (), sys));
-
-		// Can't pass yet, since there's no tiles
-		assertFalse (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
-
-		// 2 requirements, but its an 'or', so setting one of them should be enough
-		final OverlandMapTerrainData mountainsTerrain = new OverlandMapTerrainData ();
-		mountainsTerrain.setTileTypeID ("TT01");
-		map.getPlane ().get (0).getRow ().get (1).getCell ().get (4).setTerrainData (mountainsTerrain);
-		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
+		// Run method
+		assertTrue (calc.buildingPassesTileTypeRequirements (null, new MapCoordinates3DEx (20, 10, 1), building, null));
 	}
 
 	/**
-	 * Tests the buildingPassesTileTypeRequirements method, where the building requires the tiles within 1 space of the city
+	 * Tests the buildingPassesTileTypeRequirements method, where the building requires a specific tile adjacent to the city, and we have it
 	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
 	@Test
-	public final void testBuildingPassesTileTypeRequirements_DistanceOne () throws RecordNotFoundException
+	public final void testBuildingPassesTileTypeRequirements_DistanceOne_Matches () throws RecordNotFoundException
 	{
 		// Building we're trying to place
 		final BuildingRequiresTileType buildingRequiresTileType = new BuildingRequiresTileType ();
@@ -324,39 +540,185 @@ public final class TestCityCalculationsImpl
 		final Building building = new Building ();
 		building.getBuildingRequiresTileType ().add (buildingRequiresTileType);
 		
-		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
-
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final OverlandMapTerrainData oneAway = new OverlandMapTerrainData ();
+		oneAway.setTileTypeID ("TT01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (oneAway);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
-		// Can't pass yet, since there's no tiles
-		assertFalse (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
+		// Run method
+		assertTrue (calc.buildingPassesTileTypeRequirements (map, new MapCoordinates3DEx (20, 10, 1), building, sys));
+	}
+	
+	/**
+	 * Tests the buildingPassesTileTypeRequirements method, where the building requires a specific tile adjacent to the city, and we don't have it
+	 * @throws RecordNotFoundException If the buildingID doesn't exist
+	 */
+	@Test
+	public final void testBuildingPassesTileTypeRequirements_DistanceOne_NoMatch () throws RecordNotFoundException
+	{
+		// Building we're trying to place
+		final BuildingRequiresTileType buildingRequiresTileType = new BuildingRequiresTileType ();
+		buildingRequiresTileType.setDistance (1);
+		buildingRequiresTileType.setTileTypeID ("TT01");
+		
+		final Building building = new Building ();
+		building.getBuildingRequiresTileType ().add (buildingRequiresTileType);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
-		// Putting it 2 tiles away doesn't help
-		final OverlandMapTerrainData twoAway = new OverlandMapTerrainData ();
-		twoAway.setTileTypeID ("TT01");
-		map.getPlane ().get (0).getRow ().get (1).getCell ().get (4).setTerrainData (twoAway);
-		assertFalse (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
-
-		// Putting it 1 tile away does
 		final OverlandMapTerrainData oneAway = new OverlandMapTerrainData ();
 		oneAway.setTileTypeID ("TT01");
-		map.getPlane ().get (0).getRow ().get (1).getCell ().get (3).setTerrainData (oneAway);
-		assertTrue (calc.buildingPassesTileTypeRequirements (map, cityLocation, building, sys));
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (22).setTerrainData (oneAway);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		assertFalse (calc.buildingPassesTileTypeRequirements (map, new MapCoordinates3DEx (20, 10, 1), building, sys));
+	}
+	
+	/**
+	 * Tests the buildingPassesTileTypeRequirements method, where the building requires one of two possible tiles adjacent to the city, and we have one of them it
+	 * @throws RecordNotFoundException If the buildingID doesn't exist
+	 */
+	@Test
+	public final void testBuildingPassesTileTypeRequirements_DistanceOne_Or () throws RecordNotFoundException
+	{
+		// Building we're trying to place
+		final Building building = new Building ();
+
+		for (int n = 1; n <= 2; n++)
+		{
+			final BuildingRequiresTileType buildingRequiresTileType = new BuildingRequiresTileType ();
+			buildingRequiresTileType.setDistance (1);
+			buildingRequiresTileType.setTileTypeID ("TT0" + n);
+			building.getBuildingRequiresTileType ().add (buildingRequiresTileType);
+		}
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final OverlandMapTerrainData oneAway = new OverlandMapTerrainData ();
+		oneAway.setTileTypeID ("TT01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (oneAway);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		assertTrue (calc.buildingPassesTileTypeRequirements (map, new MapCoordinates3DEx (20, 10, 1), building, sys));
+	}
+	
+	/**
+	 * Tests the buildingPassesTileTypeRequirements method, where the building requires a specific tile in the city terrain area, and we have it
+	 * @throws RecordNotFoundException If the buildingID doesn't exist
+	 */
+	@Test
+	public final void testBuildingPassesTileTypeRequirements_DistanceTwo_Matches () throws RecordNotFoundException
+	{
+		// Building we're trying to place
+		final BuildingRequiresTileType buildingRequiresTileType = new BuildingRequiresTileType ();
+		buildingRequiresTileType.setDistance (2);
+		buildingRequiresTileType.setTileTypeID ("TT01");
+		
+		final Building building = new Building ();
+		building.getBuildingRequiresTileType ().add (buildingRequiresTileType);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final OverlandMapTerrainData oneAway = new OverlandMapTerrainData ();
+		oneAway.setTileTypeID ("TT01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (22).setTerrainData (oneAway);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		assertTrue (calc.buildingPassesTileTypeRequirements (map, new MapCoordinates3DEx (20, 10, 1), building, sys));
 	}
 
 	/**
-	 * Tests the listCityFoodProductionFromTerrainTiles method
-	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
+	 * Tests the buildingPassesTileTypeRequirements method, where the building requires a specific tile in the city terrain area, that the corner tiles don't count
+	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
 	@Test
-	public final void testListCityFoodProductionFromTerrainTiles () throws RecordNotFoundException
+	public final void testBuildingPassesTileTypeRequirements_DistanceTwo_Corner () throws RecordNotFoundException
+	{
+		// Building we're trying to place
+		final BuildingRequiresTileType buildingRequiresTileType = new BuildingRequiresTileType ();
+		buildingRequiresTileType.setDistance (2);
+		buildingRequiresTileType.setTileTypeID ("TT01");
+		
+		final Building building = new Building ();
+		building.getBuildingRequiresTileType ().add (buildingRequiresTileType);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final OverlandMapTerrainData oneAway = new OverlandMapTerrainData ();
+		oneAway.setTileTypeID ("TT01");
+		map.getPlane ().get (1).getRow ().get (12).getCell ().get (22).setTerrainData (oneAway);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		assertFalse (calc.buildingPassesTileTypeRequirements (map, new MapCoordinates3DEx (20, 10, 1), building, sys));
+	}
+
+	/**
+	 * Tests the listCityFoodProductionFromTerrainTiles method where there is none, because no tile types are specified
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testListCityFoodProductionFromTerrainTiles_None () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// Session description
+		final CoordinateSystem overlandMapCoordinateSystem = GenerateTestData.createOverlandMapCoordinateSystem ();
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		final CityProductionBreakdown breakdown = calc.listCityFoodProductionFromTerrainTiles
+			(map, new MapCoordinates3DEx (20, 10, 1), overlandMapCoordinateSystem, db);
+		
+		// Check results
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, breakdown.getProductionTypeID ());
+		assertEquals (0, breakdown.getTileTypeProduction ().size ());
+	}
+	
+	/**
+	 * Tests the listCityFoodProductionFromTerrainTiles method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testListCityFoodProductionFromTerrainTiles_Some () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -372,13 +734,6 @@ public final class TestCityCalculationsImpl
 		final TileTypeEx mountainsDef = new TileTypeEx ();
 		when (db.findTileType ("TT03", "listCityFoodProductionFromTerrainTiles")).thenReturn (mountainsDef);
 		
-		// Set up object to test
-		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		
-		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
-
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
@@ -386,12 +741,6 @@ public final class TestCityCalculationsImpl
 		// Session description
 		final CoordinateSystem overlandMapCoordinateSystem = GenerateTestData.createOverlandMapCoordinateSystem ();
 		
-		// 0 so far
-		final CityProductionBreakdown breakdown1 = calc.listCityFoodProductionFromTerrainTiles (map, cityLocation, overlandMapCoordinateSystem, db);
-		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, breakdown1.getProductionTypeID ());
-		assertEquals (0, breakdown1.getDoubleProductionAmount ());
-		assertEquals (0, breakdown1.getTileTypeProduction ().size ());
-
 		// Add some tile types that grant food, 3 hills and 5 rivers, (3*1) + (4*5) = 23
 		// Note we add hills in the NW and NE corners too, outside the city radius, so we prove that this isn't counted
 		// Also adds some mountains, which don't produce any food at all, to prove they don't get included in the breakdown
@@ -399,63 +748,113 @@ public final class TestCityCalculationsImpl
 		{
 			final OverlandMapTerrainData hillsTerrain = new OverlandMapTerrainData ();
 			hillsTerrain.setTileTypeID ("TT01");
-			map.getPlane ().get (0).getRow ().get (0).getCell ().get (x).setTerrainData (hillsTerrain);
+			map.getPlane ().get (1).getRow ().get (8).getCell ().get (18 + x).setTerrainData (hillsTerrain);
 
 			final OverlandMapTerrainData riverTile = new OverlandMapTerrainData ();
 			riverTile.setTileTypeID ("TT02");
-			map.getPlane ().get (0).getRow ().get (1).getCell ().get (x).setTerrainData (riverTile);
+			map.getPlane ().get (1).getRow ().get (9).getCell ().get (18 + x).setTerrainData (riverTile);
 
 			final OverlandMapTerrainData mountainsTile = new OverlandMapTerrainData ();
 			mountainsTile.setTileTypeID ("TT03");
-			map.getPlane ().get (0).getRow ().get (2).getCell ().get (x).setTerrainData (mountainsTile);
+			map.getPlane ().get (1).getRow ().get (10).getCell ().get (18 + x).setTerrainData (mountainsTile);
 		}
 
-		final CityProductionBreakdown breakdown2 = calc.listCityFoodProductionFromTerrainTiles (map, cityLocation, overlandMapCoordinateSystem, db);
-		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, breakdown2.getProductionTypeID ());
-		assertEquals (23, breakdown2.getDoubleProductionAmount ());
-		assertEquals (2, breakdown2.getTileTypeProduction ().size ());
-		assertEquals ("TT02", breakdown2.getTileTypeProduction ().get (0).getTileTypeID ());
-		assertEquals (5, breakdown2.getTileTypeProduction ().get (0).getCount ());
-		assertEquals (4, breakdown2.getTileTypeProduction ().get (0).getDoubleProductionAmountEachTile ());
-		assertEquals (20, breakdown2.getTileTypeProduction ().get (0).getDoubleProductionAmountAllTiles ());
-		assertEquals ("TT01", breakdown2.getTileTypeProduction ().get (1).getTileTypeID ());
-		assertEquals (3, breakdown2.getTileTypeProduction ().get (1).getCount ());
-		assertEquals (1, breakdown2.getTileTypeProduction ().get (1).getDoubleProductionAmountEachTile ());
-		assertEquals (3, breakdown2.getTileTypeProduction ().get (1).getDoubleProductionAmountAllTiles ());
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
+			eq (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		calc.setCityProductionUtils (cityProductionUtils);
+		
+		// Run method
+		final CityProductionBreakdown breakdown = calc.listCityFoodProductionFromTerrainTiles
+			(map, new MapCoordinates3DEx (20, 10, 1), overlandMapCoordinateSystem, db);
+		
+		// Check results
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, breakdown.getProductionTypeID ());
+		assertEquals (2, breakdown.getTileTypeProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, breakdown.getTileTypeProduction ().get (0).getProductionAmountBucketID ());
+		assertEquals ("TT02", breakdown.getTileTypeProduction ().get (0).getTileTypeID ());
+		assertEquals (5, breakdown.getTileTypeProduction ().get (0).getCount ());
+		assertEquals (4, breakdown.getTileTypeProduction ().get (0).getDoubleProductionAmountEachTile ());
+		assertEquals (20, breakdown.getTileTypeProduction ().get (0).getDoubleProductionAmountAllTiles ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, breakdown.getTileTypeProduction ().get (1).getProductionAmountBucketID ());
+		assertEquals ("TT01", breakdown.getTileTypeProduction ().get (1).getTileTypeID ());
+		assertEquals (3, breakdown.getTileTypeProduction ().get (1).getCount ());
+		assertEquals (1, breakdown.getTileTypeProduction ().get (1).getDoubleProductionAmountEachTile ());
+		assertEquals (3, breakdown.getTileTypeProduction ().get (1).getDoubleProductionAmountAllTiles ());
+		
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (breakdown, 20, ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (breakdown, 3, ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
 	}
 
 	/**
-	 * Tests the calculateCityGrowthRate method
+	 * Tests the calculateCityGrowthRate method when the city is already at max size
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateCityGrowthRate () throws Exception
+	public final void testCalculateCityGrowthRate_MaxSize () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (10000);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 10, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdown.class.getName (), breakdown.getClass ().getName ());
+		assertEquals (10000, breakdown.getCurrentPopulation ());
+		assertEquals (10000, breakdown.getMaximumPopulation ());
+		assertEquals (0, breakdown.getInitialTotal ());
+		assertEquals (0, breakdown.getCappedTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityGrowthRate method when the population is growing, and the difference between the current size and max size is an even number
+	 * This is the example quoted in the strategy guide, however note the example is in contradiction with the formula - from testing
+	 * I believe the example is right and the formula is supposed to be a -1 not a +1
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Growing_Even () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		final RaceEx standardRace = new RaceEx ();
 		when (db.findRace ("RC01", "calculateCityGrowthRate")).thenReturn (standardRace);
-
-		final RaceEx raceWithBonus = new RaceEx ();
-		raceWithBonus.setGrowthRateModifier (20);
-		when (db.findRace ("RC02", "calculateCityGrowthRate")).thenReturn (raceWithBonus);
 		
-		final RaceEx raceWithPenalty = new RaceEx ();
-		raceWithPenalty.setGrowthRateModifier (-20);
-		when (db.findRace ("RC03", "calculateCityGrowthRate")).thenReturn (raceWithPenalty);
-
-		final Building granaryDef = new Building ();
-		granaryDef.setGrowthRateBonus (20);
-		when (db.findBuilding ("BL01", "calculateCityGrowthRate")).thenReturn (granaryDef);
-
-		final Building farmersMarketDef = new Building ();
-		farmersMarketDef.setGrowthRateBonus (30);
-		when (db.findBuilding ("BL02", "calculateCityGrowthRate")).thenReturn (farmersMarketDef);
-		
-		final Building sagesGuildDef = new Building ();
-		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
-
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -473,17 +872,9 @@ public final class TestCityCalculationsImpl
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
-
+		
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		
-		// Set up object to test
-		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
-		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
-		
-		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
-
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
@@ -492,7 +883,8 @@ public final class TestCityCalculationsImpl
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC01");
 		cityData.setCityOwnerID (pd.getPlayerID ());
-		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
+		cityData.setCityPopulation (12000);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -501,20 +893,17 @@ public final class TestCityCalculationsImpl
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
 
-		// At max size
-		cityData.setCityPopulation (10000);
-		final CityGrowthRateBreakdown maximum = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 10, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdown.class.getName (), maximum.getClass ().getName ());
-		assertEquals (10000, maximum.getCurrentPopulation ());
-		assertEquals (10000, maximum.getMaximumPopulation ());
-		assertEquals (0, maximum.getInitialTotal ());
-		assertEquals (0, maximum.getCappedTotal ());
-
-		// Growing (this is the example quoted in the strategy guide, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1)
-		cityData.setCityPopulation (12000);
-		final CityGrowthRateBreakdown growingEvenBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 22, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), growingEvenBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownGrowing growingEven = (CityGrowthRateBreakdownGrowing) growingEvenBreakdown;
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing growingEven = (CityGrowthRateBreakdownGrowing) breakdown;
 		assertEquals (12000, growingEven.getCurrentPopulation ());
 		assertEquals (22000, growingEven.getMaximumPopulation ());
 		assertEquals (50, growingEven.getBaseGrowthRate ());
@@ -525,10 +914,71 @@ public final class TestCityCalculationsImpl
 		assertEquals (50, growingEven.getTotalGrowthRateAdjustedForDifficultyLevel ());
 		assertEquals (50, growingEven.getInitialTotal ());
 		assertEquals (50, growingEven.getCappedTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityGrowthRate method when the population is growing, and the difference between the current size and max size is an odd number
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Growing_Odd () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final CityGrowthRateBreakdown growingOddBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 23, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), growingOddBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownGrowing growingOdd = (CityGrowthRateBreakdownGrowing) growingOddBreakdown;
+		final RaceEx standardRace = new RaceEx ();
+		when (db.findRace ("RC01", "calculateCityGrowthRate")).thenReturn (standardRace);
+		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
+		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (pd.getPlayerID ());
+		cityData.setCityPopulation (12000);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 23, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing growingOdd = (CityGrowthRateBreakdownGrowing) breakdown;
 		assertEquals (12000, growingOdd.getCurrentPopulation ());
 		assertEquals (23000, growingOdd.getMaximumPopulation ());
 		assertEquals (50, growingOdd.getBaseGrowthRate ());
@@ -539,12 +989,72 @@ public final class TestCityCalculationsImpl
 		assertEquals (50, growingOdd.getTotalGrowthRateAdjustedForDifficultyLevel ());
 		assertEquals (50, growingOdd.getInitialTotal ());
 		assertEquals (50, growingOdd.getCappedTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityGrowthRate method when the population is growing, and the race gets a growth rate bonus
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Growing_RaceBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// Bonus from race - positive
+		final RaceEx raceWithBonus = new RaceEx ();
+		raceWithBonus.setGrowthRateModifier (20);
+		when (db.findRace ("RC02", "calculateCityGrowthRate")).thenReturn (raceWithBonus);
+		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
+		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC02");
-		final CityGrowthRateBreakdown barbarianBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 22, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), barbarianBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownGrowing barbarian = (CityGrowthRateBreakdownGrowing) barbarianBreakdown;
+		cityData.setCityOwnerID (pd.getPlayerID ());
+		cityData.setCityPopulation (12000);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing barbarian = (CityGrowthRateBreakdownGrowing) breakdown;
 		assertEquals (12000, barbarian.getCurrentPopulation ());
 		assertEquals (22000, barbarian.getMaximumPopulation ());
 		assertEquals (50, barbarian.getBaseGrowthRate ());
@@ -555,12 +1065,72 @@ public final class TestCityCalculationsImpl
 		assertEquals (70, barbarian.getTotalGrowthRateAdjustedForDifficultyLevel ());
 		assertEquals (70, barbarian.getInitialTotal ());
 		assertEquals (70, barbarian.getCappedTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityGrowthRate method when the population is growing, and the race gets a growth rate penalty
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Growing_RacePenalty () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// Bonus from race - negative
+		final RaceEx raceWithPenalty = new RaceEx ();
+		raceWithPenalty.setGrowthRateModifier (-20);
+		when (db.findRace ("RC03", "calculateCityGrowthRate")).thenReturn (raceWithPenalty);
+		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
+		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC03");
-		final CityGrowthRateBreakdown highElfBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 22, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), highElfBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownGrowing highElf = (CityGrowthRateBreakdownGrowing) highElfBreakdown;
+		cityData.setCityOwnerID (pd.getPlayerID ());
+		cityData.setCityPopulation (12000);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing highElf = (CityGrowthRateBreakdownGrowing) breakdown;
 		assertEquals (12000, highElf.getCurrentPopulation ());
 		assertEquals (22000, highElf.getMaximumPopulation ());
 		assertEquals (50, highElf.getBaseGrowthRate ());
@@ -571,26 +1141,98 @@ public final class TestCityCalculationsImpl
 		assertEquals (30, highElf.getTotalGrowthRateAdjustedForDifficultyLevel ());
 		assertEquals (30, highElf.getInitialTotal ());
 		assertEquals (30, highElf.getCappedTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityGrowthRate method when the population is growing, and the city has some buildings that increase growth rate
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Growing_BuildingBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// Bonus from buildings
+		final RaceEx raceWithPenalty = new RaceEx ();
+		raceWithPenalty.setGrowthRateModifier (-20);
+		when (db.findRace ("RC03", "calculateCityGrowthRate")).thenReturn (raceWithPenalty);
+
+		final Building granaryDef = new Building ();
+		granaryDef.setGrowthRateBonus (20);
+		when (db.findBuilding ("BL01", "calculateCityGrowthRate")).thenReturn (granaryDef);
+
+		final Building farmersMarketDef = new Building ();
+		farmersMarketDef.setGrowthRateBonus (30);
+		when (db.findBuilding ("BL02", "calculateCityGrowthRate")).thenReturn (farmersMarketDef);
+		
+		final Building sagesGuildDef = new Building ();
+		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
+		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
+		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC03");
+		cityData.setCityOwnerID (pd.getPlayerID ());
+		cityData.setCityPopulation (12000);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID ("BL01");
-		granary.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
+		granary.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		buildings.add (granary);
 
 		final MemoryBuilding farmersMarket = new MemoryBuilding ();
 		farmersMarket.setBuildingID ("BL02");
-		farmersMarket.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
+		farmersMarket.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		buildings.add (farmersMarket);
 
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
 		sagesGuild.setBuildingID ("BL03");
-		sagesGuild.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
+		sagesGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		buildings.add (sagesGuild);
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
 
-		final CityGrowthRateBreakdown withBuildingsBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 22, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), withBuildingsBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownGrowing withBuildings = (CityGrowthRateBreakdownGrowing) withBuildingsBreakdown;
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing withBuildings = (CityGrowthRateBreakdownGrowing) breakdown;
 		assertEquals (12000, withBuildings.getCurrentPopulation ());
 		assertEquals (22000, withBuildings.getMaximumPopulation ());
 		assertEquals (50, withBuildings.getBaseGrowthRate ());
@@ -605,35 +1247,204 @@ public final class TestCityCalculationsImpl
 		assertEquals (80, withBuildings.getTotalGrowthRateAdjustedForDifficultyLevel ());
 		assertEquals (80, withBuildings.getInitialTotal ());
 		assertEquals (80, withBuildings.getCappedTotal ());
-		
-		// Bonus for AI players
-		pd.setHuman (false);
+	}
 
-		final CityGrowthRateBreakdown aiWithBuildingsBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 22, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), aiWithBuildingsBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownGrowing aiWithBuildings = (CityGrowthRateBreakdownGrowing) aiWithBuildingsBreakdown;
-		assertEquals (12000, aiWithBuildings.getCurrentPopulation ());
-		assertEquals (22000, aiWithBuildings.getMaximumPopulation ());
-		assertEquals (50, aiWithBuildings.getBaseGrowthRate ());
-		assertEquals (-20, aiWithBuildings.getRacialGrowthModifier ());
-		assertEquals (2, aiWithBuildings.getBuildingModifier ().size ());
-		assertEquals ("BL01", aiWithBuildings.getBuildingModifier ().get (0).getBuildingID ());
-		assertEquals (20, aiWithBuildings.getBuildingModifier ().get (0).getGrowthRateBonus ());
-		assertEquals ("BL02", aiWithBuildings.getBuildingModifier ().get (1).getBuildingID ());
-		assertEquals (30, aiWithBuildings.getBuildingModifier ().get (1).getGrowthRateBonus ());
-		assertEquals (80, aiWithBuildings.getTotalGrowthRate ());
-		assertEquals (300, aiWithBuildings.getDifficultyLevelMultiplier ());
-		assertEquals (240, aiWithBuildings.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (240, aiWithBuildings.getInitialTotal ());
-		assertEquals (240, aiWithBuildings.getCappedTotal ());
+	/**
+	 * Tests the calculateCityGrowthRate method when the population is growing, and its an AI player who get a pretty huge bonus
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Growing_AIBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final RaceEx raceWithPenalty = new RaceEx ();
+		raceWithPenalty.setGrowthRateModifier (-20);
+		when (db.findRace ("RC03", "calculateCityGrowthRate")).thenReturn (raceWithPenalty);
+
+		final Building granaryDef = new Building ();
+		granaryDef.setGrowthRateBonus (20);
+		when (db.findBuilding ("BL01", "calculateCityGrowthRate")).thenReturn (granaryDef);
+
+		final Building farmersMarketDef = new Building ();
+		farmersMarketDef.setGrowthRateBonus (30);
+		when (db.findBuilding ("BL02", "calculateCityGrowthRate")).thenReturn (farmersMarketDef);
 		
+		final Building sagesGuildDef = new Building ();
+		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
+		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		pd.setHuman (false);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
+		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC03");
+		cityData.setCityOwnerID (pd.getPlayerID ());
+		cityData.setCityPopulation (12000);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+
+		final MemoryBuilding granary = new MemoryBuilding ();
+		granary.setBuildingID ("BL01");
+		granary.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (granary);
+
+		final MemoryBuilding farmersMarket = new MemoryBuilding ();
+		farmersMarket.setBuildingID ("BL02");
+		farmersMarket.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (farmersMarket);
+
+		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
+		sagesGuild.setBuildingID ("BL03");
+		sagesGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (sagesGuild);
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing withBuildings = (CityGrowthRateBreakdownGrowing) breakdown;
+		assertEquals (12000, withBuildings.getCurrentPopulation ());
+		assertEquals (22000, withBuildings.getMaximumPopulation ());
+		assertEquals (50, withBuildings.getBaseGrowthRate ());
+		assertEquals (-20, withBuildings.getRacialGrowthModifier ());
+		assertEquals (2, withBuildings.getBuildingModifier ().size ());
+		assertEquals ("BL01", withBuildings.getBuildingModifier ().get (0).getBuildingID ());
+		assertEquals (20, withBuildings.getBuildingModifier ().get (0).getGrowthRateBonus ());
+		assertEquals ("BL02", withBuildings.getBuildingModifier ().get (1).getBuildingID ());
+		assertEquals (30, withBuildings.getBuildingModifier ().get (1).getGrowthRateBonus ());
+		assertEquals (80, withBuildings.getTotalGrowthRate ());
+		assertEquals (300, withBuildings.getDifficultyLevelMultiplier ());
+		assertEquals (240, withBuildings.getTotalGrowthRateAdjustedForDifficultyLevel ());
+		assertEquals (240, withBuildings.getInitialTotal ());
+		assertEquals (240, withBuildings.getCappedTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityGrowthRate method when the population is growing and almost at max size, but we can still grow by the calculated amount
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Growing_AlmostCapped () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final RaceEx raceWithPenalty = new RaceEx ();
+		raceWithPenalty.setGrowthRateModifier (-20);
+		when (db.findRace ("RC03", "calculateCityGrowthRate")).thenReturn (raceWithPenalty);
+
+		final Building granaryDef = new Building ();
+		granaryDef.setGrowthRateBonus (20);
+		when (db.findBuilding ("BL01", "calculateCityGrowthRate")).thenReturn (granaryDef);
+
+		final Building farmersMarketDef = new Building ();
+		farmersMarketDef.setGrowthRateBonus (30);
+		when (db.findBuilding ("BL02", "calculateCityGrowthRate")).thenReturn (farmersMarketDef);
+		
+		final Building sagesGuildDef = new Building ();
+		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
+		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
 		pd.setHuman (true);
 		
-		// With all those buildings, at almost max size we still get a reasonable increase
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
+		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC03");
+		cityData.setCityOwnerID (pd.getPlayerID ());
 		cityData.setCityPopulation (21960);
-		final CityGrowthRateBreakdown almostCappedBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 22, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), almostCappedBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownGrowing almostCapped = (CityGrowthRateBreakdownGrowing) almostCappedBreakdown;
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+
+		final MemoryBuilding granary = new MemoryBuilding ();
+		granary.setBuildingID ("BL01");
+		granary.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (granary);
+
+		final MemoryBuilding farmersMarket = new MemoryBuilding ();
+		farmersMarket.setBuildingID ("BL02");
+		farmersMarket.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (farmersMarket);
+
+		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
+		sagesGuild.setBuildingID ("BL03");
+		sagesGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (sagesGuild);
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing almostCapped = (CityGrowthRateBreakdownGrowing) breakdown;
 		assertEquals (21960, almostCapped.getCurrentPopulation ());
 		assertEquals (22000, almostCapped.getMaximumPopulation ());
 		assertEquals (0, almostCapped.getBaseGrowthRate ());
@@ -648,43 +1459,208 @@ public final class TestCityCalculationsImpl
 		assertEquals (30, almostCapped.getTotalGrowthRateAdjustedForDifficultyLevel ());
 		assertEquals (30, almostCapped.getInitialTotal ());
 		assertEquals (30, almostCapped.getCappedTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityGrowthRate method when the population is growing and almost at max size, but we can still grow by the calculated amount
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Growing_Capped () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// +30 with only 20 to spare would push us over max size
+		final RaceEx raceWithPenalty = new RaceEx ();
+		raceWithPenalty.setGrowthRateModifier (-20);
+		when (db.findRace ("RC03", "calculateCityGrowthRate")).thenReturn (raceWithPenalty);
+
+		final Building granaryDef = new Building ();
+		granaryDef.setGrowthRateBonus (20);
+		when (db.findBuilding ("BL01", "calculateCityGrowthRate")).thenReturn (granaryDef);
+
+		final Building farmersMarketDef = new Building ();
+		farmersMarketDef.setGrowthRateBonus (30);
+		when (db.findBuilding ("BL02", "calculateCityGrowthRate")).thenReturn (farmersMarketDef);
+		
+		final Building sagesGuildDef = new Building ();
+		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
+		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
+		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC03");
+		cityData.setCityOwnerID (pd.getPlayerID ());
 		cityData.setCityPopulation (21980);
-		final CityGrowthRateBreakdown overCapBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 22, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), overCapBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownGrowing overCap = (CityGrowthRateBreakdownGrowing) overCapBreakdown;
-		assertEquals (21980, overCap.getCurrentPopulation ());
-		assertEquals (22000, overCap.getMaximumPopulation ());
-		assertEquals (0, overCap.getBaseGrowthRate ());
-		assertEquals (-20, overCap.getRacialGrowthModifier ());
-		assertEquals (2, overCap.getBuildingModifier ().size ());
-		assertEquals ("BL01", overCap.getBuildingModifier ().get (0).getBuildingID ());
-		assertEquals (20, overCap.getBuildingModifier ().get (0).getGrowthRateBonus ());
-		assertEquals ("BL02", overCap.getBuildingModifier ().get (1).getBuildingID ());
-		assertEquals (30, overCap.getBuildingModifier ().get (1).getGrowthRateBonus ());
-		assertEquals (30, overCap.getTotalGrowthRate ());
-		assertEquals (100, overCap.getDifficultyLevelMultiplier ());
-		assertEquals (30, overCap.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (30, overCap.getInitialTotal ());
-		assertEquals (20, overCap.getCappedTotal ());
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
-		// Dying - note the race and building modifiers don't apply, because we can't by virtue of bonuses force a city to go over max size
-		final CityGrowthRateBreakdown dyingBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 18, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownDying.class.getName (), dyingBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownDying dying = (CityGrowthRateBreakdownDying) dyingBreakdown;
+		final MemoryBuilding granary = new MemoryBuilding ();
+		granary.setBuildingID ("BL01");
+		granary.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (granary);
+
+		final MemoryBuilding farmersMarket = new MemoryBuilding ();
+		farmersMarket.setBuildingID ("BL02");
+		farmersMarket.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (farmersMarket);
+
+		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
+		sagesGuild.setBuildingID ("BL03");
+		sagesGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (sagesGuild);
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownGrowing almostCapped = (CityGrowthRateBreakdownGrowing) breakdown;
+		assertEquals (21980, almostCapped.getCurrentPopulation ());
+		assertEquals (22000, almostCapped.getMaximumPopulation ());
+		assertEquals (0, almostCapped.getBaseGrowthRate ());
+		assertEquals (-20, almostCapped.getRacialGrowthModifier ());
+		assertEquals (2, almostCapped.getBuildingModifier ().size ());
+		assertEquals ("BL01", almostCapped.getBuildingModifier ().get (0).getBuildingID ());
+		assertEquals (20, almostCapped.getBuildingModifier ().get (0).getGrowthRateBonus ());
+		assertEquals ("BL02", almostCapped.getBuildingModifier ().get (1).getBuildingID ());
+		assertEquals (30, almostCapped.getBuildingModifier ().get (1).getGrowthRateBonus ());
+		assertEquals (30, almostCapped.getTotalGrowthRate ());
+		assertEquals (100, almostCapped.getDifficultyLevelMultiplier ());
+		assertEquals (30, almostCapped.getTotalGrowthRateAdjustedForDifficultyLevel ());
+		assertEquals (30, almostCapped.getInitialTotal ());
+		assertEquals (20, almostCapped.getCappedTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityGrowthRate method when the city is over max size and the population is dying 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Dying () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (21980);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 18, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownDying.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownDying dying = (CityGrowthRateBreakdownDying) breakdown;
 		assertEquals (21980, dying.getCurrentPopulation ());
 		assertEquals (18000, dying.getMaximumPopulation ());
 		assertEquals (3, dying.getBaseDeathRate ());
 		assertEquals (150, dying.getCityDeathRate ());
 		assertEquals (-150, dying.getInitialTotal ());
 		assertEquals (-150, dying.getCappedTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityGrowthRate method when the city is over max size and the population is dying, but can't go under 1000
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityGrowthRate_Dying_Capped () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Owner
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
-		// Dying and would go under minimum size
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (1020);
-		final CityGrowthRateBreakdown underCapBreakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, cityLocation, 0, difficultyLevel, db);
-		assertEquals (CityGrowthRateBreakdownDying.class.getName (), underCapBreakdown.getClass ().getName ());
-		final CityGrowthRateBreakdownDying underCap = (CityGrowthRateBreakdownDying) underCapBreakdown;
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 0, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (CityGrowthRateBreakdownDying.class.getName (), breakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownDying underCap = (CityGrowthRateBreakdownDying) breakdown;
 		assertEquals (1020, underCap.getCurrentPopulation ());
 		assertEquals (1000, underCap.getMaximumPopulation ());
 		assertEquals (1, underCap.getBaseDeathRate ());
@@ -694,88 +1670,19 @@ public final class TestCityCalculationsImpl
 	}
 
 	/**
-	 * Tests the calculateCityRebels method
-	 * @throws PlayerNotFoundException If we can't find the player who owns the city
-	 * @throws RecordNotFoundException If any of a number of items cannot be found in the cache
+	 * Tests the calculateCityRebels method, when tax rate is set to none, and so no rebels are generated
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateCityRebels () throws PlayerNotFoundException, RecordNotFoundException
+	public final void testCalculateCityRebels_NoTaxes () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Building shrineDef = new Building ();
-		shrineDef.setBuildingUnrestReduction (1);
-		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
-		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
-
-		final Building animstsGuildDef = new Building ();
-		animstsGuildDef.setBuildingUnrestReduction (1);
-		animstsGuildDef.setBuildingUnrestReductionImprovedByRetorts (false);
-		when (db.findBuilding ("BL02", "calculateCityRebels")).thenReturn (animstsGuildDef);
-		
-		final Building templeDef = new Building ();
-		templeDef.setBuildingUnrestReduction (1);
-		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
-		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
-
 		// Tax rates
 		final TaxRate taxRate1 = new TaxRate ();
 		when (db.findTaxRate ("TR01", "calculateCityRebels")).thenReturn (taxRate1);
-
-		final TaxRate taxRate2 = new TaxRate ();
-		taxRate2.setTaxUnrestPercentage (45);
-		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
-
-		final TaxRate taxRate3 = new TaxRate ();
-		taxRate3.setTaxUnrestPercentage (75);
-		when (db.findTaxRate ("TR03", "calculateCityRebels")).thenReturn (taxRate3);
 		
-		// Units
-		final UnitEx normalUnitDef = new UnitEx ();
-		normalUnitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
-		
-		final Pick normalMagicRealm = new Pick ();
-		normalMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
-
-		final UnitEx summonedUnitDef = new UnitEx ();
-		summonedUnitDef.setUnitMagicRealm ("MB01");
-		when (db.findUnit ("UN002", "calculateCityRebels")).thenReturn (summonedUnitDef);
-		
-		final Pick summonedMagicRealm = new Pick ();
-		summonedMagicRealm.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
-		when (db.findPick ("MB01", "calculateCityRebels")).thenReturn (summonedMagicRealm);
-		
-		final UnitEx heroUnitDef = new UnitEx ();
-		heroUnitDef.setUnitMagicRealm ("LTH");
-		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
-		
-		final Pick heroMagicRealm = new Pick ();
-		heroMagicRealm.setUnitTypeID ("H");
-		when (db.findPick ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
-		
-		// Races
-		final RaceUnrest klackonUnrest = new RaceUnrest ();
-		klackonUnrest.setCapitalRaceID ("RC01");
-		klackonUnrest.setUnrestLiteral (-2);
-		
-		final RaceEx klackonsDef = new RaceEx ();
-		klackonsDef.getRaceUnrest ().add (klackonUnrest);
-		when (db.findRace ("RC01", "calculateCityRebels")).thenReturn (klackonsDef);
-		
-		final RaceUnrest highElfDwarfUnrest = new RaceUnrest ();
-		highElfDwarfUnrest.setCapitalRaceID ("RC03");
-		highElfDwarfUnrest.setUnrestPercentage (30);
-		
-		final RaceEx highElvesDef = new RaceEx ();
-		highElvesDef.getRaceUnrest ().add (highElfDwarfUnrest);
-		when (db.findRace ("RC02", "calculateCityRebels")).thenReturn (highElvesDef);
-		
-		// Location
-		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 0);
-
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
@@ -786,7 +1693,7 @@ public final class TestCityCalculationsImpl
 		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (17900);
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
-		map.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -823,9 +1730,11 @@ public final class TestCityCalculationsImpl
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
-		// Tax rate with no rebels!  and no gold...
+		// Run method
 		final CityUnrestBreakdown zeroPercent = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR01", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01", db);
+		
+		// Check results
 		assertEquals (17, zeroPercent.getPopulation ());
 		assertEquals (0, zeroPercent.getTaxPercentage ());
 		assertEquals (0, zeroPercent.getRacialPercentage ());
@@ -845,10 +1754,75 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, zeroPercent.getMinimumFarmers ());		// We have 6 minimum farmers, but set to 0 since the cap doesn't affect the result
 		assertEquals (0, zeroPercent.getTotalAfterFarmers ());
 		assertEquals (0, zeroPercent.getFinalTotal ());
+	}
 
-		// Harsh 45% tax rate = 7.65, prove that it rounds down
+	/**
+	 * Tests the calculateCityRebels method, when tax rate is set to a high value
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_HighTaxes () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown highPercent = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+		
+		// Check results
 		assertEquals (17, highPercent.getPopulation ());
 		assertEquals (45, highPercent.getTaxPercentage ());
 		assertEquals (0, highPercent.getRacialPercentage ());
@@ -867,13 +1841,79 @@ public final class TestCityCalculationsImpl
 		assertFalse (highPercent.isForceAll ());
 		assertEquals (0, highPercent.getMinimumFarmers ());
 		assertEquals (0, highPercent.getTotalAfterFarmers ());
-		assertEquals (7, highPercent.getFinalTotal ());
+		assertEquals (7, highPercent.getFinalTotal ());		// 7.65, prove that it rounds down
+	}
+	
+	/**
+	 * Tests the calculateCityRebels method, when tax rate is set so high that we have too many rebels for the minimum number of farmers the city requires
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_ConvertToFarmers () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Tax rates
+		final TaxRate taxRate3 = new TaxRate ();
+		taxRate3.setTaxUnrestPercentage (75);
+		when (db.findTaxRate ("TR03", "calculateCityRebels")).thenReturn (taxRate3);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
-		// Worst 75% tax rate = 12.75, but we have 6 minimum farmers so would be 18 population in a size 17 city - prove rebels will revert to farmers to avoid starving
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Retorts, to prove this value does not get included in the output, as we have no religious buildings
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
 		
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+
+		// Run method
 		final CityUnrestBreakdown maxPercent = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR03", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR03", db);
+		
+		// Check results
 		assertEquals (17, maxPercent.getPopulation ());
 		assertEquals (75, maxPercent.getTaxPercentage ());
 		assertEquals (0, maxPercent.getRacialPercentage ());
@@ -892,24 +1932,92 @@ public final class TestCityCalculationsImpl
 		assertFalse (maxPercent.isForceAll ());
 		assertEquals (6, maxPercent.getMinimumFarmers ());		// Now the mininmum farmers makes a difference, the value gets listed
 		assertEquals (11, maxPercent.getTotalAfterFarmers ());
-		assertEquals (11, maxPercent.getFinalTotal ());
+		assertEquals (11, maxPercent.getFinalTotal ());				// 12.75, but we have 6 minimum farmers so would be 18 population in a size 17 city
+	}
 
-		// Add some buildings that reduce unrest - and back to 45% tax rate = 7.65
+	/**
+	 * Tests the calculateCityRebels method, when a religious building improves unrest, but we have no retort that gives a bonus to religious buildings
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_ReligiousBuilding_NoBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
-		shrineBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 		buildings.add (shrineBuilding);
-
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (0);
 		
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown shrine = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+		
+		// Check results
 		assertEquals (17, shrine.getPopulation ());
 		assertEquals (45, shrine.getTaxPercentage ());
 		assertEquals (0, shrine.getRacialPercentage ());
 		assertEquals (0, shrine.getRacialLiteral ());
 		assertEquals (45, shrine.getTotalPercentage ());
-		assertEquals (7, shrine.getBaseValue ());
+		assertEquals (7, shrine.getBaseValue ());		// 45% tax rate = 7.65
 		assertEquals (1, shrine.getBuildingReducingUnrest ().size ());
 		assertEquals ("BL01", shrine.getBuildingReducingUnrest ().get (0).getBuildingID ());
 		assertEquals (1, shrine.getBuildingReducingUnrest ().get (0).getUnrestReduction ());
@@ -925,21 +2033,103 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, shrine.getMinimumFarmers ());
 		assertEquals (0, shrine.getTotalAfterFarmers ());
 		assertEquals (6, shrine.getFinalTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityRebels method, when we have both a religious and non-religious building improving unrest,
+	 * and a retort that only gives a bonus to the religious building
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_ReligiousBuilding_WithBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building animstsGuildDef = new Building ();
+		animstsGuildDef.setBuildingUnrestReduction (1);
+		animstsGuildDef.setBuildingUnrestReductionImprovedByRetorts (false);
+		when (db.findBuilding ("BL02", "calculateCityRebels")).thenReturn (animstsGuildDef);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
+		shrineBuilding.setBuildingID ("BL01");
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (shrineBuilding);
+		
+		final MemoryBuilding secondBuilding = new MemoryBuilding ();
+		secondBuilding.setBuildingID ("BL02");
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (secondBuilding);
+
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
 
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
 		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
-		final MemoryBuilding secondBuilding = new MemoryBuilding ();
-		secondBuilding.setBuildingID ("BL02");
-		secondBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
-		buildings.add (secondBuilding);
-
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown animistsGuild = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+
+		// Check results
 		assertEquals (17, animistsGuild.getPopulation ());
 		assertEquals (45, animistsGuild.getTaxPercentage ());
 		assertEquals (0, animistsGuild.getRacialPercentage ());
@@ -964,11 +2154,102 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, animistsGuild.getMinimumFarmers ());
 		assertEquals (0, animistsGuild.getTotalAfterFarmers ());
 		assertEquals (5, animistsGuild.getFinalTotal ());
+	}
 
-		// Divine power does work on 2nd religious building
+	/**
+	 * Tests the calculateCityRebels method, when we have two religious buildings, so now the +50% bonus from the retort is enough to make a difference
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_TwoReligiousBuildings_WithBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building templeDef = new Building ();
+		templeDef.setBuildingUnrestReduction (1);
+		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
+		shrineBuilding.setBuildingID ("BL01");
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (shrineBuilding);
+		
+		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL03");
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (secondBuilding);
+
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Divine power doesn't work on non-religious building
+		final List<String> religiousRetortsList = new ArrayList<String> ();
+		religiousRetortsList.add ("RT01");
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown temple = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+
+		// Check results
 		assertEquals (17, temple.getPopulation ());
 		assertEquals (45, temple.getTaxPercentage ());
 		assertEquals (0, temple.getRacialPercentage ());
@@ -993,16 +2274,116 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, temple.getMinimumFarmers ());
 		assertEquals (0, temple.getTotalAfterFarmers ());
 		assertEquals (4, temple.getFinalTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityRebels method, when there is one unit guarding the city which is not enough to reduce unrest
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_OneUnit () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// 1 unit does nothing
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building templeDef = new Building ();
+		templeDef.setBuildingUnrestReduction (1);
+		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
+
+		final UnitEx normalUnitDef = new UnitEx ();
+		normalUnitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
+
+		final Pick normalMagicRealm = new Pick ();
+		normalMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
+		shrineBuilding.setBuildingID ("BL01");
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (shrineBuilding);
+		
+		final MemoryBuilding secondBuilding = new MemoryBuilding ();
+		secondBuilding.setBuildingID ("BL03");
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (secondBuilding);
+
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID ("UN001");
-		normalUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
+		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (normalUnit);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Divine power doesn't work on non-religious building
+		final List<String> religiousRetortsList = new ArrayList<String> ();
+		religiousRetortsList.add ("RT01");
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown firstUnit = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+
+		// Check results
 		assertEquals (17, firstUnit.getPopulation ());
 		assertEquals (45, firstUnit.getTaxPercentage ());
 		assertEquals (0, firstUnit.getRacialPercentage ());
@@ -1027,16 +2408,130 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, firstUnit.getMinimumFarmers ());
 		assertEquals (0, firstUnit.getTotalAfterFarmers ());
 		assertEquals (4, firstUnit.getFinalTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityRebels method, when there are two units guarding the city which reduce unrest even though one is a normal unit and the other a hero
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_TwoUnits () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// 2nd unit reduces unrest, even if one is normal and one a hero
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building templeDef = new Building ();
+		templeDef.setBuildingUnrestReduction (1);
+		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
+
+		final UnitEx normalUnitDef = new UnitEx ();
+		normalUnitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
+
+		final UnitEx heroUnitDef = new UnitEx ();
+		heroUnitDef.setUnitMagicRealm ("LTH");
+		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
+		
+		final Pick normalMagicRealm = new Pick ();
+		normalMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
+
+		final Pick heroMagicRealm = new Pick ();
+		heroMagicRealm.setUnitTypeID ("H");
+		when (db.findPick ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
+		shrineBuilding.setBuildingID ("BL01");
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (shrineBuilding);
+		
+		final MemoryBuilding secondBuilding = new MemoryBuilding ();
+		secondBuilding.setBuildingID ("BL03");
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (secondBuilding);
+
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		final MemoryUnit normalUnit = new MemoryUnit ();
+		normalUnit.setUnitID ("UN001");
+		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		normalUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (normalUnit);
+
 		final MemoryUnit heroUnit = new MemoryUnit ();
 		heroUnit.setUnitID ("UN003");
-		heroUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
+		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		heroUnit.setStatus (UnitStatusID.ALIVE);
 		units.add (heroUnit);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Divine power doesn't work on non-religious building
+		final List<String> religiousRetortsList = new ArrayList<String> ();
+		religiousRetortsList.add ("RT01");
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown secondUnit = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+
+		// Check results
 		assertEquals (17, secondUnit.getPopulation ());
 		assertEquals (45, secondUnit.getTaxPercentage ());
 		assertEquals (0, secondUnit.getRacialPercentage ());
@@ -1061,25 +2556,154 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, secondUnit.getMinimumFarmers ());
 		assertEquals (0, secondUnit.getTotalAfterFarmers ());
 		assertEquals (3, secondUnit.getFinalTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityRebels method, when there is a normal unit and a hero who help reduce unrest, plus some summoned units and dead units who don't
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_SummonedAndDeadUnits () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building templeDef = new Building ();
+		templeDef.setBuildingUnrestReduction (1);
+		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
+
+		final UnitEx normalUnitDef = new UnitEx ();
+		normalUnitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
+
+		final UnitEx summonedUnitDef = new UnitEx ();
+		summonedUnitDef.setUnitMagicRealm ("MB01");
+		when (db.findUnit ("UN002", "calculateCityRebels")).thenReturn (summonedUnitDef);
+		
+		final UnitEx heroUnitDef = new UnitEx ();
+		heroUnitDef.setUnitMagicRealm ("LTH");
+		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
+		
+		final Pick normalMagicRealm = new Pick ();
+		normalMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
+		
+		final Pick summonedMagicRealm = new Pick ();
+		summonedMagicRealm.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
+		when (db.findPick ("MB01", "calculateCityRebels")).thenReturn (summonedMagicRealm);
+
+		final Pick heroMagicRealm = new Pick ();
+		heroMagicRealm.setUnitTypeID ("H");
+		when (db.findPick ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
+		shrineBuilding.setBuildingID ("BL01");
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (shrineBuilding);
+		
+		final MemoryBuilding secondBuilding = new MemoryBuilding ();
+		secondBuilding.setBuildingID ("BL03");
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (secondBuilding);
+
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		final MemoryUnit normalUnit = new MemoryUnit ();
+		normalUnit.setUnitID ("UN001");
+		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		normalUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (normalUnit);
+
+		final MemoryUnit heroUnit = new MemoryUnit ();
+		heroUnit.setUnitID ("UN003");
+		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		heroUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (heroUnit);
 
 		// summoned units or dead units don't help (unitCount still = 2)
 		for (int n = 0; n < 2; n++)
 		{
 			final MemoryUnit deadUnit = new MemoryUnit ();
 			deadUnit.setUnitID ("UN001");
-			deadUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
+			deadUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 			deadUnit.setStatus (UnitStatusID.DEAD);
 			units.add (deadUnit);
 
 			final MemoryUnit summonedUnit = new MemoryUnit ();
 			summonedUnit.setUnitID ("UN002");
-			summonedUnit.setUnitLocation (new MapCoordinates3DEx (2, 2, 0));
+			summonedUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 			summonedUnit.setStatus (UnitStatusID.ALIVE);
 			units.add (summonedUnit);
 		}
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Divine power doesn't work on non-religious building
+		final List<String> religiousRetortsList = new ArrayList<String> ();
+		religiousRetortsList.add ("RT01");
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown extraUnits = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+
+		// Check results
 		assertEquals (17, extraUnits.getPopulation ());
 		assertEquals (45, extraUnits.getTaxPercentage ());
 		assertEquals (0, extraUnits.getRacialPercentage ());
@@ -1104,16 +2728,145 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, extraUnits.getMinimumFarmers ());
 		assertEquals (0, extraUnits.getTotalAfterFarmers ());
 		assertEquals (3, extraUnits.getFinalTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityRebels method, when we're at a Klackon capital so they get the special 2 unrest reduction
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_Klackons () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// Put our captial here, and its klackons so we get -2
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building templeDef = new Building ();
+		templeDef.setBuildingUnrestReduction (1);
+		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
+
+		final UnitEx normalUnitDef = new UnitEx ();
+		normalUnitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
+
+		final UnitEx heroUnitDef = new UnitEx ();
+		heroUnitDef.setUnitMagicRealm ("LTH");
+		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
+		
+		final Pick normalMagicRealm = new Pick ();
+		normalMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
+
+		final Pick heroMagicRealm = new Pick ();
+		heroMagicRealm.setUnitTypeID ("H");
+		when (db.findPick ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
+
+		final RaceUnrest klackonUnrest = new RaceUnrest ();
+		klackonUnrest.setCapitalRaceID ("RC01");
+		klackonUnrest.setUnrestLiteral (-2);
+		
+		final RaceEx klackonsDef = new RaceEx ();
+		klackonsDef.getRaceUnrest ().add (klackonUnrest);
+		when (db.findRace ("RC01", "calculateCityRebels")).thenReturn (klackonsDef);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
+		shrineBuilding.setBuildingID ("BL01");
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (shrineBuilding);
+		
+		final MemoryBuilding secondBuilding = new MemoryBuilding ();
+		secondBuilding.setBuildingID ("BL03");
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (secondBuilding);
+
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		final MemoryUnit normalUnit = new MemoryUnit ();
+		normalUnit.setUnitID ("UN001");
+		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		normalUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (normalUnit);
+
+		final MemoryUnit heroUnit = new MemoryUnit ();
+		heroUnit.setUnitID ("UN003");
+		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		heroUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (heroUnit);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Divine power doesn't work on non-religious building
+		final List<String> religiousRetortsList = new ArrayList<String> ();
+		religiousRetortsList.add ("RT01");
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Capital race
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
-		fortressBuilding.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
+		fortressBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 
 		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
-
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown klackons = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+
+		// Check results
 		assertEquals (17, klackons.getPopulation ());
 		assertEquals (45, klackons.getTaxPercentage ());
 		assertEquals (0, klackons.getRacialPercentage ());
@@ -1138,12 +2891,140 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, klackons.getMinimumFarmers ());
 		assertEquals (0, klackons.getTotalAfterFarmers ());
 		assertEquals (1, klackons.getFinalTotal ());
-		
-		// Other races get no bonus from being same as capital race
-		cityData.setCityRaceID ("RC02");
+	}
+	
+	/**
+	 * Tests the calculateCityRebels method, when the city is at our fortress, but anyone other than Klackons don't get any kind of unrest bonus
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_NoCapitalRaceBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building templeDef = new Building ();
+		templeDef.setBuildingUnrestReduction (1);
+		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
+
+		final UnitEx normalUnitDef = new UnitEx ();
+		normalUnitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
+
+		final UnitEx heroUnitDef = new UnitEx ();
+		heroUnitDef.setUnitMagicRealm ("LTH");
+		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
+		
+		final Pick normalMagicRealm = new Pick ();
+		normalMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
+
+		final Pick heroMagicRealm = new Pick ();
+		heroMagicRealm.setUnitTypeID ("H");
+		when (db.findPick ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
+		
+		final RaceEx highElvesDef = new RaceEx ();
+		when (db.findRace ("RC02", "calculateCityRebels")).thenReturn (highElvesDef);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC02");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
+		shrineBuilding.setBuildingID ("BL01");
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (shrineBuilding);
+		
+		final MemoryBuilding secondBuilding = new MemoryBuilding ();
+		secondBuilding.setBuildingID ("BL03");
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (secondBuilding);
+
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		final MemoryUnit normalUnit = new MemoryUnit ();
+		normalUnit.setUnitID ("UN001");
+		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		normalUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (normalUnit);
+
+		final MemoryUnit heroUnit = new MemoryUnit ();
+		heroUnit.setUnitID ("UN003");
+		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		heroUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (heroUnit);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Divine power doesn't work on non-religious building
+		final List<String> religiousRetortsList = new ArrayList<String> ();
+		religiousRetortsList.add ("RT01");
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		
+		// Capital race
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
+		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
+		fortressBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+
+		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown highElves = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+
+		// Check results
 		assertEquals (17, highElves.getPopulation ());
 		assertEquals (45, highElves.getTaxPercentage ());
 		assertEquals (0, highElves.getRacialPercentage ());
@@ -1168,10 +3049,129 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, highElves.getMinimumFarmers ());
 		assertEquals (0, highElves.getTotalAfterFarmers ());
 		assertEquals (3, highElves.getFinalTotal ());
+	}
 
-		// If reduce the tax rate from only having 3 rebels, they're so happy that we get a negative number of rebels
+	/**
+	 * Tests the calculateCityRebels method, when we calculate a negative number of rebels (no taxes, but some unrest bonuses) so gets forced up to 0
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_ForcePositive () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building templeDef = new Building ();
+		templeDef.setBuildingUnrestReduction (1);
+		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
+
+		final UnitEx normalUnitDef = new UnitEx ();
+		normalUnitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
+
+		final UnitEx heroUnitDef = new UnitEx ();
+		heroUnitDef.setUnitMagicRealm ("LTH");
+		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
+		
+		final Pick normalMagicRealm = new Pick ();
+		normalMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
+
+		final Pick heroMagicRealm = new Pick ();
+		heroMagicRealm.setUnitTypeID ("H");
+		when (db.findPick ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
+		
+		// Tax rates
+		final TaxRate taxRate1 = new TaxRate ();
+		when (db.findTaxRate ("TR01", "calculateCityRebels")).thenReturn (taxRate1);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
+		shrineBuilding.setBuildingID ("BL01");
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (shrineBuilding);
+		
+		final MemoryBuilding secondBuilding = new MemoryBuilding ();
+		secondBuilding.setBuildingID ("BL03");
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (secondBuilding);
+
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		final MemoryUnit normalUnit = new MemoryUnit ();
+		normalUnit.setUnitID ("UN001");
+		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		normalUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (normalUnit);
+
+		final MemoryUnit heroUnit = new MemoryUnit ();
+		heroUnit.setUnitID ("UN003");
+		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		heroUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (heroUnit);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Divine power doesn't work on non-religious building
+		final List<String> religiousRetortsList = new ArrayList<String> ();
+		religiousRetortsList.add ("RT01");
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown forcePositive = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR01", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01", db);
+
+		// Check results
 		assertEquals (17, forcePositive.getPopulation ());
 		assertEquals (0, forcePositive.getTaxPercentage ());
 		assertEquals (0, forcePositive.getRacialPercentage ());
@@ -1196,18 +3196,151 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, forcePositive.getMinimumFarmers ());
 		assertEquals (0, forcePositive.getTotalAfterFarmers ());
 		assertEquals (0, forcePositive.getFinalTotal ());
+	}
+
+	/**
+	 * Tests the calculateCityRebels method, when the race inhabiting the city and the capital race don't like each other and generate unrest
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_RacialUnrest () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Building shrineDef = new Building ();
+		shrineDef.setBuildingUnrestReduction (1);
+		shrineDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL01", "calculateCityRebels")).thenReturn (shrineDef);
+
+		final Building templeDef = new Building ();
+		templeDef.setBuildingUnrestReduction (1);
+		templeDef.setBuildingUnrestReductionImprovedByRetorts (true);
+		when (db.findBuilding ("BL03", "calculateCityRebels")).thenReturn (templeDef);
+
+		final UnitEx normalUnitDef = new UnitEx ();
+		normalUnitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
+
+		final UnitEx heroUnitDef = new UnitEx ();
+		heroUnitDef.setUnitMagicRealm ("LTH");
+		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
 		
-		// Move capital to a different city with a different race
+		final Pick normalMagicRealm = new Pick ();
+		normalMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
+
+		final Pick heroMagicRealm = new Pick ();
+		heroMagicRealm.setUnitTypeID ("H");
+		when (db.findPick ("LTH", "calculateCityRebels")).thenReturn (heroMagicRealm);
+		
+		final RaceUnrest highElfDwarfUnrest = new RaceUnrest ();
+		highElfDwarfUnrest.setCapitalRaceID ("RC03");
+		highElfDwarfUnrest.setUnrestPercentage (30);
+		
+		final RaceEx highElvesDef = new RaceEx ();
+		highElvesDef.getRaceUnrest ().add (highElfDwarfUnrest);
+		when (db.findRace ("RC02", "calculateCityRebels")).thenReturn (highElvesDef);
+		
+		// Tax rates
+		final TaxRate taxRate2 = new TaxRate ();
+		taxRate2.setTaxUnrestPercentage (45);
+		when (db.findTaxRate ("TR02", "calculateCityRebels")).thenReturn (taxRate2);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// Cities
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC02");
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (17900);
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
 		final OverlandMapCityData capitalCityData = new OverlandMapCityData ();
 		capitalCityData.setCityRaceID ("RC03");
 		capitalCityData.setCityOwnerID (1);
 		capitalCityData.setCityPopulation (1000);
-		map.getPlane ().get (0).getRow ().get (2).getCell ().get (20).setCityData (capitalCityData);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (30).setCityData (capitalCityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
+		shrineBuilding.setBuildingID ("BL01");
+		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (shrineBuilding);
+		
+		final MemoryBuilding secondBuilding = new MemoryBuilding ();
+		secondBuilding.setBuildingID ("BL03");
+		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		buildings.add (secondBuilding);
 
-		fortressBuilding.setCityLocation (new MapCoordinates3DEx (20, 2, 0));
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
+		final MemoryUnit normalUnit = new MemoryUnit ();
+		normalUnit.setUnitID ("UN001");
+		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		normalUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (normalUnit);
+
+		final MemoryUnit heroUnit = new MemoryUnit ();
+		heroUnit.setUnitID ("UN003");
+		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		heroUnit.setStatus (UnitStatusID.ALIVE);
+		units.add (heroUnit);
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Divine power doesn't work on non-religious building
+		final List<String> religiousRetortsList = new ArrayList<String> ();
+		religiousRetortsList.add ("RT01");
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		
+		// Capital race
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
+		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
+		fortressBuilding.setCityLocation (new MapCoordinates3DEx (30, 10, 1));
+
+		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown racialUnrest = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+
+		// Check results
 		assertEquals (17, racialUnrest.getPopulation ());
 		assertEquals (45, racialUnrest.getTaxPercentage ());
 		assertEquals (30, racialUnrest.getRacialPercentage ());
@@ -1232,16 +3365,97 @@ public final class TestCityCalculationsImpl
 		assertEquals (0, racialUnrest.getMinimumFarmers ());
 		assertEquals (0, racialUnrest.getTotalAfterFarmers ());
 		assertEquals (8, racialUnrest.getFinalTotal ());
+	}
+	
+	/**
+	 * Tests the calculateCityRebels method, when we calculate more rebels than the whole town population, so have to cap it
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCityRebels_ForceAll () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final RaceUnrest highElfDwarfUnrest = new RaceUnrest ();
+		highElfDwarfUnrest.setCapitalRaceID ("RC03");
+		highElfDwarfUnrest.setUnrestPercentage (30);
 		
-		// Make them so mad that there's more rebels than there are people
-		buildings.remove (shrineBuilding);
-		buildings.remove (secondBuilding);
-		units.clear ();
+		final RaceEx highElvesDef = new RaceEx ();
+		highElvesDef.getRaceUnrest ().add (highElfDwarfUnrest);
+		when (db.findRace ("RC02", "calculateCityRebels")).thenReturn (highElvesDef);
 		
+		// Tax rates
+		final TaxRate taxRate3 = new TaxRate ();
+		taxRate3.setTaxUnrestPercentage (75);
+		when (db.findTaxRate ("TR03", "calculateCityRebels")).thenReturn (taxRate3);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// Cities
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC02");
+		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (24890);		// Has to be over 20 for 105% to round down to >1 person
+		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		final OverlandMapCityData capitalCityData = new OverlandMapCityData ();
+		capitalCityData.setCityRaceID ("RC03");
+		capitalCityData.setCityOwnerID (1);
+		capitalCityData.setCityPopulation (1000);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (30).setCityData (capitalCityData);
 		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+
+		// Units
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
+
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		players.add (player);
+
+		// Divine power doesn't work on non-religious building
+		// Capital race
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryBuilding fortressBuilding = new MemoryBuilding ();
+		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
+		fortressBuilding.setCityLocation (new MapCoordinates3DEx (30, 10, 1));
+
+		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
 		final CityUnrestBreakdown forceAll = calc.calculateCityRebels
-			(players, map, units, buildings, spells, cityLocation, "TR03", db);
+			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR03", db);
+
+		// Check results
 		assertEquals (24, forceAll.getPopulation ());
 		assertEquals (75, forceAll.getTaxPercentage ());
 		assertEquals (30, forceAll.getRacialPercentage ());
@@ -1264,11 +3478,143 @@ public final class TestCityCalculationsImpl
 	}
 	
 	/**
-	 * Tests the addProductionFromPopulation method
-	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
+	 * Tests the addGoldFromTaxes method, when we are generating some gold
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAddProductionFromPopulation () throws RecordNotFoundException
+	public final void testAddGoldFromTaxes_Some () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TaxRate taxRate = new TaxRate ();
+		taxRate.setDoubleTaxGold (3);
+		when (db.findTaxRate ("TR02", "addGoldFromTaxes")).thenReturn (taxRate);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (8723);
+		cityData.setNumberOfRebels (2);
+
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
+			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCityProductionUtils (cityProductionUtils);
+		
+		// Run method
+		final CityProductionBreakdown gold = calc.addGoldFromTaxes (cityData, "TR02", db);
+		
+		// Check results
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, gold.getProductionTypeID ());
+		assertEquals (6, gold.getApplicablePopulation ());
+		assertEquals (3, gold.getDoubleProductionAmountEachPopulation ());
+		assertEquals (18, gold.getDoubleProductionAmountAllPopulation ());
+		
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (gold, 18, null, db);
+	}
+	
+	/**
+	 * Tests the addGoldFromTaxes method, when we have a tax rate chosen that generates no gold
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddGoldFromTaxes_NoTaxRate () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TaxRate taxRate = new TaxRate ();
+		when (db.findTaxRate ("TR01", "addGoldFromTaxes")).thenReturn (taxRate);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (8723);
+		cityData.setNumberOfRebels (2);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		assertNull (calc.addGoldFromTaxes (cityData, "TR01", db));
+	}
+	
+	/**
+	 * Tests the addGoldFromTaxes method, when there aren't enough people to generate any taxes
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddGoldFromTaxes_NoPeople () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TaxRate taxRate = new TaxRate ();
+		taxRate.setDoubleTaxGold (3);
+		when (db.findTaxRate ("TR02", "addGoldFromTaxes")).thenReturn (taxRate);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (923);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		assertNull (calc.addGoldFromTaxes (cityData, "TR02", db));
+	}
+	
+	/**
+	 * Tests the addRationsEatenByPopulation method, when there are some civilians eating rations
+	 */
+	@Test
+	public final void testAddRationsEatenByPopulation_Some ()
+	{
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (8723);
+		cityData.setNumberOfRebels (2);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		final CityProductionBreakdown rations = calc.addRationsEatenByPopulation (cityData);
+		
+		// Check results
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, rations.getProductionTypeID ());
+		assertEquals (8, rations.getApplicablePopulation ());
+		assertEquals (1, rations.getConsumptionAmountEachPopulation ());
+		assertEquals (8, rations.getConsumptionAmountAllPopulation ());
+		assertEquals (8, rations.getConsumptionAmount ());
+	}
+	
+	/**
+	 * Tests the addRationsEatenByPopulation method, when there aren't enough people to eat any rations
+	 */
+	@Test
+	public final void testAddRationsEatenByPopulation_NoPeople ()
+	{
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityPopulation (923);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Run method
+		assertNull (calc.addRationsEatenByPopulation (cityData));
+	}
+	
+	/**
+	 * Tests the addProductionFromPopulation method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddProductionFromPopulation () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -1294,9 +3640,15 @@ public final class TestCityCalculationsImpl
 		
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
 		
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
+			eq (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (buildingUtils);
+		calc.setCityProductionUtils (cityProductionUtils);
 		
 		when (buildingUtils.totalBonusProductionPerPersonFromBuildings (buildings, new MapCoordinates3DEx (20, 10, 1), "B", "RE02", db)).thenReturn (2);
 		
@@ -1307,30 +3659,38 @@ public final class TestCityCalculationsImpl
 		// Check results
 		assertEquals (2, productionValues.getProductionType ().size ());
 		assertEquals ("RE01", productionValues.getProductionType ().get (0).getProductionTypeID ());
-		assertEquals (10, productionValues.getProductionType ().get (0).getDoubleProductionAmount ());
 		assertEquals ("RE02", productionValues.getProductionType ().get (1).getProductionTypeID ());
-		assertEquals (25, productionValues.getProductionType ().get (1).getDoubleProductionAmount ());
 
 		assertEquals (1, productionValues.getProductionType ().get (0).getPopulationTaskProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (0).getPopulationTaskProduction ().get (0).getProductionAmountBucketID ());
 		assertEquals ("B", productionValues.getProductionType ().get (0).getPopulationTaskProduction ().get (0).getPopulationTaskID ());
 		assertEquals (5, productionValues.getProductionType ().get (0).getPopulationTaskProduction ().get (0).getCount ());
 		assertEquals (2, productionValues.getProductionType ().get (0).getPopulationTaskProduction ().get (0).getDoubleProductionAmountEachPopulation ());
 		assertEquals (10, productionValues.getProductionType ().get (0).getPopulationTaskProduction ().get (0).getDoubleProductionAmountAllPopulation ());
 		
 		assertEquals (1, productionValues.getProductionType ().get (1).getPopulationTaskProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (1).getPopulationTaskProduction ().get (0).getProductionAmountBucketID ());
 		assertEquals ("B", productionValues.getProductionType ().get (1).getPopulationTaskProduction ().get (0).getPopulationTaskID ());
 		assertEquals (5, productionValues.getProductionType ().get (1).getPopulationTaskProduction ().get (0).getCount ());
 		assertEquals (5, productionValues.getProductionType ().get (1).getPopulationTaskProduction ().get (0).getDoubleProductionAmountEachPopulation ());
 		assertEquals (25, productionValues.getProductionType ().get (1).getPopulationTaskProduction ().get (0).getDoubleProductionAmountAllPopulation ());
+		
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 10,
+			ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 25,
+			ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
 	}
 	
 	/**
 	 * Tests the addProductionFromFortressPickType method
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAddProductionFromFortressPickType ()
+	public final void testAddProductionFromFortressPickType () throws Exception
 	{
 		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		final ProductionTypeAndDoubledValue prod1 = new ProductionTypeAndDoubledValue ();
 		prod1.setProductionTypeID ("RE01");
 		prod1.setDoubledProductionValue (2);
@@ -1343,41 +3703,53 @@ public final class TestCityCalculationsImpl
 		pickType.setPickTypeID ("B");
 		pickType.getFortressPickTypeProduction ().add (prod1);
 		pickType.getFortressPickTypeProduction ().add (prod2);
+
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
+			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCityProductionUtils (cityProductionUtils);
 		
 		// Run method
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
-		calc.addProductionFromFortressPickType (productionValues, pickType, 5);
+		calc.addProductionFromFortressPickType (productionValues, pickType, 5, db);
 		
 		// Check results
 		assertEquals (2, productionValues.getProductionType ().size ());
 		assertEquals ("RE01", productionValues.getProductionType ().get (0).getProductionTypeID ());
-		assertEquals (10, productionValues.getProductionType ().get (0).getDoubleProductionAmount ());
 		assertEquals ("RE02", productionValues.getProductionType ().get (1).getProductionTypeID ());
-		assertEquals (15, productionValues.getProductionType ().get (1).getDoubleProductionAmount ());
 
 		assertEquals (1, productionValues.getProductionType ().get (0).getPickTypeProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (0).getPickTypeProduction ().get (0).getProductionAmountBucketID ());
 		assertEquals ("B", productionValues.getProductionType ().get (0).getPickTypeProduction ().get (0).getPickTypeID ());
 		assertEquals (5, productionValues.getProductionType ().get (0).getPickTypeProduction ().get (0).getCount ());
 		assertEquals (2, productionValues.getProductionType ().get (0).getPickTypeProduction ().get (0).getDoubleProductionAmountEachPick ());
 		assertEquals (10, productionValues.getProductionType ().get (0).getPickTypeProduction ().get (0).getDoubleProductionAmountAllPicks ());
 		
 		assertEquals (1, productionValues.getProductionType ().get (1).getPickTypeProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (1).getPickTypeProduction ().get (0).getProductionAmountBucketID ());
 		assertEquals ("B", productionValues.getProductionType ().get (1).getPickTypeProduction ().get (0).getPickTypeID ());
 		assertEquals (5, productionValues.getProductionType ().get (1).getPickTypeProduction ().get (0).getCount ());
 		assertEquals (3, productionValues.getProductionType ().get (1).getPickTypeProduction ().get (0).getDoubleProductionAmountEachPick ());
 		assertEquals (15, productionValues.getProductionType ().get (1).getPickTypeProduction ().get (0).getDoubleProductionAmountAllPicks ());
+		
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 10, null, db);
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 15, null, db);
 	}
 	
 	/**
 	 * Tests the addProductionFromFortressPlane method
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAddProductionFromFortressPlane ()
+	public final void testAddProductionFromFortressPlane () throws Exception
 	{
 		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		final ProductionTypeAndDoubledValue prod1 = new ProductionTypeAndDoubledValue ();
 		prod1.setProductionTypeID ("RE01");
 		prod1.setDoubledProductionValue (2);
@@ -1390,26 +3762,37 @@ public final class TestCityCalculationsImpl
 		plane.setPlaneNumber (1);
 		plane.getFortressPlaneProduction ().add (prod1);
 		plane.getFortressPlaneProduction ().add (prod2);
+
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
+			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCityProductionUtils (cityProductionUtils);
 		
 		// Run method
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
-		calc.addProductionFromFortressPlane (productionValues, plane);
+		calc.addProductionFromFortressPlane (productionValues, plane, db);
 
 		// Check results
 		assertEquals (2, productionValues.getProductionType ().size ());
 		
 		assertEquals ("RE01", productionValues.getProductionType ().get (0).getProductionTypeID ());
-		assertEquals (2, productionValues.getProductionType ().get (0).getDoubleProductionAmount ());
-		assertEquals (1, productionValues.getProductionType ().get (0).getFortressPlane ());
-		assertEquals (2, productionValues.getProductionType ().get (0).getDoubleProductionAmountFortressPlane ());
+		assertEquals (1, productionValues.getProductionType ().get (0).getPlaneProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (0).getPlaneProduction ().get (0).getProductionAmountBucketID ());
+		assertEquals (1, productionValues.getProductionType ().get (0).getPlaneProduction ().get (0).getFortressPlane ());
+		assertEquals (2, productionValues.getProductionType ().get (0).getPlaneProduction ().get (0).getDoubleProductionAmountFortressPlane ());
 		
 		assertEquals ("RE02", productionValues.getProductionType ().get (1).getProductionTypeID ());
-		assertEquals (3, productionValues.getProductionType ().get (1).getDoubleProductionAmount ());
-		assertEquals (1, productionValues.getProductionType ().get (1).getFortressPlane ());
-		assertEquals (3, productionValues.getProductionType ().get (1).getDoubleProductionAmountFortressPlane ());
+		assertEquals (1, productionValues.getProductionType ().get (1).getPlaneProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (1).getPlaneProduction ().get (0).getProductionAmountBucketID ());
+		assertEquals (1, productionValues.getProductionType ().get (1).getPlaneProduction ().get (0).getFortressPlane ());
+		assertEquals (3, productionValues.getProductionType ().get (1).getPlaneProduction ().get (0).getDoubleProductionAmountFortressPlane ());
+		
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 2, null, db);
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 3, null, db);
 	}
 	
 	/**
@@ -1451,10 +3834,16 @@ public final class TestCityCalculationsImpl
 		final PlayerPickUtils pickUtils = mock (PlayerPickUtils.class);
 		when (pickUtils.totalReligiousBuildingBonus (picks, db)).thenReturn (50);
 		when (pickUtils.pickIdsContributingToReligiousBuildingBonus (picks, db)).thenReturn (pickIDs);
+
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
+			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setPlayerPickUtils (pickUtils);
+		calc.setCityProductionUtils (cityProductionUtils);
 		
 		// Run method
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
@@ -1463,13 +3852,13 @@ public final class TestCityCalculationsImpl
 		// Check results
 		assertEquals (3, productionValues.getProductionType ().size ());
 		assertEquals ("RE01", productionValues.getProductionType ().get (0).getProductionTypeID ());
-		assertEquals (3, productionValues.getProductionType ().get (0).getDoubleProductionAmount ());
 		assertEquals ("RE02", productionValues.getProductionType ().get (1).getProductionTypeID ());
 		assertEquals (2, productionValues.getProductionType ().get (1).getConsumptionAmount ());
 		assertEquals ("RE03", productionValues.getProductionType ().get (2).getProductionTypeID ());
 		assertEquals (25, productionValues.getProductionType ().get (2).getPercentageBonus ());
 		
 		assertEquals (1, productionValues.getProductionType ().get (0).getBuildingBreakdown ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (0).getBuildingBreakdown ().get (0).getProductionAmountBucketID ());
 		assertEquals ("BL01", productionValues.getProductionType ().get (0).getBuildingBreakdown ().get (0).getBuildingID ());
 		assertEquals (2, productionValues.getProductionType ().get (0).getBuildingBreakdown ().get (0).getDoubleUnmodifiedProductionAmount ());
 		assertEquals (3, productionValues.getProductionType ().get (0).getBuildingBreakdown ().get (0).getDoubleModifiedProductionAmount ());
@@ -1480,14 +3869,16 @@ public final class TestCityCalculationsImpl
 		assertEquals (2, productionValues.getProductionType ().get (1).getBuildingBreakdown ().get (0).getConsumptionAmount ());
 		assertEquals ("BL01", productionValues.getProductionType ().get (2).getBuildingBreakdown ().get (0).getBuildingID ());
 		assertEquals (25, productionValues.getProductionType ().get (2).getBuildingBreakdown ().get (0).getPercentageBonus ());
+		
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 3, null, db);
 	}
 	
 	/**
 	 * Tests the addProductionFromMapFeatures method
-	 * @throws RecordNotFoundException If we encounter a map feature that we cannot find in the cache
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAddProductionFromMapFeatures () throws RecordNotFoundException
+	public final void testAddProductionFromMapFeatures () throws Exception
 	{
 		// Mock database
 		final ProductionTypeAndDoubledValue firstProd = new ProductionTypeAndDoubledValue ();
@@ -1530,9 +3921,15 @@ public final class TestCityCalculationsImpl
 			map.getPlane ().get (0).getRow ().get (1).getCell ().get (x).setTerrainData (secondTile);
 		}
 		
+		// Additions
+		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
+		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
+			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		calc.setCityProductionUtils (cityProductionUtils);
 		
 		// Run method
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
@@ -1542,8 +3939,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (3, productionValues.getProductionType ().size ());
 
 		assertEquals ("RE01", productionValues.getProductionType ().get (0).getProductionTypeID ());
-		assertEquals (6, productionValues.getProductionType ().get (0).getDoubleProductionAmount ());
 		assertEquals (1, productionValues.getProductionType ().get (0).getMapFeatureProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getProductionAmountBucketID ());
 		assertEquals ("MF01", productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getMapFeatureID ());
 		assertEquals (2, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getCount ());
 		assertEquals (3, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountEachFeature ());
@@ -1554,8 +3951,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (6, productionValues.getProductionType ().get (0).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
 		
 		assertEquals ("RE02", productionValues.getProductionType ().get (1).getProductionTypeID ());
-		assertEquals (8, productionValues.getProductionType ().get (1).getDoubleProductionAmount ());
 		assertEquals (1, productionValues.getProductionType ().get (1).getMapFeatureProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getProductionAmountBucketID ());
 		assertEquals ("MF01", productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getMapFeatureID ());
 		assertEquals (2, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getCount ());
 		assertEquals (4, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountEachFeature ());
@@ -1566,8 +3963,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (8, productionValues.getProductionType ().get (1).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
 
 		assertEquals ("RE03", productionValues.getProductionType ().get (2).getProductionTypeID ());
-		assertEquals (36, productionValues.getProductionType ().get (2).getDoubleProductionAmount ());
 		assertEquals (1, productionValues.getProductionType ().get (2).getMapFeatureProduction ().size ());
+		assertEquals (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getProductionAmountBucketID ());
 		assertEquals ("MF02", productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getMapFeatureID ());
 		assertEquals (3, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getCount ());
 		assertEquals (4, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleUnmodifiedProductionAmountEachFeature ());
@@ -1576,31 +3973,81 @@ public final class TestCityCalculationsImpl
 		assertEquals (24, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleProductionAmountAfterRacialMultiplier ());
 		assertEquals (50, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getBuildingMineralPercentageBonus ());	
 		assertEquals (36, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
+		
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 6, null, db);
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 8, null, db);
+		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (2), 36, null, db);
 	}
 	
 	/**
-	 * Tests the halveAddPercentageBonusAndCapProduction method
-	 * @throws RecordNotFoundException If we encounter a production type that can't be found in the DB
-	 * @throws MomException If we encounter a production value that the DB states should always be an exact multiple of 2, but isn't
+	 * Tests the addUnrestReductionFromSpell method with special rules for Just Cause
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testHalveAddPercentageBonusAndCapProduction () throws RecordNotFoundException, MomException
+	public final void testAddUnrestReductionFromSpell_JustCause () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final ProductionTypeEx gold = new ProductionTypeEx ();
-		gold.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
-		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "halveAddPercentageBonusAndCapProduction")).thenReturn (gold);
+		// Spell being added
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
-		final ProductionTypeEx food = new ProductionTypeEx ();
-		food.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
-		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "halveAddPercentageBonusAndCapProduction")).thenReturn (food);
+		// Call method
+		final CityUnrestBreakdown breakdown = new CityUnrestBreakdown ();
+		assertEquals (1, calc.addUnrestReductionFromSpell (breakdown, spell, db));
 		
-		// Difficulty level
-		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
-		difficultyLevel.setCityMaxSize (25);
-		difficultyLevel.setAiWizardsProductionRateMultiplier (250);
+		// Check results
+		assertEquals (1, breakdown.getSpellReducingUnrest ().size ());
+		assertEquals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE, breakdown.getSpellReducingUnrest ().get (0).getSpellID ()); 
+		assertEquals (1, breakdown.getSpellReducingUnrest ().get (0).getUnrestReduction ()); 
+	}
+	
+	/**
+	 * Tests the addUnrestReductionFromSpell method on a normal spell whose unrest reduction is defined in the XML
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAddUnrestReductionFromSpell_Other () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.setCitySpellEffectUnrestReduction (2);
+		
+		when (db.findCitySpellEffect ("SE001", "addUnrestReductionFromSpell")).thenReturn (effect);
+		
+		// Spell being added
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCitySpellEffectID ("SE001");
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		final CityUnrestBreakdown breakdown = new CityUnrestBreakdown ();
+		assertEquals (2, calc.addUnrestReductionFromSpell (breakdown, spell, db));
+		
+		// Check results
+		assertEquals (1, breakdown.getSpellReducingUnrest ().size ());
+		assertEquals ("SP001", breakdown.getSpellReducingUnrest ().get (0).getSpellID ()); 
+		assertEquals (2, breakdown.getSpellReducingUnrest ().get (0).getUnrestReduction ()); 
+	}
+	
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when the "before" amount is an exact multiple of 2, and there's no %s or after values involved
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_ExactMultiple () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1608,77 +4055,535 @@ public final class TestCityCalculationsImpl
 		
 		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, null, null);
 		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (6);
+		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
-		// Exact multiple
-		final CityProductionBreakdown prod1 = new CityProductionBreakdown ();
-		prod1.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		prod1.setDoubleProductionAmount (18);
-		prod1.setPercentageBonus (25);
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
 		
-		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod1, difficultyLevel, db);
-		
-		assertNull (prod1.getRoundingDirectionID ());
-		assertEquals (9, prod1.getBaseProductionAmount ());
-		assertEquals (11, prod1.getModifiedProductionAmount ());
-		assertEquals (11, prod1.getCappedProductionAmount ());
-		
-		// Round down
-		final CityProductionBreakdown prod2 = new CityProductionBreakdown ();
-		prod2.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		prod2.setDoubleProductionAmount (19);
-		prod2.setPercentageBonus (25);
-
-		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod2, difficultyLevel, db);
-		
-		assertEquals (RoundingDirectionID.ROUND_DOWN, prod2.getRoundingDirectionID ());
-		assertEquals (9, prod2.getBaseProductionAmount ());
-		assertEquals (11, prod2.getModifiedProductionAmount ());
-		assertEquals (11, prod2.getCappedProductionAmount ());
-		
-		// Round up
-		gold.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
-
-		final CityProductionBreakdown prod3 = new CityProductionBreakdown ();
-		prod3.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		prod3.setDoubleProductionAmount (19);
-		prod3.setPercentageBonus (25);
-
-		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod3, difficultyLevel, db);
-		
-		assertEquals (RoundingDirectionID.ROUND_UP, prod3.getRoundingDirectionID ());
-		assertEquals (10, prod3.getBaseProductionAmount ());
-		assertEquals (12, prod3.getModifiedProductionAmount ());
-		assertEquals (12, prod3.getCappedProductionAmount ());
-		
-		// Value is over cap, but isn't food so cap doesn't apply
-		final CityProductionBreakdown prod4 = new CityProductionBreakdown ();
-		prod4.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		prod4.setDoubleProductionAmount (41);
-		prod4.setPercentageBonus (25);
-
-		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod4, difficultyLevel, db);
-		
-		assertEquals (RoundingDirectionID.ROUND_UP, prod4.getRoundingDirectionID ());
-		assertEquals (21, prod4.getBaseProductionAmount ());
-		assertEquals (26, prod4.getModifiedProductionAmount ());
-		assertEquals (26, prod4.getCappedProductionAmount ());
-
-		// Cap applies to food
-		final CityProductionBreakdown prod5 = new CityProductionBreakdown ();
-		prod5.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-		prod5.setDoubleProductionAmount (41);
-		prod5.setPercentageBonus (25);
-
-		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod5, difficultyLevel, db);
-		
-		assertEquals (RoundingDirectionID.ROUND_UP, prod5.getRoundingDirectionID ());
-		assertEquals (21, prod5.getBaseProductionAmount ());
-		assertEquals (26, prod5.getModifiedProductionAmount ());
-		assertEquals (25, prod5.getCappedProductionAmount ());
+		// Check results
+		assertEquals (3, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (3, breakdown.getProductionAmountPlusPercentageBonus ());
+		assertEquals (3, breakdown.getProductionAmountMinusPercentagePenalty ());
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (3, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (100, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (3, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (3, breakdown.getCappedProductionAmount ());
 	}
 
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when the "before" amount isn't an exact multiple of 2 but should be
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testHalveAddPercentageBonusAndCapProduction_NotExactMultiple () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setRoundingDirectionID (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+		when (db.findProductionType ("RE02", "halveAddPercentageBonusAndCapProduction")).thenReturn (productionType);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, null, null);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (7);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
+	}
+
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when the "before" amount isn't an exact multiple of 2, and gets rounded down
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_RoundDown () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
+		when (db.findProductionType ("RE02", "halveAddPercentageBonusAndCapProduction")).thenReturn (productionType);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, null, null);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (7);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
+		
+		// Check results
+		assertEquals (3, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (3, breakdown.getProductionAmountPlusPercentageBonus ());
+		assertEquals (3, breakdown.getProductionAmountMinusPercentagePenalty ());
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (3, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (100, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (3, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (3, breakdown.getCappedProductionAmount ());
+	}
+	
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when the "before" amount isn't an exact multiple of 2, and gets rounded up
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_RoundUp () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
+		when (db.findProductionType ("RE02", "halveAddPercentageBonusAndCapProduction")).thenReturn (productionType);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, null, null);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (7);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
+		
+		// Check results
+		assertEquals (4, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (4, breakdown.getProductionAmountPlusPercentageBonus ());
+		assertEquals (4, breakdown.getProductionAmountMinusPercentagePenalty ());
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (4, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (100, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (4, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (4, breakdown.getCappedProductionAmount ());
+	}
+	
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when a percentage bonus applies to the "before" value
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_PercentageBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, null, null);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (30);
+		breakdown.setPercentageBonus (50);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (22, breakdown.getProductionAmountPlusPercentageBonus ());	// Rounded down
+		assertEquals (22, breakdown.getProductionAmountMinusPercentagePenalty ());
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (22, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (100, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (22, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (22, breakdown.getCappedProductionAmount ());
+	}
+
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when a percentage bonus applies, followed by a percentage penalty
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_PercentagePenalty () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, null, null);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (30);
+		breakdown.setPercentageBonus (50);
+		breakdown.setPercentagePenalty (25);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (22, breakdown.getProductionAmountPlusPercentageBonus ());	// 22.5 Rounded down
+		assertEquals (17, breakdown.getProductionAmountMinusPercentagePenalty ());	// 16.5 Rounded up (the amount reduced by is rounded down)
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (17, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (100, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (17, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (17, breakdown.getCappedProductionAmount ());
+	}
+
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when a percentage bonus applies, followed by a percentage penalty
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_OverfarmingRule () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, null, null);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		breakdown.setDoubleProductionAmountBeforePercentages (30);
+		breakdown.setPercentageBonus (50);
+		breakdown.setPercentagePenalty (25);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (22, breakdown.getProductionAmountPlusPercentageBonus ());	// 22.5 Rounded down
+		assertEquals (17, breakdown.getProductionAmountMinusPercentagePenalty ());	// 16.5 Rounded up (the amount reduced by is rounded down)
+		assertEquals (12, breakdown.getFoodProductionFromTerrainTiles ().intValue ());
+		assertEquals (14, breakdown.getProductionAmountAfterOverfarmingPenalty ().intValue ());	// Trying to farm 17 but can only farm 12 without penalty, remaining 5 is halved so 14
+		assertEquals (14, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (100, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (14, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (14, breakdown.getCappedProductionAmount ());
+	}
+
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when a percentage bonus applies, followed by a percentage penalty, followed by an "after" value
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_After () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, null, null);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (30);
+		breakdown.setPercentageBonus (50);
+		breakdown.setPercentagePenalty (25);
+		breakdown.setProductionAmountToAddAfterPercentages (3);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (22, breakdown.getProductionAmountPlusPercentageBonus ());	// 22.5 Rounded down
+		assertEquals (17, breakdown.getProductionAmountMinusPercentagePenalty ());	// 16.5 Rounded up (the amount reduced by is rounded down)
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (20, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (100, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (20, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (20, breakdown.getCappedProductionAmount ());
+	}
+
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method applying the special multiplier for AI wizards
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_AIMultiplier_Wizard_Applies () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
+		productionType.setDifficultyLevelMultiplierApplies (true);
+		when (db.findProductionType ("RE02", "halveAddPercentageBonusAndCapProduction")).thenReturn (productionType);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (false);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, pub, null);
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsProductionRateMultiplier (300);
+		difficultyLevel.setAiRaidersProductionRateMultiplier (200);
+		difficultyLevel.setCityMaxSize (25);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (30);
+		breakdown.setPercentageBonus (50);
+		breakdown.setPercentagePenalty (25);
+		breakdown.setProductionAmountToAddAfterPercentages (3);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (22, breakdown.getProductionAmountPlusPercentageBonus ());	// 22.5 Rounded down
+		assertEquals (17, breakdown.getProductionAmountMinusPercentagePenalty ());	// 16.5 Rounded up (the amount reduced by is rounded down)
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (20, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (300, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (60, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (60, breakdown.getCappedProductionAmount ());
+	}
+	
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method applying the special multiplier for AI raiders
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_AIMultiplier_Raiders_Applies () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
+		productionType.setDifficultyLevelMultiplierApplies (true);
+		when (db.findProductionType ("RE02", "halveAddPercentageBonusAndCapProduction")).thenReturn (productionType);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (false);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, pub, null);
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsProductionRateMultiplier (300);
+		difficultyLevel.setAiRaidersProductionRateMultiplier (200);
+		difficultyLevel.setCityMaxSize (25);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (30);
+		breakdown.setPercentageBonus (50);
+		breakdown.setPercentagePenalty (25);
+		breakdown.setProductionAmountToAddAfterPercentages (3);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (22, breakdown.getProductionAmountPlusPercentageBonus ());	// 22.5 Rounded down
+		assertEquals (17, breakdown.getProductionAmountMinusPercentagePenalty ());	// 16.5 Rounded up (the amount reduced by is rounded down)
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (20, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (200, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (40, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (40, breakdown.getCappedProductionAmount ());
+	}
+	
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when it is an AI player, but a production type where the special multiplier doesn't apply
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_AIMultiplier_Wizard_NotApplies () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
+		productionType.setDifficultyLevelMultiplierApplies (false);
+		when (db.findProductionType ("RE02", "halveAddPercentageBonusAndCapProduction")).thenReturn (productionType);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (false);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, pub, null);
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsProductionRateMultiplier (300);
+		difficultyLevel.setAiRaidersProductionRateMultiplier (200);
+		difficultyLevel.setCityMaxSize (25);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID ("RE02");
+		breakdown.setDoubleProductionAmountBeforePercentages (30);
+		breakdown.setPercentageBonus (50);
+		breakdown.setPercentagePenalty (25);
+		breakdown.setProductionAmountToAddAfterPercentages (3);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (22, breakdown.getProductionAmountPlusPercentageBonus ());	// 22.5 Rounded down
+		assertEquals (17, breakdown.getProductionAmountMinusPercentagePenalty ());	// 16.5 Rounded up (the amount reduced by is rounded down)
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (20, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (100, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (20, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (20, breakdown.getCappedProductionAmount ());
+	}
+	
+	/**
+	 * Tests the halveAddPercentageBonusAndCapProduction method when a city would be over size 25 so the cap kicks in
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHalveAddPercentageBonusAndCapProduction_MaxCitySizeCap () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
+		productionType.setDifficultyLevelMultiplierApplies (true);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "halveAddPercentageBonusAndCapProduction")).thenReturn (productionType);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (false);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, pub, null);
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsProductionRateMultiplier (300);
+		difficultyLevel.setAiRaidersProductionRateMultiplier (200);
+		difficultyLevel.setCityMaxSize (25);
+		
+		// Calculation values
+		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
+		breakdown.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+		breakdown.setDoubleProductionAmountBeforePercentages (30);
+		breakdown.setPercentageBonus (50);
+		breakdown.setPercentagePenalty (25);
+		breakdown.setProductionAmountToAddAfterPercentages (3);
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, difficultyLevel, db);
+		
+		// Check results
+		assertEquals (15, breakdown.getProductionAmountBeforePercentages ());
+		assertEquals (22, breakdown.getProductionAmountPlusPercentageBonus ());	// 22.5 Rounded down
+		assertEquals (17, breakdown.getProductionAmountMinusPercentagePenalty ());	// 16.5 Rounded up (the amount reduced by is rounded down)
+		assertNull (breakdown.getFoodProductionFromTerrainTiles ());
+		assertNull (breakdown.getProductionAmountAfterOverfarmingPenalty ());
+		assertEquals (20, breakdown.getProductionAmountBaseTotal ());
+		assertEquals (200, breakdown.getDifficultyLevelMultiplier ());
+		assertEquals (40, breakdown.getTotalAdjustedForDifficultyLevel ());
+		assertEquals (25, breakdown.getCappedProductionAmount ());
+	}
+	
 	/**
 	 * Tests the calculateSingleCityProduction method where the production type does exist in the output from "calculate all"
 	 * @throws Exception If there is a problem
@@ -1937,5 +4842,145 @@ public final class TestCityCalculationsImpl
 		assertEquals (93, calc.goldToRushBuy (60, 29));
 		assertEquals (60, calc.goldToRushBuy (60, 30));
 		assertEquals (2, calc.goldToRushBuy (60, 59));
+	}
+	
+	/**
+	 * Tests the listUnitsCityCanConstruct method
+	 */
+	@Test
+	public final void testListUnitsCityCanConstruct ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final List<UnitEx> unitDefs = new ArrayList<UnitEx> ();
+		
+		// 1 is a Hero
+		// 2 is a raceless unit we can construct
+		// 3 is incorrect race
+		// 4 is correct race, but don't have required buildings
+		// 5 is correct race, and have required buildings
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitEx unitDef = new UnitEx ();
+			unitDef.setUnitID ("UN00" + n);
+			unitDef.setUnitMagicRealm ((n == 1) ? CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO : CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+			
+			if (n == 3)
+				unitDef.setUnitRaceID ("RC02");
+			else if (n >= 4)
+				unitDef.setUnitRaceID ("RC01");
+			
+			unitDefs.add (unitDef);
+		}
+		
+		when (db.getUnits ()).thenReturn (unitDefs);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Which units we have the required buildings for
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (0))).thenReturn (true);
+		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (1))).thenReturn (true);
+		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (2))).thenReturn (true);
+		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (3))).thenReturn (false);
+		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (4))).thenReturn (true);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		
+		// Run method
+		final List<UnitEx> list = calc.listUnitsCityCanConstruct (new MapCoordinates3DEx (20, 10, 1), map, buildings, db);
+		
+		// Check results
+		assertEquals (2, list.size ());
+		assertEquals ("UN002", list.get (0).getUnitID ());
+		assertEquals ("UN005", list.get (1).getUnitID ());
+	}
+	
+	/**
+	 * Tests the buildRenderCityData method
+	 */
+	@Test
+	public final void testBuildRenderCityData ()
+	{
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityName ("Blah");
+		cityData.setCityRaceID ("RC01");
+		cityData.setCitySizeID ("CS01");
+		cityData.setCityOwnerID (3);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Terrain tiles
+		for (int n = 1; n <= 3; n++)
+		{
+			final OverlandMapTerrainData terrain = new OverlandMapTerrainData ();
+			terrain.setTileTypeID ("TT0" + n);
+			map.getPlane ().get (1).getRow ().get (10).getCell ().get (19 + n).setTerrainData (terrain);
+		}
+		
+		// Fog of war memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final MemoryBuilding building = new MemoryBuilding ();
+			building.setBuildingID ("BL0" + n);
+			building.setCityLocation (new MapCoordinates3DEx ((n < 3) ? 20 : 21, 10, 1));
+			mem.getBuilding ().add (building);
+		}
+
+		for (int n = 1; n <= 4; n++)
+		{
+			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+			if (n > 1)
+				spell.setCitySpellEffectID ("SE00" + n);
+			
+			spell.setCityLocation (new MapCoordinates3DEx ((n < 4) ? 20 : 21, 10, 1));
+			mem.getMaintainedSpell ().add (spell);
+		}
+		
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		final RenderCityData data = calc.buildRenderCityData (new MapCoordinates3DEx (20, 10, 1), sys, mem);
+		
+		// Check results
+		assertEquals (3, data.getCityOwnerID ());
+		assertEquals ("CS01", data.getCitySizeID ());
+		assertEquals ("Blah", data.getCityName ());
+		assertEquals (1, data.getPlaneNumber ());
+		assertEquals (0, data.getRubbleBuildingID ().size ());
+		
+		assertEquals (2, data.getBuildingID ().size ());
+		assertEquals ("BL01", data.getBuildingID ().get (0));
+		assertEquals ("BL02", data.getBuildingID ().get (1));
+
+		assertEquals (2, data.getCitySpellEffectID ().size ());
+		assertEquals ("SE002", data.getCitySpellEffectID ().get (0));
+		assertEquals ("SE003", data.getCitySpellEffectID ().get (1));
+
+		assertEquals (2, data.getAdjacentTileTypeID ().size ());
+		assertEquals ("TT01", data.getAdjacentTileTypeID ().get (0));
+		assertEquals ("TT02", data.getAdjacentTileTypeID ().get (1));
 	}
 }

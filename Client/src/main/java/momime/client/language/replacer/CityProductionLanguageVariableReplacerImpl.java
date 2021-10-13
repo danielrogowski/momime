@@ -6,6 +6,7 @@ import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityProductionBreakdownBuilding;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
+import momime.common.internal.CityProductionBreakdownPlane;
 import momime.common.internal.CityProductionBreakdownPopulationTask;
 import momime.common.internal.CityProductionBreakdownSpell;
 import momime.common.internal.CityProductionBreakdownTileType;
@@ -32,6 +33,9 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	
 	/** Pick type specific breakdown */
 	private CityProductionBreakdownPickType currentPickType;
+	
+	/** Plane specific breakdown */
+	private CityProductionBreakdownPlane currentPlane;
 	
 	/**
 	 * @param code Code to replace
@@ -74,15 +78,6 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 					(getClient ().getClientDB ().findBuilding (CommonDatabaseConstants.BUILDING_FORTRESS, "determineVariableValue").getBuildingName ());
 				break;
 				
-			case "PLANE_NAME":
-				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPlane
-					(getBreakdown ().getFortressPlane (), "determineVariableValue").getPlaneDescription ());
-				break;
-				
-			case "FORTRESS_PLANE_PRODUCTION":
-				text = getTextUtils ().halfIntToStr (getBreakdown ().getDoubleProductionAmountFortressPlane ());
-				break;
-				
 			case "GOLD_TRADE_BONUS_TILE_TYPE":
 				text = Integer.valueOf (getBreakdown ().getTradePercentageBonusFromTileType ()).toString ();
 				break;
@@ -107,12 +102,12 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				text = Integer.valueOf (getBreakdown ().getTotalPopulation ()).toString ();
 				break;
 				
-			case "UNMODIFIED_PRODUCTION_AMOUNT":
-				text = getTextUtils ().halfIntToStr (getBreakdown ().getDoubleProductionAmount ());
+			case "PRODUCTION_AMOUNT_BEFORE_PERCENTAGES":
+				text = getTextUtils ().halfIntToStr (getBreakdown ().getDoubleProductionAmountBeforePercentages ());
 				break;
 				
 			case "ROUNDED_PRODUCTION_AMOUNT":
-				text = Integer.valueOf (getBreakdown ().getBaseProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getProductionAmountBeforePercentages ()).toString ();
 				break;
 				
 			case "PERCENTAGE_BONUS":
@@ -124,19 +119,39 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 				
 			case "PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS":
-				text = Integer.valueOf (getBreakdown ().getModifiedProductionAmount () - getBreakdown ().getBaseProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getProductionAmountPlusPercentageBonus () - getBreakdown ().getProductionAmountBeforePercentages ()).toString ();
 				break;
 
 			case "PRODUCTION_LOSS_FROM_PERCENTAGE_PENALTY":
-				text = Integer.valueOf (getBreakdown ().getModifiedProductionAmount () - getBreakdown ().getPenalizedProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getProductionAmountPlusPercentageBonus () - getBreakdown ().getProductionAmountMinusPercentagePenalty ()).toString ();
 				break;
 				
-			case "PRODUCTION_TOTAL":
-				text = Integer.valueOf (getBreakdown ().getModifiedProductionAmount ()).toString ();
+			case "PRODUCTION_TOTAL_AFTER_BONUS":
+				text = Integer.valueOf (getBreakdown ().getProductionAmountPlusPercentageBonus ()).toString ();
 				break;
 				
 			case "PRODUCTION_TOTAL_AFTER_PENALTY":
-				text = Integer.valueOf (getBreakdown ().getPenalizedProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getProductionAmountMinusPercentagePenalty ()).toString ();
+				break;
+				
+			case "FOOD_FROM_TERRAIN":
+				text = getBreakdown ().getFoodProductionFromTerrainTiles ().toString ();
+				break;
+				
+			case "OVERFARMING_AMOUNT":
+				text = Integer.valueOf (getBreakdown ().getProductionAmountMinusPercentagePenalty () - getBreakdown ().getFoodProductionFromTerrainTiles ()).toString ();
+				break;
+				
+			case "OVERFARMING_PRODUCTION_GAINED":
+				text = Integer.valueOf (getBreakdown ().getProductionAmountAfterOverfarmingPenalty () - getBreakdown ().getFoodProductionFromTerrainTiles ()).toString ();
+				break;
+				
+			case "PRODUCTION_TOTAL_AFTER_OVERFARMING":
+				text = getBreakdown ().getProductionAmountAfterOverfarmingPenalty ().toString ();
+				break;
+				
+			case "PRODUCTION_AMOUNT_BASE_TOTAL":
+				text = Integer.valueOf (getBreakdown ().getProductionAmountBaseTotal ()).toString ();
 				break;
 				
 			// AI players
@@ -323,6 +338,17 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 			case "PRODUCTION_ALL_PICKS":
 				text = getTextUtils ().halfIntToStr (getCurrentPickType ().getDoubleProductionAmountAllPicks ());
 				break;
+
+			// Dependant on current plane
+			case "PLANE_NAME":
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPlane
+					(getCurrentPlane ().getFortressPlane (), "determineVariableValue").getPlaneDescription ());
+				break;
+				
+			case "FORTRESS_PLANE_PRODUCTION":
+				text = getTextUtils ().halfIntToStr (getCurrentPlane ().getDoubleProductionAmountFortressPlane ());
+				break;
+				
 				
 			default:
 				text = null;
@@ -430,5 +456,22 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	public final void setCurrentPickType (final CityProductionBreakdownPickType pickType)
 	{
 		currentPickType = pickType;
+	}
+
+	/**
+	 * @return Plane specific breakdown
+	 */
+	public final CityProductionBreakdownPlane getCurrentPlane ()
+	{
+		return currentPlane;
+	}
+	
+	/**
+	 * @param plane Plane specific breakdown
+	 */
+	@Override
+	public final void setCurrentPlane (final CityProductionBreakdownPlane plane)
+	{
+		currentPlane = plane;
 	}
 }

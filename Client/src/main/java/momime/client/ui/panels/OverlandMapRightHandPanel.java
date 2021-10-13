@@ -1188,7 +1188,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				cityInfo = getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCanBuildCity ()).replaceAll
 					("MAXIMUM_POPULATION", Integer.valueOf (getCityCalculations ().listCityFoodProductionFromTerrainTiles
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
-						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()).getDoubleProductionAmount ()).toString () + ",000").replaceAll
+						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()).getProductionAmountBeforePercentages ()).toString () + ",000").replaceAll
 					("PRODUCTION_BONUS", Integer.valueOf (getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
 						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()).getPercentageBonus ()).toString ()).replaceAll

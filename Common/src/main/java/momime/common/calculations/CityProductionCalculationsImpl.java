@@ -15,7 +15,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.PickType;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TaxRate;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -25,6 +24,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PlayerPick;
+import momime.common.utils.CityProductionUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 
@@ -44,6 +44,9 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	
 	/** City calculations */
 	private CityCalculations cityCalculations;
+	
+	/** Utils for totalling up city production */
+	private CityProductionUtils cityProductionUtils;
 	
 	/**
 	 * @param players Pre-locked players list
@@ -94,36 +97,14 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		if (includeProductionAndConsumptionFromPopulation)
 		{
 			// Gold from taxes
-			final TaxRate taxRate = db.findTaxRate (taxRateID, "calculateAllCityProductions");
-			final int taxPayers = (cityData.getCityPopulation () / 1000) - cityData.getNumberOfRebels ();
-
-			// If tax rate set to zero then we're getting no money from taxes, so don't add it
-			// Otherwise we get a production entry in the breakdown of zero which produces an error on the client
-			if ((taxRate.getDoubleTaxGold () > 0) && (taxPayers > 0))
-			{
-				final CityProductionBreakdown gold = new CityProductionBreakdown ();
-				gold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-				gold.setApplicablePopulation (taxPayers);
-				gold.setDoubleProductionAmountEachPopulation (taxRate.getDoubleTaxGold ());
-				gold.setDoubleProductionAmountAllPopulation (taxPayers * taxRate.getDoubleTaxGold ());
-				gold.setDoubleProductionAmount (gold.getDoubleProductionAmountAllPopulation ());
-
+			final CityProductionBreakdown gold = getCityCalculations ().addGoldFromTaxes (cityData, taxRateID, db);
+			if (gold != null)
 				productionValues.getProductionType ().add (gold);
-			}
 
 			// Rations consumption by population
-			final int eaters = cityData.getCityPopulation () / 1000;
-			if (eaters > 0)
-			{
-				final CityProductionBreakdown rations = new CityProductionBreakdown ();
-				rations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-				rations.setApplicablePopulation (eaters);
-				rations.setConsumptionAmountEachPopulation (1);
-				rations.setConsumptionAmountAllPopulation (eaters);
-				rations.setConsumptionAmount (eaters);
-				
+			final CityProductionBreakdown rations = getCityCalculations ().addRationsEatenByPopulation (cityData);
+			if (rations != null)
 				productionValues.getProductionType ().add (rations);
-			}
 
 			// Production from population
 			getCityCalculations ().addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.POPULATION_TASK_ID_FARMER,
@@ -151,10 +132,10 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 					// Wizard's fortress produces mana according to how many books were chosen at the start of the game...
 					for (final PickType thisPickType : db.getPickType ())
 						getCityCalculations ().addProductionFromFortressPickType (productionValues, thisPickType, getPlayerPickUtils ().countPicksOfType
-							(cityOwnerPicks, thisPickType.getPickTypeID (), true, db));
+							(cityOwnerPicks, thisPickType.getPickTypeID (), true, db), db);
 
 					// ...and according to which plane it is on
-					getCityCalculations ().addProductionFromFortressPlane (productionValues, db.findPlane (cityLocation.getZ (), "calculateAllCityProductions"));
+					getCityCalculations ().addProductionFromFortressPlane (productionValues, db.findPlane (cityLocation.getZ (), "calculateAllCityProductions"), db);
 				}
 
 				// Regular building
@@ -170,10 +151,6 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 				if (cityLocation.equals (spell.getCityLocation ()))
 					getCityCalculations ().addProductionFromSpell (productionValues, spell, doubleTotalFromReligiousBuildings, db);
 
-		// Maintenance cost of city enchantment spells
-		// Left this out - its commented out in the Delphi code as well due to the fact that
-		// Temples and such produce magic power, but spell maintenance is charged in Mana
-
 		// See if we've got a miners' guild to boost the income from map features
 		final CityProductionBreakdown mineralPercentageResult = productionValues.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);
 		final int buildingMineralPercentageBonus = (mineralPercentageResult != null) ? mineralPercentageResult.getPercentageBonus () : 0;
@@ -186,7 +163,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		// Halve and cap food (max city size) production first, because if calculatePotential=true then we need to know the potential max city size before
 		// we can calculate the gold trade % cap.
 		// Have to do this after map features are added in, since wild game increase max city size.
-		getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, food, sd.getDifficultyLevel (), db);
+		getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, food, 0, sd.getDifficultyLevel (), db);
 		
 		// Gold trade % from rivers and oceans
 		// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
@@ -197,7 +174,8 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
 		for (final CityProductionBreakdown thisProduction : productionValues.getProductionType ())
 			if (thisProduction != food)
-				getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, thisProduction, sd.getDifficultyLevel (), db);
+				getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, thisProduction, food.getProductionAmountPlusPercentageBonus (),
+					sd.getDifficultyLevel (), db);
 		
 		// Convert production to gold, if set to trade goods
 		final String currentlyConstructingBuildingID = (cityData != null) ? cityData.getCurrentlyConstructingBuildingID () : null;
@@ -276,5 +254,21 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
+	}
+
+	/**
+	 * @return Utils for totalling up city production
+	 */
+	public final CityProductionUtils getCityProductionUtils ()
+	{
+		return cityProductionUtils;
+	}
+
+	/**
+	 * @param c Utils for totalling up city production
+	 */
+	public final void setCityProductionUtils (final CityProductionUtils c)
+	{
+		cityProductionUtils = c;
 	}
 }

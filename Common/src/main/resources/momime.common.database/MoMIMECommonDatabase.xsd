@@ -4575,7 +4575,8 @@ Ordering of this list is very significant.
 				<xsd:documentation>Percentage bonuses are applied, and production amounts are added on after.
 This only makes sense if there is some exception to this setting (either specified in XML or hard coded) that puts *something* into the "before" bucket.
 So then production amount = (before * (1 + percentage bonus - percentage penalty)) + after.
-This is needed to make the overly complicated food and rations calculations accurate.</xsd:documentation>
+This is needed to make the overly complicated food and rations calculations accurate.
+Any value that goes into the "after" bucket must a whole number (the doubled amount in the XML must be an even number) as rounding has already been applied before this.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="AFTER_PERCENTAGE_BONUSES" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>

@@ -4,6 +4,7 @@ import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityProductionBreakdownBuilding;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
+import momime.common.internal.CityProductionBreakdownPlane;
 import momime.common.internal.CityProductionBreakdownPopulationTask;
 import momime.common.internal.CityProductionBreakdownSpell;
 import momime.common.internal.CityProductionBreakdownTileType;
@@ -42,4 +43,9 @@ public interface CityProductionLanguageVariableReplacer extends BreakdownLanguag
 	 * @param pickType Pick type specific breakdown
 	 */
 	public void setCurrentPickType (final CityProductionBreakdownPickType pickType);
+	
+	/**
+	 * @param plane Plane specific breakdown
+	 */
+	public void setCurrentPlane (final CityProductionBreakdownPlane plane);
 }

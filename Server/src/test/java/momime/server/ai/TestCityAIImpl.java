@@ -1,9 +1,8 @@
 package momime.server.ai;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,28 +10,24 @@ import java.util.List;
 import org.junit.Test;
 
 import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
+import com.ndg.map.areas.storage.MapArea2D;
+import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
+import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
-import momime.common.calculations.CityProductionCalculationsImpl;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.MapFeatureEx;
+import momime.common.database.OverlandMapSize;
+import momime.common.database.TileTypeEx;
 import momime.common.database.Wizard;
-import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapAreaOfMemoryGridCells;
-import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.MemoryBuildingUtilsImpl;
-import momime.common.utils.PlayerPickUtils;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculationsImpl;
 import momime.server.database.ServerDatabaseValues;
@@ -49,218 +44,70 @@ public final class TestCityAIImpl extends ServerTestData
 	@Test
 	public final void testChooseCityLocation () throws Exception
 	{
-		final CommonDatabase db = loadServerDatabase ();
-
-		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells map = createOverlandMap (sd.getOverlandMapSize ());
-
-		// Fill map with ocean, then we can't build a city anywhere
-		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
-			for (final MapRowOfMemoryGridCells row : plane.getRow ())
-				for (final MemoryGridCell cell : row.getCell ())
-				{
-					final OverlandMapTerrainData terrain = new OverlandMapTerrainData ();
-					terrain.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEAN);
-
-					cell.setTerrainData (terrain);
-				}
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Player picks
-		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-
-		// Set up test object
-		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
+		for (int x = 1; x <= 5; x++)
+		{
+			final TileTypeEx tileType = new TileTypeEx ();
+			tileType.setCanBuildCity (x != 4);		// So 24, 10 is invalid because of tile type
+			when (db.findTileType ("TT0" + x, "chooseCityLocation")).thenReturn (tileType);
+		}		
 		
-		final BooleanMapAreaOperations2DImpl booleanMapAreaOperations2D = new BooleanMapAreaOperations2DImpl ();
-		booleanMapAreaOperations2D.setCoordinateSystemUtils (coordinateSystemUtils);
+		for (int x = 1; x <= 5; x++)
+		{
+			final MapFeatureEx mapFeature = new MapFeatureEx ();
+			mapFeature.setCanBuildCity (x != 3);		// So 23, 10 is invalid because of map feature (e.g. lair)
+			when (db.findMapFeature ("MF0" + x, "chooseCityLocation")).thenReturn (mapFeature);
+		}		
 		
-		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setCoordinateSystemUtils (coordinateSystemUtils);
-		calc.setPlayerPickUtils (playerPickUtils);
-		calc.setBooleanMapAreaOperations2D (booleanMapAreaOperations2D);
+		// Session description
+		final OverlandMapSize mapSize = createOverlandMapSize ();
 		
-		final CityProductionCalculationsImpl prod = new CityProductionCalculationsImpl ();
-		prod.setCityCalculations (calc);
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setOverlandMapSize (mapSize);
 		
+		// Maps
+		final MapVolumeOfMemoryGridCells trueMap = createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells knownMap = createOverlandMap (mapSize);
+		
+		for (int x = 1; x <= 5; x++)
+		{
+			final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+			terrainData.setTileTypeID ("TT0" + x);
+			if ((x >= 2) && (x <= 3))
+				terrainData.setMapFeatureID ("MF0" + x);		// Chosen tile 22, 10 also has a map feature, but we can build a city on it (e.g. gold)
+			
+			knownMap.getPlane ().get (1).getRow ().get (10).getCell ().get (20 + x).setTerrainData (terrainData);
+		}
+		
+		// Area too close to other cities
+		final MapArea2D<Boolean> withinExistingCityRadius = new MapArea2DArrayListImpl<Boolean> ();
+		withinExistingCityRadius.setCoordinateSystem (mapSize);
+		for (int y = 0; y < mapSize.getHeight (); y++)
+			for (int x = 0; x < mapSize.getWidth (); x++)
+				withinExistingCityRadius.set (x, y, (x == 25) && (y == 10));		// So 25, 10 is blocked even though it has the highest estimate 
+		
+		final CityCalculations cityCalc = mock (CityCalculations.class);
+		when (cityCalc.markWithinExistingCityRadius (trueMap, knownMap, 1, mapSize)).thenReturn (withinExistingCityRadius);
+		
+		// Quality evaluations
+		final AICityCalculations aiCityCalc = mock (AICityCalculations.class);
+		for (int x = 1; x <= 5; x++)
+			when (aiCityCalc.evaluateCityQuality (new MapCoordinates3DEx (20 + x, 10, 1), true, true, knownMap, sd, db)).thenReturn (x * 100);
+		
+		// Set up object to test
 		final CityAIImpl ai = new CityAIImpl ();
-		ai.setCityCalculations (calc);
-		ai.setCityProductionCalculations (prod);
-		ai.setCoordinateSystemUtils (coordinateSystemUtils);
+		ai.setCityCalculations (cityCalc);
+		ai.setAiCityCalculations (aiCityCalc);
 		
-		final MapCoordinates3DEx ocean = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
-		assertNull (ocean);
-
-		// Fill map with tundra, then we can build a city anywhere but none of them are very good
-		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
-			for (final MapRowOfMemoryGridCells row : plane.getRow ())
-				for (final MemoryGridCell cell : row.getCell ())
-					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
-
-		final MapCoordinates3DEx tundra = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
-		assertEquals (0, tundra.getX ());
-		assertEquals (0, tundra.getY ());
-		assertEquals (0, tundra.getZ ());
-
-		// If we put 3 dots of grass, there's only one exact spot where the city radius will include all of them
-		// Also set the entire other plane to grass, to prove that it doesn't get considered
-		map.getPlane ().get (0).getRow ().get (13).getCell ().get (20).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
-		map.getPlane ().get (0).getRow ().get (13).getCell ().get (24).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
-		map.getPlane ().get (0).getRow ().get (10).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
-
-		for (final MapRowOfMemoryGridCells row : map.getPlane ().get (1).getRow ())
-			for (final MemoryGridCell cell : row.getCell ())
-				cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
-
-		final MapCoordinates3DEx grass = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
-		assertEquals (22, grass.getX ());
-		assertEquals (12, grass.getY ());
-		assertEquals (0, grass.getZ ());
-
-		// Putting some gems there is great
-		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF01");
-
-		final MapCoordinates3DEx gems = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
-		assertEquals (22, gems.getX ());
-		assertEquals (12, gems.getY ());
-		assertEquals (0, gems.getZ ());
-
-		// Putting a lair there instead means we can't build a city there
-		// Note there's no longer a spot where can include all 3 grass tiles, so it picks the first coordinates that it encounters that includes two of the grass tiles
-		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF13");
-
-		final MapCoordinates3DEx lair = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
-		assertEquals (20, lair.getX ());
-		assertEquals (11, lair.getY ());
-		assertEquals (0, lair.getZ ());
-
-		// Put a river just to the right of the city - so it would be included in the previous radius, so we get the food from it anyway
-		// But we don't get the 20% gold bonus from it unless we move the city to that location, so this proves that the gold bonus is taken into account
-		map.getPlane ().get (0).getRow ().get (11).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_RIVER);
-
-		final MapCoordinates3DEx river = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
-		assertEquals (21, river.getX ());
-		assertEquals (11, river.getY ());
-		assertEquals (0, river.getZ ());
-
-		// Mountains produce no food and no gold, just like tundra, but they go give a 5% production bonus
-		// This carefully places 5 mountain tiles just along underneath where the city was previously chosen, totally 25% bonus so it then
-		// moves the city to include this 25% in preference to the 20% gold bonus from the river tile
-		map.getPlane ().get (0).getRow ().get (13).getCell ().get (19).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
-		map.getPlane ().get (0).getRow ().get (14).getCell ().get (20).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
-		map.getPlane ().get (0).getRow ().get (14).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
-		map.getPlane ().get (0).getRow ().get (14).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
-		map.getPlane ().get (0).getRow ().get (13).getCell ().get (23).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
-
-		final MapCoordinates3DEx mountain = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
-		assertEquals (21, mountain.getX ());
-		assertEquals (12, mountain.getY ());
-		assertEquals (0, mountain.getZ ());
-
-		// Iron ore has a +4 quality rating, so putting some on the row that just *isn't* included if we take those mountains means it will still choose
-		// the 25% bonus from the mountains rather than the 20% + 4 from the river and iron ore
-		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF04");
-
-		final MapCoordinates3DEx ironOre = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
-		assertEquals (21, ironOre.getX ());
-		assertEquals (12, ironOre.getY ());
-		assertEquals (0, ironOre.getZ ());
-
-		// Coal has a +6 quality rating, so putting some on the row that just *isn't* included if we take those mountains means it will now go
-		// back to the 20% + 6 from the river and coal rather than the 25% from the mountains
-		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF05");
-
-		final MapCoordinates3DEx coal = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
-		assertEquals (21, coal.getX ());
-		assertEquals (11, coal.getY ());
-		assertEquals (0, coal.getZ ());
-	}
-
-	/**
-	 * Tests the findWorkersToConvertToFarmers method
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testFindWorkersToConvertToFarmers () throws Exception
-	{
-		final CommonDatabase db = loadServerDatabase ();
-
-		// Map
-		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sd.getOverlandMapSize ());
-
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-
-		// Player
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (2);
-
-		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
-
-		// Fix random results - would be better to mock some non-zero values here
-		final RandomUtils random = mock (RandomUtils.class);
+		// Call method
+		final MapCoordinates3DEx location = ai.chooseCityLocation (knownMap, trueMap, 1, true, sd, db, null);
 		
-		// Set up test object
-		final ServerCityCalculationsImpl serverCityCalculations = new ServerCityCalculationsImpl ();
-		serverCityCalculations.setMemoryBuildingUtils (new MemoryBuildingUtilsImpl ());
-		
-		final CityAIImpl ai = new CityAIImpl ();
-		ai.setServerCityCalculations (serverCityCalculations);
-		ai.setRandomUtils (random);
-		
-		// If we want trade goods cities and there are none, no updates will take place
-		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-		{
-			final OverlandMapCityData cityData = new OverlandMapCityData ();
-			cityData.setCityOwnerID (2);
-			cityData.setCityPopulation (4000);
-			cityData.setMinimumFarmers (1);
-			cityData.setNumberOfRebels (1);
-			cityData.setOptionalFarmers (0);
-			cityData.setCityRaceID ("RC05");		// High men (standard ration production)
-			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_HOUSING);
-			trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).setCityData (cityData);
-		}
-
-		assertEquals (10, ai.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd));
-
-		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ());
-
-		// In the situation where we have 62 cities - 2 building trade goods and 60 building something else - and we need 5 rations, there are
-		// only 2 possible outcomes - use 2 farmers in city A and 1 in city B, or use 1 in city A and 2 in city B
-		// Those 3 farmers will then produce 6 rations, so 1 leftover, hence -2 result
-		for (int x = 0; x < 2; x++)
-		{
-			final OverlandMapCityData cityData = new OverlandMapCityData ();
-			cityData.setCityOwnerID (2);
-			cityData.setCityPopulation (4000);
-			cityData.setMinimumFarmers (1);
-			cityData.setNumberOfRebels (1);
-			cityData.setOptionalFarmers (0);
-			cityData.setCityRaceID ("RC05");		// High men (standard ration production)
-			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_TRADE_GOODS);
-			trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x).setCityData (cityData);
-		}
-
-		assertEquals (-2, ai.findWorkersToConvertToFarmers (10, true, trueMap, player, db, sd));
-
-		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-			assertEquals (0, trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (x).getCityData ().getOptionalFarmers ());
-
-		switch (trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (0).getCityData ().getOptionalFarmers ())
-		{
-			case 1:
-				assertEquals (2, trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (1).getCityData ().getOptionalFarmers ());
-				break;
-
-			case 2:
-				assertEquals (1, trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (1).getCityData ().getOptionalFarmers ());
-				break;
-
-			default:
-				fail ("Optional farmers in city A must be 1 or 2");
-		}
+		// Check results
+		assertEquals (22, location.getX ());
+		assertEquals (10, location.getY ());
+		assertEquals (1, location.getZ ());
 	}
 
 	/**

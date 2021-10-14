@@ -403,6 +403,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">
@@ -448,6 +449,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
 	</bean>
 
 	<bean id="serverUnitCalculations" class="momime.server.calculations.ServerUnitCalculationsImpl">
@@ -764,7 +766,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="aiSpellCalculations" ref="aiSpellCalculations" />
 		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="randomUtils" ref="randomUtils" />
-		<property name="cityAI" ref="cityAI" />
+		<property name="aiCityCalculations" ref="aiCityCalculations" />
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="unitAI" ref="unitAI" />
@@ -779,18 +781,25 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 	</bean>
 
+	<bean id="aiCityCalculations" class="momime.server.ai.AICityCalculationsImpl">
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="aiCityCalculations" ref="aiCityCalculations" />
 	</bean>
 
 	<bean id="momAI" class="momime.server.ai.MomAIImpl">

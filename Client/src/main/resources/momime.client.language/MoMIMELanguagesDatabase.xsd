@@ -809,15 +809,15 @@
 						<xsd:selector xpath="productionPercentagePenaltyTotal" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="cityProductionProductionOverfarmingRuleHeadingPK">
+					<xsd:key name="cityProductionOverfarmingRuleHeadingPK">
 						<xsd:selector xpath="overfarmingRuleHeading" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="cityProductionProductionOverfarmingRuleLinePK">
+					<xsd:key name="cityProductionOverfarmingRuleLinePK">
 						<xsd:selector xpath="overfarmingRuleLine" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="cityProductionProductionBaseTotalPK">
+					<xsd:key name="cityProductionBaseTotalPK">
 						<xsd:selector xpath="baseTotal" />
 						<xsd:field xpath="@language" />
 					</xsd:key>

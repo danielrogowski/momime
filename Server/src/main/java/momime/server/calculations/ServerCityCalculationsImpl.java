@@ -15,9 +15,7 @@ import momime.common.database.Building;
 import momime.common.database.CitySize;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.Race;
-import momime.common.database.RacePopulationTask;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -26,6 +24,7 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.server.utils.CityServerUtils;
 
 /**
  * Server only calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
@@ -41,58 +40,9 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
-	/**
-	 * @param map True terrain
-	 * @param buildings True list of buildings
-	 * @param cityLocation Location of the city to calculate for
-	 * @param db Lookup lists built over the XML database
-	 * @return Rations produced by one farmer in this city
-	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
-	 * @throws MomException If the city's race has no farmers defined or those farmers have no ration production defined
-	 */
-	@Override
-	public final int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final CommonDatabase db)
-		throws MomException, RecordNotFoundException
-	{
-		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-
-		// Find the farmers for this race
-		RacePopulationTask farmer = null;
-		final Iterator<RacePopulationTask> taskIter = db.findRace (cityData.getCityRaceID (), "calculateDoubleFarmingRate").getRacePopulationTask ().iterator ();
-		while ((farmer == null) && (taskIter.hasNext ()))
-		{
-			final RacePopulationTask thisTask = taskIter.next ();
-			if (thisTask.getPopulationTaskID ().equals (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER))
-				farmer = thisTask;
-		}
-
-		if (farmer == null)
-			throw new MomException ("calculateDoubleFarmingRate: Race " + cityData.getCityRaceID () + " has no farmers defined");
-
-		// Find how many rations each farmer produces
-		ProductionTypeAndDoubledValue rations = null;
-		final Iterator<ProductionTypeAndDoubledValue> prodIter = farmer.getRacePopulationTaskProduction ().iterator ();
-		while ((rations == null) && (prodIter.hasNext ()))
-		{
-			final ProductionTypeAndDoubledValue thisProd = prodIter.next ();
-			if (thisProd.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS))
-				rations = thisProd;
-		}
-
-		if (rations == null)
-			throw new MomException ("calculateDoubleFarmingRate: Farmers for race " + cityData.getCityRaceID () + " do not produce any rations");
-
-		// Every race has farmers, and every farmer produces rations, so the chain of records must exist
-		final int doubleFarmingRate = rations.getDoubledProductionValue () +
-
-			// Bump up farming rate if we have an Animists' guild
-			getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings (buildings, cityLocation,
-				CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, db);
-
-		return doubleFarmingRate;
-	}
-
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
+	
 	/**
 	 * Updates the city size ID and minimum number of farmers
 	 *
@@ -159,7 +109,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		else
 		{
 			// Get the farming rate for this race
-			final int doubleFarmingRate = calculateDoubleFarmingRate (map, buildings, cityLocation, db);
+			final int doubleFarmingRate = getCityServerUtils ().calculateDoubleFarmingRate (map, buildings, spells, cityLocation, db);
 
 			// Now can do calculation, round up
 			cityData.setMinimumFarmers (((rationsNeeded * 2) + doubleFarmingRate - 1) / doubleFarmingRate);
@@ -320,5 +270,21 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
 	}
 }

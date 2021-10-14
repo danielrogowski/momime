@@ -23,19 +23,6 @@ import momime.common.messages.OverlandMapCityData;
 public interface ServerCityCalculations
 {
 	/**
-	 * @param map True terrain
-	 * @param buildings True list of buildings
-	 * @param cityLocation Location of the city to calculate for
-	 * @param db Lookup lists built over the XML database
-	 * @return Rations produced by one farmer in this city
-	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
-	 * @throws MomException If the city's race has no farmers defined or those farmers have no ration production defined
-	 */
-	public int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final CommonDatabase db)
-		throws MomException, RecordNotFoundException;
-
-	/**
 	 * Updates the city size ID and minimum number of farmers
 	 *
 	 * After updating city population, must call the routines in this sequence:

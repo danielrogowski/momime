@@ -17,17 +17,22 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.RaceEx;
+import momime.common.database.RacePopulationTask;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.ServerTestData;
 
 /**
@@ -748,5 +753,253 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		assertEquals (new MapCoordinates3DEx (20, 10, 1), utils.findCityWithinRadius (new MapCoordinates3DEx (21, 12, 1), terrain, sys));
 		assertNull (utils.findCityWithinRadius (new MapCoordinates3DEx (22, 12, 1), terrain, sys));
 		assertNull (utils.findCityWithinRadius (new MapCoordinates3DEx (21, 12, 0), terrain, sys));
+	}
+
+	/**
+	 * Tests the calculateDoubleFarmingRate method on the simple case where there's no modifiers
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateDoubleFarmingRate_Normal () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeAndDoubledValue rations = new ProductionTypeAndDoubledValue ();
+		rations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		rations.setDoubledProductionValue (4);
+		
+		final RacePopulationTask farmer = new RacePopulationTask ();
+		farmer.getRacePopulationTaskProduction ().add (rations);
+		farmer.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
+		
+		final RaceEx race = new RaceEx ();
+		race.getRacePopulationTask ().add (farmer);
+		when (db.findRace ("RC01", "calculateDoubleFarmingRate")).thenReturn (race);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// City
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
+		
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// Call method
+		assertEquals (4, utils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db));
+	}
+
+	/**
+	 * Tests the calculateDoubleFarmingRate method when the race has no farmers defined
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testCalculateDoubleFarmingRate_NoFarmers () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeAndDoubledValue rations = new ProductionTypeAndDoubledValue ();
+		rations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		rations.setDoubledProductionValue (4);
+		
+		final RacePopulationTask farmer = new RacePopulationTask ();
+		farmer.getRacePopulationTaskProduction ().add (rations);
+		farmer.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
+		
+		final RaceEx race = new RaceEx ();
+		race.getRacePopulationTask ().add (farmer);
+		when (db.findRace ("RC01", "calculateDoubleFarmingRate")).thenReturn (race);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// City
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
+		
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// Call method
+		utils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db);
+	}
+
+	/**
+	 * Tests the calculateDoubleFarmingRate method when farmers don't have an amount of rations they generate defined
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testCalculateDoubleFarmingRate_FarmersDontGenerateRations () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeAndDoubledValue rations = new ProductionTypeAndDoubledValue ();
+		rations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		rations.setDoubledProductionValue (4);
+		
+		final RacePopulationTask farmer = new RacePopulationTask ();
+		farmer.getRacePopulationTaskProduction ().add (rations);
+		farmer.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
+		
+		final RaceEx race = new RaceEx ();
+		race.getRacePopulationTask ().add (farmer);
+		when (db.findRace ("RC01", "calculateDoubleFarmingRate")).thenReturn (race);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// City
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
+		
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Set up object to test
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// Call method
+		utils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db);
+	}
+
+	/**
+	 * Tests the calculateDoubleFarmingRate method when we get a bonus per farmer from Animists' Guild
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateDoubleFarmingRate_AnimistsGuild () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeAndDoubledValue rations = new ProductionTypeAndDoubledValue ();
+		rations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		rations.setDoubledProductionValue (4);
+		
+		final RacePopulationTask farmer = new RacePopulationTask ();
+		farmer.getRacePopulationTaskProduction ().add (rations);
+		farmer.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
+		
+		final RaceEx race = new RaceEx ();
+		race.getRacePopulationTask ().add (farmer);
+		when (db.findRace ("RC01", "calculateDoubleFarmingRate")).thenReturn (race);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		when (memoryBuildingUtils.totalBonusProductionPerPersonFromBuildings (buildings, new MapCoordinates3DEx (20, 10, 1),
+			CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, db)).thenReturn (2);
+
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		// City
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
+		
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// Call method
+		assertEquals (6, utils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db));
+	}
+
+	/**
+	 * Tests the calculateDoubleFarmingRate method when we get a bonus per farmer from Animists' Guild, but its then all halved by Famine
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateDoubleFarmingRate_Famine () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeAndDoubledValue rations = new ProductionTypeAndDoubledValue ();
+		rations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		rations.setDoubledProductionValue (4);
+		
+		final RacePopulationTask farmer = new RacePopulationTask ();
+		farmer.getRacePopulationTaskProduction ().add (rations);
+		farmer.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
+		
+		final RaceEx race = new RaceEx ();
+		race.getRacePopulationTask ().add (farmer);
+		when (db.findRace ("RC01", "calculateDoubleFarmingRate")).thenReturn (race);
+
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		when (memoryBuildingUtils.totalBonusProductionPerPersonFromBuildings (buildings, new MapCoordinates3DEx (20, 10, 1),
+			CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, db)).thenReturn (2);
+
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_FAMINE, null, null,
+			new MapCoordinates3DEx (20, 10, 1), null)).thenReturn (new MemoryMaintainedSpell ());
+
+		// City
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
+		
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityRaceID ("RC01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+
+		// Set up object to test
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// Call method
+		assertEquals (3, utils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db));
 	}
 }

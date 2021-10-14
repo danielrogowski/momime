@@ -16,6 +16,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.server.messages.MomGeneralServerKnowledge;
@@ -124,4 +125,18 @@ public interface CityServerUtils
 	public List<MapCoordinates3DEx> listMissingRoadCellsBetween (final MapCoordinates3DEx firstCityLocation, final MapCoordinates3DEx secondCityLocation, final int playerID,
 		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+
+	/**
+	 * @param map True terrain
+	 * @param buildings True list of buildings
+	 * @param spells True list of spells
+	 * @param cityLocation Location of the city to calculate for
+	 * @param db Lookup lists built over the XML database
+	 * @return Rations produced by one farmer in this city
+	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
+	 * @throws MomException If the city's race has no farmers defined or those farmers have no ration production defined
+	 */
+	public int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
+		final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation, final CommonDatabase db)
+		throws MomException, RecordNotFoundException;
 }

@@ -27,7 +27,9 @@ import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Plane;
+import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.Race;
+import momime.common.database.RacePopulationTask;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.messages.AvailableUnit;
@@ -37,6 +39,7 @@ import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -44,6 +47,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.database.ServerDatabaseValues;
@@ -89,6 +93,9 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * @param location Location we we base our search from
@@ -414,6 +421,65 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	}
 	
 	/**
+	 * @param map True terrain
+	 * @param buildings True list of buildings
+	 * @param spells True list of spells
+	 * @param cityLocation Location of the city to calculate for
+	 * @param db Lookup lists built over the XML database
+	 * @return Rations produced by one farmer in this city
+	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
+	 * @throws MomException If the city's race has no farmers defined or those farmers have no ration production defined
+	 */
+	@Override
+	public final int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
+		final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation, final CommonDatabase db)
+		throws MomException, RecordNotFoundException
+	{
+		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+
+		// Find the farmers for this race
+		RacePopulationTask farmer = null;
+		final Iterator<RacePopulationTask> taskIter = db.findRace (cityData.getCityRaceID (), "calculateDoubleFarmingRate").getRacePopulationTask ().iterator ();
+		while ((farmer == null) && (taskIter.hasNext ()))
+		{
+			final RacePopulationTask thisTask = taskIter.next ();
+			if (thisTask.getPopulationTaskID ().equals (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER))
+				farmer = thisTask;
+		}
+
+		if (farmer == null)
+			throw new MomException ("calculateDoubleFarmingRate: Race " + cityData.getCityRaceID () + " has no farmers defined");
+
+		// Find how many rations each farmer produces
+		ProductionTypeAndDoubledValue rations = null;
+		final Iterator<ProductionTypeAndDoubledValue> prodIter = farmer.getRacePopulationTaskProduction ().iterator ();
+		while ((rations == null) && (prodIter.hasNext ()))
+		{
+			final ProductionTypeAndDoubledValue thisProd = prodIter.next ();
+			if (thisProd.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS))
+				rations = thisProd;
+		}
+
+		if (rations == null)
+			throw new MomException ("calculateDoubleFarmingRate: Farmers for race " + cityData.getCityRaceID () + " do not produce any rations");
+
+		// Every race has farmers, and every farmer produces rations, so the chain of records must exist
+		int doubleFarmingRate = rations.getDoubledProductionValue () +
+
+			// Bump up farming rate if we have an Animists' guild
+			getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings (buildings, cityLocation,
+				CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, db);
+		
+		// If city has Famine cast on it then this is halved
+		// This is a bit of a cheat, should look for the modifiers under the spell effect instead... but then what would we do if we get a value like 45%?
+		// The only reason this works is because its a nice even number AND we already know the result up until now is guaranteed to be a multiple of 2.
+		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_FAMINE, null, null, cityLocation, null) != null)
+			doubleFarmingRate = doubleFarmingRate / 2;
+
+		return doubleFarmingRate;
+	}
+	
+	/**
 	 * @return MemoryBuilding utils
 	 */
 	public final MemoryBuildingUtils getMemoryBuildingUtils ()
@@ -571,5 +637,21 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

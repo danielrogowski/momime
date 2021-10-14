@@ -77,8 +77,8 @@ public final class SpellAIImpl implements SpellAI
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
-	/** AI decisions about cities */
-	private CityAI cityAI;
+	/** AI city calculations */
+	private AICityCalculations aiCityCalculations;
 	
 	/** Spell processing methods */
 	private SpellProcessing spellProcessing;
@@ -486,7 +486,7 @@ public final class SpellAIImpl implements SpellAI
 									player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
 									priv.getFogOfWarMemory ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
 								{
-									final int thisCityQuality = getCityAI ().evaluateCityQuality (cityLocation, false, false, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription (), mom.getServerDB ());
+									final int thisCityQuality = getAiCityCalculations ().evaluateCityQuality (cityLocation, false, false, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription (), mom.getServerDB ());
 									if ((targetLocation == null) || (thisCityQuality > bestCityQuality))
 									{
 										targetLocation = cityLocation;
@@ -827,19 +827,19 @@ public final class SpellAIImpl implements SpellAI
 	}
 
 	/**
-	 * @return AI decisions about cities
+	 * @return AI city calculations
 	 */
-	public final CityAI getCityAI ()
+	public final AICityCalculations getAiCityCalculations ()
 	{
-		return cityAI;
+		return aiCityCalculations;
 	}
 
 	/**
-	 * @param ai AI decisions about cities
+	 * @param c AI city calculations
 	 */
-	public final void setCityAI (final CityAI ai)
+	public final void setAiCityCalculations (final AICityCalculations c)
 	{
-		cityAI = ai;
+		aiCityCalculations = c;
 	}
 
 	/**

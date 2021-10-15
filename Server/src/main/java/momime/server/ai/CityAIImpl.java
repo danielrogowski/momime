@@ -23,6 +23,8 @@ import com.ndg.random.WeightedChoicesImpl;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.AiBuildingTypeID;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
@@ -32,6 +34,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.Wizard;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -91,6 +94,9 @@ public final class CityAIImpl implements CityAI
 	
 	/** AI city calculations */
 	private AICityCalculations aiCityCalculations;
+
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
 	
 	/**
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
@@ -184,9 +190,10 @@ public final class CityAIImpl implements CityAI
 
 		log.debug ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations");
 
-		// Then take off how many rations cities are producing even if they have zero optional farmers set
+		// Reset every city to 0 optional farmers, and see how many rations we get just like that
 		// e.g. a size 1 city with a granary next to a wild game resource will produce +3 rations even with no farmers,
 		// or a size 1 city with no resources must be a farmer, but he only eats 1 of the 2 rations he produces so this also gives +1
+		final List<AICityRationDetails> cities = new ArrayList<AICityRationDetails> ();
 		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
@@ -198,30 +205,71 @@ public final class CityAIImpl implements CityAI
 
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
-						rationsNeeded = rationsNeeded - getCityCalculations ().calculateSingleCityProduction (players, trueMap.getMap (),
-							trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, true, db,
-							CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+						final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
+							trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, true, false, db);
+						final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+						
+						final AICityRationDetails cityDetails = new AICityRationDetails ();
+						cityDetails.setCityLocation (cityLocation);
+						cityDetails.setRationsProduced ((rations == null) ? 0 :
+							(rations.getCappedProductionAmount () - rations.getConsumptionAmount () + rations.getConvertToProductionAmount ()));
+						cityDetails.setOverfarming ((rations != null) && (rations.getProductionAmountAfterOverfarmingPenalty () != null));
+						cities.add (cityDetails);
 					}
 				}
 
-		log.debug ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations after taking off what is provided by setting 0 optional farmers in all cities");
+		int rationsProduced = cities.stream ().mapToInt (c -> c.getRationsProduced ()).sum ();
+		log.debug ("setOptionalFarmersInAllCities: Cities generating surplus of " + rationsProduced + " rations with all optional farmers set to 0");
+		
+		// 1) Convert workers in cities that are not overfarming and are producing trade goods
+		// 2) Convert workers in cities that are not overfarming and are producing something other than trade goods
+		// 3) Convert workers in cities that are overfarming and are producing trade goods
+		// 4) Convert workers in cities that are overfarming and are producing something other than trade goods
+		int category = 1;
+		while ((rationsProduced < rationsNeeded) && (category <= 4))
+		{
+			// Find a random city of this category, tending towards cities with more workers
+			final boolean wantTradeGoods = (category == 1) || (category == 3);
+			final boolean wantOverfarming = (category >= 3);
+			
+			final AICityRationDetails cityDetails = getAiCityCalculations ().findWorkersToConvertToFarmers (cities, wantTradeGoods, wantOverfarming, trueMap.getMap ());
+			if (cityDetails == null)
+			{
+				log.debug ("No more cities matching category " + category);
+				category++;
+			}
+			else
+			{
+				// Increase optional farmers in this city and recalculate
+				final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityDetails.getCityLocation ().getZ ()).getRow ().get
+					(cityDetails.getCityLocation ().getY ()).getCell ().get (cityDetails.getCityLocation ().getX ()).getCityData ();
+				cityData.setOptionalFarmers (cityData.getOptionalFarmers () + 1);
 
-		// Farming rate for each farmer is doubled
-		int doubleRationsNeeded = rationsNeeded * 2;
-		log.debug ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after doubling");
+				final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
+					trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityDetails.getCityLocation (), priv.getTaxRateID (), sd, true, false, db);
+				final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 
-		// Use farmers from cities producing trade goods first
-		if (doubleRationsNeeded > 0)
-			doubleRationsNeeded = getAiCityCalculations ().findWorkersToConvertToFarmers
-				(doubleRationsNeeded, true, trueMap, player.getPlayerDescription ().getPlayerID (), db, sd);
-
-		log.debug ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after using up trade goods cities");
-
-		if (doubleRationsNeeded > 0)
-			doubleRationsNeeded = getAiCityCalculations ().findWorkersToConvertToFarmers
-				(doubleRationsNeeded, false, trueMap, player.getPlayerDescription ().getPlayerID (), db, sd);
-
-		log.debug ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after using up other production cities");
+				final boolean nowOverfarming = (rations != null) && (rations.getProductionAmountAfterOverfarmingPenalty () != null);
+				
+				// If adding +1 farmer is now making the city overfarm, but that's not the category of city we were looking for, then change the farmer back and keep going
+				if ((nowOverfarming) && (!wantOverfarming))
+				{
+					log.debug ("Worked converted to a farmer at " + cityDetails.getCityLocation () + " would push it into overfarming, so changing them back");
+					cityData.setOptionalFarmers (cityData.getOptionalFarmers () - 1);
+					cityDetails.setOverfarming (true);
+				}
+				else
+				{
+					// Keep this civilian converted to a farmer.  Update totals and see if we need to keep going.
+					cityDetails.setRationsProduced ((rations == null) ? 0 :
+						(rations.getCappedProductionAmount () - rations.getConsumptionAmount () + rations.getConvertToProductionAmount ()));
+					cityDetails.setOverfarming (nowOverfarming);
+					
+					rationsProduced = cities.stream ().mapToInt (c -> c.getRationsProduced ()).sum ();
+					log.debug ("Converted worker to farmer at " + cityDetails.getCityLocation () + ", now cities generating " + rationsProduced + " rations");
+				}
+			}
+		}
 
 		// Update each player's memorised view of this city with the new number of optional farmers, if they can see it
 		for (final Plane plane : db.getPlane ())
@@ -852,5 +900,21 @@ public final class CityAIImpl implements CityAI
 	public final void setAiCityCalculations (final AICityCalculations c)
 	{
 		aiCityCalculations = c;
+	}
+
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
 	}
 }

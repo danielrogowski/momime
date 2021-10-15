@@ -1,12 +1,13 @@
 package momime.server.ai;
 
+import java.util.List;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 
@@ -32,19 +33,14 @@ public interface AICityCalculations
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**
-	 * Finds workers in cities to convert to optional farmers
+	 * Chooses one city to convert a worker to a farmer when AI player isn't generating enough rations
 	 *
-	 * @param doubleRationsNeeded 2x number of rations that we still need to find optional farmers to help produce
-	 * @param tradeGoods If true will only consider cities that are building trade goods; if false will only consider cities that are building something other than trade goods
-	 * @param trueMap True map details
-	 * @param playerID Player who we want to convert workers into farmers for
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @return Adjusted value of doubleRationsNeeded
-	 * @throws RecordNotFoundException If there is a building that cannot be found in the DB
-	 * @throws MomException If a city's race has no farmers defined or those farmers have no ration production defined
+	 * @param cities List of cities to check through 
+	 * @param wantTradeGoods If true will only consider cities that are building trade goods; if false will only consider cities that are building something other than trade goods
+	 * @param wantOverfarming If true will only consider cities that are overfarming; if false will only consider cities that are not overfarming
+	 * @param trueTerrain True overland terrain
+	 * @return Chosen city if one matched requirements; null if none matched
 	 */
-	public int findWorkersToConvertToFarmers (final int doubleRationsNeeded, final boolean tradeGoods, final FogOfWarMemory trueMap,
-		final int playerID, final CommonDatabase db, final MomSessionDescription sd)
-		throws RecordNotFoundException, MomException;
+	public AICityRationDetails findWorkersToConvertToFarmers (final List<AICityRationDetails> cities, final boolean wantTradeGoods,
+		final boolean wantOverfarming, final MapVolumeOfMemoryGridCells trueTerrain);
 }

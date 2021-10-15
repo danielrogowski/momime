@@ -2,13 +2,15 @@ package momime.server.ai;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
@@ -20,7 +22,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
 import momime.common.internal.CityProductionBreakdown;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -299,42 +300,30 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 	}
 	
 	/**
-	 * Tests the findWorkersToConvertToFarmers method when we only need to find and convert one farmer
-	 * @throws Exception If there is a problem
+	 * Tests the findWorkersToConvertToFarmers method
 	 */
 	@Test
-	public final void testFindWorkersToConvertToFarmers_OnlyNeedOne () throws Exception
+	public final void testFindWorkersToConvertToFarmers ()
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Session description
-		final OverlandMapSize mapSize = createOverlandMapSize ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (mapSize);
-
 		// Map
-		final MapVolumeOfMemoryGridCells map = createOverlandMap (mapSize);
-		
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (map);
-		
-		// Amount of rations each farmer generates
-		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
-		when (cityServerUtils.calculateDoubleFarmingRate (eq (trueMap.getMap ()), eq (trueMap.getBuilding ()), eq (trueMap.getMaintainedSpell ()),
-			any (MapCoordinates3DEx.class), eq (db))).thenReturn (4);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
 		
 		// Cities
+		final List<AICityRationDetails> cities = new ArrayList<AICityRationDetails> ();
 		for (int x = 1; x <= 5; x++)
 		{
 			final OverlandMapCityData cityData = new OverlandMapCityData ();
-			cityData.setCityOwnerID ((x == 5) ? 4 : 3);
 			cityData.setCurrentlyConstructingBuildingID ((x == 1) ? "BL15" : CommonDatabaseConstants.BUILDING_TRADE_GOODS);
 			cityData.setCityPopulation (x * 4000);
 			cityData.setMinimumFarmers (x);
-			cityData.setNumberOfRebels (x);		// So cities have 2, 4, 6, 8 and 10 available workers, but cities 1+5 are excluded because of owner+current construction
+			cityData.setNumberOfRebels (x);		// So cities have 2, 4, 6 and 8 available workers, but 1st city is excluded because its building something useful
 			map.getPlane ().get (1).getRow ().get (10).getCell ().get (20 + x).setCityData (cityData);
+			
+			final AICityRationDetails cityDetails = new AICityRationDetails ();
+			cityDetails.setCityLocation (new MapCoordinates3DEx (20 + x, 10, 1));
+			cityDetails.setOverfarming (x == 5);		// City with 10 available workers excluded because its overfarming already
+			cities.add (cityDetails);
 		}
 		
 		// Random selection
@@ -344,73 +333,11 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
 		calc.setRandomUtils (random);
-		calc.setCityServerUtils (cityServerUtils);
 		
 		// Run method
-		assertEquals (0, calc.findWorkersToConvertToFarmers (4, true, trueMap, 3, db, sd));
+		final AICityRationDetails chosenCity = calc.findWorkersToConvertToFarmers (cities, true, false, map);
 		
 		// Check results
-		assertEquals (0, map.getPlane ().get (1).getRow ().get (10).getCell ().get (22).getCityData ().getOptionalFarmers ());
-		assertEquals (1, map.getPlane ().get (1).getRow ().get (10).getCell ().get (23).getCityData ().getOptionalFarmers ());
-		assertEquals (0, map.getPlane ().get (1).getRow ().get (10).getCell ().get (24).getCityData ().getOptionalFarmers ());
-	}
-
-	/**
-	 * Tests the findWorkersToConvertToFarmers method when we need to pick 3 farmers before we exit
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testFindWorkersToConvertToFarmers_Multiple () throws Exception
-	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Session description
-		final OverlandMapSize mapSize = createOverlandMapSize ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (mapSize);
-
-		// Map
-		final MapVolumeOfMemoryGridCells map = createOverlandMap (mapSize);
-		
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (map);
-		
-		// Amount of rations each farmer generates
-		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
-		when (cityServerUtils.calculateDoubleFarmingRate (eq (trueMap.getMap ()), eq (trueMap.getBuilding ()), eq (trueMap.getMaintainedSpell ()),
-			any (MapCoordinates3DEx.class), eq (db))).thenReturn (4);
-		
-		// Cities
-		for (int x = 1; x <= 5; x++)
-		{
-			final OverlandMapCityData cityData = new OverlandMapCityData ();
-			cityData.setCityOwnerID ((x == 5) ? 4 : 3);
-			cityData.setCurrentlyConstructingBuildingID ((x == 1) ? "BL15" : CommonDatabaseConstants.BUILDING_TRADE_GOODS);
-			cityData.setCityPopulation (x * 4000);
-			cityData.setMinimumFarmers (x);
-			cityData.setNumberOfRebels (x);		// So cities have 2, 4, 6, 8 and 10 available workers, but cities 1+5 are excluded because of owner+current construction
-			map.getPlane ().get (1).getRow ().get (10).getCell ().get (20 + x).setCityData (cityData);
-		}
-		
-		// Random selection
-		final RandomUtils random = mock (RandomUtils.class);
-		when (random.nextInt (18)).thenReturn (7);
-		when (random.nextInt (17)).thenReturn (2);
-		when (random.nextInt (16)).thenReturn (7);
-		
-		// Set up object to test
-		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
-		calc.setRandomUtils (random);
-		calc.setCityServerUtils (cityServerUtils);
-		
-		// Run method
-		assertEquals (-3, calc.findWorkersToConvertToFarmers (9, true, trueMap, 3, db, sd));
-		
-		// Check results
-		assertEquals (1, map.getPlane ().get (1).getRow ().get (10).getCell ().get (22).getCityData ().getOptionalFarmers ());
-		assertEquals (2, map.getPlane ().get (1).getRow ().get (10).getCell ().get (23).getCityData ().getOptionalFarmers ());
-		assertEquals (0, map.getPlane ().get (1).getRow ().get (10).getCell ().get (24).getCityData ().getOptionalFarmers ());
+		assertEquals (23, chosenCity.getCityLocation ().getX ());
 	}
 }

@@ -20,7 +20,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityProductionBreakdown;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -115,65 +114,48 @@ public final class AICityCalculationsImpl implements AICityCalculations
 	}
 
 	/**
-	 * Finds workers in cities to convert to optional farmers
+	 * Chooses one city to convert a worker to a farmer when AI player isn't generating enough rations
 	 *
-	 * @param doubleRationsNeeded 2x number of rations that we still need to find optional farmers to help produce
-	 * @param tradeGoods If true will only consider cities that are building trade goods; if false will only consider cities that are building something other than trade goods
-	 * @param trueMap True map details
-	 * @param playerID Player who we want to convert workers into farmers for
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @return Adjusted value of doubleRationsNeeded
-	 * @throws RecordNotFoundException If there is a building that cannot be found in the DB
-	 * @throws MomException If a city's race has no farmers defined or those farmers have no ration production defined
+	 * @param cities List of cities to check through 
+	 * @param wantTradeGoods If true will only consider cities that are building trade goods; if false will only consider cities that are building something other than trade goods
+	 * @param wantOverfarming If true will only consider cities that are overfarming; if false will only consider cities that are not overfarming
+	 * @param trueTerrain True overland terrain
+	 * @return Chosen city if one matched requirements; null if none matched
 	 */
 	@Override
-	public final int findWorkersToConvertToFarmers (final int doubleRationsNeeded, final boolean tradeGoods, final FogOfWarMemory trueMap,
-		final int playerID, final CommonDatabase db, final MomSessionDescription sd)
-		throws RecordNotFoundException, MomException
+	public final AICityRationDetails findWorkersToConvertToFarmers (final List<AICityRationDetails> cities, final boolean wantTradeGoods,
+		final boolean wantOverfarming, final MapVolumeOfMemoryGridCells trueTerrain)
 	{
 		// Build a list of all the workers, by finding all the cities and adding the coordinates of the city to the list the number
 		// of times for how many workers there are in the city that we could convert to farmers
-		final List<MapCoordinates3DEx> workerCoordinates = new ArrayList<MapCoordinates3DEx> ();
+		final List<AICityRationDetails> workers = new ArrayList<AICityRationDetails> ();
 
-		for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
-			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+		for (final AICityRationDetails city : cities)
+			if (((wantOverfarming) && (city.isOverfarming ())) ||
+				((!wantOverfarming) && (!city.isOverfarming ())))
+			{
+				final OverlandMapCityData cityData = trueTerrain.getPlane ().get (city.getCityLocation ().getZ ()).getRow ().get 
+					(city.getCityLocation ().getY ()).getCell ().get (city.getCityLocation ().getX ()).getCityData ();
+	
+				if (((wantTradeGoods) && (CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))) ||
+					((!wantTradeGoods) && (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
 				{
-					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == playerID))
-
-						if (((tradeGoods) && (CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))) ||
-							((!tradeGoods) && (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
-						{
-							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
-
-							final int numberOfWorkers = (cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getNumberOfRebels ();
-							for (int workerNo = 0; workerNo < numberOfWorkers; workerNo++)
-								workerCoordinates.add (cityLocation);
-						}
+					final int numberOfWorkers = (cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getNumberOfRebels ();
+					for (int workerNo = 0; workerNo < numberOfWorkers; workerNo++)
+						workers.add (city);
 				}
-
-		log.debug ("findWorkersToConvertToFarmers: Found " + workerCoordinates.size () + " workers available to convert");
-
-		// Now pick workers at random from the list to convert to farmers
-		// In this way, we tend to favour putting farmers in larger cities that can spare the population more
-		int modifiedDoubleRationsNeeded = doubleRationsNeeded;
-		while ((modifiedDoubleRationsNeeded > 0) && (workerCoordinates.size () > 0))
-		{
-			final int workerNo = getRandomUtils ().nextInt (workerCoordinates.size ());
-			final MapCoordinates3DEx cityLocation = workerCoordinates.get (workerNo);
-			workerCoordinates.remove (workerNo);
-
-			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-
-			// Add 1 optional farmer in this city
-			cityData.setOptionalFarmers (cityData.getOptionalFarmers () + 1);
-			modifiedDoubleRationsNeeded = modifiedDoubleRationsNeeded - getCityServerUtils ().calculateDoubleFarmingRate
-				(trueMap.getMap (), trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, db);
 		}
 
-		return modifiedDoubleRationsNeeded;
+		log.debug ("findWorkersToConvertToFarmers: Found " + workers.size () + " workers available to convert");
+		
+		// Pick one at random
+		final AICityRationDetails city;
+		if (workers.size () == 0)
+			city = null;
+		else
+			city = workers.get (getRandomUtils ().nextInt (workers.size ()));
+		
+		return city;
 	}
 	
 	/**

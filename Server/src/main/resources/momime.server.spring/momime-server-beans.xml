@@ -801,6 +801,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="aiCityCalculations" ref="aiCityCalculations" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 	</bean>
 
 	<bean id="momAI" class="momime.server.ai.MomAIImpl">

@@ -1,5 +1,6 @@
 package momime.common.calculations;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -147,9 +148,18 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		
 		// Bonuses from spells like Dark Rituals or Prosperity
 		if (spells != null)
+		{
+			// Don't process the same spell twice - for example if two different enemy wizards both cast Famine on our city, we don't get -100% food, just the normal -50%
+			final List<String> citySpellEffectApplied = new ArrayList<String> ();
+			
 			for (final MemoryMaintainedSpell spell : spells)
-				if (cityLocation.equals (spell.getCityLocation ()))
+				if ((spell.getCitySpellEffectID () != null) && (cityLocation.equals (spell.getCityLocation ())) &&
+					(!citySpellEffectApplied.contains (spell.getCitySpellEffectID ())))
+				{
 					getCityCalculations ().addProductionFromSpell (productionValues, spell, doubleTotalFromReligiousBuildings, db);
+					citySpellEffectApplied.add (spell.getCitySpellEffectID ());
+				}
+		}
 
 		// See if we've got a miners' guild to boost the income from map features
 		final CityProductionBreakdown mineralPercentageResult = productionValues.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);

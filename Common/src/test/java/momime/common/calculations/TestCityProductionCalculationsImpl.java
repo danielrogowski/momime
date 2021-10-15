@@ -138,6 +138,7 @@ public final class TestCityProductionCalculationsImpl
 		for (int n = 1; n <= 3; n++)
 		{
 			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+			spell.setCitySpellEffectID ("SE0" + n);
 			
 			if (n <= 2)
 				spell.setCityLocation (new MapCoordinates3DEx (18 + n, 10, 1));

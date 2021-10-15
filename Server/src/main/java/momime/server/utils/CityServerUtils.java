@@ -127,6 +127,9 @@ public interface CityServerUtils
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
+	 * Must take care in how this is used.  If a city allocates a lot of farmers then the overfarming rule applies,
+	 * and any additional farmers will generate less than the value output here. 
+	 * 
 	 * @param map True terrain
 	 * @param buildings True list of buildings
 	 * @param spells True list of spells

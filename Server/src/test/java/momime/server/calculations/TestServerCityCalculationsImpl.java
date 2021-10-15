@@ -17,13 +17,15 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.MomException;
-import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
+import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CitySize;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -104,16 +106,24 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityData.setCityPopulation (6900);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
-		// Rations provided by buildings for free
-		final CityCalculations cityCalc = mock (CityCalculations.class);
+		// Max city size and rations provided by buildings for free
+		final CityProductionBreakdown food = new CityProductionBreakdown ();
+		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+		food.setProductionAmountPlusPercentageBonus (10);
 		
+		final CityProductionBreakdownsEx cityProductions = new CityProductionBreakdownsEx ();
+		cityProductions.getProductionType ().add (food);
+		
+		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
+		when (prod.calculateAllCityProductions (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (), sd, false, false, db)).thenReturn (cityProductions);
+	
 		// Rations produced per farmer
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
 		when (cityServerUtils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db)).thenReturn (4);
 
 		// Set up object to test
 		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
-		calc.setCityCalculations (cityCalc);
+		calc.setCityProductionCalculations (prod);
 		calc.setCityServerUtils (cityServerUtils);
 		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
@@ -122,7 +132,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		
 		// Check results
 		assertEquals ("CS02", cityData.getCitySizeID ());
-		assertEquals (3, cityData.getMinimumFarmers ());
+		assertEquals (3, cityData.getMinimumFarmers ());		// 6 pop, each farmer produces 2, so need 6 / 2 = 3 farmers
 	}
 
 	/**
@@ -189,8 +199,16 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityData.setCityPopulation (16900);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
-		// Rations provided by buildings for free
-		final CityCalculations cityCalc = mock (CityCalculations.class);
+		// Max city size and rations provided by buildings for free
+		final CityProductionBreakdown food = new CityProductionBreakdown ();
+		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+		food.setProductionAmountPlusPercentageBonus (10);
+		
+		final CityProductionBreakdownsEx cityProductions = new CityProductionBreakdownsEx ();
+		cityProductions.getProductionType ().add (food);
+		
+		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
+		when (prod.calculateAllCityProductions (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (), sd, false, false, db)).thenReturn (cityProductions);
 		
 		// Rations produced per farmer
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
@@ -198,7 +216,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 
 		// Set up object to test
 		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
-		calc.setCityCalculations (cityCalc);
+		calc.setCityProductionCalculations (prod);
 		calc.setCityServerUtils (cityServerUtils);
 		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
@@ -269,10 +287,21 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityData.setCityPopulation (6900);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
-		// Rations provided by buildings for free
-		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.calculateSingleCityProduction (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (), sd, false,
-			db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (2);		// Not doubled
+		// Max city size and rations provided by buildings for free
+		final CityProductionBreakdown food = new CityProductionBreakdown ();
+		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+		food.setProductionAmountPlusPercentageBonus (10);
+		
+		final CityProductionBreakdown rations = new CityProductionBreakdown ();
+		rations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		rations.setProductionAmountToAddAfterPercentages (2);		// Not doubled
+		
+		final CityProductionBreakdownsEx cityProductions = new CityProductionBreakdownsEx ();
+		cityProductions.getProductionType ().add (food);
+		cityProductions.getProductionType ().add (rations);
+		
+		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
+		when (prod.calculateAllCityProductions (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (), sd, false, false, db)).thenReturn (cityProductions);
 		
 		// Rations produced per farmer
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
@@ -280,7 +309,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 
 		// Set up object to test
 		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
-		calc.setCityCalculations (cityCalc);
+		calc.setCityProductionCalculations (prod);
 		calc.setCityServerUtils (cityServerUtils);
 		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
@@ -289,9 +318,102 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		
 		// Check results
 		assertEquals ("CS02", cityData.getCitySizeID ());
-		assertEquals (2, cityData.getMinimumFarmers ());
+		assertEquals (2, cityData.getMinimumFarmers ());		// 6 pop, but we get 2 rations for free; each farmer produces 2, so need 4 / 2 = 2 farmers
 	}
 
+	/**
+	 * Tests the calculateCitySizeIDAndMinimumFarmers method when the overfarming rule applies
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateCitySizeIDAndMinimumFarmers_Overfarming () throws Exception
+	{
+		// Mock database
+		final CitySize smallCity = new CitySize ();
+		smallCity.setCitySizeID ("CS01");
+		smallCity.setCitySizeMaximum (3999);
+		
+		final CitySize mediumCity = new CitySize ();
+		mediumCity.setCitySizeID ("CS02");
+		mediumCity.setCitySizeMinimum (4000);
+		mediumCity.setCitySizeMaximum (6999);
+		
+		final CitySize largeCity = new CitySize ();
+		largeCity.setCitySizeID ("CS03");
+		largeCity.setCitySizeMinimum (7000);
+		
+		final List<CitySize> citySizes = new ArrayList<CitySize> ();
+		citySizes.add (smallCity);
+		citySizes.add (mediumCity);
+		citySizes.add (largeCity);
+		
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getCitySize ()).thenReturn (citySizes);
+		
+		// Session description
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setOverlandMapSize (overlandMapSize);
+		
+		// Buildings
+		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Player
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setTaxRateID ("TR01");
+
+		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player);
+		
+		// Session utils
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, 2, "calculateCitySizeIDAndMinimumFarmers")).thenReturn (player);
+
+		// City
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (overlandMapSize);
+
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+		cityData.setCityRaceID ("RC01");
+		cityData.setCityPopulation (14000);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Max city size and rations provided by buildings for free
+		final CityProductionBreakdown food = new CityProductionBreakdown ();
+		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+		food.setProductionAmountPlusPercentageBonus (10);	// So the city is over max size
+		
+		final CityProductionBreakdownsEx cityProductions = new CityProductionBreakdownsEx ();
+		cityProductions.getProductionType ().add (food);
+		
+		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
+		when (prod.calculateAllCityProductions (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (), sd, false, false, db)).thenReturn (cityProductions);
+	
+		// Rations produced per farmer
+		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
+		when (cityServerUtils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db)).thenReturn (3);
+
+		// Set up object to test
+		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
+		calc.setCityProductionCalculations (prod);
+		calc.setCityServerUtils (cityServerUtils);
+		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		
+		// Run method
+		calc.calculateCitySizeIDAndMinimumFarmers (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), sd, db);
+		
+		// Check results
+		assertEquals ("CS03", cityData.getCitySizeID ());
+		assertEquals (12, cityData.getMinimumFarmers ());		// 12 farmers each producing 1½ generate 18, but food from terrain is 10 so overfarming
+																						// rule halves the excess and we get 14, which = the population so loop stops
+	}
+	
 	/**
 	 * Tests the ensureNotTooManyOptionalFarmers method in valid scenarios
 	 * @throws MomException If minimum farmers + rebels > population

@@ -450,6 +450,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 	</bean>
 
 	<bean id="serverUnitCalculations" class="momime.server.calculations.ServerUnitCalculationsImpl">

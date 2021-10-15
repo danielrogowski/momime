@@ -11,12 +11,15 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CitySize;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
+import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -42,6 +45,9 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	
 	/** Server-only city utils */
 	private CityServerUtils cityServerUtils;
+	
+	/** City production calculations */
+	private CityProductionCalculations cityProductionCalculations;
 	
 	/**
 	 * Updates the city size ID and minimum number of farmers
@@ -94,25 +100,60 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		if (!found)
 			throw new MomException ("No city size ID is defined for cities of size " + cityData.getCityPopulation ());
 
-		// Next work out how many farmers we need to support the population (strategy guide p187)
-		// Subtract 2 for each wild game resource in the city area and 2 for granary, 3 for farmer's market, 2 for foresters' guild
+		// Find how many rations the city produces even if it has 0 farmers
 		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCitySizeIDAndMinimumFarmers");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
-		final int rationsNeeded = (cityData.getCityPopulation () / 1000) - getCityCalculations ().calculateSingleCityProduction
-			(players, map, buildings, spells, cityLocation, priv.getTaxRateID (), sd, false,
-				db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions
+			(players, map, buildings, spells, cityLocation, priv.getTaxRateID (), sd, false, false, db);
+		
+		// This is what the wiki calls "Base Food Level"
+		final CityProductionBreakdown food = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+		final int foodProductionFromTerrainTiles = (food == null) ? 0 : food.getProductionAmountPlusPercentageBonus ();
+		
+		// Which buildings give rations for free?  2 separate totals, for before + after overfarming rule is applied
+		final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+		final int freeRationsBefore = (rations == null) ? 0 : rations.getProductionAmountMinusPercentagePenalty ();		// If famine in effect, has already been applied here
+		final int freeRationsAfter = (rations == null) ? 0 : rations.getProductionAmountToAddAfterPercentages ();			// Famine doesn't apply to after values
+		final int population = cityData.getCityPopulation () / 1000;
+		final int rationsNeeded = population - freeRationsBefore - freeRationsAfter;
 
 		// See if we need any farmers at all
 		if (rationsNeeded <= 0)
 			cityData.setMinimumFarmers (0);
 		else
 		{
-			// Get the farming rate for this race
+			// Get the farming rate for this race.  If famine in effect, this will already have been halved.
 			final int doubleFarmingRate = getCityServerUtils ().calculateDoubleFarmingRate (map, buildings, spells, cityLocation, db);
 
-			// Now can do calculation, round up
-			cityData.setMinimumFarmers (((rationsNeeded * 2) + doubleFarmingRate - 1) / doubleFarmingRate);
+			// Can work out value assuming every farmer is working at normal efficiency, but that might not be true, so this is optimistic
+			int minimumFarmers = ((rationsNeeded * 2) + doubleFarmingRate - 1) / doubleFarmingRate;
+			if (minimumFarmers >= population)
+				minimumFarmers = population;
+			else
+			{
+				// Check how many rations we'll actually get, taking overfarming rule into account, and keep adding 1 until we run out of civilians or have enough rations
+				boolean done = false;
+				while (!done)
+				{
+					int rationsProduced = freeRationsBefore + ((minimumFarmers * doubleFarmingRate) / 2);		// Round down.. only possible to get halves if Famine in effect
+					if (rationsProduced > foodProductionFromTerrainTiles)
+						rationsProduced = foodProductionFromTerrainTiles + ((rationsProduced - foodProductionFromTerrainTiles) / 2);
+					
+					rationsProduced = rationsProduced + freeRationsAfter;
+					
+					if (rationsProduced >= population)
+						done = true;
+					else
+					{
+						minimumFarmers++;
+						if (minimumFarmers >= population)
+							done = true;
+					}
+				}
+			}
+			
+			cityData.setMinimumFarmers (minimumFarmers);
 		}
 	}
 
@@ -286,5 +327,21 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	public final void setCityServerUtils (final CityServerUtils utils)
 	{
 		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return City production calculations
+	 */
+	public final CityProductionCalculations getCityProductionCalculations ()
+	{
+		return cityProductionCalculations;
+	}
+
+	/**
+	 * @param c City production calculations
+	 */
+	public final void setCityProductionCalculations (final CityProductionCalculations c)
+	{
+		cityProductionCalculations = c;
 	}
 }

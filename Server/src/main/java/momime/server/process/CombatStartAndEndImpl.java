@@ -544,7 +544,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 							unitStack.add (trueUnit);
 							moveFrom = new MapCoordinates3DEx ((MapCoordinates3DEx) trueUnit.getUnitLocation ());
 						}
-						else
+						else if (!undead.contains (trueUnit))
 							leftoverDefenders.add (trueUnit);
 					}
 				

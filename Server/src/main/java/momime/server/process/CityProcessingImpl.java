@@ -922,7 +922,7 @@ public final class CityProcessingImpl implements CityProcessing
 		tc.getCityData ().setCurrentlyConstructingUnitID (null);
 		tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 		
-		// AI players generate more resources - which includes rations - so minimum farmers can actually change when a city changes owner
+		// AI players generate more resources - which no longer includes rations (old versions did) - but to be on the safe side, recalc everything
 		getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (),
 			trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db);
 		

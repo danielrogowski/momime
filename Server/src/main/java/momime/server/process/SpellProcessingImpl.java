@@ -83,6 +83,7 @@ import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.SpellAI;
+import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.database.ServerDatabaseValues;
@@ -195,6 +196,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** City processing methods */
 	private CityProcessing cityProcessing;
+	
+	/** Server-only city calculations */
+	private ServerCityCalculations serverCityCalculations;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -934,8 +938,38 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 
 		// Remove spell itself
-		return getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+		final boolean unitDied = getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
 			trueSpell.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+		
+		// If the spell was cast on a city, better recalculate everything on the city
+		if (trueSpell.getCityLocation () != null)
+		{
+			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(trueSpell.getCityLocation ().getZ ()).getRow ().get (trueSpell.getCityLocation ().getY ()).getCell ().get (trueSpell.getCityLocation ().getX ()).getCityData ();
+			if (cityData != null)
+			{
+				final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetOverlandSpell (C)");
+				final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+				
+				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					(MapCoordinates3DEx) trueSpell.getCityLocation (), mom.getSessionDescription (), mom.getServerDB ());
+					
+				// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
+				cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
+					(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					(MapCoordinates3DEx) trueSpell.getCityLocation (), cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
+				
+				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
+				
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getPlayers (), (MapCoordinates3DEx) trueSpell.getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
+			}
+		}
+		
+		return unitDied;
 	}
 	
 	/**
@@ -1378,6 +1412,34 @@ public final class SpellProcessingImpl implements SpellProcessing
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (targetUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 							mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 					}
+			}
+			
+			// If its a city enchantment or curse, better recalculate everything on the city
+			else if (targetLocation != null)
+			{
+				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
+				if (cityData != null)
+				{
+					final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetOverlandSpell (C)");
+					final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+					
+					getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						targetLocation, mom.getSessionDescription (), mom.getServerDB ());
+						
+					// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
+					cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
+						(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						targetLocation, cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
+					
+					getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
+					
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+				}
 			}
 		}
 		else
@@ -2029,5 +2091,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setCityProcessing (final CityProcessing obj)
 	{
 		cityProcessing = obj;
+	}
+
+	/**
+	 * @return Server-only city calculations
+	 */
+	public final ServerCityCalculations getServerCityCalculations ()
+	{
+		return serverCityCalculations;
+	}
+
+	/**
+	 * @param calc Server-only city calculations
+	 */
+	public final void setServerCityCalculations (final ServerCityCalculations calc)
+	{
+		serverCityCalculations = calc;
 	}
 }

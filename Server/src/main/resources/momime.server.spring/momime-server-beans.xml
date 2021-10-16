@@ -618,6 +618,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="serverCityCalculations" ref="serverCityCalculations" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

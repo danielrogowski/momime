@@ -643,6 +643,10 @@
 						<xsd:selector xpath="cityGrowthRateTotal" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="cityGrowthRateTotalAfterStreamOfLifePK">
+						<xsd:selector xpath="cityGrowthRateTotalAfterStreamOfLife" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="cityGrowthRateHousingPK">
 						<xsd:selector xpath="housing" />
 						<xsd:field xpath="@language" />
@@ -2906,6 +2910,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="racialGrowthModifier" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="growthBonusFromBuilding" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowthRateTotal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowthRateTotalAfterStreamOfLife" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="housing" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="darkRituals" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentageModifiers" />

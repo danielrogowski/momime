@@ -397,6 +397,9 @@ public final class CommonDatabaseConstants
 	
 	/** Block travel between planes */
 	public final static String SPELL_ID_PLANAR_SEAL = "SP135"; 
+	
+	/** Stream of Life doubles population growth */
+	public final static String SPELL_ID_STREAM_OF_LIFE = "SP148";
 
 	/** Dark Rituals spell */
 	public final static String SPELL_ID_DARK_RITUALS = "SP163";	

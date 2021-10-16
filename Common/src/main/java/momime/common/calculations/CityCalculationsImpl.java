@@ -470,6 +470,14 @@ public final class CityCalculationsImpl implements CityCalculations
 						growing.getBuildingModifier ().add (breakdownBuilding);
 					}
 				}
+
+			// Stream of Life is a separate step here and not lumped in with the % from Housing (or Dark Rituals, not that you can ever have both)
+			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_STREAM_OF_LIFE,
+				null, null, cityLocation, null) != null)
+				
+				growing.setTotalGrowthRateAfterStreamOfLife (growing.getTotalGrowthRate () * 2);
+			else
+				growing.setTotalGrowthRateAfterStreamOfLife (growing.getTotalGrowthRate ());
 			
 			// Housing setting
 			if (CommonDatabaseConstants.BUILDING_HOUSING.equals (cityData.getCurrentlyConstructingBuildingID ()))
@@ -506,11 +514,11 @@ public final class CityCalculationsImpl implements CityCalculations
 			final int percentageBonuses = growing.getHousingPercentageBonus () - growing.getDarkRitualsPercentagLoss ();
 			if (percentageBonuses != 0)
 			{
-				growing.setPercentageModifiers ((growing.getTotalGrowthRate () * percentageBonuses / 1000) * 10);
-				growing.setTotalGrowthRateIncludingPercentageModifiers (growing.getTotalGrowthRate () + growing.getPercentageModifiers ());
+				growing.setPercentageModifiers ((growing.getTotalGrowthRateAfterStreamOfLife () * percentageBonuses / 1000) * 10);
+				growing.setTotalGrowthRateIncludingPercentageModifiers (growing.getTotalGrowthRateAfterStreamOfLife () + growing.getPercentageModifiers ());
 			}
 			else
-				growing.setTotalGrowthRateIncludingPercentageModifiers (growing.getTotalGrowthRate ());
+				growing.setTotalGrowthRateIncludingPercentageModifiers (growing.getTotalGrowthRateAfterStreamOfLife ());
 			
 			// AI players get a special bonus
 			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");

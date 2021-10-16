@@ -51,6 +51,11 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 							<xsd:documentation>Total growth = base + racial + buildings</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRateAfterStreamOfLife" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>If Stream of Life cast then totalGrowthRate gets doubled, prior to applying the % modifiers from Housing and/or Dark Rituals.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="housingPercentageBonus" type="momimecommon:percentage">
 						<xsd:annotation>
 							<xsd:documentation>If city production is set to "Housing", this is the percentage bonus calculated from the number of workers and types of buildings present</xsd:documentation>

@@ -31,6 +31,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AnimationID;
@@ -494,12 +495,25 @@ public final class SpellQueueingImpl implements SpellQueueing
 		else
 		{
 			// Overland spell - need to see if we can instant cast it or need to queue it up
-			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, heroItem, variableDamage, pub.getPick (),
-				mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+			final boolean castInstantly;
+			final int reducedCastingCost;
+			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME) &&
+				(!mom.getGeneralPublicKnowledge ().getCurrentPlayerID ().equals (player.getPlayerDescription ().getPlayerID ())))
+			{
+				castInstantly = false;
+				reducedCastingCost = 0;
+			}
+			else
+			{
+				reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, heroItem, variableDamage, pub.getPick (),
+					mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+				
+				castInstantly = (priv.getQueuedSpell ().size () == 0) && (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (),
+					getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (),
+						CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) >= reducedCastingCost);
+			}
 			
-			if ((priv.getQueuedSpell ().size () == 0) && (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (),
-				getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (),
-					CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) >= reducedCastingCost))
+			if (castInstantly)
 			{
 				// Cast instantly, and show the casting message instantly too
 				getSpellProcessing ().castOverlandNow (player, spell, variableDamage, heroItem, mom);

@@ -1656,6 +1656,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <spellUnrestPercentage language="en">
             <text>SPELL_PERCENTAGE% unrest from SPELL_NAME</text>
         </spellUnrestPercentage>
+        <spellEliminatesUnrest language="en">
+            <text>SPELL_NAME eliminates all unrest</text>
+        </spellEliminatesUnrest>
         <retort language="en">
             <text>RELIGIOUS_BUILDING_REDUCTION from religious buildings x RETORT_PERCENTAGE% bonus from RETORT_LIST = RETORT_VALUE</text>
         </retort>

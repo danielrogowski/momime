@@ -114,7 +114,6 @@ public interface FogOfWarMidTurnMultiChanges
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**
-	 * @param trueUnits True list of units to heal/gain experience
 	 * @param onlyOnePlayerID If zero, will heal/exp units belonging to all players; if specified will heal/exp only units belonging to the specified player
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
@@ -126,7 +125,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final FogOfWarMemory trueMap,
+	public void healUnitsAndGainExperience (final int onlyOnePlayerID, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	

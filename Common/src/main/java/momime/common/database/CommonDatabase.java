@@ -292,6 +292,11 @@ public interface CommonDatabase
 	public Building findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
 
 	/**
+	 * @return Complete list of all city spell effects in game
+	 */
+	public List<CitySpellEffect> getCitySpellEffect ();
+	
+	/**
 	 * @param citySpellEffectID City spell effect ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return CitySpellEffect object

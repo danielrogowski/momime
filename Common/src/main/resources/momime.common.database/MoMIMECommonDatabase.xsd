@@ -3847,6 +3847,7 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 					<xsd:documentation>Increase in unrest caused by spell.  For famine, so this is stored as +25.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectHealingRateBonus" type="momimecommon:healingRate" nxe:label="Healing Rate" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectProductionModifier" type="momimecommon:citySpellEffectProductionModifier" />
 		</xsd:sequence>
 		<xsd:attribute name="citySpellEffectID" type="momimecommon:citySpellEffectID" use="required" nxe:label="City Spell Effect ID" nxe:gridwidth="110" />

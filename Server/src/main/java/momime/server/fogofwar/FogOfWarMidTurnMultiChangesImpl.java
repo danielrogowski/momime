@@ -267,7 +267,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	}
 	
 	/**
-	 * @param trueUnits True list of units to heal/gain experience
 	 * @param onlyOnePlayerID If zero, will heal/exp units belonging to all players; if specified will heal/exp only units belonging to the specified player
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
@@ -280,15 +279,22 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	@Override
-	public final void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final FogOfWarMemory trueMap,
+	public final void healUnitsAndGainExperience (final int onlyOnePlayerID, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		// Find the best Armsmaster at each map cell and all the healers
+		// Find the best Armsmaster at each map cell
 		final Map<MapCoordinates3DEx, Integer> armsmasters = new HashMap<MapCoordinates3DEx, Integer> ();
+		
+		// Find all the healers at each map cell; this is in 1/60ths so
+		// Default healing rate 3 = 5%
+		// Units with healer skill typically have value 12 = 20% (25% total)
+		// Being in a city adds +3 = 5% (10% total)
+		// Animsts' Guilds add +4 = 6.66% (16.66% total)
+		// Stream of Life adds +60 = 100%
 		final Map<MapCoordinates3DEx, Integer> healers = new HashMap<MapCoordinates3DEx, Integer> ();
 		
-		for (final MemoryUnit thisUnit : trueUnits)
+		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
 			{
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
@@ -341,11 +347,28 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			}
 		});
 		
+		// Stream of Life fully heals
+		final Map<String, Integer> healingCitySpellEffects = db.getCitySpellEffect ().stream ().filter
+			(e -> e.getCitySpellEffectHealingRateBonus () != null).collect (Collectors.toMap (e -> e.getCitySpellEffectID (), e -> e.getCitySpellEffectHealingRateBonus ()));
+		
+		trueMap.getMaintainedSpell ().forEach (s ->
+		{
+			if ((s.getCitySpellEffectID () != null) && (s.getCityLocation () != null))
+			{
+				final Integer healingValue = healingCitySpellEffects.get (s.getCitySpellEffectID ());
+				if (healingValue != null)
+				{
+					final Integer oldValue = healers.get (s.getCityLocation ());
+					healers.put ((MapCoordinates3DEx) s.getCityLocation (), ((oldValue == null ? 0 : oldValue) + healingValue));
+				}
+			}
+		});
+		
 		// This can generate a lot of data - a unit update for every single one of our own units plus all units we can see (except summoned ones) - so collate the client messages
 		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
 
 		// Now process all units
-		for (final MemoryUnit thisUnit : trueUnits)
+		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
 			{
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);

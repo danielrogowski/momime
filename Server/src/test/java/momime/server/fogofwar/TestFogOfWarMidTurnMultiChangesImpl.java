@@ -482,12 +482,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (xu5.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (10);
 		
 		// Units list
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		units.add (unit1);
-		units.add (unit2);
-		units.add (unit3);
-		units.add (unit4);
-		units.add (unit5);
+		trueMap.getUnit ().add (unit1);
+		trueMap.getUnit ().add (unit2);
+		trueMap.getUnit ().add (unit3);
+		trueMap.getUnit ().add (unit4);
+		trueMap.getUnit ().add (unit5);
 		
 		// Set up object to test
 		// The damage list and exp lookups are more awkward to mock than if we just let it use the real methods
@@ -501,7 +500,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setUnitUtils (unitUtils);
 		
 		// Run method
-		multi.healUnitsAndGainExperience (units, 0, trueMap, players, db, sd);
+		multi.healUnitsAndGainExperience (0, trueMap, players, db, sd);
 		
 		// Check results
 		verify (unitServerUtils, times (1)).healDamage (unit1.getUnitDamage (), 2, false);		// 5% of 24 is 1.2, then round up

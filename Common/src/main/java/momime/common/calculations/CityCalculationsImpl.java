@@ -638,11 +638,6 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 		}
 
-		// Do calculation, rounding down
-		breakdown.setTotalPercentage (breakdown.getTaxPercentage () + breakdown.getRacialPercentage ());
-		breakdown.setPopulation (cityData.getCityPopulation () / 1000);
-		breakdown.setBaseValue ((breakdown.getPopulation () * breakdown.getTotalPercentage ()) / 100);
-
 		// Count up religious buildings and non-religious buildings separately
 		// This is because Divine & Infernal power improve the pacifying effects of religious unrest reduction,
 		// but they do not improve the unrest reduction of the Animists' Guild or the Oracle
@@ -691,11 +686,23 @@ public final class CityCalculationsImpl implements CityCalculations
 		}
 		
 		// Unrest reduction / increase from spells
-		int spellsUnrestReduction = 0;
 		if (spells != null)
+		{
+			// Don't process the same spell twice - for example if two different enemy wizards both cast Famine on our city, we don't get -50% unrest, just the normal -25%
+			final List<String> citySpellEffectApplied = new ArrayList<String> ();
+			
 			for (final MemoryMaintainedSpell spell : spells)
-				if (cityLocation.equals (spell.getCityLocation ()))
-					spellsUnrestReduction = spellsUnrestReduction + addUnrestReductionFromSpell (breakdown, spell, db);
+				if (((spell.getCityLocation () == null) && (spell.getCitySpellEffectID () == null)) ||		// This is just to allow Just Cause into the method
+					((cityLocation.equals (spell.getCityLocation ())) && (spell.getCitySpellEffectID () != null) && (!citySpellEffectApplied.contains (spell.getCitySpellEffectID ()))))
+				{
+					final CityUnrestBreakdownSpell spellBreakdown = createUnrestReductionFromSpell (spell, db);
+					if (spellBreakdown != null)
+						breakdown.getSpellReducingUnrest ().add (spellBreakdown);
+					
+					if (spell.getCitySpellEffectID () != null)
+						citySpellEffectApplied.add (spell.getCitySpellEffectID ());
+				}
+		}
 
 		// Subtract pacifying effects of non-summoned units
 		for (final MemoryUnit thisUnit : units)
@@ -708,9 +715,16 @@ public final class CityCalculationsImpl implements CityCalculations
 
 		breakdown.setUnitReduction (-(breakdown.getUnitCount () / 2));
 
+		// Do calculation, rounding down
+		breakdown.setTotalPercentage (breakdown.getTaxPercentage () + breakdown.getRacialPercentage () +
+			breakdown.getSpellReducingUnrest ().stream ().filter (s -> s.getUnrestPercentage () != null).mapToInt (s -> s.getUnrestPercentage ()).sum ());
+		breakdown.setPopulation (cityData.getCityPopulation () / 1000);
+		breakdown.setBaseValue ((breakdown.getPopulation () * breakdown.getTotalPercentage ()) / 100);
+		
 		// Total unrest, before applying bounding limits
-		breakdown.setBaseTotal (breakdown.getBaseValue () + breakdown.getRacialLiteral () - religiousUnrestReduction - nonReligiousUnrestReduction -
-			spellsUnrestReduction + breakdown.getUnitReduction ());
+		breakdown.setBaseTotal (breakdown.getBaseValue () + breakdown.getRacialLiteral () + breakdown.getUnitReduction () -
+		 	religiousUnrestReduction - nonReligiousUnrestReduction -
+		 	breakdown.getSpellReducingUnrest ().stream ().filter (s -> s.getUnrestReduction () != null).mapToInt (s -> s.getUnrestReduction ()).sum ());
 		final int boundedTotal;
 
 		if (breakdown.getBaseTotal () < 0)
@@ -1169,44 +1183,39 @@ public final class CityCalculationsImpl implements CityCalculations
 	/**
 	 * Adds on unrest reduction (or penalty) from a spell
 	 * 
-	 * @param breakdown Unrest breakdown to add to
 	 * @param spell The spell to calculate for
 	 * @param db Lookup lists built over the XML database
-	 * @return Unrest reduction provided by this spell, so +ve number reduces unrest, and a -ve number is a penalty that increases unrest
+	 * @return Breakdown if one was created; null if one was not
 	 * @throws RecordNotFoundException If the definition for the spell can't be found in the db
 	 */
-	final int addUnrestReductionFromSpell (final CityUnrestBreakdown breakdown, final MemoryMaintainedSpell spell, final CommonDatabase db)
+	final CityUnrestBreakdownSpell createUnrestReductionFromSpell (final MemoryMaintainedSpell spell, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		int spellsUnrestReduction = 0;
+		CityUnrestBreakdownSpell spellBreakdown = null;
 		
-		// Just Cause is a bit of a special case as it provides unrest reduction without having a city spell effect, soi have to do from the spell directly
+		// Just Cause is a bit of a special case as it provides unrest reduction without having a city spell effect, so have to do from the spell directly
 		if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
 		{
-			spellsUnrestReduction = 1;
-			
-			final CityUnrestBreakdownSpell spellBreakdown = new CityUnrestBreakdownSpell ();
+			spellBreakdown = new CityUnrestBreakdownSpell ();
 			spellBreakdown.setSpellID (spell.getSpellID ());
 			spellBreakdown.setUnrestReduction (1);
-			breakdown.getSpellReducingUnrest ().add (spellBreakdown);
 		}
 		
 		// Other spells use data from XML to specify bonuses
 		else if (spell.getCitySpellEffectID () != null)
 		{
-			final CitySpellEffect effect = db.findCitySpellEffect (spell.getCitySpellEffectID (), "addUnrestReductionFromSpell");
-			if ((effect.getCitySpellEffectUnrestReduction () != null) && (effect.getCitySpellEffectUnrestReduction () != 0))
+			final CitySpellEffect effect = db.findCitySpellEffect (spell.getCitySpellEffectID (), "createUnrestReductionFromSpell");
+			if (((effect.getCitySpellEffectUnrestReduction () != null) && (effect.getCitySpellEffectUnrestReduction () != 0)) ||
+				((effect.getCitySpellEffectUnrestPercentage () != null) && (effect.getCitySpellEffectUnrestPercentage () != 0)))
 			{
-				spellsUnrestReduction = effect.getCitySpellEffectUnrestReduction ();
-				
-				final CityUnrestBreakdownSpell spellBreakdown = new CityUnrestBreakdownSpell ();
+				spellBreakdown = new CityUnrestBreakdownSpell ();
 				spellBreakdown.setSpellID (spell.getSpellID ());
 				spellBreakdown.setUnrestReduction (effect.getCitySpellEffectUnrestReduction ());
-				breakdown.getSpellReducingUnrest ().add (spellBreakdown);
+				spellBreakdown.setUnrestPercentage (effect.getCitySpellEffectUnrestPercentage ());
 			}
 		}
 		
-		return spellsUnrestReduction;
+		return spellBreakdown;
 	}
 	
 	/**

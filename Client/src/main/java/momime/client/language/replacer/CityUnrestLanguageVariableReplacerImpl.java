@@ -105,6 +105,10 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 				text = getTextUtils ().intToStrPlusMinus (-getCurrentSpell ().getUnrestReduction ());
 				break;
 				
+			case "SPELL_PERCENTAGE":
+				text = getCurrentSpell ().getUnrestPercentage ().toString ();
+				break;
+				
 			default:
 				text = null;
 		}

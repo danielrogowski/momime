@@ -57,6 +57,7 @@ import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
+import momime.common.internal.CityUnrestBreakdownSpell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -3980,11 +3981,11 @@ public final class TestCityCalculationsImpl
 	}
 	
 	/**
-	 * Tests the addUnrestReductionFromSpell method with special rules for Just Cause
+	 * Tests the createUnrestReductionFromSpell method with special rules for Just Cause
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAddUnrestReductionFromSpell_JustCause () throws Exception
+	public final void testCreateUnrestReductionFromSpell_JustCause () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -3997,29 +3998,28 @@ public final class TestCityCalculationsImpl
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Call method
-		final CityUnrestBreakdown breakdown = new CityUnrestBreakdown ();
-		assertEquals (1, calc.addUnrestReductionFromSpell (breakdown, spell, db));
+		final CityUnrestBreakdownSpell breakdown = calc.createUnrestReductionFromSpell (spell, db);
 		
 		// Check results
-		assertEquals (1, breakdown.getSpellReducingUnrest ().size ());
-		assertEquals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE, breakdown.getSpellReducingUnrest ().get (0).getSpellID ()); 
-		assertEquals (1, breakdown.getSpellReducingUnrest ().get (0).getUnrestReduction ()); 
+		assertEquals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE, breakdown.getSpellID ()); 
+		assertEquals (1, breakdown.getUnrestReduction ().intValue ());
 	}
 	
 	/**
-	 * Tests the addUnrestReductionFromSpell method on a normal spell whose unrest reduction is defined in the XML
+	 * Tests the createUnrestReductionFromSpell method on a normal spell whose unrest reduction is defined in the XML
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAddUnrestReductionFromSpell_Other () throws Exception
+	public final void testCreateUnrestReductionFromSpell_Other () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final CitySpellEffect effect = new CitySpellEffect ();
 		effect.setCitySpellEffectUnrestReduction (2);
+		effect.setCitySpellEffectUnrestPercentage (10);
 		
-		when (db.findCitySpellEffect ("SE001", "addUnrestReductionFromSpell")).thenReturn (effect);
+		when (db.findCitySpellEffect ("SE001", "createUnrestReductionFromSpell")).thenReturn (effect);
 		
 		// Spell being added
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
@@ -4030,13 +4030,12 @@ public final class TestCityCalculationsImpl
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Call method
-		final CityUnrestBreakdown breakdown = new CityUnrestBreakdown ();
-		assertEquals (2, calc.addUnrestReductionFromSpell (breakdown, spell, db));
+		final CityUnrestBreakdownSpell breakdown = calc.createUnrestReductionFromSpell (spell, db);
 		
 		// Check results
-		assertEquals (1, breakdown.getSpellReducingUnrest ().size ());
-		assertEquals ("SP001", breakdown.getSpellReducingUnrest ().get (0).getSpellID ()); 
-		assertEquals (2, breakdown.getSpellReducingUnrest ().get (0).getUnrestReduction ()); 
+		assertEquals ("SP001", breakdown.getSpellID ()); 
+		assertEquals (2, breakdown.getUnrestReduction ().intValue ());
+		assertEquals (10, breakdown.getUnrestPercentage ().intValue ());
 	}
 	
 	/**

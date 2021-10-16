@@ -895,6 +895,10 @@
 						<xsd:selector xpath="spellUnrestReduction" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="unrestCalculationSpellUnrestPercentagePK">
+						<xsd:selector xpath="spellUnrestPercentage" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="unrestCalculationUnitReductionPK">
 						<xsd:selector xpath="unitReduction" />
 						<xsd:field xpath="@language" />
@@ -2969,6 +2973,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="racialLiteral" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buildingUnrestReduction" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellUnrestReduction" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellUnrestPercentage" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="retort" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitReduction" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="baseTotal" />

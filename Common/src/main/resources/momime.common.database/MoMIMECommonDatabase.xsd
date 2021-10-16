@@ -3837,7 +3837,16 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element >
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectExperience" type="momimecommon:experiencePoints" nxe:label="Experience Granted" nxe:gridwidth="120" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectUnrestReduction" type="momimecommon:buildingUnrestReduction" nxe:label="Unrest Reduction" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectUnrestReduction" type="momimecommon:buildingUnrestReduction" nxe:label="Unrest Reduction" nxe:gridwidth="100" >
+				<xsd:annotation>
+					<xsd:documentation>How much unrest the spell reduces - a positive value is a beneficial reduction to unrest; a negative value increases unrest.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectUnrestPercentage" type="momimecommon:percentage" nxe:label="Unrest %" nxe:gridwidth="70">
+				<xsd:annotation>
+					<xsd:documentation>Increase in unrest caused by spell.  For famine, so this is stored as +25.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectProductionModifier" type="momimecommon:citySpellEffectProductionModifier" />
 		</xsd:sequence>
 		<xsd:attribute name="citySpellEffectID" type="momimecommon:citySpellEffectID" use="required" nxe:label="City Spell Effect ID" nxe:gridwidth="110" />

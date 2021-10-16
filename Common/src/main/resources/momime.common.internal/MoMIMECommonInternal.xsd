@@ -127,9 +127,14 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="unrestReduction" type="momimecommon:buildingUnrestReduction">
+			<xsd:element minOccurs="0" maxOccurs="1" name="unrestReduction" type="momimecommon:buildingUnrestReduction">
 				<xsd:annotation>
 					<xsd:documentation>How much unrest the spell reduces - a positive value is a beneficial reduction to unrest; a negative value increases unrest.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="unrestPercentage" type="momimecommon:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Increase in unrest caused by spell.  For famine, so this is stored as +25.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>

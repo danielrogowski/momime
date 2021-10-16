@@ -92,16 +92,33 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		final StringBuilder text = new StringBuilder ();
 		
 		// Percentages
+		int valuesContributingToPercentage = 0;
 		if (breakdown.getTaxPercentage () > 0)
+		{
 			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getTaxPercentage ()));
+			valuesContributingToPercentage++;
+		}
 
 		if (breakdown.getRacialPercentage () > 0)
+		{
 			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getRacialPercentage ()));
+			valuesContributingToPercentage++;
+		}
 
-		if ((breakdown.getTaxPercentage () > 0) && (breakdown.getRacialPercentage () > 0))
+		// Spell percentages
+		for (final CityUnrestBreakdownSpell spellUnrest : breakdown.getSpellReducingUnrest ())
+			if (spellUnrest.getUnrestPercentage () != null)
+			{
+				getUnrestReplacer ().setCurrentSpell (spellUnrest);			
+				getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getSpellUnrestPercentage ()));
+				valuesContributingToPercentage++;
+			}
+
+		// Base total
+		if (valuesContributingToPercentage > 1)
 			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getTotalPercentage ()));
-		
-		if ((breakdown.getTaxPercentage () > 0) || (breakdown.getRacialPercentage () > 0))
+
+		if (valuesContributingToPercentage > 0)
 		{
 			text.append (System.lineSeparator ());
 			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getBaseValue ()));
@@ -122,12 +139,13 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		if (breakdown.getReligiousBuildingReduction () != 0)
 			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getRetort ()));
 
-		// Spells
+		// Spell literal values
 		for (final CityUnrestBreakdownSpell spellUnrest : breakdown.getSpellReducingUnrest ())
-		{
-			getUnrestReplacer ().setCurrentSpell (spellUnrest);			
-			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getSpellUnrestReduction ()));
-		}
+			if (spellUnrest.getUnrestReduction () != null)
+			{
+				getUnrestReplacer ().setCurrentSpell (spellUnrest);			
+				getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getSpellUnrestReduction ()));
+			}
 		
 		// Units stationed in city
 		if (breakdown.getUnitCount () > 0)

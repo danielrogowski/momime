@@ -700,7 +700,8 @@ public final class CityCalculationsImpl implements CityCalculations
 			final List<String> citySpellEffectApplied = new ArrayList<String> ();
 			
 			for (final MemoryMaintainedSpell spell : spells)
-				if (((spell.getCityLocation () == null) && (spell.getCitySpellEffectID () == null)) ||		// This is just to allow Just Cause into the method
+				if (((spell.getCityLocation () == null) && (spell.getCitySpellEffectID () == null) &&
+						(spell.getCastingPlayerID () == cityData.getCityOwnerID ())) ||		// This is just to allow Just Cause into the method
 					((cityLocation.equals (spell.getCityLocation ())) && (spell.getCitySpellEffectID () != null) && (!citySpellEffectApplied.contains (spell.getCitySpellEffectID ()))))
 				{
 					final CityUnrestBreakdownSpell spellBreakdown = createUnrestReductionFromSpell (spell, db);

@@ -345,7 +345,7 @@ public final class SpellAIImpl implements SpellAI
 												// Routine checks everything, even down to whether there is even a city there or not, or whether the city already has that spell cast on it, so just let it handle it
 												if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
 													player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
-													priv.getFogOfWarMemory ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
+													priv.getFogOfWarMemory ().getBuilding (), mom.getPlayers ()) == TargetSpellResult.VALID_TARGET)
 													
 													validTargetFound = true;
 		
@@ -484,7 +484,7 @@ public final class SpellAIImpl implements SpellAI
 								// Routine checks everything, even down to whether there is even a city there or not, so just let it handle it
 								if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
 									player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
-									priv.getFogOfWarMemory ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
+									priv.getFogOfWarMemory ().getBuilding (), mom.getPlayers ()) == TargetSpellResult.VALID_TARGET)
 								{
 									final int thisCityQuality = getAiCityCalculations ().evaluateCityQuality (cityLocation, false, false, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription (), mom.getServerDB ());
 									if ((targetLocation == null) || (thisCityQuality > bestCityQuality))

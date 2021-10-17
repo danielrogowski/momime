@@ -147,7 +147,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 					spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getOverlandTargetLocation (),
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getPlayers ());
 				if (reason == TargetSpellResult.VALID_TARGET)
 				{
 					// Do we need to pick a citySpellEffectID?

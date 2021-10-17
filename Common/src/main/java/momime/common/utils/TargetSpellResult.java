@@ -28,6 +28,9 @@ public enum TargetSpellResult
 	
 	/** There is no city at the specified location */
 	NO_CITY_HERE,
+	
+	/** For Evil Prescence, which has no effect on wizards who have death books */
+	WIZARD_HAS_DEATH_BOOKS,
 
 	/** Spell can't be targeted on this magic realm/lifeform type of unit, e.g. Star Fires can only be targeted on Chaos+Death units */
 	UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE,

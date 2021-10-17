@@ -889,7 +889,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 										(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
 										getClient ().getOurPlayerID (), mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (),
-										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ());
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getPlayers ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
 									{

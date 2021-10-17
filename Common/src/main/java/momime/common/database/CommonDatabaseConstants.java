@@ -73,6 +73,11 @@ public final class CommonDatabaseConstants
 	/** hero */
 	public final static String UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO  = "LTH";
 
+	// magic realms / spell books
+	
+	/** Death books */
+	public final static String PICK_ID_DEATH_BOOK = "MB02";
+	
 	// retorts
 
 	/** Alchemy (magic weapons, and convert gold <-> mana without the 50% loss) */
@@ -427,6 +432,11 @@ public final class CommonDatabaseConstants
 	
 	/** Spell of Return has a lot of special rules - we are always blocked from casting it even when banished (server auto casts it for us), and can never cancel casting it */
 	public final static String SPELL_ID_SPELL_OF_RETURN = "SP214";
+	
+	// city spell effects
+	
+	/** Evil presence nullifies magic power and unrest benefits of religious buildings, unless the city owner has any death books */
+	public final static String CITY_SPELL_EFFECT_ID_EVIL_PRESENCE = "SE183";
 	
 	// client graphics
 

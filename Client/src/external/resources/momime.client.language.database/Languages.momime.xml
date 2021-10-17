@@ -1060,6 +1060,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <cannotSeeCity language="en">
             <text>SPELL_NAME can only be targeted at cities you can see.</text>
         </cannotSeeCity>
+        <wizardHasDeathBooks language="en">
+            <text>SPELL_NAME has no effect on cities owned by wizards who have death books.</text>
+        </wizardHasDeathBooks>
         <locationAlreadyCorrupted language="en">
             <text>This location already has SPELL_NAME cast on it.</text>
         </locationAlreadyCorrupted>

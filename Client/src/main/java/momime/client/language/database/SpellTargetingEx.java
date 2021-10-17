@@ -143,6 +143,10 @@ public final class SpellTargetingEx extends SpellTargeting
 				languageText = getCannotSeeCity ();
 				break;
 			 
+			case WIZARD_HAS_DEATH_BOOKS:
+				languageText = getWizardHasDeathBooks ();
+				break;
+			 
 			default:
 				throw new MomException ("SpellTargetingEx.getCityLanguageText doesn't know what to do with enum value " + targetSpellResult);
 		 }

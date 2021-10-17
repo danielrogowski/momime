@@ -420,7 +420,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 					spell, player.getPlayerDescription ().getPlayerID (), combatLocation,
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getPlayers ());
 				
 				if (validTarget != TargetSpellResult.VALID_TARGET)
 				{

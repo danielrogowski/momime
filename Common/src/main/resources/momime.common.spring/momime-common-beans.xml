@@ -311,6 +311,8 @@
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
@@ -62,6 +63,12 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -465,13 +472,16 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param map Known terrain
 	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
+	 * @param players Players list
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 */
 	@Override
 	public final TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
-		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList)
-		throws RecordNotFoundException
+		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
+		final List<? extends PlayerPublicDetails> players)
+		throws RecordNotFoundException, PlayerNotFoundException
 	{
     	final TargetSpellResult result;
     	final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
@@ -513,8 +523,22 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else if (citySpellEffectIDs.size () == 0)
     			result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
     		
-    		else    			
+    		else if (citySpellEffectIDs.size () > 1)
     			result = TargetSpellResult.VALID_TARGET;
+    		
+    		else if (!citySpellEffectIDs.get (0).equals (CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE))
+    			result = TargetSpellResult.VALID_TARGET;
+
+    		else
+    		{
+    			// Special validation for Evil Presence - make sure the city owner has no Death Books
+    			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "isCityValidTargetForSpell");
+    			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
+    			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.PICK_ID_DEATH_BOOK) > 0)
+    				result = TargetSpellResult.WIZARD_HAS_DEATH_BOOKS;
+    			else
+    				result = TargetSpellResult.VALID_TARGET;
+    		}
     	}
 
     	return result;
@@ -859,5 +883,37 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

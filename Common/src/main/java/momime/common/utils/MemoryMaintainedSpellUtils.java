@@ -146,12 +146,15 @@ public interface MemoryMaintainedSpellUtils
 	 * @param map Known terrain
 	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
+	 * @param players Players list
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 */
 	public TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
-		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList)
-		throws RecordNotFoundException; 
+		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
+		final List<? extends PlayerPublicDetails> players)
+		throws RecordNotFoundException, PlayerNotFoundException; 
 
 	/**
 	 * Checks whether the specified spell can be targetted at the specified overland map location.  Spells targetted specifically at

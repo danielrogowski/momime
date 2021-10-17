@@ -915,7 +915,7 @@
 						<xsd:selector xpath="spellUnrestPercentage" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="unrestCalculationSpellEliminatesUnreestPK">
+					<xsd:key name="unrestCalculationSpellEliminatesUnrestPK">
 						<xsd:selector xpath="spellEliminatesUnreest" />
 						<xsd:field xpath="@language" />
 					</xsd:key>

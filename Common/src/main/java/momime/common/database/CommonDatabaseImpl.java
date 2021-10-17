@@ -201,10 +201,12 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		playListsMap = getPlayList ().stream ().collect (Collectors.toMap (p -> p.getPlayListID (), p -> p));
 		
 		// City view element maps are a bit unusual as there's separate maps for each type of element
-		cityViewElementBuildingsMap = getCityViewElement ().stream ().filter (e -> e.getBuildingID () != null).collect (Collectors.toMap (e -> e.getBuildingID (), e -> e));
+		cityViewElementBuildingsMap = getCityViewElement ().stream ().filter
+			(e -> (e.getBuildingID () != null) && (e.getCitySpellEffectID () == null)).collect (Collectors.toMap (e -> e.getBuildingID (), e -> e));
 		
 		// Some spell effects are listed twice, once for Arcanus, once for Myrror, but not all so careful as planeNumber may be null
-		cityViewElementSpellEffectsMap = getCityViewElement ().stream ().filter (e -> e.getCitySpellEffectID () != null).collect (Collectors.toMap
+		cityViewElementSpellEffectsMap = getCityViewElement ().stream ().filter
+			(e -> (e.getCitySpellEffectID () != null) && (e.getBuildingID () == null)).collect (Collectors.toMap
 			(e -> e.getCitySpellEffectID (), e -> e, (e1, e2) ->
 		{
 			final CityViewElement e;

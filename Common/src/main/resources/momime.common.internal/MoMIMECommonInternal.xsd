@@ -410,6 +410,11 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 					<xsd:documentation>Percentage bonus that applies to the overall production total rather than this single building, e.g. +25% gold from Marketplace.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="negatedBySpellID" type="momimecommon:spellID">
+				<xsd:annotation>
+					<xsd:documentation>For Evil Presence.  If this is filled in then the production amount does NOT apply (but consumption + percentages do).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 

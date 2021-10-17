@@ -303,6 +303,10 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 			case "BUILDING_CONSUMPTION":
 				text = Integer.valueOf (getCurrentBuilding ().getConsumptionAmount ()).toString ();
 				break;
+
+			case "NEGATED_BY_SPELL_NAME":
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getCurrentBuilding ().getNegatedBySpellID (), "determineVariableValue").getSpellName ());
+				break;
 				
 			// Dependant on current spell
 			case "SPELL_NAME":

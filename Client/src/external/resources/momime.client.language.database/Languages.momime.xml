@@ -1444,6 +1444,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <productionFromBuildingWithReligiousRetortBonus language="pl">
             <text>BUILDING_NAME produkuje BUILDING_UNMODIFIED_PRODUCTION PRODUCTION_TYPE +PERCENTAGE_BONUS% premii z retort = PRODUCTION_AMOUNT PRODUCTION_TYPE</text>
         </productionFromBuildingWithReligiousRetortBonus>
+        <productionFromBuildingNegated language="en">
+            <text>BUILDING_NAME producing BUILDING_MODIFIED_PRODUCTION PRODUCTION_TYPE is negated by NEGATED_BY_SPELL_NAME</text>
+        </productionFromBuildingNegated>
         <productionFromSpell language="en">
             <text>SPELL_NAME produces SPELL_PRODUCTION PRODUCTION_TYPE</text>
         </productionFromSpell>

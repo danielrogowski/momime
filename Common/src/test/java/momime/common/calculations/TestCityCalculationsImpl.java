@@ -3848,7 +3848,7 @@ public final class TestCityCalculationsImpl
 		
 		// Run method
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
-		calc.addProductionAndConsumptionFromBuilding (productionValues, building, picks, db);
+		calc.addProductionAndConsumptionFromBuilding (productionValues, building, null, picks, db);
 		
 		// Check results
 		assertEquals (3, productionValues.getProductionType ().size ());

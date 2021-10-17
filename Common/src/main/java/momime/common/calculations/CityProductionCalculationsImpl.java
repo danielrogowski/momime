@@ -27,6 +27,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.CityProductionUtils;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 
 /**
@@ -48,6 +49,9 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	
 	/** Utils for totalling up city production */
 	private CityProductionUtils cityProductionUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * @param players Pre-locked players list
@@ -119,6 +123,12 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 				cityData.getNumberOfRebels (), cityLocation, buildings, db);
 		}
 
+		// See if they get any benefit from religious buildings or if it is nullified
+		final MemoryMaintainedSpell evilPresence = (spells == null) ? null : getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(spells, null, null, null, null, cityLocation, CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE);
+		final String religiousBuildingsNegatedBySpellID = ((evilPresence != null) && (cityOwnerPicks != null) &&
+			(getPlayerPickUtils ().getQuantityOfPick (cityOwnerPicks, CommonDatabaseConstants.PICK_ID_DEATH_BOOK) == 0)) ? evilPresence.getSpellID () : null;
+		
 		// Production from and Maintenance of buildings
 		int doubleTotalFromReligiousBuildings = 0;
 		for (final Building thisBuilding : db.getBuilding ())
@@ -143,7 +153,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 				// Do not count buildings with a pending sale
 				else if (!thisBuilding.getBuildingID ().equals (mc.getBuildingIdSoldThisTurn ()))
 					doubleTotalFromReligiousBuildings = doubleTotalFromReligiousBuildings + getCityCalculations ().addProductionAndConsumptionFromBuilding
-						(productionValues, thisBuilding, cityOwnerPicks, db);
+						(productionValues, thisBuilding, religiousBuildingsNegatedBySpellID, cityOwnerPicks, db);
 			}
 		
 		// Bonuses from spells like Dark Rituals or Prosperity
@@ -280,5 +290,21 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	public final void setCityProductionUtils (final CityProductionUtils c)
 	{
 		cityProductionUtils = c;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

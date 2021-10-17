@@ -650,7 +650,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityRebels");
 		final List<PlayerPick> cityOwnerPicks = ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
 		
-		// See if they get any benefit from religious buildings
+		// See if they get any benefit from religious buildings or if it is nullified
 		final MemoryMaintainedSpell evilPresence = getMemoryMaintainedSpellUtils ().findMaintainedSpell
 			(spells, null, null, null, null, cityLocation, CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE);
 		final String religiousBuildingsNegatedBySpellID = ((evilPresence != null) &&
@@ -951,6 +951,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * 
 	 * @param productionValues Production values running totals to add the production to
 	 * @param buildingDef The building to calculate for
+	 * @param religiousBuildingsNegatedBySpellID Set to spellID of Evil Presence if it is cast on this city and we don't have any death books, otherwise null
 	 * @param picks The list of spell picks belonging to the player who owns the city that this building is in
 	 * @param db Lookup lists built over the XML database
 	 * @return Production (magic power) from religious buildings
@@ -959,7 +960,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 */
 	@Override
 	public final int addProductionAndConsumptionFromBuilding (final CityProductionBreakdownsEx productionValues,
-		final Building buildingDef, final List<PlayerPick> picks, final CommonDatabase db)
+		final Building buildingDef, final String religiousBuildingsNegatedBySpellID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		int doubleTotalFromReligiousBuildings = 0;
@@ -983,11 +984,11 @@ public final class CityCalculationsImpl implements CityCalculations
 				{
 					// Bonus from retorts?
 					final int totalReligiousBuildingBonus;
-					final boolean isReligiousBuilding = ((picks != null) &&
-						(buildingDef.isBuildingUnrestReductionImprovedByRetorts () != null) && (buildingDef.isBuildingUnrestReductionImprovedByRetorts ()));
+					final boolean isReligiousBuilding = ((buildingDef.isBuildingUnrestReductionImprovedByRetorts () != null) &&
+						(buildingDef.isBuildingUnrestReductionImprovedByRetorts ()));
 					
 					if (isReligiousBuilding)
-						totalReligiousBuildingBonus = getPlayerPickUtils ().totalReligiousBuildingBonus (picks, db);
+						totalReligiousBuildingBonus = (picks == null) ? 0 : getPlayerPickUtils ().totalReligiousBuildingBonus (picks, db);
 					else
 						totalReligiousBuildingBonus = 0;
 
@@ -1006,7 +1007,12 @@ public final class CityCalculationsImpl implements CityCalculations
 					
 					// Need this even if religious building bonus is 0
 					if (isReligiousBuilding)
-						doubleTotalFromReligiousBuildings = doubleTotalFromReligiousBuildings + amountAfterReligiousBuildingBonus;
+					{
+						if (religiousBuildingsNegatedBySpellID != null)
+							buildingBreakdown.setNegatedBySpellID (religiousBuildingsNegatedBySpellID);
+						else
+							doubleTotalFromReligiousBuildings = doubleTotalFromReligiousBuildings + amountAfterReligiousBuildingBonus;
+					}
 				}
 
 				// Consumption?
@@ -1043,8 +1049,9 @@ public final class CityCalculationsImpl implements CityCalculations
 					// Add whatever we generated above to the grand totals
 					breakdown.setConsumptionAmount (breakdown.getConsumptionAmount () + buildingBreakdown.getConsumptionAmount ());
 					breakdown.setPercentageBonus (breakdown.getPercentageBonus () + buildingBreakdown.getPercentageBonus ());
-					buildingBreakdown.setProductionAmountBucketID (getCityProductionUtils ().addProductionAmountToBreakdown
-						(breakdown, buildingBreakdown.getDoubleModifiedProductionAmount (), buildingDef.getOverrideProductionAmountBucketID (), db));
+					buildingBreakdown.setProductionAmountBucketID (getCityProductionUtils ().addProductionAmountToBreakdown (breakdown,
+						(religiousBuildingsNegatedBySpellID != null) ? 0 : buildingBreakdown.getDoubleModifiedProductionAmount (),
+							buildingDef.getOverrideProductionAmountBucketID (), db));
 				}
 			}
 		

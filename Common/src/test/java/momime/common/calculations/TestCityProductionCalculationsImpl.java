@@ -36,6 +36,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 
 /**
@@ -122,15 +123,15 @@ public final class TestCityProductionCalculationsImpl
 
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (0)), eq (pub.getPick ()), eq (db))).thenReturn (1);
+			eq (buildingDefs.get (0)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (1);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (1)), eq (pub.getPick ()), eq (db))).thenReturn (2);
+			eq (buildingDefs.get (1)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (2);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (2)), eq (pub.getPick ()), eq (db))).thenReturn (3);
+			eq (buildingDefs.get (2)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (3);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (3)), eq (pub.getPick ()), eq (db))).thenReturn (4);
+			eq (buildingDefs.get (3)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (4);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (4)), eq (pub.getPick ()), eq (db))).thenReturn (5);
+			eq (buildingDefs.get (4)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (5);
 		
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -164,11 +165,14 @@ public final class TestCityProductionCalculationsImpl
 		when (cityCalculations.addRationsEatenByPopulation (cityData)).thenReturn (rations);
 		
 		// Set up object to test
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
 		final CityProductionCalculationsImpl calc = new CityProductionCalculationsImpl ();
 		calc.setCityCalculations (cityCalculations);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		calc.setMemoryBuildingUtils (memoryBuildingUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		
 		// Call method
 		final CityProductionBreakdownsEx productions = calc.calculateAllCityProductions
@@ -188,11 +192,11 @@ public final class TestCityProductionCalculationsImpl
 		verify (cityCalculations, times (1)).addProductionFromPopulation (productions, race,
 			CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, 3, new MapCoordinates3DEx (20, 10, 1), buildings, db);
 		
-		verify (cityCalculations, times (1)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (0), pub.getPick (), db);
-		verify (cityCalculations, times (0)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (1), pub.getPick (), db);		// This city does not have it
-		verify (cityCalculations, times (1)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (2), pub.getPick (), db);
-		verify (cityCalculations, times (0)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (3), pub.getPick (), db);		// Its sold
-		verify (cityCalculations, times (0)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (4), pub.getPick (), db);		// Fortress has special rules
+		verify (cityCalculations, times (1)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (0), null, pub.getPick (), db);
+		verify (cityCalculations, times (0)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (1), null, pub.getPick (), db);		// This city does not have it
+		verify (cityCalculations, times (1)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (2), null, pub.getPick (), db);
+		verify (cityCalculations, times (0)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (3), null, pub.getPick (), db);		// Its sold
+		verify (cityCalculations, times (0)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (4), null, pub.getPick (), db);		// Fortress has special rules
 		
 		verify (cityCalculations, times (1)).addProductionFromFortressPickType (productions, pickType, 5, db);
 		verify (cityCalculations, times (1)).addProductionFromFortressPlane (productions, plane, db);

@@ -213,6 +213,7 @@ public interface CityCalculations
 	 * 
 	 * @param productionValues Production values running totals to add the production to
 	 * @param buildingDef The building to calculate for
+	 * @param religiousBuildingsNegatedBySpellID Set to spellID of Evil Presence if it is cast on this city and we don't have any death books, otherwise null
 	 * @param picks The list of spell picks belonging to the player who owns the city that this building is in
 	 * @param db Lookup lists built over the XML database
 	 * @return Production (magic power) from religious buildings
@@ -220,7 +221,7 @@ public interface CityCalculations
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	public int addProductionAndConsumptionFromBuilding (final CityProductionBreakdownsEx productionValues,
-		final Building buildingDef, final List<PlayerPick> picks, final CommonDatabase db)
+		final Building buildingDef, final String religiousBuildingsNegatedBySpellID, final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 	
 	/**

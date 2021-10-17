@@ -344,8 +344,13 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			// Production from buildings, e.g. Library generating research, or Granary generating food+rations
 			if (buildingProduction.getDoubleUnmodifiedProductionAmount () > 0)
 			{
+				// Evil Presence stops it from producing anything
+				if (buildingProduction.getNegatedBySpellID () != null)
+					buckets.get (buildingProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+						(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromBuildingNegated ())));
+				
 				// Shrines etc. generate +50% more power if wizard has Divine or Infernal Power retort
-				if (buildingProduction.getReligiousBuildingPercentageBonus () == 0)
+				else if (buildingProduction.getReligiousBuildingPercentageBonus () == 0)
 					buckets.get (buildingProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
 						(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromBuildingWithoutReligiousRetortBonus ())));
 				else

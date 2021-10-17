@@ -95,6 +95,10 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 			case "BUILDING_REDUCTION":
 				text = "-" + getCurrentBuilding ().getUnrestReduction ();
 				break;
+
+			case "NEGATED_BY_SPELL_NAME":
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getCurrentBuilding ().getNegatedBySpellID (), "determineVariableValue").getSpellName ());
+				break;
 				
 			// Dependant on current spell
 			case "SPELL_NAME":

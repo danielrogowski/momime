@@ -141,8 +141,11 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			// Buildings
 			for (final CityUnrestBreakdownBuilding buildingUnrest : breakdown.getBuildingReducingUnrest ())
 			{
-				getUnrestReplacer ().setCurrentBuilding (buildingUnrest);			
-				getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getBuildingUnrestReduction ()));
+				getUnrestReplacer ().setCurrentBuilding (buildingUnrest);		
+				if (buildingUnrest.getNegatedBySpellID () != null)
+					getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getBuildingUnrestReductionNegated ()));
+				else
+					getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getBuildingUnrestReduction ()));
 			}
 			
 			// Divine Power / Infernal Power retort

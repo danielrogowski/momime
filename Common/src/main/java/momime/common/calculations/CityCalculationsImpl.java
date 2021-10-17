@@ -646,6 +646,16 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 		}
 
+		// Find the picks of the player who owns this city
+		final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityRebels");
+		final List<PlayerPick> cityOwnerPicks = ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
+		
+		// See if they get any benefit from religious buildings
+		final MemoryMaintainedSpell evilPresence = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(spells, null, null, null, null, cityLocation, CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE);
+		final String religiousBuildingsNegatedBySpellID = ((evilPresence != null) &&
+			(getPlayerPickUtils ().getQuantityOfPick (cityOwnerPicks, CommonDatabaseConstants.PICK_ID_DEATH_BOOK) == 0)) ? evilPresence.getSpellID () : null;
+		
 		// Count up religious buildings and non-religious buildings separately
 		// This is because Divine & Infernal power improve the pacifying effects of religious unrest reduction,
 		// but they do not improve the unrest reduction of the Animists' Guild or the Oracle
@@ -659,27 +669,28 @@ public final class CityCalculationsImpl implements CityCalculations
 				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "calculateCityRebels");
 				if (building.getBuildingUnrestReduction () != null)
 				{
-					// Add to which total
-					if ((building.isBuildingUnrestReductionImprovedByRetorts () != null) && (building.isBuildingUnrestReductionImprovedByRetorts ()))
-						religiousUnrestReduction = religiousUnrestReduction + building.getBuildingUnrestReduction ();
-					else
-						nonReligiousUnrestReduction = nonReligiousUnrestReduction + building.getBuildingUnrestReduction ();
-
 					// List building in breakdown
 					final CityUnrestBreakdownBuilding buildingBreakdown = new CityUnrestBreakdownBuilding ();
 					buildingBreakdown.setBuildingID (thisBuilding.getBuildingID ());
 					buildingBreakdown.setUnrestReduction (building.getBuildingUnrestReduction ());
 					breakdown.getBuildingReducingUnrest ().add (buildingBreakdown);
+					
+					// Add to which total
+					if ((building.isBuildingUnrestReductionImprovedByRetorts () != null) && (building.isBuildingUnrestReductionImprovedByRetorts ()))
+					{
+						if (religiousBuildingsNegatedBySpellID == null)
+							religiousUnrestReduction = religiousUnrestReduction + building.getBuildingUnrestReduction ();
+						else
+							buildingBreakdown.setNegatedBySpellID (religiousBuildingsNegatedBySpellID);
+					}
+					else
+						nonReligiousUnrestReduction = nonReligiousUnrestReduction + building.getBuildingUnrestReduction ();
 				}
 			}
 
 		// Bump up effect of religious buildings if we have Divine or Infernal Power, rounding down
 		if (religiousUnrestReduction > 0)
 		{
-			// Find the picks of the player who owns this city
-			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityRebels");
-			final List<PlayerPick> cityOwnerPicks = ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
-
 			breakdown.setReligiousBuildingRetortPercentage (getPlayerPickUtils ().totalReligiousBuildingBonus (cityOwnerPicks, db));
 			breakdown.getPickIdContributingToReligiousBuildingBonus ().addAll (getPlayerPickUtils ().pickIdsContributingToReligiousBuildingBonus (cityOwnerPicks, db));
 

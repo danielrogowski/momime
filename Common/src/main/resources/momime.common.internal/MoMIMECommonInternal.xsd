@@ -123,6 +123,11 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 					<xsd:documentation>How much unrest the building reduces - stored as a positive value.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="negatedBySpellID" type="momimecommon:spellID">
+				<xsd:annotation>
+					<xsd:documentation>For Evil Presence.  If this is filled in then the unrestReduction value listed does NOT apply.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 	

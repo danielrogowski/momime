@@ -127,6 +127,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * This used to be called calculateProductionBonus when it only returned an int.
 	 * 
 	 * @param map Known terrain
+	 * @param spells Known spells
 	 * @param cityLocation Location of the city to calculate for
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @param db Lookup lists built over the XML database
@@ -135,7 +136,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 */
 	@Override
 	public final CityProductionBreakdown listCityProductionPercentageBonusesFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
-		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		// First pass - get a list of how many of each tile type are within the city radius
@@ -166,13 +167,29 @@ public final class CityCalculationsImpl implements CityCalculations
 				}
 			}
 		
-		// Second pass - now check which of those tile types actually produce any production % bonuses
+		// Second pass - look to see if any city spell effects boost the production bonus of certain tile types
+		final Map<String, Integer> productionBonusOverrides = new HashMap<String, Integer> ();
+		if (spells != null)
+			for (final MemoryMaintainedSpell spell : spells)
+				if ((spell.getCitySpellEffectID () != null) && (cityLocation.equals (spell.getCityLocation ())))
+				{
+					final CitySpellEffect citySpellEffect = db.findCitySpellEffect (spell.getCitySpellEffectID (), "listCityProductionPercentageBonusesFromTerrainTiles");
+					citySpellEffect.getCitySpellEffectTileType ().stream ().filter (t -> t.getProductionBonusOverride () != null).forEach
+						(t -> productionBonusOverrides.put (t.getTileTypeID (), t.getProductionBonusOverride ()));
+				}
+		
+		// Third pass - now check which of those tile types actually produce any production % bonuses
 		final CityProductionBreakdown breakdown = new CityProductionBreakdown ();
 		breakdown.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 		
 		for (final CityProductionBreakdownTileType thisTileType : tileTypes.values ())
 		{
-			final Integer percentageBonus = db.findTileType (thisTileType.getTileTypeID (), "listCityProductionPercentageBonusesFromTerrainTiles").getProductionBonus ();
+			final Integer percentageBonus;
+			if (productionBonusOverrides.containsKey (thisTileType.getTileTypeID ()))
+				percentageBonus = productionBonusOverrides.get (thisTileType.getTileTypeID ());
+			else
+				percentageBonus = db.findTileType (thisTileType.getTileTypeID (), "listCityProductionPercentageBonusesFromTerrainTiles").getProductionBonus ();
+			
 			if (percentageBonus != null)
 			{
 				thisTileType.setPercentageBonusEachTile (percentageBonus);

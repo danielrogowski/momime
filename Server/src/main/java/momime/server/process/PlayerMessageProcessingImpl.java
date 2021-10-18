@@ -173,6 +173,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 	/** Casting for each type of spell */
 	private SpellCasting spellCasting;
+
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
 	
 	/** Number of save points to keep for each session */
 	private int savePointKeepCount;
@@ -669,6 +672,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		// Allow another building to be sold
 		getMemoryGridCellUtils ().blankBuildingsSoldThisTurn (mom.getGeneralServerKnowledge ().getTrueMap ().getMap ());
+		
+		// Gaia's blessing can possibly change terrain near our cities
+		getSpellProcessing ().rollSpellTerrainEffectsEachTurn (mom, onlyOnePlayerID);
 
 		// Global production - only need to do a simple recalc on turn 1, with no accumulation and no city growth
 		if (mom.getGeneralPublicKnowledge ().getTurnNumber () > 1)
@@ -1704,5 +1710,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setSpellCasting (final SpellCasting c)
 	{
 		spellCasting = c;
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final SpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final SpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

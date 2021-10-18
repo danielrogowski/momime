@@ -544,6 +544,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="savePointKeepCount" value="#{serverConfig.savePointKeepCount}" />
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="spellCasting" ref="spellCasting" />
+		<property name="spellProcessing" ref="spellProcessing" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">

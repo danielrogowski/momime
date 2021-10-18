@@ -95,7 +95,8 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		productionValues.getProductionType ().add (food);
 
 		// Production % increase from surrounding tiles
-		final CityProductionBreakdown production = getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles (map, cityLocation, sd.getOverlandMapSize (), db);
+		final CityProductionBreakdown production = getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
+			(map, spells, cityLocation, sd.getOverlandMapSize (), db);
 		productionValues.getProductionType ().add (production);
 
 		// Deal with people

@@ -40,6 +40,7 @@ public interface CityCalculations
 	 * This used to be called calculateProductionBonus when it only returned an int.
 	 * 
 	 * @param map Known terrain
+	 * @param spells Known spells
 	 * @param cityLocation Location of the city to calculate for
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
 	 * @param db Lookup lists built over the XML database
@@ -47,7 +48,7 @@ public interface CityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type that we cannot find in the cache
 	 */
 	public CityProductionBreakdown listCityProductionPercentageBonusesFromTerrainTiles (final MapVolumeOfMemoryGridCells map,
-		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException;
 	
 	/**

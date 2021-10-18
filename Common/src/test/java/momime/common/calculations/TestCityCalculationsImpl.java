@@ -101,10 +101,9 @@ public final class TestCityCalculationsImpl
 		when (db.findTileType ("TT01", "listCityProductionPercentageBonusesFromTerrainTiles")).thenReturn (hillsTileType);
 		when (db.findTileType ("TT02", "listCityProductionPercentageBonusesFromTerrainTiles")).thenReturn (mountainsTileType);
 		when (db.findTileType ("TT03", "listCityProductionPercentageBonusesFromTerrainTiles")).thenReturn (riverTileType);
-		
-		// Set up object to test
-		final CityCalculationsImpl calc = new CityCalculationsImpl ();
-		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
@@ -128,8 +127,14 @@ public final class TestCityCalculationsImpl
 			map.getPlane ().get (0).getRow ().get (2).getCell ().get (x).setTerrainData (riverTile);
 		}
 
-		final CityProductionBreakdown breakdown = calc.listCityProductionPercentageBonusesFromTerrainTiles (map, new MapCoordinates3DEx (2, 2, 0), sys, db);
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
+		// Run method
+		final CityProductionBreakdown breakdown = calc.listCityProductionPercentageBonusesFromTerrainTiles (map, spells, new MapCoordinates3DEx (2, 2, 0), sys, db);
+		
+		// Check results
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, breakdown.getProductionTypeID ());
 		assertEquals (34, breakdown.getPercentageBonus ());
 		assertEquals (2, breakdown.getTileTypeProduction ().size ());

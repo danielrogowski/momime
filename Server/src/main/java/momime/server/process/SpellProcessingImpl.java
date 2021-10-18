@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -13,6 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.operations.MapAreaOperations2D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -23,8 +25,11 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellTargetID;
+import momime.common.database.CitySpellEffect;
+import momime.common.database.CitySpellEffectTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
@@ -1611,6 +1616,51 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 		
 		return stolenSpellIDs;		
+	}
+	
+	/**
+	 * For Gaia's blessing.  Each turn it has a chance of turning deserts into grasslands, or volcanoes into hills.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process all spells; if specified will process only spells cast by the specified player
+	 * @throws RecordNotFoundException If we encounter a spell with an unknown city spell effect
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	@Override
+	public final void rollSpellTerrainEffectsEachTurn (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+			if ((spell.getCitySpellEffectID () != null) && (spell.getCityLocation () != null) &&
+				((onlyOnePlayerID == 0) || (onlyOnePlayerID == spell.getCastingPlayerID ())))
+			{
+				final CitySpellEffect citySpellEffect = mom.getServerDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "rollSpellTerrainEffectsEachTurn");
+				
+				final Map<String, CitySpellEffectTileType> tileTypesToRoll = citySpellEffect.getCitySpellEffectTileType ().stream ().filter
+					(t -> (t.getChangeToTileTypeID () != null) && (t.getChangeToTileTypeChance () != null)).collect (Collectors.toMap (t -> t.getTileTypeID (), t -> t));
+				
+				// Now check the tiles around the city to see if any match the ones that might get updated
+				final MapCoordinates3DEx coords = new MapCoordinates3DEx ((MapCoordinates3DEx) spell.getCityLocation ());
+				for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+					if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+					{
+						final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+							(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+						final CitySpellEffectTileType change = tileTypesToRoll.get (terrainData.getTileTypeID ());
+						
+						if ((change != null) && (getRandomUtils ().nextInt (100) < change.getChangeToTileTypeChance ()))
+						{
+							if (terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO))
+								terrainData.setVolcanoOwnerID (null);
+							
+							terrainData.setTileTypeID (change.getChangeToTileTypeID ());
+							
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), coords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+						}
+					}
+			}
 	}
 	
 	/**

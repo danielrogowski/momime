@@ -548,6 +548,10 @@
 						<xsd:selector xpath="citySpellEffectProductionModifier" />
 						<xsd:field xpath="@productionTypeID" />
 					</xsd:key>
+					<xsd:key name="citySpellEffectTileTypePK">
+						<xsd:selector xpath="citySpellEffectTileType" />
+						<xsd:field xpath="@tileTypeID" />
+					</xsd:key>
 					<xsd:key name="citySpellEffectNamePK">
 						<xsd:selector xpath="citySpellEffectName" />
 						<xsd:field xpath="@language" />
@@ -1338,6 +1342,14 @@
 		<xsd:keyref refer="momimecommon:productionTypePK" name="citySpellEffectProductionModifierFKproductionType">
 			<xsd:selector xpath="citySpellEffect/citySpellEffectProductionModifier" />
 			<xsd:field xpath="@productionTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:tileTypePK" name="citySpellEffectProductionModifierFKtileType1">
+			<xsd:selector xpath="citySpellEffect/citySpellEffectTileType" />
+			<xsd:field xpath="@tileTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:tileTypePK" name="citySpellEffectProductionModifierFKtileType2">
+			<xsd:selector xpath="citySpellEffect/citySpellEffectTileType" />
+			<xsd:field xpath="changeToTileTypeID" />
 		</xsd:keyref>
 		
 		<!-- Combat attack resolution, for dealing with exactly what happens if e.g. we have first strike and enemy unit has haste, new for 0.9.6.2 -->
@@ -3849,6 +3861,7 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectHealingRateBonus" type="momimecommon:healingRate" nxe:label="Healing Rate" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectProductionModifier" type="momimecommon:citySpellEffectProductionModifier" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectTileType" type="momimecommon:citySpellEffectTileType" />
 		</xsd:sequence>
 		<xsd:attribute name="citySpellEffectID" type="momimecommon:citySpellEffectID" use="required" nxe:label="City Spell Effect ID" nxe:gridwidth="110" />
 	</xsd:complexType>
@@ -3864,6 +3877,34 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>productionTypeDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="citySpellEffectTileType" nxe:singular="City Spell Effect Tile Type" nxe:plural="City Spell Effect Tile Types">
+        <xsd:annotation>
+        	<xsd:documentation>Defines effects on nearby terrain that a particular city spell effect has.  For Gaia's Blessing.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="productionBonusOverride" type="momimecommon:percentage" nxe:label="Production Bonus %" nxe:gridwidth="120">
+		        <xsd:annotation>
+		        	<xsd:documentation>Use this value for the % production bonus, instead of the default specified on the tile type.
+Used for Gaia's blessing which makes Forest tiles give +6% production instead of the usual +3%.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="changeToTileTypeID" type="momimecommon:tileTypeID" nxe:label="Change to Tile Type" nxe:showmaincolumn="false">
+		        <xsd:annotation>
+		        	<xsd:documentation>Each turn there is changeToTileTypeChange% chance that all nearby terrain of tile type tileTypeID will be changed to this tile type instead.
+Used for Gaia's blessing which can change deserts into grasslands and volcanoes into hills.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="changeToTileTypeChance" type="momimecommon:percentage" nxe:label="Change to Tile Type %" nxe:gridwidth="120" />
+		</xsd:sequence>
+		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

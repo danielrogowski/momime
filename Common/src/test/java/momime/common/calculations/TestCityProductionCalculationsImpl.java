@@ -154,7 +154,7 @@ public final class TestCityProductionCalculationsImpl
 
 		final CityProductionBreakdown production = new CityProductionBreakdown ();
 		production.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		when (cityCalculations.listCityProductionPercentageBonusesFromTerrainTiles (map, new MapCoordinates3DEx (20, 10, 1), mapSize, db)).thenReturn (production);
+		when (cityCalculations.listCityProductionPercentageBonusesFromTerrainTiles (map, spells, new MapCoordinates3DEx (20, 10, 1), mapSize, db)).thenReturn (production);
 
 		final CityProductionBreakdown gold = new CityProductionBreakdown ();
 		gold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);

@@ -153,4 +153,16 @@ public interface SpellProcessing
 	 */
 	public List<String> stealSpells (final PlayerServerDetails stealFrom, final PlayerServerDetails giveTo, final int spellsStolenFromFortress, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
+
+	/**
+	 * For Gaia's blessing.  Each turn it has a chance of turning deserts into grasslands, or volcanoes into hills.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process all spells; if specified will process only spells cast by the specified player
+	 * @throws RecordNotFoundException If we encounter a spell with an unknown city spell effect
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public void rollSpellTerrainEffectsEachTurn (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, JAXBException, XMLStreamException;
 }

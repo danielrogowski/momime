@@ -1641,25 +1641,42 @@ public final class SpellProcessingImpl implements SpellProcessing
 					(t -> (t.getChangeToTileTypeID () != null) && (t.getChangeToTileTypeChance () != null)).collect (Collectors.toMap (t -> t.getTileTypeID (), t -> t));
 				
 				// Now check the tiles around the city to see if any match the ones that might get updated
-				final MapCoordinates3DEx coords = new MapCoordinates3DEx ((MapCoordinates3DEx) spell.getCityLocation ());
-				for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-					if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
-					{
-						final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-							(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-						final CitySpellEffectTileType change = tileTypesToRoll.get (terrainData.getTileTypeID ());
-						
-						if ((change != null) && (getRandomUtils ().nextInt (100) < change.getChangeToTileTypeChance ()))
+				if ((!tileTypesToRoll.isEmpty ()) || (citySpellEffect.getPurifyCorruptedTilesChance () != null))
+				{
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx ((MapCoordinates3DEx) spell.getCityLocation ());
+					for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+						if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
 						{
-							if (terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO))
-								terrainData.setVolcanoOwnerID (null);
+							final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 							
-							terrainData.setTileTypeID (change.getChangeToTileTypeID ());
+							boolean terrainUpdated = false;
 							
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-								mom.getPlayers (), coords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+							// Changing one tile type into another
+							final CitySpellEffectTileType change = tileTypesToRoll.get (terrainData.getTileTypeID ());
+							if ((change != null) && (getRandomUtils ().nextInt (100) < change.getChangeToTileTypeChance ()))
+							{
+								if (terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO))
+									terrainData.setVolcanoOwnerID (null);
+								
+								terrainData.setTileTypeID (change.getChangeToTileTypeID ());
+								
+								terrainUpdated = true;
+							}
+							
+							// Purifying corruption
+							if ((terrainData.getCorrupted () != null) && (citySpellEffect.getPurifyCorruptedTilesChance () != null) &&
+								(getRandomUtils ().nextInt (100) < citySpellEffect.getPurifyCorruptedTilesChance ()))
+							{
+								terrainData.setCorrupted (null);
+								terrainUpdated = true;
+							}
+							
+							if (terrainUpdated)
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									mom.getPlayers (), coords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 						}
-					}
+				}
 			}
 	}
 	

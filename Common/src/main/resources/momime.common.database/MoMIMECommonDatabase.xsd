@@ -3860,6 +3860,7 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectHealingRateBonus" type="momimecommon:healingRate" nxe:label="Healing Rate" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="purifyCorruptedTilesChance" type="momimecommon:percentage" nxe:label="Change to Purify Corruption %" nxe:gridwidth="160" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectProductionModifier" type="momimecommon:citySpellEffectProductionModifier" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectTileType" type="momimecommon:citySpellEffectTileType" />
 		</xsd:sequence>

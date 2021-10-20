@@ -177,7 +177,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		}
 		
 		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (kind == KindOfSpell.ATTACK_UNITS) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (kind == KindOfSpell.RAISE_DEAD))
+			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (kind == KindOfSpell.RAISE_DEAD) ||
+			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
 		{
 			if ((spell.getAttackSpellOverlandTarget () != null) && (spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS))
 			{
@@ -227,8 +228,21 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					else if (validUnits.size () == 0)
 						error = "None of the units here are suitable targets for this spell";
 					
-					else
+					else if (spell.getSpellBookSectionID () != SpellBookSectionID.UNIT_CURSES)
 						error = null;
+					
+					// For curses on a whole stack, assume there's only going to be 1 effect
+					else if (spell.getUnitSpellEffect ().size () == 0)
+						error = "Casting unit curse on entire stack, but no effects are defined";
+
+					else if (spell.getUnitSpellEffect ().size () > 1)
+						error = "Casting unit curse on entire stack, but multiple effects are defined";
+					
+					else
+					{
+						error = null;
+						unitSkillID = spell.getUnitSpellEffect ().get (0).getUnitSkillID ();
+					}
 				}
 			}
 			else
@@ -398,7 +412,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		}
 		
 		else
-			error = "Don't know how to target spells from this spell book section";
+			error = "Don't know how to target spells from spell book section " + spell.getSpellBookSectionID ();
 
 		// All ok?
 		if (error != null)

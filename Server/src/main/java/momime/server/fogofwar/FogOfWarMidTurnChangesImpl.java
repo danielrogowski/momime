@@ -664,6 +664,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 *
 	 * @param gsk Server knowledge structure
 	 * @param trueSpell True spell to add
+	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -675,14 +676,17 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void addExistingTrueMaintainedSpellToClients (final MomGeneralServerKnowledge gsk,
-		final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
+		final MemoryMaintainedSpell trueSpell, final boolean skipAnimation, final List<PlayerServerDetails> players,
 		final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		// Build the message ready to send it to whoever can see the spell
 		final AddOrUpdateMaintainedSpellMessage msg = new AddOrUpdateMaintainedSpellMessage ();
 		msg.setMaintainedSpell (trueSpell);
-		msg.setNewlyCast (true);		// Spells added via this method must be new, or just being targetted, so either way from the client's point of view they must be newly cast
+		
+		// Spells added via this method must be new, or just being targetted, so either way from the client's point of view they must be newly cast
+		// so normally this is "true", but in reality what the client uses this for is to decide whether to show the animation for it
+		msg.setNewlyCast (!skipAnimation);
 		msg.setSpellTransient (false);
 
 		// Check which players can see the spell
@@ -731,6 +735,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
+	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param players List of players in the session, this can be passed in null for when spells that require a target are added initially only on the server
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -744,8 +749,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	@Override
 	public final MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final Integer variableDamage, final List<PlayerServerDetails> players,
-		final CommonDatabase db, final MomSessionDescription sd)
+		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final Integer variableDamage, final boolean skipAnimation,
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		// First add on server
@@ -771,7 +776,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Then let the other routine deal with updating player memory and the clients
 		if (players != null)
-			addExistingTrueMaintainedSpellToClients (gsk, trueSpell, players, db, sd);
+			addExistingTrueMaintainedSpellToClients (gsk, trueSpell, skipAnimation, players, db, sd);
 
 		return trueSpell;
 	}

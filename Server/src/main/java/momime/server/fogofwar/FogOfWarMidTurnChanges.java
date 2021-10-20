@@ -203,6 +203,7 @@ public interface FogOfWarMidTurnChanges
 	 *
 	 * @param gsk Server knowledge structure
 	 * @param trueSpell True spell to add
+	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -213,7 +214,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void addExistingTrueMaintainedSpellToClients (final MomGeneralServerKnowledge gsk,
-		final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
+		final MemoryMaintainedSpell trueSpell, final boolean skipAnimation, final List<PlayerServerDetails> players,
 		final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
@@ -227,6 +228,7 @@ public interface FogOfWarMidTurnChanges
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
+	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param players List of players in the session, this can be passed in null for when spells that require a target are added initially only on the server
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -239,8 +241,8 @@ public interface FogOfWarMidTurnChanges
 	 */
 	public MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final Integer variableDamage, final List<PlayerServerDetails> players,
-		final CommonDatabase db, final MomSessionDescription sd)
+		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final Integer variableDamage, final boolean skipAnimation,
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**

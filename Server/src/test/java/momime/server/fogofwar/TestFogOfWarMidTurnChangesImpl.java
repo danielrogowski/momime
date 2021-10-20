@@ -1962,7 +1962,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		calc.addExistingTrueMaintainedSpellToClients (gsk, trueSpell, players, db, sd);
+		calc.addExistingTrueMaintainedSpellToClients (gsk, trueSpell, false, players, db, sd);
 		
 		// Players 1-4 can't even see the spell so shouldn't get the dup method called; players 5-8 should
 		for (int playerIndex = 0; playerIndex < 8; playerIndex++)

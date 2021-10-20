@@ -240,7 +240,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
 				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
 					(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-						null, null, false, null, null, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+						null, null, false, null, null, variableDamage, false, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 
 				// Does this overland enchantment give a global combat area effect? (Not all do)
 				if (spell.getSpellHasCombatEffect ().size () > 0)
@@ -304,7 +304,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.
 			final MemoryMaintainedSpell maintainedSpell = getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
 				(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-				null, null, false, null, null, variableDamage, null, mom.getServerDB (), mom.getSessionDescription ());
+				null, null, false, null, null, variableDamage, false, null, mom.getServerDB (), mom.getSessionDescription ());
 
 			if (player.getPlayerDescription ().isHuman ())
 			{
@@ -479,7 +479,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
 						castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (),
-						true, null, null, useVariableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+						true, null, null, useVariableDamage, false, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 				}
 				else
 				{
@@ -512,7 +512,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final String citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
 				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
 					castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null,
-					true, combatLocation, citySpellEffectID, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+					true, combatLocation, citySpellEffectID, variableDamage, false, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 				
 				// The new enchantment presumably requires the combat map to be regenerated so we can see it
 				// (the only city enchantments/curses that can be cast in combat are Wall of Fire / Wall of Darkness)
@@ -1389,61 +1389,94 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else if (spell.getBuildingID () == null)
 		{
 			// Enchantment or curse spell that generates some city or unit effect
-			// Set values on server
-			if (targetUnit != null)
-				maintainedSpell.setUnitURN (targetUnit.getUnitURN ());
-			
-			maintainedSpell.setCityLocation (targetLocation);
-			maintainedSpell.setUnitSkillID (unitSkillID);
-			maintainedSpell.setCitySpellEffectID (citySpellEffectID);
-			
-			// Add spell on clients (they don't have a blank version of it before now)
-			getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (mom.getGeneralServerKnowledge (), maintainedSpell,
-				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-			
-			// If its a unit enchantment, does it grant any secondary permanent effects? (Black Channels making units Undead)
-			if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+			if ((spell.getAttackSpellOverlandTarget () == AttackSpellTargetID.ALL_UNITS) && (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-				
-				for (final UnitSpellEffect effect : spell.getUnitSpellEffect ())
-					if ((effect.isPermanent () != null) && (effect.isPermanent ()) && (!xu.hasBasicSkill (effect.getUnitSkillID ())))
+				// Multiple targets (stasis)
+				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
+						(tu.getOwningPlayerID () != maintainedSpell.getCastingPlayerID ()))
 					{
-						final UnitSkillAndValue permanentEffect = new UnitSkillAndValue ();
-						permanentEffect.setUnitSkillID (effect.getUnitSkillID ());
-						targetUnit.getUnitHasSkill ().add (permanentEffect);
+						final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (targetUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+						{
+							// For the first unit, reuse the spell that already exists on the server; for subsequent units we need to create a new spell
+							if (maintainedSpell.getUnitURN () == null)
+							{
+								maintainedSpell.setUnitURN (tu.getUnitURN ());
+								maintainedSpell.setUnitSkillID (unitSkillID);
+								getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (mom.getGeneralServerKnowledge (), maintainedSpell, false,
+									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+							}
+							else
+								getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
+									maintainedSpell.getCastingPlayerID (), maintainedSpell.getSpellID (), tu.getUnitURN (), unitSkillID, false, null, null, null, true,	// Don't show 2nd anim
+									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+						}
 					}
 			}
-			
-			// If its a city enchantment or curse, better recalculate everything on the city
-			else if (targetLocation != null)
+			else
 			{
-				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
-				if (cityData != null)
+				// Single target, so reuse the spell that already exists on the server
+				// Set values on server
+				if (targetUnit != null)
+					maintainedSpell.setUnitURN (targetUnit.getUnitURN ());
+				
+				maintainedSpell.setCityLocation (targetLocation);
+				maintainedSpell.setUnitSkillID (unitSkillID);
+				maintainedSpell.setCitySpellEffectID (citySpellEffectID);
+				
+				// Add spell on clients (they don't have a blank version of it before now)
+				getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (mom.getGeneralServerKnowledge (), maintainedSpell, false,
+					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				
+				// If its a unit enchantment, does it grant any secondary permanent effects? (Black Channels making units Undead)
+				if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 				{
-					final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetOverlandSpell (C)");
-					final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
-					getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-						targetLocation, mom.getSessionDescription (), mom.getServerDB ());
+					for (final UnitSpellEffect effect : spell.getUnitSpellEffect ())
+						if ((effect.isPermanent () != null) && (effect.isPermanent ()) && (!xu.hasBasicSkill (effect.getUnitSkillID ())))
+						{
+							final UnitSkillAndValue permanentEffect = new UnitSkillAndValue ();
+							permanentEffect.setUnitSkillID (effect.getUnitSkillID ());
+							targetUnit.getUnitHasSkill ().add (permanentEffect);
+							
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (targetUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+						}
+				}
+			
+				// If its a city enchantment or curse, better recalculate everything on the city
+				else if (targetLocation != null)
+				{
+					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
+					if (cityData != null)
+					{
+						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetOverlandSpell (C)");
+						final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 						
-					// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
-					cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
-						(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-						targetLocation, cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
-					
-					getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
-					
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							targetLocation, mom.getSessionDescription (), mom.getServerDB ());
+							
+						// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
+						cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
+							(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							targetLocation, cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
+						
+						getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
+						
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+					}
 				}
 			}
 		}

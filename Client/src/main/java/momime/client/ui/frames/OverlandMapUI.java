@@ -924,7 +924,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 							
 							// Spells aimed at units
 							else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
-								(kind == KindOfSpell.ATTACK_UNITS))
+								(kind == KindOfSpell.ATTACK_UNITS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
 							{
 								// Find units at this map location, and also check if they're valid targets
 								final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();

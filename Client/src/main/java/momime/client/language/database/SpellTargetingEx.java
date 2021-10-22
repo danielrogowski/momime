@@ -22,6 +22,10 @@ public final class SpellTargetingEx extends SpellTargeting
 		 final List<LanguageText> languageText;
 		 switch (targetSpellResult)
 		 {
+			case CANNOT_SEE_TARGET:
+				languageText = getCannotSeeUnit ();
+				break;
+			 
 			case ENCHANTING_OR_HEALING_ENEMY:
 				languageText = getEnchantingEnemyUnit ();
 				break;

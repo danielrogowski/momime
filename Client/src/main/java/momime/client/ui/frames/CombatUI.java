@@ -561,7 +561,8 @@ public final class CombatUI extends MomClientFrameUI
 										
 										validTarget = (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 											(getSpellBeingTargeted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
-												xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getPlayers (),
+												xus, true, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+												getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (),
 												getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
 										
 										// Cracks call can also be aimed at walls even if the unit is flying
@@ -1126,7 +1127,8 @@ public final class CombatUI extends MomClientFrameUI
 									
 									TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 										(getSpellBeingTargeted (), null, getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
-										 xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getPlayers (), getClient ().getClientDB ());
+										 xus, true, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+										 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
 									{

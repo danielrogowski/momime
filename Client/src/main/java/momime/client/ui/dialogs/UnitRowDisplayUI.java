@@ -199,8 +199,9 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, null, null, getClient ().getOurPlayerID (), null, null, xu,
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getPlayers (), getClient ().getClientDB ());
+						(spell, null, null, getClient ().getOurPlayerID (), null, null, xu, true,
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
 					
 					if (validTarget == TargetSpellResult.VALID_TARGET)
 					{

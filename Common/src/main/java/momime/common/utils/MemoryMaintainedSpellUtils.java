@@ -120,7 +120,10 @@ public interface MemoryMaintainedSpellUtils
 	 * @param castingUnit Unit casting the spell, if its a hero casting a spell or using a spell imbued into an item, or a creature like Giant Spiders casting web; null if wizard casting
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param targetUnit Unit to cast the spell on
+	 * @param isTargeting True if calling this method to allow the player to target something at the unit, which means they must be able to see it,
+	 * 	False if resolving damage - for example a unit we can't see is not a valid target to select, but if its hit by an area attack like ice storm, then we do damage it
 	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param fow Area we can currently see
 	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
@@ -129,8 +132,8 @@ public interface MemoryMaintainedSpellUtils
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	public TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final SpellBookSectionID overrideSpellBookSection, final MapCoordinates3DEx combatLocation,
-		final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage, final ExpandedUnitDetails targetUnit,
-		final FogOfWarMemory mem, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage, final ExpandedUnitDetails targetUnit, final boolean isTargeting,
+		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException; 
 
 	/**

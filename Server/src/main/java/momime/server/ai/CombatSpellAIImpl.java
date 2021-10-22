@@ -146,7 +146,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, player.getPlayerDescription ().getPlayerID (),
-						combatCastingUnit, null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
+						combatCastingUnit, null, xu, true, mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (),
 						mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 					{
 						if (targetCount == null)

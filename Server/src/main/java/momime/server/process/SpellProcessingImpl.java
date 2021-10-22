@@ -423,6 +423,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 		}
 		
+		final MomPersistentPlayerPrivateKnowledge castingPlayerPriv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		if (passesCounteringAttempts)
 		{
 			final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
@@ -697,7 +698,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-							xuCombatCastingUnit, variableDamage, xu, mom.getGeneralServerKnowledge ().getTrueMap (),
+							xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
 							targetUnits.add (thisUnit);
@@ -1090,8 +1091,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
-							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
+							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{
 							// Heal this unit
 							final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
@@ -1337,8 +1338,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
-							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
+							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
 							planeShiftUnits.add (thisTarget);
 					}
@@ -1400,8 +1401,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
-							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
+							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{
 							// For the first unit, reuse the spell that already exists on the server; for subsequent units we need to create a new spell
 							if (maintainedSpell.getUnitURN () == null)

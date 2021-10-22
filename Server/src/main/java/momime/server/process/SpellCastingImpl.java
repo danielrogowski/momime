@@ -234,6 +234,8 @@ public final class SpellCastingImpl implements SpellCasting
 		final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+		
 		final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
 		PlayerServerDetails defendingPlayer = null;
 		
@@ -244,8 +246,8 @@ public final class SpellCastingImpl implements SpellCasting
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
-					castingPlayer.getPlayerDescription ().getPlayerID (), null, null, thisTarget, mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+					castingPlayer.getPlayerDescription ().getPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
+					priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 				{
 					targetUnits.add (tu);
 					

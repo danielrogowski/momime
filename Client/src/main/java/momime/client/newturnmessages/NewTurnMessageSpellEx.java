@@ -351,8 +351,9 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 									getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 								
 								if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-									(spell, null, null, getClient ().getOurPlayerID (), null, null, xu,
-										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getPlayers (),
+									(spell, null, null, getClient ().getOurPlayerID (), null, null, xu, true,
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (),
 										getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
 									
 									deadUnits.add (thisUnit);

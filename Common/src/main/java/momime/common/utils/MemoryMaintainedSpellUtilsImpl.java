@@ -315,6 +315,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		(fow.getPlane ().get (targetUnit.getUnitLocation ().getZ ()).getRow ().get (targetUnit.getUnitLocation ().getY ()).getCell ().get (targetUnit.getUnitLocation ().getX ()) != FogOfWarStateID.CAN_SEE))
     		result = TargetSpellResult.CANNOT_SEE_TARGET;
     	
+    	// Same deal if we can clearly see the map cell, but the unit is invisible
+    	else if ((combatLocation == null) && (isTargeting) && (kind != KindOfSpell.RAISE_DEAD) &&
+    		(!getUnitUtils ().canSeeUnitOverland (targetUnit.getMemoryUnit (), castingPlayerID, mem.getMaintainedSpell (), db)))
+    		result = TargetSpellResult.INVISIBLE;
+    	
     	// For anything other than raise dead-type spell, target unit must be alive
     	else if ((kind != KindOfSpell.RAISE_DEAD) && (targetUnit.getStatus () != UnitStatusID.ALIVE))
     		result = TargetSpellResult.UNIT_DEAD;

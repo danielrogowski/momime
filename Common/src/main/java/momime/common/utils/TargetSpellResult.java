@@ -65,6 +65,12 @@ public enum TargetSpellResult
 	/** Spell can only be targeted against locations that we can actually see */
 	CANNOT_SEE_TARGET,
 	
+	/**
+	 * Can't target invisible units overland; this is special as we don't want to show the player an error like "You can't target invisible units" as it gives them
+	 * information that an invisible unit is there.  So this gets trapped and avoid showing any error message at all, just like there was never a unit there to begin with.
+	 */
+	INVISIBLE,
+	
 	/** Spell cannot be targeted at certain tile types */
 	INVALID_TILE_TYPE,
 	

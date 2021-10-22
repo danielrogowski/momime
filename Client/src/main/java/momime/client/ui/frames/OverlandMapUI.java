@@ -934,8 +934,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 								for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 									if ((mapLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
 									{
-										units.add (mu);
-										
 										final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 										
@@ -943,10 +941,18 @@ public final class OverlandMapUI extends MomClientFrameUI
 											getClient ().getOurPlayerID (), null, null, xu, true, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 											getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
 										
-										if (validTarget == TargetSpellResult.VALID_TARGET)												
+										if (validTarget == TargetSpellResult.VALID_TARGET)
+										{
+											units.add (mu);
 											validUnits.add (xu);
-										else
+										}
+										
+										// If its invisible, don't even add it to the units list
+										else if (validTarget != TargetSpellResult.INVISIBLE)
+										{
+											units.add (mu);
 											invalidReasons.add (validTarget);
+										}
 									}
 								
 								if (units.size () > 0)

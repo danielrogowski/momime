@@ -714,6 +714,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param existingCurse Whether the resistance roll is to shake off an existing curse (false is normal setting, if its to try to avoid being cursed in the first place)
 	 * @return Whether the defender failed the resistance roll or not, i.e. true if something bad happens
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -721,7 +722,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final boolean calculateResistanceRoll (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+		final AttackDamage attackDamage, final boolean existingCurse) throws MomException, JAXBException, XMLStreamException
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
@@ -757,6 +758,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final int hits = failed ? 1 : 0;
 		damageCalculationMsg.setActualHits (hits);		
 		damageCalculationMsg.setFinalHits (hits);
+		damageCalculationMsg.setExistingCurse (existingCurse);
 		
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		

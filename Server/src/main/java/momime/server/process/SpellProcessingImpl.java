@@ -459,7 +459,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					addUnitSpell = true;
 				else
 					addUnitSpell = getDamageProcessor ().makeResistanceRoll ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
-						targetUnit, attackingPlayer, defendingPlayer, spell, variableDamage, castingPlayer, SpellCastType.COMBAT, mom);
+						targetUnit, attackingPlayer, defendingPlayer, spell, variableDamage, false, castingPlayer, SpellCastType.COMBAT, mom);
 				
 				if (addUnitSpell)
 				{
@@ -1709,6 +1709,72 @@ public final class SpellProcessingImpl implements SpellProcessing
 								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 									mom.getPlayers (), coords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 						}
+				}
+			}
+	}
+	
+	/**
+	 * For Stasis.  Each turn, units with stasis get a resistance roll for a chance to free themselves.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process units belonging to everyone; if specified will process only units owned by the specified player
+	 * @throws RecordNotFoundException If we encounter an unknown spell
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	@Override
+	public final void rollToRemoveOverlandCurses (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		// Run down copy of spell list, since we'll be possibly removing some as we go along
+		final List<MemoryMaintainedSpell> trueSpells = new ArrayList<MemoryMaintainedSpell> ();
+		trueSpells.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+		
+		for (final MemoryMaintainedSpell spell : trueSpells)
+			if ((spell.getUnitURN () != null) && (spell.getUnitSkillID () != null))
+			{
+				final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "rollToRemoveOverlandCurses");
+				if (spellDef.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES)
+				{
+					// Check if right player
+					final MemoryUnit tu = getUnitUtils ().findUnitURN (spell.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "rollToRemoveOverlandCurses");
+					if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == tu.getOwningPlayerID ()))
+					{
+						// Stasis has two skill IDs, one for the first time and one for subsequent turns.
+						// This is so even units with Magic Immunity get frozen for one turn.
+						if (spell.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_STASIS_FIRST_TURN))
+						{
+							spell.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_STASIS_LATER_TURNS);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (spell, mom.getGeneralServerKnowledge (),
+								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+						}
+						else
+						{
+							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails
+								(tu, null, null, spellDef.getSpellRealm (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+							
+							// Are we immune to it?  Possibly we already had the effect and then had Magic Immunity cast on us overland.
+							// If we are immune to it, it won't show in the unit's modified list, because we already know they have the curse.
+							boolean removeSpell = !xu.hasModifiedSkill (spell.getUnitSkillID ());
+							if (!removeSpell)
+							{
+								// Make resistance roll
+								final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
+									(mom.getPlayers (), spell.getCastingPlayerID (), "rollOverlandCursesEachTurn");
+								
+								// Not in combat, so attacking/defending player not really relevant, but really all this is used for is
+								// which two players to send the damage calc to, so just send the unit and spell owner
+								removeSpell = !getDamageProcessor ().makeResistanceRoll (null, tu, castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (),
+									spellDef, null, true, castingPlayer, SpellCastType.OVERLAND, mom); 
+							}
+							
+							if (removeSpell)
+								getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+									spell.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+						}
+					}
 				}
 			}
 	}

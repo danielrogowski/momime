@@ -1200,6 +1200,12 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <defenceResistsCurse language="en">
             <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, passes resistance roll and avoids curse.</text>
         </defenceResistsCurse>
+        <defenceRetainsCurse language="en">
+            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, fails resistance roll and is still cursed.</text>
+        </defenceRetainsCurse>
+        <defenceShakesOffCurse language="en">
+            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, passes resistance roll and shakes off curse.</text>
+        </defenceShakesOffCurse>
         <defenceTerrified language="en">
             <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, fails resistance roll and and cannot move this turn.</text>
         </defenceTerrified>

@@ -64,6 +64,7 @@ public interface DamageProcessor
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param spell The spell being cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt
+	 * @param existingCurse Whether the resistance roll is to shake off an existing curse (false is normal setting, if its to try to avoid being cursed in the first place)
 	 * @param castingPlayer The player casting the spell
 	 * @param castType Whether spell is being cast in combat or overland
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -76,7 +77,8 @@ public interface DamageProcessor
 	 */
 	public boolean makeResistanceRoll (final MemoryUnit attacker, final MemoryUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final SpellCastType castType, final MomSessionVariables mom)
+		final Spell spell, final Integer variableDamage, final boolean existingCurse,
+		final PlayerServerDetails castingPlayer, final SpellCastType castType, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
 	/**

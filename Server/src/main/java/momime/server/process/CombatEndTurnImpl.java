@@ -246,7 +246,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				(terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT);
 			
 			for (final ExpandedUnitDetails xu : unitsToRoll)
-				if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage))
+				if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage, false))
 					terrifiedUnitURNs.add (xu.getUnitURN ());
 		}
 		

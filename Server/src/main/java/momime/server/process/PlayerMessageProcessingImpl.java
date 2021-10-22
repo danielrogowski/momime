@@ -675,6 +675,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		// Gaia's blessing can possibly change terrain near our cities
 		getSpellProcessing ().rollSpellTerrainEffectsEachTurn (mom, onlyOnePlayerID);
+		
+		// Stasis
+		getSpellProcessing ().rollToRemoveOverlandCurses (mom, onlyOnePlayerID);
 
 		// Global production - only need to do a simple recalc on turn 1, with no accumulation and no city growth
 		if (mom.getGeneralPublicKnowledge ().getTurnNumber () > 1)

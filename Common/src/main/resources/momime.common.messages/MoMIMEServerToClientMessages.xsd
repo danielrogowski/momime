@@ -705,6 +705,12 @@ null = doesn't have Blur, or the attacking unit has Immunity to Illusions and so
     						<xsd:documentation>Final HP loss the defender suffers, after some of actualHits may have been blocked and hence do no damage.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="existingCurse" type="xsd:boolean">
+					    <xsd:annotation>
+    						<xsd:documentation>If making resistance roll against a curse, whether we're trying to avoid being cursed to begin with,
+or trying to shake off an existing curse (Stasis).</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

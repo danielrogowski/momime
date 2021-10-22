@@ -375,8 +375,10 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			// The only values that can actually change are:
 			// 1) castingPlayerID, when a spell is taken over with Spell Binding
 			// 2) variableDamage, if the strength of a spell changes (used for Web HP)
+			// 3) unitSkillID, for stasis this changes after initially casting it
 			needToUpdate = (source.getCastingPlayerID () != dest.getCastingPlayerID ()) ||
-				(!CompareUtils.safeIntegerCompare (source.getVariableDamage (), dest.getVariableDamage ()));
+				(!CompareUtils.safeIntegerCompare (source.getVariableDamage (), dest.getVariableDamage ())) ||
+				(!CompareUtils.safeStringCompare (source.getUnitSkillID (), dest.getUnitSkillID ()));
 		}
 
 		if (needToUpdate);

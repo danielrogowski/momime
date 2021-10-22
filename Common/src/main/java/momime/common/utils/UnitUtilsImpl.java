@@ -293,8 +293,7 @@ public final class UnitUtilsImpl implements UnitUtils
 					}
 				}
 				
-				if (!found)
-					throw new RecordNotFoundException (UnitSpellEffect.class.getName (), thisSpell.getUnitSkillID (), "expandUnitDetails");
+				// Its possible we don't find the effect at all, in some unusual cases like Stasis
 				
 				// Is it the unit we're calculating skills for?
 				if ((unit instanceof MemoryUnit) && (((MemoryUnit) unit).getUnitURN () == thisSpell.getUnitURN ()))

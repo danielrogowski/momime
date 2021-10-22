@@ -357,6 +357,12 @@ public final class CommonDatabaseConstants
 	/** Confusion (unit rolls random action each combat turn) */
 	public final static String UNIT_SKILL_ID_CONFUSION = "SC046";
 	
+	/** Stasis on the first turn when it cannot even be blocked by Magic Immunity */
+	public final static String UNIT_SKILL_ID_STASIS_FIRST_TURN = "SC068A";
+
+	/** Stasis on subsequent turns when it can be cancelled by Magic Immunity or passing a resistance roll */
+	public final static String UNIT_SKILL_ID_STASIS_LATER_TURNS = "SC068B";
+	
 	/** Possession (unit is under permanent control of caster) */
 	public final static String UNIT_SKILL_ID_POSSESSION = "SC172";
 	

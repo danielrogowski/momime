@@ -220,7 +220,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			// Ignore permanent effects, since they aren't choosable
     			if ((effect.isPermanent () == null) || (!effect.isPermanent ()))
 				{
-    				final MemoryMaintainedSpell found = findMaintainedSpell (spells, castingPlayerID, spell.getSpellID (), unitURN, effect.getUnitSkillID (), null, null);
+    				MemoryMaintainedSpell found = findMaintainedSpell (spells, castingPlayerID, spell.getSpellID (), unitURN, effect.getUnitSkillID (), null, null);
+    				
+    				// Stasis gets converted to a different unitSkillID after one turn, so have to look for both
+    				if ((found == null) && (effect.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_STASIS_FIRST_TURN)))
+    					found = findMaintainedSpell (spells, castingPlayerID, spell.getSpellID (), unitURN, CommonDatabaseConstants.UNIT_SKILL_ID_STASIS_LATER_TURNS, null, null);
     				
     				// Web is an exception - we can recast it as long as the previous web has been destroyed and only the remnants remain that prevent flying
     				if ((found == null) || ((effect.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)) && (found.getVariableDamage () == null)))

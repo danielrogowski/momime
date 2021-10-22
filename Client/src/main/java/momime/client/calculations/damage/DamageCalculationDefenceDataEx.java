@@ -97,9 +97,9 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 		{
 			// This only happens when making a resistance roll
 			if (getFinalHits () > 0)
-				languageText = getLanguages ().getCombatDamage ().getDefenceCursed ();
+				languageText = isExistingCurse () ? getLanguages ().getCombatDamage ().getDefenceRetainsCurse () : getLanguages ().getCombatDamage ().getDefenceCursed ();
 			else
-				languageText = getLanguages ().getCombatDamage ().getDefenceResistsCurse ();
+				languageText = isExistingCurse () ? getLanguages ().getCombatDamage ().getDefenceShakesOffCurse () : getLanguages ().getCombatDamage ().getDefenceResistsCurse ();
 		}
 		else
 			switch (getDamageResolutionTypeID ())

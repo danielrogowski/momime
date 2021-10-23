@@ -1100,7 +1100,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 			{
-				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db).getMovementSpeed ());
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				
+				boolean stasis = false;
+				for (final String stasisSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_STASIS)
+					if (xu.hasModifiedSkill (stasisSkillID))
+						stasis = true;
+				
+				thisUnit.setDoubleOverlandMovesLeft (stasis ? 0 : (2 * xu.getMovementSpeed ()));
 				
 				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);
 			}
@@ -1108,7 +1115,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		// Send out client updates
 		for (final Entry<Integer, FogOfWarVisibleAreaChangedMessage> entry : fowMessages.entrySet ())
 		{
-			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, entry.getKey (), "healUnitsAndGainExperience");
+			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, entry.getKey (), "resetUnitOverlandMovement");
 			player.getConnection ().sendMessageToClient (entry.getValue ());
 		}
 	}

@@ -363,6 +363,9 @@ public final class CommonDatabaseConstants
 	/** Stasis on subsequent turns when it can be cancelled by Magic Immunity or passing a resistance roll */
 	public final static String UNIT_SKILL_ID_STASIS_LATER_TURNS = "SC068B";
 	
+	/** All stasis skills */
+	public final static List<String> UNIT_SKILL_IDS_STASIS = Arrays.asList (UNIT_SKILL_ID_STASIS_FIRST_TURN, UNIT_SKILL_ID_STASIS_LATER_TURNS); 
+	
 	/** Possession (unit is under permanent control of caster) */
 	public final static String UNIT_SKILL_ID_POSSESSION = "SC172";
 	

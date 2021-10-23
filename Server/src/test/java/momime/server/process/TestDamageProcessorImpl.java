@@ -223,7 +223,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc, times (1)).sendDamageHeader (attacker, defenders, attackingPlayer, defendingPlayer,
+		verify (calc, times (1)).sendDamageHeader (attacker, defenders, false, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null);
 		
 		// Check units facing each other
@@ -396,7 +396,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc, times (1)).sendDamageHeader (attacker, defenders, attackingPlayer, defendingPlayer,
+		verify (calc, times (1)).sendDamageHeader (attacker, defenders, false, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null);
 		
 		// Check units facing each other
@@ -534,7 +534,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc, times (1)).sendDamageHeader (null, defenders, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		verify (calc, times (1)).sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
 	}
 	
 	/**
@@ -709,7 +709,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc, times (1)).sendDamageHeader (null, defenders, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		verify (calc, times (1)).sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
 	}
 	
 	/**

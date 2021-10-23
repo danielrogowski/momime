@@ -633,6 +633,11 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="existingCurse" type="xsd:boolean">
+					    <xsd:annotation>
+    						<xsd:documentation>Set to true when this isn't a new "attack", but the defender trying to shake off a curse they already have (Stasis).</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

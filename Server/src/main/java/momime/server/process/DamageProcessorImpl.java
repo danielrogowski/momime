@@ -107,7 +107,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		getDamageCalculator ().sendDamageHeader (attacker, defenders, attackingPlayer, defendingPlayer, attackSkillID, spell, castingPlayer);
+		getDamageCalculator ().sendDamageHeader (attacker, defenders, false, attackingPlayer, defendingPlayer, attackSkillID, spell, castingPlayer);
 		
 		// Make the units face each other
 		if (attackerDirection != null)
@@ -403,7 +403,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		getDamageCalculator ().sendDamageHeader (attacker, defenders, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		getDamageCalculator ().sendDamageHeader (attacker, defenders, existingCurse, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
 	
 		// Spell might be being cast by a unit, or a hero casting a spell imbued in an item
 		final ExpandedUnitDetails xuUnitMakingAttack = (attacker == null) ? null : 

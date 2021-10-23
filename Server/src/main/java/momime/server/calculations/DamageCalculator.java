@@ -49,6 +49,7 @@ public interface DamageCalculator
 	 * 
 	 * @param attacker Unit making the attack; or null if the attack isn't coming from a unit
 	 * @param defenders Unit(s) being hit; some attacks can hit multiple units such as Flame Strike
+	 * @param existingCurse True if this isn't a new "attack", but is the defender trying to shake off an existing curse (Stasis)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackSkillID The skill being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
@@ -57,7 +58,7 @@ public interface DamageCalculator
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void sendDamageHeader (final MemoryUnit attacker, final List<MemoryUnit> defenders,
+	public void sendDamageHeader (final MemoryUnit attacker, final List<MemoryUnit> defenders, final boolean existingCurse,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String attackSkillID, final Spell spell, final PlayerServerDetails castingPlayer)
 		throws JAXBException, XMLStreamException;
 	

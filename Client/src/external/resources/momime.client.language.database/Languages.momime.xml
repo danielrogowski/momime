@@ -1143,6 +1143,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <headerWithoutEitherUnit language="en">
             <text>ATTACKER_NAME making ATTACK_TYPE attack:</text>
         </headerWithoutEitherUnit>
+        <headerWithDefenderOnlyExistingCurse language="en">
+            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME trying to shake off ATTACKER_NAME's ATTACK_TYPE spell:</text>
+        </headerWithDefenderOnlyExistingCurse>
         <attackWithUnit language="en">
             <text>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME hits for up to POTENTIAL_HITS of DAMAGE_TYPE:</text>
         </attackWithUnit>

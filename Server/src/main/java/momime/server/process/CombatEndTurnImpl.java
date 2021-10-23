@@ -243,7 +243,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		final List<Integer> terrifiedUnitURNs = new ArrayList<Integer> ();
 		if (unitsToRoll.size () > 0)
 		{
-			getDamageCalculator ().sendDamageHeader (null, defenders, attackingPlayer, defendingPlayer, null, terrorDef, castingPlayer);
+			getDamageCalculator ().sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, terrorDef, castingPlayer);
 			final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell
 				(terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT);
 			

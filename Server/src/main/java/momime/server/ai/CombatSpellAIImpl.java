@@ -145,9 +145,12 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, player.getPlayerDescription ().getPlayerID (),
+					if ((getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, player.getPlayerDescription ().getPlayerID (),
 						combatCastingUnit, null, xu, true, mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (),
-						mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+						mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
+							
+							(getUnitUtils ().canSeeUnitInCombat (xu, player.getPlayerDescription ().getPlayerID (), mom.getPlayers (),
+								mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ())))
 					{
 						if (targetCount == null)
 						{

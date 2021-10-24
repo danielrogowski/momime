@@ -15,6 +15,7 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.AttackResolution;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -178,21 +179,38 @@ public final class DamageProcessorImpl implements DamageProcessor
 			final AttackResolutionUnit attackerWrapper = (attacker == null) ? null : new AttackResolutionUnit (attacker);
 			final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 			
-			// Process each step
-			for (final List<AttackResolutionStepContainer> step : steps)
+			// Process each step; use counter as we might add more steps as we process the list 
+			// Skip the entire step if either unit is already dead
+			int stepNumber = 0;
+			while ((stepNumber < steps.size ()) && (xuDefender.calculateAliveFigureCount () > 0) &&
+				((xuAttacker == null) || (xuAttacker.calculateAliveFigureCount () > 0)))
+			{
+				final List<AttackResolutionStepContainer> step = steps.get (stepNumber);
 				
-				// Skip the entire step if either unit is already dead
-				if (((xuAttacker == null) || (xuAttacker.calculateAliveFigureCount () > 0)) &&
-					(xuDefender.calculateAliveFigureCount () > 0))
+				final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
+					(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+				
+				for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)
+					if (!specialDamageResolutionsApplied.contains (thisSpecialDamageResolutionApplied))
+						specialDamageResolutionsApplied.add (thisSpecialDamageResolutionApplied);
+
+				stepNumber++;
+				
+				// Warp lightning generates additional steps, each time subtracting off the stepNumber in damage until we reach 0.
+				// It would be neater if this was handled prior to this loop, but then it sends all 10 "spell attack" damage calcs to the client,
+				// followed by the 10 resolutions, and we want them to be interspersed.
+				if ((spell != null) && (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_WARP_LIGHTNING)) &&
+					(stepNumber < spell.getCombatBaseDamage ()) && (xuDefender.calculateAliveFigureCount () > 0))
 				{
-					final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
-						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+					final List<AttackResolutionStepContainer> spellInnerSteps = new ArrayList<AttackResolutionStepContainer> ();
+					steps.add (spellInnerSteps);
 					
-					for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)
-						if (!specialDamageResolutionsApplied.contains (thisSpecialDamageResolutionApplied))
-							specialDamageResolutionsApplied.add (thisSpecialDamageResolutionApplied);
+					spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
+						(spell, spell.getCombatBaseDamage () - stepNumber, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
+							(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT)));
 				}
+			}
 			
 			// Count this as an attack against this defender, as long as its a regular attack from a unit and not a spell
 			if (attackSkillID != null)

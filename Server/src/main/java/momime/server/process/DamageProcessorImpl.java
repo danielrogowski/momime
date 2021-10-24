@@ -1,7 +1,6 @@
 package momime.server.process;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -16,11 +15,7 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.AttackResolution;
-import momime.common.database.AttackResolutionStep;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
-import momime.common.database.NegatedBySkill;
-import momime.common.database.NegatedByUnitID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
@@ -127,13 +122,20 @@ public final class DamageProcessorImpl implements DamageProcessor
 			getUnitUtils ().expandUnitDetails (attacker, null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-		final AttackDamage commonPotentialDamageToDefenders;
+		final List<List<AttackResolutionStepContainer>> spellSteps;
 		if (spell == null)
-			commonPotentialDamageToDefenders = null;
+			spellSteps = null;
 		else
-			commonPotentialDamageToDefenders = getDamageCalculator ().attackFromSpell
+		{
+			spellSteps = new ArrayList<List<AttackResolutionStepContainer>> ();
+			
+			final List<AttackResolutionStepContainer> spellInnerSteps = new ArrayList<AttackResolutionStepContainer> ();
+			spellSteps.add (spellInnerSteps);
+			
+			spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
 				(spell, variableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
-					(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT);
+					(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT)));
+		}
 		
 		// Process our attack against each defender
 		final ServerGridCellEx tc = (combatLocation == null) ? null : (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -160,16 +162,10 @@ public final class DamageProcessorImpl implements DamageProcessor
 			}
 
 			// For attacks based on unit attributes (i.e. melee or ranged attacks), use the full routine to work out the sequence of steps to resolve the attack.
-			// If its an attack from a spell, just make a dummy list with a null in it - processAttackResolutionStep looks for this.
-			final List<List<AttackResolutionStep>> steps;
-			if (commonPotentialDamageToDefenders != null)
-			{
-				final List<AttackResolutionStep> dummySteps = new ArrayList<AttackResolutionStep> ();
-				dummySteps.add (null);
-				
-				steps = new ArrayList<List<AttackResolutionStep>> ();
-				steps.add (dummySteps);
-			}
+			// If its an attack from a spell, this was already worked out above.
+			final List<List<AttackResolutionStepContainer>> steps;
+			if (spellSteps != null)
+				steps = spellSteps;
 			else
 			{
 				final AttackResolution attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (xuAttacker, xuDefender, attackSkillID, mom.getServerDB ());
@@ -177,38 +173,20 @@ public final class DamageProcessorImpl implements DamageProcessor
 				steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ());
 			}
 
-			// If this particular defender is immune to an illusionary attack, then temporarily set the spell damage resolution type to normal
-			boolean downgradeIllusionaryAttack = false;
-			if ((commonPotentialDamageToDefenders != null) && (commonPotentialDamageToDefenders.getDamageResolutionTypeID () == DamageResolutionTypeID.ILLUSIONARY))
-			{
-				// Borrow the list of immunities from the Illusionary Attack skill - I don't want to have to define immunties to damage types in the XSD just for this
-				final Iterator<NegatedBySkill> iter = mom.getServerDB ().findUnitSkill
-					(CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "resolveAttack").getNegatedBySkill ().iterator ();
-				while ((!downgradeIllusionaryAttack) && (iter.hasNext ()))
-				{
-					final NegatedBySkill negateIllusionaryAttack = iter.next ();
-					if ((negateIllusionaryAttack.getNegatedByUnitID () == NegatedByUnitID.ENEMY_UNIT) && (xuDefender.hasModifiedSkill (negateIllusionaryAttack.getNegatedBySkillID ())))
-						downgradeIllusionaryAttack = true;
-				}
-			}
-			
-			final AttackDamage spellDamageToThisDefender = downgradeIllusionaryAttack ?
-				new AttackDamage (commonPotentialDamageToDefenders, DamageResolutionTypeID.SINGLE_FIGURE) : commonPotentialDamageToDefenders;
-			
 			// Some figures being frozen in fear lasts for the duration of one attack resolution,
 			// i.e. spans multiple resolution steps so have to keep track of it out here
 			final AttackResolutionUnit attackerWrapper = (attacker == null) ? null : new AttackResolutionUnit (attacker);
 			final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 			
 			// Process each step
-			for (final List<AttackResolutionStep> step : steps)
+			for (final List<AttackResolutionStepContainer> step : steps)
 				
 				// Skip the entire step if either unit is already dead
 				if (((xuAttacker == null) || (xuAttacker.calculateAliveFigureCount () > 0)) &&
 					(xuDefender.calculateAliveFigureCount () > 0))
 				{
 					final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
-						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step, spellDamageToThisDefender,
+						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
 					for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)

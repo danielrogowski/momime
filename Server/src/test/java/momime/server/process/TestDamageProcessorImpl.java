@@ -24,7 +24,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.database.AttackResolution;
-import momime.common.database.AttackResolutionStep;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -153,9 +152,9 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolution attackResolution = new AttackResolution ();
 		when (attackResolutionProc.chooseAttackResolution (xuAttacker, xuDefender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, db)).thenReturn (attackResolution);
 		
-		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
+		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
 		
-		final List<List<AttackResolutionStep>> stepNumbers = new ArrayList<List<AttackResolutionStep>> ();
+		final List<List<AttackResolutionStepContainer>> stepNumbers = new ArrayList<List<AttackResolutionStepContainer>> ();
 		stepNumbers.add (steps);
 		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ())).thenReturn (stepNumbers);
 		
@@ -215,7 +214,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, null, players, trueMap, combatMapSize, db);
+			steps, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
@@ -330,9 +329,9 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolution attackResolution = new AttackResolution ();
 		when (attackResolutionProc.chooseAttackResolution (xuAttacker, xuDefender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, db)).thenReturn (attackResolution);
 		
-		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
+		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
 		
-		final List<List<AttackResolutionStep>> stepNumbers = new ArrayList<List<AttackResolutionStep>> ();
+		final List<List<AttackResolutionStepContainer>> stepNumbers = new ArrayList<List<AttackResolutionStepContainer>> ();
 		stepNumbers.add (steps);
 		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ())).thenReturn (stepNumbers);
 		
@@ -388,7 +387,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, null, players, trueMap, combatMapSize, db);
+			steps, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
@@ -523,11 +522,11 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Ensure steps were processed
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
-		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
-		steps.add (null);
+		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
+		steps.add (new AttackResolutionStepContainer (spellDamage));
 		
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, spellDamage, players, trueMap, combatMapSize, db);
+			steps,  players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
@@ -689,20 +688,19 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit defender2Wrapper = new AttackResolutionUnit (defender2);
 		final AttackResolutionUnit defender3Wrapper = new AttackResolutionUnit (defender3);
 
-		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
-		steps.add (null);
+		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
+		steps.add (new AttackResolutionStepContainer (spellDamage));
 
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
-		final AttackDamage reducedDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
 		
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender1Wrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, spellDamage, players, trueMap, combatMapSize, db);
+			steps, players, trueMap, combatMapSize, db);
 		
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender2Wrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, reducedDamage, players, trueMap, combatMapSize, db);
+			steps, players, trueMap, combatMapSize, db);
 		
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender3Wrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, spellDamage, players, trueMap, combatMapSize, db);
+			steps, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,

@@ -154,25 +154,25 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Run method
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		final List<List<AttackResolutionStep>> dest = proc.splitAttackResolutionStepsByStepNumber (src);
+		final List<List<AttackResolutionStepContainer>> dest = proc.splitAttackResolutionStepsByStepNumber (src);
 		
 		// Check results
 		assertEquals (4, dest.size ());
 		
 		assertEquals (2, dest.get (0).size ());
-		assertEquals (1, dest.get (0).get (0).getStepNumber ());
-		assertEquals (1, dest.get (0).get (1).getStepNumber ());
+		assertEquals (1, dest.get (0).get (0).getUnitSkillStep ().getStepNumber ());
+		assertEquals (1, dest.get (0).get (1).getUnitSkillStep ().getStepNumber ());
 		
 		assertEquals (1, dest.get (1).size ());
-		assertEquals (2, dest.get (1).get (0).getStepNumber ());
+		assertEquals (2, dest.get (1).get (0).getUnitSkillStep ().getStepNumber ());
 		
 		assertEquals (3, dest.get (2).size ());
-		assertEquals (3, dest.get (2).get (0).getStepNumber ());
-		assertEquals (3, dest.get (2).get (1).getStepNumber ());
-		assertEquals (3, dest.get (2).get (2).getStepNumber ());
+		assertEquals (3, dest.get (2).get (0).getUnitSkillStep ().getStepNumber ());
+		assertEquals (3, dest.get (2).get (1).getUnitSkillStep ().getStepNumber ());
+		assertEquals (3, dest.get (2).get (2).getUnitSkillStep ().getStepNumber ());
 		
 		assertEquals (1, dest.get (3).size ());
-		assertEquals (4, dest.get (3).get (0).getStepNumber ());
+		assertEquals (4, dest.get (3).get (0).getUnitSkillStep ().getStepNumber ());
 	}
 
 	/**
@@ -271,8 +271,8 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		attackStep.setCombatSide (UnitCombatSideID.ATTACKER);
 		attackStep.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
 		
-		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
-		steps.add (attackStep);
+		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
+		steps.add (new AttackResolutionStepContainer (attackStep));
 
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -358,7 +358,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Run method
 		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, new MapCoordinates3DEx (20, 10, 1),
-			steps, null, players, fow, combatMapSize, db);
+			steps, players, fow, combatMapSize, db);
 		
 		// Check results
 		//assertEquals (0, attacker.getDamageTaken ());
@@ -381,9 +381,9 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		counterattackStep.setCombatSide (UnitCombatSideID.DEFENDER);
 		counterattackStep.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 		
-		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
-		steps.add (attackStep);
-		steps.add (counterattackStep);
+		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
+		steps.add (new AttackResolutionStepContainer (attackStep));
+		steps.add (new AttackResolutionStepContainer (counterattackStep));
 
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -478,7 +478,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Run method
 		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, new MapCoordinates3DEx (20, 10, 1),
-			steps, null, players, fow, combatMapSize, db);
+			steps, players, fow, combatMapSize, db);
 		
 		// Check results
 		//assertEquals (2+4, attacker.getDamageTaken ());
@@ -493,13 +493,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 	public final void testProcessAttackResolutionStep_Skills () throws Exception
 	{
 		// Attack resolution steps
-		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
+		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
 		for (int n = 1; n <= 4; n++)
 		{
 			final AttackResolutionStep attackStep = new AttackResolutionStep ();
 			attackStep.setCombatSide (UnitCombatSideID.ATTACKER);
 			attackStep.setUnitSkillID ("US00" + n);
-			steps.add (attackStep);
+			steps.add (new AttackResolutionStepContainer (attackStep));
 		}
 
 		// Mock database
@@ -587,7 +587,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Run method
 		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, new MapCoordinates3DEx (20, 10, 1),
-			steps, null, players, fow, combatMapSize, db);
+			steps, players, fow, combatMapSize, db);
 		
 		// Check results
 		//assertEquals (0, attacker.getDamageTaken ());
@@ -602,8 +602,14 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 	public final void testProcessAttackResolutionStep_Spell () throws Exception
 	{
 		// Attack resolution steps
-		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
-		steps.add (null);
+		final DamageCalculator damageCalc = mock (DamageCalculator.class);
+
+		final DamageType damageTypeToDefender = new DamageType ();
+
+		final AttackDamage spellDamage = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
+
+		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
+		steps.add (new AttackResolutionStepContainer (spellDamage));
 
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -655,15 +661,8 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		// Wrapper
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 		
-		// Spell does preset damage
-		final DamageCalculator damageCalc = mock (DamageCalculator.class);
-
-		final DamageType damageTypeToDefender = new DamageType ();
-
-		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
-		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, potentialDamageToDefender, null, null, null, null)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, steps.get (0).getSpellStep (), null, null, null, null)).thenReturn (3);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -674,7 +673,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Run method
 		proc.processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, new MapCoordinates3DEx (20, 10, 1),
-			steps, potentialDamageToDefender, players, fow, combatMapSize, db);
+			steps, players, fow, combatMapSize, db);
 		
 		// Check results
 		//assertEquals (3+3, defender.getDamageTaken ());

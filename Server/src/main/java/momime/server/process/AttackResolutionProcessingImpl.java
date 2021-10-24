@@ -19,6 +19,8 @@ import momime.common.database.AttackResolutionStep;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.NegatedBySkill;
+import momime.common.database.NegatedByUnitID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkill;
@@ -109,17 +111,17 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	
 	/**
 	 * @param steps Steps in one continuous list
-	 * @return Same list as input, but segmented into sublists where all steps share the same step number
+	 * @return Same list as input, but segmented into sublists where all steps share the same step number; also wraps each step in the container class
 	 * @throws MomException If the steps in the input list aren't in stepNumber order
 	 */
 	@Override
-	public final List<List<AttackResolutionStep>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStep> steps)
+	public final List<List<AttackResolutionStepContainer>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStep> steps)
 		throws MomException
 	{
-		final List<List<AttackResolutionStep>> result = new ArrayList<List<AttackResolutionStep>> ();
+		final List<List<AttackResolutionStepContainer>> result = new ArrayList<List<AttackResolutionStepContainer>> ();
 		
 		int currentStepNumber = 0;
-		List<AttackResolutionStep> currentList = null;
+		List<AttackResolutionStepContainer> currentList = null;
 		for (final AttackResolutionStep step : steps)
 		{
 			// Only acceptable values are currentStepNumber, or currentStepNumber+1
@@ -127,13 +129,13 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				throw new MomException ("Found an attack resolution step with step number of " + step.getStepNumber ());
 			
 			else if (step.getStepNumber () == currentStepNumber)
-				currentList.add (step);
+				currentList.add (new AttackResolutionStepContainer (step));
 			
 			else if (step.getStepNumber () == currentStepNumber + 1)
 			{
 				currentStepNumber = currentStepNumber + 1;
-				currentList = new ArrayList<AttackResolutionStep> ();
-				currentList.add (step);
+				currentList = new ArrayList<AttackResolutionStepContainer> ();
+				currentList.add (new AttackResolutionStepContainer (step));
 				result.add (currentList);
 			}
 			
@@ -153,7 +155,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param combatLocation Location the combat is taking place; null if its damage from an overland spell
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
-	 * @param commonPotentialDamageToDefenders This damage is applied to the defender if any "null" entries are encountered in the steps list (used for spell damage)
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param combatMapCoordinateSystem Combat map coordinate system
@@ -168,7 +169,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	@Override
 	public final List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
-		final List<AttackResolutionStep> steps, final AttackDamage commonPotentialDamageToDefenders,
+		final List<AttackResolutionStepContainer> steps,
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -186,14 +187,14 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		
 		// Calculate and total up all the damage before we apply any of it
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		for (final AttackResolutionStep step : steps)
+		for (final AttackResolutionStepContainer step : steps)
 		{
 			// Which unit is being attacked?
-			final AttackResolutionUnit unitBeingAttacked = ((step == null) || (step.getCombatSide () == UnitCombatSideID.ATTACKER)) ? defender : attacker;
+			final AttackResolutionUnit unitBeingAttacked = (step.getCombatSide () == UnitCombatSideID.ATTACKER) ? defender : attacker;
 			if (unitBeingAttacked == null)
 				throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitBeingAttacked, attacking side = " + step.getCombatSide ());
 
-			final int stepRepetitions = ((step == null) || (step.getRepetitions () == null)) ? 1 : step.getRepetitions ();
+			final int stepRepetitions = step.getRepetitions ();
 			for (int stepRepetitionNo = 0; stepRepetitionNo < stepRepetitions; stepRepetitionNo++)
 			{
 				// If the unit being attacked is already dead, then don't bother proceeding
@@ -206,9 +207,26 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 					final AttackDamage potentialDamage;
 					final AttackResolutionUnit unitMakingAttack;
 					final ExpandedUnitDetails xuUnitMakingAttack;
-					if (step == null)
+					if (step.getSpellStep () != null)
 					{
-						potentialDamage = commonPotentialDamageToDefenders;
+						// If this particular defender is immune to an illusionary attack, then temporarily set the spell damage resolution type to normal
+						boolean downgradeIllusionaryAttack = false;
+						if ((step.getSpellStep ().getDamageResolutionTypeID () == DamageResolutionTypeID.ILLUSIONARY))
+						{
+							// Borrow the list of immunities from the Illusionary Attack skill - I don't want to have to define immunties to damage types in the XSD just for this
+							final Iterator<NegatedBySkill> iter = db.findUnitSkill
+								(CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "processAttackResolutionStep").getNegatedBySkill ().iterator ();
+							while ((!downgradeIllusionaryAttack) && (iter.hasNext ()))
+							{
+								final NegatedBySkill negateIllusionaryAttack = iter.next ();
+								if ((negateIllusionaryAttack.getNegatedByUnitID () == NegatedByUnitID.ENEMY_UNIT) && (xuUnitBeingAttackedHPcheck.hasModifiedSkill (negateIllusionaryAttack.getNegatedBySkillID ())))
+									downgradeIllusionaryAttack = true;
+							}
+						}
+						
+						potentialDamage = downgradeIllusionaryAttack ?
+							new AttackDamage (step.getSpellStep (), DamageResolutionTypeID.SINGLE_FIGURE) : step.getSpellStep ();
+						
 						unitMakingAttack = null;
 						xuUnitMakingAttack = null;
 					}
@@ -222,13 +240,13 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						xuUnitMakingAttack = getUnitUtils ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null, players, mem, db);
 						
 						// If this is a hasted ranged attack, make sure we actually have enough ammo to make both attacks
-						if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())) &&
+						if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillStep ().getUnitSkillID ())) &&
 							(!getUnitCalculations ().canMakeRangedAttack (xuUnitMakingAttack)))
 							
 							potentialDamage = null;
 						else
 							potentialDamage = getDamageCalculator ().attackFromUnitSkill
-								(unitMakingAttack, unitBeingAttacked, attackingPlayer, defendingPlayer, step.getUnitSkillID (), players, mem, db);
+								(unitMakingAttack, unitBeingAttacked, attackingPlayer, defendingPlayer, step.getUnitSkillStep ().getUnitSkillID (), players, mem, db);
 					}
 					
 					// We may get null here, if the step says to attack with a skill that this unit doesn't have
@@ -238,7 +256,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						int penalty = 0;
 						
 						// If its a non-magical ranged attack, work out any distance penalty
-						if ((step != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())))
+						if ((step.getUnitSkillStep () != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillStep ().getUnitSkillID ())))
 							penalty = penalty + getServerUnitCalculations ().calculateRangedAttackDistancePenalty
 								(xuUnitMakingAttack, xuUnitBeingAttackedHPcheck, combatMapCoordinateSystem);
 						

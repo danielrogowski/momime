@@ -18,7 +18,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.server.calculations.AttackDamage;
 
 /**
  * Methods for processing attack resolutions.  This would all just be part of DamageProcessor, these methods
@@ -43,10 +42,10 @@ public interface AttackResolutionProcessing
 	
 	/**
 	 * @param steps Steps in one continuous list
-	 * @return Same list as input, but segmented into sublists where all steps share the same step number
+	 * @return Same list as input, but segmented into sublists where all steps share the same step number; also wraps each step in the container class
 	 * @throws MomException If the steps in the input list aren't in stepNumber order
 	 */
-	public List<List<AttackResolutionStep>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStep> steps)
+	public List<List<AttackResolutionStepContainer>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStep> steps)
 		throws MomException;
 	
 	/**
@@ -58,7 +57,6 @@ public interface AttackResolutionProcessing
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param combatLocation Location the combat is taking place; null if its damage from an overland spell
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
-	 * @param commonPotentialDamageToDefenders This damage is applied to the defender if any "null" entries are encountered in the steps list (used for spell damage)
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param combatMapCoordinateSystem Combat map coordinate system
@@ -72,7 +70,7 @@ public interface AttackResolutionProcessing
 	 */
 	public List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
-		final List<AttackResolutionStep> steps, final AttackDamage commonPotentialDamageToDefenders,
+		final List<AttackResolutionStepContainer> steps,
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

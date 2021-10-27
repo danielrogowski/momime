@@ -441,21 +441,17 @@ public final class UnitUtilsImpl implements UnitUtils
 				basicSkillValuesWithNegatedSkillsRemoved.put (unitSkillID, 0);
 		
 		// STEP 10 - Copy across basic skill values
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
 		for (final Entry<String, Integer> basicSkill : basicSkillValuesWithNegatedSkillsRemoved.entrySet ())
+		{
+			final UnitSkillValueBreakdown breakdown = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
 			
-			// Skills with no value just get copied in as-is with no breakdown
-			if (basicSkill.getValue () == null)
-				modifiedSkillValues.put (basicSkill.getKey (), null);
-			else
-			{
-				// Start a map of components of the breakdown
-				final Map<UnitSkillComponent, Integer> components = new HashMap<UnitSkillComponent, Integer> ();
-				if (basicSkill.getValue () > 0)
-					components.put (UnitSkillComponent.BASIC, basicSkill.getValue ());
+			// Start a map of components of the breakdown
+			if ((basicSkill.getValue () != null) && (basicSkill.getValue () > 0))
+				breakdown.getComponents ().put (UnitSkillComponent.BASIC, basicSkill.getValue ());
 				
-				modifiedSkillValues.put (basicSkill.getKey (), components);
-			}
+			modifiedSkillValues.put (basicSkill.getKey (), breakdown);
+		}
 		
 		// STEP 11 - If we're a boat, see who has Wind Mastery cast
 		if (basicSkillValues.containsKey (CommonDatabaseConstants.UNIT_SKILL_ID_SAILING))
@@ -481,11 +477,11 @@ public final class UnitUtilsImpl implements UnitUtils
 			if (bonus != 0)
 			{
 				final UnitSkillComponent component = UnitSkillComponent.SPELL_EFFECTS;
-				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED);
+				final UnitSkillValueBreakdown breakdown = modifiedSkillValues.get (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED);
 				
-				Integer bonusValue = components.get (component);
+				Integer bonusValue = breakdown.getComponents ().get (component);
 				bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus;
-				components.put (component, bonusValue);
+				breakdown.getComponents ().put (component, bonusValue);
 			}
 		}
 		
@@ -499,9 +495,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		if (mu.getModifiedExperienceLevel () != null)
 			for (final UnitSkillAndValue bonus : mu.getModifiedExperienceLevel ().getExperienceSkillBonus ())
 			{
-				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonus.getUnitSkillID ());
-				if ((components != null) && (bonus.getUnitSkillValue () != null))
-					components.put (UnitSkillComponent.EXPERIENCE, bonus.getUnitSkillValue ());
+				final UnitSkillValueBreakdown breakdown = modifiedSkillValues.get (bonus.getUnitSkillID ());
+				if ((breakdown != null) && (bonus.getUnitSkillValue () != null))
+					breakdown.getComponents ().put (UnitSkillComponent.EXPERIENCE, bonus.getUnitSkillValue ());
 			}
 		
 		// STEP 14 - Add bonuses from combat area effects
@@ -513,22 +509,33 @@ public final class UnitUtilsImpl implements UnitUtils
 				// check since some effects have different components which apply to different lifeform types, e.g. True Light and Darkness
 				for (final String grantedSkillID : db.findCombatAreaEffect (thisCAE.getCombatAreaEffectID (), "expandUnitDetails").getCombatAreaEffectGrantsSkill ())
 					
-					// Adds this skill if we don't already have it (like Mass Invisibility granting Invisibility)
+					// Adds this skill if we don't already have it (like Mass Invisibility granting Invisibility); these are all valueless
 					if ((!modifiedSkillValues.containsKey (grantedSkillID)) && (!isSkillNegated (grantedSkillID, modifiedSkillValues, enemyUnits, db)))
-						modifiedSkillValues.put (grantedSkillID, null);
+						modifiedSkillValues.put (grantedSkillID, new UnitSkillValueBreakdown (UnitSkillComponent.COMBAT_AREA_EFFECTS));
 		
 		// STEP 15 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
 				final boolean haveRequiredSkill;
+				UnitSkillComponent overrideComponent = null;
+				
 				if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
 					haveRequiredSkill = (enemyUnits != null) && (enemyUnits.size () == 1) && (enemyUnits.get (0).hasModifiedSkill (skillDef.getUnitSkillID ()));
+				
+				else if (addsToSkill.isAffectsEntireStack ())
+					haveRequiredSkill = unitStackSkills.containsKey (skillDef.getUnitSkillID ());
+				
 				else
-					haveRequiredSkill = (addsToSkill.isAffectsEntireStack () ? unitStackSkills : modifiedSkillValues).containsKey (skillDef.getUnitSkillID ());
+				{
+					final UnitSkillValueBreakdown requiredSkill = modifiedSkillValues.get (skillDef.getUnitSkillID ());
+					haveRequiredSkill = (requiredSkill != null);
+					if ((requiredSkill != null) && (requiredSkill.getSource () == UnitSkillComponent.COMBAT_AREA_EFFECTS))		// So still show in green on unit details
+						overrideComponent = requiredSkill.getSource ();
+				}
 					
 				if (haveRequiredSkill)
-					getExpandUnitDetailsUtils ().addSkillBonus (mu, skillDef.getUnitSkillID (), addsToSkill, null, modifiedSkillValues, unitStackSkills,
+					getExpandUnitDetailsUtils ().addSkillBonus (mu, skillDef.getUnitSkillID (), addsToSkill, overrideComponent, modifiedSkillValues, unitStackSkills,
 						attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID ());
 			}
 		
@@ -542,9 +549,9 @@ public final class UnitUtilsImpl implements UnitUtils
 					for (final UnitSkillAndValue basicStat : heroItemType.getHeroItemTypeBasicStat ())
 						if (basicStat.getUnitSkillValue () != null)
 						{
-							final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (basicStat.getUnitSkillID ());
-							if ((components != null) && (basicStat.getUnitSkillValue () != null))
-								components.put (UnitSkillComponent.HERO_ITEMS, basicStat.getUnitSkillValue ());
+							final UnitSkillValueBreakdown breakdown = modifiedSkillValues.get (basicStat.getUnitSkillID ());
+							if ((breakdown != null) && (basicStat.getUnitSkillValue () != null))
+								breakdown.getComponents ().put (UnitSkillComponent.HERO_ITEMS, basicStat.getUnitSkillValue ());
 						}
 					
 					// Bonuses imbued on the item
@@ -561,51 +568,51 @@ public final class UnitUtilsImpl implements UnitUtils
 							{
 								for (final String attackSkillID : heroItemType.getHeroItemTypeAttackType ())
 								{
-									final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (attackSkillID);
-									if (components != null)
+									final UnitSkillValueBreakdown breakdown = modifiedSkillValues.get (attackSkillID);
+									if (breakdown != null)
 									{
 										// This might coincide with a basic stat, e.g. plate mail (+2 defence) with another +4 defence imbued onto it
-										Integer bonusValue = components.get (UnitSkillComponent.HERO_ITEMS);
+										Integer bonusValue = breakdown.getComponents ().get (UnitSkillComponent.HERO_ITEMS);
 										bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonusStat.getUnitSkillValue ();
-										components.put (UnitSkillComponent.HERO_ITEMS, bonusValue);
+										breakdown.getComponents ().put (UnitSkillComponent.HERO_ITEMS, bonusValue);
 									}
 								}
 							}
 		
-							// Regular bonus - if we don't add the skill then add it; there's very few of these (Holy Avenger and Stoning; also -Spell Save)
+							// Regular bonus - if we don't have the skill then add it; there's very few of these (Holy Avenger and Stoning; also -Spell Save)
 							// This a bit different that bonuses from spells or CAEs, as those won't add valued skills to stop settlers gaining an attack or phantom warriors gaining defence
 							// but every hero has at least 1 attack, 1 defence, 1 resistance, and so on 
 							else
 							{
-								Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonusStat.getUnitSkillID ());
-								if (components == null)
+								UnitSkillValueBreakdown breakdown = modifiedSkillValues.get (bonusStat.getUnitSkillID ());
+								if (breakdown == null)
 								{
-									components = new HashMap<UnitSkillComponent, Integer> ();
-									modifiedSkillValues.put (bonusStat.getUnitSkillID (), components);
+									breakdown = new UnitSkillValueBreakdown (UnitSkillComponent.HERO_ITEMS);
+									modifiedSkillValues.put (bonusStat.getUnitSkillID (), breakdown);
 								}
 								
 								// This might coincide with a basic stat, e.g. plate mail (+2 defence) with another +4 defence imbued onto it
-								Integer bonusValue = components.get (UnitSkillComponent.HERO_ITEMS);
+								Integer bonusValue = breakdown.getComponents ().get (UnitSkillComponent.HERO_ITEMS);
 								bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonusStat.getUnitSkillValue ();
-								components.put (UnitSkillComponent.HERO_ITEMS, bonusValue);
+								breakdown.getComponents ().put (UnitSkillComponent.HERO_ITEMS, bonusValue);
 							}
 				}
 		
 		// STEP 17 - If we falied to find any + to hit / + to block values and we have no basic value then there's no point keeping it in the list
 		// We know the entry has to exist and have a valid map in it from the code above, but it may be an empty map
 		for (final String unitSkillID : SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL)
-			if (modifiedSkillValues.get (unitSkillID).isEmpty ())
+			if (modifiedSkillValues.get (unitSkillID).getComponents ().isEmpty ())
 				modifiedSkillValues.remove (unitSkillID);
 		
 		// STEP 18 - Apply any skill adjustments that set to a fixed value (shatter), divide by a value (warp creature) or multiply by a value (berserk) 
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
-				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (addsToSkill.getAddsToSkillID ());
+				final UnitSkillValueBreakdown breakdown = modifiedSkillValues.get (addsToSkill.getAddsToSkillID ());
 				
 				// Note the value != null check is here, isn't in the bonuses block above, because we assume we won't get skills like "shatter 1" vs "shatter 2"
 				// which set the level of penalty
-				if ((components != null) && (addsToSkill.getAddsToSkillValue () != null) && ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.LOCK) ||
+				if ((breakdown != null) && (addsToSkill.getAddsToSkillValue () != null) && ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.LOCK) ||
 					(addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.DIVIDE) || (addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.MULTIPLY)))
 				{
 					final boolean haveRequiredSkill;
@@ -662,7 +669,7 @@ public final class UnitUtilsImpl implements UnitUtils
 								
 								// Set to a fixed value?
 								int currentSkillValue = 0;
-								for (final Entry<UnitSkillComponent, Integer> c : components.entrySet ())
+								for (final Entry<UnitSkillComponent, Integer> c : breakdown.getComponents ().entrySet ())
 									if (c.getValue () == null)
 										throw new MomException ("expandUnitDetails on " + unit.getUnitID () + " trying to sum addsFromSkill ID " + addsToSkill.getAddsToSkillID () + " for penalties but the " + c.getKey () + " component is null");
 									else
@@ -689,9 +696,9 @@ public final class UnitUtilsImpl implements UnitUtils
 								
 								if (bonus != 0)
 								{
-									Integer bonusValue = components.get (component);
+									Integer bonusValue = breakdown.getComponents ().get (component);
 									bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus;
-									components.put (component, bonusValue);
+									breakdown.getComponents ().put (component, bonusValue);
 								}
 							}
 						}

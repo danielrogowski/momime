@@ -35,7 +35,7 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	private final RangedAttackTypeEx rangedAttackType;
 	
 	/** Modified skill values, broken down into their individual components; valueless skills will just have a null in the outer map */
-	private final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues;
+	private final Map<String, UnitSkillValueBreakdown> modifiedSkillValues;
 	
 	/** Base upkeep values, before any reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here */
 	private final Map<String, Integer> basicUpkeepValues;
@@ -69,7 +69,7 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final UnitEx aUnitDefinition, final UnitType aUnitType, final PlayerPublicDetails anOwningPlayer,
 		final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackTypeEx aRangedAttackType,
 		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl, final int aControllingPlayerID,
-		final Map<String, Integer> aBasicSkillValues, final Map<String, Map<UnitSkillComponent, Integer>> aModifiedSkillValues,
+		final Map<String, Integer> aBasicSkillValues, final Map<String, UnitSkillValueBreakdown> aModifiedSkillValues,
 		final Map<String, Integer> aBasicUpkeepValues, final Map<String, Integer> aModifiedUpkeepValues, final UnitUtils aUnitUtils)
 	{
 		super (aUnit, aUnitDefinition, aUnitType, anOwningPlayer, aBasicExpLvl, aModifiedExpLvl, aBasicSkillValues);
@@ -150,9 +150,9 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 		if (!hasModifiedSkill (unitSkillID))
 			throw new MomException ("filterModifiedSkillValue called on " + getUnitID () + " skill ID " + unitSkillID + " but the unit does not have this skill");
 
-		final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (unitSkillID);
+		final UnitSkillValueBreakdown breakdown = modifiedSkillValues.get (unitSkillID);
 		Integer total;
-		if ((components == null) || (components.isEmpty ()))
+		if ((breakdown.getComponents () == null) || (breakdown.getComponents ().isEmpty ()))
 		{
 			// Exception here is if this is the experience skill and we're still at 0, it'll be an empty list but we must still return 0 not a null
 			total = (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ? 0 : null;
@@ -160,7 +160,7 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 		else
 		{
 			total = 0;
-			for (final Entry<UnitSkillComponent, Integer> c : components.entrySet ())
+			for (final Entry<UnitSkillComponent, Integer> c : breakdown.getComponents ().entrySet ())
 				if (c.getValue () == null)
 					throw new MomException ("filterModifiedSkillValue called on " + getUnitID () + " skill ID " + unitSkillID + " but the " + c.getKey () + " component is null");
 				else if (((component == UnitSkillComponent.ALL) || (component  == c.getKey ())) &&
@@ -394,14 +394,14 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 		});	
 		
 		final StringBuilder mod = new StringBuilder ();
-		modifiedSkillValues.forEach ((k, components) ->
+		modifiedSkillValues.forEach ((k, breakdown) ->
 		{
 			if (mod.length () > 0)
 				mod.append (",");
 			
-			mod.append (k);
-			if ((components != null) && (!components.isEmpty ()))
-				mod.append ("=" + components.values ().stream ().mapToInt (v -> v).sum ());
+			mod.append (k + "-" + breakdown.getSource ());
+			if ((breakdown.getComponents () != null) && (!breakdown.getComponents ().isEmpty ()))
+				mod.append ("=" + breakdown.getComponents ().values ().stream ().mapToInt (v -> v).sum ());
 		});	
 		
 		// Finish off

@@ -31,15 +31,15 @@ public final class TestExpandedUnitDetailsImpl
 	@Test
 	public final void testGetModifiedSkillValue_Normal () throws Exception
 	{
-		// Set up skill components with various components and positive/negative values 
-		final Map<UnitSkillComponent, Integer> components = new HashMap<UnitSkillComponent, Integer> ();
-		components.put (UnitSkillComponent.BASIC, 5);
-		components.put (UnitSkillComponent.EXPERIENCE, 3);
-		components.put (UnitSkillComponent.SPELL_EFFECTS, 2);
-		components.put (UnitSkillComponent.COMBAT_AREA_EFFECTS, -1);
+		// Set up skill components with various components and positive/negative values
+		final UnitSkillValueBreakdown breakdown = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
+		breakdown.getComponents ().put (UnitSkillComponent.BASIC, 5);
+		breakdown.getComponents ().put (UnitSkillComponent.EXPERIENCE, 3);
+		breakdown.getComponents ().put (UnitSkillComponent.SPELL_EFFECTS, 2);
+		breakdown.getComponents ().put (UnitSkillComponent.COMBAT_AREA_EFFECTS, -1);
 
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
-		modifiedSkillValues.put ("US001", components);
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US001", breakdown);
 
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -58,12 +58,12 @@ public final class TestExpandedUnitDetailsImpl
 	public final void testGetModifiedSkillValue_NullComponent () throws Exception
 	{
 		// Include a component with a null value 
-		final Map<UnitSkillComponent, Integer> components = new HashMap<UnitSkillComponent, Integer> ();
-		components.put (UnitSkillComponent.BASIC, 5);
-		components.put (UnitSkillComponent.SPELL_EFFECTS, null);
+		final UnitSkillValueBreakdown breakdown = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
+		breakdown.getComponents ().put (UnitSkillComponent.BASIC, 5);
+		breakdown.getComponents ().put (UnitSkillComponent.SPELL_EFFECTS, null);
 
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
-		modifiedSkillValues.put ("US001", components);
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US001", breakdown);
 
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -81,7 +81,7 @@ public final class TestExpandedUnitDetailsImpl
 	@Test(expected=MomException.class)
 	public final void testGetModifiedSkillValue_DontHaveSkill () throws Exception
 	{
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
 
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -100,9 +100,9 @@ public final class TestExpandedUnitDetailsImpl
 	@Test
 	public final void testGetModifiedSkillValue_ValuelessSkill () throws Exception
 	{
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
-		modifiedSkillValues.put ("US001", null);
-		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, null);
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US001", new UnitSkillValueBreakdown (UnitSkillComponent.BASIC));
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, new UnitSkillValueBreakdown (UnitSkillComponent.BASIC));
 
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -122,14 +122,14 @@ public final class TestExpandedUnitDetailsImpl
 	public final void testFilterModifiedSkillValue_Normal () throws Exception
 	{
 		// Set up skill components with various components and positive/negative values 
-		final Map<UnitSkillComponent, Integer> components = new HashMap<UnitSkillComponent, Integer> ();
-		components.put (UnitSkillComponent.BASIC, 5);
-		components.put (UnitSkillComponent.EXPERIENCE, 3);
-		components.put (UnitSkillComponent.SPELL_EFFECTS, 2);
-		components.put (UnitSkillComponent.COMBAT_AREA_EFFECTS, -1);
+		final UnitSkillValueBreakdown breakdown = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
+		breakdown.getComponents ().put (UnitSkillComponent.BASIC, 5);
+		breakdown.getComponents ().put (UnitSkillComponent.EXPERIENCE, 3);
+		breakdown.getComponents ().put (UnitSkillComponent.SPELL_EFFECTS, 2);
+		breakdown.getComponents ().put (UnitSkillComponent.COMBAT_AREA_EFFECTS, -1);
 
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
-		modifiedSkillValues.put ("US001", components);
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
+		modifiedSkillValues.put ("US001", breakdown);
 
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -168,9 +168,9 @@ public final class TestExpandedUnitDetailsImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Set up object to test
-		final Map<UnitSkillComponent, Integer> hp = new HashMap<UnitSkillComponent, Integer> ();
+		final UnitSkillValueBreakdown hp = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
 
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, hp);
 
 		final MemoryUnit unit = new MemoryUnit ();
@@ -178,7 +178,7 @@ public final class TestExpandedUnitDetailsImpl
 		
 		// Unit with 1 HP per figure at full health of 6 figures
 		unitDef.setFigureCount (6);
-		hp.put (UnitSkillComponent.BASIC, 1);
+		hp.getComponents ().put (UnitSkillComponent.BASIC, 1);
 
 		assertEquals (6, xu.calculateHitPointsRemaining ());
 	
@@ -187,7 +187,7 @@ public final class TestExpandedUnitDetailsImpl
 		assertEquals (5, xu.calculateHitPointsRemaining ());
 
 		// Now it has 4 HP per figure
-		hp.put (UnitSkillComponent.EXPERIENCE, 3);
+		hp.getComponents ().put (UnitSkillComponent.EXPERIENCE, 3);
 		assertEquals (23, xu.calculateHitPointsRemaining ());
 		
 		// Take 2 more hits
@@ -209,9 +209,9 @@ public final class TestExpandedUnitDetailsImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Set up object to test
-		final Map<UnitSkillComponent, Integer> hp = new HashMap<UnitSkillComponent, Integer> ();
+		final UnitSkillValueBreakdown hp = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
 
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, hp);
 
 		final MemoryUnit unit = new MemoryUnit ();
@@ -219,7 +219,7 @@ public final class TestExpandedUnitDetailsImpl
 
 		// Unit with 1 HP per figure at full health of 6 figures
 		unitDef.setFigureCount (6);
-		hp.put (UnitSkillComponent.BASIC, 1);
+		hp.getComponents ().put (UnitSkillComponent.BASIC, 1);
 		
 		assertEquals (6, xu.calculateAliveFigureCount ());
 		
@@ -236,7 +236,7 @@ public final class TestExpandedUnitDetailsImpl
 		assertEquals (0, xu.calculateAliveFigureCount ());
 		
 		// Now it has 4 HP per figure, so 6x4=24 total damage
-		hp.put (UnitSkillComponent.EXPERIENCE, 3);
+		hp.getComponents ().put (UnitSkillComponent.EXPERIENCE, 3);
 		assertEquals (4, xu.calculateAliveFigureCount ());
 		
 		// With 11 dmg taken, there's still only 2 figures dead, since it rounds down
@@ -266,9 +266,9 @@ public final class TestExpandedUnitDetailsImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		// Set up object to test
-		final Map<UnitSkillComponent, Integer> hp = new HashMap<UnitSkillComponent, Integer> ();
+		final UnitSkillValueBreakdown hp = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
 
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, hp);
 
 		final MemoryUnit unit = new MemoryUnit ();
@@ -276,7 +276,7 @@ public final class TestExpandedUnitDetailsImpl
 		
 		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
 		unitDef.setFigureCount (6);
-		hp.put (UnitSkillComponent.BASIC, 1);
+		hp.getComponents ().put (UnitSkillComponent.BASIC, 1);
 
 		assertEquals (1, xu.calculateHitPointsRemainingOfFirstFigure ());
 	
@@ -285,7 +285,7 @@ public final class TestExpandedUnitDetailsImpl
 		assertEquals (1, xu.calculateHitPointsRemainingOfFirstFigure ());
 
 		// Now it has 4 HP per figure
-		hp.put (UnitSkillComponent.EXPERIENCE, 3);
+		hp.getComponents ().put (UnitSkillComponent.EXPERIENCE, 3);
 		assertEquals (3, xu.calculateHitPointsRemainingOfFirstFigure ());
 		
 		// Take 2 more hits
@@ -314,14 +314,14 @@ public final class TestExpandedUnitDetailsImpl
 	public final void testCalculateFullRangedAttackAmmo () throws Exception
 	{
 		// Test unit without the ranged attack skill
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
 
 		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
 		assertEquals (0, unit.calculateFullRangedAttackAmmo ());
 
 		// Test unit with the ranged attack skill
-		final Map<UnitSkillComponent, Integer> ammo = new HashMap<UnitSkillComponent, Integer> ();
-		ammo.put (UnitSkillComponent.BASIC, 5);
+		final UnitSkillValueBreakdown ammo = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
+		ammo.getComponents ().put (UnitSkillComponent.BASIC, 5);
 		
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, ammo);
 		assertEquals (5, unit.calculateFullRangedAttackAmmo ());
@@ -338,7 +338,7 @@ public final class TestExpandedUnitDetailsImpl
 		final AvailableUnit unit = new AvailableUnit ();
 		
 		// Set up object to test
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
 		final ExperienceLevel expLevel = new ExperienceLevel ();
 		
 		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, expLevel, 2, null, modifiedSkillValues, null, null, null);
@@ -347,8 +347,8 @@ public final class TestExpandedUnitDetailsImpl
 		assertEquals (0, xu.calculateManaTotal ());
 
 		// Test an archangel
-		final Map<UnitSkillComponent, Integer> casterUnitSkill = new HashMap<UnitSkillComponent, Integer> ();
-		casterUnitSkill.put (UnitSkillComponent.BASIC, 40);
+		final UnitSkillValueBreakdown casterUnitSkill = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
+		casterUnitSkill.getComponents ().put (UnitSkillComponent.BASIC, 40);
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, casterUnitSkill);
 		
 		assertEquals (40, xu.calculateManaTotal ());
@@ -357,15 +357,15 @@ public final class TestExpandedUnitDetailsImpl
 		expLevel.setLevelNumber (2);
 		modifiedSkillValues.remove (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
 		
-		final Map<UnitSkillComponent, Integer> casterHeroSkill = new HashMap<UnitSkillComponent, Integer> ();
-		casterHeroSkill.put (UnitSkillComponent.BASIC, 3);
+		final UnitSkillValueBreakdown casterHeroSkill = new UnitSkillValueBreakdown (UnitSkillComponent.BASIC);
+		casterHeroSkill.getComponents ().put (UnitSkillComponent.BASIC, 3);
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, casterHeroSkill);
 		
 		assertEquals (22, xu.calculateManaTotal ());
 		
 		// Test a higher hero, lv 5 caster skill * lv 4 (+1=5) exp * 2½ = 62½, +40 from unit caster skill = 102½
 		expLevel.setLevelNumber (4);
-		casterHeroSkill.put (UnitSkillComponent.BASIC, 5);
+		casterHeroSkill.getComponents ().put (UnitSkillComponent.BASIC, 5);
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, casterUnitSkill);
 		
 		assertEquals (102, xu.calculateManaTotal ());

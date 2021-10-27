@@ -31,7 +31,7 @@ public interface ExpandUnitDetailsUtils
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public void addSkillBonus (final MinimalUnitDetails mu, final String unitSkillID, final AddsToSkill addsToSkill, final UnitSkillComponent overrideComponent,
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues, final Map<String, Integer> unitStackSkills,
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final Map<String, Integer> unitStackSkills,
 		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID)
 		throws MomException;
 }

@@ -36,12 +36,12 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 	 */
 	@Override
 	public final void addSkillBonus (final MinimalUnitDetails mu, final String unitSkillID, final AddsToSkill addsToSkill, final UnitSkillComponent overrideComponent,
-		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues, final Map<String, Integer> unitStackSkills,
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final Map<String, Integer> unitStackSkills,
 		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID)
 		throws MomException
 	{
-		final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (addsToSkill.getAddsToSkillID ());
-		if ((components != null) && ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.ADD_FIXED) ||
+		final UnitSkillValueBreakdown breakdown = modifiedSkillValues.get (addsToSkill.getAddsToSkillID ());
+		if ((breakdown != null) && ((addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.ADD_FIXED) ||
 			(addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.ADD_DIVISOR)))
 		{
 			final MapCoordinates3DEx unitCombatLocation = mu.isMemoryUnit () ? mu.getCombatLocation () : null;
@@ -111,9 +111,9 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 						else
 						{
 							multiplier = 0;
-							final Map<UnitSkillComponent, Integer> totalComponents = modifiedSkillValues.get (unitSkillID);
+							final UnitSkillValueBreakdown totalComponents = modifiedSkillValues.get (unitSkillID);
 							if (totalComponents != null)
-								for (final Entry<UnitSkillComponent, Integer> c : totalComponents.entrySet ())
+								for (final Entry<UnitSkillComponent, Integer> c : totalComponents.getComponents ().entrySet ())
 									if (c.getValue () == null)
 										throw new MomException ("expandUnitDetails on " + mu.getUnitID () + " trying to sum addsFromSkill ID " + unitSkillID + " for bonuses but the " + c.getKey () + " component is null");
 									else
@@ -157,9 +157,9 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 					
 					if (bonus != 0)
 					{
-						Integer bonusValue = components.get (component);
+						Integer bonusValue = breakdown.getComponents ().get (component);
 						bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus;
-						components.put (component, bonusValue);
+						breakdown.getComponents ().put (component, bonusValue);
 					}
 				}
 			}

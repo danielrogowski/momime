@@ -470,6 +470,10 @@
 						<xsd:selector xpath="combatAreaEffectHelpText" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="combatAreaEffectGrantsSkillPK">
+						<xsd:selector xpath="combatAreaEffectGrantsSkill" />
+						<xsd:field xpath="." />
+					</xsd:key>	
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellRank" type="momimecommon:spellRank">
 					<xsd:key name="spellRankDescriptionPK">
@@ -1137,9 +1141,9 @@
 			<xsd:selector xpath="combatAreaEffect" />
 			<xsd:field xpath="combatAreaEffectNegatedByPick" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:unitSkillPK" name="combatAreaEffectSkillBonusFKunitSkill">
-			<xsd:selector xpath="combatAreaEffect/combatAreaEffectSkillBonus" />
-			<xsd:field xpath="@unitSkillID" />
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="combatAreaEffectFKunitSkill">
+			<xsd:selector xpath="combatAreaEffect/combatAreaEffectGrantsSkill" />
+			<xsd:field xpath="." />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:productionTypePK" name="pickProductionBonusFKproductionType">
 			<xsd:selector xpath="pick/pickProductionBonus" />
@@ -3215,22 +3219,16 @@ but kept these separate to make it totally clear when production values are reco
 this value each time a dispel attempt is made (counter magic).</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffectSkillBonus" type="momimecommon:combatAreaEffectSkillBonus" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffectGrantsSkill" type="momimecommon:unitSkillID">
+		        <xsd:annotation>
+		        	<xsd:documentation>Lists any unit skill that the CAE grants.  The unit skill may then have bonuses defined on it, like +stats from node auras or prayer.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+		        </xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" use="required" nxe:label="Effect ID" nxe:gridwidth="80" />
-	</xsd:complexType>
-
-	<xsd:complexType name="combatAreaEffectSkillBonus" nxe:singular="Skill Bonus" nxe:plural="Skill Bonuses">
-        <xsd:annotation>
-        	<xsd:documentation>Lists any unit skill that the CAE grants.  The unit skill may then have bonuses defined on it, like +stats from node auras or prayer.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Skill" nxe:gridwidth="200">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="spellBookSection" nxe:singular="Spell Book Section" nxe:plural="Spell Book Sections" nxe:submenu="Spells">

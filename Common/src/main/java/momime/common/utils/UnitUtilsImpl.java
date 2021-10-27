@@ -20,7 +20,6 @@ import momime.common.database.AddsToSkill;
 import momime.common.database.AddsToSkillValueType;
 import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
-import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemBonusStat;
@@ -512,11 +511,11 @@ public final class UnitUtilsImpl implements UnitUtils
 				// Found a combat area effect whose location matches this unit, as well as any player or other pre-requisites
 				// So this means all the skill bonuses apply, except we still need to do the magic realm
 				// check since some effects have different components which apply to different lifeform types, e.g. True Light and Darkness
-				for (final CombatAreaEffectSkillBonus bonus : db.findCombatAreaEffect (thisCAE.getCombatAreaEffectID (), "expandUnitDetails").getCombatAreaEffectSkillBonus ())
+				for (final String grantedSkillID : db.findCombatAreaEffect (thisCAE.getCombatAreaEffectID (), "expandUnitDetails").getCombatAreaEffectGrantsSkill ())
 					
 					// Adds this skill if we don't already have it (like Mass Invisibility granting Invisibility)
-					if ((!modifiedSkillValues.containsKey (bonus.getUnitSkillID ())) && (!isSkillNegated (bonus.getUnitSkillID (), modifiedSkillValues, enemyUnits, db)))
-						modifiedSkillValues.put (bonus.getUnitSkillID (), null);
+					if ((!modifiedSkillValues.containsKey (grantedSkillID)) && (!isSkillNegated (grantedSkillID, modifiedSkillValues, enemyUnits, db)))
+						modifiedSkillValues.put (grantedSkillID, null);
 		
 		// STEP 15 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())

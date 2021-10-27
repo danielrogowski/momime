@@ -26,7 +26,6 @@ import momime.common.database.AddsToSkill;
 import momime.common.database.AddsToSkillValueType;
 import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
-import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
@@ -928,11 +927,8 @@ public final class TestUnitUtilsImpl
 		// CAE definiton
 		final CombatAreaEffect caeDef = new CombatAreaEffect ();
 		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.ALL_EVEN_NOT_IN_COMBAT);
+		caeDef.getCombatAreaEffectGrantsSkill ().add ("CS001");
 		when (db.findCombatAreaEffect (eq ("CAE01"), anyString ())).thenReturn (caeDef);
-
-		final CombatAreaEffectSkillBonus caeBonus = new CombatAreaEffectSkillBonus ();
-		caeBonus.setUnitSkillID ("CS001");
-		caeDef.getCombatAreaEffectSkillBonus ().add (caeBonus);
 		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();

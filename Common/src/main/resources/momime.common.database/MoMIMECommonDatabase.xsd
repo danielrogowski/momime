@@ -1137,10 +1137,6 @@
 			<xsd:selector xpath="combatAreaEffect" />
 			<xsd:field xpath="combatAreaEffectNegatedByPick" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:pickPK" name="combatAreaEffectSkillBonusFKpick">
-			<xsd:selector xpath="combatAreaEffect/combatAreaEffectSkillBonus" />
-			<xsd:field xpath="effectMagicRealm" />
-		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:unitSkillPK" name="combatAreaEffectSkillBonusFKunitSkill">
 			<xsd:selector xpath="combatAreaEffect/combatAreaEffectSkillBonus" />
 			<xsd:field xpath="@unitSkillID" />
@@ -3226,21 +3222,15 @@ this value each time a dispel attempt is made (counter magic).</xsd:documentatio
 
 	<xsd:complexType name="combatAreaEffectSkillBonus" nxe:singular="Skill Bonus" nxe:plural="Skill Bonuses">
         <xsd:annotation>
-        	<xsd:documentation>Lists the bonuses or penalties to skills that units get from a particular combat area effect, e.g. Chaos creatures getting bonuses to the "attack" type skills such as Fire Breath from Chaos nodes.</xsd:documentation>
+        	<xsd:documentation>Lists any unit skill that the CAE grants.  The unit skill may then have bonuses defined on it, like +stats from node auras or prayer.</xsd:documentation>
         </xsd:annotation>
-        <xsd:complexContent>
-			<xsd:extension base="momimecommon:unitSkillAndValue">
-				<xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="1" name="effectMagicRealm" type="momimecommon:pickID" nxe:label="Bonus applies to creatures of magic realm" nxe:showmaincolumn="false">
-						<xsd:annotation>
-							<xsd:appinfo>
-								<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
-							</xsd:appinfo>
-						</xsd:annotation>
-					</xsd:element>
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
+		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Skill" nxe:gridwidth="200">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="spellBookSection" nxe:singular="Spell Book Section" nxe:plural="Spell Book Sections" nxe:submenu="Spells">

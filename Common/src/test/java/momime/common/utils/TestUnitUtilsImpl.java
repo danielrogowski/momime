@@ -900,6 +900,9 @@ public final class TestUnitUtilsImpl
 		final UnitSkillEx chaosChannels = new UnitSkillEx ();
 		chaosChannels.setChangesUnitToMagicRealm ("LTC");
 		when (db.findUnitSkill (eq ("US002"), anyString ())).thenReturn (chaosChannels);
+
+		final UnitSkillEx skillFromCAE = new UnitSkillEx ();
+		when (db.findUnitSkill (eq ("CS001"), anyString ())).thenReturn (skillFromCAE);
 		
 		// RAT definition
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
@@ -925,16 +928,12 @@ public final class TestUnitUtilsImpl
 		// CAE definiton
 		final CombatAreaEffect caeDef = new CombatAreaEffect ();
 		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.ALL_EVEN_NOT_IN_COMBAT);
-		for (final String magicRealmID : new String [] {null, "LTC", "LTH"})
-		{
-			final CombatAreaEffectSkillBonus caeBonus = new CombatAreaEffectSkillBonus ();
-			caeBonus.setUnitSkillID ("US001");
-			caeBonus.setUnitSkillValue (3);
-			caeBonus.setEffectMagicRealm (magicRealmID);			
-			caeDef.getCombatAreaEffectSkillBonus ().add (caeBonus);
-		}		
 		when (db.findCombatAreaEffect (eq ("CAE01"), anyString ())).thenReturn (caeDef);
 
+		final CombatAreaEffectSkillBonus caeBonus = new CombatAreaEffectSkillBonus ();
+		caeBonus.setUnitSkillID ("CS001");
+		caeDef.getCombatAreaEffectSkillBonus ().add (caeBonus);
+		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
 		
@@ -1009,13 +1008,18 @@ public final class TestUnitUtilsImpl
 
 		assertTrue (details.hasBasicSkill ("US002"));
 		assertTrue (details.hasModifiedSkill ("US002"));
+
+		assertFalse (details.hasBasicSkill ("CS001"));
+		assertTrue (details.hasModifiedSkill ("CS001"));
 		
 		assertEquals (2, details.getBasicSkillValue ("US001").intValue ());
-		assertEquals (2 + 2 + 3 + 3, details.getModifiedSkillValue ("US001").intValue ());
+		assertEquals (2 + 2, details.getModifiedSkillValue ("US001").intValue ());
 		
 		assertNull (details.getBasicSkillValue ("US002"));
 		assertNull (details.getModifiedSkillValue ("US002"));
 
+		assertNull (details.getModifiedSkillValue ("CS001"));
+		
 		assertTrue (details.hasBasicSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
 		assertTrue (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
 		

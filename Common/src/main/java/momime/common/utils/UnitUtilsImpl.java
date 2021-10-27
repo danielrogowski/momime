@@ -508,37 +508,15 @@ public final class UnitUtilsImpl implements UnitUtils
 		// STEP 14 - Add bonuses from combat area effects
 		for (final MemoryCombatAreaEffect thisCAE : mem.getCombatAreaEffect ())
 			if (doesCombatAreaEffectApplyToUnit (unit, thisCAE, db))
-			{
+				
 				// Found a combat area effect whose location matches this unit, as well as any player or other pre-requisites
 				// So this means all the skill bonuses apply, except we still need to do the magic realm
 				// check since some effects have different components which apply to different lifeform types, e.g. True Light and Darkness
 				for (final CombatAreaEffectSkillBonus bonus : db.findCombatAreaEffect (thisCAE.getCombatAreaEffectID (), "expandUnitDetails").getCombatAreaEffectSkillBonus ())
-				{
-					// Magic realm/lifeform type can be blank for effects that apply to all types of unit (e.g. Prayer)
-					if ((bonus.getEffectMagicRealm () == null) || (bonus.getEffectMagicRealm ().equals (magicRealmLifeformType.getPickID ())))
-					{
-						// If bonus is value-less, then it can add a skill we previously didn't have (like Mass Invisibility granting Invisibility)
-						if (bonus.getUnitSkillValue () == null)
-						{
-							if ((!modifiedSkillValues.containsKey (bonus.getUnitSkillID ())) && (!isSkillNegated (bonus.getUnitSkillID (), modifiedSkillValues, enemyUnits, db)))
-								modifiedSkillValues.put (bonus.getUnitSkillID (), null);
-						}
-
-						else
-						{
-							// If bonus has a value like +attack, we only get the bonus if we already have that attack skill
-							final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonus.getUnitSkillID ());
-							if ((components != null) && (bonus.getUnitSkillValue () != null))
-							{
-								// There might be more than one CAE giving a bonus to the same skill, so this isn't a simple "put"
-								Integer bonusValue = components.get (UnitSkillComponent.COMBAT_AREA_EFFECTS);
-								bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus.getUnitSkillValue ();
-								components.put (UnitSkillComponent.COMBAT_AREA_EFFECTS, bonusValue);
-							}
-						}
-					}
-				}
-			}
+					
+					// Adds this skill if we don't already have it (like Mass Invisibility granting Invisibility)
+					if ((!modifiedSkillValues.containsKey (bonus.getUnitSkillID ())) && (!isSkillNegated (bonus.getUnitSkillID (), modifiedSkillValues, enemyUnits, db)))
+						modifiedSkillValues.put (bonus.getUnitSkillID (), null);
 		
 		// STEP 15 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())

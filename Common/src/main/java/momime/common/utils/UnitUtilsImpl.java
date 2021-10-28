@@ -501,6 +501,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			}
 		
 		// STEP 14 - Add bonuses from combat area effects
+		final List<String> skillsGrantedFromCombatAreaEffects = new ArrayList<String> ();
 		for (final MemoryCombatAreaEffect thisCAE : mem.getCombatAreaEffect ())
 			if (doesCombatAreaEffectApplyToUnit (unit, thisCAE, db))
 				
@@ -511,9 +512,17 @@ public final class UnitUtilsImpl implements UnitUtils
 					
 					// Adds this skill if we don't already have it (like Mass Invisibility granting Invisibility); these are all valueless
 					if ((!modifiedSkillValues.containsKey (grantedSkillID)) && (!isSkillNegated (grantedSkillID, modifiedSkillValues, enemyUnits, db)))
+					{
 						modifiedSkillValues.put (grantedSkillID, new UnitSkillValueBreakdown (UnitSkillComponent.COMBAT_AREA_EFFECTS));
+						skillsGrantedFromCombatAreaEffects.add (grantedSkillID);
+					}
 		
-		// STEP 15 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
+		// STEP 15 - For any skills added from CAEs, recheck if they are negated - this is because High Prayer is added after Prayer
+		for (final String unitSkillID : skillsGrantedFromCombatAreaEffects)
+			if (isSkillNegated (unitSkillID, modifiedSkillValues, enemyUnits, db))
+				modifiedSkillValues.remove (unitSkillID);
+		
+		// STEP 16 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
@@ -539,7 +548,7 @@ public final class UnitUtilsImpl implements UnitUtils
 						attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID ());
 			}
 		
-		// STEP 16 - Hero items - numeric bonuses (dealt with valueless skills above)
+		// STEP 17 - Hero items - numeric bonuses (dealt with valueless skills above)
 		if (unit instanceof MemoryUnit)
 			for (final MemoryUnitHeroItemSlot slot : ((MemoryUnit) unit).getHeroItemSlot ())
 				if (slot.getHeroItem () != null)
@@ -598,13 +607,13 @@ public final class UnitUtilsImpl implements UnitUtils
 							}
 				}
 		
-		// STEP 17 - If we falied to find any + to hit / + to block values and we have no basic value then there's no point keeping it in the list
+		// STEP 18 - If we falied to find any + to hit / + to block values and we have no basic value then there's no point keeping it in the list
 		// We know the entry has to exist and have a valid map in it from the code above, but it may be an empty map
 		for (final String unitSkillID : SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL)
 			if (modifiedSkillValues.get (unitSkillID).getComponents ().isEmpty ())
 				modifiedSkillValues.remove (unitSkillID);
 		
-		// STEP 18 - Apply any skill adjustments that set to a fixed value (shatter), divide by a value (warp creature) or multiply by a value (berserk) 
+		// STEP 19 - Apply any skill adjustments that set to a fixed value (shatter), divide by a value (warp creature) or multiply by a value (berserk) 
 		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
@@ -706,11 +715,11 @@ public final class UnitUtilsImpl implements UnitUtils
 				}
 			}
 		
-		// STEP 19 - Basic upkeep values - just copy from the unit definition
+		// STEP 20 - Basic upkeep values - just copy from the unit definition
 		final Map<String, Integer> basicUpkeepValues = mu.getUnitDefinition ().getUnitUpkeep ().stream ().collect
 			(Collectors.toMap (u -> u.getProductionTypeID (), u -> u.getUndoubledProductionValue ()));
 		
-		// STEP 20 - Modify upkeep values
+		// STEP 21 - Modify upkeep values
 		final Map<String, Integer> modifiedUpkeepValues;
 
 		// Upkeep for undead is zeroed for normal units and adds +50% for summoned creatures
@@ -747,7 +756,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			}));
 		}
 		
-		// STEP 21 - Work out who has control of the unit at the moment
+		// STEP 22 - Work out who has control of the unit at the moment
 		int controllingPlayerID = unit.getOwningPlayerID ();
 		if ((unit instanceof MemoryUnit) && (((MemoryUnit) unit).getConfusionEffect () == ConfusionEffect.CASTER_CONTROLLED) && (confusionSpellOwner != null))
 			controllingPlayerID = confusionSpellOwner;

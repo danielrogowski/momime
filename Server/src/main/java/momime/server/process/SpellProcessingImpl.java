@@ -32,6 +32,7 @@ import momime.common.database.CitySpellEffect;
 import momime.common.database.CitySpellEffectTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
 import momime.common.database.HeroItem;
 import momime.common.database.MapFeatureEx;
 import momime.common.database.RecordNotFoundException;
@@ -88,6 +89,8 @@ import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.SpellAI;
+import momime.server.calculations.AttackDamage;
+import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
@@ -204,6 +207,12 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Server-only city calculations */
 	private ServerCityCalculations serverCityCalculations;
+	
+	/** Damage calc */
+	private DamageCalculator damageCalculator;
+	
+	/** Attack resolution processing */
+	private AttackResolutionProcessing attackResolutionProcessing;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -1372,19 +1381,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 			getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), targetLocation, mom);
 			
 			// Now do the buildings
-			final List<MemoryBuilding> destroyedBuildings = new ArrayList<MemoryBuilding> ();
-			for (final MemoryBuilding thisBuilding : mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ())
-				if ((thisBuilding.getCityLocation ().equals (targetLocation)) &&
-					(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
-					(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) &&
-					(getRandomUtils ().nextInt (100) < 15))
-					
-					destroyedBuildings.add (thisBuilding);
-
-			// Have to do this even if 0 buildings got destroyed, as this is how the client knows to show the animation and clean up the NTM
-			getCityProcessing ().destroyBuildings (mom.getGeneralServerKnowledge ().getTrueMap (),
-				mom.getPlayers (), destroyedBuildings, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), targetLocation,
-				mom.getSessionDescription (), mom.getServerDB ());
+			getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), 15,
+				targetLocation, mom);
 		}
 
 		else if (spell.getBuildingID () == null)
@@ -1712,6 +1710,103 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 				}
 			}
+	}
+	
+	/**
+	 * For Chaos Rift.  Each turn, units in the city get struck by lightning bolts.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
+	 * @throws RecordNotFoundException If we encounter an unknown spell
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	@Override
+	public final void citySpellEffectsAttackingUnits (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+			if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_CHAOS_RIFT)) && (spell.getCityLocation () != null) &&
+				((onlyOnePlayerID == 0) || (onlyOnePlayerID == spell.getCastingPlayerID ())))
+			{
+				// Get a list of units in the city, even if they're invisible or immune to the damage
+				final List<MemoryUnit> unitsInCity = getUnitUtils ().listAliveEnemiesAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+					spell.getCityLocation ().getX (), spell.getCityLocation ().getY (), spell.getCityLocation ().getZ (), 0);
+				if (unitsInCity.size () > 0)
+				{
+					final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "citySpellEffectsAttackingUnits");
+
+					final List<ExpandedUnitDetails> expandedUnitsInCity = new ArrayList<ExpandedUnitDetails> ();
+					for (final MemoryUnit mu : unitsInCity)
+						expandedUnitsInCity.add (getUnitUtils ().expandUnitDetails (mu, null, null, spellDef.getSpellRealm (), mom.getPlayers (),
+							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+					
+					// Roll damage; the XML specifies the damage type, attack strength and so on
+					final DamageType damageType = mom.getServerDB ().findDamageType (spellDef.getAttackSpellDamageTypeID (), "citySpellEffectsAttackingUnits");
+					final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spell.getCastingPlayerID (), "citySpellEffectsAttackingUnits");
+					
+					AttackDamage attackDamage = null;
+					for (int lightningBoltNo = 0; lightningBoltNo < 5; lightningBoltNo++)
+					{
+						final ExpandedUnitDetails xu = expandedUnitsInCity.get (getRandomUtils ().nextInt (expandedUnitsInCity.size ()));
+						
+						// Be careful that previous lightning bolts may have already killed it
+						if ((xu.calculateAliveFigureCount () > 0) && (!xu.isUnitImmuneToDamageType (damageType)))
+						{
+							// Only bother to send the damage calculation header once we find a unit that actually has to make a roll.
+							// Maybe even though there's 2 units in the city, one is immune and one isn't, they get lucky and all 5 bolts hit the immune one...
+							// Assuming here that all struck units will belong to the same player, but that should be the case.
+							if (attackDamage == null)
+							{
+								getDamageCalculator ().sendDamageHeader (null, unitsInCity, false,
+									castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), null, spellDef, castingPlayer);
+								
+								attackDamage = getDamageCalculator ().attackFromSpell
+									(spellDef, null, castingPlayer, null, castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), mom.getServerDB (), SpellCastType.OVERLAND);
+							}
+							
+							// Its not enough to call armour piercing damage directly - must call this wrapper method so that
+							// a) It is clever enough to downgrade the armour piercing damage to normal if the target unit has immunity to illusions / true sight
+							// b) It applies the damage to the unit rather than just rolliing it
+							getAttackResolutionProcessing ().processAttackResolutionStep (null, new AttackResolutionUnit (xu.getMemoryUnit ()),
+								castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), null, Arrays.asList (new AttackResolutionStepContainer (attackDamage)),
+								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+							
+							// Above method applies damage on the server, but doesn't send it to the client or check if the unit is now dead, so need to do that here
+							if (xu.calculateAliveFigureCount () > 0)
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xu.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+							else
+								getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (xu.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE,
+									mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+						}
+					}
+				}
+			}
+	}
+
+	/**
+	 * For Chaos Rift.  Each turn, there is a chance of each building in the city being destroyed.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
+	 * @throws RecordNotFoundException If we encounter an unknown spell
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	@Override
+	public final void citySpellEffectsAttackingBuildings (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+			if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_CHAOS_RIFT)) && (spell.getCityLocation () != null) &&
+				((onlyOnePlayerID == 0) || (onlyOnePlayerID == spell.getCastingPlayerID ())))
+				
+				getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), spell.getCastingPlayerID (), 5, (MapCoordinates3DEx) spell.getCityLocation (), mom);
 	}
 	
 	/**
@@ -2274,5 +2369,37 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setServerCityCalculations (final ServerCityCalculations calc)
 	{
 		serverCityCalculations = calc;
+	}
+
+	/**
+	 * @return Damage calc
+	 */
+	public final DamageCalculator getDamageCalculator ()
+	{
+		return damageCalculator;
+	}
+
+	/**
+	 * @param calc Damage calc
+	 */
+	public final void setDamageCalculator (final DamageCalculator calc)
+	{
+		damageCalculator = calc;
+	}
+
+	/**
+	 * @return Attack resolution processing
+	 */
+	public final AttackResolutionProcessing getAttackResolutionProcessing ()
+	{
+		return attackResolutionProcessing;
+	}
+
+	/**
+	 * @param proc Attack resolution processing
+	 */
+	public final void setAttackResolutionProcessing (final AttackResolutionProcessing proc)
+	{
+		attackResolutionProcessing= proc;
 	}
 }

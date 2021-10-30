@@ -999,6 +999,32 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
+	 * Lists the enemy units at a specified location on the overland map, regardless of whether they might be invisible or not.
+	 * 
+	 * @param units List of units to check
+	 * @param x X coordinate of location to check
+	 * @param y Y coordinate of location to check
+	 * @param plane Plane to check
+	 * @param exceptPlayerID Player who's units to not consider (can pass in 0 to count *all* units at this location)
+	 * @return Number of units that we find at the requested location who belongs to someone other than the specified player
+	 */
+	@Override
+	public final List<MemoryUnit> listAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID)
+	{
+		final List<MemoryUnit> list = new ArrayList<MemoryUnit> ();
+		
+		for (final MemoryUnit thisUnit : units)
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () != exceptPlayerID) && (thisUnit.getUnitLocation () != null) &&
+				(thisUnit.getUnitLocation ().getX () == x) && (thisUnit.getUnitLocation ().getY () == y) && (thisUnit.getUnitLocation ().getZ () == plane))
+
+				list.add (thisUnit);
+		
+		return list;
+	}
+	
+	/**
+	 * Counts the number of enemy units at a specified location on the overland map, regardless of whether they might be invisible or not.
+	 * 
 	 * @param units List of units to check
 	 * @param x X coordinate of location to check
 	 * @param y Y coordinate of location to check
@@ -1009,6 +1035,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final int countAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID)
 	{
+		// Could just call listAliveEnemiesAtLocation ().size () but maybe fraction faster if we don't
 		int count = 0;
 		for (final MemoryUnit thisUnit : units)
 		{

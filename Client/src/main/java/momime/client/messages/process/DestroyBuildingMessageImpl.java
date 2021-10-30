@@ -79,12 +79,13 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 				getNewTurnMessagesUI ().languageChanged ();
 			}
 			
-			// If we cast it OR its our city, then display a popup window for it.
+			// If we cast it OR its our city, and its a one time spell not a CAE that triggers every turn, then display a popup window for it.
 			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(getBuildingDestructionSpellLocation ().getZ ()).getRow ().get (getBuildingDestructionSpellLocation ().getY ()).getCell ().get (getBuildingDestructionSpellLocation ().getX ()).getCityData ();
 			
-			if (((getBuildingDestructionSpellCastByPlayerID () != null) && (getBuildingDestructionSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
-				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ())))
+			if ((((getBuildingDestructionSpellCastByPlayerID () != null) && (getBuildingDestructionSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
+				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ()))) &&
+				(getClient ().getClientDB ().findSpell (getBuildingsDestroyedBySpellID (), "DestroyBuildingMessageImpl").getSpellHasCityEffect ().size () == 0))
 			{
 				animated = true;
 				

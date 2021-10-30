@@ -676,6 +676,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// Gaia's blessing can possibly change terrain near our cities
 		getSpellProcessing ().rollSpellTerrainEffectsEachTurn (mom, onlyOnePlayerID);
 		
+		// Chaos rift will fire attacks at both enemy units in the city and the buildings themselves
+		getSpellProcessing ().citySpellEffectsAttackingUnits (mom, onlyOnePlayerID);
+		getSpellProcessing ().citySpellEffectsAttackingBuildings (mom, onlyOnePlayerID);
+		
 		// Stasis
 		getSpellProcessing ().rollToRemoveOverlandCurses (mom, onlyOnePlayerID);
 

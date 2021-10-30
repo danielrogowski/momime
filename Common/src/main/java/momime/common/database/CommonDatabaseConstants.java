@@ -406,6 +406,9 @@ public final class CommonDatabaseConstants
 	/** Warp Lightning spell */
 	public final static String SPELL_ID_WARP_LIGHTNING = "SP101";
 	
+	/** Chaos Rift spell */
+	public final static String SPELL_ID_CHAOS_RIFT = "SP110";
+	
 	/** Just Cause spell */
 	public final static String SPELL_ID_JUST_CAUSE = "SP127";
 	

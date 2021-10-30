@@ -586,6 +586,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
+		<property name="cityProcessing" ref="cityProcessing" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">
@@ -620,6 +621,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
+		<property name="damageCalculator" ref="damageCalculator" />
+		<property name="attackResolutionProcessing" ref="attackResolutionProcessing" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

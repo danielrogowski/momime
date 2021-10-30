@@ -19,6 +19,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -69,6 +70,9 @@ public final class SpellCastingImpl implements SpellCasting
 	
 	/** Damage processor */
 	private DamageProcessor damageProcessor;
+	
+	/** City processing methods */
+	private CityProcessing cityProcessing;
 	
 	/**
 	 * Processes casting a summoning spell overland, finding where there is space for the unit to go and adding it
@@ -260,6 +264,40 @@ public final class SpellCastingImpl implements SpellCasting
 			getDamageProcessor ().resolveAttack (null, targetUnits, castingPlayer, defendingPlayer,
 				null, null, null, null, spell, variableDamage, castingPlayer, null, mom);
 	}
+	
+	/**
+	 * Rolls when a spell has a certain % chance of destroying each building in a city.  Used for Earthquake and Chaos Rift.
+	 * 
+	 * @param spellID The spell that is destroying the buildings
+	 * @param castingPlayerID Who cast the spell
+	 * @param percentageChance The % chance of each building being destroyed
+	 * @param targetLocation The city being targeted
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void rollChanceOfEachBuildingBeingDestroyed (final String spellID, final int castingPlayerID, final int percentageChance,
+		final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		final List<MemoryBuilding> destroyedBuildings = new ArrayList<MemoryBuilding> ();
+		for (final MemoryBuilding thisBuilding : mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ())
+			if ((thisBuilding.getCityLocation ().equals (targetLocation)) &&
+				(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
+				(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) &&
+				(getRandomUtils ().nextInt (100) < percentageChance))
+				
+				destroyedBuildings.add (thisBuilding);
+
+		// Have to do this even if 0 buildings got destroyed, as for Earthquake this is how the client knows to show the animation and clean up the NTM
+		getCityProcessing ().destroyBuildings (mom.getGeneralServerKnowledge ().getTrueMap (),
+			mom.getPlayers (), destroyedBuildings, spellID, castingPlayerID, targetLocation,
+			mom.getSessionDescription (), mom.getServerDB ());
+	}
 
 	/**
 	 * @return Unit utils
@@ -371,5 +409,21 @@ public final class SpellCastingImpl implements SpellCasting
 	public final void setDamageProcessor (final DamageProcessor proc)
 	{
 		damageProcessor = proc;
+	}
+
+	/**
+	 * @return City processing methods
+	 */
+	public final CityProcessing getCityProcessing ()
+	{
+		return cityProcessing;
+	}
+
+	/**
+	 * @param obj City processing methods
+	 */
+	public final void setCityProcessing (final CityProcessing obj)
+	{
+		cityProcessing = obj;
 	}
 }

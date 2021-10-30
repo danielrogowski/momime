@@ -155,6 +155,20 @@ public interface UnitUtils
 		final int exceptPlayerID, final CommonDatabase db);
 	
 	/**
+	 * Lists the enemy units at a specified location on the overland map, regardless of whether they might be invisible or not.
+	 * 
+	 * @param units List of units to check
+	 * @param x X coordinate of location to check
+	 * @param y Y coordinate of location to check
+	 * @param plane Plane to check
+	 * @param exceptPlayerID Player who's units to not consider (can pass in 0 to count *all* units at this location)
+	 * @return Number of units that we find at the requested location who belongs to someone other than the specified player
+	 */
+	public List<MemoryUnit> listAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID);
+
+	/**
+	 * Counts the number of enemy units at a specified location on the overland map, regardless of whether they might be invisible or not.
+	 * 
 	 * @param units List of units to check
 	 * @param x X coordinate of location to check
 	 * @param y Y coordinate of location to check

@@ -1767,9 +1767,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 									(spellDef, null, castingPlayer, null, castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), mom.getServerDB (), SpellCastType.OVERLAND);
 							}
 							
-							// Its not enough to call armour piercing damage directly - must call this wrapper method so that
-							// a) It is clever enough to downgrade the armour piercing damage to normal if the target unit has immunity to illusions / true sight
-							// b) It applies the damage to the unit rather than just rolliing it
+							// Its not enough to call armour piercing damage directly - must call this wrapper method so that it applies the damage to the unit as well
 							getAttackResolutionProcessing ().processAttackResolutionStep (null, new AttackResolutionUnit (xu.getMemoryUnit ()),
 								castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), null, Arrays.asList (new AttackResolutionStepContainer (attackDamage)),
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());

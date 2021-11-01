@@ -1279,8 +1279,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (F)");
 				
 				// Check if the cell is really empty - maybe there's an invisible unit we couldn't see before
-				if (getUnitUtils ().findAliveUnitInCombatAt (combatLocation, movePath, mom.getPlayers (),
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) != null)
+				if ((!tu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS)) &&
+					(getUnitUtils ().findAliveUnitInCombatAt (combatLocation, movePath, mom.getPlayers (),
+						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) != null))
 				{
 					// Invisible unit here - wind movePath back one step
 					blocked = true;

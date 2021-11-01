@@ -202,6 +202,7 @@ public final class CombatAIImpl implements CombatAI
 			if ((thisUnit.getOwningPlayerID () != attacker.getControllingPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && 
 				(combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) && (thisUnit != attacker.getMemoryUnit ()) &&
+				(!db.getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())) &&
 				
 				// Check that if we select this enemy, we have a valid action to take against it - i.e. that we don't have a cunning human
 				// player box in a weak unit by surrounding it by 8 others and then get in a tizzy trying to work out a path to the unit.
@@ -213,8 +214,7 @@ public final class CombatAIImpl implements CombatAI
 			{
 				// Make sure we can actually see it
 				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
-				if ((getUnitUtils ().canSeeUnitInCombat (xu, attacker.getOwningPlayerID (), players, mem, db, combatMapCoordinateSystem)) &&
-					(!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS)))
+				if (getUnitUtils ().canSeeUnitInCombat (xu, attacker.getOwningPlayerID (), players, mem, db, combatMapCoordinateSystem))
 				{
 					// Is this the first possible target we've found, or better than our current target.
 					// EvaluateTarget just returns 1, 2 or 3 - bump that up a lot.

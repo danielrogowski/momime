@@ -871,19 +871,15 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		
 		for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
 			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
-				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
+				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) &&
+				(!db.getUnitsThatMoveThroughOtherUnits ().contains (unitBeingMoved.getUnitID ())) &&
+				(!db.getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())))
 			{
 				// Note on owning vs controlling player ID - unitBeingMoved.getControllingPlayerID () is the player whose turn it is, who is controlling the unit, so this is fine.
 				// But they don't want to attack their own units who might just be temporarily confused, equally if an enemy unit is confused and currently under our
 				// control, we still want to kill it - ideally we confusee units and make them kill each other!  So this is why it is not xu.getControllingPlayerID ()
 				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, unitsBeingMoved, null, null, players, fogOfWarMemory, db);
-				if ((unitBeingMoved.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS)) ||
-					(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS)))
-				{
-					// If we can move through it, or it can move through is, then ignore it like it isn't there
-				}
-				
-				else if ((thisUnit == unitBeingMoved.getMemoryUnit ()) || (xu.getOwningPlayerID () == unitBeingMoved.getControllingPlayerID ()))
+				if ((thisUnit == unitBeingMoved.getMemoryUnit ()) || (xu.getOwningPlayerID () == unitBeingMoved.getControllingPlayerID ()))
 					ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
 				
 				else if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getControllingPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))

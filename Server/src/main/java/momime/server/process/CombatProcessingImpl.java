@@ -620,7 +620,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		int consecutiveTurnsWithoutDoingAnything = 0;
 		int consecutiveTurns = 0;
 		CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
 		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()) && (consecutiveTurnsWithoutDoingAnything < 2) && (consecutiveTurns < 50))
 		{
 			// Who should take their turn next?
@@ -737,7 +737,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// Careful as the entire session may have been wiped out too
 			if (mom.getPlayers ().size () > 0)
 				combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-					(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+					(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
 			
 			consecutiveTurns++;
 		}
@@ -1175,7 +1175,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// Find who the two players are
 		final MapCoordinates3DEx combatLocation = tu.getCombatLocation ();
 		final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
 		
 		if (!combatPlayers.bothFound ())
 			throw new MomException ("okToMoveUnitInCombat: One or other cell has no combat units left so player could not be determined");
@@ -1199,8 +1199,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 		{
 			// Bump to different cell if there's an invisible unit here
 			final MapCoordinates2DEx actualMoveTo = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-				(combatLocation, combatCell.getCombatMap (), moveTo,  mom.getSessionDescription ().getCombatMapSize (),
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				(combatLocation, combatCell.getCombatMap (), moveTo, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+					mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 			
 			// Update on client
 			final MoveUnitInCombatMessage msg = new MoveUnitInCombatMessage ();
@@ -1280,8 +1280,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 				
 				// Check if the cell is really empty - maybe there's an invisible unit we couldn't see before
 				if ((!tu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS)) &&
-					(getUnitUtils ().findAliveUnitInCombatAt (combatLocation, movePath, mom.getPlayers (),
-						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) != null))
+					(getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation,
+						movePath, mom.getServerDB ()) != null))
 				{
 					// Invisible unit here - wind movePath back one step
 					blocked = true;
@@ -1344,10 +1344,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			if (ATTACK_UNIT.contains (combatMoveType))
 			{
-				final ExpandedUnitDetails defender = getUnitUtils ().findAliveUnitInCombatAt (combatLocation, moveTo, mom.getPlayers (),
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				final MemoryUnit defender = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+					combatLocation, moveTo, mom.getServerDB ());
 				if (defender != null)
-					defenders.add (defender.getMemoryUnit ());
+					defenders.add (defender);
 			}
 			
 			final boolean attackWalls = ATTACK_WALLS.contains (combatMoveType);

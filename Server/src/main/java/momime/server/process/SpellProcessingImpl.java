@@ -640,8 +640,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
 				
 				final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-					(combatLocation, gc.getCombatMap (), targetLocation, mom.getSessionDescription ().getCombatMapSize (),
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					(combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+						mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 	
 				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), targetUnit,
@@ -677,8 +677,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// Set it immediately into combat
 					final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-						(combatLocation, gc.getCombatMap (), targetLocation, mom.getSessionDescription ().getCombatMapSize (),
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						(combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+							mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
 					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
@@ -786,7 +786,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 								mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 							
 							// If we recalled our last remaining unit(s) out of combat, then we lose
-							if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+							if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide,
+								mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
+								
 								winningPlayer = (castingPlayer == defendingPlayer) ? attackingPlayer : defendingPlayer;
 						}
 					}
@@ -819,7 +821,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							// Its possible we dispelled Lionheart on the last enemy unit thereby winning the combat, so check to be sure
 							if (getDamageProcessor ().countUnitsInCombat (combatLocation,
 								(castingSide == UnitCombatSideID.ATTACKER) ? UnitCombatSideID.DEFENDER : UnitCombatSideID.ATTACKER,
-								mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+								mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
 									winningPlayer = castingPlayer;
 	
 					}

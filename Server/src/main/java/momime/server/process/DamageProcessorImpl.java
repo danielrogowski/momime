@@ -15,6 +15,7 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.AttackResolution;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
@@ -314,7 +315,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					
 			// If the attacker is now wiped out, this is the last record we will ever have of who the attacking player was, so we have to deal with tidying up the combat now
 			if ((!anyAttackingPlayerUnitsSurvived) &&
-				(countUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0))
+				(countUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0))
 			{
 				combatEnded = true;
 				winningPlayer = defendingPlayer;
@@ -356,7 +357,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 			// If the defender is now wiped out, this is the last record we will ever have of who the defending player was, so we have to deal with tidying up the combat now.
 			// If attacker was also wiped out then we've already done this - the defender won by default.
 			if ((!combatEnded) && (!anyDefendingPlayerUnitsSurvived) && (combatLocation != null) &&
-				(countUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0))
+				(countUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0))
 			{
 				combatEnded = true;
 				winningPlayer = attackingPlayer;
@@ -435,16 +436,18 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param combatLocation Location that combat is taking place
 	 * @param combatSide Which side to count
 	 * @param trueUnits List of true units
+	 * @param db Lookup lists built over the XML database
 	 * @return How many units are still left alive in combat on the requested side
 	 */
 	@Override
 	public final int countUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
-		final List<MemoryUnit> trueUnits)
+		final List<MemoryUnit> trueUnits, final CommonDatabase db)
 	{
 		int count = 0;
 		for (final MemoryUnit trueUnit : trueUnits)
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
-				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null) && (trueUnit.getCombatHeading () != null))
+				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null) && (trueUnit.getCombatHeading () != null) &&
+				(!db.getUnitsThatMoveThroughOtherUnits ().contains (trueUnit.getUnitID ())))
 					
 				count++;
 

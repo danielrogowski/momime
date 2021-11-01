@@ -855,7 +855,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 						spellDef.getCombatCastingCost () != null)
 					{
 						final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-							((MapCoordinates3DEx) trueSpell.getCityLocation (), trueMap.getUnit (), players);
+							((MapCoordinates3DEx) trueSpell.getCityLocation (), trueMap.getUnit (), players, db);
 						if (combatPlayers.bothFound ())
 						{
 							final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();

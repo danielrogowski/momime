@@ -716,6 +716,9 @@ public final class TestDamageProcessorImpl extends ServerTestData
 	@Test
 	public final void testCountUnitsInCombat ()
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up sample units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		
@@ -783,6 +786,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		
 		// Run test
-		assertEquals (2, proc.countUnitsInCombat (new MapCoordinates3DEx (20, 10, 1), UnitCombatSideID.ATTACKER, units));
+		assertEquals (2, proc.countUnitsInCombat (new MapCoordinates3DEx (20, 10, 1), UnitCombatSideID.ATTACKER, units, db));
 	}
 }

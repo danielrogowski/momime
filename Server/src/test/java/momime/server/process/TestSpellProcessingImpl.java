@@ -752,7 +752,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MapCoordinates2DEx adjustedTargetLocation = new MapCoordinates2DEx (10, 7);
 		
 		when (unitServerUtils.findFreeCombatPositionAvoidingInvisibleClosestTo (combatLocation, gc.getCombatMap (), targetLocation,
-			combatMapSize, players, trueMap, db)).thenReturn (adjustedTargetLocation);
+			trueMap.getUnit (), combatMapSize, db)).thenReturn (adjustedTargetLocation);
 		
 		// Mock the creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);

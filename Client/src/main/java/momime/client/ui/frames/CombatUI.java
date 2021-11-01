@@ -1314,8 +1314,8 @@ public final class CombatUI extends MomClientFrameUI
 			// There must always be at least one unit on each side.  The only situation where we can get a combat with zero defenders is attacking an empty city,
 			// but in that case the server doesn't even send the startCombat message, so we don't even bother firing up the combatUI, it just goes straight to the
 			// Raze/Capture screen (see how the startCombat method on the server is written).
-			players = getCombatMapUtils ().determinePlayersInCombatFromLocation
-				(getCombatLocation (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), getClient ().getPlayers ());
+			players = getCombatMapUtils ().determinePlayersInCombatFromLocation (getCombatLocation (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), getClient ().getPlayers (), getClient ().getClientDB ());
 			if (!players.bothFound ())
 				throw new MomException ("CombatUI tried to start up with zero units on one or other side");
 			

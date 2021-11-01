@@ -646,7 +646,7 @@ public final class SpellAIImpl implements SpellAI
 						
 						// Wizards have limited casting skill they can use in each combat
 						final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-							(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+							(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
 
 						final int ourSkill;
 						if (player == combatPlayers.getAttackingPlayer ())

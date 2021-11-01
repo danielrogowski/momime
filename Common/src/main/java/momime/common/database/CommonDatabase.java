@@ -553,4 +553,9 @@ public interface CommonDatabase
 	 * @return City walls building ID
 	 */
 	public String getCityWallsBuildingID ();
+	
+	/**
+	 * @return List of unit IDs that have the special unit skill that they can move through other units and other units can move through them (Magic Vortex) 
+	 */
+	public List<String> getUnitsThatMoveThroughOtherUnits ();
 }

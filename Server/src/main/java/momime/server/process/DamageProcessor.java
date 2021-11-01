@@ -11,6 +11,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitCombatSideID;
@@ -85,8 +86,9 @@ public interface DamageProcessor
 	 * @param combatLocation Location that combat is taking place
 	 * @param combatSide Which side to count
 	 * @param trueUnits List of true units
+	 * @param db Lookup lists built over the XML database
 	 * @return How many units are still left alive in combat on the requested side
 	 */
 	public int countUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
-		final List<MemoryUnit> trueUnits);
+		final List<MemoryUnit> trueUnits, final CommonDatabase db);
 }

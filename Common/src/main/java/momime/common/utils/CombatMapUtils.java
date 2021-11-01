@@ -35,11 +35,12 @@ public interface CombatMapUtils
 	 * @param combatLocation Overland map coordinates where combat is taking place
 	 * @param units List of known units
 	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
 	 * @return Who the attacking and defending players are
 	 * @throws PlayerNotFoundException If we determine the attacking or defending player ID, but that ID then can't be found in the players list
 	 */
 	public CombatPlayers determinePlayersInCombatFromLocation (final MapCoordinates3DEx combatLocation,
-		final List<MemoryUnit> units, final List<? extends PlayerPublicDetails> players) throws PlayerNotFoundException;
+		final List<MemoryUnit> units, final List<? extends PlayerPublicDetails> players, final CommonDatabase db) throws PlayerNotFoundException;
 	
 	/**
 	 * @param combatLocation Location where the combat is taking place

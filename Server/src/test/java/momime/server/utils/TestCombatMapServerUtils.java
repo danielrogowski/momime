@@ -1,6 +1,7 @@
 package momime.server.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.CommonDatabase;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
@@ -90,6 +92,9 @@ public final class TestCombatMapServerUtils
 	@Test
 	public final void testCountPlayersAliveUnitsAtCombatLocation ()
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		
@@ -157,6 +162,6 @@ public final class TestCombatMapServerUtils
 		// Run test
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 10, 1);
 		
-		assertEquals (2, utils.countPlayersAliveUnitsAtCombatLocation (3, combatLocation, units));
+		assertEquals (2, utils.countPlayersAliveUnitsAtCombatLocation (3, combatLocation, units, db));
 	}
 }

@@ -110,7 +110,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 			// Once its dead we also won't be able to figure out who the players in combat were
 			final CombatPlayers combatPlayers = ((trueUnit == null) || (trueUnit.getCombatLocation () == null)) ? null :
 				getCombatMapUtils ().determinePlayersInCombatFromLocation ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ()); 
+					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ()); 
 			
 			// Switch off spell + associated CAEs
 			if (getSpellProcessing ().switchOffSpell (getSpellURN (), mom))
@@ -118,7 +118,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 				// Unit died - if it was in combat, did switching off the spell lose the combat?
 				if ((combatPlayers != null) && (combatPlayers.bothFound ()))
 					if (getDamageProcessor ().countUnitsInCombat ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
-						trueUnit.getCombatSide (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+						trueUnit.getCombatSide (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
 					{
 						final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
 						final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();

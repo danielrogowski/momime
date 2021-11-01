@@ -162,19 +162,14 @@ public interface UnitUtils
 	public void beforeKillingUnit (final FogOfWarMemory mem, final int unitURN);
 	
 	/**
+	 * @param units List of units to check
 	 * @param combatLocation Location on overland map where the combat is taking place
 	 * @param combatPosition Position within the combat map to look at
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Unit at this position, or null if there isn't one
-	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
-	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
-	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public ExpandedUnitDetails findAliveUnitInCombatAt (final MapCoordinates3DEx combatLocation,
-		final MapCoordinates2DEx combatPosition, final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
-		throws PlayerNotFoundException, RecordNotFoundException, MomException;
+	public MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final MapCoordinates3DEx combatLocation,
+		final MapCoordinates2DEx combatPosition, final CommonDatabase db);
 	
 	/**
 	 * findAliveUnitInCombatAt will still return units we cannot see because they're invisible.  This adds that check.  So for example if we have a unit

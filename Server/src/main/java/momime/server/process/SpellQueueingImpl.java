@@ -311,7 +311,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		{
 			// First need to know if we're the attacker or defender
 			combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-				(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+				(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
 			
 			final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
@@ -442,7 +442,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				
 				else if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&
 					(getCombatMapServerUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
-						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
+						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
 					
 					msg = "You already have the maximum number of units in combat so cannot summon any more.";
 				

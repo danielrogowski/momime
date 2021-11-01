@@ -586,7 +586,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -684,7 +684,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Defender/human player just finished turn
 		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
@@ -799,7 +799,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 
 		// Its the Defender/human player's turn
 		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
@@ -916,7 +916,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatPlayers attackerWins = new CombatPlayers (attackingPlayer, null);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn
 			(combatPlayers, combatPlayers, combatPlayers, combatPlayers, attackerWins);
 		
 		// Defender/human player just finished turn
@@ -3494,7 +3494,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Where we want to move to
 		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (3, 8);
@@ -3680,7 +3680,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Where we want to move to
 		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (3, 8);
@@ -3702,11 +3702,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// The unit we're attacking
 		final MemoryUnit defender = new MemoryUnit ();
-		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
-
-		when (unitUtils.findAliveUnitInCombatAt (combatLocation, moveTo, players, trueMap, db)).thenReturn (xuDefender);
-
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, moveTo, db)).thenReturn (defender);
+		
 		// Set up object to test
 		final DamageProcessor damageProcessor = mock (DamageProcessor.class); 
 		
@@ -3865,7 +3862,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Where we want to move to
 		final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (3, 8);
@@ -3887,11 +3884,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		// The unit we're attacking
 		final MemoryUnit defender = new MemoryUnit ();
-		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, moveTo, db)).thenReturn (defender);
 		
-		when (unitUtils.findAliveUnitInCombatAt (combatLocation, moveTo, players, trueMap, db)).thenReturn (xuDefender);
-
 		// Set up object to test
 		final DamageProcessor damageProcessor = mock (DamageProcessor.class);
 		final CombatHandling combatHandling = mock (CombatHandling.class);

@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
@@ -994,19 +993,15 @@ public final class TestUnitUtilsImpl
 	
 	/**
 	 * Tests the findAliveUnitInCombatAt method
-	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testFindAliveUnitInCombatAt () throws Exception
+	public final void testFindAliveUnitInCombatAt ()
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Players
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
 		// Put into a list units that meet every criteria except one
-		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
 		// Unit is dead
 		final MemoryUnit u1 = new MemoryUnit ();
@@ -1016,7 +1011,7 @@ public final class TestUnitUtilsImpl
 		u1.setCombatHeading (1);
 		u1.setStatus (UnitStatusID.DEAD);
 		
-		mem.getUnit ().add (u1);
+		units.add (u1);
 		
 		// Wrong combat location
 		final MemoryUnit u2 = new MemoryUnit ();
@@ -1026,7 +1021,7 @@ public final class TestUnitUtilsImpl
 		u2.setCombatHeading (1);
 		u2.setStatus (UnitStatusID.ALIVE);
 		
-		mem.getUnit ().add (u2);
+		units.add (u2);
 		
 		// Wrong combat position
 		final MemoryUnit u3 = new MemoryUnit ();
@@ -1036,28 +1031,15 @@ public final class TestUnitUtilsImpl
 		u3.setCombatHeading (1);
 		u3.setStatus (UnitStatusID.ALIVE);
 		
-		mem.getUnit ().add (u3);
-		
-		// Expanded versions of units
-		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
-		
-		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (u1, null, null, null, players, mem, db)).thenReturn (xu1);
-		
-		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (u2, null, null, null, players, mem, db)).thenReturn (xu2);
-		
-		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (u3, null, null, null, players, mem, db)).thenReturn (xu3);
+		units.add (u3);
 		
 		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setExpandUnitDetails (expand);
 		
 		// Should get a null
 		final MapCoordinates3DEx loc = new MapCoordinates3DEx (20, 10, 1);
 		final MapCoordinates2DEx pos = new MapCoordinates2DEx (14, 7);
-		assertNull (utils.findAliveUnitInCombatAt (loc, pos, players, mem, db));
+		assertNull (utils.findAliveUnitInCombatAt (units, loc, pos, db));
 		
 		// Add one that matches
 		final MemoryUnit u4 = new MemoryUnit ();
@@ -1067,13 +1049,10 @@ public final class TestUnitUtilsImpl
 		u4.setCombatHeading (1);
 		u4.setStatus (UnitStatusID.ALIVE);
 		
-		mem.getUnit ().add (u4);
-		
-		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (u4, null, null, null, players, mem, db)).thenReturn (xu4);
+		units.add (u4);
 		
 		// Show that we find it
-		assertSame (xu4, utils.findAliveUnitInCombatAt (loc, pos, players, mem, db));
+		assertSame (u4, utils.findAliveUnitInCombatAt (units, loc, pos, db));
 	}
 	
 	/**

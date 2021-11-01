@@ -232,7 +232,7 @@ public final class TestCombatUI extends ClientTestData
 		
 		// Players involved in combat
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (new MapCoordinates3DEx (20, 10, 0), fow.getUnit (), players)).thenReturn
+		when (combatMapUtils.determinePlayersInCombatFromLocation (new MapCoordinates3DEx (20, 10, 0), fow.getUnit (), players, db)).thenReturn
 			(new CombatPlayers (attackingPlayer, defendingPlayer));
 		
 		// Player name generator

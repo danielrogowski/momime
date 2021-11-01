@@ -11,13 +11,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.database.CombatMapLayerID;
-import momime.common.database.UnitCombatSideID;
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomCombatTile;
-import momime.common.messages.MomCombatTileLayer;
-import momime.common.messages.UnitStatusID;
-
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -26,6 +19,14 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
+import momime.common.database.CombatMapLayerID;
+import momime.common.database.CommonDatabase;
+import momime.common.database.UnitCombatSideID;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
+import momime.common.messages.MomCombatTileLayer;
+import momime.common.messages.UnitStatusID;
 
 /**
  * Tests the CombatMapUtils class
@@ -65,6 +66,9 @@ public final class TestCombatMapUtilsImpl
 	@Test
 	public final void testDeterminePlayersInCombatFromLocation () throws PlayerNotFoundException
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 10, 1);
 		
@@ -138,7 +142,7 @@ public final class TestCombatMapUtilsImpl
 		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Neither player found so far
-		final CombatPlayers result1 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players);
+		final CombatPlayers result1 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players, db);
 		assertNull (result1.getAttackingPlayer ());
 		assertNull (result1.getDefendingPlayer ());
 		assertFalse (result1.bothFound ());
@@ -154,7 +158,7 @@ public final class TestCombatMapUtilsImpl
 		unit5.setCombatHeading (1);
 		units.add (unit5);
 		
-		final CombatPlayers result2 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players);
+		final CombatPlayers result2 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players, db);
 		assertNull (result2.getAttackingPlayer ());
 		assertSame (defender, result2.getDefendingPlayer ());
 		assertFalse (result2.bothFound ());
@@ -170,7 +174,7 @@ public final class TestCombatMapUtilsImpl
 		unit6.setCombatHeading (1);
 		units.add (unit6);
 		
-		final CombatPlayers result3 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players);
+		final CombatPlayers result3 = utils.determinePlayersInCombatFromLocation (combatLocation, units, players, db);
 		assertSame (attacker, result3.getAttackingPlayer ());
 		assertSame (defender, result3.getDefendingPlayer ());
 		assertTrue (result3.bothFound ());

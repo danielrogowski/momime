@@ -71,12 +71,13 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	 * @param combatLocation Overland map coordinates where combat is taking place
 	 * @param units List of known units
 	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
 	 * @return Who the attacking and defending players are
 	 * @throws PlayerNotFoundException If we determine the attacking or defending player ID, but that ID then can't be found in the players list
 	 */
 	@Override
 	public final CombatPlayers determinePlayersInCombatFromLocation (final MapCoordinates3DEx combatLocation,
-		final List<MemoryUnit> units, final List<? extends PlayerPublicDetails> players) throws PlayerNotFoundException
+		final List<MemoryUnit> units, final List<? extends PlayerPublicDetails> players, final CommonDatabase db) throws PlayerNotFoundException
 	{
 		Integer attackingPlayerID = null;
 		Integer defendingPlayerID = null;
@@ -87,7 +88,8 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 		{
 			final MemoryUnit thisUnit = iter.next ();
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) &&
-				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))					
+				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) &&
+				(!db.getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())))
 			{
 				switch (thisUnit.getCombatSide ())
 				{

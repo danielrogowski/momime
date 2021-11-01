@@ -30,9 +30,11 @@ public interface CombatMapServerUtils
 	 * @param playerID Player whose units to count
 	 * @param combatLocation Combat units must be in
 	 * @param units List of units
+	 * @param db Lookup lists built over the XML database
 	 * @return Number of alive units belonging to this player at this location
 	 */
-	public int countPlayersAliveUnitsAtCombatLocation (final int playerID, final MapCoordinates3DEx combatLocation, final List<MemoryUnit> units);
+	public int countPlayersAliveUnitsAtCombatLocation (final int playerID, final MapCoordinates3DEx combatLocation,
+		final List<MemoryUnit> units, final CommonDatabase db);
 
 	/**
 	 * @param combatLocation Location where the combat is taking place

@@ -151,6 +151,9 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	
 	/** City walls building ID */
 	private String cityWallsBuildingID;
+	
+	/** List of unit IDs that have the special unit skill that they can move through other units and other units can move through them (Magic Vortex) */
+	private List<String> unitsThatMoveThroughOtherUnits;
 
 	/**
 	 * Builds all the hash maps to enable finding records faster
@@ -339,6 +342,26 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 			log.warn ("No building ID found that gives a defence bonus");
 		else
 			log.info ("Building ID that grants defence bonus (city walls) = " + cityWallsBuildingID);
+		
+		// Find Magic Vortex unit ID (it needs to be excluded from many methods that count/check units left in combat)
+		unitsThatMoveThroughOtherUnits = getUnit ().stream ().filter (u -> u.getUnitHasSkill ().stream ().anyMatch
+			(s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS))).map (u -> u.getUnitID ()).collect (Collectors.toList ());
+		
+		if (unitsThatMoveThroughOtherUnits.size () == 0)
+			log.warn ("No unit ID found that can move through other units");
+		else
+		{
+			final StringBuilder list = new StringBuilder ();
+			unitsThatMoveThroughOtherUnits.forEach (s ->
+			{
+				if (list.length () > 0)
+					list.append (", ");
+				
+				list.append (s);
+			});
+			
+			log.info ("Unit ID(s) that can move through other units (magic vortex) = " + list);
+		}
 	}
 	
 	/**
@@ -1144,6 +1167,15 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	public final String getCityWallsBuildingID ()
 	{
 		return cityWallsBuildingID;
+	}
+
+	/**
+	 * @return List of unit IDs that have the special unit skill that they can move through other units and other units can move through them (Magic Vortex) 
+	 */
+	@Override
+	public final List<String> getUnitsThatMoveThroughOtherUnits ()
+	{
+		return unitsThatMoveThroughOtherUnits;
 	}
 	
 	/**

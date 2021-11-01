@@ -107,7 +107,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 			case SUMMONING:
 				if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&
 					(getCombatMapServerUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
-						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
+						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
 					
 					valid = false;
 				break;

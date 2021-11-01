@@ -63,15 +63,19 @@ public final class CombatMapServerUtilsImpl implements CombatMapServerUtils
 	 * @param playerID Player whose units to count
 	 * @param combatLocation Combat units must be in
 	 * @param units List of units
+	 * @param db Lookup lists built over the XML database
 	 * @return Number of alive units belonging to this player at this location
 	 */
 	@Override
-	public final int countPlayersAliveUnitsAtCombatLocation (final int playerID, final MapCoordinates3DEx combatLocation, final List<MemoryUnit> units)
+	public final int countPlayersAliveUnitsAtCombatLocation (final int playerID, final MapCoordinates3DEx combatLocation,
+		final List<MemoryUnit> units, final CommonDatabase db)
 	{
 		int count = 0;
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatHeading () != null) &&
-				(thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null))
+				(thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) &&
+				(!db.getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())))
+				
 				count++;			
 
 		return count;

@@ -635,7 +635,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, null);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -730,7 +730,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// We already cast a spell
 		gc.setSpellCastThisCombatTurn (true);
@@ -830,7 +830,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (new PlayerServerDetails (null, null, null, null, null), defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -931,7 +931,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -1043,7 +1043,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -1159,7 +1159,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -1275,7 +1275,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -1400,7 +1400,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -1522,7 +1522,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -1656,7 +1656,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -1792,7 +1792,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -1921,7 +1921,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -1944,11 +1944,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (combatLocation, combatTargetLocation, players, trueMap, db)).thenReturn (null);
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
-		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (9);
+		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit (), db)).thenReturn (9);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -2056,7 +2056,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -2079,11 +2079,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (combatLocation, combatTargetLocation, players, trueMap, db)).thenReturn (null);
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
-		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (8);
+		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit (), db)).thenReturn (8);
 		
 		// Combat terrain cell
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -2196,7 +2196,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
-		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
+		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
@@ -2221,11 +2221,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (combatLocation, combatTargetLocation, players, trueMap, db)).thenReturn (null);
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
-		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit ())).thenReturn (9);
+		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit (), db)).thenReturn (9);
 		
 		// Combat terrain cell
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);

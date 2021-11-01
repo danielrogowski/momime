@@ -26,9 +26,9 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationWallData;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SpellCastType;
-import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
@@ -64,8 +64,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -120,7 +120,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// If its a spell, we work out the kind of damage dealt once only (so it only appears in the client message log once)
 		// If its a regular attribute-based attack, damage is worked out inside each resolution step.
 		final ExpandedUnitDetails xuAttackerPreliminary = (attacker == null) ? null : 
-			getUnitUtils ().expandUnitDetails (attacker, null, null, null,
+			getExpandUnitDetails ().expandUnitDetails (attacker, null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 		final List<List<AttackResolutionStepContainer>> spellSteps;
@@ -147,7 +147,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		{
 			// Calculate the attacker stats, with the defender listed as the opponent.
 			// This is important for the call to chooseAttackResolution, since the defender may have Negate First Strike.
-			final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender, null, null, null,
+			final ExpandedUnitDetails xuDefender = getExpandUnitDetails ().expandUnitDetails (defender, null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
 			final ExpandedUnitDetails xuAttacker;
@@ -158,7 +158,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 				final List<ExpandedUnitDetails> xuDefenders = new ArrayList<ExpandedUnitDetails> ();
 				xuDefenders.add (xuDefender);
 				
-				xuAttacker = getUnitUtils ().expandUnitDetails (attacker, xuDefenders, null, null,
+				xuAttacker = getExpandUnitDetails ().expandUnitDetails (attacker, xuDefenders, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			}
 
@@ -286,7 +286,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 			boolean anyAttackingPlayerUnitsSurvived = false;
 			for (final MemoryUnit attackingPlayerUnit : attackingPlayerUnits)
 			{
-				final ExpandedUnitDetails xuAttackingPlayerUnit = getUnitUtils ().expandUnitDetails (attackingPlayerUnit, null, null, null,
+				final ExpandedUnitDetails xuAttackingPlayerUnit = getExpandUnitDetails ().expandUnitDetails (attackingPlayerUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 				if (xuAttackingPlayerUnit.calculateAliveFigureCount () > 0)
@@ -326,7 +326,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 			boolean anyDefendingPlayerUnitsSurvived = false;
 			for (final MemoryUnit defendingPlayerUnit : defendingPlayerUnits)
 			{
-				final ExpandedUnitDetails xuDefendingPlayerUnit = getUnitUtils ().expandUnitDetails (defendingPlayerUnit, null, null, null,
+				final ExpandedUnitDetails xuDefendingPlayerUnit = getExpandUnitDetails ().expandUnitDetails (defendingPlayerUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 				if (xuDefendingPlayerUnit.calculateAliveFigureCount () > 0)
@@ -404,7 +404,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	
 		// Spell might be being cast by a unit, or a hero casting a spell imbued in an item
 		final ExpandedUnitDetails xuUnitMakingAttack = (attacker == null) ? null : 
-			getUnitUtils ().expandUnitDetails (attacker, null, null, null,
+			getExpandUnitDetails ().expandUnitDetails (attacker, null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
 		// Work out base saving throw plus any modifiers from hero items with -spell save
@@ -424,7 +424,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 			xuUnitsMakingAttack.add (xuUnitMakingAttack);
 		}
 		
-		final ExpandedUnitDetails xuUnitBeingAttacked = getUnitUtils ().expandUnitDetails (defender, xuUnitsMakingAttack,
+		final ExpandedUnitDetails xuUnitBeingAttacked = getExpandUnitDetails ().expandUnitDetails (defender, xuUnitsMakingAttack,
 			potentialDamage.getAttackFromSkillID (), potentialDamage.getAttackFromMagicRealmID (),
 			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
@@ -564,19 +564,19 @@ public final class DamageProcessorImpl implements DamageProcessor
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 
 	/**

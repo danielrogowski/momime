@@ -62,9 +62,9 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitUtils;
 
 /**
  * Tests the UnitInfoPanel class
@@ -301,14 +301,14 @@ public final class TestUnitInfoPanel extends ClientTestData
 		unit.setWeaponGrade (2);
 		unit.setOwningPlayerID (1);
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getUnit ()).thenReturn (unit);
 		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getOwningPlayer ()).thenReturn (player);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Skills
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
@@ -425,7 +425,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		panel.setPlayerPickUtils (playerPickUtils);
-		panel.setUnitUtils (unitUtils);
+		panel.setExpandUnitDetails (expand);
 		panel.setClientConfig (new MomImeClientConfig ());
 		
 		if (actions != null)

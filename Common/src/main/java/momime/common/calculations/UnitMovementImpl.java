@@ -25,10 +25,10 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.UnitUtils;
 
 /**
  * Methods dealing with unit movement
@@ -41,8 +41,8 @@ public final class UnitMovementImpl implements UnitMovement
 	/** Marks locations in the doubleMovementDistances array that we've proved that we cannot move to */
 	private final static int MOVEMENT_DISTANCE_CANNOT_MOVE_HERE = -2;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -150,7 +150,7 @@ public final class UnitMovementImpl implements UnitMovement
 					final int z = thisUnit.getUnitLocation ().getZ ();
 					
 					final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, map, db);
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, map, db);
 					
 					// Count space granted by transports
 					final Integer unitTransportCapacity = xu.getUnitDefinition ().getTransportCapacity ();
@@ -447,19 +447,19 @@ public final class UnitMovementImpl implements UnitMovement
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 
 	/**

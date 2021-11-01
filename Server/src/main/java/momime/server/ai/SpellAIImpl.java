@@ -38,6 +38,7 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
@@ -48,7 +49,6 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.SpellProcessing;
@@ -92,8 +92,8 @@ public final class SpellAIImpl implements SpellAI
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Methods that the AI uses to calculate stats about types of units and rating how good units are */
 	private AIUnitCalculations aiUnitCalculations;
@@ -370,7 +370,7 @@ public final class SpellAIImpl implements SpellAI
 								while ((!validTargetFound) && (iter.hasNext ()))
 								{
 									final MemoryUnit mu = iter.next ();
-									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+									final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 										mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 									if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
 										(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
@@ -502,7 +502,7 @@ public final class SpellAIImpl implements SpellAI
 				int bestUnitRating = -1;
 				for (final MemoryUnit mu : priv.getFogOfWarMemory ().getUnit ())
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 						mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 					if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
 						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
@@ -907,19 +907,19 @@ public final class SpellAIImpl implements SpellAI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 
 	/**

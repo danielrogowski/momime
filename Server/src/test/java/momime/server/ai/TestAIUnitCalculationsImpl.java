@@ -22,10 +22,10 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.UnitUtils;
 
 /**
  * Tests the AIUnitCalculationsImpl class
@@ -57,12 +57,12 @@ public final class TestAIUnitCalculationsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 		
 		// Test unit
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final AvailableUnit unit = new AvailableUnit ();
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Resources it consumes
 		final Set<String> upkeeps = new HashSet<String> ();
@@ -82,7 +82,7 @@ public final class TestAIUnitCalculationsImpl
 		
 		// Set up object to test
 		final AIUnitCalculationsImpl ai = new AIUnitCalculationsImpl ();
-		ai.setUnitUtils (unitUtils);
+		ai.setExpandUnitDetails (expand);
 		ai.setResourceValueUtils (resources);
 		
 		// Run method
@@ -118,12 +118,12 @@ public final class TestAIUnitCalculationsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 		
 		// Test unit
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final AvailableUnit unit = new AvailableUnit ();
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Resources it consumes
 		final Set<String> upkeeps = new HashSet<String> ();
@@ -142,7 +142,7 @@ public final class TestAIUnitCalculationsImpl
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		
 		final AIUnitCalculationsImpl ai = new AIUnitCalculationsImpl ();
-		ai.setUnitUtils (unitUtils);
+		ai.setExpandUnitDetails (expand);
 		ai.setResourceValueUtils (resources);
 		ai.setPlayerPickUtils (playerPickUtils);
 		

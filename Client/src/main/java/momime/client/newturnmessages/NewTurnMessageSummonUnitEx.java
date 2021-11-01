@@ -21,6 +21,7 @@ import momime.common.database.LanguageText;
 import momime.common.database.UnitEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.NewTurnMessageSummonUnit;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
@@ -53,6 +54,9 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** The unit that was summoned */
 	private ExpandedUnitDetails xu;
@@ -139,7 +143,7 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 			unit.setUnitID (getUnitID ());
 		}
 		
-		xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
+		xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	
@@ -315,5 +319,21 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

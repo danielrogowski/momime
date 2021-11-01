@@ -3702,7 +3702,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// The unit we're attacking
 		final MemoryUnit defender = new MemoryUnit ();
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, moveTo)).thenReturn (defender);
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
+
+		when (unitUtils.findAliveUnitInCombatAt (combatLocation, moveTo, players, trueMap, db)).thenReturn (xuDefender);
 
 		// Set up object to test
 		final DamageProcessor damageProcessor = mock (DamageProcessor.class); 
@@ -3884,7 +3887,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		// The unit we're attacking
 		final MemoryUnit defender = new MemoryUnit ();
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, moveTo)).thenReturn (defender);
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
+		
+		when (unitUtils.findAliveUnitInCombatAt (combatLocation, moveTo, players, trueMap, db)).thenReturn (xuDefender);
 
 		// Set up object to test
 		final DamageProcessor damageProcessor = mock (DamageProcessor.class);

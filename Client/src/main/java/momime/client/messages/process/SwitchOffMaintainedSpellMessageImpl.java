@@ -23,6 +23,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
@@ -55,6 +56,9 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	
 	/** Wizards UI */
 	private WizardsUI wizardsUI;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -108,7 +112,7 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 					// We might be witnessing the combat from an adjacent tile so can see the spell being cancelled, but not know the unit's exact location if we're not directly involved
 					if (u.getCombatPosition () != null)
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (u, null, null, null,
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (u, null, null, null,
 							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), xu);
@@ -254,5 +258,21 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	public final void setWizardsUI (final WizardsUI ui)
 	{
 		wizardsUI = ui;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

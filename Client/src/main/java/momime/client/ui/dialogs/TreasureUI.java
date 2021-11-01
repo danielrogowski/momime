@@ -32,6 +32,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.TreasureRewardPrisoner;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
@@ -75,6 +76,9 @@ public final class TreasureUI extends MomClientDialogUI
 
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * Sets up the dialog once all values have been injected
@@ -210,7 +214,7 @@ public final class TreasureUI extends MomClientDialogUI
 						prisonerText = prisonerText.replaceAll ("A_UNIT_NAME", "A hero");
 					else
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						getUnitStatsReplacer ().setUnit (xu);
@@ -369,5 +373,21 @@ public final class TreasureUI extends MomClientDialogUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

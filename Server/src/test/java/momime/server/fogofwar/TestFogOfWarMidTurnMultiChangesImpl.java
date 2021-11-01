@@ -48,6 +48,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
@@ -380,7 +381,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		// Normal unit that has taken 2 kinds of damage
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
 		
 		final UnitDamage unit1dmg1 = new UnitDamage ();
@@ -401,7 +402,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit1.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
 
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (expand.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
 		when (xu1.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu1.getUnitDefinition ()).thenReturn (unitDef);
 		when (xu1.getFullFigureCount ()).thenReturn (6);
@@ -422,7 +423,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit2.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (-1);
 
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
+		when (expand.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu2.getUnitDefinition ()).thenReturn (unitDef);
 		when (xu2.getFullFigureCount ()).thenReturn (2);
@@ -438,7 +439,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit3.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
 
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
+		when (expand.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
 		when (xu3.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu3.getUnitDefinition ()).thenReturn (unitDef);
 		when (xu3.getFullFigureCount ()).thenReturn (2);
@@ -454,7 +455,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit4.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (-1);
 
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit4, null, null, null, players, trueMap, db)).thenReturn (xu4);
+		when (expand.expandUnitDetails (unit4, null, null, null, players, trueMap, db)).thenReturn (xu4);
 		when (xu4.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu4.getUnitDefinition ()).thenReturn (unitDef);
 		when (xu4.getFullFigureCount ()).thenReturn (2);
@@ -475,7 +476,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
 
 		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
+		when (expand.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
 		when (xu5.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu5.getUnitDefinition ()).thenReturn (unitDef);
 		when (xu5.getFullFigureCount ()).thenReturn (1);
@@ -497,7 +498,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setUnitServerUtils (unitServerUtils);
 		multi.setUnitSkillDirectAccess (direct);
 		multi.setFogOfWarMidTurnChanges (midTurn);
-		multi.setUnitUtils (unitUtils);
+		multi.setExpandUnitDetails (expand);
 		
 		// Run method
 		multi.healUnitsAndGainExperience (0, trueMap, players, db, sd);
@@ -550,7 +551,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
 		// Normal unit, in combat, on the correct side
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
 		
 		final MemoryUnit unit1 = new MemoryUnit ();
@@ -563,7 +564,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit1.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (expand.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
 		when (xu1.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Normal unit, in combat, on the wrong side
@@ -577,7 +578,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit2.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
+		when (expand.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Normal unit, not in combat, on the correct side
@@ -587,7 +588,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit3.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
+		when (expand.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
 		when (xu3.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Summoned unit, in combat, on the correct side
@@ -601,7 +602,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit4.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit4, null, null, null, players, trueMap, db)).thenReturn (xu4);
+		when (expand.expandUnitDetails (unit4, null, null, null, players, trueMap, db)).thenReturn (xu4);
 		when (xu4.getModifiedUnitMagicRealmLifeformType ()).thenReturn (summonedUnit);
 		
 		// Dead unit, in combat, on the correct side
@@ -615,7 +616,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
 		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
+		when (expand.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
 		when (xu5.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Normal unit, in combat, on the correct side
@@ -629,7 +630,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (direct.getDirectSkillValue (unit6.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
 		final ExpandedUnitDetails xu6 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit6, null, null, null, players, trueMap, db)).thenReturn (xu6);
+		when (expand.expandUnitDetails (unit6, null, null, null, players, trueMap, db)).thenReturn (xu6);
 		when (xu6.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Set up object to test
@@ -638,7 +639,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final PlayerMessageProcessing playerMessageProcessing = mock (PlayerMessageProcessing.class);
 		
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
-		multi.setUnitUtils (unitUtils);
+		multi.setExpandUnitDetails (expand);
 		multi.setFogOfWarMidTurnChanges (midTurn);
 		multi.setUnitSkillDirectAccess (direct);
 		multi.setUnitServerUtils (unitServerUtils);
@@ -1198,7 +1199,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Create units owned by 3 players
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		for (int playerID = 1; playerID <= 3; playerID++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
@@ -1206,7 +1207,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			fow.getUnit ().add (spearmen);
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
+			when (expand.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
 			when (xuSpearmen.getMovementSpeed ()).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
@@ -1214,7 +1215,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			fow.getUnit ().add (hellHounds);
 
 			final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
-			when (unitUtils.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
+			when (expand.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
 			when (xuHellHounds.getMovementSpeed ()).thenReturn (2);
 		}
 
@@ -1222,7 +1223,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
-		multi.setUnitUtils (unitUtils);
+		multi.setExpandUnitDetails (expand);
 		multi.setFogOfWarMidTurnChanges (midTurn);
 		
 		// Run method
@@ -1255,7 +1256,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Create units owned by 3 players
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		for (int playerID = 1; playerID <= 3; playerID++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
@@ -1263,7 +1264,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			fow.getUnit ().add (spearmen);
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
+			when (expand.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
 			when (xuSpearmen.getMovementSpeed ()).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
@@ -1271,7 +1272,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			fow.getUnit ().add (hellHounds);
 
 			final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
-			when (unitUtils.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
+			when (expand.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
 			when (xuHellHounds.getMovementSpeed ()).thenReturn (2);
 		}
 
@@ -1279,7 +1280,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
-		multi.setUnitUtils (unitUtils);
+		multi.setExpandUnitDetails (expand);
 		multi.setFogOfWarMidTurnChanges (midTurn);
 
 		// Run method

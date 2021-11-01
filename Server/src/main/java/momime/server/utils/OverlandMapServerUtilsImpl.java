@@ -38,6 +38,7 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseValues;
@@ -68,6 +69,9 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * Sets the race for all land squares connected to x, y
@@ -217,7 +221,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			defendingSpirit.setUnitID (tc.getNodeSpiritUnitID ());
 			getUnitUtils ().initializeUnitSkills (defendingSpirit, -1, db);
 			
-			final int defendingStrength = getUnitUtils ().expandUnitDetails (defendingSpirit, null, null, null, players, trueMap, db).getModifiedSkillValue
+			final int defendingStrength = getExpandUnitDetails ().expandUnitDetails (defendingSpirit, null, null, null, players, trueMap, db).getModifiedSkillValue
 				(CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE);
 			
 			// Decide who wins
@@ -463,5 +467,21 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

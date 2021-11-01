@@ -55,6 +55,7 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
@@ -539,7 +540,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defenderPd.getPlayerID (), "attemptToMeldWithNode (d)")).thenReturn (defender);
 		
 		// Units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
@@ -552,7 +553,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
 		
 		final ExpandedUnitDetails xuDefendingSpirit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
+		when (expand.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (xuDefendingSpirit);
 		
 		// Unit stats
@@ -565,11 +566,13 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
 		utils.setRandomUtils (randomUtils);
 		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		utils.setExpandUnitDetails (expand);
 		utils.setUnitUtils (unitUtils);
 		
 		// Run method
@@ -677,7 +680,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		players.add (defender);
 		
 		// Units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
@@ -690,7 +693,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
 		
 		final ExpandedUnitDetails xuDefendingSpirit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
+		when (expand.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (xuDefendingSpirit);
 		
 		// Unit stats
@@ -703,10 +706,12 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
 		utils.setRandomUtils (randomUtils);
+		utils.setExpandUnitDetails (expand);
 		utils.setUnitUtils (unitUtils);
 		
 		// Run method

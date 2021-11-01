@@ -50,6 +50,7 @@ import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
@@ -137,6 +138,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** More methods dealing with executing combats */
 	private CombatHandling combatHandling;
+
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
@@ -519,7 +523,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if ((currentLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
 				((onlyUnitURNs == null) || (onlyUnitURNs.contains (tu.getUnitURN ()))))
 
-				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null,
+				unitStack.add (getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 		
 		// Remove from the list any units to whom the combat terrain is impassable.
@@ -784,7 +788,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				(trueUnit.getOwningPlayerID () == winningPlayer.getPlayerDescription ().getPlayerID ()) &&
 				((trueUnit.getStatus () != UnitStatusID.ALIVE) || (trueUnit.getUnitDamage ().size () > 0)))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
 
 				boolean regeneration = false;
 				for (final String regenerationSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_REGENERATION)
@@ -1195,8 +1199,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 		{
 			// Bump to different cell if there's an invisible unit here
 			final MapCoordinates2DEx actualMoveTo = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-				(combatLocation, combatCell.getCombatMap (), moveTo, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-					mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+				(combatLocation, combatCell.getCombatMap (), moveTo,  mom.getSessionDescription ().getCombatMapSize (),
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
 			// Update on client
 			final MoveUnitInCombatMessage msg = new MoveUnitInCombatMessage ();
@@ -1275,7 +1279,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (F)");
 				
 				// Check if the cell is really empty - maybe there's an invisible unit we couldn't see before
-				if (getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, movePath) != null)
+				if (getUnitUtils ().findAliveUnitInCombatAt (combatLocation, movePath, mom.getPlayers (),
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) != null)
 				{
 					// Invisible unit here - wind movePath back one step
 					blocked = true;
@@ -1338,9 +1343,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			if (ATTACK_UNIT.contains (combatMoveType))
 			{
-				final MemoryUnit defender = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, moveTo);
+				final ExpandedUnitDetails defender = getUnitUtils ().findAliveUnitInCombatAt (combatLocation, moveTo, mom.getPlayers (),
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				if (defender != null)
-					defenders.add (defender);
+					defenders.add (defender.getMemoryUnit ());
 			}
 			
 			final boolean attackWalls = ATTACK_WALLS.contains (combatMoveType);
@@ -1693,5 +1699,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setCombatHandling (final CombatHandling h)
 	{
 		combatHandling = h;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

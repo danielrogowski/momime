@@ -86,6 +86,7 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
 import momime.common.messages.clienttoserver.SellBuildingMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -186,6 +187,9 @@ public final class CityViewUI extends MomClientFrameUI
 
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
@@ -343,7 +347,7 @@ public final class CityViewUI extends MomClientFrameUI
 				final AvailableUnit unit = new AvailableUnit ();
 				unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
 				
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null,
 					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				getUnitStatsReplacer ().setUnit (xu);
 
@@ -879,7 +883,7 @@ public final class CityViewUI extends MomClientFrameUI
 			{
 				if (x < CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
@@ -1129,7 +1133,7 @@ public final class CityViewUI extends MomClientFrameUI
 			// We don't have to get the weapon grade or experience right just to draw the figures
 			getUnitUtils ().initializeUnitSkills (sample, null, getClient ().getClientDB ());
 			
-			sampleUnit = getUnitUtils ().expandUnitDetails (sample, null, null, null,
+			sampleUnit = getExpandUnitDetails ().expandUnitDetails (sample, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			final String movingActionID = getUnitCalculations ().determineCombatActionID (sampleUnit, true, getClient ().getClientDB ());
@@ -1781,5 +1785,21 @@ public final class CityViewUI extends MomClientFrameUI
 	public final List<SelectUnitButton> getSelectUnitButtons ()
 	{
 		return selectUnitButtons;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

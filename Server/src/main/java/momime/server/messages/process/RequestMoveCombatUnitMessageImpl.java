@@ -22,6 +22,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -49,6 +50,9 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -97,7 +101,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 				error = "You cannot move units in combat when it isn't your turn";
 			else
 			{
-				xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+				xu = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 				if (xu.getControllingPlayerID () != sender.getPlayerDescription ().getPlayerID ())
@@ -179,5 +183,21 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	public final void setCombatProcessing (final CombatProcessing proc)
 	{
 		combatProcessing = proc;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

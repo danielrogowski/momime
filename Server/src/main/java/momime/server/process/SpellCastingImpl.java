@@ -31,11 +31,11 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.common.messages.servertoclient.OverlandCastingInfoMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -50,8 +50,8 @@ public final class SpellCastingImpl implements SpellCasting
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (SpellCastingImpl.class);
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -133,7 +133,7 @@ public final class SpellCastingImpl implements SpellCasting
 						player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Let it move this turn
-				newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
+				newUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (newUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 			}
 
@@ -246,7 +246,7 @@ public final class SpellCastingImpl implements SpellCasting
 		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE))
 			{
-				final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+				final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
@@ -300,19 +300,19 @@ public final class SpellCastingImpl implements SpellCasting
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 	
 	/**

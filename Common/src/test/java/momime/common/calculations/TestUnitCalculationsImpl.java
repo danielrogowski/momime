@@ -54,6 +54,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtilsImpl;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.PlayerPickUtils;
@@ -80,7 +81,7 @@ public final class TestUnitCalculationsImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Unit A that matches
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 
 		final MemoryUnit u1 = new MemoryUnit ();
 		u1.setStatus (UnitStatusID.ALIVE);
@@ -92,7 +93,7 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u1);
 
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u1, null, null, null, players, fow, db)).thenReturn (xu1);
+		when (expand.expandUnitDetails (u1, null, null, null, players, fow, db)).thenReturn (xu1);
 		when (xu1.getMovementSpeed ()).thenReturn (1);
 		when (xu1.getControllingPlayerID ()).thenReturn (1);
 
@@ -107,7 +108,7 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u2);
 
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u2, null, null, null, players, fow, db)).thenReturn (xu2);
+		when (expand.expandUnitDetails (u2, null, null, null, players, fow, db)).thenReturn (xu2);
 		when (xu2.getMovementSpeed ()).thenReturn (1);
 		when (xu2.getControllingPlayerID ()).thenReturn (1);
 		
@@ -121,7 +122,7 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u3);
 
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u3, null, null, null, players, fow, db)).thenReturn (xu3);
+		when (expand.expandUnitDetails (u3, null, null, null, players, fow, db)).thenReturn (xu3);
 		when (xu3.getMovementSpeed ()).thenReturn (1);
 		when (xu3.getControllingPlayerID ()).thenReturn (1);
 		
@@ -136,7 +137,7 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u4);
 
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u4, null, null, null, players, fow, db)).thenReturn (xu4);
+		when (expand.expandUnitDetails (u4, null, null, null, players, fow, db)).thenReturn (xu4);
 		when (xu4.getMovementSpeed ()).thenReturn (1);
 		when (xu4.getControllingPlayerID ()).thenReturn (2);
 		
@@ -151,13 +152,13 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u5);
 
 		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u5, null, null, null, players, fow, db)).thenReturn (xu5);
+		when (expand.expandUnitDetails (u5, null, null, null, players, fow, db)).thenReturn (xu5);
 		when (xu5.getMovementSpeed ()).thenReturn (2);
 		when (xu5.getControllingPlayerID ()).thenReturn (1);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setExpandUnitDetails (expand);
 		
 		// Run method
 		final MapCoordinates3DEx loc = new MapCoordinates3DEx (20, 10, 1);
@@ -867,7 +868,7 @@ public final class TestUnitCalculationsImpl
 		
 		// Unit stack
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		for (int n = 0; n < 3; n++)
 		{
@@ -886,7 +887,7 @@ public final class TestUnitCalculationsImpl
 			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
 			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
+			when (expand.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 			if (n == 0)
@@ -913,7 +914,7 @@ public final class TestUnitCalculationsImpl
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setExpandUnitDetails (expand);
 		
 		// Run test
 		final UnitStack unitStack = calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
@@ -962,7 +963,7 @@ public final class TestUnitCalculationsImpl
 		
 		// Unit stack
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		for (int n = 0; n < 3; n++)
 		{
@@ -981,7 +982,7 @@ public final class TestUnitCalculationsImpl
 			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
 			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
+			when (expand.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 			selectedUnits.add (xuSpearmen);
@@ -1007,7 +1008,7 @@ public final class TestUnitCalculationsImpl
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setExpandUnitDetails (expand);
 		
 		// Run test
 		final UnitStack unitStack = calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
@@ -1069,7 +1070,7 @@ public final class TestUnitCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		// Unit stack
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		for (int n = 0; n < 3; n++)
 		{
@@ -1088,7 +1089,7 @@ public final class TestUnitCalculationsImpl
 			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
 			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
+			when (expand.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 		}
@@ -1111,7 +1112,7 @@ public final class TestUnitCalculationsImpl
 			when (xuDrake.getUnitURN ()).thenReturn (n + 4);
 			when (xuDrake.hasModifiedSkill ("US001")).thenReturn (true);
 			
-			when (unitUtils.expandUnitDetails (drake, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuDrake);
+			when (expand.expandUnitDetails (drake, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuDrake);
 			
 			fogOfWarMemory.getUnit ().add (drake);
 		}
@@ -1138,7 +1139,7 @@ public final class TestUnitCalculationsImpl
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setExpandUnitDetails (expand);
 		
 		// Run test
 		final UnitStack unitStack = calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);

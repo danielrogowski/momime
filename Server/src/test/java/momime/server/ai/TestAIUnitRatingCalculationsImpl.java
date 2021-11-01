@@ -23,6 +23,7 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
+import momime.common.utils.ExpandUnitDetailsImpl;
 import momime.common.utils.ExpandUnitDetailsUtilsImpl;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -200,14 +201,18 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		unitDetailsUtils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
 		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		unitUtils.setUnitDetailsUtils (unitDetailsUtils);
-		unitUtils.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());
+		
+		final ExpandUnitDetailsImpl expand = new ExpandUnitDetailsImpl ();
+		expand.setUnitDetailsUtils (unitDetailsUtils);
+		expand.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());
+		expand.setUnitUtils (unitUtils);
 		
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();
+		unitServerUtils.setExpandUnitDetails (expand);
 		unitServerUtils.setUnitUtils (unitUtils);
 		
 		final AIUnitRatingCalculationsImpl ai = new AIUnitRatingCalculationsImpl ();
-		ai.setUnitUtils (unitUtils);
+		ai.setExpandUnitDetails (expand);
 		
 		// Calculate each unit in turn
 		final Map<Integer, List<UnitEx>> ratings = new HashMap<Integer, List<UnitEx>> ();
@@ -256,14 +261,18 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		unitDetailsUtils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
 		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		unitUtils.setUnitDetailsUtils (unitDetailsUtils);
-		unitUtils.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());
+
+		final ExpandUnitDetailsImpl expand = new ExpandUnitDetailsImpl ();
+		expand.setUnitDetailsUtils (unitDetailsUtils);
+		expand.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());
+		expand.setUnitUtils (unitUtils);
 		
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();
+		unitServerUtils.setExpandUnitDetails (expand);
 		unitServerUtils.setUnitUtils (unitUtils);
 		
 		final AIUnitRatingCalculationsImpl ai = new AIUnitRatingCalculationsImpl ();
-		ai.setUnitUtils (unitUtils);
+		ai.setExpandUnitDetails (expand);
 		ai.setUnitSkillDirectAccess (new UnitSkillDirectAccessImpl ());
 		
 		// Calculate each unit in turn

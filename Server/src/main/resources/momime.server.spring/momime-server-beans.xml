@@ -127,6 +127,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="requestMoveOverlandUnitStackMessage" class="momime.server.messages.process.RequestMoveOverlandUnitStackMessageImpl" scope="prototype">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 	<bean id="alchemyMessage" class="momime.server.messages.process.AlchemyMessageImpl" scope="prototype">
@@ -183,6 +184,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 	<bean id="cancelTargetSpellMessage" class="momime.server.messages.process.CancelTargetSpellMessageImpl" scope="prototype">
@@ -213,6 +215,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="requestMoveHeroItemMessage" class="momime.server.messages.process.RequestMoveHeroItemMessageImpl" scope="prototype">
@@ -372,6 +375,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtilsImpl">
@@ -390,6 +394,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtilsImpl">
@@ -404,6 +409,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">
@@ -429,7 +435,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="unitSkillDirectAccess" class="momime.server.utils.UnitSkillDirectAccessImpl" />
@@ -454,7 +460,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="serverUnitCalculations" class="momime.server.calculations.ServerUnitCalculationsImpl">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
@@ -470,7 +476,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
@@ -484,7 +490,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="damageCalculator" class="momime.server.calculations.DamageCalculatorImpl">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
@@ -545,6 +551,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">
@@ -579,7 +586,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="spellCasting" class="momime.server.process.SpellCastingImpl">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
@@ -623,6 +630,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="damageCalculator" ref="damageCalculator" />
 		<property name="attackResolutionProcessing" ref="attackResolutionProcessing" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -641,6 +649,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">
@@ -661,7 +670,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="attackResolutionProcessing" ref="attackResolutionProcessing" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	
@@ -671,6 +680,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="damageCalculator" ref="damageCalculator" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="combatStartAndEnd" class="momime.server.process.CombatStartAndEndImpl">
@@ -711,6 +721,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="combatHandling" ref="combatHandling" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="combatHandling" class="momime.server.process.CombatHandlingImpl">
@@ -720,7 +731,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="combatEndTurn" class="momime.server.process.CombatEndTurnImpl">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="randomUtils" ref="randomUtils" />
@@ -748,6 +759,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 	<bean id="offerGenerator" class="momime.server.process.OfferGeneratorImpl">
@@ -762,6 +774,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="heroItemUtils" ref="heroItemUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<!-- AI -->
@@ -777,7 +790,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="unitAI" ref="unitAI" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="aiUnitCalculations" ref="aiUnitCalculations" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="spellCalculations" ref="spellCalculations" />
@@ -796,7 +809,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
@@ -829,6 +842,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="spellAI" ref="spellAI" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="unitAI" class="momime.server.ai.UnitAIImpl">
@@ -850,6 +864,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="aiHeroItemRatingCalculations" ref="aiHeroItemRatingCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">
@@ -860,14 +875,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="aiUnitCalculations" class="momime.server.ai.AIUnitCalculationsImpl">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="aiUnitRatingCalculations" ref="aiUnitRatingCalculations" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 	
 	<bean id="aiUnitRatingCalculations" class="momime.server.ai.AIUnitRatingCalculationsImpl">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 		<property name="aiHeroItemRatingCalculations" ref="aiHeroItemRatingCalculations" />
 	</bean>
@@ -889,6 +904,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="spellQueueing" ref="spellQueueing" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>	
 	
 	<!-- Fog of War -->
@@ -927,6 +943,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="fogOfWarMidTurnMultiChanges" class="momime.server.fogofwar.FogOfWarMidTurnMultiChangesImpl">
@@ -948,6 +965,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">
@@ -961,6 +979,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 	<!-- Beans created each time a new session is started

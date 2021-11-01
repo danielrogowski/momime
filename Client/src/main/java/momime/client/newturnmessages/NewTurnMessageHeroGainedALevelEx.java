@@ -20,6 +20,7 @@ import momime.client.ui.MomUIConstants;
 import momime.common.database.LanguageText;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageHeroGainedALevel;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
@@ -52,6 +53,9 @@ public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGa
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** The hero who gained a level */
 	private ExpandedUnitDetails xu;
@@ -102,7 +106,7 @@ public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGa
 	{
 		final MemoryUnit unit = getUnitUtils ().findUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		if (unit != null)
-			xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
+			xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	
@@ -274,5 +278,21 @@ public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGa
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

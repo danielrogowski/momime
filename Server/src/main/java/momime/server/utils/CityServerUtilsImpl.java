@@ -45,6 +45,7 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -96,6 +97,9 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * @param location Location we we base our search from
@@ -388,7 +392,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		getUnitUtils ().initializeUnitSkills (dummyUnit, 0, db);		// otherwise it does not even get the "walking" skill
 		
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
-		selectedUnits.add (getUnitUtils ().expandUnitDetails (dummyUnit, null, null, null, players, fogOfWarMemory, db));
+		selectedUnits.add (getExpandUnitDetails ().expandUnitDetails (dummyUnit, null, null, null, players, fogOfWarMemory, db));
 		
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
@@ -656,5 +660,21 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

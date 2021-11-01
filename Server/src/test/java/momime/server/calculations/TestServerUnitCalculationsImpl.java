@@ -37,10 +37,10 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -140,7 +140,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		final Set<String> unitStackSkills = new HashSet<String> ();
 		
 		// Units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final MemoryUnit trireme = new MemoryUnit ();
 		trireme.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
@@ -151,7 +151,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		trueMap.getUnit ().add (trireme);
 		
 		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (trireme, null, null, null, players, trueMap, db)).thenReturn (xuTrireme);
+		when (expand.expandUnitDetails (trireme, null, null, null, players, trueMap, db)).thenReturn (xuTrireme);
 		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
 		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
 
@@ -168,7 +168,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 			trueMap.getUnit ().add (spearmen);
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, trueMap, db)).thenReturn (xuSpearmen);
+			when (expand.expandUnitDetails (spearmen, null, null, null, players, trueMap, db)).thenReturn (xuSpearmen);
 			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
 			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
 
@@ -186,7 +186,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setExpandUnitDetails (expand);
 		calc.setUnitCalculations (unitCalc);
 		calc.setMemoryGridCellUtils (gridCellUtils);
 		calc.setRandomUtils (random);

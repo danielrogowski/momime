@@ -43,9 +43,9 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitUtils;
 
 /**
  * Tests the UnitInfoUI class
@@ -138,14 +138,14 @@ public final class TestUnitInfoUI extends ClientTestData
 		unit.setUnitID ("UN001");
 		unit.setOwningPlayerID (pd.getPlayerID ());
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getUnit ()).thenReturn (unit);
 		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Movement
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -176,7 +176,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setUnitCalculations (unitCalc);
-		panel.setUnitUtils (unitUtils);
+		panel.setExpandUnitDetails (expand);
 		panel.setUnitClientUtils (unitClientUtils);
 		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
@@ -286,14 +286,14 @@ public final class TestUnitInfoUI extends ClientTestData
 		unit.setUnitID ("UN001");
 		unit.setOwningPlayerID (pd.getPlayerID ());
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getUnit ()).thenReturn (unit);
 		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Movement
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -324,7 +324,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setUnitCalculations (unitCalc);
-		panel.setUnitUtils (unitUtils);
+		panel.setExpandUnitDetails (expand);
 		panel.setUnitClientUtils (unitClientUtils);
 		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());

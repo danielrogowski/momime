@@ -37,6 +37,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
@@ -93,6 +94,9 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	
 	/** Kind of spell utils */
 	private KindOfSpellUtils kindOfSpellUtils;
+
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** True for city enchantments/curses and overland enchantments */
 	private boolean animatedByOtherFrame;
@@ -428,7 +432,7 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 					// We might be witnessing the combat from an adjacent tile so can see the spell being cast, but not know the unit's exact location if we're not directly involved
 					if (u.getCombatPosition () != null)
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (u, null, null, null,
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (u, null, null, null,
 							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), xu);
@@ -696,5 +700,21 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
 	{
 		kindOfSpellUtils = k;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

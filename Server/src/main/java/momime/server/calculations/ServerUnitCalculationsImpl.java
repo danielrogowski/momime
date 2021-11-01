@@ -32,10 +32,10 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitUtils;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.utils.UnitServerUtils;
@@ -48,8 +48,8 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (ServerUnitCalculationsImpl.class);
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -128,7 +128,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 		for (final MemoryUnit tu : trueMap.getUnit ())
 			if ((tu.getStatus () == UnitStatusID.ALIVE) && (mapLocation.equals (tu.getUnitLocation ())) && (playerID == tu.getOwningPlayerID ()))
-				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, players, trueMap, db));
+				unitStack.add (getExpandUnitDetails ().expandUnitDetails (tu, null, null, null, players, trueMap, db));
 		
 		// Get a list of the unit stack skills
 		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
@@ -303,19 +303,19 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	}
 	
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 
 	/**

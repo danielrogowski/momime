@@ -28,6 +28,7 @@ import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.UnitDamage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.AttackDamage;
@@ -56,6 +57,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	
 	/** Damage calc */
 	private DamageCalculator damageCalculator;
+
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * When one unit initiates a basic attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
@@ -198,7 +202,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			for (int stepRepetitionNo = 0; stepRepetitionNo < stepRepetitions; stepRepetitionNo++)
 			{
 				// If the unit being attacked is already dead, then don't bother proceeding
-				final ExpandedUnitDetails xuUnitBeingAttackedHPcheck = getUnitUtils ().expandUnitDetails (unitBeingAttacked.getUnit (), null, null, null, players, mem, db);
+				final ExpandedUnitDetails xuUnitBeingAttackedHPcheck = getExpandUnitDetails ().expandUnitDetails (unitBeingAttacked.getUnit (), null, null, null, players, mem, db);
 				
 				final List<UnitDamage> damageTaken = (unitBeingAttacked == defender) ? damageToDefender : damageToAttacker;
 				if (getUnitUtils ().getTotalDamageTaken (damageTaken) < xuUnitBeingAttackedHPcheck.calculateHitPointsRemaining ())					
@@ -237,7 +241,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						if (unitMakingAttack == null)
 							throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitMakingAttack, attacking side = " + step.getCombatSide ());
 						
-						xuUnitMakingAttack = getUnitUtils ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null, players, mem, db);
+						xuUnitMakingAttack = getExpandUnitDetails ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null, players, mem, db);
 						
 						// If this is a hasted ranged attack, make sure we actually have enough ammo to make both attacks
 						if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillStep ().getUnitSkillID ())) &&
@@ -290,7 +294,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 								xuUnitsMakingAttack.add (xuUnitMakingAttack);
 							}
 							
-							final ExpandedUnitDetails xuUnitBeingAttacked = getUnitUtils ().expandUnitDetails (unitBeingAttacked.getUnit (), xuUnitsMakingAttack,
+							final ExpandedUnitDetails xuUnitBeingAttacked = getExpandUnitDetails ().expandUnitDetails (unitBeingAttacked.getUnit (), xuUnitsMakingAttack,
 								potentialDamage.getAttackFromSkillID (), potentialDamage.getAttackFromMagicRealmID (), players, mem, db);
 							
 							final int thisDamage;				
@@ -435,11 +439,11 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		// Instead we apply both, then the unit has -2 HP, and the heal routine will always heal healable damage first.
 		// So we convert 2 HP of the healable damage already taken into life stealing damage, ending up with the unit dying from
 		// taking 2 HP healable damage and 4 HP life stealing damage, and so it becomes undead.
-		final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender.getUnit (), null, null, null, players, mem, db);
+		final ExpandedUnitDetails xuDefender = getExpandUnitDetails ().expandUnitDetails (defender.getUnit (), null, null, null, players, mem, db);
 		getUnitServerUtils ().healDamage (defender.getUnit ().getUnitDamage (), -xuDefender.calculateHitPointsRemaining (), true);
 		if (attacker != null)
 		{
-			final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attacker.getUnit (), null, null, null, players, mem, db);
+			final ExpandedUnitDetails xuAttacker = getExpandUnitDetails ().expandUnitDetails (attacker.getUnit (), null, null, null, players, mem, db);
 			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -xuAttacker.calculateHitPointsRemaining (), true);
 		}
 		
@@ -524,5 +528,21 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	public final void setDamageCalculator (final DamageCalculator calc)
 	{
 		damageCalculator = calc;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

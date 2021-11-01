@@ -15,18 +15,18 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.UnitUtils;
 
 /**
  * Methods that the AI uses to calculate stats about types of units and rating how good units are
  */
 public final class AIUnitCalculationsImpl implements AIUnitCalculations
 {
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
@@ -104,7 +104,7 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
-		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
+		final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
 		
 		// Now we can check its upkeep
 		boolean ok = true;
@@ -133,19 +133,19 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 
 	/**

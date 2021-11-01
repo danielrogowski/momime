@@ -351,6 +351,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatUI" ref="combatUI" />
 		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="createArtifactUI" ref="createArtifactUI" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="updateCombatMapMessage" class="momime.client.messages.process.UpdateCombatMapMessageImpl" scope="prototype">
@@ -375,6 +376,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="soundPlayer" ref="soundPlayer" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>	
 
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype">
@@ -387,6 +389,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="anim" ref="anim" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="combatEndedMessage" class="momime.client.messages.process.CombatEndedMessageImpl" scope="prototype">
@@ -406,6 +409,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="soundPlayer" ref="soundPlayer" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 	<bean id="askForCaptureCityDecisionMessage" class="momime.client.messages.process.AskForCaptureCityDecisionMessageImpl" scope="prototype">
@@ -488,6 +492,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">
@@ -498,6 +503,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="addOrUpdateCombatAreaEffectMessage" class="momime.client.messages.process.AddOrUpdateCombatAreaEffectMessageImpl" scope="prototype">
@@ -661,6 +667,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype">
@@ -670,6 +677,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="newTurnMessageCreateArtifact" class="momime.client.newturnmessages.NewTurnMessageCreateArtifactEx" scope="prototype">
@@ -698,6 +706,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 	<bean id="newTurnMessageNode" class="momime.client.newturnmessages.NewTurnMessageNodeEx" scope="prototype">
@@ -714,6 +723,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="newTurnMessageOfferHero" class="momime.client.newturnmessages.NewTurnMessageOfferHeroEx" scope="prototype">
@@ -721,7 +731,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
@@ -737,6 +747,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="newTurnMessageOfferItem" class="momime.client.newturnmessages.NewTurnMessageOfferItemEx" scope="prototype">
@@ -973,12 +984,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="combatMapProcessing" class="momime.client.process.CombatMapProcessingImpl">
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 	<bean id="playerColourImageGenerator" class="momime.client.ui.PlayerColourImageGeneratorImpl">
@@ -1324,6 +1336,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="magicSlidersLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1400,7 +1413,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="variableManaUI" ref="variableManaUI" />
 		<property name="createArtifactUI" ref="createArtifactUI" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="memoryMaintainedSpellClientUtils" ref="memoryMaintainedSpellClientUtils" />		
 	</bean>
 
@@ -1445,6 +1458,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="variableManaUI" ref="variableManaUI" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="castCombatSpellFromUI" ref="castCombatSpellFromUI" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="castCombatSpellFromUI" class="momime.client.ui.dialogs.CastCombatSpellFromUI">
@@ -1890,6 +1904,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="helpUI" ref="helpUI" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="cityViewPanel" ref="cityViewPanel" />																				<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 		<property name="memoryMaintainedSpellListCellRenderer" ref="memoryMaintainedSpellListCellRenderer" />	<!-- So Spring will create and inject a new spell list renderer for each city view UI -->
 	</bean>
@@ -1930,7 +1945,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
@@ -1957,6 +1972,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="buildingListCellRenderer" ref="buildingListCellRenderer" />		<!-- So Spring will create and inject a new building list renderer for each change construction UI -->
 		<property name="unitListCellRenderer" ref="unitListCellRenderer" />					<!-- So Spring will create and inject a new unit list renderer for each change construction UI -->
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each changeConstructionUI -->
@@ -2035,7 +2051,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
@@ -2084,6 +2100,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="client" ref="client" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="wizardBanishedLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -2171,6 +2188,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="armyListCellRenderer" ref="armyListCellRenderer" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 </beans>

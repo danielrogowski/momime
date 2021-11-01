@@ -70,6 +70,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
+	
 	/**
 	 * Searches for a maintained spell in a list
 	 *
@@ -396,7 +399,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 				
 				getUnitUtils ().initializeUnitSkills (unit, null, db);
 
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db);
 
 		    	final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (targetUnit.getUnitLocation ().getZ ()).getRow
 	    			().get (targetUnit.getUnitLocation ().getY ()).getCell ().get (targetUnit.getUnitLocation ().getX ()).getTerrainData ();
@@ -651,7 +654,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 					
 					getUnitUtils ().initializeUnitSkills (unit, null, db);
 	
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db);
 	
 	    			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db) == null)
 	    				result = TargetSpellResult.TERRAIN_IMPASSABLE;
@@ -933,5 +936,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

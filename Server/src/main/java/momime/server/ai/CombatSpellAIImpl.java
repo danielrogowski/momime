@@ -20,6 +20,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -56,6 +57,9 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	
 	/** Spell queueing methods */
 	private SpellQueueing spellQueueing;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * Checks whether casting the specified spell in combat is valid, e.g. does it have a valid target, and lists out all possible choices for casting it (if any).
@@ -142,7 +146,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 
 				for (final MemoryUnit targetUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 					if ((getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, player.getPlayerDescription ().getPlayerID (),
@@ -324,5 +328,21 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	public final void setSpellQueueing (final SpellQueueing obj)
 	{
 		spellQueueing = obj;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

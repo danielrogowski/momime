@@ -29,8 +29,8 @@ import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -103,9 +103,9 @@ public final class TestSpellCastingImpl
 		when (midTurn.addUnitOnServerAndClients (gsk, "UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
 			player3, UnitStatusID.ALIVE, players, sd, db)).thenReturn (unit);
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, trueMap, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (unit, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Set up test object
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -115,7 +115,7 @@ public final class TestSpellCastingImpl
 		casting.setServerUnitCalculations (serverUnitCalculations);
 		casting.setUnitServerUtils (unitServerUtils);
 		casting.setFogOfWarMidTurnChanges (midTurn);
-		casting.setUnitUtils (unitUtils);
+		casting.setExpandUnitDetails (expand);
 		
 		// Run test
 		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);
@@ -213,9 +213,9 @@ public final class TestSpellCastingImpl
 			when (unitServerUtils.findUnitWithPlayerAndID (trueMap.getUnit (), 7, "UN00" + n)).thenReturn (hero);				
 		}
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (theHero, null, null, null, players, trueMap, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (theHero, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Fix random results
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -229,7 +229,7 @@ public final class TestSpellCastingImpl
 		casting.setServerUnitCalculations (serverUnitCalculations);
 		casting.setUnitServerUtils (unitServerUtils);
 		casting.setFogOfWarMidTurnChanges (midTurn);
-		casting.setUnitUtils (unitUtils);
+		casting.setExpandUnitDetails (expand);
 		
 		// Run test
 		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);

@@ -45,8 +45,8 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitUtils;
 
 /**
  * Tests the UnitRowDisplayUI class
@@ -140,7 +140,7 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 
 		// Unit
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		
 		final MemoryUnit unit = new MemoryUnit ();
@@ -149,7 +149,7 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Unicorns");
 
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		units.add (unit);
@@ -210,7 +210,7 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		display.setClient (client);
 		display.setUiComponentFactory (uiComponentFactory);
 		display.setUnitClientUtils (unitClientUtils);
-		display.setUnitUtils (unitUtils);
+		display.setExpandUnitDetails (expand);
 		display.setSmallFont (CreateFontsForTests.getSmallFont ());
 		display.setMediumFont (CreateFontsForTests.getMediumFont ());
 		display.setUnitRowDisplayLayout (layout);

@@ -51,6 +51,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
@@ -1094,11 +1095,11 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 		
 		// Unit we're trying to add
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
+		when (expand.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
@@ -1120,6 +1121,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setOwningPlayerID (2);
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (ourUnit);
 		when (unitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (8);
 		
@@ -1127,6 +1129,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		utils.setUnitCalculations (calc);
+		utils.setExpandUnitDetails (expand);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
@@ -1169,11 +1172,11 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 
 		// Unit we're trying to add
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
+		when (expand.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
@@ -1199,6 +1202,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setOwningPlayerID (2);
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (ourUnit);
 		when (unitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (9);
 		
@@ -1215,6 +1219,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		utils.setUnitCalculations (calc);
+		utils.setExpandUnitDetails (expand);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
@@ -1250,11 +1255,11 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 
 		// Unit we're trying to add
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
+		when (expand.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
@@ -1273,9 +1278,12 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 			any (CommonDatabase.class))).thenReturn (null);
 
 		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		utils.setUnitCalculations (calc);
+		utils.setExpandUnitDetails (expand);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method

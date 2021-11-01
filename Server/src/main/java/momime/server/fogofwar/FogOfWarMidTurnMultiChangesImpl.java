@@ -50,6 +50,7 @@ import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PlaneShiftUnitStackMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
@@ -130,6 +131,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
+
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
@@ -297,7 +301,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
 				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ARMSMASTER))
 				{
 					final int expLevel = xu.getModifiedExperienceLevel ().getLevelNumber ();
@@ -371,7 +375,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
 				final Pick magicRealm = xu.getModifiedUnitMagicRealmLifeformType ();
 				
 				boolean sendMsg = false;
@@ -472,7 +476,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
 				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null) && (trueUnit.getCombatHeading () != null))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
 				final Pick magicRealm = xu.getModifiedUnitMagicRealmLifeformType ();
 
 				int exp = getUnitSkillDirectAccess ().getDirectSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
@@ -1100,7 +1104,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
 				
 				boolean stasis = false;
 				for (final String stasisSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_STASIS)
@@ -1184,7 +1188,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			unitStack.addAll (selectedUnits);
 			
 			for (final MemoryUnit tu : unitsInTargetCell)
-				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, players, gsk.getTrueMap (), db));
+				unitStack.add (getExpandUnitDetails ().expandUnitDetails (tu, null, null, null, players, gsk.getTrueMap (), db));
 			
 			// Get a list of the unit stack skills
 			final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
@@ -1595,5 +1599,21 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

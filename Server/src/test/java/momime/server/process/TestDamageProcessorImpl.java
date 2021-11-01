@@ -44,9 +44,9 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SpellCastType;
-import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.AttackDamage;
@@ -136,15 +136,15 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
 
 		// Expanded unit detalis
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null),
+		when (expand.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
-		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
+		when (expand.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
 		
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
@@ -187,7 +187,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		proc.setCombatStartAndEnd (combatStartAndEnd);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setUnitServerUtils (unitServerUtils);
-		proc.setUnitUtils (unitUtils);
+		proc.setExpandUnitDetails (expand);
 		
 		// Need another surviving unit on each side, so the combat doesn't end
 		for (final PlayerServerDetails thisPlayer : players)
@@ -312,16 +312,16 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
 
 		// Expanded unit detalis
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null),
+		when (expand.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
-		when (unitUtils.expandUnitDetails (attacker, null, null, null,
+		when (expand.expandUnitDetails (attacker, null, null, null,
 			players, trueMap, db)).thenReturn (xuAttacker);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
 		
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
@@ -364,7 +364,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		proc.setCombatStartAndEnd (combatStartAndEnd);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setUnitServerUtils (unitServerUtils);
-		proc.setUnitUtils (unitUtils);
+		proc.setExpandUnitDetails (expand);
 		
 		// The 'attacker' unit is still left alive because it still took no dmg, so put a unit in the list so the combat doesn't end for them (attacker is owned by defendingPlayer)
 		final MemoryUnit survivingUnit = new MemoryUnit ();
@@ -479,10 +479,10 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		when (mom.getPlayers ()).thenReturn (players);
 
 		// Expanded unit detalis
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -510,7 +510,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		proc.setDamageCalculator (calc);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setFogOfWarMidTurnChanges (midTurnSingle);
-		proc.setUnitUtils (unitUtils);
+		proc.setExpandUnitDetails (expand);
 		
 		// Run method
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
@@ -621,16 +621,16 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		gsk.setTrueMap (trueMap);
 
 		// Expanded unit detalis
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final ExpandedUnitDetails xuDefender1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender1, null, null, null, players, trueMap, db)).thenReturn (xuDefender1);
+		when (expand.expandUnitDetails (defender1, null, null, null, players, trueMap, db)).thenReturn (xuDefender1);
 		
 		final ExpandedUnitDetails xuDefender2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender2, null, null, null, players, trueMap, db)).thenReturn (xuDefender2);
+		when (expand.expandUnitDetails (defender2, null, null, null, players, trueMap, db)).thenReturn (xuDefender2);
 		
 		final ExpandedUnitDetails xuDefender3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender3, null, null, null, players, trueMap, db)).thenReturn (xuDefender3);
+		when (expand.expandUnitDetails (defender3, null, null, null, players, trueMap, db)).thenReturn (xuDefender3);
 		
 		// Middle unit is immune to illusions
 		when (xuDefender1.hasModifiedSkill ("US001")).thenReturn (false);
@@ -672,7 +672,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		proc.setDamageCalculator (calc);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setFogOfWarMidTurnChanges (midTurnSingle);
-		proc.setUnitUtils (unitUtils);
+		proc.setExpandUnitDetails (expand);
 		
 		// Run method
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();

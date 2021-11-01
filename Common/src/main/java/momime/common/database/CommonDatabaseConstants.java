@@ -325,6 +325,9 @@ public final class CommonDatabaseConstants
 	
 	/** Unit lacks graphics for multiple figures, so always just draw one */
 	public final static String UNIT_SKILL_ID_DRAW_ONE_FIGURE = "US170";
+	
+	/** Passes through units, and other units can pass through it */
+	public final static String UNIT_SKILL_ID_MOVE_THROUGH_UNITS = "US172";
 
 	/** Hidden skill granted by Blur CSE */
 	public final static String UNIT_SKILL_ID_BLUR = "CS051";

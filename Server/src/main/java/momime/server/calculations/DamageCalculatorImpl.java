@@ -32,10 +32,10 @@ import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.process.AttackResolutionUnit;
 import momime.server.utils.UnitServerUtils;
@@ -50,8 +50,8 @@ import momime.server.utils.UnitServerUtils;
  */
 public final class DamageCalculatorImpl implements DamageCalculator
 {
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -166,22 +166,22 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// e.g. Defender may have Weapon Immunity but the attacker has Holy Weapon which negates it
 		// e.g. Attacker may have First Strike but the defender has Negate First Strike
 		// So to get around this, we generate the attacker's stats twice.
-		final ExpandedUnitDetails xuAttackerPreliminary = getUnitUtils ().expandUnitDetails (attacker.getUnit (), null, attackSkillID, null, players, mem, db);
+		final ExpandedUnitDetails xuAttackerPreliminary = getExpandUnitDetails ().expandUnitDetails (attacker.getUnit (), null, attackSkillID, null, players, mem, db);
 		final List<ExpandedUnitDetails> attackers = new ArrayList<ExpandedUnitDetails> ();
 		attackers.add (xuAttackerPreliminary);
 		
 		// In fact worse than that.  If attacker is invisible, the stats we worked out for them above will say they're invisible even if we have True Sight,
 		// because we haven't taken the defender into account yet.  That means if we work the final defender stats out now, they'll suffer -1 to hit. 
-		final ExpandedUnitDetails xuDefenderPreliminary = getUnitUtils ().expandUnitDetails (defender.getUnit (), attackers, attackSkillID, null, players, mem, db);
+		final ExpandedUnitDetails xuDefenderPreliminary = getExpandUnitDetails ().expandUnitDetails (defender.getUnit (), attackers, attackSkillID, null, players, mem, db);
 		final List<ExpandedUnitDetails> defenders = new ArrayList<ExpandedUnitDetails> ();
 		defenders.add (xuDefenderPreliminary);
 
 		// Now work the real stats out
-		final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attacker.getUnit (), defenders, attackSkillID, null, players, mem, db);
+		final ExpandedUnitDetails xuAttacker = getExpandUnitDetails ().expandUnitDetails (attacker.getUnit (), defenders, attackSkillID, null, players, mem, db);
 		attackers.clear ();
 		attackers.add (xuAttacker);
 		
-		final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender.getUnit (), attackers, attackSkillID, null, players, mem, db);
+		final ExpandedUnitDetails xuDefender = getExpandUnitDetails ().expandUnitDetails (defender.getUnit (), attackers, attackSkillID, null, players, mem, db);
 		
 		// The unit's skill level indicates the strength of the attack (e.g. Poison Touch 2 vs Poison Touch 4)
 		final AttackDamage attackDamage;
@@ -1117,19 +1117,19 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	}
 	
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 	
 	/**

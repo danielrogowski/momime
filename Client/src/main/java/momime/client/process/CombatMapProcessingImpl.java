@@ -13,8 +13,8 @@ import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.EndCombatTurnMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitUtils;
 
 /**
  * Methods dealing with combat movement and unit lists, to keep this from making CombatUI too large and complicated.
@@ -31,8 +31,8 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * At the start of our combat turn, once all our movement has been reset, this gets called.
@@ -52,7 +52,7 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 				(mu.getStatus () == UnitStatusID.ALIVE) && (getCombatUI ().getCombatLocation ().equals (mu.getCombatLocation ())) &&
 				(mu.getCombatPosition () != null) && (mu.getCombatHeading () != null) && (mu.getCombatSide () != null))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, getClient ().getPlayers (),
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null, getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				
 				if (xu.getControllingPlayerID () == getClient ().getOurPlayerID ())
@@ -182,18 +182,18 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 }

@@ -447,12 +447,12 @@ public final class TestResourceValueUtilsImpl
 		
 		mem.getUnit ().add (hero);
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)).thenReturn (true);
 		when (xu.calculateManaTotal ()).thenReturn (15);
-		when (unitUtils.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
 		
 		// Wizard's Fortress
 		final MemoryBuilding fortress = new MemoryBuilding ();
@@ -465,7 +465,7 @@ public final class TestResourceValueUtilsImpl
 		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.setSkillCalculations (new SkillCalculationsImpl ());
 		utils.setMemoryBuildingUtils (memoryBuildingUtils);
-		utils.setUnitUtils (unitUtils);
+		utils.setExpandUnitDetails (expand);
 		
 		// Run method
 		assertEquals (3 + 10 + 7, utils.calculateModifiedCastingSkill (resourceValues, playerDetails, players, mem, db, true));
@@ -493,12 +493,12 @@ public final class TestResourceValueUtilsImpl
 		
 		mem.getUnit ().add (hero);
 
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE)).thenReturn (true);
 		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE)).thenReturn (2);
-		when (unitUtils.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
 		
 		// Level 2 hero with super sage
 		final ExperienceLevel captain = new ExperienceLevel ();
@@ -507,7 +507,7 @@ public final class TestResourceValueUtilsImpl
 		
 		// Set up object to test
 		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		utils.setExpandUnitDetails (expand);
 		
 		// Run method
 		assertEquals (13, utils.calculateResearchFromUnits (2, players, mem, db));
@@ -631,12 +631,12 @@ public final class TestResourceValueUtilsImpl
 		
 		mem.getUnit ().add (hero);
 
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY)).thenReturn (true);
 		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY)).thenReturn (2);
-		when (unitUtils.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
 		
 		// Level 2 hero with super legendary
 		final ExperienceLevel captain = new ExperienceLevel ();
@@ -651,7 +651,7 @@ public final class TestResourceValueUtilsImpl
 		// Set up object to test
 		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
-		utils.setUnitUtils (unitUtils);
+		utils.setExpandUnitDetails (expand);
 		
 		// Run method
 		assertEquals (3 + 10 + 10 + 13, utils.calculateModifiedFame (resourceValues, playerDetails, players, mem, db));

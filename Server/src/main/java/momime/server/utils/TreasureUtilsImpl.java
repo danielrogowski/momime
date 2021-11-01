@@ -46,11 +46,11 @@ import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.TreasureRewardPrisoner;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.HeroItemUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -109,8 +109,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * The treasure reward process detailed in the strategy guide (Appendix C) and on the MoM Wiki is awkward to implement, and in
@@ -427,7 +427,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, players, gsk.getTrueMap (), sd, db);
 					
 						// Let it move this turn
-						hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null, players, gsk.getTrueMap (), db).getMovementSpeed ());
+						hero.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (hero, null, null, null, players, gsk.getTrueMap (), db).getMovementSpeed ());
 					}
 					break;
 
@@ -880,18 +880,18 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 }

@@ -53,6 +53,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
@@ -128,6 +129,9 @@ public final class UnitAIImpl implements UnitAI
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
+	
 	/**
 	 * Lists every unit this AI player can build at every city they own, as well as any units they can summon, sorted with the best units first.
 	 * This won't list heroes, since if we cast Summon Hero/Champion, we never know which one we're going to get.
@@ -185,7 +189,7 @@ public final class UnitAIImpl implements UnitAI
 							
 							getUnitUtils ().initializeUnitSkills (unit, startingExperience, db);
 							
-							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
+							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
 							
 							results.add (new AIConstructableUnit (unitDef, cityLocation, null,
 								getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
@@ -211,7 +215,7 @@ public final class UnitAIImpl implements UnitAI
 							
 							getUnitUtils ().initializeUnitSkills (unit, null, db);
 			
-							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
+							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
 							
 							results.add (new AIConstructableUnit (unitDef, null, spell,
 								getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
@@ -254,7 +258,7 @@ public final class UnitAIImpl implements UnitAI
 					unitArray [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()] = unitList; 
 				}
 
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null, players, mem, db);
 				
 				unitList.add (new AIUnitAndRatings (mu,
 					getAiUnitCalculations ().determineAIUnitType (xu),
@@ -436,7 +440,7 @@ public final class UnitAIImpl implements UnitAI
 	public final AiUnitCategory determineUnitCategory (final MemoryUnit mu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, mem, db);
+		final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null, players, mem, db);
 
 		// Check categories from the bottom up, since the end categories are the most specific
 		AiUnitCategory category = null;
@@ -759,7 +763,7 @@ public final class UnitAIImpl implements UnitAI
 		// Create a stack for the units (so transports pick up any units stacked with them)
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 		for (final AIUnitAndRatings mu : units)
-			selectedUnits.add (getUnitUtils ().expandUnitDetails (mu.getUnit (), null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()));
+			selectedUnits.add (getExpandUnitDetails ().expandUnitDetails (mu.getUnit (), null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()));
 		
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 		
@@ -835,7 +839,7 @@ public final class UnitAIImpl implements UnitAI
 					for (final AIUnitAndRatings mu : units)
 					{
 						final MemoryUnit tu = getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "decideAndExecuteUnitMovement");
-						trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null,
+						trueUnits.add (getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 					}
 					
@@ -961,7 +965,7 @@ public final class UnitAIImpl implements UnitAI
 			for (final MemoryUnit tu : trueMap.getUnit ())
 				if ((tu.getStatus () == UnitStatusID.ALIVE) && (tu.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (tu.getHeroItemSlot ().size () > 0))
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, players, trueMap, db);
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null, players, trueMap, db);
 					if (xu.isHero ())
 						heroes.add (new ExpandedUnitDetailsAndRating (xu, getAiUnitRatingCalculations ().calculateUnitCurrentRating (tu, xu, players, trueMap, db)));
 				}
@@ -1319,5 +1323,21 @@ public final class UnitAIImpl implements UnitAI
 	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

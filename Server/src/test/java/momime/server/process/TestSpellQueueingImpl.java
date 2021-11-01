@@ -45,6 +45,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
@@ -1544,8 +1545,9 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (101, trueMap.getUnit ())).thenReturn (targetUnit);
 		
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
 		
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
@@ -1561,6 +1563,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		proc.setExpandUnitDetails (expand);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, 101, null, mom);
@@ -1676,8 +1679,9 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (101, trueMap.getUnit ())).thenReturn (targetUnit);
 		
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
 		
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
@@ -1696,6 +1700,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setSpellProcessing (spellProcessing);
+		proc.setExpandUnitDetails (expand);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, 101, null, mom);
@@ -1939,7 +1944,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation)).thenReturn (null);
+		when (unitUtils.findAliveUnitInCombatAt (combatLocation, combatTargetLocation, players, trueMap, db)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
@@ -2074,7 +2079,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation)).thenReturn (null);
+		when (unitUtils.findAliveUnitInCombatAt (combatLocation, combatTargetLocation, players, trueMap, db)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
@@ -2216,7 +2221,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation)).thenReturn (null);
+		when (unitUtils.findAliveUnitInCombatAt (combatLocation, combatTargetLocation, players, trueMap, db)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);

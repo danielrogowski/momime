@@ -40,12 +40,12 @@ import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitUtils;
 
 /**
  * Popup that displays each of the units in a particular map cell so we can select one.
@@ -74,8 +74,8 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
@@ -195,7 +195,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 				{
 					// Its a normal unit enchantment being cast on the overland map
 					// Use common routine to do all the validation
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -250,7 +250,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 				if (thisSkill.getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
 					unitAttributeIDs.add (thisSkill.getUnitSkillID ());
 
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
+			final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			for (int attrNo = 1; attrNo <= 6; attrNo++)
@@ -434,19 +434,19 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 
 	/**

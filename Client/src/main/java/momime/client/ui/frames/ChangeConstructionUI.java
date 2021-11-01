@@ -51,6 +51,7 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
@@ -134,6 +135,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 
 	/** Handles clicks on the units list */
 	private ListSelectionListener unitSelectionListener;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -364,7 +368,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			// We don't have to get the weapon grade or experience right just to draw the figures
 			getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());
 			
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null,
+			final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (sampleUnit, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 			final String movingActionID = getUnitCalculations ().determineCombatActionID (xu, true, getClient ().getClientDB ());
@@ -661,5 +665,21 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	public final void setClientCityCalculations (final ClientCityCalculations calc)
 	{
 		clientCityCalculations = calc;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

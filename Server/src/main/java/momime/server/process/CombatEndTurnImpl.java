@@ -33,13 +33,13 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationConfusionData;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
@@ -56,8 +56,8 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	/** Move types which represent moving (rather than being blocked, or initiating some kind of attack) */
 	private final static List<CombatMoveType> MOVE_TYPES = Arrays.asList (CombatMoveType.MOVE, CombatMoveType.TELEPORT);
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -141,7 +141,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 						if (effect == ConfusionEffect.MOVE_RANDOMLY)
 						{
 							// Find how much movement they have
-							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
+							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
 							if (!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB))
@@ -227,7 +227,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 					(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					// attackSpellDamageResolutionTypeID = R on Terror spell def just to make the resistance check in isUnitValidTargetForSpell take effect
@@ -260,7 +260,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 					(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					if (xu.getControllingPlayerID () == playerID)
 					{
@@ -346,7 +346,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
 				(thisUnit.getUnitDamage ().size () > 0))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
 				
 				boolean regeneration = false;
 				for (final String regenerationSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_REGENERATION)
@@ -367,19 +367,19 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 	
 	/**

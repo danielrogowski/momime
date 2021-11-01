@@ -30,6 +30,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
@@ -66,6 +67,9 @@ public final class CombatAIImpl implements CombatAI
 	/** AI decisions about spells */
 	private SpellAI spellAI;
 	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
+	
 	/**
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param currentPlayerID AI player whose turn we are taking
@@ -87,7 +91,7 @@ public final class CombatAIImpl implements CombatAI
 				(combatLocation.equals (tu.getCombatLocation ())) && (tu.getCombatPosition () != null) && (tu.getCombatHeading () != null) && (tu.getCombatSide () != null) &&
 				(tu.getDoubleCombatMovesLeft () != null) && (tu.getDoubleCombatMovesLeft () > 0))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null, players, mem, db);
 					
 				if (xu.getControllingPlayerID () == currentPlayerID)
 					unitsToMove.add (tu);
@@ -208,8 +212,9 @@ public final class CombatAIImpl implements CombatAI
 				(movementDirections [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] > 0)))
 			{
 				// Make sure we can actually see it
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
-				if (getUnitUtils ().canSeeUnitInCombat (xu, attacker.getOwningPlayerID (), players, mem, db, combatMapCoordinateSystem))
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+				if ((getUnitUtils ().canSeeUnitInCombat (xu, attacker.getOwningPlayerID (), players, mem, db, combatMapCoordinateSystem)) &&
+					(!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS)))
 				{
 					// Is this the first possible target we've found, or better than our current target.
 					// EvaluateTarget just returns 1, 2 or 3 - bump that up a lot.
@@ -370,7 +375,7 @@ public final class CombatAIImpl implements CombatAI
 					final List<ExpandedUnitDetailsAndCombatAIOrder> sortedUnitsToMove = new ArrayList<ExpandedUnitDetailsAndCombatAIOrder> ();
 					for (final MemoryUnit tu : unitsToMove)
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						sortedUnitsToMove.add (new ExpandedUnitDetailsAndCombatAIOrder (xu, calculateUnitCombatAIOrder (xu)));
@@ -495,5 +500,21 @@ public final class CombatAIImpl implements CombatAI
 	public final void setSpellAI (final SpellAI ai)
 	{
 		spellAI = ai;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

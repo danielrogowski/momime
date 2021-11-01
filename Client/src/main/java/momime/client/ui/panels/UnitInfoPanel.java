@@ -69,10 +69,10 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitUtils;
 
 /**
  * Unit info screen; used both for displaying real units already on the map, or when changing
@@ -120,8 +120,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Multiplayer client */
 	private MomClient client;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -634,7 +634,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Find details about this kind of unit
 		building = null;
 		shadingColours = new ArrayList<String> ();
-		unit = getUnitUtils ().expandUnitDetails (showUnit, null, null, null, getClient ().getPlayers (),
+		unit = getExpandUnitDetails ().expandUnitDetails (showUnit, null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 		// Update language independant labels
@@ -1002,19 +1002,19 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 
 	/**

@@ -42,6 +42,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
@@ -111,6 +112,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 	
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * Client wants to cast a spell, either overland or in combat
@@ -227,7 +231,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 
 				else
 				{
-					xuCombatCastingUnit = getUnitUtils ().expandUnitDetails (combatCastingUnit, null, null, null,
+					xuCombatCastingUnit = getExpandUnitDetails ().expandUnitDetails (combatCastingUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 					if (xuCombatCastingUnit.getControllingPlayerID () != player.getPlayerDescription ().getPlayerID ())
@@ -397,7 +401,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "Cannot find the unit you are trying to target the spell on.";
 				else
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (combatTargetUnit, null, null, spell.getSpellRealm (),
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (combatTargetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -909,5 +913,21 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
 	{
 		combatMapServerUtils = u;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

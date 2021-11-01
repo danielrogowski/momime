@@ -63,6 +63,7 @@ import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -129,6 +130,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/** Map generator */
 	private CombatMapGenerator combatMapGenerator;
 	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
+
 	/**
 	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
 	 * i.e. the caller must update the True Map value themselves before calling this
@@ -883,7 +887,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if (trueSpell.getUnitURN () != null)
 			{
 				final MemoryUnit mu = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellOnServerAndClients");
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null, players, trueMap, db);
 				if (xu.calculateAliveFigureCount () <= 0)
 				{
 					killed = true;
@@ -1733,5 +1737,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void setCombatMapGenerator (final CombatMapGenerator gen)
 	{
 		combatMapGenerator = gen;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

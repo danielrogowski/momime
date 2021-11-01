@@ -63,32 +63,6 @@ public interface UnitUtils
 	 * @return Unit definition
 	 */
 	public UnitEx initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final CommonDatabase db) throws RecordNotFoundException;
-
-	/**
-	 * Calculates and stores all derived skill, upkeep and other values for a particular unit and stores them for easy and quick lookup.
-	 * Note the calculated values depend in part on which unit(s) we're in combat with and if we're calculating stats for purposes of defending an incoming attack.
-	 * e.g. the +2 defence from Long Range will only be included vs incoming ranged attacks; the +3 bonus from Resist Elements will only be included vs incoming Chaos+Nature based attacks
-	 * So must bear this in mind that we need to recalculate unit stats again if the circumstances we are calculating them for change, even if the unit itself has not changed.
-	 * 
-	 * @param unit Unit to expand skill list for
-	 * @param enemyUnits List of enemy units who may have skills that negate the skill we're checking for; typically this is the unit we're engaging in an attack with; in some
-	 * 	cases such as Invisibility, it may be ALL units we're in combat with; for situations not involved in combats or specific attacks, just pass null here
-	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
-	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
-	 * @param attackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
-	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @return List of all skills this unit has, with skills granted from other skills and skills granted from spells merged into the list
-	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
-	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
-	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
-	 */
-	public ExpandedUnitDetails expandUnitDetails (final AvailableUnit unit,
-		final List<ExpandedUnitDetails> enemyUnits, final String attackFromSkillID, final String attackFromMagicRealmID,
-		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
 	 * @param unitSkillID Unit skill we want to check for
@@ -188,12 +162,19 @@ public interface UnitUtils
 	public void beforeKillingUnit (final FogOfWarMemory mem, final int unitURN);
 	
 	/**
-	 * @param units List of units to check
 	 * @param combatLocation Location on overland map where the combat is taking place
 	 * @param combatPosition Position within the combat map to look at
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
 	 * @return Unit at this position, or null if there isn't one
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition);
+	public ExpandedUnitDetails findAliveUnitInCombatAt (final MapCoordinates3DEx combatLocation,
+		final MapCoordinates2DEx combatPosition, final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**
 	 * findAliveUnitInCombatAt will still return units we cannot see because they're invisible.  This adds that check.  So for example if we have a unit

@@ -40,6 +40,7 @@ import momime.common.messages.MomCombatTile;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
@@ -96,6 +97,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** The attacking unit; null if we can't see it */
 	private MemoryUnit attackerUnit;
@@ -217,7 +221,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				duration = tickCount / (double) RANGED_ATTACK_FPS;
 				
 				// Get the start location of every individual missile
-				final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attackerUnit, null, null, null,
+				final ExpandedUnitDetails xuAttacker = getExpandUnitDetails ().expandUnitDetails (attackerUnit, null, null, null,
 					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				
 				final int totalFigureCount = xuAttacker.getFullFigureCount ();
@@ -691,6 +695,22 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
+	}
+	
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 	
 	/**

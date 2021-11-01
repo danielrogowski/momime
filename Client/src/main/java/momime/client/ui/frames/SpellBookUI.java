@@ -70,13 +70,13 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitUtils;
 
 /**
  * Spell book with fancy turning pages - the same book is used for casting spells overland, in combat, and research
@@ -133,8 +133,8 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Methods for working with spells that are only needed on the client */
 	private MemoryMaintainedSpellClientUtils memoryMaintainedSpellClientUtils;
@@ -763,7 +763,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				{
 					final MemoryUnit thisUnit = iter.next ();
 					
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -849,7 +849,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				// This is basically the same loop as above, except now we need a list of the dead units, not simply to find one and exit the loop 
 				for (final MemoryUnit thisUnit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -1655,19 +1655,19 @@ public final class SpellBookUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 	
 	/**

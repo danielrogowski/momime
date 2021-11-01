@@ -17,6 +17,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
@@ -46,6 +47,9 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 	
 	/** Variable replacer for outputting skill descriptions */
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** The unit that was killed */
 	private ExpandedUnitDetails xu;
@@ -87,7 +91,7 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 		// Now we've got a hold of the unit, we can really kill it
 		getUnitUtils ().removeUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		
-		xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
+		xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	
@@ -231,5 +235,21 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 	public final void setUnitStatsReplacer (final UnitStatsLanguageVariableReplacer replacer)
 	{
 		unitStatsReplacer = replacer;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

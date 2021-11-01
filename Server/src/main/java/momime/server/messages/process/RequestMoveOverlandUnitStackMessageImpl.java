@@ -21,6 +21,7 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -39,6 +40,9 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -79,7 +83,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 				error = "Some of the units you are trying to move are not at the starting location";
 			else
 			{
-				unitStack.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
+				unitStack.add (getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 				
 				if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
@@ -137,5 +141,21 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
 	{
 		fogOfWarMidTurnMultiChanges = obj;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

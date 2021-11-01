@@ -23,8 +23,8 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.database.LanguageText;
 import momime.common.messages.NewTurnMessageOfferHero;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitUtils;
 
 /**
  * Offer to hire a hero.  The hero stats get generated on the server, but until they're actually bought, they don't
@@ -51,8 +51,8 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero imp
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
@@ -113,7 +113,7 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero imp
 	@Override
 	public final void preProcess () throws IOException
 	{
-		xu = getUnitUtils ().expandUnitDetails (getHero (), null, null, null, getClient ().getPlayers (),
+		xu = getExpandUnitDetails ().expandUnitDetails (getHero (), null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	
@@ -317,19 +317,19 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero imp
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param util Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils util)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = util;
+		expandUnitDetails = e;
 	}
 
 	/**

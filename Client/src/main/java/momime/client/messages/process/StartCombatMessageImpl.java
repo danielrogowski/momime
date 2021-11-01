@@ -17,6 +17,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.UnitUtils;
@@ -44,6 +45,9 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	
 	/** Crafting popup */
 	private CreateArtifactUI createArtifactUI;
+
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -64,7 +68,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 			unit.setCombatHeading (unitLoc.getCombatHeading ());
 			unit.setCombatSide (unitLoc.getCombatSide ());
 			
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+			final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (xu);
@@ -184,5 +188,21 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	public final void setCreateArtifactUI (final CreateArtifactUI ui)
 	{
 		createArtifactUI = ui;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

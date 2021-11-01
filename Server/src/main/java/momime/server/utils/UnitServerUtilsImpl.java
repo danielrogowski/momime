@@ -51,6 +51,7 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -115,6 +116,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
@@ -369,7 +373,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			else
 			{
 				// Does it have the necessary skill?
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				boolean hasNecessarySkillID = (necessarySkillIDs.size () == 0);
@@ -587,7 +591,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		testUnit.setOwningPlayerID (playerID);
 		getUnitUtils ().initializeUnitSkills (testUnit, 0, db);
 
-		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (testUnit, null, null, null, players, trueMap, db);
+		final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (testUnit, null, null, null, players, trueMap, db);
 
 		// First try the centre
 		MapCoordinates3DEx addLocation = null;
@@ -945,22 +949,26 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param combatLocation Location of combat to check
 	 * @param combatMap Scenery of the combat map at that location
 	 * @param startPosition Position in the combat map to start checking from
-	 * @param trueUnits List of true units
 	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
-	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
 	public final MapCoordinates2DEx findFreeCombatPositionAvoidingInvisibleClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
-		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
-		throws RecordNotFoundException
+		final MapCoordinates2DEx startPosition, final CoordinateSystem combatMapCoordinateSystem,
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		MapCoordinates2DEx found = null;
 		final MapCoordinates2DEx coords = new MapCoordinates2DEx (startPosition);
 		
 		// Check centre cell first
-		if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords) == null) &&
+		if ((getUnitUtils ().findAliveUnitInCombatAt (combatLocation, coords, players, mem, db) == null) &&
 			(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 				(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
 				
@@ -983,7 +991,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, d))
 					{
 						// Is this cell unoccupied + passable terrain?
-						if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords) == null) &&
+						if ((getUnitUtils ().findAliveUnitInCombatAt (combatLocation, coords, players, mem, db) == null) &&
 							(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 								(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
 							
@@ -1240,5 +1248,21 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
 	{
 		fogOfWarMidTurnMultiChanges = obj;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

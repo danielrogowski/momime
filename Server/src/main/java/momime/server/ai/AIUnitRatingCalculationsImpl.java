@@ -19,8 +19,8 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitDamage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitUtils;
 import momime.server.utils.UnitSkillDirectAccess;
 
 /**
@@ -28,8 +28,8 @@ import momime.server.utils.UnitSkillDirectAccess;
  */
 public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculations
 {
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Unit skill values direct access */
 	private UnitSkillDirectAccess unitSkillDirectAccess;
@@ -104,7 +104,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	public final int calculateUnitCurrentRating (final AvailableUnit unit, final ExpandedUnitDetails xu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final int rating = calculateUnitRating ((xu != null) ? xu : getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db), db);
+		final int rating = calculateUnitRating ((xu != null) ? xu : getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db), db);
 		return rating;
 	}
 
@@ -170,7 +170,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 		}
 
 		// Now calculate its rating
-		final int rating = calculateUnitRating (getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db), db);
+		final int rating = calculateUnitRating (getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db), db);
 		
 		// Now put everything back the way it was
 		if (experience >= 0)
@@ -188,19 +188,19 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 
 	/** 

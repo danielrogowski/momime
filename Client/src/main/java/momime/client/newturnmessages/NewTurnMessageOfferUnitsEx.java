@@ -30,6 +30,7 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.NewTurnMessageOfferUnits;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitTypeUtils;
 import momime.common.utils.UnitUtils;
@@ -72,6 +73,9 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Sample unit representing the unit on offer */
 	private AvailableUnit sampleUnit;
@@ -133,7 +137,7 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 		// We don't have to get the weapon grade or experience right just to draw the figures
 		getUnitUtils ().initializeUnitSkills (sampleUnit, expLevel.getExperienceRequired (), getClient ().getClientDB ());
 		
-		xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null, getClient ().getPlayers (),
+		xu = getExpandUnitDetails ().expandUnitDetails (sampleUnit, null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	
@@ -416,5 +420,21 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
 	{
 		playerColourImageGenerator = gen;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

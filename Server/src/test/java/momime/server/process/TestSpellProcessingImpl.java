@@ -42,6 +42,7 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
@@ -49,7 +50,6 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
@@ -752,7 +752,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MapCoordinates2DEx adjustedTargetLocation = new MapCoordinates2DEx (10, 7);
 		
 		when (unitServerUtils.findFreeCombatPositionAvoidingInvisibleClosestTo (combatLocation, gc.getCombatMap (), targetLocation,
-			trueMap.getUnit (), combatMapSize, db)).thenReturn (adjustedTargetLocation);
+			combatMapSize, players, trueMap, db)).thenReturn (adjustedTargetLocation);
 		
 		// Mock the creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -762,9 +762,9 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (midTurn.addUnitOnServerAndClients (gsk, "UN004", attackingFrom, null, null,
 			combatLocation, attackingPlayer, UnitStatusID.ALIVE, players, sd, db)).thenReturn (summonedUnit);
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (summonedUnit, null, null, null, players, trueMap, db)).thenReturn (xu);
+		when (expand.expandUnitDetails (summonedUnit, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Mock unit speed
 		when (xu.getMovementSpeed ()).thenReturn (49);
@@ -788,7 +788,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setServerResourceCalculations (serverResourceCalc);
 		proc.setOverlandMapServerUtils (overlandMapServerUtils);
 		proc.setCombatProcessing (combatProcessing);
-		proc.setUnitUtils (unitUtils);
+		proc.setExpandUnitDetails (expand);
 		proc.setSpellUtils (spellUtils);
 		proc.setSpellDispelling (spellDispelling);
 		proc.setUnitServerUtils (unitServerUtils);

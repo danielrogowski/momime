@@ -31,6 +31,7 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
@@ -337,10 +338,11 @@ public final class TestPlayerMessageProcessingImpl
 		when (unitUtils.findUnitURN (1, trueMap.getUnit (), "continueMovement")).thenReturn (unit1);
 		when (unitUtils.findUnitURN (2, trueMap.getUnit (), "continueMovement")).thenReturn (unit2);
 		
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
-		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
+		when (expand.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (expand.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> unitStack1 = new ArrayList<ExpandedUnitDetails> ();
 		unitStack1.add (xu1);
@@ -376,6 +378,7 @@ public final class TestPlayerMessageProcessingImpl
 		final PlayerMessageProcessingImpl proc = new PlayerMessageProcessingImpl ();
 		proc.setUnitUtils (unitUtils);
 		proc.setFogOfWarMidTurnMultiChanges (midTurn);
+		proc.setExpandUnitDetails (expand);
 		
 		// Run method
 		proc.continueMovement (0, mom);
@@ -430,10 +433,11 @@ public final class TestPlayerMessageProcessingImpl
 		when (unitUtils.findUnitURN (1, trueMap.getUnit (), "continueMovement")).thenReturn (unit1);
 		when (unitUtils.findUnitURN (2, trueMap.getUnit (), "continueMovement")).thenReturn (unit2);
 		
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
-		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
+		when (expand.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (expand.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> unitStack1 = new ArrayList<ExpandedUnitDetails> ();
 		unitStack1.add (xu1);
@@ -470,6 +474,7 @@ public final class TestPlayerMessageProcessingImpl
 		proc.setUnitUtils (unitUtils);
 		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setExpandUnitDetails (expand);
 		
 		// Run method
 		proc.continueMovement (2, mom);

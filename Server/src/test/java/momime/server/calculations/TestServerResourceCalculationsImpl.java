@@ -58,6 +58,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -65,7 +66,6 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.ResourceValueUtilsImpl;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
@@ -158,12 +158,12 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
 		// Set up test object
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		final CityProductionCalculations cityCalc = mock (CityProductionCalculations.class);
 
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setExpandUnitDetails (expand);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setCityProductionCalculations (cityCalc);
 		calc.setUnitServerUtils (mock (UnitServerUtils.class));
@@ -171,7 +171,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Use real resource value utils, so we don't have to mock every possible value of addToAmountPerTurn
 		final ResourceValueUtilsImpl resourceValueUtils = new ResourceValueUtilsImpl ();
 		resourceValueUtils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
-		resourceValueUtils.setUnitUtils (unitUtils);
+		resourceValueUtils.setExpandUnitDetails (expand);
 		calc.setResourceValueUtils (resourceValueUtils);
 
 		// We have some shadow demons (7 mana upkeep)
@@ -182,7 +182,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		trueMap.getUnit ().add (shadowDemons);
 
 		final ExpandedUnitDetails xuShadowDemons = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (shadowDemons, null, null, null, players, trueMap, db)).thenReturn (xuShadowDemons);
+		when (expand.expandUnitDetails (shadowDemons, null, null, null, players, trueMap, db)).thenReturn (xuShadowDemons);
 		when (xuShadowDemons.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (7);
 		
 		final Set<String> shadowDemonsUpkeeps = new HashSet<String> ();
@@ -224,7 +224,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		trueMap.getUnit ().add (warlocks);
 
 		final ExpandedUnitDetails xuWarlocks = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (warlocks, null, null, null, players, trueMap, db)).thenReturn (xuWarlocks);
+		when (expand.expandUnitDetails (warlocks, null, null, null, players, trueMap, db)).thenReturn (xuWarlocks);
 		when (xuWarlocks.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (1);
 		when (xuWarlocks.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (5);
 		
@@ -531,21 +531,21 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		trueMap.getMaintainedSpell ().add (natureAwarenessOtherPlayer);
 
 		// Unit upkeep
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 
 		final ExpandedUnitDetails xuWarlocks = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (warlocks, null, null, null, players, trueMap, db)).thenReturn (xuWarlocks);
+		when (expand.expandUnitDetails (warlocks, null, null, null, players, trueMap, db)).thenReturn (xuWarlocks);
 		
 		final ExpandedUnitDetails xuGargoyles = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (gargoyles, null, null, null, players, trueMap, db)).thenReturn (xuGargoyles);
+		when (expand.expandUnitDetails (gargoyles, null, null, null, players, trueMap, db)).thenReturn (xuGargoyles);
 		when (xuGargoyles.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
 		
 		final ExpandedUnitDetails xuGargoylesOtherStatus = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (gargoylesOtherStatus, null, null, null, players, trueMap, db)).thenReturn (xuGargoylesOtherStatus);
+		when (expand.expandUnitDetails (gargoylesOtherStatus, null, null, null, players, trueMap, db)).thenReturn (xuGargoylesOtherStatus);
 		when (xuGargoylesOtherStatus.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
 		
 		final ExpandedUnitDetails xuGargoylesOtherPlayer = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (gargoylesOtherPlayer, null, null, null, players, trueMap, db)).thenReturn (xuGargoylesOtherPlayer);
+		when (expand.expandUnitDetails (gargoylesOtherPlayer, null, null, null, players, trueMap, db)).thenReturn (xuGargoylesOtherPlayer);
 		when (xuGargoylesOtherPlayer.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
 		
 		// Create dummy implementation for the factory that is usually provided by spring
@@ -573,7 +573,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setMemoryBuildingUtils (buildingUtils);
-		calc.setUnitUtils (unitUtils);
+		calc.setExpandUnitDetails (expand);
 		calc.setMomResourceConsumerFactory (factory);
 		
 		// Run test

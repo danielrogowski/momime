@@ -41,8 +41,8 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -228,7 +228,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 					if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerDetails.getPlayerDescription ().getPlayerID ()) &&
 						(fortressLocation.getCityLocation ().equals (unit.getUnitLocation ())))
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db);
 						if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO))
 							heroesTotalMana = heroesTotalMana + xu.calculateManaTotal ();
 					}
@@ -263,7 +263,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		for (final MemoryUnit unit : mem.getUnit ())
 			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerID))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db);
 				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE))
 				{
 					final int expLevel = xu.getModifiedExperienceLevel ().getLevelNumber ();
@@ -322,7 +322,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		for (final MemoryUnit unit : mem.getUnit ())
 			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerDetails.getPlayerDescription ().getPlayerID ()))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db);
 				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY))
 				{
 					final int expLevel = xu.getModifiedExperienceLevel ().getLevelNumber ();
@@ -497,19 +497,19 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	}
 
 	/**
-	 * @return Unit utils
+	 * @return expandUnitDetails method
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return unitUtils;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param e expandUnitDetails method
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		unitUtils = utils;
+		expandUnitDetails = e;
 	}
 
 	/**

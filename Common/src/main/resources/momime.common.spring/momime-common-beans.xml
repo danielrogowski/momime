@@ -296,6 +296,7 @@
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="memoryBuildingUtils" class="momime.common.utils.MemoryBuildingUtilsImpl" />
@@ -314,6 +315,7 @@
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />
@@ -323,7 +325,7 @@
 		<property name="skillCalculations" ref="skillCalculations" />
 		<property name="spellCalculations" ref="spellCalculations" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 	
@@ -340,13 +342,18 @@
 	</bean>
 
 	<bean id="expandUnitDetailsUtils" class="momime.common.utils.ExpandUnitDetailsUtilsImpl" />
+
+	<bean id="expandUnitDetails" class="momime.common.utils.ExpandUnitDetailsImpl">
+		<property name="unitDetailsUtils" ref="unitDetailsUtils" />
+		<property name="expandUnitDetailsUtils" ref="expandUnitDetailsUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
 	
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">
-		<property name="playerPickUtils" ref="playerPickUtils" />
-		<property name="unitDetailsUtils" ref="unitDetailsUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-		<property name="expandUnitDetailsUtils" ref="expandUnitDetailsUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 	
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl">
@@ -380,7 +387,7 @@
 	</bean>
 
 	<bean id="unitMovement" class="momime.common.calculations.UnitMovementImpl">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />

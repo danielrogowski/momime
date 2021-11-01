@@ -41,6 +41,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -79,6 +80,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
+	
 	/**
 	 * Gives all units full movement back again for their combat turn
 	 *
@@ -104,7 +108,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
 				if (xu.getControllingPlayerID () == playerID)
 				{				
 					final boolean webbed;
@@ -615,7 +619,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 					if ((thisTransportCapacity == null) || (thisTransportCapacity <= 0))
 					{
 						// Always automatically add "outside" units; add "inside" units only if there's still space
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, fogOfWarMemory, db);
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, fogOfWarMemory, db);
 						if (areAllTerrainTypesPassable (xu, unitStackSkills, db))
 							stack.getUnits ().add (xu);
 						else if (unitsInside < transportCapacity)
@@ -872,8 +876,14 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				// Note on owning vs controlling player ID - unitBeingMoved.getControllingPlayerID () is the player whose turn it is, who is controlling the unit, so this is fine.
 				// But they don't want to attack their own units who might just be temporarily confused, equally if an enemy unit is confused and currently under our
 				// control, we still want to kill it - ideally we confusee units and make them kill each other!  So this is why it is not xu.getControllingPlayerID ()
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, unitsBeingMoved, null, null, players, fogOfWarMemory, db);
-				if ((thisUnit == unitBeingMoved.getMemoryUnit ()) || (xu.getOwningPlayerID () == unitBeingMoved.getControllingPlayerID ()))
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, unitsBeingMoved, null, null, players, fogOfWarMemory, db);
+				if ((unitBeingMoved.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS)) ||
+					(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS)))
+				{
+					// If we can move through it, or it can move through is, then ignore it like it isn't there
+				}
+				
+				else if ((thisUnit == unitBeingMoved.getMemoryUnit ()) || (xu.getOwningPlayerID () == unitBeingMoved.getControllingPlayerID ()))
 					ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
 				
 				else if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getControllingPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
@@ -1158,5 +1168,21 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

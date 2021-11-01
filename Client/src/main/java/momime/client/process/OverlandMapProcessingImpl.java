@@ -37,6 +37,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -87,6 +88,9 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * At the start of a turn, once all our movement has been reset and the server has sent any continuation moves to us, this gets called.
@@ -187,7 +191,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 					count++;
 					if (buttonIter.hasNext ())
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						final HideableComponent<SelectUnitButton> button = buttonIter.next ();
@@ -784,5 +788,21 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

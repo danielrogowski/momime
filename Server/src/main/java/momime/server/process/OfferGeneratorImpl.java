@@ -39,6 +39,7 @@ import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.OfferAcceptedMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.HeroItemUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
@@ -93,6 +94,9 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	
 	/** Hero item utils */
 	private HeroItemUtils heroItemUtils;
+
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * Tests to see if the player has any heroes they can get, and if so rolls a chance that one offers to join them this turn (for a fee).
@@ -423,7 +427,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Let it move this turn
-				hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null,
+				hero.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (hero, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 				
 				// Update amounts to show what the hero is consuming/generatnig
@@ -461,7 +465,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 						null, player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 					// Let it move this turn
-					newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
+					newUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (newUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 					
 					unitsAdded++;
@@ -673,5 +677,21 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	public final void setHeroItemUtils (final HeroItemUtils util)
 	{
 		heroItemUtils = util;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

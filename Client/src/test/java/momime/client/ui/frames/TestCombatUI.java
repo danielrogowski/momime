@@ -66,10 +66,10 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.UnitUtils;
 
 /**
  * Tests the CombatUI class
@@ -288,11 +288,11 @@ public final class TestCombatUI extends ClientTestData
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (selectedUnit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("High Elf Swordsmen");
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xuSelectedUnit = mock (ExpandedUnitDetails.class);
 		when (xuSelectedUnit.getUnitDefinition ()).thenReturn (unitDef);
 		when (xuSelectedUnit.getOwningPlayerID ()).thenReturn (atkPd.getPlayerID ());
-		when (unitUtils.expandUnitDetails (selectedUnit, null, null, null, players, fow, db)).thenReturn (xuSelectedUnit);
+		when (expand.expandUnitDetails (selectedUnit, null, null, null, players, fow, db)).thenReturn (xuSelectedUnit);
 		
 		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);
 		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (2);
@@ -342,7 +342,7 @@ public final class TestCombatUI extends ClientTestData
 		combat.setMusicPlayer (mock (AudioPlayer.class));
 		combat.setCombatMapProcessing (mock (CombatMapProcessing.class));
 		combat.setUnitCalculations (unitCalc);
-		combat.setUnitUtils (unitUtils);
+		combat.setExpandUnitDetails (expand);
 		combat.setTextUtils (new TextUtilsImpl ());
 		combat.setSpellBookUI (new SpellBookUI ());
 		combat.setSmallFont (CreateFontsForTests.getSmallFont ());

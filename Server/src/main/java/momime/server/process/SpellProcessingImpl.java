@@ -75,6 +75,7 @@ import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
@@ -213,6 +214,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Attack resolution processing */
 	private AttackResolutionProcessing attackResolutionProcessing;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -605,7 +609,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				if (spell.getResurrectedHealthPercentage () < 100)
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final int totalHP = xu.calculateHitPointsRemaining ();
@@ -636,15 +640,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
 				
 				final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-					(combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-						mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+					(combatLocation, gc.getCombatMap (), targetLocation, mom.getSessionDescription ().getCombatMapSize (),
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 	
 				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), targetUnit,
 					combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 	
 				// Allow it to be moved this combat turn
-				targetUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
+				targetUnit.setDoubleCombatMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 			}
 			
@@ -673,15 +677,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// Set it immediately into combat
 					final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-						(combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-							mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+						(combatLocation, gc.getCombatMap (), targetLocation, mom.getSessionDescription ().getCombatMapSize (),
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
 						combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 					
 					// Allow it to be moved this combat turn
-					tu.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (tu, null, null, null,
+					tu.setDoubleCombatMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 					
 					// Make sure we remove it after combat
@@ -703,7 +707,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				{
 					for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
@@ -1062,7 +1066,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							castingPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());				}
 					
 						// Let it move this turn
-						targetUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
+						targetUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 					}
 			}
@@ -1096,7 +1100,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
 						(tu.getOwningPlayerID () == maintainedSpell.getCastingPlayerID ()))
 					{
-						final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
@@ -1343,7 +1347,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
 						(tu.getOwningPlayerID () == maintainedSpell.getCastingPlayerID ()))
 					{
-						final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
@@ -1395,7 +1399,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
 						(tu.getOwningPlayerID () != maintainedSpell.getCastingPlayerID ()))
 					{
-						final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
@@ -1435,7 +1439,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// If its a unit enchantment, does it grant any secondary permanent effects? (Black Channels making units Undead)
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					for (final UnitSpellEffect effect : spell.getUnitSpellEffect ())
@@ -1740,7 +1744,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 					final List<ExpandedUnitDetails> expandedUnitsInCity = new ArrayList<ExpandedUnitDetails> ();
 					for (final MemoryUnit mu : unitsInCity)
-						expandedUnitsInCity.add (getUnitUtils ().expandUnitDetails (mu, null, null, spellDef.getSpellRealm (), mom.getPlayers (),
+						expandedUnitsInCity.add (getExpandUnitDetails ().expandUnitDetails (mu, null, null, spellDef.getSpellRealm (), mom.getPlayers (),
 							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 					
 					// Roll damage; the XML specifies the damage type, attack strength and so on
@@ -1846,7 +1850,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 						else
 						{
-							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails
+							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails
 								(tu, null, null, spellDef.getSpellRealm (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
 							// Are we immune to it?  Possibly we already had the effect and then had Magic Immunity cast on us overland.
@@ -2399,5 +2403,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setAttackResolutionProcessing (final AttackResolutionProcessing proc)
 	{
 		attackResolutionProcessing= proc;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

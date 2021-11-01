@@ -94,6 +94,7 @@ import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -219,6 +220,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Select casting source popup */
 	private CastCombatSpellFromUI castCombatSpellFromUI;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -547,7 +551,7 @@ public final class CombatUI extends MomClientFrameUI
 									}
 									else
 									{
-										final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargeted ().getSpellRealm (),
+										final ExpandedUnitDetails xus = getExpandUnitDetails ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargeted ().getSpellRealm (),
 											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 										final Integer variableDamage;
@@ -1113,7 +1117,7 @@ public final class CombatUI extends MomClientFrameUI
 								}
 								else
 								{
-									final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargeted ().getSpellRealm (),
+									final ExpandedUnitDetails xus = getExpandUnitDetails ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargeted ().getSpellRealm (),
 										getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									final Integer variableDamage;
@@ -1363,7 +1367,7 @@ public final class CombatUI extends MomClientFrameUI
 			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (getCombatLocation ().equals (unit.getCombatLocation ())) &&
 				(unit.getCombatHeading () != null) && (unit.getCombatSide () != null))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null,
 					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 				setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), xu);
@@ -1464,7 +1468,7 @@ public final class CombatUI extends MomClientFrameUI
 			(getSelectedUnitInCombat ().getDoubleCombatMovesLeft () > 0))
 		{
 			// Unit or hero casting from their own MP pool
-			final ExpandedUnitDetails castingUnit = getUnitUtils ().expandUnitDetails (getSelectedUnitInCombat (), null, null, null,
+			final ExpandedUnitDetails castingUnit = getExpandUnitDetails ().expandUnitDetails (getSelectedUnitInCombat (), null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			if ((getSelectedUnitInCombat ().getManaRemaining () > 0) &&
@@ -1773,7 +1777,7 @@ public final class CombatUI extends MomClientFrameUI
 		}
 		else
 		{
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+			final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			final CombatMapSize combatMapSize = getClient ().getSessionDescription ().getCombatMapSize ();
@@ -2623,5 +2627,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setCastCombatSpellFromUI (final CastCombatSpellFromUI ui)
 	{
 		castCombatSpellFromUI = ui;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

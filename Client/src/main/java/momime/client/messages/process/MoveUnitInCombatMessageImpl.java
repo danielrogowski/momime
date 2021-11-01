@@ -32,6 +32,7 @@ import momime.common.database.UnitSkillEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
@@ -75,6 +76,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	
 	/** Sound effects player */
 	private AudioPlayer soundPlayer;
+
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/** Work the duration out once only */
 	private double duration;
@@ -128,7 +132,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 			log.warn ("MoveUnitInCombatMessageImpl is trying to move Unit URN " + getUnitURN () + " but its previous location stated in the message (" + getMoveFrom () +
 				") isn't what we expected (" + mu.getCombatPosition () + ")");
 		
-		unit = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+		unit = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 		
 		// See if we need to draw any overlays or animations that move with the unit, e.g. Web or Confusion
@@ -516,6 +520,22 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	public final void setSoundPlayer (final AudioPlayer player)
 	{
 		soundPlayer = player;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 	
 	/**

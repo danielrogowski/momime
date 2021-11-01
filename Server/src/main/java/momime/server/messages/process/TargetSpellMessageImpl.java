@@ -28,6 +28,7 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
@@ -71,6 +72,9 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -212,7 +216,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						{
 							units.add (mu);
 							
-							final ExpandedUnitDetails thisTarget = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+							final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
 							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
@@ -268,7 +272,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					else
 					{
 						// Common routine used by both the client and server does the guts of the validation work
-						xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
+						xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -560,5 +564,21 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

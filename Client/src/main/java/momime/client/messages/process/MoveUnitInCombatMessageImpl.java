@@ -173,7 +173,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		}
 		
 		// Remove the unit from the map cell it is leaving so the regular drawing routine stops drawing this unit
-		getCombatUI ().setUnitToDrawAtLocation (mu.getCombatPosition ().getX (), mu.getCombatPosition ().getY (), null);
+		getCombatUI ().clearUnitToDrawFromLocation (mu.getCombatPosition ().getX (), mu.getCombatPosition ().getY (), mu.getUnitID ());
 		
 		// Don't draw unit moving if we can't see it
 		if (getUnitUtils ().canSeeUnitInCombat (unit, getClient ().getOurPlayerID (), getClient ().getPlayers (),

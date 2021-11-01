@@ -356,8 +356,8 @@ public final class CombatUI extends MomClientFrameUI
 	/** Bitmaps for each animation frame of the combat map */
 	private BufferedImage [] combatMapBitmaps;
 	
-	/** Units occupying each cell of the combat map */
-	private CombatUIUnitAndAnimations [] [] unitToDrawAtEachLocation;
+	/** Units occupying each cell of the combat map; first index is 0 for normal units and 1 for units that can walk over others (vortexes); followed by y then x */
+	private CombatUIUnitAndAnimations [] [] [] unitToDrawAtEachLocation;
 	
 	/** Let AI auto control our units? */
 	private boolean autoControl;
@@ -634,53 +634,54 @@ public final class CombatUI extends MomClientFrameUI
 				// Draw units at the top first and work downwards
 				zOrderGraphics.clear ();
 				
-				for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
-					for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
-					{
-						final CombatUIUnitAndAnimations unit = unitToDrawAtEachLocation [y] [x];
-						if (unit != null)
-							try
-							{
-								if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
-									getClient ().getSessionDescription ().getCombatMapSize ()))
+				for (int special = 0; special <= 1; special++)
+					for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
+						for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
+						{
+							final CombatUIUnitAndAnimations unit = unitToDrawAtEachLocation [special] [y] [x];
+							if (unit != null)
+								try
 								{
-									// Is the unit currently animating in an attack?
-									String combatActionID = null;
-									if (getAttackAnim () != null)
+									if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
+										getClient ().getSessionDescription ().getCombatMapSize ()))
 									{
-										// Ranged attack animation
-										if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
+										// Is the unit currently animating in an attack?
+										String combatActionID = null;
+										if (getAttackAnim () != null)
 										{
-											// Show firing unit going 'pew'
-											if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) && (getAttackAnim ().getCurrent () == null))
-												combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_RANGED_ATTACK;
+											// Ranged attack animation
+											if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
+											{
+												// Show firing unit going 'pew'
+												if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) && (getAttackAnim ().getCurrent () == null))
+													combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_RANGED_ATTACK;
+											}
+											
+											// Melee attack animation
+											else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
+											{
+												if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) ||
+													(getAttackAnim ().getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == unit.getUnit ().getUnit ())))
+													combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
+											}
 										}
 										
-										// Melee attack animation
-										else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
-										{
-											if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) ||
-												(getAttackAnim ().getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == unit.getUnit ().getUnit ())))
-												combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
-										}
+										// If animation didn't provide a specific combatActionID then just default to standing still
+										if (combatActionID == null)
+											combatActionID = getUnitCalculations ().determineCombatActionID (unit.getUnit (), false, getClient ().getClientDB ());
+										
+										// Draw unit
+										getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
+											getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
+											getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours (), null);
 									}
-									
-									// If animation didn't provide a specific combatActionID then just default to standing still
-									if (combatActionID == null)
-										combatActionID = getUnitCalculations ().determineCombatActionID (unit.getUnit (), false, getClient ().getClientDB ());
-									
-									// Draw unit
-									getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
-										getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
-										getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours (), null);
 								}
-							}
-							catch (final Exception e)
-							{
-								log.error (e, e);
-							}
-					}
+								catch (final Exception e)
+								{
+									log.error (e, e);
+								}
+						}
 				
 				// Draw unit that's part way through moving
 				if (getUnitMoving () != null)
@@ -797,48 +798,49 @@ public final class CombatUI extends MomClientFrameUI
 					}
 				
 				// Draw overlays and animations over standing units
-				for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
-					for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
-					{
-						final CombatUIUnitAndAnimations unit = unitToDrawAtEachLocation [y] [x];
-						if ((unit != null) && (((unit.getAnimations () != null) && (unit.getAnimations ().size () > 0)) ||
-							((unit.getOverlays () != null) && (unit.getOverlays ().size () > 0))))
-							try
-							{
-								if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
-									getClient ().getSessionDescription ().getCombatMapSize ()))
+				for (int special = 0; special <= 1; special++)
+					for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
+						for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
+						{
+							final CombatUIUnitAndAnimations unit = unitToDrawAtEachLocation [special] [y] [x];
+							if ((unit != null) && (((unit.getAnimations () != null) && (unit.getAnimations ().size () > 0)) ||
+								((unit.getOverlays () != null) && (unit.getOverlays ().size () > 0))))
+								try
 								{
-									if (unit.getOverlays () != null)
-										for (final BufferedImage image : unit.getOverlays ())
-										{
-											// No way to override this for static image overlays yet, so just assume most common values
-											final int adjustX = 2 * 1;
-											final int adjustY = 2 * -22;
-											
-											g.drawImage (image,
-												getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) + adjustX,
-												getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
-										}
-									
-									if (unit.getAnimations () != null)
-										for (final AnimationEx effectAnim : unit.getAnimations ())
-										{
-											final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
-											final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
-											
-											final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.COMMON_XML);
-											g.drawImage (image,
-												getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) + adjustX,
-												getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
-										}
+									if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
+										getClient ().getSessionDescription ().getCombatMapSize ()))
+									{
+										if (unit.getOverlays () != null)
+											for (final BufferedImage image : unit.getOverlays ())
+											{
+												// No way to override this for static image overlays yet, so just assume most common values
+												final int adjustX = 2 * 1;
+												final int adjustY = 2 * -22;
+												
+												g.drawImage (image,
+													getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) + adjustX,
+													getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
+											}
+										
+										if (unit.getAnimations () != null)
+											for (final AnimationEx effectAnim : unit.getAnimations ())
+											{
+												final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
+												final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
+												
+												final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.COMMON_XML);
+												g.drawImage (image,
+													getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) + adjustX,
+													getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
+											}
+									}
 								}
-							}
-							catch (final Exception e)
-							{
-								log.error (e, e);
-							}
-					}
+								catch (final Exception e)
+								{
+									log.error (e, e);
+								}
+						}
 
 				// Draw animations over unit that's part way through moving
 				if (getUnitMoving () != null)
@@ -1349,8 +1351,8 @@ public final class CombatUI extends MomClientFrameUI
 			// Find all the units involved in this combat and make a grid showing which is in
 			// which cell, so when we draw them its easier to draw the back ones first.
 			
-			// unitToDrawAtEachLocation is a lot simpler here than in OverlandMapUI since there can only ever be 1 unit at each location.
-			unitToDrawAtEachLocation = new CombatUIUnitAndAnimations [getClient ().getSessionDescription ().getCombatMapSize ().getHeight ()] [getClient ().getSessionDescription ().getCombatMapSize ().getWidth ()];
+			// unitToDrawAtEachLocation is a lot simpler here than in OverlandMapUI since there can only ever be 1 unit at each location, plus maybe a vortex.
+			unitToDrawAtEachLocation = new CombatUIUnitAndAnimations [2] [getClient ().getSessionDescription ().getCombatMapSize ().getHeight ()] [getClient ().getSessionDescription ().getCombatMapSize ().getWidth ()];
 			setUnitsToDrawAtEachLocation ();                                   
 			generateCombatAreaEffectIcons ();
 		}
@@ -1935,60 +1937,72 @@ public final class CombatUI extends MomClientFrameUI
 
 	/**
 	 * Careful with making updates to this since all the drawing is based on it.  Updates must be consistent with the current location of units, i.e. unit.setCombatPosition ()
+	 * 
 	 * @param x Combat map location to draw this unit at  
 	 * @param y Combat map location to draw this unit at  
-	 * @param xu Unit to draw here
+	 * @param xu Unit to start drawing here
 	 * @throws IOException If there is a problem
 	 */
 	public final void setUnitToDrawAtLocation (final int x, final int y, final ExpandedUnitDetails xu) throws IOException
 	{
-		if (xu == null)
-			unitToDrawAtEachLocation [y] [x] = null;
-		else
+		final int special = getClient ().getClientDB ().getUnitsThatMoveThroughOtherUnits ().contains (xu.getUnitID ()) ? 1 : 0;
+		
+		final List<BufferedImage> overlays = new ArrayList<BufferedImage> ();
+		final List<AnimationEx> animations = new ArrayList<AnimationEx> ();
+		final List<String> shadingColours = new ArrayList<String> ();
+		
+		for (final String unitSkillID : xu.listModifiedSkillIDs ())
 		{
-			final List<BufferedImage> overlays = new ArrayList<BufferedImage> ();
-			final List<AnimationEx> animations = new ArrayList<AnimationEx> ();
-			final List<String> shadingColours = new ArrayList<String> ();
-			
-			for (final String unitSkillID : xu.listModifiedSkillIDs ())
+			final UnitSkillEx unitSkillDef = getClient ().getClientDB ().findUnitSkill (unitSkillID, "setUnitToDrawAtLocation");
+			if ((unitSkillDef.getUnitSkillCombatOverlay () != null) || (unitSkillDef.getUnitSkillCombatAnimation () != null))
 			{
-				final UnitSkillEx unitSkillDef = getClient ().getClientDB ().findUnitSkill (unitSkillID, "setUnitToDrawAtLocation");
-				if ((unitSkillDef.getUnitSkillCombatOverlay () != null) || (unitSkillDef.getUnitSkillCombatAnimation () != null))
+				// Do we need a certain skill value to draw this?
+				final boolean drawOverlay;
+				if (unitSkillDef.getUnitSkillCombatOverlayMinimumValue () == null)
+					drawOverlay = true;
+				else
 				{
-					// Do we need a certain skill value to draw this?
-					final boolean drawOverlay;
-					if (unitSkillDef.getUnitSkillCombatOverlayMinimumValue () == null)
-						drawOverlay = true;
+					final Integer testSkillValue = xu.getModifiedSkillValue (unitSkillID);
+					if (testSkillValue == null)
+						drawOverlay = false;
 					else
-					{
-						final Integer testSkillValue = xu.getModifiedSkillValue (unitSkillID);
-						if (testSkillValue == null)
-							drawOverlay = false;
-						else
-							drawOverlay = (testSkillValue >= unitSkillDef.getUnitSkillCombatOverlayMinimumValue ());
-					}
-					
-					if (drawOverlay)
-					{
-						if (unitSkillDef.getUnitSkillCombatOverlay () != null)
-							overlays.add (getUtils ().loadImage (unitSkillDef.getUnitSkillCombatOverlay ()));
-						
-						if (unitSkillDef.getUnitSkillCombatAnimation () != null)
-							animations.add (getClient ().getClientDB ().findAnimation (unitSkillDef.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
-					}
-				}				
+						drawOverlay = (testSkillValue >= unitSkillDef.getUnitSkillCombatOverlayMinimumValue ());
+				}
 				
-				if (unitSkillDef.getUnitSkillCombatColour () != null)
-					shadingColours.add (unitSkillDef.getUnitSkillCombatColour ());
-			}
+				if (drawOverlay)
+				{
+					if (unitSkillDef.getUnitSkillCombatOverlay () != null)
+						overlays.add (getUtils ().loadImage (unitSkillDef.getUnitSkillCombatOverlay ()));
+					
+					if (unitSkillDef.getUnitSkillCombatAnimation () != null)
+						animations.add (getClient ().getClientDB ().findAnimation (unitSkillDef.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
+				}
+			}				
 			
-			unitToDrawAtEachLocation [y] [x] = new CombatUIUnitAndAnimations (xu, 
-				(overlays.size () == 0) ? null : overlays,
-				(animations.size () == 0) ? null : animations,
-				(shadingColours.size () == 0) ? null : shadingColours);
+			if (unitSkillDef.getUnitSkillCombatColour () != null)
+				shadingColours.add (unitSkillDef.getUnitSkillCombatColour ());
 		}
+		
+		unitToDrawAtEachLocation [special] [y] [x] = new CombatUIUnitAndAnimations (xu, 
+			(overlays.size () == 0) ? null : overlays,
+			(animations.size () == 0) ? null : animations,
+			(shadingColours.size () == 0) ? null : shadingColours);
 	}
 
+	/**
+	 * Declared separately from setUnitToDrawAtLocation so that callers don't need to build the whole expandedUnitDetails just to clear a unit,
+	 * and can get away with only providing the unitID.
+	 * 
+	 * @param x Combat map location to draw this unit at  
+	 * @param y Combat map location to draw this unit at  
+	 * @param unitID Unit to stop drawing here
+	 */
+	public final void clearUnitToDrawFromLocation (final int x, final int y, final String unitID)
+	{
+		final int special = getClient ().getClientDB ().getUnitsThatMoveThroughOtherUnits ().contains (unitID) ? 1 : 0;
+		unitToDrawAtEachLocation [special] [y] [x] = null;
+	}
+	
 	/**
 	 * @return Max castable spell cost
 	 */

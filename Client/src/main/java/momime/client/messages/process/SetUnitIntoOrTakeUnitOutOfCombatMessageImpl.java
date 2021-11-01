@@ -172,7 +172,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 			// Stop drawing the unit (possible the unit was never in combat in the first place, if we are capturing an empty city)
 			if (unit.getCombatPosition () != null)
 			{
-				getCombatUI ().setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), null);
+				getCombatUI ().clearUnitToDrawFromLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), unit.getUnitID ());
 				getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (unit);
 				getCombatMapProcessing ().selectNextUnitToMoveCombat ();
 			}

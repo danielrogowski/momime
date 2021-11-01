@@ -34,6 +34,7 @@ import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.TreasureRewardPrisoner;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -128,6 +129,8 @@ public final class TestTreasureUI extends ClientTestData
 		when (unitStatsReplacer.replaceVariables ("A_UNIT_NAME;")).thenReturn ("Brax the Dwarf");
 		when (unitStatsReplacer.replaceVariables ("A_UNIT_NAME, who would not fit here so was moved to an adjacent tile;")).thenReturn ("Zaldron the Sage, who would not fit here so was moved to an adjacent tile");
 		
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		
 		// Set up some sample treasure
 		final TreasureRewardMessage reward = new TreasureRewardMessage ();
 		reward.setMapFeatureID ("MF01");
@@ -182,6 +185,7 @@ public final class TestTreasureUI extends ClientTestData
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		box.setTreasureLayout (layout);
 		box.setTreasureReward (reward);
+		box.setExpandUnitDetails (expand);
 		box.setTextUtils (new TextUtilsImpl ());
 		
 		// Display form		

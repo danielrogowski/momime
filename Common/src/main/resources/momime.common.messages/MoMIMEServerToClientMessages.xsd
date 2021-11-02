@@ -1572,6 +1572,10 @@ So this is either the spellID for Detect Magic or Spell Blast.</xsd:documentatio
 				<xsd:documentation>Confusion - moved randomly</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="CONFUSION" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="V"><xsd:annotation>
+				<xsd:documentation>Magic Vortex - moving its 3 random moves each turn</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MAGIC_VORTEX" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 </xsd:schema>

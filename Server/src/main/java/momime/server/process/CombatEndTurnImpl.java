@@ -315,6 +315,55 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 			}
 		}
 		
+		// Do we have any vortexes?  If so then move their 3 random moves.  Then they get their 1 movement controlled by the player during their regular turn.
+		for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+				(mom.getServerDB ().getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())))
+			{
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				if ((xu.getControllingPlayerID () == playerID) && (!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)))
+				{
+					final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
+					final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(thisUnit.getCombatLocation ().getZ ()).getRow ().get (thisUnit.getCombatLocation ().getY ()).getCell ().get (thisUnit.getCombatLocation ().getX ());
+					xu.setDoubleCombatMovesLeft (6);
+					
+					Integer firstDirection = null;
+					for (int vortexMoveNumber = 0; vortexMoveNumber < 3; vortexMoveNumber++)
+					{
+						// Only ever deviates +/- 90 degres from the first direction chosen
+						final int d;
+						if (firstDirection == null)
+						{
+							d = getRandomUtils ().nextInt (getCoordinateSystemUtils ().getMaxDirection (combatMapSize.getCoordinateSystemType ())) + 1;
+							firstDirection = d;
+						}
+						else
+							d = getCoordinateSystemUtils ().normalizeDirection (combatMapSize.getCoordinateSystemType (), firstDirection - 2 + getRandomUtils ().nextInt (5));
+
+						// Nothing is impassable, but might bang into the edge of the map
+						final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+						final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+						final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+						
+						getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
+							mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
+						
+						// Check the intended cell
+						final MapCoordinates2DEx coords = new MapCoordinates2DEx ((MapCoordinates2DEx) thisUnit.getCombatPosition ());
+						if (getCoordinateSystemUtils ().move2DCoordinates (combatMapSize, coords, d))
+						{
+							final CombatMoveType moveType = movementTypes [coords.getY ()] [coords.getX ()];
+							if (MOVE_TYPES.contains (moveType))
+								getCombatProcessing ().okToMoveUnitInCombat (xu, coords, MoveUnitInCombatReason.MAGIC_VORTEX,
+									movementDirections, movementTypes, mom);
+						}
+					}
+				}
+			}
+		
 		return terrifiedUnitURNs;
 	}
 	

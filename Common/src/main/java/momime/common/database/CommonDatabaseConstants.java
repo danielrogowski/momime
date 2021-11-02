@@ -406,8 +406,14 @@ public final class CommonDatabaseConstants
 	/** Wall of Fire spell */
 	public final static String SPELL_ID_WALL_OF_FIRE = "SP087";
 	
+	/** Lightning Bolt spell */
+	public final static String SPELL_ID_LIGHTNING_BOLT = "SP091";
+	
 	/** Warp Lightning spell */
 	public final static String SPELL_ID_WARP_LIGHTNING = "SP101";
+	
+	/** Doom Bolt spell */
+	public final static String SPELL_ID_DOOM_BOLT = "SP104";
 	
 	/** Chaos Rift spell */
 	public final static String SPELL_ID_CHAOS_RIFT = "SP110";

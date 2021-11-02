@@ -51,9 +51,13 @@ public interface CombatHandling
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the vortex killed the last unit on one or other side of the combat and ended it or not
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public boolean damageFromVortex (final MemoryUnit vortex, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final MomSessionVariables mom) throws JAXBException, XMLStreamException;
+		final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

@@ -1812,34 +1812,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), spell.getCastingPlayerID (), 5, (MapCoordinates3DEx) spell.getCityLocation (), mom);
 	}
-
-	/**
-	 * Sends damage header about the doom and lightning attacks from a Magic Vortex
-	 * 
-	 * @param vortex The vortex that is making attacks
-	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
-	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
-	 * @param db Lookup lists built over the XML database
-	 * @throws JAXBException If there is a problem converting the object into XML
-	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 */
-	@Override
-	public final void sendVortexDamageHeader (final MemoryUnit vortex, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final CommonDatabase db) throws JAXBException, XMLStreamException
-	{
-		// Find who owns the vortex
-		final PlayerServerDetails castingPlayer;
-		if (vortex.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ())
-			castingPlayer = attackingPlayer;
-		else
-			castingPlayer = defendingPlayer;
-		
-		// Find the spell that summoned the vortex
-		for (final Spell spellDef : db.getSpell ())
-			if (spellDef.getSummonedUnit ().contains (vortex.getUnitID ()))
-				getDamageCalculator ().sendDamageHeader (null, new ArrayList<MemoryUnit> (), false,
-					attackingPlayer, defendingPlayer, null, spellDef, castingPlayer);
-	}
 	
 	/**
 	 * For Stasis.  Each turn, units with stasis get a resistance roll for a chance to free themselves.

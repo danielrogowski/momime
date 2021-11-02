@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -20,6 +21,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
+import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -32,6 +34,9 @@ import momime.server.utils.CombatMapServerUtils;
  */
 public final class CombatHandlingImpl implements CombatHandling
 {
+	/** Number of point damage done by vortex doom bolts + lightning bolts */
+	private final static int VORTEX_VARIABLE_DAMAGE = 5;
+	
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
 	
@@ -50,8 +55,11 @@ public final class CombatHandlingImpl implements CombatHandling
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
-	/** Spell processing methods */
-	private SpellProcessing spellProcessing;
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
+
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
 	/**
 	 * Checks to see if anything special needs to happen when a unit crosses over the border between two combat tiles
@@ -114,44 +122,70 @@ public final class CombatHandlingImpl implements CombatHandling
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the vortex killed the last unit on one or other side of the combat and ended it or not
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
 	public final boolean damageFromVortex (final MemoryUnit vortex, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final MomSessionVariables mom) throws JAXBException, XMLStreamException
+		final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		boolean combatEnded = false;
-		boolean sentHeader = false;
+		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), vortex.getOwningPlayerID (), "damageFromVortex");
+		
+		// Build a list of all the units being attacked
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		
 		// Is there a unit in the same space as the vortex?
 		final MemoryUnit doomUnit = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 			(MapCoordinates3DEx) vortex.getCombatLocation (), (MapCoordinates2DEx) vortex.getCombatPosition (), mom.getServerDB ());
 		if (doomUnit != null)
 		{
-			getSpellProcessing ().sendVortexDamageHeader (vortex, attackingPlayer, defendingPlayer, mom.getServerDB ());
-			sentHeader = true;
+			// Use the Doom Bolt spell definition, which has all the magic realm, damage type etc set correctly, and just override the damage
+			final Spell doomBoltSpell = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_DOOM_BOLT, "damageFromVortex");
+			final ExpandedUnitDetails xuDoomUnit = getExpandUnitDetails ().expandUnitDetails (doomUnit, null, null, doomBoltSpell.getSpellRealm (),
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (doomBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), 0,
+				null, VORTEX_VARIABLE_DAMAGE, xuDoomUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
+				mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+				
+				defenders.add (doomUnit);
 		}
 		
 		// Are there any units in the 8 tiles adjacent to the vortex?
+		final Spell lightningBoltSpell = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_LIGHTNING_BOLT, "damageFromVortex");
 		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (mom.getSessionDescription ().getCombatMapSize ().getCoordinateSystemType ()); d++)
-			if (!combatEnded)
+		{
+			final MapCoordinates2DEx coords = new MapCoordinates2DEx ((MapCoordinates2DEx) vortex.getCombatPosition ());
+			if (getCoordinateSystemUtils ().move2DCoordinates (mom.getSessionDescription ().getCombatMapSize (), coords, d))
 			{
-				final MapCoordinates2DEx coords = new MapCoordinates2DEx ((MapCoordinates2DEx) vortex.getCombatPosition ());
-				if (getCoordinateSystemUtils ().move2DCoordinates (mom.getSessionDescription ().getCombatMapSize (), coords, d))
+				final MemoryUnit lightningUnit = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+					(MapCoordinates3DEx) vortex.getCombatLocation (), coords, mom.getServerDB ());
+				if ((lightningUnit != null) && (getRandomUtils ().nextInt (3) == 0))
 				{
-					final MemoryUnit lightningUnit = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-						(MapCoordinates3DEx) vortex.getCombatLocation (), coords, mom.getServerDB ());
-					if ((lightningUnit != null) && (getRandomUtils ().nextInt (3) == 0))
-					{
-						if (!sentHeader)
-						{
-							getSpellProcessing ().sendVortexDamageHeader (vortex, attackingPlayer, defendingPlayer, mom.getServerDB ());
-							sentHeader = true;
-						}
-					}
+					// Use the Lightning Bolt spell definition, which has all the magic realm, damage type etc set correctly, and just override the damage
+					final ExpandedUnitDetails xuLightningUnit = getExpandUnitDetails ().expandUnitDetails (lightningUnit, null, null, lightningBoltSpell.getSpellRealm (),
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (lightningBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), 0,
+						null, VORTEX_VARIABLE_DAMAGE, xuLightningUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
+						mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+						
+						defenders.add (lightningUnit);
 				}
 			}
+		}
+		
+		// Any attack to do?
+		final boolean combatEnded;
+		if (defenders.size () == 0)
+			combatEnded = false;
+		else
+			combatEnded = getDamageProcessor ().resolveAttack (vortex, defenders, attackingPlayer, defendingPlayer, null, null, null, null,
+				lightningBoltSpell, VORTEX_VARIABLE_DAMAGE, castingPlayer, (MapCoordinates3DEx) vortex.getCombatLocation (), mom);
 		
 		return combatEnded;
 	}
@@ -251,20 +285,36 @@ public final class CombatHandlingImpl implements CombatHandling
 	{
 		randomUtils = utils;
 	}
-
+	
 	/**
-	 * @return Spell processing methods
+	 * @return expandUnitDetails method
 	 */
-	public final SpellProcessing getSpellProcessing ()
+	public final ExpandUnitDetails getExpandUnitDetails ()
 	{
-		return spellProcessing;
+		return expandUnitDetails;
 	}
 
 	/**
-	 * @param obj Spell processing methods
+	 * @param e expandUnitDetails method
 	 */
-	public final void setSpellProcessing (final SpellProcessing obj)
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
-		spellProcessing = obj;
+		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

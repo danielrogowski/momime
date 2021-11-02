@@ -731,7 +731,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="randomUtils" ref="randomUtils" />
-		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="combatEndTurn" class="momime.server.process.CombatEndTurnImpl">

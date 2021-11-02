@@ -11,6 +11,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
 
@@ -41,4 +42,18 @@ public interface CombatHandling
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final MapCoordinates2DEx moveFrom, final MapCoordinates2DEx moveTo, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Checks to see if a Magic Vortex hits any units directly under it or adjacent to it.  It will attack the side who owns it as well.
+	 * 
+	 * @param vortex The vortex to check damage from
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether the vortex killed the last unit on one or other side of the combat and ended it or not
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public boolean damageFromVortex (final MemoryUnit vortex, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final MomSessionVariables mom) throws JAXBException, XMLStreamException;
 }

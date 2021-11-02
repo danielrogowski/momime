@@ -6,10 +6,12 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -21,6 +23,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.TargetSpellResult;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.utils.CombatMapServerUtils;
 
@@ -37,6 +40,18 @@ public final class CombatHandlingImpl implements CombatHandling
 	
 	/** Damage processor */
 	private DamageProcessor damageProcessor;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
 	
 	/**
 	 * Checks to see if anything special needs to happen when a unit crosses over the border between two combat tiles
@@ -90,6 +105,56 @@ public final class CombatHandlingImpl implements CombatHandling
 		
 		return combatEnded;
 	}
+	
+	/**
+	 * Checks to see if a Magic Vortex hits any units directly under it or adjacent to it.  It will attack the side who owns it as well.
+	 * 
+	 * @param vortex The vortex to check damage from
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether the vortex killed the last unit on one or other side of the combat and ended it or not
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final boolean damageFromVortex (final MemoryUnit vortex, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final MomSessionVariables mom) throws JAXBException, XMLStreamException
+	{
+		boolean combatEnded = false;
+		boolean sentHeader = false;
+		
+		// Is there a unit in the same space as the vortex?
+		final MemoryUnit doomUnit = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+			(MapCoordinates3DEx) vortex.getCombatLocation (), (MapCoordinates2DEx) vortex.getCombatPosition (), mom.getServerDB ());
+		if (doomUnit != null)
+		{
+			getSpellProcessing ().sendVortexDamageHeader (vortex, attackingPlayer, defendingPlayer, mom.getServerDB ());
+			sentHeader = true;
+		}
+		
+		// Are there any units in the 8 tiles adjacent to the vortex?
+		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (mom.getSessionDescription ().getCombatMapSize ().getCoordinateSystemType ()); d++)
+			if (!combatEnded)
+			{
+				final MapCoordinates2DEx coords = new MapCoordinates2DEx ((MapCoordinates2DEx) vortex.getCombatPosition ());
+				if (getCoordinateSystemUtils ().move2DCoordinates (mom.getSessionDescription ().getCombatMapSize (), coords, d))
+				{
+					final MemoryUnit lightningUnit = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+						(MapCoordinates3DEx) vortex.getCombatLocation (), coords, mom.getServerDB ());
+					if ((lightningUnit != null) && (getRandomUtils ().nextInt (3) == 0))
+					{
+						if (!sentHeader)
+						{
+							getSpellProcessing ().sendVortexDamageHeader (vortex, attackingPlayer, defendingPlayer, mom.getServerDB ());
+							sentHeader = true;
+						}
+					}
+				}
+			}
+		
+		return combatEnded;
+	}
 
 	/**
 	 * @return Methods dealing with combat maps that are only needed on the server
@@ -137,5 +202,69 @@ public final class CombatHandlingImpl implements CombatHandling
 	public final void setDamageProcessor (final DamageProcessor proc)
 	{
 		damageProcessor = proc;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final SpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final SpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

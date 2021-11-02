@@ -653,34 +653,43 @@ public final class CombatProcessingImpl implements CombatProcessing
 					getCombatEndTurn ().combatBeforeEitherTurn ((PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (),
 						combatLocation, mom);
 				
-				// Roll for which units will be terrified and cannot move this turn
+				// Roll for which units will be terrified and cannot move this turn; this also moves Magic Vortexes which could end the combat, or the whole session
 				final List<Integer> terrifiedUnitURNs = getCombatEndTurn ().startCombatTurn (combatLocation, tc.getCombatCurrentPlayerID (),
 					(PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), mom);
-				
-				// Tell all human players involved in the combat who the new player is
-				final SetCombatPlayerMessage msg = new SetCombatPlayerMessage ();
-				msg.setCombatLocation (combatLocation);
-				msg.setPlayerID (tc.getCombatCurrentPlayerID ());
-				msg.getTerrifiedUnitURN ().addAll (terrifiedUnitURNs);
-				
-				if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().isHuman ())
-					((PlayerServerDetails) combatPlayers.getDefendingPlayer ()).getConnection ().sendMessageToClient (msg);
-
-				if (combatPlayers.getAttackingPlayer ().getPlayerDescription ().isHuman ())
-					((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
-				
-				// Give this player all their movement for this turn
-				final List<ExpandedUnitDetails> webbedUnits = getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayerID (), combatLocation,
-					terrifiedUnitURNs, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-				
-				getFogOfWarMidTurnMultiChanges ().processWebbedUnits (webbedUnits,
-					mom.getGeneralServerKnowledge (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-				
-				// Allow the player to cast a spell this turn
-				tc.setSpellCastThisCombatTurn (null);
-				
-				// Reset counterattack to hit penalties
-				tc.getNumberOfTimedAttacked ().clear ();
+				if (terrifiedUnitURNs == null)
+				{
+					// Combat ended
+					tc.setCombatCurrentPlayerID (null);
+					consecutiveTurnsWithoutDoingAnything = 0;
+					aiPlayerTurn = false;
+				}
+				else
+				{
+					// Tell all human players involved in the combat who the new player is
+					final SetCombatPlayerMessage msg = new SetCombatPlayerMessage ();
+					msg.setCombatLocation (combatLocation);
+					msg.setPlayerID (tc.getCombatCurrentPlayerID ());
+					msg.getTerrifiedUnitURN ().addAll (terrifiedUnitURNs);
+					
+					if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().isHuman ())
+						((PlayerServerDetails) combatPlayers.getDefendingPlayer ()).getConnection ().sendMessageToClient (msg);
+	
+					if (combatPlayers.getAttackingPlayer ().getPlayerDescription ().isHuman ())
+						((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
+					
+					// Give this player all their movement for this turn
+					final List<ExpandedUnitDetails> webbedUnits = getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayerID (), combatLocation,
+						terrifiedUnitURNs, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					
+					getFogOfWarMidTurnMultiChanges ().processWebbedUnits (webbedUnits,
+						mom.getGeneralServerKnowledge (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+					
+					// Allow the player to cast a spell this turn
+					tc.setSpellCastThisCombatTurn (null);
+					
+					// Reset counterattack to hit penalties
+					tc.getNumberOfTimedAttacked ().clear ();
+				}
 			}
 			
 			// AI or human player?
@@ -1377,7 +1386,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 					
 				case MOVE:
 				case TELEPORT:
-					// Nothing special to do
+					// Vortexes attack just by moving
+					if (mom.getServerDB ().getUnitsThatMoveThroughOtherUnits ().contains (tu.getUnitID ()))
+						combatEnded = getCombatHandling ().damageFromVortex (tu.getMemoryUnit (), attackingPlayer, defendingPlayer, mom);
 					break;
 	
 				case CANNOT_MOVE:

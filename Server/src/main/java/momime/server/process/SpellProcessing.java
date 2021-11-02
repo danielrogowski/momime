@@ -167,6 +167,19 @@ public interface SpellProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
+	 * Sends damage header about the doom and lightning attacks from a Magic Vortex
+	 * 
+	 * @param vortex The vortex that is making attacks
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void sendVortexDamageHeader (final MemoryUnit vortex, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final CommonDatabase db) throws JAXBException, XMLStreamException;
+	
+	/**
 	 * For Stasis.  Each turn, units with stasis get a resistance roll for a chance to free themselves.
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on

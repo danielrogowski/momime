@@ -197,7 +197,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return List of units frozen in terror who will not get any movement allocation this turn
+	 * @return List of units frozen in terror who will not get any movement allocation this turn; will return null (rather than an empty list) if the combat ends
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
@@ -209,113 +209,9 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		// Work out the other player in combat
-		final PlayerServerDetails castingPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer;
-		final MomPersistentPlayerPrivateKnowledge castingPlayerPriv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
-		
-		// Does opposing player have terror cast on this combat?
-		final Spell terrorDef = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_TERROR, "startCombatTurn");
-		final String combatAreaEffectID = terrorDef.getSpellHasCombatEffect ().get (0);
-		
-		final List<ExpandedUnitDetails> unitsToRoll = new ArrayList<ExpandedUnitDetails> ();
-		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-		
-		if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
-			combatAreaEffectID, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
-			
-			for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
-					(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
-				{
-					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-					
-					// attackSpellDamageResolutionTypeID = R on Terror spell def just to make the resistance check in isUnitValidTargetForSpell take effect
-					if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(terrorDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-							null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
-							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
-						
-						unitsToRoll.add (xu);
-				}
-		
-		// Only bother to send the damage calculation header if there's at least one unit that has to make a roll
-		final List<Integer> terrifiedUnitURNs = new ArrayList<Integer> ();
-		if (unitsToRoll.size () > 0)
-		{
-			getDamageCalculator ().sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, terrorDef, castingPlayer);
-			final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell
-				(terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT);
-			
-			for (final ExpandedUnitDetails xu : unitsToRoll)
-				if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage, false))
-					terrifiedUnitURNs.add (xu.getUnitURN ());
-		}
-		
-		// Does opposing player have mana leak cast on this combat?
-		if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
-			CommonDatabaseConstants.COMBAT_AREA_EFFECT_ID_MANA_LEAK, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
-		{
-			for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
-					(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
-				{
-					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-					if (xu.getControllingPlayerID () == playerID)
-					{
-						// Units with their own MP pool
-						if (thisUnit.getManaRemaining () > 0)
-						{
-							thisUnit.setManaRemaining (Math.max (0, thisUnit.getManaRemaining () - 5));
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
-						}
-						
-						// Units with magical ranged attacks
-						else if ((thisUnit.getAmmoRemaining () > 0) && (xu.getRangedAttackType ().getMagicRealmID () != null))
-						{
-							thisUnit.setAmmoRemaining (thisUnit.getAmmoRemaining () - 1);
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
-						}
-					}
-				}
-			
-			// Enemy wizard
-			final PlayerServerDetails thisPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? attackingPlayer : defendingPlayer;
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
-			final int mana = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-			if (mana > 0)
-			{
-				final int subtractMana = Math.min (5, mana);
-				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -subtractMana);
-				
-				// We have to re-send the remaining casting skill with the message, since the client doesn't record it, and by sending
-				// it the client can correctly work out if the reduced MP is below the remaining casting skill and means the player can now cast less
-				if (thisPlayer.getPlayerDescription ().isHuman ())
-				{
-					final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-						(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-
-					Integer sendSkillValue = null;
-					if (thisPlayer == defendingPlayer)
-					{
-						if (gc.getCombatDefenderCastingSkillRemaining () != null)
-							sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
-					}
-					else if (thisPlayer == attackingPlayer)
-					{
-						if (gc.getCombatAttackerCastingSkillRemaining () != null)
-							sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
-					}
-					
-					getServerResourceCalculations ().sendGlobalProductionValues (thisPlayer, sendSkillValue, false);
-				}
-			}
-		}
-		
 		// Do we have any vortexes?  If so then move their 3 random moves.  Then they get their 1 movement controlled by the player during their regular turn.
+		final List<ExpandedUnitDetails> vortexes = new ArrayList<ExpandedUnitDetails> ();
+		
 		for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
@@ -324,45 +220,166 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				if ((xu.getControllingPlayerID () == playerID) && (!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)))
+					vortexes.add (xu);
+			}
+		
+		// Don't process over the main unit list in case earlier vortexes kill off some units and modify the list
+		boolean combatEnded = false;
+		for (final ExpandedUnitDetails xu : vortexes)
+			if (!combatEnded)
+			{
+				final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
+				final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(xu.getCombatLocation ().getZ ()).getRow ().get (xu.getCombatLocation ().getY ()).getCell ().get (xu.getCombatLocation ().getX ());
+				xu.setDoubleCombatMovesLeft (6);
+				
+				Integer firstDirection = null;
+				int vortexMoveNumber = 0;
+				while ((!combatEnded) && (vortexMoveNumber < 3))
 				{
-					final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
-					final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-						(thisUnit.getCombatLocation ().getZ ()).getRow ().get (thisUnit.getCombatLocation ().getY ()).getCell ().get (thisUnit.getCombatLocation ().getX ());
-					xu.setDoubleCombatMovesLeft (6);
-					
-					Integer firstDirection = null;
-					for (int vortexMoveNumber = 0; vortexMoveNumber < 3; vortexMoveNumber++)
+					// Only ever deviates +/- 90 degres from the first direction chosen
+					final int d;
+					if (firstDirection == null)
 					{
-						// Only ever deviates +/- 90 degres from the first direction chosen
-						final int d;
-						if (firstDirection == null)
-						{
-							d = getRandomUtils ().nextInt (getCoordinateSystemUtils ().getMaxDirection (combatMapSize.getCoordinateSystemType ())) + 1;
-							firstDirection = d;
-						}
-						else
-							d = getCoordinateSystemUtils ().normalizeDirection (combatMapSize.getCoordinateSystemType (), firstDirection - 2 + getRandomUtils ().nextInt (5));
+						d = getRandomUtils ().nextInt (getCoordinateSystemUtils ().getMaxDirection (combatMapSize.getCoordinateSystemType ())) + 1;
+						firstDirection = d;
+					}
+					else
+						d = getCoordinateSystemUtils ().normalizeDirection (combatMapSize.getCoordinateSystemType (), firstDirection - 2 + getRandomUtils ().nextInt (5));
+	
+					// Nothing is impassable, but might bang into the edge of the map
+					final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+					final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+					final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+					
+					getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
+						mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
+					
+					// Check the intended cell
+					final MapCoordinates2DEx coords = new MapCoordinates2DEx (xu.getCombatPosition ());
+					if (getCoordinateSystemUtils ().move2DCoordinates (combatMapSize, coords, d))
+					{
+						final CombatMoveType moveType = movementTypes [coords.getY ()] [coords.getX ()];
+						if (MOVE_TYPES.contains (moveType))
+							combatEnded = getCombatProcessing ().okToMoveUnitInCombat (xu, coords, MoveUnitInCombatReason.MAGIC_VORTEX,
+								movementDirections, movementTypes, mom);
+					}
+					
+					vortexMoveNumber++;
+				}
+			}
 
-						// Nothing is impassable, but might bang into the edge of the map
-						final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-						final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-						final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final List<Integer> terrifiedUnitURNs;
+		if (combatEnded)
+			terrifiedUnitURNs = null;
+		else
+		{
+			// Work out the other player in combat
+			final PlayerServerDetails castingPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer;
+			final MomPersistentPlayerPrivateKnowledge castingPlayerPriv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+			
+			// Does opposing player have terror cast on this combat?
+			final Spell terrorDef = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_TERROR, "startCombatTurn");
+			final String combatAreaEffectID = terrorDef.getSpellHasCombatEffect ().get (0);
+			
+			final List<ExpandedUnitDetails> unitsToRoll = new ArrayList<ExpandedUnitDetails> ();
+			final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+			
+			if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
+				combatAreaEffectID, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
+				
+				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+						(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+					{
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
-							mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
-						
-						// Check the intended cell
-						final MapCoordinates2DEx coords = new MapCoordinates2DEx ((MapCoordinates2DEx) thisUnit.getCombatPosition ());
-						if (getCoordinateSystemUtils ().move2DCoordinates (combatMapSize, coords, d))
+						// attackSpellDamageResolutionTypeID = R on Terror spell def just to make the resistance check in isUnitValidTargetForSpell take effect
+						if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+							(terrorDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+								null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
+								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+							
+							unitsToRoll.add (xu);
+					}
+			
+			// Only bother to send the damage calculation header if there's at least one unit that has to make a roll
+			terrifiedUnitURNs = new ArrayList<Integer> ();
+			if (unitsToRoll.size () > 0)
+			{
+				getDamageCalculator ().sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, terrorDef, castingPlayer);
+				final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell
+					(terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT);
+				
+				for (final ExpandedUnitDetails xu : unitsToRoll)
+					if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage, false))
+						terrifiedUnitURNs.add (xu.getUnitURN ());
+			}
+			
+			// Does opposing player have mana leak cast on this combat?
+			if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
+				CommonDatabaseConstants.COMBAT_AREA_EFFECT_ID_MANA_LEAK, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
+			{
+				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+						(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+					{
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						if (xu.getControllingPlayerID () == playerID)
 						{
-							final CombatMoveType moveType = movementTypes [coords.getY ()] [coords.getX ()];
-							if (MOVE_TYPES.contains (moveType))
-								getCombatProcessing ().okToMoveUnitInCombat (xu, coords, MoveUnitInCombatReason.MAGIC_VORTEX,
-									movementDirections, movementTypes, mom);
+							// Units with their own MP pool
+							if (thisUnit.getManaRemaining () > 0)
+							{
+								thisUnit.setManaRemaining (Math.max (0, thisUnit.getManaRemaining () - 5));
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+							}
+							
+							// Units with magical ranged attacks
+							else if ((thisUnit.getAmmoRemaining () > 0) && (xu.getRangedAttackType ().getMagicRealmID () != null))
+							{
+								thisUnit.setAmmoRemaining (thisUnit.getAmmoRemaining () - 1);
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+							}
 						}
+					}
+				
+				// Enemy wizard
+				final PlayerServerDetails thisPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? attackingPlayer : defendingPlayer;
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+				final int mana = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+				if (mana > 0)
+				{
+					final int subtractMana = Math.min (5, mana);
+					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -subtractMana);
+					
+					// We have to re-send the remaining casting skill with the message, since the client doesn't record it, and by sending
+					// it the client can correctly work out if the reduced MP is below the remaining casting skill and means the player can now cast less
+					if (thisPlayer.getPlayerDescription ().isHuman ())
+					{
+						final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+							(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+	
+						Integer sendSkillValue = null;
+						if (thisPlayer == defendingPlayer)
+						{
+							if (gc.getCombatDefenderCastingSkillRemaining () != null)
+								sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
+						}
+						else if (thisPlayer == attackingPlayer)
+						{
+							if (gc.getCombatAttackerCastingSkillRemaining () != null)
+								sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
+						}
+						
+						getServerResourceCalculations ().sendGlobalProductionValues (thisPlayer, sendSkillValue, false);
 					}
 				}
 			}
+		}
 		
 		return terrifiedUnitURNs;
 	}

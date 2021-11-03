@@ -537,7 +537,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
 		
 		// Dish out damage
-		final int totalHits = getUnitServerUtils ().applyDamage (defender, actualDamage, damageCalculationMsg.getModifiedDefenceStrength (),
+		final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, actualDamage, damageCalculationMsg.getModifiedDefenceStrength (),
 			damageCalculationMsg.getChanceToDefend ());
 		
 		damageCalculationMsg.setFinalHits (totalHits);
@@ -635,7 +635,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDefenderFigures (defender.calculateAliveFigureCount ());
 
 		// Dish out damage
-		final int totalHits = getUnitServerUtils ().applyDamage (defender, attackDamage.getPotentialHits (), 0, 0);
+		final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, attackDamage.getPotentialHits (), 0, 0);
 		
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -673,7 +673,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Unit either takes no damage, or dies outright
 		if (damageCalculationMsg.getActualHits () < attackDamage.getPotentialHits ())
 		{
-			final int totalHits = getUnitServerUtils ().applyDamage (defender, Integer.MAX_VALUE, 0, 0);
+			final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, Integer.MAX_VALUE, 0, 0);
 			damageCalculationMsg.setFinalHits (totalHits);
 		}
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -931,7 +931,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		if (totalHits < 0)
 			totalHits = 0;
 		else
-			totalHits = getUnitServerUtils ().applyDamage (defender, totalHits, 0, 0);
+			totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, totalHits, 0, 0);
 			
 		// Store and send final totals
 		damageCalculationMsg.setFinalHits (totalHits);
@@ -979,7 +979,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setActualHits (totalHits);
 		
 		// Can't overkill the unit
-		totalHits = getUnitServerUtils ().applyDamage (defender, totalHits, 0, 0);
+		totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, totalHits, 0, 0);
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
@@ -1031,7 +1031,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Unit either takes no damage, or dies outright
 		if (damageCalculationMsg.getModifiedDefenceStrength () < 10)
 		{
-			final int totalHits = getUnitServerUtils ().applyDamage (defender, Integer.MAX_VALUE, 0, 0);
+			final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, Integer.MAX_VALUE, 0, 0);
 			damageCalculationMsg.setFinalHits (totalHits);
 		}
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);

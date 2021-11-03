@@ -653,7 +653,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws MomException If there are any problems with the unit stats calculation
 	 */
 	@Override
-	public final int applyDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend)
+	public final int applySingleFigureDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend)
 		throws MomException
 	{
 		// Dish out damage - See page 287 in the strategy guide

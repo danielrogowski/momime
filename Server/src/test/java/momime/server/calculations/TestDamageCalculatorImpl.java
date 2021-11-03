@@ -743,7 +743,7 @@ public final class TestDamageCalculatorImpl
 
 		// Mock the damage being applied
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, 6, 4, 5)).thenReturn (3);		// Take 6 hits, each figure has defence 4, with 50% block chance
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 4, 5)).thenReturn (3);		// Take 6 hits, each figure has defence 4, with 50% block chance
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -830,7 +830,7 @@ public final class TestDamageCalculatorImpl
 
 		// Mock the damage being applied (NB. now 2 instead of 4 defence)
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, 6, 2, 5)).thenReturn (3);		// Take 6 hits, each figure has defence 2, with 50% block chance
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 2, 5)).thenReturn (3);		// Take 6 hits, each figure has defence 2, with 50% block chance
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -917,7 +917,7 @@ public final class TestDamageCalculatorImpl
 
 		// Mock the damage being applied (NB. now 0 instead of 4 defence)
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, 6, 0, 5)).thenReturn (6);		// Take 6 hits, each figure has defence 0, with 50% block chance
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 0, 5)).thenReturn (6);		// Take 6 hits, each figure has defence 0, with 50% block chance
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1082,7 +1082,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, 6, 0, 0)).thenReturn (6);				// Automatically takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 0, 0)).thenReturn (6);				// Automatically takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1157,7 +1157,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1233,7 +1233,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1620,7 +1620,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, 2, 0, 0)).thenReturn (2);		// Take 2 hits, with no defence and no blocks
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 2, 0, 0)).thenReturn (2);		// Take 2 hits, with no defence and no blocks
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1702,7 +1702,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, 5, 0, 0)).thenReturn (5);		// Take 5 hits, with no defence and no blocks
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 5, 0, 0)).thenReturn (5);		// Take 5 hits, with no defence and no blocks
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1779,7 +1779,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, 2, 0, 0)).thenReturn (2);		// Take 5 hits, with no defence and no blocks
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 2, 0, 0)).thenReturn (2);		// Take 5 hits, with no defence and no blocks
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1852,7 +1852,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1924,7 +1924,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applyDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();

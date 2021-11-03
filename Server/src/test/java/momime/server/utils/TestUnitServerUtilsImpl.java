@@ -1346,11 +1346,11 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	}
 	
 	/**
-	 * Tests the applyDamage method
+	 * Tests the applySingleFigureDamage method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testApplyDamage () throws Exception
+	public final void testApplySingleFigureDamage () throws Exception
 	{
 		// Unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -1372,7 +1372,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		utils.setRandomUtils (random);
 		
 		// Run method
-		assertEquals (3, utils.applyDamage (xu, 6, 4, 5));	// Take 6 hits, each figure has defence 4, with 50% block chance
+		assertEquals (3, utils.applySingleFigureDamage (xu, 6, 4, 5));	// Take 6 hits, each figure has defence 4, with 50% block chance
 	}
 	
 	/**

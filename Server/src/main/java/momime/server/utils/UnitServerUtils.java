@@ -155,7 +155,7 @@ public interface UnitServerUtils
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
 	 * @throws MomException If there are any problems with the unit stats calculation
 	 */
-	public int applyDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend)
+	public int applySingleFigureDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend)
 		throws MomException;
 
 	/**

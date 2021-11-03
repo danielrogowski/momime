@@ -582,8 +582,8 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 			players, fow, db)).thenReturn (potentialDamageToDefender2);
 
 		// 3+4 of them actually hit
-		when (damageCalc.calculateResistOrTakeDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender1)).thenReturn (3);
-		when (damageCalc.calculateDoomDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender2)).thenReturn (4);
+		when (damageCalc.calculateResistOrTakeDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender1, db)).thenReturn (3);
+		when (damageCalc.calculateDoomDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender2, db)).thenReturn (4);
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);

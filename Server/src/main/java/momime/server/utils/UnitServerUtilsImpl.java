@@ -651,13 +651,19 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
 	 * @param damageReductionApplies Whether the type of damage allows defence rolls or not; this is to differentiate between 0 defence
 	 * 	because the unit has no defence (like Phantom Warriors) and 0 defence because the damage type allows no defence (like Doom Bolt)
+	 * @param db Lookup lists built over the XML database
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
 	 * @throws MomException If there are any problems with the unit stats calculation
 	 */
 	@Override
 	public final int applySingleFigureDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
-		final boolean damageReductionApplies) throws MomException
+		final boolean damageReductionApplies, final CommonDatabase db) throws MomException
 	{
+		// Total up damage reduction from invulnerability
+		int damageReduction = 0;
+		if (damageReductionApplies)
+			damageReduction = db.getDamageReductionSkills ().entrySet ().stream ().filter (e -> defender.hasModifiedSkill (e.getKey ())).mapToInt (e -> e.getValue ()).sum ();
+		
 		// Dish out damage - See page 287 in the strategy guide
 		// We can't do all defending in one go, each figure only gets to use its shields if the previous figure dies.
 		// e.g. a unit of 8 spearmen has to take 2 hits, if all 8 spearmen get to try to block the 2 hits, they might not even lose 1 figure.
@@ -675,7 +681,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				if (getRandomUtils ().nextInt (10) < chanceToDefend)
 					thisBlockedHits++;
 			
-			hitsLeftToApply = hitsLeftToApply - thisBlockedHits;
+			hitsLeftToApply = hitsLeftToApply - thisBlockedHits - damageReduction;
 			
 			// If any damage was not blocked by shields then it goes to health
 			if (hitsLeftToApply > 0)
@@ -711,14 +717,20 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param actualDamage Placeholder to output number of potential hits which actually hit (before blocking)
 	 * @param damageReductionApplies Whether the type of damage allows defence rolls or not; this is to differentiate between 0 defence
 	 * 	because the unit has no defence (like Phantom Warriors) and 0 defence because the damage type allows no defence (like Doom Bolt)
+	 * @param db Lookup lists built over the XML database
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
 	 * @throws MomException If there are any problems with the unit stats calculation
 	 */
 	@Override
 	public final int applyMultiFigureDamage (final ExpandedUnitDetails defender, final int potentialHitsPerFigure, final int chanceToHit,
-		final int defenderDefenceStrength, final int chanceToDefend, final Holder<Integer> actualDamage, final boolean damageReductionApplies)
-		throws MomException
+		final int defenderDefenceStrength, final int chanceToDefend, final Holder<Integer> actualDamage, final boolean damageReductionApplies,
+		final CommonDatabase db) throws MomException
 	{
+		// Total up damage reduction from invulnerability
+		int damageReduction = 0;
+		if (damageReductionApplies)
+			damageReduction = db.getDamageReductionSkills ().entrySet ().stream ().filter (e -> defender.hasModifiedSkill (e.getKey ())).mapToInt (e -> e.getValue ()).sum ();
+
 		// Keep track of how many HP the current figure has
 		int hitPointsThisFigure = defender.calculateHitPointsRemainingOfFirstFigure ();
 		
@@ -745,7 +757,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					blocksFromThisFigure++;
 			
 			// We can't do less than 0, or more than the full HP, damage to each individual figure
-			int hitsOnThisFigure = damageToThisFigure - blocksFromThisFigure;
+			int hitsOnThisFigure = damageToThisFigure - blocksFromThisFigure - damageReduction;
 			if (hitsOnThisFigure < 0)
 				hitsOnThisFigure = 0;
 			else if (hitsOnThisFigure > hitPointsThisFigure)

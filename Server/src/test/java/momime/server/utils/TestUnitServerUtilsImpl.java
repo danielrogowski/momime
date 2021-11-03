@@ -1352,6 +1352,9 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	@Test
 	public final void testApplySingleFigureDamage () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		
@@ -1372,7 +1375,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		utils.setRandomUtils (random);
 		
 		// Run method
-		assertEquals (3, utils.applySingleFigureDamage (xu, 6, 4, 5, true));	// Take 6 hits, each figure has defence 4, with 50% block chance
+		assertEquals (3, utils.applySingleFigureDamage (xu, 6, 4, 5, true, db));	// Take 6 hits, each figure has defence 4, with 50% block chance
 	}
 	
 	/**
@@ -1382,6 +1385,9 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	@Test
 	public final void testApplyMultiFigureDamage () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		
@@ -1404,7 +1410,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		// Run method
 		// Possible 6 hits per figure with 30% chance of each striking, then each figure has defence 4, with 50% block chance
 		final Holder<Integer> actualDamage = new Holder<Integer> ();
-		assertEquals (7, utils.applyMultiFigureDamage (xu, 6, 3, 4, 5, actualDamage, true));
+		assertEquals (7, utils.applyMultiFigureDamage (xu, 6, 3, 4, 5, actualDamage, true, db));
 		assertEquals (12, actualDamage.getValue ().intValue ());
 	}
 	

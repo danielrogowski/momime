@@ -3,6 +3,7 @@ package momime.common.database;
 import java.awt.Dimension;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
@@ -558,4 +559,9 @@ public interface CommonDatabase
 	 * @return List of unit IDs that have the special unit skill that they can move through other units and other units can move through them (Magic Vortex) 
 	 */
 	public List<String> getUnitsThatMoveThroughOtherUnits ();
+
+	/**
+	 * @return Map of unit skill IDs to the damage reduction they give
+	 */
+	public Map<String, Integer> getDamageReductionSkills ();
 }

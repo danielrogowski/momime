@@ -155,6 +155,9 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	/** List of unit IDs that have the special unit skill that they can move through other units and other units can move through them (Magic Vortex) */
 	private List<String> unitsThatMoveThroughOtherUnits;
 
+	/** Map of unit skill IDs to the damage reduction they give */
+	private Map<String, Integer> damageReductionSkills;
+	
 	/**
 	 * Builds all the hash maps to enable finding records faster
 	 */
@@ -362,6 +365,10 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 			
 			log.info ("Unit ID(s) that can move through other units (magic vortex) = " + list);
 		}
+		
+		// Find damage reduction skills (Invulnerability)
+		damageReductionSkills = getUnitSkill ().stream ().filter (s -> s.getDamageReduction () != null).collect
+			(Collectors.toMap (s -> s.getUnitSkillID (), s -> s.getDamageReduction ()));
 	}
 	
 	/**
@@ -1176,6 +1183,15 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	public final List<String> getUnitsThatMoveThroughOtherUnits ()
 	{
 		return unitsThatMoveThroughOtherUnits;
+	}
+
+	/**
+	 * @return Map of unit skill IDs to the damage reduction they give
+	 */
+	@Override
+	public final Map<String, Integer> getDamageReductionSkills ()
+	{
+		return damageReductionSkills;
 	}
 	
 	/**

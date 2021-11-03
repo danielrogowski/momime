@@ -322,12 +322,12 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									
 								case DOOM:
 									thisDamage = getDamageCalculator ().calculateDoomDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
 									break;
 			
 								case CHANCE_OF_DEATH:
 									thisDamage = getDamageCalculator ().calculateChanceOfDeathDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
 									break;
 			
 								case EACH_FIGURE_RESIST_OR_DIE:
@@ -342,17 +342,17 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									
 								case RESIST_OR_TAKE_DAMAGE:
 									thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
 									break;
 									
 								case RESISTANCE_ROLLS:
 									thisDamage = getDamageCalculator ().calculateResistanceRollsDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
 									break;
 			
 								case DISINTEGRATE:
 									thisDamage = getDamageCalculator ().calculateDisintegrateDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
 									break;
 									
 								case FEAR:

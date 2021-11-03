@@ -215,13 +215,14 @@ public interface DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public int calculateDoomDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException;
 
 	/**
 	 * Sets the number of actual hits for "% chance of death" damage, used by cracks call.
@@ -230,13 +231,14 @@ public interface DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public int calculateChanceOfDeathDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException;
 
 	/**
 	 * Doesn't actually do any damage - just makes a resistance roll and returns true/false for whether the unit failed the roll or not.
@@ -292,13 +294,14 @@ public interface DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public int calculateResistOrTakeDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException;
 	
 	/**
 	 * Rolls the number of actual hits for "resistance rolls damage", where the unit has to make n resistance rolls and
@@ -308,13 +311,14 @@ public interface DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public int calculateResistanceRollsDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException;
 	
 	/**
 	 * Sets the number of actual hits for disintegrate, which completely kills the unit if it has 9 resistance or less.
@@ -323,13 +327,14 @@ public interface DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public int calculateDisintegrateDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException;
 
 	/**
 	 * Rolls the effect of a fear attack, which causes no actual damage, but can cause some of the figures to become

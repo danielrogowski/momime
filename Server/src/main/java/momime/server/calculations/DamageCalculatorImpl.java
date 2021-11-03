@@ -406,7 +406,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attacker, attackDamage, 1,
 			combatLocation, combatMap, trueBuildings, db);
 		
-		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
+		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage, db);
 		return totalHits;
 	}
 	
@@ -439,7 +439,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attacker, attackDamage, 2,
 			combatLocation, combatMap, trueBuildings, db);
 		
-		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
+		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage, db);
 		return totalHits;
 	}
 
@@ -472,7 +472,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attacker, attackDamage, 0,
 			combatLocation, combatMap, trueBuildings, db);
 		
-		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
+		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage, db);
 		return totalHits;
 	}
 	
@@ -484,13 +484,14 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	private final int calculateSingleFigureDamageInternal (final ExpandedUnitDetails defender, final int defenderDefenceStrength,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final AttackDamage attackDamage)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final AttackDamage attackDamage, final CommonDatabase db)
 		throws MomException, JAXBException, XMLStreamException
 	{
 		// Store values straight into the message
@@ -538,7 +539,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 		// Dish out damage
 		final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, actualDamage, damageCalculationMsg.getModifiedDefenceStrength (),
-			damageCalculationMsg.getChanceToDefend (), true);
+			damageCalculationMsg.getChanceToDefend (), true, db);
 		
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -597,7 +598,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Dish out damage
 		final Holder<Integer> actualDamage = new Holder<Integer> ();
 		final int totalHits = getUnitServerUtils ().applyMultiFigureDamage (defender, attackDamage.getPotentialHits (), damageCalculationMsg.getChanceToHit (),
-			damageCalculationMsg.getModifiedDefenceStrength (), damageCalculationMsg.getChanceToDefend (), actualDamage, true);
+			damageCalculationMsg.getModifiedDefenceStrength (), damageCalculationMsg.getChanceToDefend (), actualDamage, true, db);
 		
 		// Store and send final totals
 		damageCalculationMsg.setActualHits (actualDamage.getValue ());		
@@ -614,6 +615,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -621,7 +623,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateDoomDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
@@ -635,7 +637,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDefenderFigures (defender.calculateAliveFigureCount ());
 
 		// Dish out damage
-		final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, attackDamage.getPotentialHits (), 0, 0, false);
+		final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, attackDamage.getPotentialHits (), 0, 0, false, db);
 		
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -650,6 +652,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -657,7 +660,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateChanceOfDeathDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
@@ -673,7 +676,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Unit either takes no damage, or dies outright
 		if (damageCalculationMsg.getActualHits () < attackDamage.getPotentialHits ())
 		{
-			final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, Integer.MAX_VALUE, 0, 0, false);
+			final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, Integer.MAX_VALUE, 0, 0, false, db);
 			damageCalculationMsg.setFinalHits (totalHits);
 		}
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
@@ -888,6 +891,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -895,7 +899,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateResistOrTakeDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
@@ -931,7 +935,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		if (totalHits < 0)
 			totalHits = 0;
 		else
-			totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, totalHits, 0, 0, false);
+			totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, totalHits, 0, 0, false, db);
 			
 		// Store and send final totals
 		damageCalculationMsg.setFinalHits (totalHits);
@@ -948,6 +952,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -955,7 +960,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateResistanceRollsDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
@@ -979,7 +984,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setActualHits (totalHits);
 		
 		// Can't overkill the unit
-		totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, totalHits, 0, 0, false);
+		totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, totalHits, 0, 0, false, db);
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
@@ -993,6 +998,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -1000,7 +1006,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final int calculateDisintegrateDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+		final AttackDamage attackDamage, final CommonDatabase db) throws MomException, JAXBException, XMLStreamException
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
@@ -1031,7 +1037,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Unit either takes no damage, or dies outright
 		if (damageCalculationMsg.getModifiedDefenceStrength () < 10)
 		{
-			final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, Integer.MAX_VALUE, 0, 0, false);
+			final int totalHits = getUnitServerUtils ().applySingleFigureDamage (defender, Integer.MAX_VALUE, 0, 0, false, db);
 			damageCalculationMsg.setFinalHits (totalHits);
 		}
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);

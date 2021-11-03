@@ -698,6 +698,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateSingleFigureDamage () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -732,7 +735,7 @@ public final class TestDamageCalculatorImpl
 		
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 1, null, null, null, null)).thenReturn (4);
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 1, null, null, null, db)).thenReturn (4);
 		
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
@@ -743,7 +746,7 @@ public final class TestDamageCalculatorImpl
 
 		// Mock the damage being applied
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 4, 5, true)).thenReturn (3);		// Take 6 hits, each figure has defence 4, with 50% block chance
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 4, 5, true, db)).thenReturn (3);		// Take 6 hits, each figure has defence 4, with 50% block chance
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -752,7 +755,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, null));
+		assertEquals (3, calc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -785,6 +788,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateArmourPiercingDamage () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -819,7 +825,7 @@ public final class TestDamageCalculatorImpl
 
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 2, null, null, null, null)).thenReturn (2);		// halved by Armour Piercing
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 2, null, null, null, db)).thenReturn (2);		// halved by Armour Piercing
 
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
@@ -830,7 +836,7 @@ public final class TestDamageCalculatorImpl
 
 		// Mock the damage being applied (NB. now 2 instead of 4 defence)
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 2, 5, true)).thenReturn (3);		// Take 6 hits, each figure has defence 2, with 50% block chance
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 2, 5, true, db)).thenReturn (3);		// Take 6 hits, each figure has defence 2, with 50% block chance
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -839,7 +845,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (3, calc.calculateArmourPiercingDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, null));
+		assertEquals (3, calc.calculateArmourPiercingDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -872,6 +878,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateIllusionaryDamage () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -917,7 +926,7 @@ public final class TestDamageCalculatorImpl
 
 		// Mock the damage being applied (NB. now 0 instead of 4 defence)
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 0, 5, true)).thenReturn (6);		// Take 6 hits, each figure has defence 0, with 50% block chance
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 0, 5, true, db)).thenReturn (6);		// Take 6 hits, each figure has defence 0, with 50% block chance
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -926,7 +935,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (6, calc.calculateIllusionaryDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, null));
+		assertEquals (6, calc.calculateIllusionaryDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -959,6 +968,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateMultiFigureDamage () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -993,7 +1005,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 1, null, null, null, null)).thenReturn (4);
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 1, null, null, null, db)).thenReturn (4);
 		
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
@@ -1006,7 +1018,7 @@ public final class TestDamageCalculatorImpl
 		@SuppressWarnings ("unchecked")
 		final ArgumentCaptor<Holder<Integer>> captureActualDamage = ArgumentCaptor.forClass (Holder.class);
 		
-		when (unitServerUtils.applyMultiFigureDamage (eq (xuDefender), eq (4), eq (4), eq (4), eq (5), captureActualDamage.capture (), eq (true))).thenAnswer ((i) ->
+		when (unitServerUtils.applyMultiFigureDamage (eq (xuDefender), eq (4), eq (4), eq (4), eq (5), captureActualDamage.capture (), eq (true), eq (db))).thenAnswer ((i) ->
 		{
 			captureActualDamage.getValue ().setValue (7);
 			return 5;
@@ -1019,7 +1031,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (5, calc.calculateMultiFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, null));
+		assertEquals (5, calc.calculateMultiFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1052,6 +1064,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateDoomDamage () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1082,7 +1097,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 0, 0, false)).thenReturn (6);			// Automatically takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 6, 0, 0, false, db)).thenReturn (6);			// Automatically takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1090,7 +1105,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (6, calc.calculateDoomDamage (xuDefender, attackingPlayer, defendingPlayer,
-			new AttackDamage (6, 1, damageType, DamageResolutionTypeID.DOOM, null, null, null, 1)));
+			new AttackDamage (6, 1, damageType, DamageResolutionTypeID.DOOM, null, null, null, 1), db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1123,6 +1138,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateChanceOfDeathDamage_Dies () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1157,7 +1175,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0, false)).thenReturn (6);		// Takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0, false, db)).thenReturn (6);		// Takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1166,7 +1184,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (6, calc.calculateChanceOfDeathDamage (xuDefender, attackingPlayer, defendingPlayer,
-			new AttackDamage (25, 0, damageType, DamageResolutionTypeID.CHANCE_OF_DEATH, null, null, null, 1)));
+			new AttackDamage (25, 0, damageType, DamageResolutionTypeID.CHANCE_OF_DEATH, null, null, null, 1), db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1199,6 +1217,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateChanceOfDeathDamage_Lives () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1233,7 +1254,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0, false)).thenReturn (6);		// Takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0, false, db)).thenReturn (6);		// Takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1242,7 +1263,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (0, calc.calculateChanceOfDeathDamage (xuDefender, attackingPlayer, defendingPlayer,
-			new AttackDamage (25, 0, damageType, DamageResolutionTypeID.CHANCE_OF_DEATH, null, null, null, 1)));
+			new AttackDamage (25, 0, damageType, DamageResolutionTypeID.CHANCE_OF_DEATH, null, null, null, 1), db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1583,6 +1604,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateResistOrTakeDamage_NoSavingThrowModifier () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1620,7 +1644,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, 2, 0, 0, false)).thenReturn (2);		// Take 2 hits, with no defence and no blocks
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 2, 0, 0, false, db)).thenReturn (2);		// Take 2 hits, with no defence and no blocks
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1629,7 +1653,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (2, calc.calculateResistOrTakeDamage (xuDefender, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1)));
+			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1), db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1662,6 +1686,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateResistOrTakeDamage_WithSavingThrowModifier () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1702,7 +1729,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, 5, 0, 0, false)).thenReturn (5);		// Take 5 hits, with no defence and no blocks
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 5, 0, 0, false, db)).thenReturn (5);		// Take 5 hits, with no defence and no blocks
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1711,7 +1738,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (5, calc.calculateResistOrTakeDamage (xuDefender, attackingPlayer, defendingPlayer,
-			new AttackDamage (3, 0, damageType, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1)));
+			new AttackDamage (3, 0, damageType, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1), db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1744,6 +1771,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateResistanceRollsDamage () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1779,7 +1809,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, 2, 0, 0, false)).thenReturn (2);		// Take 5 hits, with no defence and no blocks
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, 2, 0, 0, false, db)).thenReturn (2);		// Take 5 hits, with no defence and no blocks
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1788,7 +1818,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		assertEquals (2, calc.calculateResistanceRollsDamage (xuDefender, attackingPlayer, defendingPlayer,
-			new AttackDamage (6, 0, damageType, DamageResolutionTypeID.RESISTANCE_ROLLS, null, null, null, 1)));
+			new AttackDamage (6, 0, damageType, DamageResolutionTypeID.RESISTANCE_ROLLS, null, null, null, 1), db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1821,6 +1851,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateDisintegrateDamage_Dies () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1852,7 +1885,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0, false)).thenReturn (6);		// Takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0, false, db)).thenReturn (6);		// Takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1860,7 +1893,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (6, calc.calculateDisintegrateDamage (xuDefender, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.DISINTEGRATE, null, null, null, 1)));
+			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.DISINTEGRATE, null, null, null, 1), db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1893,6 +1926,9 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateDisintegrateDamage_Lives () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1924,7 +1960,7 @@ public final class TestDamageCalculatorImpl
 		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0, false)).thenReturn (6);		// Takes full dmg of 6 hits
+		when (unitServerUtils.applySingleFigureDamage (xuDefender, Integer.MAX_VALUE, 0, 0, false, db)).thenReturn (6);		// Takes full dmg of 6 hits
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -1932,7 +1968,7 @@ public final class TestDamageCalculatorImpl
 	
 		// Run test
 		assertEquals (0, calc.calculateDisintegrateDamage (xuDefender, attackingPlayer, defendingPlayer,
-			new AttackDamage (2, 0, damageType, DamageResolutionTypeID.DISINTEGRATE, null, null, null, 1)));
+			new AttackDamage (2, 0, damageType, DamageResolutionTypeID.DISINTEGRATE, null, null, null, 1), db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());

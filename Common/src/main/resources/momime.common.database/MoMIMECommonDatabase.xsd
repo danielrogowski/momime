@@ -2730,6 +2730,11 @@ the lead figure then the unit's value will be multiplied by x7.5.
 The value of multiplicative skills is ignored, so don't use this for any skill that may take a value.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="damageReduction" type="momimecommon:unitSkillValue" nxe:label="Damage reduction" nxe:gridwidth="120">
+				<xsd:annotation>
+					<xsd:documentation>For damage reduction from Invulnerability.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillImageFile" type="momimecommon:imageFilename" nxe:label="Unit skill image file" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="movementIconImageFile" type="momimecommon:imageFilename" nxe:label="Movement icon image file" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="movementIconImagePreference" type="momimecommon:rulePreferenceWeighting" nxe:label="Movement icon image preference weighting" nxe:gridwidth="200" />

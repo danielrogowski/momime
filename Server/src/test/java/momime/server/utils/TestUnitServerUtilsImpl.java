@@ -26,6 +26,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
+import com.ndg.utils.Holder;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
@@ -1345,11 +1346,11 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	}
 	
 	/**
-	 * Tests the applyDamage method when the unit is still alive
+	 * Tests the applyDamage method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testApplyDamage_Alive () throws Exception
+	public final void testApplyDamage () throws Exception
 	{
 		// Unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -1372,6 +1373,39 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		// Run method
 		assertEquals (3, utils.applyDamage (xu, 6, 4, 5));	// Take 6 hits, each figure has defence 4, with 50% block chance
+	}
+	
+	/**
+	 * Tests the applyMultiFigureDamage method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testApplyMultiFigureDamage () throws Exception
+	{
+		// Unit
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		
+		when (xu.calculateAliveFigureCount ()).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+		when (xu.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		
+		// Fix random number generator rolls
+		// Note these are in sets of 4 - the defence rolls each figure makes trying to block, before taking damage to HP
+		final RandomUtils random = mock (RandomUtils.class);
+		when (random.nextInt (10)).thenReturn
+			(0, 1, 2, 3, 4, 1,   6, 9, 1, 5,		// First figure takes 4 hits, blocks 1 so takes 3 dmg, but it only had 2 HP to begin with; the extra 1 does not carry to next figure
+			2, 3, 1, 6, 0, 7,   6, 9, 1, 5,		// Second figure takes 3 hits, also blocks 1, so takes 3 dmg so it loses 2 HP and has 1 HP left
+			0, 1, 2, 3, 2, 1,  6, 7, 8, 9);		// Third figure takes 5 hits and fails to block any of them so loses 3 HP and the extra 2 do not carry over anywhere
+		
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		utils.setRandomUtils (random);
+		
+		// Run method
+		// Possible 6 hits per figure with 30% chance of each striking, then each figure has defence 4, with 50% block chance
+		final Holder<Integer> actualDamage = new Holder<Integer> ();
+		assertEquals (7, utils.applyMultiFigureDamage (xu, 6, 3, 4, 5, actualDamage));
+		assertEquals (12, actualDamage.getValue ().intValue ());
 	}
 	
 	/**

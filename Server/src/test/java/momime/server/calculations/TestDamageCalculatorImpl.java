@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
+import com.ndg.utils.Holder;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -998,20 +1000,22 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 		when (xuDefender.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
-		// Fix random number generator rolls
-		final RandomUtils random = mock (RandomUtils.class);
-		when (random.nextInt (10)).thenReturn
-			(3, 7, 1, 2,		// First figure gets hit 3 times...
-			6, 7, 8, 9,		// ...blocking none of them, but it was already down to 2 HP so it can't take 3 damage
-			1, 2, 3, 4,		// Second figure also gets hit 3 times...
-			5, 6, 7, 8,		// ...blocking none of them so loses all its 3 HP
-			6, 1, 5, 8,		// Third figure only gets hit once...
-			3, 4, 5, 6);		// ...but blocks twice, so it blocks more hits than it receives, and takes no damage
+		// Mock the damage being applied
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		
+		@SuppressWarnings ("unchecked")
+		final ArgumentCaptor<Holder<Integer>> captureActualDamage = ArgumentCaptor.forClass (Holder.class);
+		
+		when (unitServerUtils.applyMultiFigureDamage (eq (xuDefender), eq (4), eq (4), eq (4), eq (5), captureActualDamage.capture ())).thenAnswer ((i) ->
+		{
+			captureActualDamage.getValue ().setValue (7);
+			return 5;
+		});
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setRandomUtils (random);
 		calc.setExpandUnitDetails (expand);
+		calc.setUnitServerUtils (unitServerUtils);
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test

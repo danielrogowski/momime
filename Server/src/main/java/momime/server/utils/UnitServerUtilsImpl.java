@@ -17,6 +17,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
+import com.ndg.utils.Holder;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
@@ -641,6 +642,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 
 	/**
 	 * Applys damage to a unit, optionally making defence rolls as each figure gets struck.
+	 * 
 	 * NB. This doesn't actually record the damage against the unit, just calculates how many points of damage it will take.
 	 * 
 	 * @param defender Unit being hit
@@ -648,7 +650,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param defenderDefenceStrength Value of defence stat for the defender unit
 	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws MomException If there are any problems with the unit stats calculation
 	 */
 	@Override
 	public final int applyDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend)
@@ -687,6 +689,69 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				defendingFiguresRemaining--;
 				hitPointsRemainingOfFirstFigure = defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS);
 			}
+		}
+		
+		return totalHits;
+	}
+	
+	/**
+	 * Makes attack and defence rolls for multi figure damage.  The scope of this is a bit different than applySingleFigureDamage, as for
+	 * single figure damage we make all attack rolls up front (before that method is called), whereas with multi figure damage,
+	 * the hits are rolled separately against each figure so are an integral part of the figure loop.
+	 *  
+	 * NB. This doesn't actually record the damage against the unit, just calculates how many points of damage it will take.
+	 * 
+	 * @param defender Unit being hit
+	 * @param potentialHitsPerFigure The strength of the attack.  Each potential hit has chanceToHit chance of actually hitting, then the figure can defend to try to block it.
+	 * @param chanceToHit Chance (0-10) for a potential hit to actually hit
+	 * @param defenderDefenceStrength Value of defence stat for the defender unit
+	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
+	 * @param actualDamage Placeholder to output number of potential hits which actually hit (before blocking)
+	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
+	 * @throws MomException If there are any problems with the unit stats calculation
+	 */
+	@Override
+	public final int applyMultiFigureDamage (final ExpandedUnitDetails defender, final int potentialHitsPerFigure, final int chanceToHit,
+		final int defenderDefenceStrength, final int chanceToDefend, final Holder<Integer> actualDamage)
+		throws MomException
+	{
+		// Keep track of how many HP the current figure has
+		int hitPointsThisFigure = defender.calculateHitPointsRemainingOfFirstFigure ();
+		
+		// Attack each figure individually
+		final int defenderFigures = defender.calculateAliveFigureCount ();
+		int totalHits = 0;
+		actualDamage.setValue (0);
+		
+		for (int figureNo = 0; figureNo < defenderFigures; figureNo++)
+		{
+			// How many hit this figure
+			int damageToThisFigure = 0;
+			for (int swingNo = 0; swingNo < potentialHitsPerFigure; swingNo++)
+				if (getRandomUtils ().nextInt (10) < chanceToHit)
+				{
+					actualDamage.setValue (actualDamage.getValue () + 1);
+					damageToThisFigure++;
+				}
+			
+			// How many hits does this figure block
+			int blocksFromThisFigure = 0;
+			for (int blockNo = 0; blockNo < defenderDefenceStrength; blockNo++)
+				if (getRandomUtils ().nextInt (10) < chanceToDefend)
+					blocksFromThisFigure++;
+			
+			// We can't do less than 0, or more than the full HP, damage to each individual figure
+			int hitsOnThisFigure = damageToThisFigure - blocksFromThisFigure;
+			if (hitsOnThisFigure < 0)
+				hitsOnThisFigure = 0;
+			else if (hitsOnThisFigure > hitPointsThisFigure)
+				hitsOnThisFigure = hitPointsThisFigure;
+			
+			totalHits = totalHits + hitsOnThisFigure;
+			
+			// Keep track of how many HP the next figure has
+			if ((figureNo == 0) && (defenderFigures > 1))
+				hitPointsThisFigure = defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS);
 		}
 		
 		return totalHits;

@@ -10,6 +10,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
+import com.ndg.utils.Holder;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
@@ -593,45 +594,13 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setTenTimesAverageDamage
 			(attackDamage.getPotentialHits () * damageCalculationMsg.getChanceToHit () * damageCalculationMsg.getDefenderFigures ());
 
-		// Keep track of how many HP the current figure has
-		int hitPointsThisFigure = defender.calculateHitPointsRemainingOfFirstFigure ();
-		
-		// Attack each figure individually
-		int actualDamage = 0;
-		int totalHits = 0;
-		for (int figureNo = 0; figureNo < damageCalculationMsg.getDefenderFigures (); figureNo++)
-		{
-			// How many hit this figure
-			int damageToThisFigure = 0;
-			for (int swingNo = 0; swingNo < attackDamage.getPotentialHits (); swingNo++)
-				if (getRandomUtils ().nextInt (10) < damageCalculationMsg.getChanceToHit ())
-				{
-					actualDamage++;
-					damageToThisFigure++;
-				}
-			
-			// How many hits does this figure block
-			int blocksFromThisFigure = 0;
-			for (int blockNo = 0; blockNo < damageCalculationMsg.getModifiedDefenceStrength (); blockNo++)
-				if (getRandomUtils ().nextInt (10) < damageCalculationMsg.getChanceToDefend ())
-					blocksFromThisFigure++;
-			
-			// We can't do less than 0, or more than the full HP, damage to each individual figure
-			int hitsOnThisFigure = damageToThisFigure - blocksFromThisFigure;
-			if (hitsOnThisFigure < 0)
-				hitsOnThisFigure = 0;
-			else if (hitsOnThisFigure > hitPointsThisFigure)
-				hitsOnThisFigure = hitPointsThisFigure;
-			
-			totalHits = totalHits + hitsOnThisFigure;
-			
-			// Keep track of how many HP the next figure has
-			if ((figureNo == 0) && (damageCalculationMsg.getDefenderFigures () > 1))
-				hitPointsThisFigure = defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS);
-		}
+		// Dish out damage
+		final Holder<Integer> actualDamage = new Holder<Integer> ();
+		final int totalHits = getUnitServerUtils ().applyMultiFigureDamage (defender, attackDamage.getPotentialHits (), damageCalculationMsg.getChanceToHit (),
+			damageCalculationMsg.getModifiedDefenceStrength (), damageCalculationMsg.getChanceToDefend (), actualDamage);
 		
 		// Store and send final totals
-		damageCalculationMsg.setActualHits (actualDamage);		
+		damageCalculationMsg.setActualHits (actualDamage.getValue ());		
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		

@@ -649,12 +649,14 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param hitsToApply The number of hits striking the defender (number that passed the attacker's to hit roll)
 	 * @param defenderDefenceStrength Value of defence stat for the defender unit
 	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
+	 * @param damageReductionApplies Whether the type of damage allows defence rolls or not; this is to differentiate between 0 defence
+	 * 	because the unit has no defence (like Phantom Warriors) and 0 defence because the damage type allows no defence (like Doom Bolt)
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
 	 * @throws MomException If there are any problems with the unit stats calculation
 	 */
 	@Override
-	public final int applySingleFigureDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend)
-		throws MomException
+	public final int applySingleFigureDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
+		final boolean damageReductionApplies) throws MomException
 	{
 		// Dish out damage - See page 287 in the strategy guide
 		// We can't do all defending in one go, each figure only gets to use its shields if the previous figure dies.
@@ -707,12 +709,14 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param defenderDefenceStrength Value of defence stat for the defender unit
 	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
 	 * @param actualDamage Placeholder to output number of potential hits which actually hit (before blocking)
+	 * @param damageReductionApplies Whether the type of damage allows defence rolls or not; this is to differentiate between 0 defence
+	 * 	because the unit has no defence (like Phantom Warriors) and 0 defence because the damage type allows no defence (like Doom Bolt)
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
 	 * @throws MomException If there are any problems with the unit stats calculation
 	 */
 	@Override
 	public final int applyMultiFigureDamage (final ExpandedUnitDetails defender, final int potentialHitsPerFigure, final int chanceToHit,
-		final int defenderDefenceStrength, final int chanceToDefend, final Holder<Integer> actualDamage)
+		final int defenderDefenceStrength, final int chanceToDefend, final Holder<Integer> actualDamage, final boolean damageReductionApplies)
 		throws MomException
 	{
 		// Keep track of how many HP the current figure has

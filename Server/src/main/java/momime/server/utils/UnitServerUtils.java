@@ -152,11 +152,13 @@ public interface UnitServerUtils
 	 * @param hitsToApply The number of hits striking the defender (number that passed the attacker's to hit roll)
 	 * @param defenderDefenceStrength Value of defence stat for the defender unit
 	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
+	 * @param damageReductionApplies Whether the type of damage allows defence rolls or not; this is to differentiate between 0 defence
+	 * 	because the unit has no defence (like Phantom Warriors) and 0 defence because the damage type allows no defence (like Doom Bolt)
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
 	 * @throws MomException If there are any problems with the unit stats calculation
 	 */
-	public int applySingleFigureDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend)
-		throws MomException;
+	public int applySingleFigureDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
+		final boolean damageReductionApplies) throws MomException;
 
 	/**
 	 * Makes attack and defence rolls for multi figure damage.  The scope of this is a bit different than applySingleFigureDamage, as for
@@ -171,11 +173,13 @@ public interface UnitServerUtils
 	 * @param defenderDefenceStrength Value of defence stat for the defender unit
 	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
 	 * @param actualDamage Placeholder to output number of potential hits which actually hit (before blocking)
+	 * @param damageReductionApplies Whether the type of damage allows defence rolls or not; this is to differentiate between 0 defence
+	 * 	because the unit has no defence (like Phantom Warriors) and 0 defence because the damage type allows no defence (like Doom Bolt)
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
 	 * @throws MomException If there are any problems with the unit stats calculation
 	 */
 	public int applyMultiFigureDamage (final ExpandedUnitDetails defender, final int potentialHitsPerFigure, final int chanceToHit,
-		final int defenderDefenceStrength, final int chanceToDefend, final Holder<Integer> actualDamage)
+		final int defenderDefenceStrength, final int chanceToDefend, final Holder<Integer> actualDamage, final boolean damageReductionApplies)
 		throws MomException;
 	
 	/**

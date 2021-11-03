@@ -102,8 +102,8 @@ public final class CombatHandlingImpl implements CombatHandling
 			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spellDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, 0, null, null, xu,
 				false, mom.getGeneralServerKnowledge ().getTrueMap (), null, mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 			{
-				final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
-				targetUnits.add (xu.getMemoryUnit ());
+				final List<ResolveAttackTarget> targetUnits = new ArrayList<ResolveAttackTarget> ();
+				targetUnits.add (new ResolveAttackTarget (xu.getMemoryUnit ()));
 				
 				// castingPlayer (the owner of the wall of fire) has to be the defendingPlayer
 				combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer, null, null, null, null, spellDef, null,
@@ -136,7 +136,7 @@ public final class CombatHandlingImpl implements CombatHandling
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), vortex.getOwningPlayerID (), "damageFromVortex");
 		
 		// Build a list of all the units being attacked
-		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();
 		
 		// Is there a unit in the same space as the vortex?
 		final MemoryUnit doomUnit = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
@@ -151,8 +151,11 @@ public final class CombatHandlingImpl implements CombatHandling
 			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (doomBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), 0,
 				null, VORTEX_VARIABLE_DAMAGE, xuDoomUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
 				mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
-				
-				defenders.add (doomUnit);
+			{
+				final ResolveAttackTarget doomUnitTarget = new ResolveAttackTarget (doomUnit);
+				doomUnitTarget.setSpellOverride (doomBoltSpell);
+				defenders.add (doomUnitTarget);
+			}
 		}
 		
 		// Are there any units in the 8 tiles adjacent to the vortex?
@@ -173,8 +176,11 @@ public final class CombatHandlingImpl implements CombatHandling
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (lightningBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), 0,
 						null, VORTEX_VARIABLE_DAMAGE, xuLightningUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
 						mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
-						
-						defenders.add (lightningUnit);
+					{
+						final ResolveAttackTarget lightningUnitTarget = new ResolveAttackTarget (lightningUnit);
+						lightningUnitTarget.setSpellOverride (lightningBoltSpell);
+						defenders.add (lightningUnitTarget);
+					}
 				}
 			}
 		}

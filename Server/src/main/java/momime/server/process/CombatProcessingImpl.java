@@ -1349,14 +1349,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 		if ((!blocked) && (!combatEnded))
 		{
 			final CombatMoveType combatMoveType = movementTypes [moveTo.getY ()] [moveTo.getX ()];
-			final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+			final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();
 			
 			if (ATTACK_UNIT.contains (combatMoveType))
 			{
 				final MemoryUnit defender = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 					combatLocation, moveTo, mom.getServerDB ());
 				if (defender != null)
-					defenders.add (defender);
+					defenders.add (new ResolveAttackTarget (defender));
 			}
 			
 			final boolean attackWalls = ATTACK_WALLS.contains (combatMoveType);

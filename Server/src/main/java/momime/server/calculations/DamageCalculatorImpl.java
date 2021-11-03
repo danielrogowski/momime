@@ -116,6 +116,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
 		damageCalculationMsg.setAttackSkillID (attackSkillID);
 
+		// Unit curses don't have the single/all units flag, they always have a single target
 		if ((defenders.size () > 0) && ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES)))
 			

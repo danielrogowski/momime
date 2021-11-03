@@ -3729,8 +3729,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertEquals (0, tu.getDoubleCombatMovesLeft ().intValue ());
 		
 		// Check the attack happened
-		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-		defenders.add (defender);
+		final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();
+		defenders.add (new ResolveAttackTarget (defender));
 		
 		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, null, 4,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
@@ -3923,8 +3923,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertEquals (1, tu.getDoubleCombatMovesLeft ().intValue ());
 
 		// Check the attack happened
-		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-		defenders.add (defender);
+		final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();
+		defenders.add (new ResolveAttackTarget (defender));
 
 		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, null, 3,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);

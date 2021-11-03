@@ -49,7 +49,7 @@ public interface DamageProcessor
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public boolean resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
+	public boolean resolveAttack (final MemoryUnit attacker, final List<ResolveAttackTarget> defenders,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer wreckTileChance, final MapCoordinates2DEx wreckTilePosition,
 		final Integer attackerDirection, final String attackSkillID,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 

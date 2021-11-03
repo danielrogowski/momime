@@ -744,9 +744,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 							wreckTileChance = 1;
 							wreckTilePosition = (MapCoordinates2DEx) targetUnit.getCombatPosition ();
 						}
-								
+						
+						final List<ResolveAttackTarget> targetUnitWrappers = targetUnits.stream ().map (t -> new ResolveAttackTarget (t)).collect (Collectors.toList ());
+						
 						combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
-							targetUnits, attackingPlayer, defendingPlayer,
+							targetUnitWrappers, attackingPlayer, defendingPlayer,
 							wreckTileChance, wreckTilePosition, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
 					}
 					else if (kind == KindOfSpell.HEALING)

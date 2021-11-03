@@ -2,6 +2,7 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -97,14 +98,15 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final boolean resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
+	public final boolean resolveAttack (final MemoryUnit attacker, final List<ResolveAttackTarget> defenders,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer wreckTileChance, final MapCoordinates2DEx wreckTilePosition,
 		final Integer attackerDirection, final String attackSkillID,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		getDamageCalculator ().sendDamageHeader (attacker, defenders, false, attackingPlayer, defendingPlayer, attackSkillID, spell, castingPlayer);
+		final List<MemoryUnit> defenderUnits = defenders.stream ().map (d -> d.getDefender ()).collect (Collectors.toList ());
+		getDamageCalculator ().sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer, attackSkillID, spell, castingPlayer);
 		
 		// Make the units face each other
 		if (attackerDirection != null)
@@ -114,8 +116,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 			final int defenderDirection = getCoordinateSystemUtils ().normalizeDirection
 				(mom.getSessionDescription ().getCombatMapSize ().getCoordinateSystemType (), attackerDirection + 4);
 			
-			for (final MemoryUnit defender : defenders) 
-				defender.setCombatHeading (defenderDirection);
+			for (final ResolveAttackTarget defender : defenders) 
+				defender.getDefender ().setCombatHeading (defenderDirection);
 		}
 		
 		// If its a spell, we work out the kind of damage dealt once only (so it only appears in the client message log once)
@@ -144,11 +146,11 @@ public final class DamageProcessorImpl implements DamageProcessor
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		for (final MemoryUnit defender : defenders)
+		for (final ResolveAttackTarget defender : defenders)
 		{
 			// Calculate the attacker stats, with the defender listed as the opponent.
 			// This is important for the call to chooseAttackResolution, since the defender may have Negate First Strike.
-			final ExpandedUnitDetails xuDefender = getExpandUnitDetails ().expandUnitDetails (defender, null, null, null,
+			final ExpandedUnitDetails xuDefender = getExpandUnitDetails ().expandUnitDetails (defender.getDefender (), null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
 			final ExpandedUnitDetails xuAttacker;
@@ -178,7 +180,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 			// Some figures being frozen in fear lasts for the duration of one attack resolution,
 			// i.e. spans multiple resolution steps so have to keep track of it out here
 			final AttackResolutionUnit attackerWrapper = (attacker == null) ? null : new AttackResolutionUnit (attacker);
-			final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
+			final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender.getDefender ());
 			
 			// Process each step; use counter as we might add more steps as we process the list 
 			// Skip the entire step if either unit is already dead
@@ -216,8 +218,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 			// Count this as an attack against this defender, as long as its a regular attack from a unit and not a spell
 			if (attackSkillID != null)
 			{
-				final Integer count = tc.getNumberOfTimedAttacked ().get (defender.getUnitURN ());
-				tc.getNumberOfTimedAttacked ().put (defender.getUnitURN (), ((count == null) ? 0 : count) + 1);
+				final Integer count = tc.getNumberOfTimedAttacked ().get (xuDefender.getUnitURN ());
+				tc.getNumberOfTimedAttacked ().put (xuDefender.getUnitURN (), ((count == null) ? 0 : count) + 1);
 			}
 		}
 		
@@ -247,7 +249,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// Must pass attacking/defendingPlayer as null if this is not combat damage, so overland damage isn't animated on clients.
 		getFogOfWarMidTurnChanges ().sendDamageToClients (attacker,
 			(combatLocation == null) ? null : attackingPlayer, (combatLocation == null) ? null : defendingPlayer,
-			defenders, attackSkillID, (spell == null) ? null : spell.getSpellID (),
+			defenderUnits, attackSkillID, (spell == null) ? null : spell.getSpellID (),
 			specialDamageResolutionsApplied, wreckTilePosition, sendWrecked, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
@@ -259,17 +261,17 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// which way around we assign the players as knocking a wall down isn't going to end the combat.
 		final List<MemoryUnit> attackingPlayerUnits;
 		final List<MemoryUnit> defendingPlayerUnits;
-		if ((defenders.size () == 0) || (defenders.get (0).getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()))
+		if ((defenders.size () == 0) || (defenders.get (0).getDefender ().getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()))
 		{
 			attackingPlayerUnits = new ArrayList<MemoryUnit> ();
 			if (attacker != null)
 				attackingPlayerUnits.add (attacker);
 			
-			defendingPlayerUnits = defenders;
+			defendingPlayerUnits = defenderUnits;
 		}
 		else
 		{
-			attackingPlayerUnits = defenders;
+			attackingPlayerUnits = defenderUnits;
 			
 			defendingPlayerUnits = new ArrayList<MemoryUnit> ();
 			if (attacker != null)

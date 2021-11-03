@@ -240,7 +240,7 @@ public final class SpellCastingImpl implements SpellCasting
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
-		final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+		final List<ResolveAttackTarget> targetUnits = new ArrayList<ResolveAttackTarget> ();
 		PlayerServerDetails defendingPlayer = null;
 		
 		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
@@ -253,7 +253,7 @@ public final class SpellCastingImpl implements SpellCasting
 					castingPlayer.getPlayerDescription ().getPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 					priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 				{
-					targetUnits.add (tu);
+					targetUnits.add (new ResolveAttackTarget (tu));
 					
 					if (defendingPlayer == null)
 						defendingPlayer = (PlayerServerDetails) thisTarget.getOwningPlayer ();

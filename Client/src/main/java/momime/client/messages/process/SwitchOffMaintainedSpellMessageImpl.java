@@ -80,65 +80,67 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 		{
 			// Find the spell details before we remove it
 			final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findSpellURN
-				(getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate");
-			
-			// Remove it
-			getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
-			
-			// If we've got a city screen open showing where the spell was cancelled from, then remove it from the enchantments list
-			if (spell.getCityLocation () != null)
+				(getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
+			if (spell != null)
 			{
-				final CityViewUI cityView = getClient ().getCityViews ().get (spell.getCityLocation ().toString ());
-				if (cityView != null)
-				{
-					cityView.cityDataChanged ();
-					cityView.spellsChanged ();
-				}
-			}
-			
-			// If we've got a unit info display showing for this unit, then remove the spell effect from it
-			else if (spell.getUnitURN () != null)
-			{
-				final UnitInfoUI ui = getClient ().getUnitInfos ().get (spell.getUnitURN ());
-				if (ui != null)
-					ui.getUnitInfoPanel ().refreshUnitDetails ();
-
-				// If its being removed from a combat unit, need to check if we need to remove an animation from over the unit's head to no longer show the effect, e.g. Confusion
-				if (spell.isCastInCombat ())
-				{
-					final MemoryUnit u = getUnitUtils ().findUnitURN (spell.getUnitURN (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (C)");
-					
-					// We might be witnessing the combat from an adjacent tile so can see the spell being cancelled, but not know the unit's exact location if we're not directly involved
-					if (u.getCombatPosition () != null)
-					{
-						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (u, null, null, null,
-							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-						
-						getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), xu);
-					}
-				}
-			}
-			
-			// If we've got the magic screen loaded up, update overland enchantments
-			else if (getClient ().getClientDB ().findSpell (spell.getSpellID (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (O)").getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
-			{
-				getMagicSlidersUI ().spellsChanged ();
+				// Remove it
+				getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
 				
-				if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
+				// If we've got a city screen open showing where the spell was cancelled from, then remove it from the enchantments list
+				if (spell.getCityLocation () != null)
 				{
-					// Update fame if we cancelled Just Cause
-					if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
+					final CityViewUI cityView = getClient ().getCityViews ().get (spell.getCityLocation ().toString ());
+					if (cityView != null)
 					{
-						final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID
-							(getClient ().getPlayers (), spell.getCastingPlayerID (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (W)");				
-						
-						getWizardsUI ().wizardUpdated (player);
+						cityView.cityDataChanged ();
+						cityView.spellsChanged ();
 					}
+				}
+				
+				// If we've got a unit info display showing for this unit, then remove the spell effect from it
+				else if (spell.getUnitURN () != null)
+				{
+					final UnitInfoUI ui = getClient ().getUnitInfos ().get (spell.getUnitURN ());
+					if (ui != null)
+						ui.getUnitInfoPanel ().refreshUnitDetails ();
+	
+					// If its being removed from a combat unit, need to check if we need to remove an animation from over the unit's head to no longer show the effect, e.g. Confusion
+					if (spell.isCastInCombat ())
+					{
+						final MemoryUnit u = getUnitUtils ().findUnitURN (spell.getUnitURN (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (C)");
+						
+						// We might be witnessing the combat from an adjacent tile so can see the spell being cancelled, but not know the unit's exact location if we're not directly involved
+						if (u.getCombatPosition () != null)
+						{
+							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (u, null, null, null,
+								getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+							
+							getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), xu);
+						}
+					}
+				}
+				
+				// If we've got the magic screen loaded up, update overland enchantments
+				else if (getClient ().getClientDB ().findSpell (spell.getSpellID (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (O)").getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+				{
+					getMagicSlidersUI ().spellsChanged ();
 					
-					// Remove text boxes if it was Detect Magic
-					else if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC))
-						getWizardsUI ().updateWizards (false);
+					if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
+					{
+						// Update fame if we cancelled Just Cause
+						if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
+						{
+							final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID
+								(getClient ().getPlayers (), spell.getCastingPlayerID (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (W)");				
+							
+							getWizardsUI ().wizardUpdated (player);
+						}
+						
+						// Remove text boxes if it was Detect Magic
+						else if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC))
+							getWizardsUI ().updateWizards (false);
+					}
 				}
 			}
 		}

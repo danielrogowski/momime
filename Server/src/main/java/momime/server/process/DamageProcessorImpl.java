@@ -1,6 +1,7 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -126,100 +127,129 @@ public final class DamageProcessorImpl implements DamageProcessor
 			getExpandUnitDetails ().expandUnitDetails (attacker, null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-		final List<List<AttackResolutionStepContainer>> spellSteps;
-		if (spell == null)
-			spellSteps = null;
-		else
-		{
-			spellSteps = new ArrayList<List<AttackResolutionStepContainer>> ();
-			
-			final List<AttackResolutionStepContainer> spellInnerSteps = new ArrayList<AttackResolutionStepContainer> ();
-			spellSteps.add (spellInnerSteps);
-			
-			spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
-				(spell, variableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
-					(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT)));
-		}
-		
 		// Process our attack against each defender
 		final ServerGridCellEx tc = (combatLocation == null) ? null : (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		for (final ResolveAttackTarget defender : defenders)
+		
+		// If any defenders are being attacked by a different kind of spell, skip them until the next iteration
+		final List<ResolveAttackTarget> defendersLeftToProcess = new ArrayList<ResolveAttackTarget> ();
+		defendersLeftToProcess.addAll (defenders);
+		
+		while (defendersLeftToProcess.size () > 0)
 		{
-			// Calculate the attacker stats, with the defender listed as the opponent.
-			// This is important for the call to chooseAttackResolution, since the defender may have Negate First Strike.
-			final ExpandedUnitDetails xuDefender = getExpandUnitDetails ().expandUnitDetails (defender.getDefender (), null, null, null,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			Spell spellThisPass = null;
+			List<List<AttackResolutionStepContainer>> spellStepsThisPass = null;
 			
-			final ExpandedUnitDetails xuAttacker;
-			if (attacker == null)
-				xuAttacker = null;
-			else
+			final Iterator<ResolveAttackTarget> defendersIter = defendersLeftToProcess.iterator ();
+			while (defendersIter.hasNext ())
 			{
-				final List<ExpandedUnitDetails> xuDefenders = new ArrayList<ExpandedUnitDetails> ();
-				xuDefenders.add (xuDefender);
+				final ResolveAttackTarget defender = defendersIter.next ();
 				
-				xuAttacker = getExpandUnitDetails ().expandUnitDetails (attacker, xuDefenders, null, null,
+				// Calculate the attacker stats, with the defender listed as the opponent.
+				// This is important for the call to chooseAttackResolution, since the defender may have Negate First Strike.
+				final ExpandedUnitDetails xuDefender = getExpandUnitDetails ().expandUnitDetails (defender.getDefender (), null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-			}
-
-			// For attacks based on unit attributes (i.e. melee or ranged attacks), use the full routine to work out the sequence of steps to resolve the attack.
-			// If its an attack from a spell, this was already worked out above.
-			final List<List<AttackResolutionStepContainer>> steps;
-			if (spellSteps != null)
-				steps = spellSteps;
-			else
-			{
-				final AttackResolution attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (xuAttacker, xuDefender, attackSkillID, mom.getServerDB ());
 				
-				steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ());
-			}
-
-			// Some figures being frozen in fear lasts for the duration of one attack resolution,
-			// i.e. spans multiple resolution steps so have to keep track of it out here
-			final AttackResolutionUnit attackerWrapper = (attacker == null) ? null : new AttackResolutionUnit (attacker);
-			final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender.getDefender ());
-			
-			// Process each step; use counter as we might add more steps as we process the list 
-			// Skip the entire step if either unit is already dead
-			int stepNumber = 0;
-			while ((stepNumber < steps.size ()) && (xuDefender.calculateAliveFigureCount () > 0) &&
-				((xuAttacker == null) || (xuAttacker.calculateAliveFigureCount () > 0)))
-			{
-				final List<AttackResolutionStepContainer> step = steps.get (stepNumber);
-				
-				final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
-					(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
-				
-				for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)
-					if (!specialDamageResolutionsApplied.contains (thisSpecialDamageResolutionApplied))
-						specialDamageResolutionsApplied.add (thisSpecialDamageResolutionApplied);
-
-				stepNumber++;
-				
-				// Warp lightning generates additional steps, each time subtracting off the stepNumber in damage until we reach 0.
-				// It would be neater if this was handled prior to this loop, but then it sends all 10 "spell attack" damage calcs to the client,
-				// followed by the 10 resolutions, and we want them to be interspersed.
-				if ((spell != null) && (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_WARP_LIGHTNING)) &&
-					(stepNumber < spell.getCombatBaseDamage ()) && (xuDefender.calculateAliveFigureCount () > 0))
+				final ExpandedUnitDetails xuAttacker;
+				if (attacker == null)
+					xuAttacker = null;
+				else
 				{
-					final List<AttackResolutionStepContainer> spellInnerSteps = new ArrayList<AttackResolutionStepContainer> ();
-					steps.add (spellInnerSteps);
+					final List<ExpandedUnitDetails> xuDefenders = new ArrayList<ExpandedUnitDetails> ();
+					xuDefenders.add (xuDefender);
 					
-					spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
-						(spell, spell.getCombatBaseDamage () - stepNumber, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
-							(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT)));
+					xuAttacker = getExpandUnitDetails ().expandUnitDetails (attacker, xuDefenders, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				}
-			}
-			
-			// Count this as an attack against this defender, as long as its a regular attack from a unit and not a spell
-			if (attackSkillID != null)
-			{
-				final Integer count = tc.getNumberOfTimedAttacked ().get (xuDefender.getUnitURN ());
-				tc.getNumberOfTimedAttacked ().put (xuDefender.getUnitURN (), ((count == null) ? 0 : count) + 1);
+				
+				// For attacks based on unit attributes (i.e. melee or ranged attacks), use the full routine to work out the sequence of steps to resolve the attack.
+				// If its an attack from a spell, this was already worked out above.
+				final List<List<AttackResolutionStepContainer>> steps;
+				if (spell != null)
+				{
+					// What spell is this unit being attacked by?
+					final Spell thisSpell = (defender.getSpellOverride () != null) ? defender.getSpellOverride () : spell;
+					if (spellThisPass == null)
+					{
+						spellThisPass = thisSpell;
+						spellStepsThisPass = new ArrayList<List<AttackResolutionStepContainer>> ();
+						steps = spellStepsThisPass;
+						
+						final List<AttackResolutionStepContainer> spellInnerSteps = new ArrayList<AttackResolutionStepContainer> ();
+						spellStepsThisPass.add (spellInnerSteps);
+						
+						spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
+							(thisSpell, variableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
+								(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT)));
+					}
+					
+					// Same spell as before
+					else if (spellThisPass == thisSpell)
+						steps = spellStepsThisPass;
+					
+					// Different spell - defer it to next pass
+					else
+						steps = null;
+				}
+				else
+				{
+					final AttackResolution attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (xuAttacker, xuDefender, attackSkillID, mom.getServerDB ());
+					
+					steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ());
+				}
+	
+				if (steps != null)
+				{
+					// Some figures being frozen in fear lasts for the duration of one attack resolution,
+					// i.e. spans multiple resolution steps so have to keep track of it out here
+					final AttackResolutionUnit attackerWrapper = (attacker == null) ? null : new AttackResolutionUnit (attacker);
+					final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender.getDefender ());
+					
+					// Process each step; use counter as we might add more steps as we process the list 
+					// Skip the entire step if either unit is already dead
+					int stepNumber = 0;
+					while ((stepNumber < steps.size ()) && (xuDefender.calculateAliveFigureCount () > 0) &&
+						((xuAttacker == null) || (xuAttacker.calculateAliveFigureCount () > 0)))
+					{
+						final List<AttackResolutionStepContainer> step = steps.get (stepNumber);
+						
+						final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
+							(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step,
+								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+						
+						for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)
+							if (!specialDamageResolutionsApplied.contains (thisSpecialDamageResolutionApplied))
+								specialDamageResolutionsApplied.add (thisSpecialDamageResolutionApplied);
+		
+						stepNumber++;
+						
+						// Warp lightning generates additional steps, each time subtracting off the stepNumber in damage until we reach 0.
+						// It would be neater if this was handled prior to this loop, but then it sends all 10 "spell attack" damage calcs to the client,
+						// followed by the 10 resolutions, and we want them to be interspersed.
+						if ((spellThisPass != null) && (spellThisPass.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_WARP_LIGHTNING)) &&
+							(stepNumber < spellThisPass.getCombatBaseDamage ()) && (xuDefender.calculateAliveFigureCount () > 0))
+						{
+							final List<AttackResolutionStepContainer> spellInnerSteps = new ArrayList<AttackResolutionStepContainer> ();
+							steps.add (spellInnerSteps);
+							
+							spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
+								(spellThisPass, spellThisPass.getCombatBaseDamage () - stepNumber, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
+									(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT)));
+						}
+					}
+					
+					// Count this as an attack against this defender, as long as its a regular attack from a unit and not a spell
+					if (attackSkillID != null)
+					{
+						final Integer count = tc.getNumberOfTimedAttacked ().get (xuDefender.getUnitURN ());
+						tc.getNumberOfTimedAttacked ().put (xuDefender.getUnitURN (), ((count == null) ? 0 : count) + 1);
+					}
+					
+					// Done processing this defender
+					defendersIter.remove ();
+				}
 			}
 		}
 		

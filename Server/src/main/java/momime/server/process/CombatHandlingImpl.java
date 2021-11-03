@@ -159,7 +159,7 @@ public final class CombatHandlingImpl implements CombatHandling
 		}
 		
 		// Are there any units in the 8 tiles adjacent to the vortex?
-		final Spell lightningBoltSpell = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_LIGHTNING_BOLT, "damageFromVortex");
+		Spell lightningBoltSpell = null;
 		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (mom.getSessionDescription ().getCombatMapSize ().getCoordinateSystemType ()); d++)
 		{
 			final MapCoordinates2DEx coords = new MapCoordinates2DEx ((MapCoordinates2DEx) vortex.getCombatPosition ());
@@ -170,6 +170,9 @@ public final class CombatHandlingImpl implements CombatHandling
 				if ((lightningUnit != null) && (getRandomUtils ().nextInt (3) == 0))
 				{
 					// Use the Lightning Bolt spell definition, which has all the magic realm, damage type etc set correctly, and just override the damage
+					if (lightningBoltSpell == null)
+						lightningBoltSpell = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_LIGHTNING_BOLT, "damageFromVortex");
+					
 					final ExpandedUnitDetails xuLightningUnit = getExpandUnitDetails ().expandUnitDetails (lightningUnit, null, null, lightningBoltSpell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
@@ -190,8 +193,17 @@ public final class CombatHandlingImpl implements CombatHandling
 		if (defenders.size () == 0)
 			combatEnded = false;
 		else
+		{
+			// Find the spell that summoned the magic vortex, so the damage log says magic vortex attacking, rather than lightning bolt or doom bolt
+			final Spell magicVortexSpell = mom.getServerDB ().getSpell ().stream ().filter
+				(s -> s.getSummonedUnit ().contains (vortex.getUnitID ())).findAny ().orElse (null);
+			
+			if (magicVortexSpell == null)
+				throw new MomException ("damageFromVortex can't find the spell that summoned the vortex");
+			
 			combatEnded = getDamageProcessor ().resolveAttack (vortex, defenders, attackingPlayer, defendingPlayer, null, null, null, null,
-				lightningBoltSpell, VORTEX_VARIABLE_DAMAGE, castingPlayer, (MapCoordinates3DEx) vortex.getCombatLocation (), mom);
+				magicVortexSpell, VORTEX_VARIABLE_DAMAGE, castingPlayer, (MapCoordinates3DEx) vortex.getCombatLocation (), mom);
+		}
 		
 		return combatEnded;
 	}

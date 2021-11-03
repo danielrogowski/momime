@@ -263,6 +263,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Store the two players involved
 			tc.setAttackingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
 			tc.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
+			tc.getLastCombatMoveDirection ().clear ();
 			
 			// Set casting skill allocation for this combat 
 			final MomPersistentPlayerPrivateKnowledge attackingPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();

@@ -209,6 +209,10 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
+		final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+
 		// Do we have any vortexes?  If so then move their 3 random moves.  Then they get their 1 movement controlled by the player during their regular turn.
 		final List<ExpandedUnitDetails> vortexes = new ArrayList<ExpandedUnitDetails> ();
 		
@@ -228,24 +232,19 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		for (final ExpandedUnitDetails xu : vortexes)
 			if (!combatEnded)
 			{
-				final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
-				final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(xu.getCombatLocation ().getZ ()).getRow ().get (xu.getCombatLocation ().getY ()).getCell ().get (xu.getCombatLocation ().getX ());
 				xu.setDoubleCombatMovesLeft (6);
 				
-				Integer firstDirection = null;
 				int vortexMoveNumber = 0;
 				while ((!combatEnded) && (vortexMoveNumber < 3))
 				{
-					// Only ever deviates +/- 90 degres from the first direction chosen
+					// Only ever deviates +/- 90 degres from the last direction the vortex moved (whether a random or player chosen move).
+					// okToMoveUnitInCombat will record the direction chosen, so don't need to track it here.
 					final int d;
-					if (firstDirection == null)
-					{
+					if (!tc.getLastCombatMoveDirection ().containsKey (xu.getUnitURN ()))
 						d = getRandomUtils ().nextInt (getCoordinateSystemUtils ().getMaxDirection (combatMapSize.getCoordinateSystemType ())) + 1;
-						firstDirection = d;
-					}
 					else
-						d = getCoordinateSystemUtils ().normalizeDirection (combatMapSize.getCoordinateSystemType (), firstDirection - 2 + getRandomUtils ().nextInt (5));
+						d = getCoordinateSystemUtils ().normalizeDirection (combatMapSize.getCoordinateSystemType (),
+							tc.getLastCombatMoveDirection ().get (xu.getUnitURN ()) - 2 + getRandomUtils ().nextInt (5));
 	
 					// Nothing is impassable, but might bang into the edge of the map
 					final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];

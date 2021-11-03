@@ -1309,6 +1309,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					reduceMovementRemaining (tu.getMemoryUnit (), ignoresCombatTerrain ? 2 : getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 						(combatCell.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
 					msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
+					combatCell.getLastCombatMoveDirection ().put (tu.getUnitURN (), d);
 					
 					// Only send this to the players involved in the combat.
 					// Players not involved in the combat don't care where the units are positioned.

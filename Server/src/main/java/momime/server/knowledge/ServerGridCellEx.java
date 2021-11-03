@@ -69,8 +69,11 @@ public final class ServerGridCellEx extends ServerGridCell
 	/** List of items held by any heroes that died in this combat, no matter which side they were on */
 	private final List<NumberedHeroItem> itemsFromHeroesWhoDiedInCombat = new ArrayList<NumberedHeroItem> ();
 	
-	/** Map keyed by Unit URN indicating how many times each unit has been attacked this combat round */ 
+	/** Map keyed by Unit URN indicating how many times each unit has been attacked this combat round */
 	private final Map<Integer, Integer> numberOfTimedAttacked = new HashMap<Integer, Integer> (); 
+
+	/** Map keyed by Unit URN indicating the last direction a unit moved in the current combat */
+	private final Map<Integer, Integer> lastCombatMoveDirection = new HashMap<Integer, Integer> (); 
 	
 	/**
 	 * @return Whether the lair here was generated as "weak" - this is needed when populating the lair with monsters
@@ -342,5 +345,13 @@ public final class ServerGridCellEx extends ServerGridCell
 	public final Map<Integer, Integer> getNumberOfTimedAttacked ()
 	{
 		return numberOfTimedAttacked;
+	}
+
+	/**
+	 * @return Map keyed by Unit URN indicating the last direction a unit moved in the current combat
+	 */
+	public final Map<Integer, Integer> getLastCombatMoveDirection ()
+	{
+		return lastCombatMoveDirection;
 	}
 }

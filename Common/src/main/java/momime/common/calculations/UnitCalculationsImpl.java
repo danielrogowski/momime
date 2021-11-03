@@ -869,32 +869,32 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final List<ExpandedUnitDetails> unitsBeingMoved = new ArrayList<ExpandedUnitDetails> ();
 		unitsBeingMoved.add (unitBeingMoved);
 		
-		for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
-			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
-				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) &&
-				(!db.getUnitsThatMoveThroughOtherUnits ().contains (unitBeingMoved.getUnitID ())) &&
-				(!db.getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())))
-			{
-				// Note on owning vs controlling player ID - unitBeingMoved.getControllingPlayerID () is the player whose turn it is, who is controlling the unit, so this is fine.
-				// But they don't want to attack their own units who might just be temporarily confused, equally if an enemy unit is confused and currently under our
-				// control, we still want to kill it - ideally we confusee units and make them kill each other!  So this is why it is not xu.getControllingPlayerID ()
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, unitsBeingMoved, null, null, players, fogOfWarMemory, db);
-				if ((thisUnit == unitBeingMoved.getMemoryUnit ()) || (xu.getOwningPlayerID () == unitBeingMoved.getControllingPlayerID ()))
-					ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
-				
-				else if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getControllingPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
+		// Vortexes can move anywhere, even directly onto other units
+		if (!db.getUnitsThatMoveThroughOtherUnits ().contains (unitBeingMoved.getUnitID ()))
+			for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
+				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+					(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
 				{
-					enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
+					// Note on owning vs controlling player ID - unitBeingMoved.getControllingPlayerID () is the player whose turn it is, who is controlling the unit, so this is fine.
+					// But they don't want to attack their own units who might just be temporarily confused, equally if an enemy unit is confused and currently under our
+					// control, we still want to kill it - ideally we confusee units and make them kill each other!  So this is why it is not xu.getControllingPlayerID ()
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, unitsBeingMoved, null, null, players, fogOfWarMemory, db);
+					if ((thisUnit == unitBeingMoved.getMemoryUnit ()) || (xu.getOwningPlayerID () == unitBeingMoved.getControllingPlayerID ()))
+						ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
 					
-					boolean visible = true;
-					for (final String invisibilitySkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY)
-						if (xu.hasModifiedSkill (invisibilitySkillID))
-							visible = false;
-
-					if (visible)
-						directlyVisibleEnemyUnits.add (xu);
+					else if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getControllingPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
+					{
+						enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
+						
+						boolean visible = true;
+						for (final String invisibilitySkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY)
+							if (xu.hasModifiedSkill (invisibilitySkillID))
+								visible = false;
+	
+						if (visible)
+							directlyVisibleEnemyUnits.add (xu);
+					}
 				}
-			}
 		
 		// If we can attack walls, then get the list of border targets from Disrupt Wall spell
 		// Can only attack walls from the outside in, otherwise defenders inside the city would be able to attack their own walls

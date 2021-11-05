@@ -126,6 +126,10 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 					languageText = getLanguages ().getCombatDamage ().getDefenceEachFigureResistOrDie ();
 					break;
 	
+				case EACH_FIGURE_RESIST_OR_LOSE_1HP:
+					languageText = getLanguages ().getCombatDamage ().getDefenceEachFigureResistOrLose1HP ();
+					break;
+	
 				case SINGLE_FIGURE_RESIST_OR_DIE:
 					if (getFinalHits () == 0)
 						languageText = getLanguages ().getCombatDamage ().getDefenceSingleFigureResistOrDieSurvives ();

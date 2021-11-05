@@ -287,6 +287,21 @@ public interface DamageCalculator
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
 
 	/**
+	 * Rolls the number of actual hits for "each figure resist or lose 1 HP" damage, where each figure has to make a resistance roll.  Used for wrack.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public int calculateEachFigureResistOrLose1HPDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+
+	/**
 	 * Rolls the number of actual hits for "resist or take damage", where the unit takes damage equal to how
 	 * much they miss a resistance roll by.  Used for Life Drain.
 	 * 

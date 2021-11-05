@@ -1161,6 +1161,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <attackEachFigureResistOrDie language="en">
             <text>ATTACKER_NAME's ATTACK_TYPE requires each figure to pass resistance roll with POTENTIAL_HITS modifier to survive:</text>
         </attackEachFigureResistOrDie>
+        <attackEachFigureResistOrLose1HP language="en">
+            <text>ATTACKER_NAME's ATTACK_TYPE requires each figure to pass resistance roll with POTENTIAL_HITS modifier or lose 1 HP:</text>
+        </attackEachFigureResistOrLose1HP>
         <attackSingleFigureResistOrDie language="en">
             <text>ATTACKER_NAME's ATTACK_TYPE requires single figure to pass resistance roll with POTENTIAL_HITS modifier to survive:</text>
         </attackSingleFigureResistOrDie>
@@ -1227,6 +1230,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <defenceEachFigureResistOrDie language="en">
             <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll and die, unit loses FINAL_HITS HP.</text>
         </defenceEachFigureResistOrDie>
+        <defenceEachFigureResistOrLose1HP language="en">
+            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll, unit loses FINAL_HITS HP.</text>
+        </defenceEachFigureResistOrLose1HP>
         <defenceSingleFigureResistOrDieDies language="en">
             <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH and dies.</text>
         </defenceSingleFigureResistOrDieDies>

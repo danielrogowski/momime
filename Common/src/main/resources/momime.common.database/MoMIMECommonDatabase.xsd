@@ -5069,6 +5069,10 @@ which is why it is last in the list, so it will only be healed when all healable
 				<xsd:documentation>Each figure must resist or die (petrify, stoning gaze)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="EACH_FIGURE_RESIST_OR_DIE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="W"><xsd:annotation>
+				<xsd:documentation>Each figure must resist or lose 1 HP (wrack)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="EACH_FIGURE_RESIST_OR_LOSE_1HP" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="F"><xsd:annotation>
 				<xsd:documentation>Single figure must resist or die (stoning touch)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SINGLE_FIGURE_RESIST_OR_DIE" /></xsd:appinfo>

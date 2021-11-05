@@ -21,6 +21,7 @@ import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -91,6 +92,9 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
+	
+	/** Damage processor */
+	private DamageProcessor damageProcessor;
 	
 	/**
 	 * Makes any rolls necessary at the start of either player's combat turn, i.e. immediately before the defender gets a turn.
@@ -268,52 +272,92 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				}
 			}
 
+		// Work out the other player in combat
+		final PlayerServerDetails castingPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer;
+		final MomPersistentPlayerPrivateKnowledge castingPlayerPriv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		// Does opposing player have any CAEs cast that do some kind of damage each turn? (wrack, terror)
+		Spell terrorSpell = null;
+		if (!combatEnded)
+		{
+			final List<Spell> damagingCAEs = mom.getServerDB ().getSpell ().stream ().filter
+				(s -> (s.getAttackSpellDamageResolutionTypeID () != null) && (s.getSpellHasCombatEffect ().size () == 1)).collect (Collectors.toList ());
+			
+			for (final Spell damagingCAE : damagingCAEs)
+				if (!combatEnded)
+				{
+					final String combatAreaEffectID = damagingCAE.getSpellHasCombatEffect ().get (0);
+				
+					if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
+						combatAreaEffectID, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
+					{
+						// Terror has special handling below
+						if (damagingCAE.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.TERROR)
+							terrorSpell = damagingCAE;
+						else
+						{
+							final List<ResolveAttackTarget> targetUnits = new ArrayList<ResolveAttackTarget> ();
+							
+							for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+								if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+									(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+								{
+									final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, damagingCAE.getSpellRealm (),
+										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+									
+									if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+										(damagingCAE, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+											null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
+											mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+										
+										targetUnits.add (new ResolveAttackTarget (thisUnit));
+								}
+
+							if (targetUnits.size () > 0)
+								combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits,
+									attackingPlayer, defendingPlayer, null, null, null, null, damagingCAE, null, castingPlayer, combatLocation, mom);
+						}
+					}
+			}
+		}
+
 		final List<Integer> terrifiedUnitURNs;
 		if (combatEnded)
 			terrifiedUnitURNs = null;
 		else
 		{
-			// Work out the other player in combat
-			final PlayerServerDetails castingPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer;
-			final MomPersistentPlayerPrivateKnowledge castingPlayerPriv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
-			
-			// Does opposing player have terror cast on this combat?
-			final Spell terrorDef = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_TERROR, "startCombatTurn");
-			final String combatAreaEffectID = terrorDef.getSpellHasCombatEffect ().get (0);
-			
-			final List<ExpandedUnitDetails> unitsToRoll = new ArrayList<ExpandedUnitDetails> ();
-			final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-			
-			if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
-				combatAreaEffectID, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
+			terrifiedUnitURNs = new ArrayList<Integer> ();
+			if (terrorSpell != null)
+			{
+				final List<ExpandedUnitDetails> unitsToRoll = new ArrayList<ExpandedUnitDetails> ();
+				final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 				
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 					if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 						(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 					{
-						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorSpell.getSpellRealm (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						// attackSpellDamageResolutionTypeID = R on Terror spell def just to make the resistance check in isUnitValidTargetForSpell take effect
 						if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-							(terrorDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+							(terrorSpell, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
 								null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 							
 							unitsToRoll.add (xu);
 					}
-			
-			// Only bother to send the damage calculation header if there's at least one unit that has to make a roll
-			terrifiedUnitURNs = new ArrayList<Integer> ();
-			if (unitsToRoll.size () > 0)
-			{
-				getDamageCalculator ().sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, terrorDef, castingPlayer);
-				final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell
-					(terrorDef, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT);
 				
-				for (final ExpandedUnitDetails xu : unitsToRoll)
-					if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage, false))
-						terrifiedUnitURNs.add (xu.getUnitURN ());
+				// Only bother to send the damage calculation header if there's at least one unit that has to make a roll
+				if (unitsToRoll.size () > 0)
+				{
+					getDamageCalculator ().sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, terrorSpell, castingPlayer);
+					final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell
+						(terrorSpell, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT);
+					
+					for (final ExpandedUnitDetails xu : unitsToRoll)
+						if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage, false))
+							terrifiedUnitURNs.add (xu.getUnitURN ());
+				}
 			}
 			
 			// Does opposing player have mana leak cast on this combat?
@@ -324,7 +368,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 					if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 						(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 					{
-						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorDef.getSpellRealm (),
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						if (xu.getControllingPlayerID () == playerID)
 						{
@@ -621,5 +665,21 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Damage processor
+	 */
+	public final DamageProcessor getDamageProcessor ()
+	{
+		return damageProcessor;
+	}
+
+	/**
+	 * @param proc Damage processor
+	 */
+	public final void setDamageProcessor (final DamageProcessor proc)
+	{
+		damageProcessor = proc;
 	}
 }

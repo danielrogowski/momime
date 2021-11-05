@@ -335,6 +335,11 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 	
+								case EACH_FIGURE_RESIST_OR_LOSE_1HP:
+									thisDamage = getDamageCalculator ().calculateEachFigureResistOrLose1HPDamage
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+									break;
+	
 								case SINGLE_FIGURE_RESIST_OR_DIE:
 									thisDamage = getDamageCalculator ().calculateSingleFigureResistOrDieDamage
 										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);

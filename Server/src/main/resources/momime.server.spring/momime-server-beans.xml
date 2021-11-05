@@ -748,6 +748,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="damageProcessor" ref="damageProcessor" />
 	</bean>
 	
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">

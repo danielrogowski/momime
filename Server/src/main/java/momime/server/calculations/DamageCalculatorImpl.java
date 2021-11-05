@@ -814,6 +814,65 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	}
 	
 	/**
+	 * Rolls the number of actual hits for "each figure resist or lose 1 HP" damage, where each figure has to make a resistance roll.  Used for wrack.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateEachFigureResistOrLose1HPDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+	{
+		// Store values straight into the message
+		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
+
+		// Set up defender stats
+		damageCalculationMsg.setDefenderFigures (defender.calculateAliveFigureCount ());
+		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)));
+
+		// Is there a saving throw modifier?
+		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		
+		// Is there an additional saving throw modifier because of the magic realm/lifeform type of the target?
+		// (Dispel Evil and Holy Word have an additional -5 modifier against Undead)
+		if (attackDamage.getSpell () != null)
+		{
+			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
+				(attackDamage.getSpell (), defender.getModifiedUnitMagicRealmLifeformType ().getPickID ());
+			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != null) &&
+				(magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != 0))
+				
+				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier ();
+		}
+		
+		// Work out the target's effective resistance score, reduced by any saving throw modifier
+		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
+		
+		// Each figure individually
+		int totalHits = 0;
+		for (int figureNo = 0; figureNo < damageCalculationMsg.getDefenderFigures (); figureNo++)
+			
+			// Make resistance roll for this figure
+			if (getRandomUtils ().nextInt (10) >= damageCalculationMsg.getModifiedDefenceStrength ())
+				totalHits++;
+		
+		// Store and send final totals
+		damageCalculationMsg.setActualHits (totalHits);		
+		damageCalculationMsg.setFinalHits (totalHits);
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		return totalHits;
+	}
+	
+	/**
 	 * Rolls the number of actual hits for "single figure resist or die" damage, where only one figure has to make a resistance roll.  Used for stoning touch.
 	 * 
 	 * @param defender Unit being hit

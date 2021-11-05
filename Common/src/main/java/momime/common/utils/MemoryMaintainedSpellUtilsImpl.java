@@ -423,12 +423,12 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    				(s.getCastingPlayerID () != castingPlayerID) && (!spellsImmuneToDispelling.contains (s.getSpellID ())))))
 	    			result = TargetSpellResult.NOTHING_TO_DISPEL;
 	    		
-	    		else if ((useSpellBookSection != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
+	    		else if (useSpellBookSection != SpellBookSectionID.ATTACK_SPELLS)
 	    			result = TargetSpellResult.VALID_TARGET;
 	    		
 	    		else
 	    		{
-	    			// Combat attack spell - immunity skill?
+	    			// Attack spell - immunity skill?
 	    			final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "isUnitValidTargetForSpell");
 	    			if (targetUnit.isUnitImmuneToDamageType (damageType))
 	    				result = TargetSpellResult.IMMUNE;
@@ -442,7 +442,12 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     					int resistance = Math.max (0, targetUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE));
     					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
     					{
-    						final Integer savingThrowModifier = ((spell.getCombatMaxDamage () == null) || (variableDamage == null)) ? spell.getCombatBaseDamage () : variableDamage;
+    						final Integer savingThrowModifier;
+    						if (combatLocation != null)
+    							savingThrowModifier = ((spell.getCombatMaxDamage () == null) || (variableDamage == null)) ? spell.getCombatBaseDamage () : variableDamage;
+    						else
+    							savingThrowModifier = ((spell.getOverlandMaxDamage () == null) || (variableDamage == null)) ? spell.getOverlandBaseDamage () : variableDamage;
+    						
     						if (savingThrowModifier != null)
     							resistance = resistance - savingThrowModifier;
 
@@ -470,7 +475,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    					result = TargetSpellResult.VALID_TARGET;
 	    			}
 	    			
-					// Combat attack spell that rolls against something other than resistance, so always a valid target
+					// Attack spell that rolls against something other than resistance, so always a valid target
 	    			else
     	    			result = TargetSpellResult.VALID_TARGET;
 	    		}

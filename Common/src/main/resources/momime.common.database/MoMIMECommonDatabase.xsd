@@ -5066,7 +5066,7 @@ which is why it is last in the list, so it will only be healed when all healable
 				<xsd:appinfo><jaxb:typesafeEnumMember name="RESISTANCE_ROLLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="P"><xsd:annotation>
-				<xsd:documentation>Each figure must resist or die (petrify, stoning gaze)</xsd:documentation>
+				<xsd:documentation>Each figure must resist or die (petrify, stoning gaze, black wind)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="EACH_FIGURE_RESIST_OR_DIE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="W"><xsd:annotation>

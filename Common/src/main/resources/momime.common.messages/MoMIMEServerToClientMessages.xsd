@@ -1260,17 +1260,17 @@ This is purely informational, like NTMs.  Other messages (e.g. add hero item, fu
 					<xsd:sequence>
 						<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID">
 						    <xsd:annotation>
-		  							<xsd:documentation>Exactly one of tileTypeID, mapFeatureID and buildingID will be filled in, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
+	  							<xsd:documentation>Exactly one of tileTypeID, mapFeatureID and buildingID will be filled in, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="mapFeatureID" type="momimecommon:mapFeatureID">
 						    <xsd:annotation>
-		  							<xsd:documentation>Exactly one of tileTypeID, mapFeatureID and buildingID will be filled in, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
+	  							<xsd:documentation>Exactly one of tileTypeID, mapFeatureID and buildingID will be filled in, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID">
 						    <xsd:annotation>
-		  							<xsd:documentation>Exactly one of tileTypeID, mapFeatureID and buildingID will be filled in, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
+	  							<xsd:documentation>Exactly one of tileTypeID, mapFeatureID and buildingID will be filled in, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItem" type="momimemsgs:numberedHeroItem" />
@@ -1299,7 +1299,11 @@ This is purely informational, like NTMs.  Other messages (e.g. add hero item, fu
 Either spellID or combatAreaEffectID will be filled in but never both.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="owningPlayerID" type="mps:playerID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="owningPlayerID" type="mps:playerID">
+			    <xsd:annotation>
+					<xsd:documentation>This can be null when trying to return a warped node to normal.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="castingCost" type="momimecommon:spellCastingCost" />

@@ -440,6 +440,9 @@ public final class CommonDatabaseConstants
 	/** Wall of Darkness spell */
 	public final static String SPELL_ID_WALL_OF_DARKNESS = "SP178";
 
+	/** Warp Node spell */
+	public final static String SPELL_ID_WARP_NODE = "SP186";
+	
 	/** Zombie mastery spell */
 	public final static String SPELL_ID_ZOMBIE_MASTERY = "SP188";
 	

@@ -32,6 +32,7 @@ public interface SpellDispelling
 	 * @param castingPlayer Player who is casting the dispel spell
 	 * @param targetSpells Target spells that we will make rolls to try to dispel
 	 * @param targetCAEs Target CAEs that we will make rolls to try to dispel, can be left null
+	 * @param targetWarpedNode Warped node that we are trying to return to normal
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether dispelling any spells resulted in the death of any units
 	 * @throws MomException If there is a problem with any of the calculations
@@ -41,7 +42,8 @@ public interface SpellDispelling
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public boolean processDispelling (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer,
-		final List<MemoryMaintainedSpell> targetSpells, final List<MemoryCombatAreaEffect> targetCAEs, final MomSessionVariables mom)
+		final List<MemoryMaintainedSpell> targetSpells, final List<MemoryCombatAreaEffect> targetCAEs,
+		final MapCoordinates3DEx targetWarpedNode, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;
 	
 	/**

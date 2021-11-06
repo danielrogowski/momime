@@ -817,8 +817,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 							(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ()))).collect (Collectors.toList ());
 						spellsToDispel.addAll (targetSpells);
 						
+						// Is the combat taking place at a warped node?
+			    		final boolean targetWarpedNode = (gc.getTerrainData ().isWarped () != null) && (gc.getTerrainData ().isWarped ()) &&
+			    			(mom.getServerDB ().findTileType (gc.getTerrainData ().getTileTypeID (), "castCombatNow").getMagicRealmID () != null);
+						
 						// Common method does the rest
-						if (getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, spellsToDispel, targetCAEs, mom))
+						if (getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, spellsToDispel, targetCAEs,
+							targetWarpedNode ? combatLocation : null, mom))
 							
 							// Its possible we dispelled Lionheart on the last enemy unit thereby winning the combat, so check to be sure
 							if (getDamageProcessor ().countUnitsInCombat (combatLocation,
@@ -1124,7 +1129,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
 			{
 				final List<MemoryMaintainedSpell> targetSpells;
-				if (spell.getAttackSpellCombatTarget () == null)
+				boolean targetWarpedNode = false;
+				
+				if (kind == KindOfSpell.DISPEL_OVERLAND_ENCHANTMENTS)
 				{
 					// Disjunction is easy - just targeted at one single spell, and we've already got it
 					targetSpells = Arrays.asList (targetSpell);
@@ -1139,9 +1146,16 @@ public final class SpellProcessingImpl implements SpellProcessing
 		    		targetSpells = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
 		    			(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
 		    				((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))).collect (Collectors.toList ());
+		    		
+					final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+		    		
+		    		targetWarpedNode = (terrainData.isWarped () != null) && (terrainData.isWarped ()) &&
+		    			(mom.getServerDB ().findTileType (terrainData.getTileTypeID (), "targetOverlandSpell").getMagicRealmID () != null);
 				}
 				
-	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null, mom);
+	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null,
+	    			targetWarpedNode ? targetLocation : null, mom);
 			}
 
 			// The only targeted overland summoning spell is Floating Island

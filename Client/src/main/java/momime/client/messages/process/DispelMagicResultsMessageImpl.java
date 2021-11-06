@@ -101,7 +101,7 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 			else
 			{
 				// Normal dispel spell
-				if (getCastingPlayerID () == getClient ().getOurPlayerID ())
+				if ((getCastingPlayerID () == getClient ().getOurPlayerID ()) && (result.getOwningPlayerID () != null))
 					languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getOurDispelMagicSuccess () : getLanguages ().getDispelMagic ().getOurDispelMagicFail ();
 				else
 					languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getTheirDispelMagicSuccess () : getLanguages ().getDispelMagic ().getTheirDispelMagicFail ();
@@ -121,7 +121,7 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 				("CASTING_COST", getTextUtils ().intToStrCommas (result.getCastingCost ())).replaceAll
 				("PERCENTAGE", Integer.valueOf ((int) (result.getChance () * 100d)).toString ());
 			
-			if (getCastingPlayerID () == getClient ().getOurPlayerID ())
+			if ((getCastingPlayerID () == getClient ().getOurPlayerID ()) && (result.getOwningPlayerID () != null))
 				line = line.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (getMultiplayerSessionUtils ().findPlayerWithID
 					(getClient ().getPlayers (), result.getOwningPlayerID (), "DispelMagicResultsMessageImpl (O)")));
 			

@@ -27,6 +27,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.CounterMagicResult;
 import momime.common.messages.servertoclient.CounterMagicResultsMessage;
@@ -37,6 +38,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.knowledge.ServerGridCellEx;
 
 /**
  * Handles dispelling spells making rolls to dispel other spells
@@ -72,6 +74,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 	 * @param castingPlayer Player who is casting the dispel spell
 	 * @param targetSpells Target spells that we will make rolls to try to dispel
 	 * @param targetCAEs Target CAEs that we will make rolls to try to dispel, can be left null
+	 * @param targetWarpedNode Warped node that we are trying to return to normal
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether dispelling any spells resulted in the death of any units
 	 * @throws MomException If there is a problem with any of the calculations
@@ -82,7 +85,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 	 */
 	@Override
 	public final boolean processDispelling (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer,
-		final List<MemoryMaintainedSpell> targetSpells, final List<MemoryCombatAreaEffect> targetCAEs, final MomSessionVariables mom)
+		final List<MemoryMaintainedSpell> targetSpells, final List<MemoryCombatAreaEffect> targetCAEs,
+		final MapCoordinates3DEx targetWarpedNode, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
 	{
 		// Build up a map so we remember which results we have to send to which players
@@ -264,6 +268,62 @@ public final class SpellDispellingImpl implements SpellDispelling
 					results.add (result);
 				}
 			}
+		
+		// Also try to revert warped nodes back to normal
+		if (targetWarpedNode != null)
+		{
+			// How much did this spell cost to cast?  That depends whether it was cast overland or in combat
+			final Spell spellToDispelDef = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_WARP_NODE, "processDispelling (W)");
+			
+			final DispelMagicResult result = new DispelMagicResult ();
+			result.setSpellID (spellToDispelDef.getSpellID ());
+			result.setCastingCost (spellToDispelDef.getOverlandCastingCost ());
+			result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
+			result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
+
+			if (result.isDispelled ())
+			{
+				// Resolve the node warping out across the full area, updating the true map as well as players' memory of who can see each cell and informing the clients too
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+						{
+							final ServerGridCellEx aura = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+							if (targetWarpedNode.equals (aura.getAuraFromNode ()))
+							{
+								// Update true map
+								aura.getTerrainData ().setWarped (null);
+								
+								// Update players' memory and clients
+								final MapCoordinates3DEx auraLocation = new MapCoordinates3DEx (x, y, z);
+								
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									mom.getPlayers (), auraLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+							}
+						}
+			}
+			
+			if (castingPlayer.getPlayerDescription ().isHuman ())
+				resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+			
+			final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(targetWarpedNode.getZ ()).getRow ().get (targetWarpedNode.getY ()).getCell ().get (targetWarpedNode.getX ()).getTerrainData ();
+			
+			if (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ()))
+			{
+				final PlayerServerDetails nodeOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), terrainData.getNodeOwnerID (), "processDispelling (W2)");
+				if (nodeOwner.getPlayerDescription ().isHuman ())
+				{
+					List<DispelMagicResult> results = resultsMap.get (terrainData.getNodeOwnerID ());
+					if (results == null)
+					{
+						results = new ArrayList<DispelMagicResult> ();
+						resultsMap.put (terrainData.getNodeOwnerID (), results);
+					}
+					results.add (result);
+				}
+			}
+		}
 		
 		// Send the results to each human player invovled
 		if (resultsMap.size () > 0)

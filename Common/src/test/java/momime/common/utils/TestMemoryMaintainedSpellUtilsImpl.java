@@ -3805,6 +3805,9 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		// Map
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
 		final FogOfWarMemory mem = new FogOfWarMemory ();
 		mem.setMap (map);
 		
@@ -3839,6 +3842,9 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		// Map
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
 		final FogOfWarMemory mem = new FogOfWarMemory ();
 		mem.setMap (map);
 		
@@ -3880,6 +3886,9 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		// Map
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		
 		final FogOfWarMemory mem = new FogOfWarMemory ();
 		mem.setMap (map);
 		

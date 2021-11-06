@@ -1380,6 +1380,28 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			else if (kind == KindOfSpell.ATTACK_UNITS)
 				getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), targetLocation, mom);
+			
+			else if (kind == KindOfSpell.WARP_NODE)
+			{
+				// Resolve the node warping out across the full area, updating the true map as well as players' memory of who can see each cell and informing the clients too
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+						{
+							final ServerGridCellEx aura = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+							if (targetLocation.equals (aura.getAuraFromNode ()))
+							{
+								// Update true map
+								aura.getTerrainData ().setWarped (true);
+								
+								// Update players' memory and clients
+								final MapCoordinates3DEx auraLocation = new MapCoordinates3DEx (x, y, z);
+								
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									mom.getPlayers (), auraLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+							}
+						}
+			}			
 		}
 		
 		else if (kind == KindOfSpell.ATTACK_UNITS_AND_BUILDINGS)

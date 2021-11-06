@@ -327,7 +327,8 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						// Copy each animation frame over to each bitmap
 						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 						{
-							final BufferedImage nodeAuraImage = getPlayerColourImageGenerator ().getNodeAuraImage (frameNo, mc.getTerrainData ().getNodeOwnerID ());
+							final BufferedImage nodeAuraImage = getPlayerColourImageGenerator ().getNodeAuraImage (frameNo, mc.getTerrainData ().getNodeOwnerID (),
+								(mc.getTerrainData ().isWarped () != null) && (mc.getTerrainData ().isWarped ()));
 	
 							g [frameNo].drawImage (nodeAuraImage, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 						}

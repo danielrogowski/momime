@@ -584,6 +584,9 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			String error = null;
 			if ((tc.getTerrainData () != null) && (tc.getTerrainData ().getNodeOwnerID () != null) && (spirit.getOwningPlayerID () == tc.getTerrainData ().getNodeOwnerID ()))
 				error = "You've already captured this node";
+			
+			else if ((tc.getTerrainData () != null) && (tc.getTerrainData ().isWarped () != null) && (tc.getTerrainData ().isWarped ()))
+				error = "You cannot capture warped nodes";
 
 			if (error != null)
 			{

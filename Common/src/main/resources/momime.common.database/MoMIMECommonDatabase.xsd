@@ -4797,7 +4797,7 @@ If its an overland spell then its automatically a healing spell.</xsd:documentat
 If tileTypeID+spellRadius is filled in, this is Enchant Road.  If only spellRadius is filled in, this is Earth Lore.
 If it has spellValidTileTypeTarget records with changeToTileTypeID values, this is a change terrain-type spell.
 If it has spellValidMapFeatureTarget records with changeToMapFeatureID values, this is a change map feature-type spell (Transmute).
-If none of above are true, this is Corruption.</xsd:documentation>
+If none of above are true, then whether it is Corruption or Warp Node depends on how many valid tile type targets there are.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_OVERLAND_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC11"><xsd:annotation>

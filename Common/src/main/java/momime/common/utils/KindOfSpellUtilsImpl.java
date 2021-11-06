@@ -94,6 +94,8 @@ public final class KindOfSpellUtilsImpl implements KindOfSpellUtils
 					kind = KindOfSpell.CHANGE_TILE_TYPE;
 				else if ((spell.getSpellValidMapFeatureTarget ().size () > 0) && (spell.getSpellValidMapFeatureTarget ().get (0).getChangeToMapFeatureID () != null))
 					kind = KindOfSpell.CHANGE_MAP_FEATURE;
+				else if (spell.getSpellValidTileTypeTarget ().size () <= 3)
+					kind = KindOfSpell.WARP_NODE;
 				else
 					kind = KindOfSpell.CORRUPTION;
 				break;

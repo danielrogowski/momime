@@ -47,6 +47,24 @@ public final class CompareUtils
 	}
 
 	/**
+	 * Safe boolean comparison that works even with either boolean is null
+	 * @param first First value to compare
+	 * @param second Second value to compare
+	 * @return True if both ints are null, or both are non-null and identical
+	 */
+	public final static boolean safeBooleanCompare (final Boolean first, final Boolean second)
+	{
+		if ((first == null) && (second == null))
+			return true;
+
+		else if ((first == null) || (second == null))
+			return false;
+
+		else
+			return first.equals (second);
+	}
+
+	/**
 	 * Safe coords comparison that works even with either coords are null
 	 * @param first First value to compare
 	 * @param second Second value to compare

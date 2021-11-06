@@ -598,6 +598,12 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
     				<xsd:documentation>This *does* resolve out across the full area of the aura, so will be set for all squares covered by the aura, not just the actual node tile.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="warped" type="xsd:boolean">
+	    		<xsd:annotation>
+    				<xsd:documentation>For warped node auras.  This resolves out across the full area same as nodeOwnerID does, so a player may view
+some of the node aura flashes warped and some not, depending which tiles they've seen.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="corrupted" type="xsd:unsignedShort">
 	    		<xsd:annotation>
     				<xsd:documentation>This is the number of purify points it will take to return this tile to uncorrupted state.  Uncorrupted tiles have a null here.

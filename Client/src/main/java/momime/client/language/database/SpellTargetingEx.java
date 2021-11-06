@@ -199,7 +199,11 @@ public final class SpellTargetingEx extends SpellTargeting
 			case TERRAIN_IMPASSABLE:
 				languageText = getTerrainImpassable ();
 				break;
-			 
+
+			case UNOWNED_NODE:
+				languageText = getUnownedNode ();
+				break;
+				
 			default:
 				throw new MomException ("SpellTargetingEx.getLocationLanguageText doesn't know what to do with enum value " + targetSpellResult);
 		 }

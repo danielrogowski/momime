@@ -229,29 +229,33 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		if (!zeroedProductionTypes.contains (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER))
 		{
 			// Find all the nodes we own where we have the corresponding mastery, e.g. find chaos nodes we own if we have chaos mastery
-			final List<String> nodeMagicRealmIDs = db.getPick ().stream ().filter
+			final List<String> doubledNodeMagicRealmIDs = db.getPick ().stream ().filter
 				(p -> (p.getNodeAndDispelBonus () != null) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), p.getPickID ()) > 0)).map
 				(p -> p.getNodeAndDispelBonus ()).collect (Collectors.toList ());
 			
-			final List<String> nodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> nodeMagicRealmIDs.contains (t.getMagicRealmID ())).map
+			final List<String> doubledNodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> doubledNodeMagicRealmIDs.contains (t.getMagicRealmID ())).map
 				(t -> t.getTileTypeID ()).collect (Collectors.toList ());
 			
-			final List<MapCoordinates3DEx> nodeLocations = new ArrayList<MapCoordinates3DEx> ();
-			if (nodeTileTypeIDs.size () > 0)
+			final List<MapCoordinates3DEx> doubledNodeLocations = new ArrayList<MapCoordinates3DEx> ();
+			if (doubledNodeTileTypeIDs.size () > 0)
 				for (final Plane plane : db.getPlane ())
 					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 						for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 						{
 							final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-							if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (nodeTileTypeIDs.contains (terrainData.getTileTypeID ())) &&
+							if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (doubledNodeTileTypeIDs.contains (terrainData.getTileTypeID ())) &&
 								(player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
 								
-								nodeLocations.add (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()));
+								doubledNodeLocations.add (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()));
 						}
 			
 			// Counts up how many node aura squares and volcanoes this player has
 			int nodeAuraSquares = 0;
 			int volcanoSquares = 0;
+			int warpedNodes = 0;
+			
+			final List<String> nodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> t.getMagicRealmID () != null).map (t -> t.getTileTypeID ()).collect (Collectors.toList ());
+			
 			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
@@ -262,11 +266,19 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 						{
 							if ((terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
 							{
-								nodeAuraSquares++;
-								
-								// Count it twice if we have the mastery to get double magic power from this node
-								if (nodeLocations.contains (tc.getAuraFromNode ()))
+								// Non-warped Node auras
+								if ((terrainData.isWarped () == null) || (!terrainData.isWarped ()))
+								{
 									nodeAuraSquares++;
+									
+									// Count it twice if we have the mastery to get double magic power from this node
+									if (doubledNodeLocations.contains (tc.getAuraFromNode ()))
+										nodeAuraSquares++;
+								}
+								
+								// Warped nodes, but make sure its the actual node tile and not just an aura
+								else if (nodeTileTypeIDs.contains (terrainData.getTileTypeID ()))
+									warpedNodes++;
 							}
 
 							if ((terrainData.getVolcanoOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getVolcanoOwnerID ())))
@@ -287,6 +299,16 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			
 			if (volcanoSquares > 0)
 				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, volcanoSquares);
+
+			if (warpedNodes > 0)
+			{
+				// Don't allow magic power to be negative
+				final int currentMagicPower = getResourceValueUtils ().findAmountPerTurnForProductionType
+					(priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+				
+				final int magicPowerLoss = Math.min (warpedNodes * 5, currentMagicPower);
+				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, -magicPowerLoss);
+			}
 		}
 
 		// We never explicitly add Mana from Magic Power, this is calculated on the fly by getResourceValueUtils ().calculateAmountPerTurnForProductionType

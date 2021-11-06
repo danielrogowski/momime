@@ -3,6 +3,7 @@ package momime.client.ui;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,14 +66,17 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	/**
 	 * @param frameNumber Frame number of the node aura animation
 	 * @param playerID Node owner player ID
+	 * @param warped Whether to darken the node aura to show a warped node
 	 * @return Node aura image in their correct colour
 	 * @throws IOException If there is a problem loading the flag image
 	 */
 	@Override
-	public final BufferedImage getNodeAuraImage (final int frameNumber, final int playerID) throws IOException
+	public final BufferedImage getNodeAuraImage (final int frameNumber, final int playerID, final boolean warped) throws IOException
 	{
 		final String imageName = getGraphicsDB ().findAnimation ("NODE_AURA", "getNodeAuraImage").getFrame ().get (frameNumber).getImageFile ();
-		return getModifiedImage (imageName, true, null, null, null, playerID, null);
+		final List<String> shadingColours = warped ? Arrays.asList ("808080") : null;
+		
+		return getModifiedImage (imageName, true, null, null, null, playerID, shadingColours);
 	}
 	
 	/**

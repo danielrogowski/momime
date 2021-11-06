@@ -1087,7 +1087,7 @@ public final class CityProcessingImpl implements CityProcessing
 				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defeatedUnit, KillUnitActionID.LACK_OF_PRODUCTION, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			
-			// Unown any nodes the wizard had captured and volcanoes the wizard raised
+			// Unown and unwarp any nodes the wizard had captured and volcanoes the wizard raised
 			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
@@ -1097,6 +1097,7 @@ public final class CityProcessingImpl implements CityProcessing
 						if ((terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()))
 						{
 							terrainData.setNodeOwnerID (null);
+							terrainData.setWarped (null);
 							terrainUpdated = true;
 						}
 

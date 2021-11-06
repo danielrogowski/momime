@@ -596,7 +596,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get
     		(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
     	
-    	// Simpify identifying some kinds of spells so don't have to repeat this all over the place
+    	// Simplify identifying some kinds of spells so don't have to repeat this all over the place
     	final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
     	
     	// Earth Lore and Enchant Road can always be targeted anywhere, even in blackness where we've never seen before
@@ -681,6 +681,19 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    			result = TargetSpellResult.VALID_TARGET;
 	    		else
 	    			result = TargetSpellResult.NOTHING_TO_DISPEL;
+	    	}
+    		
+	    	else if (kind == KindOfSpell.WARP_NODE)
+	    	{
+	    		// Already know its aimed at a node from the tile type rules
+	    		if ((terrainData.isWarped () != null) && (terrainData.isWarped ()))
+		    		result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
+	    		
+	    		else if (terrainData.getNodeOwnerID () == null)
+	    			result = TargetSpellResult.UNOWNED_NODE;
+	    		
+	    		else if (terrainData.getNodeOwnerID () == castingPlayerID)
+	    			result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
 	    	}
    		}
     	

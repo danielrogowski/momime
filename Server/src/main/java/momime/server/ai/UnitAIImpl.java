@@ -904,7 +904,10 @@ public final class UnitAIImpl implements UnitAI
 						{
 							final TileType tileTypeDef = db.findTileType (mc.getTerrainData ().getTileTypeID (), "listNodesWeDontOwnOnPlane");
 							if ((tileTypeDef.getMagicRealmID () != null) &&
-								((mc.getTerrainData ().getNodeOwnerID () == null) || (mc.getTerrainData ().getNodeOwnerID () != playerID)))
+								((mc.getTerrainData ().getNodeOwnerID () == null) || (mc.getTerrainData ().getNodeOwnerID () != playerID)) &&
+								
+								// Can't meld with warped nodes, so no point sending spirits to them
+								((mc.getTerrainData ().isWarped () == null) || (!mc.getTerrainData ().isWarped ())))
 								
 								list.add (coords);
 						}

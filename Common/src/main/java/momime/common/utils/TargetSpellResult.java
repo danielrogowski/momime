@@ -117,5 +117,8 @@ public enum TargetSpellResult
 	INSUFFICIENT_MANA,
 	
 	/** Can't cast plane shift on any units while planar seal is in effect */
-	PLANAR_SEAL;
+	PLANAR_SEAL,
+	
+	/** Warp node can only be used on nodes that have been captured by an enemy wizard */
+	UNOWNED_NODE;
 }

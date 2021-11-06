@@ -71,6 +71,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			(!CompareUtils.safeStringCompare (sourceData.getMapFeatureID (), destinationData.getMapFeatureID ())) ||
 			(!CompareUtils.safeStringCompare (sourceData.getRiverDirections (), destinationData.getRiverDirections ())) ||
 			(!CompareUtils.safeIntegerCompare (sourceData.getNodeOwnerID (), destinationData.getNodeOwnerID ())) ||
+			(!CompareUtils.safeBooleanCompare (sourceData.isWarped (), destinationData.isWarped ())) ||
 			(!CompareUtils.safeIntegerCompare (sourceData.getVolcanoOwnerID (), destinationData.getVolcanoOwnerID ()));
 
 		if (updateRequired)
@@ -87,6 +88,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			destinationData.setMapFeatureID (sourceData.getMapFeatureID ());
 			destinationData.setRiverDirections (sourceData.getRiverDirections ());
 			destinationData.setNodeOwnerID (sourceData.getNodeOwnerID ());
+			destinationData.setWarped (sourceData.isWarped ());
 			destinationData.setVolcanoOwnerID (sourceData.getVolcanoOwnerID ());
 		}
 
@@ -106,7 +108,8 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		final boolean updateRequired = (destinationData != null) &&
 			((destinationData.getCorrupted () != null) || (destinationData.getTileTypeID () != null) || (destinationData.getRoadTileTypeID () != null) ||
 			 (destinationData.getMapFeatureID () != null) ||
-			 (destinationData.getRiverDirections () != null) || (destinationData.getNodeOwnerID () != null) || (destinationData.getVolcanoOwnerID () != null));
+			 (destinationData.getRiverDirections () != null) || (destinationData.getNodeOwnerID () != null) || (destinationData.getVolcanoOwnerID () != null) ||
+			 ((destinationData.isWarped () != null) && (destinationData.isWarped ())));
 
 		destination.setTerrainData (null);
 

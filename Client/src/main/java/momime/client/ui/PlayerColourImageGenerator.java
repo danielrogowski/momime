@@ -23,10 +23,11 @@ public interface PlayerColourImageGenerator
 	/**
 	 * @param frameNumber Frame number of the node aura animation
 	 * @param playerID Node owner player ID
+	 * @param warped Whether to darken the node aura to show a warped node
 	 * @return Node aura image in their correct colour
 	 * @throws IOException If there is a problem loading the flag image
 	 */
-	public BufferedImage getNodeAuraImage (final int frameNumber, final int playerID) throws IOException;
+	public BufferedImage getNodeAuraImage (final int frameNumber, final int playerID, final boolean warped) throws IOException;
 	
 	/**
 	 * @param d Direction of border edge to draw

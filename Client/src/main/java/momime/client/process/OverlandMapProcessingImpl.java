@@ -308,7 +308,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		boolean meldWithNodeEnabled = false;
 		if ((spiritCount == 1) && (terrainData != null))
 		{
-			if ((tileType.getMagicRealmID () != null) && (!getClient ().getOurPlayerID ().equals (terrainData.getNodeOwnerID ())))
+			if ((tileType.getMagicRealmID () != null) && (!getClient ().getOurPlayerID ().equals (terrainData.getNodeOwnerID ())) &&
+				((terrainData.isWarped () == null) || (!terrainData.isWarped ())))
 				meldWithNodeEnabled = true;
 		}
 		getOverlandMapRightHandPanel ().setMeldWithNodeEnabled (meldWithNodeEnabled);

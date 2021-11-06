@@ -424,6 +424,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				error = "Can only use the meld with node skill with node map squares";
 			else if ((specialOrder == UnitSpecialOrder.MELD_WITH_NODE) && (player.getPlayerDescription ().getPlayerID ().equals (tc.getTerrainData ().getNodeOwnerID ())))
 				error = "You already control this node so cannot meld with it again";
+			else if ((specialOrder == UnitSpecialOrder.MELD_WITH_NODE) && (tc.getTerrainData ().isWarped () != null) && (tc.getTerrainData ().isWarped ()))
+				error = "You cannot meld with warped nodes";
 			else if ((specialOrder == UnitSpecialOrder.PURIFY) && (tc.getTerrainData ().getCorrupted () == null))
 				error = "You can only use purify on corrupted terrain";
 			else if ((specialOrder == UnitSpecialOrder.PLANE_SHIFT) && (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ())))

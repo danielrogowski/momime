@@ -65,6 +65,9 @@ public enum KindOfSpell
 	/** Corruption */
 	CORRUPTION,
 	
+	/** Warp node */
+	WARP_NODE,
+	
 	/** Earth to mud */
 	EARTH_TO_MUD,
 	

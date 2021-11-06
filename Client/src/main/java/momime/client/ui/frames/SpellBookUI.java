@@ -64,6 +64,7 @@ import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -784,6 +785,17 @@ public final class SpellBookUI extends MomClientFrameUI
 						(getMemoryCombatAreaEffectUtils ().listCombatAreaEffectsFromLocalisedSpells
 							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatUI ().getCombatLocation (), getClient ().getClientDB ()).stream ().anyMatch
 								(cae -> !cae.getCastingPlayerID ().equals (getClient ().getOurPlayerID ())));
+				
+				// Or warped nodes
+				if ((!found) && (sectionID == SpellBookSectionID.DISPEL_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.ALL_UNITS))
+				{
+					final OverlandMapTerrainData combatTerrainData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(getCombatUI ().getCombatLocation ().getZ ()).getRow ().get (getCombatUI ().getCombatLocation ().getY ()).getCell ().get
+						(getCombatUI ().getCombatLocation ().getX ()).getTerrainData ();
+					
+					found = (combatTerrainData.isWarped () != null) && (combatTerrainData.isWarped () &&
+						(getClient ().getClientDB ().findTileType (combatTerrainData.getTileTypeID (), "castSpell").getMagicRealmID () != null));
+				}
 				
 				// Cracks call can also be aimed at walls
 				if ((!found) && (sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getSpellValidBorderTarget ().size () > 0))

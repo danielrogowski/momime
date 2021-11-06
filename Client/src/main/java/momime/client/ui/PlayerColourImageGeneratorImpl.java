@@ -74,7 +74,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	public final BufferedImage getNodeAuraImage (final int frameNumber, final int playerID, final boolean warped) throws IOException
 	{
 		final String imageName = getGraphicsDB ().findAnimation ("NODE_AURA", "getNodeAuraImage").getFrame ().get (frameNumber).getImageFile ();
-		final List<String> shadingColours = warped ? Arrays.asList ("808080") : null;
+		final List<String> shadingColours = warped ? Arrays.asList ("505050") : null;
 		
 		return getModifiedImage (imageName, true, null, null, null, playerID, shadingColours);
 	}

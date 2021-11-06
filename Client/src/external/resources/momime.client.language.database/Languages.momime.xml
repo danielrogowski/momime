@@ -4098,6 +4098,12 @@ Bonus Or +GOLD_BONUS%</text>
         <undeadCreatedPlural language="en">
             <text>UNDEAD_COUNT units rise from the dead.</text>
         </undeadCreatedPlural>
+        <zombieCreatedSingular language="en">
+            <text>1 unit has been transformed into Zombies.</text>
+        </zombieCreatedSingular>
+        <zombiesCreatedPlural language="en">
+            <text>ZOMBIE_COUNT units have been transformed into Zombies.</text>
+        </zombiesCreatedPlural>
         <fameGained language="en">
             <text>You have gained FAME_GAINED fame.</text>
         </fameGained>

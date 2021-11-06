@@ -127,6 +127,25 @@ public interface CombatProcessing
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
+	 * Searches for normal units that died in the specified combat where the winning player has Zombie Mastery cast,
+	 * and converts them into zombies ownd by the winning player.
+	 * 
+	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
+	 * @param newLocation The location the undead should be moved to on the overland map
+	 * @param winningPlayer The player who won the combat
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return The true units that were converted into undead
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public List<MemoryUnit> createZombies (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
+		final PlayerServerDetails winningPlayer, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
 	 * Because of createUndead above creating units from life stealing attacks, its possible that after combat we can end up with more than 9 units
 	 * in a map cell and need to go back and kill off some of the undead to get us back within the maximum.  Its too complicated to work out up front
 	 * that there will end up being too many units in a cell, its easier to just allow them to be converted to undead and kill them off later like this.

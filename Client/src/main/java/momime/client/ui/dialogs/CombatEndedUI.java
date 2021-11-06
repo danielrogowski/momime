@@ -255,6 +255,19 @@ public final class CombatEndedUI extends MomClientDialogUI
 				("UNDEAD_COUNT", Integer.valueOf (getMessage ().getUndeadCreated ()).toString ()));
 		}
 		
+		// Zombies created?
+		if (getMessage ().getZombiesCreated () > 0)
+		{
+			if (bottomText.length () > 0)
+				bottomText.append (System.lineSeparator ());
+			
+			final List<LanguageText> ZombiesText = (getMessage ().getZombiesCreated () == 1) ?
+				getLanguages ().getCombatEndedScreen ().getZombieCreatedSingular () : getLanguages ().getCombatEndedScreen ().getZombiesCreatedPlural ();
+			
+			bottomText.append (getLanguageHolder ().findDescription (ZombiesText).replaceAll
+				("ZOMBIE_COUNT", Integer.valueOf (getMessage ().getZombiesCreated ()).toString ()));
+		}
+		
 		headingText.setText (getLanguageHolder ().findDescription (languageText).replaceAll ("CITY_NAME", cityName));
 		mainText.setText (bottomText.toString ());
 	}

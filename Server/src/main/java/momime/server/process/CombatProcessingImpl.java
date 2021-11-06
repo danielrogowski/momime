@@ -53,6 +53,7 @@ import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CombatAI;
@@ -141,6 +142,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
@@ -874,6 +878,59 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		log.debug ("createUndead created undead from " + undeadCreated.size () + " losing units");
 		return undeadCreated;
+	}
+	
+	/**
+	 * Searches for normal units that died in the specified combat where the winning player has Zombie Mastery cast,
+	 * and converts them into zombies ownd by the winning player.
+	 * 
+	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
+	 * @param newLocation The location the undead should be moved to on the overland map
+	 * @param winningPlayer The player who won the combat
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return The true units that were converted into undead
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final List<MemoryUnit> createZombies (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
+		final PlayerServerDetails winningPlayer, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		// First step, just count up how many zombies to create
+		final List<MemoryUnit> zombiesCreated = new ArrayList<MemoryUnit> ();
+		
+		if ((winningPlayer != null) && (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), winningPlayer.getPlayerDescription ().getPlayerID (),
+				CommonDatabaseConstants.SPELL_ID_ZOMBIE_MASTERY, null, null, null, null) != null))
+		{
+			int zombieCount = 0;
+			for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+	
+				// Don't check combatPosition here - DEAD units should have no position
+				if ((combatLocation.equals (trueUnit.getCombatLocation ())) && (trueUnit.getStatus () == UnitStatusID.DEAD) && (!trueUnit.isWasSummonedInCombat ()) &&
+					(mom.getServerDB ().findUnit (trueUnit.getUnitID (), "createZombies").getUnitMagicRealm ().equals
+						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL)))
+				{
+					// Have to check it still is a normal unit - killing undead or chaos channeled normal units don't count
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (trueUnit, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					if (xu.getModifiedUnitMagicRealmLifeformType ().getPickID ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL))
+						zombieCount++;
+				}
+			
+			// Now create them
+			for (int zombieNo = 0; zombieNo < zombieCount; zombieNo++)
+				zombiesCreated.add (getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
+					CommonDatabaseConstants.UNIT_ID_ZOMBIE, newLocation, null, null, null,
+					winningPlayer, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()));
+		}
+	
+		log.debug ("zombiesCreated created zombies from " + zombiesCreated.size ()  + " dead normal units");
+		return zombiesCreated;
 	}
 	
 	/**
@@ -1728,5 +1785,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

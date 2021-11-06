@@ -219,6 +219,9 @@ public final class CommonDatabaseConstants
 	/** Example of simplest unit to use to test roads (High men spearmen) */
 	public final static String UNIT_ID_EXAMPLE = "UN105";
 
+	/** Unit created by Zombie Mastery */
+	public final static String UNIT_ID_ZOMBIE = "UN175";
+	
 	// unit skills
 
 	/** Melee attack strength */
@@ -436,6 +439,9 @@ public final class CommonDatabaseConstants
 	
 	/** Wall of Darkness spell */
 	public final static String SPELL_ID_WALL_OF_DARKNESS = "SP178";
+
+	/** Zombie mastery spell */
+	public final static String SPELL_ID_ZOMBIE_MASTERY = "SP188";
 	
 	/** Famine spell */
 	public final static String SPELL_ID_FAMINE = "SP189";

@@ -431,6 +431,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			msg.setUndeadCreated (undead.size ());
 
+			final List<MemoryUnit> zombies = getCombatProcessing ().createZombies (combatLocation, moveTo, winningPlayer, mom);
+			msg.setZombiesCreated (zombies.size ());
+			
 			// If won a combat vs 4 or more units, gain +1 fame
 			// If lost a combat and lost 4 or more units, lose -1 fame
 			int attackerFameChange = (winningPlayer == attackingPlayer) ? winningFameChange : losingFameChange;
@@ -545,7 +548,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 							unitStack.add (trueUnit);
 							moveFrom = new MapCoordinates3DEx ((MapCoordinates3DEx) trueUnit.getUnitLocation ());
 						}
-						else if (!undead.contains (trueUnit))
+						else if ((!undead.contains (trueUnit)) && (!zombies.contains (trueUnit)))
 							leftoverDefenders.add (trueUnit);
 					}
 				
@@ -618,6 +621,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// If life stealing attacks created some undead, its possible we've now got over 9 units in the map cell so have to kill some off again.
 				// Its a bit backwards letting them get created, then killing them off, but there's too much else going on like removing dead units and combat
 				// summons and advancing attackers into the target square, that its difficult to know up front whether is space to create the undead or not.
+				getCombatProcessing ().killUnitsIfTooManyInMapCell (moveTo, zombies, mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 				getCombatProcessing ().killUnitsIfTooManyInMapCell (moveTo, undead, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 	

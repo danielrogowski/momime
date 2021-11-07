@@ -37,8 +37,85 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.9.6</b></td>
-			<td align=left><b>28 Sep 2021</b></td>
+			<td align=left><b>Current version: 0.9.9.7</b></td>
+			<td align=left><b>7 Nov 2011</b></td>
+			<td align=left>
+				<b>Rare spells that now work correctly:</b>
+				<ul>
+					<li>Ice Storm
+					<li>Earthquake
+					<li>Fixed bug with Move Fortress not also moving the Summoning Circle when it was also at the old Wizard's Fortress location
+					<li>Gaia's Blessing
+					<li>Fixed Banish so it can't be cast on normal units or heroes
+					<li>Stop being able to cast Mind Storm on units with True Sight / Illusions Immunity
+					<li>Stasis
+					<li>Warp Lightning (only fired a single strength 10 bolt before)
+					<li>Metal Fires
+					<li>Magic Vortex
+					<li>Fire Storm
+					<li>Chaos Rift
+					<li>Invulnerability previously granted Weapon Immunity; now added the -2 damage reduction as well
+					<li>Righteousness
+					<li>Prosperity
+					<li>Altar of Battle
+					<li>Stream of Life
+					<li>Wrack
+					<li>Evil Presence
+					<li>Warp Node
+					<li>Black Wind
+					<li>Zombie Mastery
+					<li>Famine
+					<li>Cursed Lands
+				</ul>
+
+				<b>Fixes to common and uncommon spells:</b>
+				<ul>
+					<li>Allowed casting Corruption on Nodes.  Its not totally clear from the wiki whether this was intended to be allowed in the original MoM or not.
+					<li>Stop being able to cast Weakness, Black Sleep or Possession on units with Death Immunity or Righteousness
+					<li>Stop being able to cast Vertigo on units with True Sight / Illusions Immunity
+				</ul>
+
+				<b>Other new features:</b>
+				<ul>
+					<li>Added overfarming rule to Rations calculation
+					<li>Added button to overland map view to access damage calculator, so you can see results of overland damage spells like Ice Storm
+					<li>Rewritten the way Combat Area Effects (like node auras or prayer) grant bonus stats, to enable defining what effects do not stack with other effects.  Metal Fires will not stack with Flame Blade.
+High Prayer to not stack with Prayer.  Darkness, Cloud of Shadow and Eternal Night will not stack.  True Light will not stack with Heavenly Light.
+					<li>Allowed casting Corruption on Nodes.  Its not totally clear whether this was intended to be allowed in the original MoM or not.
+					<li>Made calculator and damage breakdown screens much wider as some of the long descriptions would be wider than the screen and make a horizontal scroll bar appear.
+				</ul>
+
+				<b>AI adjustments:</b>
+				<ul>
+					<li>AI players (both wizards and raiders) no longer get a boost to generation of rations based on difficulty level (boost now applies only to production, gold and magic power generated from cities)
+					<li>AI players now decide what proportion of magic power to split into mana, spell research and skill improvment, rather than leaving it at the default 1/3 split
+					<li>Decreased value rating of wild game and increased value rating of Mithril ore, so you are less likely to get a start position
+						surrounded by 4 wild game which was common, and more likely to get a start position with a Mithril ore deposit
+				</ul>
+
+				<b>Damage type adjustments:</b>
+				<ul>
+					<li>Magic Immunity now completely blocks Psionic blast, various lightning spells and Doom Bolt rather than just giving 50 shields (thanks andrei for pointing this out)
+					<li>Ranged boulder attacks (e.g. Warships, Steam Cannons) downgraded to normal damage so they do trigger the defence 10 from Weapon Immunity (this changed on wiki since I originally wrote it)
+					<li>Holy Word downgraded to deal healable damage instead of permanent
+					<li>Word of Death changed to deal death damage, so it is healable instead of permanent, and is blocked by Death Immunity and Righteousness
+					<li>Added new "Chaos damage" type to differentiate between spells that are blocked by Righteousness and those that aren't (e.g. Psionic Blast vs Lightning Bolt)
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed bug introduced in 0.9.9.5 where if an attacker won a combat, was told some of the dead defenders units were turned into undead, then those undead would be immediately killed off
+					<li>Stopped being able to instant cast overland spells during another player's turn
+					<li>Stopped AI players (and human players putting combats on auto) being able to aim spells at invisible units they can't see (thanks andrei for pointing this out)
+					<li>Corrected bonuses granted by Prayer and High Prayer in line with wiki
+					<li>In 0.9.9.0 Chaos/Sorcery/Nature mastery and Archmage made spells more difficult to dispel, but same had not been applied to Combat Area Effects
+					<li>Stop being able to close the combat screen from taskbar thereby locking up the game
+				</ul>
+			</tr>
+		<tr>
+		<tr>
+			<td align=left>0.9.9.6</td>
+			<td align=left>28 Sep 2021</td>
 			<td align=left>
 				<b>Uncommon spells that now work correctly:</b>
 				<ul>

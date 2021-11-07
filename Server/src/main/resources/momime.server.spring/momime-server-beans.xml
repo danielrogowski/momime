@@ -841,6 +841,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="offerGenerator" ref="offerGenerator" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">

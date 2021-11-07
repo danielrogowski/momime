@@ -25,16 +25,19 @@ import momime.common.database.AiUnitCategory;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SpellSetting;
 import momime.common.database.Wizard;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NewTurnMessageOffer;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.WizardState;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -81,6 +84,9 @@ public final class MomAIImpl implements MomAI
 	
 	/** Offer generator */
 	private OfferGenerator offerGenerator;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
 	
 	/**
 	 * @param player AI player whose turn to take
@@ -340,8 +346,11 @@ public final class MomAIImpl implements MomAI
 		{
 			// Only wizards can use alchemy (raiders don't need mana)
 			// Make sure we do this before rush buying projects in cities, as generating mana for Spell of Return is more important
-			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 25))
+			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 20))
+			{
 				considerAlchemy (player, mom.getPlayers (), mom.getServerDB ());
+				decideMagicPowerDistribution (player, mom.getPlayers (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+			}
 			
 			if (numberOfCities > 0)
 			{
@@ -387,7 +396,7 @@ public final class MomAIImpl implements MomAI
 		// Want 10x casting skill in MP
 		final int desiredMana = getResourceValueUtils ().calculateModifiedCastingSkill (priv.getResourceValue (), player, players, priv.getFogOfWarMemory (), db, true) * 10;
 		final int currentMana = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has " + currentMana + " MP and wants minimum " + desiredMana + " MP");
+		log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has " + currentMana + " MP and wants minimum " + desiredMana + " MP from Alchemy");
 		
 		if (desiredMana > currentMana)
 		{
@@ -419,6 +428,77 @@ public final class MomAIImpl implements MomAI
 				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, manaToConvert);
 			}
 		}
+	}
+	
+	/**
+	 * @param player AI player to decide magic power distribution for
+	 * @param players Players list
+	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
+	 * @param db Lookup lists built over the XML database
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	final void decideMagicPowerDistribution (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+		final SpellSetting spellSettings, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		
+		// Want 10x casting skill in MP
+		final int desiredMana = getResourceValueUtils ().calculateModifiedCastingSkill (priv.getResourceValue (), player, players, priv.getFogOfWarMemory (), db, true) * 10;
+		final int currentMana = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+		log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has " + currentMana + " MP and wants minimum " + desiredMana + " MP from magic power");
+		
+		// Increase MP from magic power until we generate enough to hit desired MP value
+		priv.getMagicPowerDistribution ().setManaRatio (0);
+		int manaFromMagicPower = 0;
+		while ((priv.getMagicPowerDistribution ().getManaRatio () < CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX) &&
+			(currentMana + manaFromMagicPower < desiredMana))
+		{
+			priv.getMagicPowerDistribution ().setManaRatio (priv.getMagicPowerDistribution ().getManaRatio () + 1);
+		
+			// This method calculates MP split from magic power, and takes Archmage 25% bonus into account
+			manaFromMagicPower = getResourceValueUtils ().calculateAmountPerTurnForProductionType
+				(priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db);
+		}
+
+		log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " set MP from magic power at " + priv.getMagicPowerDistribution ().getManaRatio () +
+			" / " + CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX + " to generate " + manaFromMagicPower + " MP");
+		
+		// Now figure split between research and skill improvement
+		int remainingPowerDistribution = CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX - priv.getMagicPowerDistribution ().getManaRatio ();
+		
+		// If we already know Spell of Mastery, remaining research is mostly pointless so throw everything into skill improvement
+		final SpellResearchStatusID spellOfMasteryResearch = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (),
+			CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY).getStatus ();
+		
+		if (spellOfMasteryResearch == SpellResearchStatusID.AVAILABLE)
+		{
+			priv.getMagicPowerDistribution ().setResearchRatio (0);
+			priv.getMagicPowerDistribution ().setSkillRatio (remainingPowerDistribution);
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " knows Spell of Mastery so throwing all remaining " +
+				remainingPowerDistribution + " / " + CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX + " into skill improvement");
+		}
+		
+		// If Spell of Mastery is available as one of 8 research options (even if we are researching something else first) then throw everything at it
+		else if (spellOfMasteryResearch == SpellResearchStatusID.RESEARCHABLE_NOW)
+		{
+			priv.getMagicPowerDistribution ().setResearchRatio (remainingPowerDistribution);
+			priv.getMagicPowerDistribution ().setSkillRatio (0);
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can research Spell of Mastery so throwing all remaining " +
+				remainingPowerDistribution + " / " + CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX + " into research");
+		}
+		
+		else
+		{
+			priv.getMagicPowerDistribution ().setResearchRatio (remainingPowerDistribution / 2);
+			priv.getMagicPowerDistribution ().setSkillRatio ((remainingPowerDistribution + 1) / 2);
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " splitting remaining magic power 50/50 so research at " +
+				priv.getMagicPowerDistribution ().getResearchRatio () + " / " + CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX + " and skill improvement at " +
+				priv.getMagicPowerDistribution ().getSkillRatio () + " / " + CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX);
+		}		
 	}
 
 	/**
@@ -615,5 +695,21 @@ public final class MomAIImpl implements MomAI
 	public final void setOfferGenerator (final OfferGenerator g)
 	{
 		offerGenerator = g;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
 	}
 }

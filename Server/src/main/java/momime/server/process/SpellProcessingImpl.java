@@ -701,7 +701,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
 				final List<MemoryMaintainedSpell> targetSpells = new ArrayList<MemoryMaintainedSpell> ();
 				final List<MemoryCombatAreaEffect> targetCAEs = new ArrayList<MemoryCombatAreaEffect> ();
-	    		final List<MemoryUnit> targetVortexes = new ArrayList<MemoryUnit> ();
 				if (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT)
 					targetUnits.add (targetUnit);
 				else
@@ -729,17 +728,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 						targetCAEs.addAll (getMemoryCombatAreaEffectUtils ().listCombatAreaEffectsFromLocalisedSpells
 							(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getServerDB ()).stream ().filter
 								(cae -> !cae.getCastingPlayerID ().equals (castingPlayer.getPlayerDescription ().getPlayerID ())).collect (Collectors.toList ()));
-						
-						// Also magic vortexes owned by the other player
-						targetVortexes.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
-							(u -> (combatLocation.equals (u.getCombatLocation ())) && (u.getCombatPosition () != null) && (u.getStatus () == UnitStatusID.ALIVE) &&
-								(u.getCombatSide () != null) && (u.getCombatHeading () != null) &&
-								(u.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
-								(mom.getServerDB ().getUnitsThatMoveThroughOtherUnits ().contains (u.getUnitID ()))).collect (Collectors.toList ()));
 					}
 				}
 				
-				if ((targetUnits.size () > 0) || (targetSpells.size () > 0) || (targetCAEs.size () > 0) || (targetVortexes.size () > 0))
+				if ((targetUnits.size () > 0) || (targetSpells.size () > 0) || (targetCAEs.size () > 0))
 				{
 					if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
 					{
@@ -828,6 +820,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 						// Is the combat taking place at a warped node?
 			    		final boolean targetWarpedNode = (gc.getTerrainData ().isWarped () != null) && (gc.getTerrainData ().isWarped ()) &&
 			    			(mom.getServerDB ().findTileType (gc.getTerrainData ().getTileTypeID (), "castCombatNow").getMagicRealmID () != null);
+			    		
+			    		// Are any of the units targeted directly as well as targeting the spells cast on them?
+			    		final List<MemoryUnit> targetVortexes = targetUnits.stream ().filter
+			    			(u -> mom.getServerDB ().getUnitsThatMoveThroughOtherUnits ().contains (u.getUnitID ())).collect (Collectors.toList ());
 						
 						// Common method does the rest
 						if (getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, spellsToDispel, targetCAEs,

@@ -526,7 +526,8 @@ public final class CombatUI extends MomClientFrameUI
 							final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt
 								(getCombatLocation (), moveToLocation, getClient ().getOurPlayerID (), getClient ().getPlayers (),
 								 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
-								 getClient ().getSessionDescription ().getCombatMapSize ());
+								 getClient ().getSessionDescription ().getCombatMapSize (),
+								 getSpellBeingTargeted ().getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS);
 							
 							boolean validTarget;
 							switch (getSpellBeingTargeted ().getSpellBookSectionID ())
@@ -1035,7 +1036,7 @@ public final class CombatUI extends MomClientFrameUI
 						final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (getCombatLocation (), combatCoords,
 							getClient ().getOurPlayerID (), getClient ().getPlayers (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
-							getClient ().getSessionDescription ().getCombatMapSize ());
+							getClient ().getSessionDescription ().getCombatMapSize (), false);
 						if (xu != null)
 						{
 							if ((xu == getSelectedUnitInCombat ()) || (xu.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
@@ -1066,7 +1067,8 @@ public final class CombatUI extends MomClientFrameUI
 						final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt
 							(getCombatLocation (), combatCoords, getClient ().getOurPlayerID (), getClient ().getPlayers (),
 							 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
-							 getClient ().getSessionDescription ().getCombatMapSize ());
+							 getClient ().getSessionDescription ().getCombatMapSize (),
+							 getSpellBeingTargeted ().getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS);
 						
 						// Build message
 						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();

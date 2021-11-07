@@ -1347,7 +1347,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				// Check if the cell is really empty - maybe there's an invisible unit we couldn't see before
 				if ((!tu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MOVE_THROUGH_UNITS)) &&
 					(getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation,
-						movePath, mom.getServerDB ()) != null))
+						movePath, mom.getServerDB (), false) != null))
 				{
 					// Invisible unit here - wind movePath back one step
 					blocked = true;
@@ -1412,7 +1412,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if (ATTACK_UNIT.contains (combatMoveType))
 			{
 				final MemoryUnit defender = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-					combatLocation, moveTo, mom.getServerDB ());
+					combatLocation, moveTo, mom.getServerDB (), false);
 				if (defender != null)
 					defenders.add (new ResolveAttackTarget (defender));
 			}

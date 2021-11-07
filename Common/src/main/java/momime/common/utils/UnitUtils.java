@@ -166,10 +166,11 @@ public interface UnitUtils
 	 * @param combatLocation Location on overland map where the combat is taking place
 	 * @param combatPosition Position within the combat map to look at
 	 * @param db Lookup lists built over the XML database
+	 * @param allowTargetingVortexes Normally magic vortexes cannot be targeted in any way, but allow it if this is set to true
 	 * @return Unit at this position, or null if there isn't one
 	 */
 	public MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final MapCoordinates3DEx combatLocation,
-		final MapCoordinates2DEx combatPosition, final CommonDatabase db);
+		final MapCoordinates2DEx combatPosition, final CommonDatabase db, final boolean allowTargetingVortexes);
 	
 	/**
 	 * findAliveUnitInCombatAt will still return units we cannot see because they're invisible.  This adds that check.  So for example if we have a unit
@@ -182,6 +183,7 @@ public interface UnitUtils
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param allowTargetingVortexes Normally magic vortexes cannot be targeted in any way, but allow it if this is set to true
 	 * @return Unit at this position, or null if there isn't one, or if there is one but we can't see it
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
@@ -189,7 +191,7 @@ public interface UnitUtils
 	 */
 	public ExpandedUnitDetails findAliveUnitInCombatWeCanSeeAt (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
 		final int ourPlayerID, final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db,
-		final CoordinateSystem combatMapCoordinateSystem)
+		final CoordinateSystem combatMapCoordinateSystem, final boolean allowTargetingVortexes)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**

@@ -470,25 +470,34 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @param combatLocation Location on overland map where the combat is taking place
 	 * @param combatPosition Position within the combat map to look at
 	 * @param db Lookup lists built over the XML database
+	 * @param allowTargetingVortexes Normally magic vortexes cannot be targeted in any way, but allow it if this is set to true
 	 * @return Unit at this position, or null if there isn't one
 	 */
 	@Override
 	public final MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final MapCoordinates3DEx combatLocation,
-		final MapCoordinates2DEx combatPosition, final CommonDatabase db)
+		final MapCoordinates2DEx combatPosition, final CommonDatabase db, final boolean allowTargetingVortexes)
 	{
 		MemoryUnit found = null;
+		MemoryUnit foundVortex = null;
+		
 		final Iterator<MemoryUnit> iter = units.iterator ();
 		while ((found == null) && (iter.hasNext ()))
 		{
 			final MemoryUnit thisUnit = iter.next ();
 
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (combatPosition.equals (thisUnit.getCombatPosition ())) &&
-				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (!db.getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())))
-				
-				found = thisUnit;
+				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
+			{
+				if (!db.getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ()))
+					found = thisUnit;
+
+				// Store vortex as secondary target, but keep searching for a normal unit too and only output this if we don't find one
+				else if (allowTargetingVortexes)
+					foundVortex = thisUnit;
+			}
 		}
 
-		return found;
+		return (found == null) ? foundVortex : found;
 	}
 
 	/**
@@ -502,6 +511,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param allowTargetingVortexes Normally magic vortexes cannot be targeted in any way, but allow it if this is set to true
 	 * @return Unit at this position, or null if there isn't one, or if there is one but we can't see it
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
@@ -510,10 +520,10 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final ExpandedUnitDetails findAliveUnitInCombatWeCanSeeAt (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
 		final int ourPlayerID, final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db,
-		final CoordinateSystem combatMapCoordinateSystem)
+		final CoordinateSystem combatMapCoordinateSystem, final boolean allowTargetingVortexes)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		final MemoryUnit mu = findAliveUnitInCombatAt (mem.getUnit (), combatLocation, combatPosition, db);
+		final MemoryUnit mu = findAliveUnitInCombatAt (mem.getUnit (), combatLocation, combatPosition, db, allowTargetingVortexes);
 		ExpandedUnitDetails xu = null;
 		
 		if (mu != null)

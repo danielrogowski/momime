@@ -437,7 +437,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			{
 				// Verify for summoning spells that there isn't a unit in that location... one we know about anyway
 				if (getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, combatTargetLocation, player.getPlayerDescription ().getPlayerID (), mom.getPlayers (),
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ()) != null)
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize (), true) != null)
 					msg = "There is already a unit in the chosen location so you cannot summon there.";
 				
 				else if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&

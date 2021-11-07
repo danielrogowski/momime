@@ -1816,7 +1816,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findAliveUnitInCombatWeCanSeeAt (combatLocation, combatTargetLocation, 7, players,
-			trueMap, db, sd.getCombatMapSize ())).thenReturn (mock (ExpandedUnitDetails.class));
+			trueMap, db, sd.getCombatMapSize (), true)).thenReturn (mock (ExpandedUnitDetails.class));
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1944,7 +1944,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db)).thenReturn (null);
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db, true)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
@@ -2079,7 +2079,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db)).thenReturn (null);
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db, true)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
@@ -2221,7 +2221,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db)).thenReturn (null);
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db, true)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);

@@ -1039,7 +1039,7 @@ public final class TestUnitUtilsImpl
 		// Should get a null
 		final MapCoordinates3DEx loc = new MapCoordinates3DEx (20, 10, 1);
 		final MapCoordinates2DEx pos = new MapCoordinates2DEx (14, 7);
-		assertNull (utils.findAliveUnitInCombatAt (units, loc, pos, db));
+		assertNull (utils.findAliveUnitInCombatAt (units, loc, pos, db, false));
 		
 		// Add one that matches
 		final MemoryUnit u4 = new MemoryUnit ();
@@ -1052,7 +1052,7 @@ public final class TestUnitUtilsImpl
 		units.add (u4);
 		
 		// Show that we find it
-		assertSame (u4, utils.findAliveUnitInCombatAt (units, loc, pos, db));
+		assertSame (u4, utils.findAliveUnitInCombatAt (units, loc, pos, db, false));
 	}
 	
 	/**

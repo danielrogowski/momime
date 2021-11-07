@@ -140,7 +140,7 @@ public final class CombatHandlingImpl implements CombatHandling
 		
 		// Is there a unit in the same space as the vortex?
 		final MemoryUnit doomUnit = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-			(MapCoordinates3DEx) vortex.getCombatLocation (), (MapCoordinates2DEx) vortex.getCombatPosition (), mom.getServerDB ());
+			(MapCoordinates3DEx) vortex.getCombatLocation (), (MapCoordinates2DEx) vortex.getCombatPosition (), mom.getServerDB (), false);
 		if (doomUnit != null)
 		{
 			// Use the Doom Bolt spell definition, which has all the magic realm, damage type etc set correctly, and just override the damage
@@ -166,7 +166,7 @@ public final class CombatHandlingImpl implements CombatHandling
 			if (getCoordinateSystemUtils ().move2DCoordinates (mom.getSessionDescription ().getCombatMapSize (), coords, d))
 			{
 				final MemoryUnit lightningUnit = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-					(MapCoordinates3DEx) vortex.getCombatLocation (), coords, mom.getServerDB ());
+					(MapCoordinates3DEx) vortex.getCombatLocation (), coords, mom.getServerDB (), false);
 				if ((lightningUnit != null) && (getRandomUtils ().nextInt (3) == 0))
 				{
 					// Use the Lightning Bolt spell definition, which has all the magic realm, damage type etc set correctly, and just override the damage

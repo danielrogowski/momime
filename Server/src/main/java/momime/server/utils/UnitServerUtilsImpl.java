@@ -986,7 +986,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		// Check centre cell first
 		if ((getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 				(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
-			(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem) == null))
+			(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem, true) == null))
 			
 			found = coords;
 		
@@ -1009,7 +1009,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 						// Is this cell unoccupied + passable terrain?
 						if ((getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 								(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
-							(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem) == null))
+							(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem, true) == null))
 							
 							found = coords;
 					}
@@ -1047,7 +1047,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final MapCoordinates2DEx coords = new MapCoordinates2DEx (startPosition);
 		
 		// Check centre cell first
-		if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords, db) == null) &&
+		if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords, db, true) == null) &&
 			(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 				(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
 				
@@ -1070,7 +1070,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, d))
 					{
 						// Is this cell unoccupied + passable terrain?
-						if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords, db) == null) &&
+						if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords, db, true) == null) &&
 							(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 								(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
 							

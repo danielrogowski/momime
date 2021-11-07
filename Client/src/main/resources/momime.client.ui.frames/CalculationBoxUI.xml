@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
-	<formWidth>490</formWidth>
+	<formWidth>803</formWidth>
 	<formHeight>200</formHeight>
 	<component name="frmCalculationBoxText">
 		<left>10</left>
 		<top>10</top>
-		<width>478</width>
+		<width>791</width>
 		<height>160</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCalculationBoxOK">
-		<left>245</left>
+		<left>401</left>
 		<top>190</top>
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>1.0</verticalAlignment>

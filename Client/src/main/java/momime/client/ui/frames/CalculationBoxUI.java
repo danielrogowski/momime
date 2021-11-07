@@ -56,7 +56,7 @@ public final class CalculationBoxUI extends MomClientFrameUI
 	protected final void init () throws IOException
 	{
 		// Load images
-		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/calculationBox498x200.png");
+		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/calculationBox811x200.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldNormal.png");
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldPressed.png");
 

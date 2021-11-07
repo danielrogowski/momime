@@ -16,6 +16,7 @@ import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 
@@ -33,6 +34,7 @@ public interface SpellDispelling
 	 * @param targetSpells Target spells that we will make rolls to try to dispel
 	 * @param targetCAEs Target CAEs that we will make rolls to try to dispel, can be left null
 	 * @param targetWarpedNode Warped node that we are trying to return to normal
+	 * @param targetVortexes Vortexes are odd in that the unit as a whole gets dispelled (killed) rather than a spell cast on the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether dispelling any spells resulted in the death of any units
 	 * @throws MomException If there is a problem with any of the calculations
@@ -43,7 +45,7 @@ public interface SpellDispelling
 	 */
 	public boolean processDispelling (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer,
 		final List<MemoryMaintainedSpell> targetSpells, final List<MemoryCombatAreaEffect> targetCAEs,
-		final MapCoordinates3DEx targetWarpedNode, final MomSessionVariables mom)
+		final MapCoordinates3DEx targetWarpedNode, final List<MemoryUnit> targetVortexes, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;
 	
 	/**

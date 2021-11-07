@@ -25,6 +25,7 @@ import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
@@ -38,6 +39,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 
 /**
@@ -75,6 +77,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 	 * @param targetSpells Target spells that we will make rolls to try to dispel
 	 * @param targetCAEs Target CAEs that we will make rolls to try to dispel, can be left null
 	 * @param targetWarpedNode Warped node that we are trying to return to normal
+	 * @param targetVortexes Vortexes are odd in that the unit as a whole gets dispelled (killed) rather than a spell cast on the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether dispelling any spells resulted in the death of any units
 	 * @throws MomException If there is a problem with any of the calculations
@@ -86,7 +89,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 	@Override
 	public final boolean processDispelling (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer,
 		final List<MemoryMaintainedSpell> targetSpells, final List<MemoryCombatAreaEffect> targetCAEs,
-		final MapCoordinates3DEx targetWarpedNode, final MomSessionVariables mom)
+		final MapCoordinates3DEx targetWarpedNode, final List<MemoryUnit> targetVortexes, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
 	{
 		// Build up a map so we remember which results we have to send to which players
@@ -242,30 +245,53 @@ public final class SpellDispellingImpl implements SpellDispelling
 		if (targetCAEs != null)
 			for (final MemoryCombatAreaEffect cae : targetCAEs)
 			{
-				final DispelMagicResult result = new DispelMagicResult ();
-				result.setOwningPlayerID (cae.getCastingPlayerID ());
-				result.setCombatAreaEffectID (cae.getCombatAreaEffectID ());
-				result.setCastingCost (cae.getCastingCost ());
-				result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
-				result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
-	
-				if (result.isDispelled ())
-					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-						cae.getCombatAreaEffectURN (), mom.getPlayers (), mom.getSessionDescription ());
-	
-				if (castingPlayer.getPlayerDescription ().isHuman ())
-					resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
-				
-				final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cae.getCastingPlayerID (), "processDispelling (D2)");
-				if (spellOwner.getPlayerDescription ().isHuman ())
+				// Find the spell that created it
+				final Spell caeSpell = mom.getServerDB ().getSpell ().stream ().filter
+					(s -> s.getSpellHasCombatEffect ().contains (cae.getCombatAreaEffectID ())).findAny ().orElse (null);
+				if (caeSpell != null)
 				{
-					List<DispelMagicResult> results = resultsMap.get (cae.getCastingPlayerID ());
-					if (results == null)
+					final DispelMagicResult result = new DispelMagicResult ();
+					result.setOwningPlayerID (cae.getCastingPlayerID ());
+					result.setCombatAreaEffectID (cae.getCombatAreaEffectID ());
+					result.setCastingCost (cae.getCastingCost ());
+					
+					// Retorts that make spells more difficult to dispel
+					int multiplier = 1;
+					
+					final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cae.getCastingPlayerID (), "processDispelling (D2)");
+					final List<PlayerPick> spellOwnerPicks = ((MomPersistentPlayerPublicKnowledge) spellOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
+					
+					if (getPlayerPickUtils ().getQuantityOfPick (spellOwnerPicks, CommonDatabaseConstants.RETORT_ID_ARCHMAGE) > 0)
+						multiplier++;
+					
+					if ((masteries.containsKey (caeSpell.getSpellRealm ())) &&
+						(getPlayerPickUtils ().getQuantityOfPick (spellOwnerPicks, masteries.get (caeSpell.getSpellRealm ())) > 0))
+						
+						multiplier++;
+					
+					if (multiplier > 1)
+						result.setCastingCost (result.getCastingCost () * multiplier);
+					
+					result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
+					result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
+		
+					if (result.isDispelled ())
+						getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+							cae.getCombatAreaEffectURN (), mom.getPlayers (), mom.getSessionDescription ());
+		
+					if (castingPlayer.getPlayerDescription ().isHuman ())
+						resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+					
+					if (spellOwner.getPlayerDescription ().isHuman ())
 					{
-						results = new ArrayList<DispelMagicResult> ();
-						resultsMap.put (cae.getCastingPlayerID (), results);
+						List<DispelMagicResult> results = resultsMap.get (cae.getCastingPlayerID ());
+						if (results == null)
+						{
+							results = new ArrayList<DispelMagicResult> ();
+							resultsMap.put (cae.getCastingPlayerID (), results);
+						}
+						results.add (result);
 					}
-					results.add (result);
 				}
 			}
 		
@@ -324,6 +350,60 @@ public final class SpellDispellingImpl implements SpellDispelling
 				}
 			}
 		}
+		
+		// Also try to dispel vortexes
+		if (targetVortexes != null)
+			for (final MemoryUnit vortex : targetVortexes)
+			{
+				// Find the spell that summoned it
+				final Spell vortexSpell = mom.getServerDB ().getSpell ().stream ().filter
+					(s -> s.getSummonedUnit ().contains (vortex.getUnitID ())).findAny ().orElse (null);
+				if (vortexSpell != null)
+				{
+					final DispelMagicResult result = new DispelMagicResult ();
+					result.setOwningPlayerID (vortex.getOwningPlayerID ());
+					result.setSpellID (vortexSpell.getSpellID ());
+					result.setCastingCost (vortexSpell.getCombatCastingCost ());
+					
+					// Retorts that make spells more difficult to dispel
+					int multiplier = 1;
+					
+					final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), vortex.getOwningPlayerID (), "processDispelling (V1)");
+					final List<PlayerPick> spellOwnerPicks = ((MomPersistentPlayerPublicKnowledge) spellOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
+					
+					if (getPlayerPickUtils ().getQuantityOfPick (spellOwnerPicks, CommonDatabaseConstants.RETORT_ID_ARCHMAGE) > 0)
+						multiplier++;
+					
+					if ((masteries.containsKey (vortexSpell.getSpellRealm ())) &&
+						(getPlayerPickUtils ().getQuantityOfPick (spellOwnerPicks, masteries.get (vortexSpell.getSpellRealm ())) > 0))
+						
+						multiplier++;
+					
+					if (multiplier > 1)
+						result.setCastingCost (result.getCastingCost () * multiplier);
+					
+					result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
+					result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
+
+					if (result.isDispelled ())
+						getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (vortex, KillUnitActionID.PERMANENT_DAMAGE,
+							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+					
+					if (castingPlayer.getPlayerDescription ().isHuman ())
+						resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+					
+					if (spellOwner.getPlayerDescription ().isHuman ())
+					{
+						List<DispelMagicResult> results = resultsMap.get (vortex.getOwningPlayerID ());
+						if (results == null)
+						{
+							results = new ArrayList<DispelMagicResult> ();
+							resultsMap.put (vortex.getOwningPlayerID (), results);
+						}
+						results.add (result);
+					}
+				}
+			}
 		
 		// Send the results to each human player invovled
 		if (resultsMap.size () > 0)

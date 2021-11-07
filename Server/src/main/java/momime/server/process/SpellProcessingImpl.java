@@ -701,6 +701,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
 				final List<MemoryMaintainedSpell> targetSpells = new ArrayList<MemoryMaintainedSpell> ();
 				final List<MemoryCombatAreaEffect> targetCAEs = new ArrayList<MemoryCombatAreaEffect> ();
+	    		final List<MemoryUnit> targetVortexes = new ArrayList<MemoryUnit> ();
 				if (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT)
 					targetUnits.add (targetUnit);
 				else
@@ -728,10 +729,17 @@ public final class SpellProcessingImpl implements SpellProcessing
 						targetCAEs.addAll (getMemoryCombatAreaEffectUtils ().listCombatAreaEffectsFromLocalisedSpells
 							(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getServerDB ()).stream ().filter
 								(cae -> !cae.getCastingPlayerID ().equals (castingPlayer.getPlayerDescription ().getPlayerID ())).collect (Collectors.toList ()));
+						
+						// Also magic vortexes owned by the other player
+						targetVortexes.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
+							(u -> (combatLocation.equals (u.getCombatLocation ())) && (u.getCombatPosition () != null) && (u.getStatus () == UnitStatusID.ALIVE) &&
+								(u.getCombatSide () != null) && (u.getCombatHeading () != null) &&
+								(u.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
+								(mom.getServerDB ().getUnitsThatMoveThroughOtherUnits ().contains (u.getUnitID ()))).collect (Collectors.toList ()));
 					}
 				}
 				
-				if ((targetUnits.size () > 0) || (targetSpells.size () > 0) || (targetCAEs.size () > 0))
+				if ((targetUnits.size () > 0) || (targetSpells.size () > 0) || (targetCAEs.size () > 0) || (targetVortexes.size () > 0))
 				{
 					if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
 					{
@@ -823,7 +831,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						// Common method does the rest
 						if (getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, spellsToDispel, targetCAEs,
-							targetWarpedNode ? combatLocation : null, mom))
+							targetWarpedNode ? combatLocation : null, targetVortexes, mom))
 							
 							// Its possible we dispelled Lionheart on the last enemy unit thereby winning the combat, so check to be sure
 							if (getDamageProcessor ().countUnitsInCombat (combatLocation,
@@ -1155,7 +1163,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 				
 	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null,
-	    			targetWarpedNode ? targetLocation : null, mom);
+	    			targetWarpedNode ? targetLocation : null, null, mom);
 			}
 
 			// The only targeted overland summoning spell is Floating Island

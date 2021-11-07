@@ -416,9 +416,14 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			final List<String> spellsImmuneToDispelling = db.getSpell ().stream ().filter
     				(s -> (s.isImmuneToDispelling () != null) && (s.isImmuneToDispelling ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
     			
+    			// Can try to dispel magic vortexes themselves, rather than a spell that's cast on them
+    			if ((useSpellBookSection == SpellBookSectionID.DISPEL_SPELLS) &&
+    				(db.getUnitsThatMoveThroughOtherUnits ().contains (targetUnit.getUnitID ())) && (targetUnit.getOwningPlayerID () != castingPlayerID))
+	    			result = TargetSpellResult.VALID_TARGET;
+    			
     			// We're in a method that specifically deals with targeting units, so we don't have to worry about Disenchant Area
     			// also being able to target spells cast at the location, or Disjunction targeting overland enchantments
-	    		if ((useSpellBookSection == SpellBookSectionID.DISPEL_SPELLS) &&
+    			else if ((useSpellBookSection == SpellBookSectionID.DISPEL_SPELLS) &&
 	    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == targetUnitURN) &&
 	    				(s.getCastingPlayerID () != castingPlayerID) && (!spellsImmuneToDispelling.contains (s.getSpellID ())))))
 	    			result = TargetSpellResult.NOTHING_TO_DISPEL;

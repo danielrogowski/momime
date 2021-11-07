@@ -1,13 +1,19 @@
 package momime.server.database;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.DamageType;
 import momime.common.database.DamageTypeImmunity;
+import momime.common.database.NegatedBySkill;
 import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillEx;
 import momime.server.ServerTestData;
 
@@ -106,5 +112,31 @@ public final class TestServerDatabaseRules extends ServerTestData
 						System.out.println ("  Dealt by " + rat.getRangedAttackTypeID () + " " + rat.getRangedAttackTypeDescription ().get (0).getText () + " from " + s5);
 				}
 		}
+		
+		// Also output what immunities block unit skills, but really we only want to output which unit curses are blocked
+		// otherwise we get a ton of pointless output about e.g. one version of magic immunity being blocked by another version of magic immunity
+		final Set<String> curseSkillIDs = new HashSet<String> ();
+		db.getSpell ().stream ().filter (s -> s.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES).forEach
+			(s -> s.getUnitSpellEffect ().forEach (e -> curseSkillIDs.add (e.getUnitSkillID ())));
+		
+		for (final UnitSkill unitSkill : db.getUnitSkills ())
+			if (curseSkillIDs.contains (unitSkill.getUnitSkillID ()))
+			{
+				System.out.println ("");
+				System.out.println (unitSkill.getUnitSkillID () + " \"" + unitSkill.getUnitSkillDescription ().get (0).getText () + "\"");
+
+				final StringBuilder s2 = new StringBuilder ();
+				for (final NegatedBySkill negatedBy : unitSkill.getNegatedBySkill ())
+				{
+					if (s2.length () > 0)
+						s2.append (", ");
+					
+					final UnitSkillEx negatedBySkill = db.findUnitSkill (negatedBy.getNegatedBySkillID (), "dumpDamageTypeInfo");
+					s2.append (negatedBy.getNegatedBySkillID () + " " + negatedBySkill.getUnitSkillDescription ().get (0).getText ());
+				}
+
+				if (s2.length () > 0)
+					System.out.println ("  Blocked by: " + s2);
+			}
 	}
 }

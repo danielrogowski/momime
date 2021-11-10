@@ -3,7 +3,7 @@ package momime.server.database;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.DamageType;

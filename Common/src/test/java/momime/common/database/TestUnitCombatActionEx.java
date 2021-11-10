@@ -1,12 +1,16 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the UnitCombatActionEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestUnitCombatActionEx
 {
 	/**
@@ -37,7 +41,7 @@ public final class TestUnitCombatActionEx
 	 * Tests the findDirection method to look for a direction that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindDirection_NotExists () throws RecordNotFoundException
 	{
 		// Create some dummy entries
@@ -54,6 +58,9 @@ public final class TestUnitCombatActionEx
 		action.buildMap ();
 		
 		// Run tests
-		action.findDirection (4, "testFindDirection_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			action.findDirection (4, "testFindDirection_NotExists");
+		});
 	}
 }

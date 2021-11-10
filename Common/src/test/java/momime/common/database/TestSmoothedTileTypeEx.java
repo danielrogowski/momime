@@ -1,7 +1,8 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -10,13 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.random.RandomUtils;
 
 /**
  * Tests the SmoothedTileTypeEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSmoothedTileTypeEx
 {
 	/**
@@ -88,7 +92,7 @@ public final class TestSmoothedTileTypeEx
 	 * Tests the buildMap method when an image is missing from the graphics XML
 	 * @throws RecordNotFoundException If a bitmaks that the smoothing system rules say should be in the graphics XML isn't there, i.e. an image is missing
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testBuildMap_MissingImage () throws RecordNotFoundException
 	{
 		// Set up some dummy smoothed-unsmoothed maps
@@ -111,7 +115,10 @@ public final class TestSmoothedTileTypeEx
 		tt.getSmoothedTile ().add (createSmoothedTile ("A", "ImageA"));
 		
 		// Run method
-		tt.buildMap (smoothingSystemBitmasksMap);
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			tt.buildMap (smoothingSystemBitmasksMap);
+		});
 	}
 	
 	/**
@@ -148,7 +155,7 @@ public final class TestSmoothedTileTypeEx
 	 * Tests the getRandomImage method when we ask for a bitmask outside of the valid set
 	 * @throws RecordNotFoundException If this bitmask isn't in the map, i.e. its outside the set of unsmoothed bitmasks derived from the directions+maxValueEachDirection values
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testGetRandomImage_NotFound () throws RecordNotFoundException
 	{
 		// List of candidate images
@@ -163,6 +170,9 @@ public final class TestSmoothedTileTypeEx
 		tt.getBitmasksMap ().put ("A1", images);
 		
 		// Run method
-		tt.getRandomImage ("A2");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			tt.getRandomImage ("A2");
+		});
 	}
 }

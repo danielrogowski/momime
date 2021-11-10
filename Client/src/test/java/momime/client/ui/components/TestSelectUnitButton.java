@@ -11,7 +11,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;

@@ -1,8 +1,8 @@
 package momime.common.calculations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -39,6 +41,7 @@ import momime.common.utils.MemoryGridCellUtils;
 /**
  * Tests the UnitMovementImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestUnitMovementImpl
 {
 	/**
@@ -267,7 +270,6 @@ public final class TestUnitMovementImpl
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
 		when (xu2.getUnitDefinition ()).thenReturn (transportDef);
 		when (expand.expandUnitDetails (unit2, null, null, null, players, map, db)).thenReturn (xu2);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu2, unitStackSkills, "TT01", db)).thenReturn (2);
 
 		// At 0, 0, 3 there's a transport with capacity 2 with 1 unit already inside it (terrain is impassable to that unit)
 		final MemoryUnit unit3 = new MemoryUnit ();
@@ -279,7 +281,6 @@ public final class TestUnitMovementImpl
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
 		when (xu3.getUnitDefinition ()).thenReturn (transportDef);
 		when (expand.expandUnitDetails (unit3, null, null, null, players, map, db)).thenReturn (xu3);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu3, unitStackSkills, "TT01", db)).thenReturn (2);
 
 		final MemoryUnit unit4 = new MemoryUnit ();
 		unit4.setStatus (UnitStatusID.ALIVE);
@@ -302,7 +303,6 @@ public final class TestUnitMovementImpl
 		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
 		when (xu5.getUnitDefinition ()).thenReturn (transportDef);
 		when (expand.expandUnitDetails (unit5, null, null, null, players, map, db)).thenReturn (xu5);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu5, unitStackSkills, "TT01", db)).thenReturn (2);
 
 		final MemoryUnit unit6 = new MemoryUnit ();
 		unit6.setStatus (UnitStatusID.ALIVE);
@@ -321,11 +321,6 @@ public final class TestUnitMovementImpl
 		unit7.setOwningPlayerID (1);
 		unit7.setUnitLocation (new MapCoordinates3DEx (5, 0, 0));
 		map.getUnit ().add (unit7);
-		
-		final ExpandedUnitDetails xu7 = mock (ExpandedUnitDetails.class);
-		when (xu7.getUnitDefinition ()).thenReturn (unitDef);
-		when (expand.expandUnitDetails (unit7, null, null, null, players, map, db)).thenReturn (xu7);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu7, unitStackSkills, "TT01", db)).thenReturn (null);
 		
 		// Unit stack
 		final UnitStack unitStack = new UnitStack ();
@@ -371,9 +366,15 @@ public final class TestUnitMovementImpl
 		{
 			final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 			terrain.getPlane ().get (0).getRow ().get (0).getCell ().get (x).setTerrainData (terrainData);
-			when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, true)).thenReturn ((x < 2) ? "TT01" : "TT02");
-			when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, false)).thenReturn ((x < 2) ? "TT01" : "TT02");
+			
+			if (x != 1)
+				when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, true)).thenReturn ((x < 2) ? "TT01" : "TT02");
+			
+			if ((x == 3) || (x == 4))
+				when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, false)).thenReturn ((x < 2) ? "TT01" : "TT02");
 		}
+		
+		when (memoryGridCellUtils.convertNullTileTypeToFOW (null, true)).thenReturn (null);
 		
 		// Map areas
 		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
@@ -393,8 +394,6 @@ public final class TestUnitMovementImpl
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
 		when (xu2.getUnitDefinition ()).thenReturn (unitDef);
 		
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu1, unitStackSkills, "TT01", db)).thenReturn (4);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu2, unitStackSkills, "TT01", db)).thenReturn (4);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu1, unitStackSkills, "TT02", db)).thenReturn (null);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu2, unitStackSkills, "TT02", db)).thenReturn (null);
 		

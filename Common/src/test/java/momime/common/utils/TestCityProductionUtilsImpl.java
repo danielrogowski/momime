@@ -1,10 +1,13 @@
 package momime.common.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -15,6 +18,7 @@ import momime.common.internal.CityProductionBreakdown;
 /**
  * Tests the CityProductionUtilsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCityProductionUtilsImpl
 {
 	/**
@@ -81,7 +85,7 @@ public final class TestCityProductionUtilsImpl
 	 * Tests the addProductionAmountToBreakdown method, trying to add an uneven doubled value to the "after" bucket
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testAddProductionAmountToBreakdown_NotEven () throws Exception
 	{
 		// Mock database
@@ -99,8 +103,11 @@ public final class TestCityProductionUtilsImpl
 		breakdown.setProductionTypeID ("RE01");
 		breakdown.setDoubleProductionAmountBeforePercentages (4);
 		breakdown.setProductionAmountToAddAfterPercentages (3);
-		
-		utils.addProductionAmountToBreakdown (breakdown, 9, null, db);
+	
+		assertThrows (MomException.class, () ->
+		{
+			utils.addProductionAmountToBreakdown (breakdown, 9, null, db);
+		});
 	}
 
 	/**
@@ -112,10 +119,6 @@ public final class TestCityProductionUtilsImpl
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final ProductionTypeEx productionType = new ProductionTypeEx ();
-		productionType.setProductionAmountBucketID (ProductionAmountBucketID.AFTER_PERCENTAGE_BONUSES);
-		when (db.findProductionType ("RE01", "addProductionAmountToBreakdown")).thenReturn (productionType);
 		
 		// Set up object to test
 		final CityProductionUtilsImpl utils = new CityProductionUtilsImpl ();

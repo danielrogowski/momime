@@ -1,12 +1,16 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the UnitSkillEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestUnitSkillEx
 {
 	/**
@@ -37,7 +41,7 @@ public final class TestUnitSkillEx
 	 * Tests the findWeaponGradeImageFile method to look for a weapon grade that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindWeaponGradeImageFile_NotExists () throws RecordNotFoundException
 	{
 		// Create some dummy entries
@@ -54,6 +58,9 @@ public final class TestUnitSkillEx
 		attr.buildMap ();
 		
 		// Run tests
-		attr.findWeaponGradeImageFile (4, "testFindWeaponGradeImageFile_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			attr.findWeaponGradeImageFile (4, "testFindWeaponGradeImageFile_NotExists");
+		});
 	}
 }

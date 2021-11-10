@@ -1,14 +1,17 @@
 package momime.common.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -22,6 +25,7 @@ import momime.common.messages.MemoryUnit;
 /**
  * Tests the ExpandedUnitDetailsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestExpandedUnitDetailsImpl
 {
 	/**
@@ -54,7 +58,7 @@ public final class TestExpandedUnitDetailsImpl
 	 * Tests the getModifiedSkillValue method where one of the breakdown components has no value
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testGetModifiedSkillValue_NullComponent () throws Exception
 	{
 		// Include a component with a null value 
@@ -71,14 +75,17 @@ public final class TestExpandedUnitDetailsImpl
 		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
 		
 		// Run method
-		xu.getModifiedSkillValue ("US001");
+		assertThrows (MomException.class, () ->
+		{
+			xu.getModifiedSkillValue ("US001");
+		});
 	}
 
 	/**
 	 * Tests the getModifiedSkillValue method asking for a skill that we don't even have
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testGetModifiedSkillValue_DontHaveSkill () throws Exception
 	{
 		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();
@@ -89,7 +96,10 @@ public final class TestExpandedUnitDetailsImpl
 		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, 2, null, modifiedSkillValues, null, null, null);
 		
 		// Run method
-		xu.getModifiedSkillValue ("US001");
+		assertThrows (MomException.class, () ->
+		{
+			xu.getModifiedSkillValue ("US001");
+		});
 	}
 	
 	/**

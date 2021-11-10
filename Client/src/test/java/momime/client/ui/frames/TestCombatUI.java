@@ -11,7 +11,7 @@ import java.util.Map;
 
 import javax.xml.bind.Unmarshaller;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;

@@ -1,7 +1,7 @@
 package momime.common.calculations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -42,6 +44,7 @@ import momime.common.utils.PlayerPickUtils;
 /**
  * Tests the calculations in the CityProductionCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCityProductionCalculationsImpl
 {
 	/**
@@ -115,6 +118,7 @@ public final class TestCityProductionCalculationsImpl
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		
 		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL01")).thenReturn (new MemoryBuilding ());
+		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL02")).thenReturn (null);
 		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL03")).thenReturn (new MemoryBuilding ());
 		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL04")).thenReturn (new MemoryBuilding ());
 		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (new MemoryBuilding ());
@@ -125,13 +129,7 @@ public final class TestCityProductionCalculationsImpl
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
 			eq (buildingDefs.get (0)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (1);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (1)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (2);
-		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
 			eq (buildingDefs.get (2)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (3);
-		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (3)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (4);
-		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (4)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (5);
 		
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();

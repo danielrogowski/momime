@@ -1,6 +1,6 @@
 package momime.client;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

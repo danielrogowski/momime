@@ -1,12 +1,16 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the RangedAttackTypeEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestRangedAttackTypeEx
 {
 	/**
@@ -37,7 +41,7 @@ public final class TestRangedAttackTypeEx
 	 * Tests the findWeaponGradeImageFile method to look for a weapon grade that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindWeaponGradeImageFile_NotExists () throws RecordNotFoundException
 	{
 		// Create some dummy entries
@@ -54,7 +58,10 @@ public final class TestRangedAttackTypeEx
 		rat.buildMaps ();
 		
 		// Run tests
-		rat.findWeaponGradeImageFile (4, "testFindWeaponGradeImageFile_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			rat.findWeaponGradeImageFile (4, "testFindWeaponGradeImageFile_NotExists");
+		});
 	}
 
 	/**
@@ -92,7 +99,7 @@ public final class TestRangedAttackTypeEx
 	 * Tests the findWeaponGradeImageFile method to look for a weapon grade that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCombatImage_NotExist () throws RecordNotFoundException
 	{
 		// Create some dummy entries
@@ -116,6 +123,9 @@ public final class TestRangedAttackTypeEx
 		rat.buildMaps ();
 		
 		// Run tests
-		rat.findCombatImage (RangedAttackTypeActionID.STRIKE, 4, "testFindCombatImage_NotExist");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			rat.findCombatImage (RangedAttackTypeActionID.STRIKE, 4, "testFindCombatImage_NotExist");
+		});
 	}
 }

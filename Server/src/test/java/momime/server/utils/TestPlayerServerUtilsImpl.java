@@ -1,14 +1,14 @@
 package momime.server.utils;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 

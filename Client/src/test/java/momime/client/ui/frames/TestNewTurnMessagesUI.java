@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;

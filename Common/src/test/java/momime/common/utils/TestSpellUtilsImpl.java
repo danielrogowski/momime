@@ -1,16 +1,19 @@
 package momime.common.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
@@ -32,6 +35,7 @@ import momime.common.messages.SpellResearchStatusID;
 /**
  * Tests the SpellUtils class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSpellUtilsImpl
 {
 	/** Life creature */
@@ -72,7 +76,7 @@ public final class TestSpellUtilsImpl
 	 * Tests the findSpellResearchStatus method on a spell that doesn't exist
 	 * @throws RecordNotFoundException If the research status for this spell can't be found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindSpellResearchStatus_NotExists () throws RecordNotFoundException
 	{
 		// Set up dummy spell list
@@ -88,7 +92,10 @@ public final class TestSpellUtilsImpl
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		
 		// Run method
-		utils.findSpellResearchStatus (statuses, "SP004");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			utils.findSpellResearchStatus (statuses, "SP004");
+		});
 	}
 
 	/**
@@ -135,7 +142,7 @@ public final class TestSpellUtilsImpl
 	 * @throws MomException If there is a problem
 	 * @throws RecordNotFoundException If we encounter a record that can't be found in the DB
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testSpellSummonsUnitTypeID_Invalid () throws MomException, RecordNotFoundException
 	{
 		// Mock database
@@ -166,7 +173,10 @@ public final class TestSpellUtilsImpl
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 
 		// Run method
-		utils.spellSummonsUnitTypeID (summoningSpell, db);
+		assertThrows (MomException.class, () ->
+		{
+			utils.spellSummonsUnitTypeID (summoningSpell, db);
+		});
 	}
 
 	/**
@@ -289,7 +299,7 @@ public final class TestSpellUtilsImpl
 	 * its "MP per dmg" or "dmg per MP"
 	 * @throws MomException If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testGetUnmodifiedCombatCastingCost_Error () throws MomException
 	{
 		final Spell spell = new Spell ();
@@ -298,7 +308,11 @@ public final class TestSpellUtilsImpl
 		spell.setCombatMaxDamage (110);
 		
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		utils.getUnmodifiedCombatCastingCost (spell, 80, null); 
+		
+		assertThrows (MomException.class, () ->
+		{
+			utils.getUnmodifiedCombatCastingCost (spell, 80, null);
+		});
 	}
 	
 	/**
@@ -385,7 +399,7 @@ public final class TestSpellUtilsImpl
 	 * its "MP per dmg" or "dmg per MP"
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=Exception.class)
+	@Test
 	public final void testGetUnmodifiedOverlandCastingCost_Error () throws Exception
 	{
 		final Spell spell = new Spell ();
@@ -394,7 +408,11 @@ public final class TestSpellUtilsImpl
 		spell.setOverlandMaxDamage (110);
 		
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null, null); 
+		
+		assertThrows (MomException.class, () ->
+		{
+			utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null, null);
+		});
 	}
 	
 	/**
@@ -548,11 +566,16 @@ public final class TestSpellUtilsImpl
 		// Resist elements can be cast on anything (has no Targets defined)
 		final Spell resistElements = new Spell ();
 
-		assertEquals ("Resist elements should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL));
-		assertEquals ("Resist elements should be targettable against LTH", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO));
-		assertEquals ("Resist elements should be targettable against LT01", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, LIFE_CREATURE));
-		assertEquals ("Resist elements should be targettable against LTCC", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CHAOS_CHANNELED_CREATURE));
-		assertEquals ("Resist elements should be targettable against LTU", true, utils.spellCanTargetMagicRealmLifeformType (resistElements, UNDEAD_CREATURE));
+		assertEquals (true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL),
+			"Resist elements should be targettable against LTN");
+		assertEquals (true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO),
+			"Resist elements should be targettable against LTH");
+		assertEquals (true, utils.spellCanTargetMagicRealmLifeformType (resistElements, LIFE_CREATURE),
+			"Resist elements should be targettable against LT01");
+		assertEquals (true, utils.spellCanTargetMagicRealmLifeformType (resistElements, CHAOS_CHANNELED_CREATURE),
+			"Resist elements should be targettable against LTCC");
+		assertEquals (true, utils.spellCanTargetMagicRealmLifeformType (resistElements, UNDEAD_CREATURE),
+			"Resist elements should be targettable against LTU");
 
 		// Shatter can only be cast on normal units (has a Target record defined, with no saving throw)
 		final Spell shatter = new Spell ();
@@ -560,11 +583,16 @@ public final class TestSpellUtilsImpl
 		shatterSavingThrowModifier.setTargetMagicRealmID (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		shatter.getSpellValidUnitTarget ().add (shatterSavingThrowModifier);
 
-		assertEquals ("Shatter should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (shatter, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL));
-		assertEquals ("Shatter shouldn't be targettable against LTH", false, utils.spellCanTargetMagicRealmLifeformType (shatter, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO));
-		assertEquals ("Shatter shouldn't be targettable against LT01", false, utils.spellCanTargetMagicRealmLifeformType (shatter, LIFE_CREATURE));
-		assertEquals ("Shatter shouldn't be targettable against LTCC", false, utils.spellCanTargetMagicRealmLifeformType (shatter, CHAOS_CHANNELED_CREATURE));
-		assertEquals ("Shatter shouldn't be targettable against LTU", false, utils.spellCanTargetMagicRealmLifeformType (shatter, UNDEAD_CREATURE));
+		assertEquals (true, utils.spellCanTargetMagicRealmLifeformType (shatter, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL),
+			"Shatter should be targettable against LTN");
+		assertEquals (false, utils.spellCanTargetMagicRealmLifeformType (shatter, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO),
+			"Shatter shouldn't be targettable against LTH");
+		assertEquals (false, utils.spellCanTargetMagicRealmLifeformType (shatter, LIFE_CREATURE),
+			"Shatter shouldn't be targettable against LT01");
+		assertEquals (false, utils.spellCanTargetMagicRealmLifeformType (shatter, CHAOS_CHANNELED_CREATURE),
+			"Shatter shouldn't be targettable against LTCC");
+		assertEquals (false, utils.spellCanTargetMagicRealmLifeformType (shatter, UNDEAD_CREATURE),
+			"Shatter shouldn't be targettable against LTU");
 
 		// Flame Blade can be cast on normal units, heroes and Chaos Channeled units, but has no saving throw
 		final Spell flameBlade = new Spell ();
@@ -576,11 +604,16 @@ public final class TestSpellUtilsImpl
 			flameBlade.getSpellValidUnitTarget ().add (flameBladeTarget);
 		}
 
-		assertEquals ("Flame blade should be targettable against LTN", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL));
-		assertEquals ("Flame blade should be targettable against LTH", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO));
-		assertEquals ("Flame blade shouldn't be targettable against LT01", false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, LIFE_CREATURE));
-		assertEquals ("Flame blade should be targettable against LTCC", true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CHAOS_CHANNELED_CREATURE));
-		assertEquals ("Flame blade shouldn't be targettable against LTU", false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, UNDEAD_CREATURE));
+		assertEquals (true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL),
+			"Flame blade should be targettable against LTN");
+		assertEquals (true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO),
+			"Flame blade should be targettable against LTH");
+		assertEquals (false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, LIFE_CREATURE),
+			"Flame blade shouldn't be targettable against LT01");
+		assertEquals (true, utils.spellCanTargetMagicRealmLifeformType (flameBlade, CHAOS_CHANNELED_CREATURE),
+			"Flame blade should be targettable against LTCC");
+		assertEquals (false, utils.spellCanTargetMagicRealmLifeformType (flameBlade, UNDEAD_CREATURE),
+			"Flame blade shouldn't be targettable against LTU");
 	}
 	
 	/**

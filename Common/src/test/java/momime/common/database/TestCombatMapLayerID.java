@@ -1,15 +1,18 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the CombatMapLayerID enum
  */
+@ExtendWith(MockitoExtension.class)
 public class TestCombatMapLayerID
 {
 	/**

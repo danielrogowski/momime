@@ -1,12 +1,15 @@
 package momime.common.database;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.NdgUIUtils;
 
@@ -15,6 +18,7 @@ import momime.common.MomException;
 /**
  * Tests the MapFeatureEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestMapFeatureEx
 {
 	/**
@@ -48,7 +52,7 @@ public final class TestMapFeatureEx
 	 * Tests the checkWidthAndHeight method on a map feature that's the right size
 	 * @throws IOException If there is a problem loading the image, or the map feature is the wrong size
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testCheckWidthAndHeight_Inconsistent () throws IOException
 	{
 		// Mock an images
@@ -68,6 +72,9 @@ public final class TestMapFeatureEx
 		feature.setOverlandMapImageFile ("FeatureImage");
 		
 		// Run method
-		feature.checkWidthAndHeight (ts);
+		assertThrows (MomException.class, () ->
+		{
+			feature.checkWidthAndHeight (ts);
+		});
 	}
 }

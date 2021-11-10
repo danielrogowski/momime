@@ -1,12 +1,15 @@
 package momime.common.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
@@ -17,6 +20,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 /**
  * Tests the MemoryCombatAreaEffectUtils class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestMemoryCombatAreaEffectUtilsImpl
 {
 	/**
@@ -130,7 +134,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 	 * Tests the findCombatAreaEffectURN method on a combatAreaEffect that doesn't exist
 	 * @throws RecordNotFoundException If combatAreaEffect with requested URN is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCombatAreaEffectURN_NotExists () throws RecordNotFoundException
 	{
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
@@ -143,7 +147,11 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
 		assertNull (utils.findCombatAreaEffectURN (4, combatAreaEffects));
-		utils.findCombatAreaEffectURN (4, combatAreaEffects, "testFindCombatAreaEffectURN_NotExists");
+				
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			utils.findCombatAreaEffectURN (4, combatAreaEffects, "testFindCombatAreaEffectURN_NotExists");
+		});
 	}
 
 	/**
@@ -172,7 +180,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 	 * Tests the removeCombatAreaEffectURN method on a combatAreaEffect that doesn't exist
 	 * @throws RecordNotFoundException If combatAreaEffect with requested URN is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testRemoveCombatAreaEffectURN_NotExists () throws RecordNotFoundException
 	{
 		final List<MemoryCombatAreaEffect> combatAreaEffects = new ArrayList<MemoryCombatAreaEffect> ();
@@ -184,7 +192,11 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 		}
 
 		final MemoryCombatAreaEffectUtilsImpl utils = new MemoryCombatAreaEffectUtilsImpl ();
-		utils.removeCombatAreaEffectURN (4, combatAreaEffects);
+		
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			utils.removeCombatAreaEffectURN (4, combatAreaEffects);
+		});
 	}
 
 	/**

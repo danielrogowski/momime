@@ -15,7 +15,7 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.common.database.Language;
 import momime.common.database.LanguageText;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;

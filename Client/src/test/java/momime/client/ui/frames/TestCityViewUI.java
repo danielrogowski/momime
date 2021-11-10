@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;

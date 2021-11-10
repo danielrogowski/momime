@@ -1,9 +1,9 @@
 package momime.client.graphics.database;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import momime.common.database.RecordNotFoundException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the CombatTileFigurePositionsGfx class

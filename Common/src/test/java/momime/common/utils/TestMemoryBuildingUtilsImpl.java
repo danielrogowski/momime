@@ -1,11 +1,12 @@
 package momime.common.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -14,7 +15,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -35,6 +38,7 @@ import momime.common.messages.OverlandMapCityData;
 /**
  * Tests the MemoryBuildingUtils class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestMemoryBuildingUtilsImpl
 {
 	/**
@@ -141,7 +145,7 @@ public final class TestMemoryBuildingUtilsImpl
 	 * Tests the findBuildingURN method on a building that doesn't exist
 	 * @throws RecordNotFoundException If building with requested URN is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindBuildingURN_NotExists () throws RecordNotFoundException
 	{
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -154,7 +158,11 @@ public final class TestMemoryBuildingUtilsImpl
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertNull (utils.findBuildingURN (4, buildings));
-		utils.findBuildingURN (4, buildings, "testFindBuildingURN_NotExists");
+		
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			utils.findBuildingURN (4, buildings, "testFindBuildingURN_NotExists");
+		});
 	}
 
 	/**
@@ -183,7 +191,7 @@ public final class TestMemoryBuildingUtilsImpl
 	 * Tests the removeBuildingURN method on a building that doesn't exist
 	 * @throws RecordNotFoundException If building with requested URN is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testRemoveBuildingURN_NotExists () throws RecordNotFoundException
 	{
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -195,7 +203,11 @@ public final class TestMemoryBuildingUtilsImpl
 		}
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		utils.removeBuildingURN (4, buildings);
+
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			utils.removeBuildingURN (4, buildings);
+		});
 	}
 
 	/**
@@ -804,8 +816,6 @@ public final class TestMemoryBuildingUtilsImpl
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
 
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
-		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -1022,7 +1032,7 @@ public final class TestMemoryBuildingUtilsImpl
 	 * Tests the findBuildingConsumption method on an invalid consumption because it isn't a multiple of 2
 	 * @throws MomException If we find a building consumption that isn't a multiple of 2
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testFindBuildingConsumption_Invalid () throws MomException
 	{
 		final Building building = new Building ();
@@ -1033,7 +1043,11 @@ public final class TestMemoryBuildingUtilsImpl
 		building.getBuildingPopulationProductionModifier ().add (consumption);
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
-		utils.findBuildingConsumption (building, "RE02");
+		
+		assertThrows (MomException.class, () ->
+		{
+			utils.findBuildingConsumption (building, "RE02");
+		});
 	}
 
 	/**

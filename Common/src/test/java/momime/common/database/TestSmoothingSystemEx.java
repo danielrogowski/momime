@@ -1,18 +1,22 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import momime.common.MomException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the SmoothingSystemEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSmoothingSystemEx
 {
 	/**
@@ -117,14 +121,17 @@ public final class TestSmoothingSystemEx
 	 * Tests the smoothingReductionConditionMatches method with a mixture of null and non-null inputs
 	 * @throws MomException If one input value is null but another is non-null
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testSmoothingReductionConditionMatches_NullMixture () throws MomException
 	{
 		// Set up object to test
 		final SmoothingSystemEx ss = new SmoothingSystemEx ();
 		
 		// Run tests
-		ss.smoothingReductionConditionMatches ("10111000", "1357", null, "1");
+		assertThrows (MomException.class, () ->
+		{
+			ss.smoothingReductionConditionMatches ("10111000", "1357", null, "1");
+		});
 	}
 	
 	/**
@@ -149,14 +156,17 @@ public final class TestSmoothingSystemEx
 	 * Tests the applySmoothingReductionReplacement method with a mixture of null and non-null inputs
 	 * @throws MomException If one input value is null but the other is non-null
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testApplySmoothingReductionReplacement_NullMixture () throws MomException
 	{
 		// Set up object to test
 		final SmoothingSystemEx ss = new SmoothingSystemEx ();
 		
 		// Run tests
-		ss.applySmoothingReductionReplacement ("12345678", 4, null);
+		assertThrows (MomException.class, () ->
+		{
+			ss.applySmoothingReductionReplacement ("12345678", 4, null);
+		});
 	}
 	
 	/**
@@ -212,7 +222,7 @@ public final class TestSmoothingSystemEx
 	 * Tests the applySmoothingReductionRules method where one of the rules has a mixture of null and non-null inputs
 	 * @throws MomException If there are invalid rules defined, i.e. with a mixture of null and non-null condition/set rules
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testApplySmoothingReductionRules_NullMixture () throws MomException
 	{
 		// Set up object to test
@@ -228,7 +238,10 @@ public final class TestSmoothingSystemEx
 		rule1.setRepetitions2 (4);	// Break it		
 		ss.getSmoothingReduction ().add (rule1);
 		
-		ss.applySmoothingReductionRules ("10101010");
+		assertThrows (MomException.class, () ->
+		{
+			ss.applySmoothingReductionRules ("10101010");
+		});
 	}
 	
 	/**
@@ -294,7 +307,7 @@ public final class TestSmoothingSystemEx
 	 * Tests the buildMap method
 	 * @throws MomException If there are invalid rules defined, i.e. with a mixture of null and non-null condition/set rules
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testBuildMap_NullMixture () throws MomException
 	{
 		// Set up object to test
@@ -312,6 +325,9 @@ public final class TestSmoothingSystemEx
 		ss.getSmoothingReduction ().add (rule1);
 		
 		// Run test
-		ss.buildMap (8);
+		assertThrows (MomException.class, () ->
+		{
+			ss.buildMap (8);
+		});
 	}
 }

@@ -341,13 +341,15 @@
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
-	<bean id="expandUnitDetailsUtils" class="momime.common.utils.ExpandUnitDetailsUtilsImpl" />
-
-	<bean id="expandUnitDetails" class="momime.common.utils.ExpandUnitDetailsImpl">
+	<bean id="expandUnitDetailsUtils" class="momime.common.utils.ExpandUnitDetailsUtilsImpl">
 		<property name="unitDetailsUtils" ref="unitDetailsUtils" />
-		<property name="expandUnitDetailsUtils" ref="expandUnitDetailsUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
+
+	<bean id="expandUnitDetails" class="momime.common.utils.ExpandUnitDetailsImpl">
+		<property name="expandUnitDetailsUtils" ref="expandUnitDetailsUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">

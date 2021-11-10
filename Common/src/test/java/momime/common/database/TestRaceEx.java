@@ -1,12 +1,16 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the RaceEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestRaceEx
 {
 	/**
@@ -37,7 +41,7 @@ public final class TestRaceEx
 	 * Tests the findCivilianImageFile method to look for a population task that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCivilianImageFile_NotExists () throws RecordNotFoundException
 	{
 		// Create some dummy entries
@@ -54,6 +58,9 @@ public final class TestRaceEx
 		race.buildMap ();
 		
 		// Run tests
-		race.findCivilianImageFile ("PT04", "testFindCivilianImageFile_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			race.findCivilianImageFile ("PT04", "testFindCivilianImageFile_NotExists");
+		});
 	}
 }

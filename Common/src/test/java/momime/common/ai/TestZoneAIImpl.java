@@ -1,6 +1,6 @@
 package momime.common.ai;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -8,7 +8,9 @@ import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -33,6 +35,7 @@ import momime.common.messages.UnitStatusID;
 /**
  * Tests the ZoneAIImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestZoneAIImpl
 {
 	/** Locations of our cities to test with */

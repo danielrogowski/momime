@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 
 import momime.common.database.CommonDatabaseConstants;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.NdgUIUtils;

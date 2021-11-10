@@ -1,9 +1,11 @@
 package momime.common.utils;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -236,6 +238,16 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	}
 	
 	/**
+	 * @return Map of all basic skill values keyed by skill IDs
+	 */
+	@Override
+	public final Map<String, Integer> getBasicSkillValues ()
+	{
+		// Return a copy of the map, so the caller can't get access to modify the real skill values
+		return new HashMap<String, Integer> (basicSkillValues);
+	}
+	
+	/**
 	 * @return Number of figures in this unit before it takes any damage
 	 */
 	@Override
@@ -277,6 +289,16 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 			fame = (getModifiedExperienceLevel ().getLevelNumber () + 1) / 2;
 		
 		return fame;
+	}
+	
+	/**
+	 * @return Map of all upkeep values keyed by production type IDs
+	 */
+	@Override
+	public final Map<String, Integer> getBasicUpeepValues ()
+	{
+		return getUnitDefinition ().getUnitUpkeep ().stream ().collect
+			(Collectors.toMap (u -> u.getProductionTypeID (), u -> u.getUndoubledProductionValue ()));
 	}
 	
 	/**

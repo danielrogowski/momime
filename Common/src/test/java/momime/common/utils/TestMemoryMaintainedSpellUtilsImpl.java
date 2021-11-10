@@ -1,16 +1,19 @@
 package momime.common.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -27,7 +30,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellValidTileTypeTarget;
-import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
@@ -45,6 +47,7 @@ import momime.common.messages.UnitStatusID;
 /**
  * Tests the MemoryMaintainedSpellUtils class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestMemoryMaintainedSpellUtilsImpl
 {
 	/**
@@ -356,7 +359,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	 * Tests the findSpellURN method on a spell that doesn't exist
 	 * @throws RecordNotFoundException If spell with requested URN is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindSpellURN_NotExists () throws RecordNotFoundException
 	{
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -369,7 +372,11 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		assertNull (utils.findSpellURN (4, spells));
-		utils.findSpellURN (4, spells, "testFindSpellURN_NotExists");
+		
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			utils.findSpellURN (4, spells, "testFindSpellURN_NotExists");
+		});
 	}
 
 	/**
@@ -398,7 +405,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	 * Tests the removeSpellURN method on a spell that doesn't exist
 	 * @throws RecordNotFoundException If spell with requested URN is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testRemoveSpellURN_NotExists () throws RecordNotFoundException
 	{
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -410,7 +417,11 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		}
 
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.removeSpellURN (4, spells);
+		
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			utils.removeSpellURN (4, spells);
+		});
 	}
 
 	/**
@@ -675,21 +686,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -722,23 +722,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
-		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
-		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -824,7 +811,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
 		final Pick normalUnits = new Pick ();
@@ -876,17 +862,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1024,21 +1001,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1074,23 +1040,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
-		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
-		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1129,17 +1082,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1174,17 +1118,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1230,17 +1165,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1329,20 +1255,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1430,21 +1346,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1480,23 +1385,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
-		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
-		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1538,17 +1430,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1586,17 +1469,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1645,17 +1519,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1747,20 +1612,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1841,21 +1696,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1888,23 +1732,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
-		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
-		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -1943,17 +1774,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -2038,20 +1860,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -2200,7 +2012,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
 		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
-		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (8);
 		when (xu.isUnitImmuneToDamageType (damageType)).thenReturn (true);
 		
 		final Pick normalUnits = new Pick ();
@@ -2407,7 +2218,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
 		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
-		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (12);
 		
 		final Pick normalUnits = new Pick ();
 		normalUnits.setPickID ("LTN");
@@ -2506,26 +2316,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getTotalDamageTaken (xu.getUnitDamage ())).thenReturn (2);
-		when (unitUtils.getHealableDamageTaken (xu.getUnitDamage ())).thenReturn (2);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
-		utils.setUnitUtils (unitUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -2558,28 +2352,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
-		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
-		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getTotalDamageTaken (xu.getUnitDamage ())).thenReturn (2);
-		when (unitUtils.getHealableDamageTaken (xu.getUnitDamage ())).thenReturn (2);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
-		utils.setUnitUtils (unitUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -2618,22 +2394,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getTotalDamageTaken (xu.getUnitDamage ())).thenReturn (2);
-		when (unitUtils.getHealableDamageTaken (xu.getUnitDamage ())).thenReturn (2);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
-		utils.setUnitUtils (unitUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -2724,25 +2486,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getTotalDamageTaken (xu.getUnitDamage ())).thenReturn (2);
-		when (unitUtils.getHealableDamageTaken (xu.getUnitDamage ())).thenReturn (2);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
-		utils.setUnitUtils (unitUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -2926,21 +2673,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -2972,23 +2708,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
-		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
-		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -3026,17 +2749,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getOwningPlayerID ()).thenReturn (2);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
-		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -3119,20 +2833,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -3173,7 +2877,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
 		final Pick normalUnits = new Pick ();
@@ -3227,7 +2930,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
 		final Pick normalUnits = new Pick ();
@@ -3276,21 +2978,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -3327,23 +3018,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Intended target
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (21, 10, 1));
-		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
-		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
-		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -3384,20 +3062,10 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
-		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setPickID ("LTN");
-		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnits);
-		
-		// Correct lifeform type?
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "LTN")).thenReturn (true);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		utils.setSpellUtils (spellUtils);
 		utils.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run method
@@ -3432,7 +3100,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 5));
 		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getUnitURN ()).thenReturn (50);
 		
 		final Pick normalUnits = new Pick ();
@@ -3695,11 +3362,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeEx node = new TileTypeEx ();
-		node.setMagicRealmID ("MB01");
-		node.setLand (true);
-		when (db.findTileType ("TT01", "isOverlandLocationValidTargetForSpell")).thenReturn (node);
-		
 		// Spell being targetted
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_OVERLAND_SPELLS);
@@ -3745,10 +3407,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final TileTypeEx land = new TileTypeEx ();
-		land.setLand (true);
-		when (db.findTileType ("TT01", "isOverlandLocationValidTargetForSpell")).thenReturn (land);
 		
 		// Spell being targetted
 		final Spell spell = new Spell ();

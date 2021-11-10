@@ -1,14 +1,16 @@
 package momime.common.calculations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -37,6 +39,7 @@ import momime.common.utils.SpellUtils;
 /**
  * Tests the calculations in the SpellCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSpellCalculationsImpl
 {
 	/** How much we tolerate floating point results to be wrong by because of rounding errors */

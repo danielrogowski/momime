@@ -1,9 +1,10 @@
 package momime.common.calculations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -14,7 +15,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -64,6 +67,7 @@ import momime.common.utils.UnitUtilsImpl;
 /**
  * Tests the UnitCalculationsImpl object
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestUnitCalculationsImpl
 {
 	/**
@@ -660,7 +664,7 @@ public final class TestUnitCalculationsImpl
 	 * Tests the createUnitStack method on an empty unit stack
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testCreateUnitStack_Empty () throws Exception
 	{
 		// Mock database
@@ -680,14 +684,17 @@ public final class TestUnitCalculationsImpl
 		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
+		assertThrows (MomException.class, () ->
+		{
+			calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
+		});
 	}
 	
 	/**
 	 * Tests the createUnitStack method on a unit stack which is invalid because all the units aren't in the same place
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testCreateUnitStack_DifferentLocations () throws Exception
 	{
 		// Mock database
@@ -728,14 +735,17 @@ public final class TestUnitCalculationsImpl
 		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
+		assertThrows (MomException.class, () ->
+		{
+			calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
+		});
 	}
 	
 	/**
 	 * Tests the createUnitStack method on a unit stack which is invalid because all the units aren't owned by the same player
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testCreateUnitStack_DifferentPlayers () throws Exception
 	{
 		// Mock database
@@ -776,7 +786,10 @@ public final class TestUnitCalculationsImpl
 		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
+		assertThrows (MomException.class, () ->
+		{
+			calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
+		});
 	}
 	
 	/**
@@ -1351,7 +1364,7 @@ public final class TestUnitCalculationsImpl
 	 * Tests the findPreferredMovementSkillGraphics method when we don't find a match
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testFindPreferredMovementSkillGraphics_NotFound () throws Exception
 	{
 		// Mock database
@@ -1384,7 +1397,10 @@ public final class TestUnitCalculationsImpl
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		
 		// Run test
-		calc.findPreferredMovementSkillGraphics (unit, db);
+		assertThrows (MomException.class, () ->
+		{
+			calc.findPreferredMovementSkillGraphics (unit, db);
+		});
 	}
 	
 	/**
@@ -1424,7 +1440,7 @@ public final class TestUnitCalculationsImpl
 	 * Tests the determineCombatActionID method when a combatActionID isn't defined 
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testDetermineCombatActionID_Undefined () throws Exception
 	{
 		// Mock database
@@ -1447,6 +1463,9 @@ public final class TestUnitCalculationsImpl
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		
 		// Run test
-		calc.determineCombatActionID (unit, false, db);
+		assertThrows (MomException.class, () ->
+		{
+			calc.determineCombatActionID (unit, false, db);
+		});
 	}
 }

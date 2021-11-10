@@ -1,12 +1,15 @@
 package momime.common.calculations;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the calculations in the SkillCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSkillCalculationsImpl
 {
 	/**
@@ -16,7 +19,7 @@ public final class TestSkillCalculationsImpl
 	public final void testGetSkillPointsRequiredToImproveSkillFrom_Zero ()
 	{
 		final SkillCalculationsImpl calc = new SkillCalculationsImpl ();
-		assertEquals ("Special case for zero", 1, calc.getSkillPointsRequiredToImproveSkillFrom (0));
+		assertEquals (1, calc.getSkillPointsRequiredToImproveSkillFrom (0), "Special case for zero");
 	}
 
 	/**
@@ -26,7 +29,7 @@ public final class TestSkillCalculationsImpl
 	public final void testGetSkillPointsRequiredToImproveSkillFrom_NonZero ()
 	{
 		final SkillCalculationsImpl calc = new SkillCalculationsImpl ();
-		assertEquals ("Should take 2x current skill level to progress to the next casting skill", 24, calc.getSkillPointsRequiredToImproveSkillFrom (12));
+		assertEquals (24, calc.getSkillPointsRequiredToImproveSkillFrom (12), "Should take 2x current skill level to progress to the next casting skill");
 	}
 
 	/**
@@ -44,7 +47,7 @@ public final class TestSkillCalculationsImpl
 		{
 			// -1 is because this is how many skill points we need to progress FROM the previous level to this one
 			totalSkillPointsRequired = totalSkillPointsRequired + calc.getSkillPointsRequiredToImproveSkillFrom (skillLevel - 1);
-			assertEquals ("Unexpected result for skill level " + skillLevel, totalSkillPointsRequired, calc.getSkillPointsRequiredForCastingSkill (skillLevel));
+			assertEquals (totalSkillPointsRequired, calc.getSkillPointsRequiredForCastingSkill (skillLevel), "Unexpected result for skill level " + skillLevel);
 		}
 	}
 
@@ -66,7 +69,7 @@ public final class TestSkillCalculationsImpl
 			// So any number of skill points from totalSkillPointsRequired..nextSkillPointsRequired-1 should give us skillLevel as a result
 			// nextSkillPointsRequired will push us to the next level so give skillLevel+1 as a result
 			for (int skillPoints = totalSkillPointsRequired; skillPoints < nextSkillPointsRequired; skillPoints++)
-				assertEquals ("Unexpected result for skill points " + skillPoints, skillLevel, calc.getCastingSkillForSkillPoints (skillPoints));
+				assertEquals (skillLevel, calc.getCastingSkillForSkillPoints (skillPoints), "Unexpected result for skill points " + skillPoints);
 
 			totalSkillPointsRequired = nextSkillPointsRequired;
 		}

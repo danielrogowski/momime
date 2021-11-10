@@ -109,7 +109,7 @@ public final class NewTurnMessageOfferItemEx extends NewTurnMessageOfferItem imp
 	
 	/**
 	 * Take appropriate action when a new turn message is clicked on
-	 * @throws Exception If there was a problem
+	 * @throws Exception If there is a problem
 	 */
 	@Override
 	public final void clicked () throws Exception

@@ -14,7 +14,7 @@ import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;

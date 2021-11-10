@@ -1,15 +1,18 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.NdgUIUtils;
 
@@ -18,6 +21,7 @@ import momime.common.MomException;
 /**
  * Tests the TileSetEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestTileSetEx
 {
 	/**
@@ -57,7 +61,6 @@ public final class TestTileSetEx
 		when (db.findAnimation ("A", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim1);
 		when (db.findAnimation ("B", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim2);
 		when (db.findAnimation ("C", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim3);
-		when (db.findAnimation ("D", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim4);
 
 		// Create some tiles
 		final SmoothedTile tile1 = new SmoothedTile ();
@@ -112,7 +115,6 @@ public final class TestTileSetEx
 		anim1.getFrame ().add (null);
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findAnimation ("A", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim1);
 
 		// Create some tiles
 		final SmoothedTile tile1 = new SmoothedTile ();
@@ -153,7 +155,7 @@ public final class TestTileSetEx
 	 * @throws RecordNotFoundException If one of the tiles refers to an animation that doesn't exist
 	 * @throws MomException If the values aren't consistent - every animated tile under one tile set must share the same values; or we find an empty animation
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testDeriveAnimationFrameCountAndSpeed_InconsistentFrameCount () throws RecordNotFoundException, MomException
 	{
 		// Create some animations
@@ -177,7 +179,6 @@ public final class TestTileSetEx
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findAnimation ("A", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim1);
 		when (db.findAnimation ("B", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim2);
-		when (db.findAnimation ("C", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim3);
 
 		// Create some tiles
 		final SmoothedTile tile1 = new SmoothedTile ();
@@ -203,7 +204,10 @@ public final class TestTileSetEx
 		ts.getSmoothedTileType ().add (tt2);
 		
 		// Run method
-		ts.deriveAnimationFrameCountAndSpeed (db);
+		assertThrows (MomException.class, () ->
+		{
+			ts.deriveAnimationFrameCountAndSpeed (db);
+		});
 	}
 	
 	/**
@@ -211,7 +215,7 @@ public final class TestTileSetEx
 	 * @throws RecordNotFoundException If one of the tiles refers to an animation that doesn't exist
 	 * @throws MomException If the values aren't consistent - every animated tile under one tile set must share the same values; or we find an empty animation
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testDeriveAnimationFrameCountAndSpeed_InconsistentSpeed () throws RecordNotFoundException, MomException
 	{
 		// Create some animations
@@ -236,7 +240,6 @@ public final class TestTileSetEx
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findAnimation ("A", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim1);
 		when (db.findAnimation ("B", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim2);
-		when (db.findAnimation ("C", "deriveAnimationFrameCountAndSpeed")).thenReturn (anim3);
 
 		// Create some tiles
 		final SmoothedTile tile1 = new SmoothedTile ();
@@ -262,14 +265,17 @@ public final class TestTileSetEx
 		ts.getSmoothedTileType ().add (tt2);
 		
 		// Run method
-		ts.deriveAnimationFrameCountAndSpeed (db);
+		assertThrows (MomException.class, () ->
+		{
+			ts.deriveAnimationFrameCountAndSpeed (db);
+		});
 	}
 	
 	/**
 	 * Tests the deriveTileWidthAndHeight on a tile set that includes a tile that is neither an image nor animation
 	 * @throws IOException If there is a problem loading any of the images, or we fail the consistency checks
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testDeriveTileWidthAndHeight_TileNeitherImageNorAnimation () throws IOException
 	{
 		// Create some animations
@@ -287,7 +293,10 @@ public final class TestTileSetEx
 		ts.getSmoothedTileType ().add (tt1);
 		
 		// Run method
-		ts.deriveTileWidthAndHeight (db);
+		assertThrows (MomException.class, () ->
+		{
+			ts.deriveTileWidthAndHeight (db);
+		});
 	}
 
 	/**
@@ -355,7 +364,7 @@ public final class TestTileSetEx
 	 * Tests the deriveTileWidthAndHeight method when one image doesn't match the rest
 	 * @throws IOException If there is a problem loading any of the images, or we fail the consistency checks
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testDeriveTileWidthAndHeight_InconsistentImage () throws IOException
 	{
 		// Mock some images
@@ -378,7 +387,6 @@ public final class TestTileSetEx
 
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findAnimation ("A", "deriveTileWidthAndHeight")).thenReturn (anim1);
-		when (db.findAnimation ("B", "deriveTileWidthAndHeight")).thenReturn (anim2);
 		
 		// Create some tiles
 		final SmoothedTile tile1 = new SmoothedTile ();
@@ -409,14 +417,17 @@ public final class TestTileSetEx
 		ts.getSmoothedTileType ().add (tt2);
 		
 		// Run method
-		ts.deriveTileWidthAndHeight (db);
+		assertThrows (MomException.class, () ->
+		{
+			ts.deriveTileWidthAndHeight (db);
+		});
 	}
 	
 	/**
 	 * Tests the deriveTileWidthAndHeight method when one animation doesn't match the rest
 	 * @throws IOException If there is a problem loading any of the images, or we fail the consistency checks
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testDeriveTileWidthAndHeight_InconsistentAnimation () throws IOException
 	{
 		// Mock some images
@@ -470,7 +481,10 @@ public final class TestTileSetEx
 		ts.getSmoothedTileType ().add (tt2);
 		
 		// Run method
-		ts.deriveTileWidthAndHeight (db);
+		assertThrows (MomException.class, () ->
+		{
+			ts.deriveTileWidthAndHeight (db);
+		});
 	}
 	
 	/**
@@ -499,7 +513,7 @@ public final class TestTileSetEx
 	 * @throws MomException If there is an error in buildMaps
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindSmoothingSystem_NotExists () throws MomException, RecordNotFoundException
 	{
 		final TileSetEx db = new TileSetEx ();
@@ -512,7 +526,10 @@ public final class TestTileSetEx
 
 		db.buildMaps ();
 
-		db.findSmoothingSystem ("MB04", "testFindSmoothingSystem_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findSmoothingSystem ("MB04", "testFindSmoothingSystem_NotExists");
+		});
 	}
 
 	/**
@@ -569,7 +586,7 @@ public final class TestTileSetEx
 	 * Tests the findSmoothedTileType method looking for a tile type that doesn't exist
 	 * @throws RecordNotFoundException If no matching tile type is found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindSmoothedTileType_NotExists () throws RecordNotFoundException
 	{
 		// Set up some dummy tile types
@@ -583,6 +600,9 @@ public final class TestTileSetEx
 		tileSet.getSmoothedTileType ().add (tileType3);
 		
 		// Verify exception gets thrown
-		tileSet.findSmoothedTileType ("TT03", 0, null);
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			tileSet.findSmoothedTileType ("TT03", 0, null);
+		});
 	}
 }

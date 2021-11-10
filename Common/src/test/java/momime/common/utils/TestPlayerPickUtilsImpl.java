@@ -1,8 +1,8 @@
 package momime.common.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -11,7 +11,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.Pick;
@@ -23,6 +25,7 @@ import momime.common.messages.PlayerPick;
 /**
  * Tests the PlayerPickUtils class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestPlayerPickUtilsImpl
 {
 	/**
@@ -194,11 +197,12 @@ public final class TestPlayerPickUtilsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1 ; n <= 4; n++)
-		{
-			final Pick Book = new Pick ();
-			Book.setPickType ("B");
-			when (db.findPick (eq ("MB0" + n), anyString ())).thenReturn (Book);
-		}
+			if (n != 2)
+			{
+				final Pick Book = new Pick ();
+				Book.setPickType ("B");
+				when (db.findPick (eq ("MB0" + n), anyString ())).thenReturn (Book);
+			}
 		
 		final PickPrerequisite archmagePrereq = new PickPrerequisite ();
 		archmagePrereq.setPrerequisiteCount (4);
@@ -250,34 +254,34 @@ public final class TestPlayerPickUtilsImpl
 		// Divine power needs 4 life books; Archmage needs 4 of any book; so both should return false with 3 life books
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
 		utils.updatePickQuantity (picks, "MB01", 3);
-		assertEquals ("Archmage was allowed with only 3 books", false, utils.meetsPickRequirements ("RT01", picks, db));
-		assertEquals ("Divine Power was allowed with only 3 life books", false, utils.meetsPickRequirements ("RT02", picks, db));
+		assertEquals (false, utils.meetsPickRequirements ("RT01", picks, db), "Archmage was allowed with only 3 books");
+		assertEquals (false, utils.meetsPickRequirements ("RT02", picks, db), "Divine Power was allowed with only 3 life books");
 
 		// Archmage needs all 4 books of the same type - adding a sorcery book doesn't help
 		utils.updatePickQuantity (picks, "MB03", 1);
-		assertEquals ("Archmage was allowed with all 4 books not being the same type", false, utils.meetsPickRequirements ("RT01", picks, db));
+		assertEquals (false, utils.meetsPickRequirements ("RT01", picks, db), "Archmage was allowed with all 4 books not being the same type");
 
 		// Both should be OK with 4 life books
 		utils.updatePickQuantity (picks, "MB01", 1);
-		assertEquals ("Archmage was not allowed with only 4 life books", true, utils.meetsPickRequirements ("RT01", picks, db));
-		assertEquals ("Divine Power was not allowed with only 4 life books", true, utils.meetsPickRequirements ("RT02", picks, db));
+		assertEquals (true, utils.meetsPickRequirements ("RT01", picks, db), "Archmage was not allowed with only 4 life books");
+		assertEquals (true, utils.meetsPickRequirements ("RT02", picks, db), "Divine Power was not allowed with only 4 life books");
 
 		// Sorcery mastery needs 4 sorcery books
-		assertEquals ("Sorcery Mastery was allowed with only 1 sorcery book", false, utils.meetsPickRequirements ("RT03", picks, db));
+		assertEquals (false, utils.meetsPickRequirements ("RT03", picks, db), "Sorcery Mastery was allowed with only 1 sorcery book");
 		utils.updatePickQuantity (picks, "MB03", 3);
-		assertEquals ("Sorcery Mastery was not allowed with 4 sorcery books", true, utils.meetsPickRequirements ("RT03", picks, db));
+		assertEquals (true, utils.meetsPickRequirements ("RT03", picks, db), "Sorcery Mastery was not allowed with 4 sorcery books");
 
 		// Runemaster requires 2 of 3 different types of spell book
-		assertEquals ("Runemaster was allowed with only 2 types of book", false, utils.meetsPickRequirements ("RT04", picks, db));
+		assertEquals (false, utils.meetsPickRequirements ("RT04", picks, db), "Runemaster was allowed with only 2 types of book");
 		utils.updatePickQuantity (picks, "MB04", 1);
-		assertEquals ("Runemaster was allowed with only having 1 book in the 3rd type", false, utils.meetsPickRequirements ("RT04", picks, db));
+		assertEquals (false, utils.meetsPickRequirements ("RT04", picks, db), "Runemaster was allowed with only having 1 book in the 3rd type");
 		utils.updatePickQuantity (picks, "MB04", 1);
-		assertEquals ("Runemaster was not allowed with 2 of 3 different types of spell book", true, utils.meetsPickRequirements ("RT04", picks, db));
+		assertEquals (true, utils.meetsPickRequirements ("RT04", picks, db), "Runemaster was not allowed with 2 of 3 different types of spell book");
 
 		// Node mastery requires 3 specific books
-		assertEquals ("Node Mastery was allowed without a Chaos book", false, utils.meetsPickRequirements ("RT05", picks, db));
+		assertEquals (false, utils.meetsPickRequirements ("RT05", picks, db), "Node Mastery was allowed without a Chaos book");
 		utils.updatePickQuantity (picks, "MB05", 1);
-		assertEquals ("Node Mastery was not allowed with all 3 book types", true, utils.meetsPickRequirements ("RT05", picks, db));
+		assertEquals (true, utils.meetsPickRequirements ("RT05", picks, db), "Node Mastery was not allowed with all 3 book types");
 	}
 
 	/**

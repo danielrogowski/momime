@@ -1,6 +1,7 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -9,27 +10,33 @@ import java.io.IOException;
 
 import momime.common.MomException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.NdgUIUtils;
 
 /**
  * Tests the AnimationEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestAnimationEx
 {
 	/**
 	 * Tests the deriveAnimationWidthAndHeight method on an animation with no frames
 	 * @throws IOException If there is a problem loading any of the animation frames, or we fail the consistency checks
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testDeriveAnimationWidthAndHeight_NoFrames () throws IOException
 	{
 		// Set up animation and some test frames
 		final AnimationEx anim = new AnimationEx ();
 		
 		// Run method
-		anim.deriveAnimationWidthAndHeight ();
+		assertThrows (MomException.class, () ->
+		{
+			anim.deriveAnimationWidthAndHeight ();
+		});
 	}
 
 	/**
@@ -102,7 +109,7 @@ public final class TestAnimationEx
 	 * Tests the deriveAnimationWidthAndHeight method on an animation with multiple inconsistent frames
 	 * @throws IOException If there is a problem loading any of the animation frames, or we fail the consistency checks
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testDeriveAnimationWidthAndHeight_Inconsistent () throws IOException
 	{
 		// Set up animation and some test frames
@@ -128,6 +135,9 @@ public final class TestAnimationEx
 		when (utils.loadImage ("ImageFile3")).thenReturn (image3);
 		
 		// Run method
-		anim.deriveAnimationWidthAndHeight ();
+		assertThrows (MomException.class, () ->
+		{
+			anim.deriveAnimationWidthAndHeight ();
+		});
 	}
 }

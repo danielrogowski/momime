@@ -1,15 +1,18 @@
 package momime.common.utils;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import momime.common.database.CommonDatabaseConstants;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the PlayerKnowledgeUtils class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestPlayerKnowledgeUtils
 {
 	/**

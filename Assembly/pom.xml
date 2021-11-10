@@ -273,10 +273,5 @@
 			<version>${jre.version}</version>
 			<type>zip</type>
 		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
 	</dependencies>
 </project>

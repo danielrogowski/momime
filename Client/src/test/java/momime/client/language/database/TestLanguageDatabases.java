@@ -1,6 +1,6 @@
 package momime.client.language.database;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.net.URL;
@@ -10,7 +10,7 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import momime.client.ClientTestData;

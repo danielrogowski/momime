@@ -11,7 +11,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;

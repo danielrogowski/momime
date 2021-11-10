@@ -114,7 +114,7 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 	
 	/**
 	 * Show the items screen when clicked on
-	 * @throws Exception If there was a problem
+	 * @throws Exception If there is a problem
 	 */
 	@Override
 	public final void clicked () throws Exception

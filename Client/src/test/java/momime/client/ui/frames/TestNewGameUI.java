@@ -11,7 +11,7 @@ import java.util.List;
 
 import javax.xml.bind.Unmarshaller;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.multiplayer.base.client.ClientToServerConnection;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;

@@ -1,12 +1,16 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the UnitEx class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestUnitEx
 {
 	/**
@@ -37,7 +41,7 @@ public final class TestUnitEx
 	 * Tests the findCombatAction method to look for an action that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCombatAction_NotExists () throws RecordNotFoundException
 	{
 		// Create some dummy entries
@@ -54,6 +58,9 @@ public final class TestUnitEx
 		unit.buildMaps ();
 		
 		// Run tests
-		unit.findCombatAction ("A4", "testFindCombatAction_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			unit.findCombatAction ("A4", "testFindCombatAction_NotExists");
+		});
 	}
 }

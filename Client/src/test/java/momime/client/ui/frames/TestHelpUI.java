@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;

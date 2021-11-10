@@ -1,6 +1,7 @@
 package momime.common.utils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -103,6 +104,11 @@ public interface MinimalUnitDetails
 	public Set<String> listBasicSkillIDs ();
 	
 	/**
+	 * @return Map of all basic skill values keyed by skill IDs
+	 */
+	public Map<String, Integer> getBasicSkillValues ();
+	
+	/**
 	 * @return Number of figures in this unit before it takes any damage
 	 */
 	public int getFullFigureCount ();
@@ -118,6 +124,11 @@ public interface MinimalUnitDetails
 	 * @return How much fame a player loses when this unit dies
 	 */
 	public int calculateFameLostForUnitDying ();
+	
+	/**
+	 * @return Map of all upkeep values keyed by production type IDs
+	 */
+	public Map<String, Integer> getBasicUpeepValues ();
 	
 	/**
 	 * @return String identifiying this unit, suitable for including in debug messages

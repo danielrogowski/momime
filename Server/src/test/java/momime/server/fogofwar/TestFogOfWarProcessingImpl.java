@@ -1,6 +1,6 @@
 package momime.server.fogofwar;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -12,7 +12,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;

@@ -1,8 +1,9 @@
 package momime.common.database;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -12,7 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
@@ -25,6 +28,7 @@ import momime.common.utils.MemoryBuildingUtils;
  * Note there's no point testing any of the 'get' methods that return the complete lists, since they're provided by the JAXB-generated code
  * Only need to test the maps that we coded in the Ex class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCommonDatabaseImpl
 {
 	/**
@@ -53,7 +57,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findPlaneID method to find a plane ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindPlaneID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -68,7 +72,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findPlane (2, "testFindPlaneID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findPlane (2, "testFindPlaneID_NotExists");
+		});
 	}
 
 	/**
@@ -97,7 +104,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findMapFeatureID method to find a mapFeature ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindMapFeatureID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -110,7 +117,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findMapFeature ("MF04", "testFindMapFeatureID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findMapFeature ("MF04", "testFindMapFeatureID_NotExists");
+		});
 	}
 
 	/**
@@ -137,7 +147,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findTileType method to find a tileType ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindTileType_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -150,7 +160,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findTileType ("TT04", "testFindTileType_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findTileType ("TT04", "testFindTileType_NotExists"));
+		});
 	}
 
 	/**
@@ -180,7 +193,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findProductionTypeID method to find a productionType ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindProductionTypeID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -195,7 +208,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findProductionType ("RE04", "testFindProductionTypeID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findProductionType ("RE04", "testFindProductionTypeID_NotExists");
+		});
 	}
 
 	/**
@@ -229,7 +245,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findPickTypeID method to find a pickType ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindPickTypeID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -242,7 +258,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findPickType ("PT04", "testFindPickTypeID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findPickType ("PT04", "testFindPickTypeID_NotExists");
+		});
 	}
 
 	/**
@@ -271,7 +290,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findPickID method to find a pick ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindPickID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -284,7 +303,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findPick ("MB04", "testFindPickID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findPick ("MB04", "testFindPickID_NotExists");
+		});
 	}
 
 	/**
@@ -318,7 +340,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findWizardID method to find a wizard ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindWizardID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -331,7 +353,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findWizard ("WZ04", "testFindWizardID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findWizard ("WZ04", "testFindWizardID_NotExists");
+		});
 	}
 
 	/**
@@ -358,7 +383,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findCombatAction method to find a combatAction ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCombatAction_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -371,7 +396,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findCombatAction ("CMB04", "testFindCombatAction_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findCombatAction ("CMB04", "testFindCombatAction_NotExists");
+		});
 	}
 	
 	/**
@@ -398,7 +426,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findUnitType method to find a unitType ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindUnitType_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -411,7 +439,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findUnitType ("T4", "testFindUnitType_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findUnitType ("T4", "testFindUnitType_NotExists"));
+		});
 	}
 
 	/**
@@ -441,7 +472,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findUnitID method to find a unit ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindUnitID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -454,7 +485,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findUnit ("UN004", "testFindUnitID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findUnit ("UN004", "testFindUnitID_NotExists");
+		});
 	}
 
 	/**
@@ -483,7 +517,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findUnitSkillID method to find a unit skill ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindUnitSkillID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -498,7 +532,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findUnitSkill ("US004", "testFindUnitSkillID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findUnitSkill ("US004", "testFindUnitSkillID_NotExists");
+		});
 	}
 
 	/**
@@ -525,7 +562,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findWeaponGrade method to find a weaponGradeNumber that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindWeaponGrade_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -538,7 +575,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findWeaponGrade (4, "testFindWeaponGrade_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findWeaponGrade (4, "testFindWeaponGrade_NotExists"));
+		});
 	}
 	
 	/**
@@ -565,7 +605,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findRangedAttackType method to find a rangedAttackTypeNumber that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindRangedAttackType_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -578,7 +618,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findRangedAttackType ("RAT04", "testFindRangedAttackType_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findRangedAttackType ("RAT04", "testFindRangedAttackType_NotExists"));
+		});
 	}
 	
 	/**
@@ -610,7 +653,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findRaceID method to find a race ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindRaceID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -623,7 +666,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findRace ("RC04", "testFindRaceID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findRace ("RC04", "testFindRaceID_NotExists");
+		});
 	}
 
 	/**
@@ -651,7 +697,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findBuilding method to find a building ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindBuilding_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -665,7 +711,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findBuilding ("BL04", "testFindBuilding_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findBuilding ("BL04", "testFindBuilding_NotExists"));
+		});
 	}
 
 	/**
@@ -694,7 +743,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findSpellID method to find a spell ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindSpellID_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -707,7 +756,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findSpell ("SP004", "testFindSpellID_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findSpell ("SP004", "testFindSpellID_NotExists");
+		});
 	}
 
 	/**
@@ -734,7 +786,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findCityViewElementBuilding method to find a building ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCityViewElementBuilding_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -747,7 +799,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findCityViewElementBuilding ("BL04", "testFindCityViewElementBuilding_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findCityViewElementBuilding ("BL04", "testFindCityViewElementBuilding_NotExists");
+		});
 	}
 
 	/**
@@ -794,7 +849,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findCombatAreaEffect method to find a combatAreaEffect ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCombatAreaEffect_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -807,7 +862,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findCombatAreaEffect ("CAE04", "testFindCombatAreaEffect_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findCombatAreaEffect ("CAE04", "testFindCombatAreaEffect_NotExists"));
+		});
 	}
 
 	/**
@@ -834,7 +892,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findCombatTileType method to find a combatTileType ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCombatTileType_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -847,7 +905,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findCombatTileType ("CTL04", "testFindCombatTileType_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findCombatTileType ("CTL04", "testFindCombatTileType_NotExists"));
+		});
 	}
 
 	/**
@@ -874,7 +935,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findCombatTileBorder method to find a combatTileBorder ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCombatTileBorder_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -887,7 +948,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findCombatTileBorder ("CTB04", "testFindCombatTileBorder_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findCombatTileBorder ("CTB04", "testFindCombatTileBorder_NotExists"));
+		});
 	}
 	
 	/**
@@ -914,7 +978,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findCitySpellEffect method to find a citySpellEffect ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindCitySpellEffect_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -927,7 +991,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findCitySpellEffect ("SE004", "testFindCitySpellEffect_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findCitySpellEffect ("SE004", "testFindCitySpellEffect_NotExists"));
+		});
 	}
 
 	/**
@@ -954,7 +1021,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findHeroItemSlotType method to find a heroItemSlotType ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindHeroItemSlotType_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -967,7 +1034,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findHeroItemSlotType ("IST04", "testFindHeroItemSlotType_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findHeroItemSlotType ("IST04", "testFindHeroItemSlotType_NotExists"));
+		});
 	}
 
 	/**
@@ -994,7 +1064,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findHeroItemType method to find a heroItemType ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindHeroItemType_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -1007,7 +1077,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findHeroItemType ("IT04", "testFindHeroItemType_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findHeroItemType ("IT04", "testFindHeroItemType_NotExists"));
+		});
 	}
 
 	/**
@@ -1034,7 +1107,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findHeroItemBonus method to find a heroItemBonus ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindHeroItemBonus_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -1047,7 +1120,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findHeroItemBonus ("IB04", "testFindHeroItemBonus_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findHeroItemBonus ("IB04", "testFindHeroItemBonus_NotExists"));
+		});
 	}
 
 	/**
@@ -1074,7 +1150,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findDamageType method to find a damageType ID that doesn't exist
 	 * @throws RecordNotFoundException If we can't find it as expected
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindDamageType_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -1087,7 +1163,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		assertNull (db.findDamageType ("DT04", "testFindDamageType_NotExists"));
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			assertNull (db.findDamageType ("DT04", "testFindDamageType_NotExists"));
+		});
 	}
 	
 	/**
@@ -1130,7 +1209,6 @@ public final class TestCommonDatabaseImpl
 		
 		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL01")).thenReturn (new MemoryBuilding ());
 		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL02")).thenReturn (null);
-		when (memoryBuildingUtils.findBuilding (buildings, cityLocation, "BL03")).thenReturn (new MemoryBuilding ());
 		
 		// Set up object to test
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -1169,7 +1247,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findBestCityImage method looking for a citySizeID that doesn't exist
 	 * @throws RecordNotFoundException If no city size entries match the requested citySizeID
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindBestCityImage_NotExists () throws RecordNotFoundException
 	{
 		// City location
@@ -1189,7 +1267,10 @@ public final class TestCommonDatabaseImpl
 		db.getCityImage ().add (image1);
 		
 		// Run test
-		db.findBestCityImage ("CS02", cityLocation, buildings, "testFindBestCityImage");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findBestCityImage ("CS02", cityLocation, buildings, "testFindBestCityImage");
+		});
 	}
 	
 	/**
@@ -1216,7 +1297,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findTileSet method to find a tile set ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindTileSet_NotExists () throws RecordNotFoundException
 	{
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
@@ -1229,7 +1310,10 @@ public final class TestCommonDatabaseImpl
 
 		db.buildMaps ();
 
-		db.findTileSet ("WZ04", "testFindTileSet_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findTileSet ("WZ04", "testFindTileSet_NotExists");
+		});
 	}
 
 	/**
@@ -1258,7 +1342,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findAnimation method to find a animation ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindAnimation_NotExists () throws RecordNotFoundException
 	{
 		// Set up object to test
@@ -1273,7 +1357,10 @@ public final class TestCommonDatabaseImpl
 		db.buildMaps ();
 
 		// Check results
-		db.findAnimation ("AN04", "testFindAnimation_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findAnimation ("AN04", "testFindAnimation_NotExists");
+		});
 	}
 
 	/**
@@ -1302,7 +1389,7 @@ public final class TestCommonDatabaseImpl
 	 * Tests the findPlayList method to find a play list ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindPlayList_NotExists () throws RecordNotFoundException
 	{
 		// Set up object to test
@@ -1317,7 +1404,10 @@ public final class TestCommonDatabaseImpl
 		db.buildMaps ();
 
 		// Check results
-		db.findPlayList ("PL04", "testFindPlayList_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findPlayList ("PL04", "testFindPlayList_NotExists");
+		});
 	}
 	
 	/**
@@ -1403,7 +1493,6 @@ public final class TestCommonDatabaseImpl
 		db.getCityViewElement ().add (building1);
 		
 		// 50 x 10 image, note this is the alternate image
-		when (utils.loadImage ("building2.png")).thenReturn (new BufferedImage (60, 70, BufferedImage.TYPE_INT_ARGB));
 		when (utils.loadImage ("building2alt.png")).thenReturn (new BufferedImage (50, 10, BufferedImage.TYPE_INT_ARGB));
 
 		final CityViewElement building2 = new CityViewElement ();
@@ -1435,15 +1524,11 @@ public final class TestCommonDatabaseImpl
 		db.getCityViewElement ().add (building3);
 		
 		// Huge image that isn't a building
-		when (utils.loadImage ("nonBuilding.png")).thenReturn (new BufferedImage (100, 100, BufferedImage.TYPE_INT_ARGB));
-		
 		final CityViewElement nonBuilding = new CityViewElement ();
 		nonBuilding.setCityViewImageFile ("nonBuilding.png");
 		db.getCityViewElement ().add (nonBuilding);
 		
 		// Huge Wizard's Fortress to prove that it gets ignored
-		when (utils.loadImage ("fortress.png")).thenReturn (new BufferedImage (100, 100, BufferedImage.TYPE_INT_ARGB));
-		
 		final CityViewElement fortress = new CityViewElement ();
 		fortress.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		fortress.setCityViewImageFile ("fortress.png");

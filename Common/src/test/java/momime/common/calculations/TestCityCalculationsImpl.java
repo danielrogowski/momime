@@ -1,9 +1,10 @@
 package momime.common.calculations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -15,7 +16,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -79,6 +82,7 @@ import momime.common.utils.PlayerPickUtils;
 /**
  * Tests the calculations in the CityCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCityCalculationsImpl
 {
 	/**
@@ -4086,7 +4090,7 @@ public final class TestCityCalculationsImpl
 	 * Tests the halveAddPercentageBonusAndCapProduction method when the "before" amount isn't an exact multiple of 2 but should be
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testHalveAddPercentageBonusAndCapProduction_NotExactMultiple () throws Exception
 	{
 		// Mock database
@@ -4111,7 +4115,10 @@ public final class TestCityCalculationsImpl
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Call method
-		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
+		assertThrows (MomException.class, () ->
+		{
+			calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, null, db);
+		});
 	}
 
 	/**

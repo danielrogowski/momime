@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.xml.datatype.DatatypeFactory;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.SavedGamePoint;

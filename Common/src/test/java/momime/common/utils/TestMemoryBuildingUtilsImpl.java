@@ -514,7 +514,6 @@ public final class TestMemoryBuildingUtilsImpl
 
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
-		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -539,16 +538,7 @@ public final class TestMemoryBuildingUtilsImpl
 	public final void testDoAnyBuildingsDependOn_SellInOtherLocation () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of building types
-		final Building dbBuildingOne = new Building ();
-		dbBuildingOne.setBuildingID ("BL01");
-		dbBuildingOne.getBuildingPrerequisite ().add ("BL02");
-
-		final Building dbBuildingTwo = new Building ();
-		dbBuildingTwo.setBuildingID ("BL02");
-
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
-		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -625,7 +615,7 @@ public final class TestMemoryBuildingUtilsImpl
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants null exp, BL02 grants 0 exp, BL03 grants 10 exp
 		final CommonDatabase db = mock (CommonDatabase.class);
-		for (int n = 1; n <= 3; n++)
+		for (int n = 1; n <= 2; n++)
 		{
 			final Building dbBuilding = new Building ();
 			dbBuilding.setBuildingID ("BL0" + n);
@@ -664,14 +654,6 @@ public final class TestMemoryBuildingUtilsImpl
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants no exp, BL02 grants 10 exp, BL03 grants 20 exp
 		final CommonDatabase db = mock (CommonDatabase.class);
-		for (int n = 1; n <= 3; n++)
-		{
-			final Building dbBuilding = new Building ();
-			dbBuilding.setBuildingID ("BL0" + n);
-			dbBuilding.setBuildingExperience ((n - 1) * 10);
-
-			when (db.findBuilding (eq (dbBuilding.getBuildingID ()), anyString ())).thenReturn (dbBuilding);
-		}
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -698,14 +680,12 @@ public final class TestMemoryBuildingUtilsImpl
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants no exp, BL02 grants 10 exp, BL03 grants 20 exp
 		final CommonDatabase db = mock (CommonDatabase.class);
-		for (int n = 1; n <= 3; n++)
-		{
-			final Building dbBuilding = new Building ();
-			dbBuilding.setBuildingID ("BL0" + n);
-			dbBuilding.setBuildingExperience ((n - 1) * 10);
+		
+		final Building dbBuilding = new Building ();
+		dbBuilding.setBuildingID ("BL02");
+		dbBuilding.setBuildingExperience (10);
 
-			when (db.findBuilding (eq (dbBuilding.getBuildingID ()), anyString ())).thenReturn (dbBuilding);
-		}
+		when (db.findBuilding (eq (dbBuilding.getBuildingID ()), anyString ())).thenReturn (dbBuilding);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -732,7 +712,7 @@ public final class TestMemoryBuildingUtilsImpl
 		// Set up dummy XML definitions for couple of building types
 		// BL01 grants no exp, BL02 grants 10 exp, BL03 grants 20 exp
 		final CommonDatabase db = mock (CommonDatabase.class);
-		for (int n = 1; n <= 3; n++)
+		for (int n = 2; n <= 3; n++)
 		{
 			final Building dbBuilding = new Building ();
 			dbBuilding.setBuildingID ("BL0" + n);
@@ -743,7 +723,7 @@ public final class TestMemoryBuildingUtilsImpl
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
-		for (int n = 2; n <=3; n++)
+		for (int n = 2; n <= 3; n++)
 		{
 			final MemoryBuilding memBuilding = new MemoryBuilding ();
 			memBuilding.setBuildingID ("BL0" + n);
@@ -781,7 +761,6 @@ public final class TestMemoryBuildingUtilsImpl
 
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
-		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
 		final List<MemoryBuilding> memBuildings = new ArrayList<MemoryBuilding> ();
@@ -850,7 +829,6 @@ public final class TestMemoryBuildingUtilsImpl
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
 
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
@@ -886,7 +864,6 @@ public final class TestMemoryBuildingUtilsImpl
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
 
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
@@ -922,7 +899,6 @@ public final class TestMemoryBuildingUtilsImpl
 		dbBuildingTwo.getBuildingPopulationProductionModifier ().add (mod);
 
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
 		when (db.findBuilding (eq ("BL02"), anyString ())).thenReturn (dbBuildingTwo);
 
 		// Set up list of existing buildings
@@ -948,10 +924,6 @@ public final class TestMemoryBuildingUtilsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Building BL02 grants a +4 bonus; building BL03 grants a +6 bonus
-		final Building dbBuildingOne = new Building ();
-		dbBuildingOne.setBuildingID ("BL01");
-		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (dbBuildingOne);
-
 		for (int n = 2; n <= 3; n++)
 		{
 			final BuildingPopulationProductionModifier mod = new BuildingPopulationProductionModifier ();

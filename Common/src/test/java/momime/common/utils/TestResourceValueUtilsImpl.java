@@ -16,14 +16,12 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
-import momime.common.MomException;
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
@@ -661,72 +659,356 @@ public final class TestResourceValueUtilsImpl
 	}
 	
 	/**
-	 * Tests the calculateAmountPerTurnForProductionType method
-	 * @throws MomException If there is a problem
-	 * @throws RecordNotFoundException If we look for a particular record that we expect to be present in the XML file and we can't find it
+	 * Tests the calculateAmountPerTurnForProductionType method when we're calculating something that doesn't involve the magic power split
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateAmountPerTurnForProductionType () throws MomException, RecordNotFoundException
+	public final void testCalculateAmountPerTurnForProductionType_OtherProductionType () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-
-		final Spell spellDef = new Spell ();
-		spellDef.setSpellRealm ("MB01");
-		when (db.findSpell ("SP001", "calculateAmountPerTurnForProductionType")).thenReturn (spellDef);
 		
-		// Our bonus from a number of books
-		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		// Session description
 		final SpellSetting spellSettings = new SpellSetting ();
-
-		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.getQuantityOfPick (picks, "MB01")).thenReturn (4);
-		when (playerPickUtils.getQuantityOfPick (picks, "MB02")).thenReturn (6);
 		
-		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
-		when (spellCalculations.calculateResearchBonus (4, spellSettings, spellDef, picks, db)).thenReturn (0d);
-		when (spellCalculations.calculateResearchBonus (6, spellSettings, spellDef, picks, db)).thenReturn (25d);
+		// Resource values
+		final MomResourceValue resource = new MomResourceValue ();
+		resource.setProductionTypeID ("RE01");
+		resource.setAmountPerTurn (20);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.getResourceValue ().add (resource);
+	
+		// Production bonuses
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		
+		// Run method
+		assertEquals (20, utils.calculateAmountPerTurnForProductionType (priv, picks, "RE01", spellSettings, db));
+	}
 
-		// Set up data
-		final MomPersistentPlayerPrivateKnowledge privateInfo = new MomPersistentPlayerPrivateKnowledge ();
+	/**
+	 * Tests the calculateAmountPerTurnForProductionType method when we're calculating magic power itself
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAmountPerTurnForProductionType_MagicPower () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final SpellSetting spellSettings = new SpellSetting ();
+		
+		// Resource values
+		final MomResourceValue resource = new MomResourceValue ();
+		resource.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		resource.setAmountPerTurn (20);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.getResourceValue ().add (resource);
+	
+		// Production bonuses
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		
+		// Run method
+		assertEquals (20, utils.calculateAmountPerTurnForProductionType (priv, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, spellSettings, db));
+	}
+
+	/**
+	 * Tests the calculateAmountPerTurnForProductionType method when we're calculating MP split from magic power
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAmountPerTurnForProductionType_Mana () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final SpellSetting spellSettings = new SpellSetting ();
+		
+		// Resource values
+		final MagicPowerDistribution ratios = new MagicPowerDistribution ();
+		ratios.setManaRatio (70);
+		
+		final MomResourceValue resource = new MomResourceValue ();
+		resource.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		resource.setAmountPerTurn (20);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setMagicPowerDistribution (ratios);
+		priv.getResourceValue ().add (resource);
+	
+		// Production bonuses
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		when (playerPickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, null, picks, db)).thenReturn (0);
 		
 		// Set up object to test
 		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// (20 * 70) / 240 = 5.8 rounded down
+		assertEquals (5, utils.calculateAmountPerTurnForProductionType (priv, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db));
+	}
+
+	/**
+	 * Tests the calculateAmountPerTurnForProductionType method when we're calculating MP split from magic power and get a production bonus
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAmountPerTurnForProductionType_ManaBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final SpellSetting spellSettings = new SpellSetting ();
+		
+		// Resource values
+		final MagicPowerDistribution ratios = new MagicPowerDistribution ();
+		ratios.setManaRatio (70);
+		
+		final MomResourceValue resource = new MomResourceValue ();
+		resource.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		resource.setAmountPerTurn (20);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setMagicPowerDistribution (ratios);
+		priv.getResourceValue ().add (resource);
+	
+		// Production bonuses
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		when (playerPickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, null, picks, db)).thenReturn (50);
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// (20 * 70) / 240 = 5.8 rounded down + 50% = 7.5 rounded down
+		assertEquals (7, utils.calculateAmountPerTurnForProductionType (priv, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db));
+	}
+
+	/**
+	 * Tests the calculateAmountPerTurnForProductionType method when we're calculating skill split from magic power
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAmountPerTurnForProductionType_Skill () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final SpellSetting spellSettings = new SpellSetting ();
+		
+		// Resource values
+		final MagicPowerDistribution ratios = new MagicPowerDistribution ();
+		ratios.setSkillRatio (70);
+		
+		final MomResourceValue resource = new MomResourceValue ();
+		resource.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		resource.setAmountPerTurn (20);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setMagicPowerDistribution (ratios);
+		priv.getResourceValue ().add (resource);
+	
+		// Production bonuses
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		when (playerPickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, picks, db)).thenReturn (0);
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// (20 * 70) / 240 = 5.8 rounded down
+		assertEquals (5, utils.calculateAmountPerTurnForProductionType (priv, picks,
+			CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
+	}
+
+	/**
+	 * Tests the calculateAmountPerTurnForProductionType method when we're calculating skill split from magic power and get a production bonus
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAmountPerTurnForProductionType_SkillBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final SpellSetting spellSettings = new SpellSetting ();
+		
+		// Resource values
+		final MagicPowerDistribution ratios = new MagicPowerDistribution ();
+		ratios.setSkillRatio (70);
+		
+		final MomResourceValue resource = new MomResourceValue ();
+		resource.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		resource.setAmountPerTurn (20);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setMagicPowerDistribution (ratios);
+		priv.getResourceValue ().add (resource);
+	
+		// Production bonuses
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		when (playerPickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, picks, db)).thenReturn (50);
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// (20 * 70) / 240 = 5.8 rounded down + 50% = 7.5 rounded down
+		assertEquals (7, utils.calculateAmountPerTurnForProductionType (priv, picks,
+			CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
+	}
+
+	/**
+	 * Tests the calculateAmountPerTurnForProductionType method when we're calculating research split from magic power and we are not researching any specific spell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAmountPerTurnForProductionType_Research_SpellUnknown () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final SpellSetting spellSettings = new SpellSetting ();
+		
+		// Resource values
+		final MagicPowerDistribution ratios = new MagicPowerDistribution ();
+		ratios.setResearchRatio (70);
+		
+		final MomResourceValue resource = new MomResourceValue ();
+		resource.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		resource.setAmountPerTurn (20);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setMagicPowerDistribution (ratios);
+		priv.getResourceValue ().add (resource);
+	
+		// Production bonuses
+		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		when (spellCalculations.calculateResearchBonus (0, spellSettings, null, picks, db)).thenReturn (0d);
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.setSpellCalculations (spellCalculations);
 		
-		// Gold is just a simple read
-		final MomResourceValue goldPerTurn = new MomResourceValue ();
-		goldPerTurn.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		goldPerTurn.setAmountPerTurn (20);
-		privateInfo.getResourceValue ().add (goldPerTurn);
-		
-		assertEquals (20, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db));
-		
-		// Mana and skill are a simple split from magic power
-		final MomResourceValue magicPowerPerTurn = new MomResourceValue ();
-		magicPowerPerTurn.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
-		magicPowerPerTurn.setAmountPerTurn (60);
-		privateInfo.getResourceValue ().add (magicPowerPerTurn);
-		
-		final MagicPowerDistribution powerDist = new MagicPowerDistribution ();
-		powerDist.setManaRatio (96);			// 40%
-		powerDist.setResearchRatio (96);	// 40%
-		powerDist.setSkillRatio (48);			// 20%
-		privateInfo.setMagicPowerDistribution (powerDist);
+		// (20 * 70) / 240 = 5.8 rounded down
+		assertEquals (5, utils.calculateAmountPerTurnForProductionType (priv, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+	}
 
-		assertEquals (24, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db));
-		assertEquals (12, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, spellSettings, db));
+	/**
+	 * Tests the calculateAmountPerTurnForProductionType method when we're calculating research split from magic power when research spell is known
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAmountPerTurnForProductionType_Research_SpellKnown () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Research when we have nothing specific being researched
-		assertEquals (24, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellRealm ("MB01");
+		when (db.findSpell ("SP001", "calculateAmountPerTurnForProductionType")).thenReturn (spellDef);
 		
-		// Research something in magic realm where we don't get a bonus
-		privateInfo.setSpellIDBeingResearched ("SP001"); 
-		assertEquals (24, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		// Session description
+		final SpellSetting spellSettings = new SpellSetting ();
 		
-		// Research something in magic realm where we do get a bonus
-		spellDef.setSpellRealm ("MB02"); 
-		assertEquals (24+6, utils.calculateAmountPerTurnForProductionType (privateInfo, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+		// Resource values
+		final MagicPowerDistribution ratios = new MagicPowerDistribution ();
+		ratios.setResearchRatio (70);
+		
+		final MomResourceValue resource = new MomResourceValue ();
+		resource.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		resource.setAmountPerTurn (20);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setMagicPowerDistribution (ratios);
+		priv.setSpellIDBeingResearched ("SP001");
+		priv.getResourceValue ().add (resource);
+	
+		// Production bonuses
+		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		when (playerPickUtils.getQuantityOfPick (picks, "MB01")).thenReturn (11);
+		when (spellCalculations.calculateResearchBonus (11, spellSettings, spellDef, picks, db)).thenReturn (0d);
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setSpellCalculations (spellCalculations);
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// (20 * 70) / 240 = 5.8 rounded down
+		assertEquals (5, utils.calculateAmountPerTurnForProductionType (priv, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
+	}
+
+	/**
+	 * Tests the calculateAmountPerTurnForProductionType method when we're calculating research split from magic power when research spell is known
+	 * and there is a bonus to research in that magic realm
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAmountPerTurnForProductionType_Research_SpellBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellRealm ("MB01");
+		when (db.findSpell ("SP001", "calculateAmountPerTurnForProductionType")).thenReturn (spellDef);
+		
+		// Session description
+		final SpellSetting spellSettings = new SpellSetting ();
+		
+		// Resource values
+		final MagicPowerDistribution ratios = new MagicPowerDistribution ();
+		ratios.setResearchRatio (70);
+		
+		final MomResourceValue resource = new MomResourceValue ();
+		resource.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		resource.setAmountPerTurn (20);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setMagicPowerDistribution (ratios);
+		priv.setSpellIDBeingResearched ("SP001");
+		priv.getResourceValue ().add (resource);
+	
+		// Production bonuses
+		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
+		
+		when (playerPickUtils.getQuantityOfPick (picks, "MB01")).thenReturn (11);
+		when (spellCalculations.calculateResearchBonus (11, spellSettings, spellDef, picks, db)).thenReturn (50d);
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setSpellCalculations (spellCalculations);
+		utils.setPlayerPickUtils (playerPickUtils);
+		
+		// (20 * 70) / 240 = 5.8 rounded down + 50% = 7.5 rounded down
+		assertEquals (7, utils.calculateAmountPerTurnForProductionType (priv, picks, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db));
 	}
 }

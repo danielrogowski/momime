@@ -3,6 +3,7 @@ package momime.server.process;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -556,7 +557,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	 * This is an error because these should already have been removed by findAndProcessOneCellPendingMovement.
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testFindAndProcessOneCombat_Unreachable () throws Exception
 	{
 		// Mock empty database
@@ -622,7 +623,10 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		proc.setExpandUnitDetails (expand);
 		
 		// Run method
-		assertFalse (proc.findAndProcessOneCombat (mom));
+		assertThrows (MomException.class, () ->
+		{
+			proc.findAndProcessOneCombat (mom);
+		});
 	}
 
 	/**
@@ -630,7 +634,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	 * This is an error because these should already have been dealt with by findAndProcessOneCellPendingMovement.
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testFindAndProcessOneCombat_Move () throws Exception
 	{
 		// Mock empty database
@@ -697,7 +701,10 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		proc.setExpandUnitDetails (expand);
 		
 		// Run method
-		assertFalse (proc.findAndProcessOneCombat (mom));
+		assertThrows (MomException.class, () ->
+		{
+			proc.findAndProcessOneCombat (mom);
+		});
 	}
 
 	/**

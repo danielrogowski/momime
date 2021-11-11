@@ -1,6 +1,7 @@
 package momime.client.language.database;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +42,7 @@ public final class TestMomLanguagesExImpl
 	 * Tests the findLanguageOption option searching for a language that exists
 	 * @throws RecordNotFoundException If the language is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindLanguageOption_NotExists () throws RecordNotFoundException
 	{
 		final MomLanguagesExImpl db = new MomLanguagesExImpl ();
@@ -58,6 +59,9 @@ public final class TestMomLanguagesExImpl
 		
 		db.buildMaps ();
 		
-		db.findLanguageOption (Language.GERMAN, "testFindLanguageOption_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findLanguageOption (Language.GERMAN, "testFindLanguageOption_NotExists");
+		});
 	}
 }

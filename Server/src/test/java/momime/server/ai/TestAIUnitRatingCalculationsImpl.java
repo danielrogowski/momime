@@ -201,10 +201,13 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		unitDetailsUtils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
 		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
+
+		final ExpandUnitDetailsUtilsImpl expandUnitDetailsUtils = new ExpandUnitDetailsUtilsImpl ();
+		expandUnitDetailsUtils.setUnitDetailsUtils (unitDetailsUtils);
+		expandUnitDetailsUtils.setUnitUtils (unitUtils);
 		
 		final ExpandUnitDetailsImpl expand = new ExpandUnitDetailsImpl ();
-		expand.setUnitDetailsUtils (unitDetailsUtils);
-		expand.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());
+		expand.setExpandUnitDetailsUtils (expandUnitDetailsUtils);
 		expand.setUnitUtils (unitUtils);
 		
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();
@@ -213,6 +216,7 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		
 		final AIUnitRatingCalculationsImpl ai = new AIUnitRatingCalculationsImpl ();
 		ai.setExpandUnitDetails (expand);
+		ai.setUnitSkillDirectAccess (new UnitSkillDirectAccessImpl ());
 		
 		// Calculate each unit in turn
 		final Map<Integer, List<UnitEx>> ratings = new HashMap<Integer, List<UnitEx>> ();
@@ -262,9 +266,12 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
 
+		final ExpandUnitDetailsUtilsImpl expandUnitDetailsUtils = new ExpandUnitDetailsUtilsImpl ();
+		expandUnitDetailsUtils.setUnitDetailsUtils (unitDetailsUtils);
+		expandUnitDetailsUtils.setUnitUtils (unitUtils);
+		
 		final ExpandUnitDetailsImpl expand = new ExpandUnitDetailsImpl ();
-		expand.setUnitDetailsUtils (unitDetailsUtils);
-		expand.setExpandUnitDetailsUtils (new ExpandUnitDetailsUtilsImpl ());
+		expand.setExpandUnitDetailsUtils (expandUnitDetailsUtils);
 		expand.setUnitUtils (unitUtils);
 		
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();

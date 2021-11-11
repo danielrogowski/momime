@@ -415,7 +415,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		container.setCombatMap (map);
 		
 		final URL xsdResource = getClass ().getResource ("/momime.unittests.mapstorage/MapStorage.xsd");
-		assertNotNull ("Map storage XSD could not be found on classpath", xsdResource);
+		assertNotNull (xsdResource, "Map storage XSD could not be found on classpath");
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));

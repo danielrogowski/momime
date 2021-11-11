@@ -3,6 +3,7 @@ package momime.server.calculations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -667,7 +668,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	 * Tests the accumulateGlobalProductionValues method when we have a +ve production amount that should be a multiple of 2 but isn't
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive () throws Exception
 	{
 		final CommonDatabase db = loadServerDatabase ();
@@ -692,14 +693,17 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.setResourceValueUtils (utils);
 		
 		// Call method
-		calc.accumulateGlobalProductionValues (player, spellSettings, db);
+		assertThrows (MomException.class, () ->
+		{
+			calc.accumulateGlobalProductionValues (player, spellSettings, db);
+		});
 	}
 
 	/**
 	 * Tests the accumulateGlobalProductionValues method when we have a -ve production amount that should be a multiple of 2 but isn't
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative () throws Exception
 	{
 		final CommonDatabase db = loadServerDatabase ();
@@ -724,7 +728,10 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.setResourceValueUtils (utils);
 		
 		// Call method
-		calc.accumulateGlobalProductionValues (player, spellSettings, db);
+		assertThrows (MomException.class, () ->
+		{
+			calc.accumulateGlobalProductionValues (player, spellSettings, db);
+		});
 	}
 	
 	/**

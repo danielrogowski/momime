@@ -3,6 +3,7 @@ package momime.server.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -878,7 +879,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 	 * Tests the findMapLocationOfUnitsInCombat method - this is a copy of the test above, except that the attacker unit (match) is removed
 	 * @throws MomException If the requested side is wiped out
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testFindMapLocationOfUnitsInCombat_WipedOut () throws MomException
 	{
 		// Locations
@@ -945,6 +946,10 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 
 		// Run method, recreate location so = would find no match
 		final MapCoordinates3DEx searchLocation = new MapCoordinates3DEx (20, 10, 1);
-		utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.ATTACKER, units);
+		
+		assertThrows (MomException.class, () ->
+		{
+			utils.findMapLocationOfUnitsInCombat (searchLocation, UnitCombatSideID.ATTACKER, units);
+		});
 	}
 }

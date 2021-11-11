@@ -109,7 +109,7 @@ public class ServerTestData
 
 		// XSD
 		final URL xsdResource = getClass ().getResource (CommonDatabaseConstants.COMMON_XSD_LOCATION);
-		assertNotNull ("MoM IME Common XSD could not be found on classpath", xsdResource);
+		assertNotNull (xsdResource, "MoM IME Common XSD could not be found on classpath");
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
@@ -123,7 +123,7 @@ public class ServerTestData
 		// XML - not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEServer project, then modify that location
 		final URL exampleResource = getClass ().getResource ("/MoMIMEServerVersion.properties");
-		assertNotNull ("MoMIMEServerVersion.properties could not be found on classpath", exampleResource);
+		assertNotNull (exampleResource, "MoMIMEServerVersion.properties could not be found on classpath");
 		
 		final File exampleResourceFile = new File (exampleResource.getFile ());
 		final File serverXmlFile = new File (exampleResourceFile, "../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.momime.xml");
@@ -142,7 +142,7 @@ public class ServerTestData
 		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEServer project, then modify that location
 		final URL exampleResource = getClass ().getResource ("/MoMIMEServerVersion.properties");
-		assertNotNull ("MoMIMEServerVersion.properties could not be found on classpath", exampleResource);
+		assertNotNull (exampleResource, "MoMIMEServerVersion.properties could not be found on classpath");
 		
 		final File exampleResourceFile = new File (exampleResource.getFile ());
 		return new File (exampleResourceFile, "../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.momime.xml");

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,7 +88,7 @@ public final class TestHeroItemClientUtilsImpl
 	 * Tests the insertGapsBetweenDifferentKindsOfAttributeBonuses method, when we've got a bonus that gives a bonus to 0 attributes
 	 * @throws MomException If we encounter a bonus in the list that doesn't give a bonus to *any* attribute, or to multiple attributes 
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testInsertGapsBetweenDifferentKindsOfAttributeBonuses_ZeroBonuses () throws MomException
 	{
 		// Set up sample list
@@ -100,14 +101,17 @@ public final class TestHeroItemClientUtilsImpl
 		final HeroItemClientUtilsImpl utils = new HeroItemClientUtilsImpl ();
 
 		// Run method
-		utils.insertGapsBetweenDifferentKindsOfAttributeBonuses (bonuses);
+		assertThrows (MomException.class, () ->
+		{
+			utils.insertGapsBetweenDifferentKindsOfAttributeBonuses (bonuses);
+		});
 	}
 	
 	/**
 	 * Tests the insertGapsBetweenDifferentKindsOfAttributeBonuses method, when we've got a bonus that gives a bonus to multiple attributes
 	 * @throws MomException If we encounter a bonus in the list that doesn't give a bonus to *any* attribute, or to multiple attributes 
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testInsertGapsBetweenDifferentKindsOfAttributeBonuses_MultiBonuses () throws MomException
 	{
 		// Set up sample list
@@ -127,7 +131,10 @@ public final class TestHeroItemClientUtilsImpl
 		final HeroItemClientUtilsImpl utils = new HeroItemClientUtilsImpl ();
 
 		// Run method
-		utils.insertGapsBetweenDifferentKindsOfAttributeBonuses (bonuses);
+		assertThrows (MomException.class, () ->
+		{
+			utils.insertGapsBetweenDifferentKindsOfAttributeBonuses (bonuses);
+		});
 	}
 	
 	/**
@@ -231,7 +238,7 @@ public final class TestHeroItemClientUtilsImpl
 	 * Tests the shuffleSplitPoint method when there's too many items in the left column to split it
 	 * @throws MomException If after shuffling the items, we end up with a list that's too long to display (i.e. is > count * 2); or the left list is so long that we can't split it
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testShuffleSplitPoint_OverfillLeftColumn () throws MomException
 	{
 		// Set up sample list
@@ -244,14 +251,17 @@ public final class TestHeroItemClientUtilsImpl
 		final HeroItemClientUtilsImpl utils = new HeroItemClientUtilsImpl ();
 		
 		// Run method
-		utils.shuffleSplitPoint (bonuses, 5);
+		assertThrows (MomException.class, () ->
+		{
+			utils.shuffleSplitPoint (bonuses, 5);
+		});
 	}
 
 	/**
 	 * Tests the shuffleSplitPoint method when there's too many items and it will overflow the right column
 	 * @throws MomException If after shuffling the items, we end up with a list that's too long to display (i.e. is > count * 2); or the left list is so long that we can't split it
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testShuffleSplitPoint_OverfillRightColumn () throws MomException
 	{
 		// Set up sample list
@@ -264,6 +274,9 @@ public final class TestHeroItemClientUtilsImpl
 		final HeroItemClientUtilsImpl utils = new HeroItemClientUtilsImpl ();
 		
 		// Run method
-		utils.shuffleSplitPoint (bonuses, 5);
+		assertThrows (MomException.class, () ->
+		{
+			utils.shuffleSplitPoint (bonuses, 5);
+		});
 	}
 }

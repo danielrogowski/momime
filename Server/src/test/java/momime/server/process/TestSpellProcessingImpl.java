@@ -1,6 +1,7 @@
 package momime.server.process;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -68,7 +69,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	 * Tests the castOverlandNow spell casting a spell that we haven't researched yet
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testCastOverlandNow_Unavailable () throws Exception
 	{
 		// Human player, who is also the one casting the spell
@@ -99,7 +100,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
-		proc.castOverlandNow (player3, spell, null, null, null);
+		assertThrows (MomException.class, () ->
+		{
+			proc.castOverlandNow (player3, spell, null, null, null);
+		});
 	}
 
 	/**
@@ -387,7 +391,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	 * Tests trying to cast a spell into a combat we aren't participating in
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testCastCombatNow_NotParticipating () throws Exception
 	{
 		// Server knowledge
@@ -425,7 +429,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 
 		// Run test
-		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
+		assertThrows (MomException.class, () ->
+		{
+			proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
+		});
 	}
 	
 	/**

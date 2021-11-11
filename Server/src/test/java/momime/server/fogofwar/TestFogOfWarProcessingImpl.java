@@ -351,9 +351,11 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 	
 						// The "A" cells mark locations we can only see after we cast Awareness
 						if ((cell != null) && (cell.getCellType () != CellType.BLANK) && (!cell.getStringCellValue ().equals ("A")))
-							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
+							assertEquals (FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x),
+								x + "," + y + "," + plane.getPlaneNumber ());
 						else
-							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
+							assertEquals (FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x),
+								x + "," + y + "," + plane.getPlaneNumber ());
 					}
 	
 			// Awareness
@@ -368,9 +370,11 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 					{
 						final Cell cell = workbook.getSheetAt (plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
 						if ((cell != null) && (cell.getCellType () != CellType.BLANK))
-							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
+							assertEquals (FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x),
+								x + "," + y + "," + plane.getPlaneNumber ());
 						else
-							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
+							assertEquals (FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x),
+								x + "," + y + "," + plane.getPlaneNumber ());
 					}
 		}
 
@@ -383,7 +387,8 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-					assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
+					assertEquals (FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x),
+						x + "," + y + "," + plane.getPlaneNumber ());
 	}
 
 	/**

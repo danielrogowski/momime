@@ -2,6 +2,7 @@ package momime.client.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,28 +31,34 @@ public final class TestAnimationControllerImpl
 	 * Tests the loadImageOrAnimationFrame method passing in two nulls
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testLoadImageOrAnimationFrame_BothNull () throws Exception
 	{
 		// Set up object to test
 		final AnimationControllerImpl controller = new AnimationControllerImpl ();
 		
 		// Run method
-		controller.loadImageOrAnimationFrame (null, null, true, AnimationContainer.GRAPHICS_XML);
+		assertThrows (MomException.class, () ->
+		{
+			controller.loadImageOrAnimationFrame (null, null, true, AnimationContainer.GRAPHICS_XML);
+		});
 	}
 
 	/**
 	 * Tests the loadImageOrAnimationFrame method specifying both a static image and an animationID
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testLoadImageOrAnimationFrame_BothSpecifeid () throws Exception
 	{
 		// Set up object to test
 		final AnimationControllerImpl controller = new AnimationControllerImpl ();
 		
 		// Run method
-		controller.loadImageOrAnimationFrame ("a", "b", true, AnimationContainer.GRAPHICS_XML);
+		assertThrows (MomException.class, () ->
+		{
+			controller.loadImageOrAnimationFrame ("a", "b", true, AnimationContainer.GRAPHICS_XML);
+		});
 	}
 
 	/**
@@ -82,14 +89,17 @@ public final class TestAnimationControllerImpl
 	 * Tests the loadImageOrAnimationFrame method trying to retrieve an animation that we didn't request interest in
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testLoadImageOrAnimationFrame_WithoutRegistering () throws Exception
 	{
 		// Set up object to test
 		final AnimationControllerImpl controller = new AnimationControllerImpl ();
 		
 		// Run method
-		controller.loadImageOrAnimationFrame (null, "ANIM", true, AnimationContainer.GRAPHICS_XML);
+		assertThrows (MomException.class, () ->
+		{
+			controller.loadImageOrAnimationFrame (null, "ANIM", true, AnimationContainer.GRAPHICS_XML);
+		});
 	}
 
 	/**

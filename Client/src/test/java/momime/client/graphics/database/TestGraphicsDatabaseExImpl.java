@@ -1,6 +1,7 @@
 package momime.client.graphics.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ public final class TestGraphicsDatabaseExImpl
 	 * Tests the findUnitSkillComponent method to find a unit attribute ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindUnitSkillComponent_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
@@ -53,7 +54,10 @@ public final class TestGraphicsDatabaseExImpl
 
 		db.buildMaps ();
 
-		db.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "testFindUnitSkillComponent_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "testFindUnitSkillComponent_NotExists");
+		});
 	}
 
 	/**
@@ -81,7 +85,7 @@ public final class TestGraphicsDatabaseExImpl
 	 * Tests the findUnitSpecialOrder method to find a unit attribute ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindUnitSpecialOrder_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
@@ -94,7 +98,10 @@ public final class TestGraphicsDatabaseExImpl
 
 		db.buildMaps ();
 
-		db.findUnitSpecialOrder (UnitSpecialOrder.BUILD_ROAD, "testFindUnitSpecialOrder_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findUnitSpecialOrder (UnitSpecialOrder.BUILD_ROAD, "testFindUnitSpecialOrder_NotExists");
+		});
 	}
 
 	/**
@@ -123,7 +130,7 @@ public final class TestGraphicsDatabaseExImpl
 	 * Tests the findFigureCount method to look for a figure count that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindFigureCount_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
@@ -138,7 +145,10 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 		
 		// Run tests
-		db.findFigureCount (4, "testFindFigureCount_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findFigureCount (4, "testFindFigureCount_NotExists");
+		});
 	}
 
 	/**
@@ -167,7 +177,7 @@ public final class TestGraphicsDatabaseExImpl
 	 * Tests the findAnimation method to find a animation ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindAnimation_NotExists () throws RecordNotFoundException
 	{
 		// Set up object to test
@@ -182,7 +192,10 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		// Check results
-		db.findAnimation ("AN04", "testFindAnimation_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findAnimation ("AN04", "testFindAnimation_NotExists");
+		});
 	}
 
 	/**
@@ -211,7 +224,7 @@ public final class TestGraphicsDatabaseExImpl
 	 * Tests the findPlayList method to find a play list ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindPlayList_NotExists () throws RecordNotFoundException
 	{
 		// Set up object to test
@@ -226,6 +239,9 @@ public final class TestGraphicsDatabaseExImpl
 		db.buildMaps ();
 
 		// Check results
-		db.findPlayList ("PL04", "testFindPlayList_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			db.findPlayList ("PL04", "testFindPlayList_NotExists");
+		});
 	}
 }

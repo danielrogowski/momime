@@ -2,6 +2,7 @@ package momime.server.calculations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -456,7 +457,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 	 * Tests the ensureNotTooManyOptionalFarmers method when the minimum farmers and rebels are set incorrectly
 	 * @throws MomException If minimum farmers + rebels > population
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testEnsureNotTooManyOptionalFarmers_Invalid () throws MomException
 	{
 		final OverlandMapCityData city = new OverlandMapCityData ();
@@ -467,7 +468,11 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		city.setOptionalFarmers (0);
 
 		final ServerCityCalculationsImpl calc = new ServerCityCalculationsImpl ();
-		calc.ensureNotTooManyOptionalFarmers (city);
+		
+		assertThrows (MomException.class, () ->
+		{
+			calc.ensureNotTooManyOptionalFarmers (city);
+		});
 	}
 
 	/**
@@ -570,7 +575,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 			if ((!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
 				(!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)))
 
-				assertTrue (building.getBuildingID (), calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation, building, sd.getOverlandMapSize (), db));
+				assertTrue (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation, building, sd.getOverlandMapSize (), db), building.getBuildingID ());
 
 		// Barbarians can't build Universities
 		cityData.setCityRaceID ("RC01");

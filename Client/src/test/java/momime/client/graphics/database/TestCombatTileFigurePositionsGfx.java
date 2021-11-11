@@ -1,9 +1,11 @@
 package momime.client.graphics.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import momime.common.database.RecordNotFoundException;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+
+import momime.common.database.RecordNotFoundException;
 
 /**
  * Tests the CombatTileFigurePositionsGfx class
@@ -38,7 +40,7 @@ public final class TestCombatTileFigurePositionsGfx
 	 * Tests the findFigureNumber method to look for a figure number that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindFigureNumber_NotExists () throws RecordNotFoundException
 	{
 		// Create some dummy entries
@@ -55,6 +57,9 @@ public final class TestCombatTileFigurePositionsGfx
 		positions.buildMap ();
 		
 		// Run tests
-		positions.findFigureNumber (4, "testFindFigureNumber_NotExists");
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			positions.findFigureNumber (4, "testFindFigureNumber_NotExists");
+		});
 	}
 }

@@ -2,6 +2,7 @@ package momime.server.process;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -96,7 +97,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 	 * Tests the chooseAttackResolution method when no appropraite attack resolution exists 
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testChooseAttackResolution_NotExists () throws Exception
 	{
 		// Mock database
@@ -134,7 +135,10 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
 
 		// Run method
-		proc.chooseAttackResolution (attacker, defender, "UA01", db);
+		assertThrows (MomException.class, () ->
+		{
+			proc.chooseAttackResolution (attacker, defender, "UA01", db);
+		});
 	}
 	
 	/**
@@ -180,7 +184,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 	 * Tests the splitAttackResolutionStepsByStepNumber when the source list isn't correctly sorted
 	 * @throws MomException If the steps in the input list aren't in stepNumber order
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testSplitAttackResolutionStepsByStepNumber_OutOfSequence () throws MomException
 	{
 		// Set up example list
@@ -194,14 +198,18 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Run method
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		proc.splitAttackResolutionStepsByStepNumber (src);
+		
+		assertThrows (MomException.class, () ->
+		{
+			proc.splitAttackResolutionStepsByStepNumber (src);
+		});
 	}
 
 	/**
 	 * Tests the splitAttackResolutionStepsByStepNumber when the source list skips a number
 	 * @throws MomException If the steps in the input list aren't in stepNumber order
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testSplitAttackResolutionStepsByStepNumber_SkippedSequence () throws MomException
 	{
 		// Set up example list
@@ -215,14 +223,18 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Run method
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		proc.splitAttackResolutionStepsByStepNumber (src);
+		
+		assertThrows (MomException.class, () ->
+		{
+			proc.splitAttackResolutionStepsByStepNumber (src);
+		});
 	}
 
 	/**
 	 * Tests the splitAttackResolutionStepsByStepNumber when there's a value below 0
 	 * @throws MomException If the steps in the input list aren't in stepNumber order
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testSplitAttackResolutionStepsByStepNumber_Zero () throws MomException
 	{
 		// Set up example list
@@ -236,14 +248,18 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Run method
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		proc.splitAttackResolutionStepsByStepNumber (src);
+		
+		assertThrows (MomException.class, () ->
+		{
+			proc.splitAttackResolutionStepsByStepNumber (src);
+		});
 	}
 
 	/**
 	 * Tests the splitAttackResolutionStepsByStepNumber the list doesn't start with 1
 	 * @throws MomException If the steps in the input list aren't in stepNumber order
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testSplitAttackResolutionStepsByStepNumber_SkippedStart () throws MomException
 	{
 		// Set up example list
@@ -257,7 +273,11 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Run method
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		proc.splitAttackResolutionStepsByStepNumber (src);
+		
+		assertThrows (MomException.class, () ->
+		{
+			proc.splitAttackResolutionStepsByStepNumber (src);
+		});
 	}
 	
 	/**

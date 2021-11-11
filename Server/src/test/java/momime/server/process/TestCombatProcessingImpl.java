@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -330,7 +331,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	 * and we come in with 4, 3, 6, 1, 1 should then should throw an exception (it gets to 5, 4, 3, 1, 1 and still 1 unit leftover)
 	 * @throws MomException If there's not enough space to fit all the units
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testMoveUnitsInOverfullRowsFowards_StillOverfull () throws MomException
 	{
 		// Create test lists
@@ -349,7 +350,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		maxInRow.add (1);
 		
 		// Run method
-		new CombatProcessingImpl ().moveUnitsInOverfullRowsForwards (rows, maxInRow);
+		assertThrows (MomException.class, () ->
+		{
+			new CombatProcessingImpl ().moveUnitsInOverfullRowsForwards (rows, maxInRow);
+		});
 	}
 	
 	/**

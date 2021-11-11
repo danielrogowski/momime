@@ -92,7 +92,7 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 		
 		// Read XSD
 		final URL xsdResource = getClass ().getResource (CommonDatabaseConstants.COMMON_XSD_LOCATION);
-		assertNotNull ("MoM IME Common XSD could not be found on classpath", xsdResource);
+		assertNotNull (xsdResource, "MoM IME Common XSD could not be found on classpath");
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
@@ -101,7 +101,7 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 		
 		// Locate XML
 		final File serverXml = locateServerXmlFile ();
-		assertNotNull ("MoM IME Server XML could not be found", serverXml);
+		assertNotNull (serverXml, "MoM IME Server XML could not be found");
 		
 		final Map<String, File> map = new HashMap<String, File> ();
 		map.put ("Original Master of Magic 1.31 rules", serverXml);
@@ -120,13 +120,13 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 
 		final AvailableDatabase db = msg.getNewGameDatabase ().getMomimeXmlDatabase ().get (0);
 		assertEquals ("Original Master of Magic 1.31 rules", db.getDbName ());
-		assertEquals ("Failed to load correct number of overland map sizes",	6, db.getOverlandMapSize ().size ());
-		assertEquals ("Failed to load correct number of land proportions",		3, db.getLandProportion ().size ());
-		assertEquals ("Failed to load correct number of node strengths",		3, db.getNodeStrength ().size ());
-		assertEquals ("Failed to load correct number of difficulty levels",			6, db.getDifficultyLevel ().size ());
-		assertEquals ("Failed to load correct number of fog of war settings",	2, db.getFogOfWarSetting ().size ());
-		assertEquals ("Failed to load correct number of unit settings",			2, db.getUnitSetting ().size ());
-		assertEquals ("Failed to load correct number of spell settings",			2, db.getSpellSetting ().size ());
+		assertEquals (6, db.getOverlandMapSize ().size (), "Failed to load correct number of overland map sizes");
+		assertEquals (3, db.getLandProportion ().size (), "Failed to load correct number of land proportions");
+		assertEquals (3, db.getNodeStrength ().size (), "Failed to load correct number of node strengths");
+		assertEquals (6, db.getDifficultyLevel ().size (), "Failed to load correct number of difficulty levels");
+		assertEquals (2, db.getFogOfWarSetting ().size (), "Failed to load correct number of fog of war settings");
+		assertEquals (2, db.getUnitSetting ().size (), "Failed to load correct number of unit settings");
+		assertEquals (2, db.getSpellSetting ().size (), "Failed to load correct number of spell settings");
 
 		// Build new game database
 		@SuppressWarnings ("resource")

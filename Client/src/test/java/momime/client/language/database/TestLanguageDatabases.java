@@ -31,7 +31,7 @@ public final class TestLanguageDatabases extends ClientTestData
 	public final void testNewDatabasesConformToXSD () throws Exception
 	{
 		final URL xsdResource = getClass ().getResource (LanguageDatabaseConstants.LANGUAGES_XSD_LOCATION);
-		assertNotNull ("MoM IME Languages XSD could not be found on classpath", xsdResource);
+		assertNotNull (xsdResource, "MoM IME Languages XSD could not be found on classpath");
 
 		// Load XSD
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);

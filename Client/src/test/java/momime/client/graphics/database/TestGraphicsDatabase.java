@@ -30,7 +30,7 @@ public final class TestGraphicsDatabase extends ClientTestData
 	public final void testDatabaseConformToXSD () throws Exception
 	{
 		final URL xsdResource = getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION);
-		assertNotNull ("MoM IME Graphics XSD could not be found on classpath", xsdResource);
+		assertNotNull (xsdResource, "MoM IME Graphics XSD could not be found on classpath");
 
 		// Load XSD
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);

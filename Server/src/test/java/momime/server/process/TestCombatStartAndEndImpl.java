@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -76,7 +77,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	 * Tests the startCombat method with a null list of attackers
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testStartCombat_NullAttackerList () throws Exception
 	{
 		// General server knowledge
@@ -101,14 +102,17 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, null, null, null, null, mom);
+		assertThrows (MomException.class, () ->
+		{
+			cse.startCombat (defendingLocation, attackingFrom, null, null, null, null, mom);
+		});
 	}
 
 	/**
 	 * Tests the startCombat method with an empty list of attackers
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testStartCombat_EmptyAttackerList () throws Exception
 	{
 		// General server knowledge
@@ -133,7 +137,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		
 		// Run method
-		cse.startCombat (defendingLocation, attackingFrom, new ArrayList<Integer> (), null, null, null, mom);
+		assertThrows (MomException.class, () ->
+		{
+			cse.startCombat (defendingLocation, attackingFrom, new ArrayList<Integer> (), null, null, null, mom);
+		});
 	}
 
 	/**

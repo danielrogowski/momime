@@ -3,6 +3,7 @@ package momime.server.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -807,7 +808,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	 * Tests the calculateDoubleFarmingRate method when the race has no farmers defined
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testCalculateDoubleFarmingRate_NoFarmers () throws Exception
 	{
 		// Mock database
@@ -848,14 +849,17 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		
 		// Call method
-		utils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db);
+		assertThrows (MomException.class, () ->
+		{
+			utils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db);
+		});
 	}
 
 	/**
 	 * Tests the calculateDoubleFarmingRate method when farmers don't have an amount of rations they generate defined
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testCalculateDoubleFarmingRate_FarmersDontGenerateRations () throws Exception
 	{
 		// Mock database
@@ -896,7 +900,10 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		
 		// Call method
-		utils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db);
+		assertThrows (MomException.class, () ->
+		{
+			utils.calculateDoubleFarmingRate (map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db);
+		});
 	}
 
 	/**

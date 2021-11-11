@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -286,7 +287,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	 * Tests the generateHeroNameAndRandomSkills method on a hero who only has no viable skills to pick (they are all "only if have already" and we have none of them)
 	 * @throws Exception If there is a problem
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testGenerateHeroNameAndRandomSkills_NoChoices () throws Exception
 	{
 		// Mock unit detalis
@@ -333,7 +334,10 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		utils.setRandomUtils (random);
 		
 		// Run test
-		utils.generateHeroNameAndRandomSkills (unit, db);
+		assertThrows (MomException.class, () ->
+		{
+			utils.generateHeroNameAndRandomSkills (unit, db);
+		});
 	}
 
 	/**

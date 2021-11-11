@@ -1,6 +1,7 @@
 package momime.server.ai;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -53,11 +54,15 @@ public final class TestSpellAIImpl extends ServerTestData
 	 * Tests the chooseSpellToResearchAI method with an empty spell list
 	 * @throws MomException If the list was empty
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testChooseSpellToResearchAI_EmptyList () throws MomException
 	{
 		final SpellAIImpl ai = new SpellAIImpl ();
-		ai.chooseSpellToResearchAI (new ArrayList<Spell> ());
+		
+		assertThrows (MomException.class, () ->
+		{
+			ai.chooseSpellToResearchAI (new ArrayList<Spell> ());
+		});
 	}
 
 	/**

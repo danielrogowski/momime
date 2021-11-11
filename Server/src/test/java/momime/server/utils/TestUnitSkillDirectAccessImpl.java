@@ -1,6 +1,7 @@
 package momime.server.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,7 @@ public final class TestUnitSkillDirectAccessImpl
 	 * Tests the setDirectSkillValue method on a skill that we don't already have
 	 * @throws MomException If this unit didn't previously have the specified skill
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testSetDirectSkill_NotExists () throws MomException
 	{
 		// Create test unit
@@ -97,6 +98,10 @@ public final class TestUnitSkillDirectAccessImpl
 
 		// Run method
 		final UnitSkillDirectAccessImpl utils = new UnitSkillDirectAccessImpl ();
-		utils.setDirectSkillValue (unit, "US003", 3);
+		
+		assertThrows (MomException.class, () ->
+		{
+			utils.setDirectSkillValue (unit, "US003", 3);
+		});
 	}
 }

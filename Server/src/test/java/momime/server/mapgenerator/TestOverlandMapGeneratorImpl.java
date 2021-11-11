@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
@@ -336,7 +337,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 	 * Try to place 61 towers on a map that only has space for 60 of them
 	 * @throws MomException If we can't find a suitable location to place all Towers of Wizardry even after reducing desired separation
 	 */
-	@Test(expected=MomException.class)
+	@Test
 	public final void testPlaceTowersOfWizardry_Full () throws MomException
 	{
 		// Session description
@@ -379,7 +380,10 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 					fow.getMap ().getPlane ().get (1).getRow ().get (y).getCell ().get (x).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
 		
 		// Run method
-		mapGen.placeTowersOfWizardry ();
+		assertThrows (MomException.class, () ->
+		{
+			mapGen.placeTowersOfWizardry ();
+		});
 	}
 	
 	/**
@@ -403,11 +407,15 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If no tile with this bitmask is defined
 	 */
-	@Test(expected=RecordNotFoundException.class)
+	@Test
 	public final void testFindTerrainBorder8_NotFound () throws JAXBException, MomException, RecordNotFoundException
 	{
-		final OverlandMapGeneratorImpl gen = new OverlandMapGeneratorImpl (); 
-		assertEquals (32, gen.findTerrainBorder8 ("10101010"));
+		final OverlandMapGeneratorImpl gen = new OverlandMapGeneratorImpl ();
+		
+		assertThrows (RecordNotFoundException.class, () ->
+		{
+			gen.findTerrainBorder8 ("10101010");
+		});
 	}
 
 	/**
@@ -477,11 +485,11 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 	public final void testCountStringRepetitions ()
 	{
 		final OverlandMapGeneratorImpl gen = new OverlandMapGeneratorImpl (); 
-		assertEquals ("Zero repetitions", 0, gen.countStringRepetitions ("C", "abcde"));
-		assertEquals ("One in the middle", 1, gen.countStringRepetitions ("c", "abcde"));
-		assertEquals ("Two in the middle", 2, gen.countStringRepetitions ("c", "abcgcde"));
-		assertEquals ("Two including one at the start", 2, gen.countStringRepetitions ("c", "cgcde"));
-		assertEquals ("Two including one at the end", 2, gen.countStringRepetitions ("c", "abcgc"));
+		assertEquals (0, gen.countStringRepetitions ("C", "abcde"), "Zero repetitions");
+		assertEquals (1, gen.countStringRepetitions ("c", "abcde"), "One in the middle");
+		assertEquals (2, gen.countStringRepetitions ("c", "abcgcde"), "Two in the middle");
+		assertEquals (2, gen.countStringRepetitions ("c", "cgcde"), "Two including one at the start");
+		assertEquals (2, gen.countStringRepetitions ("c", "abcgc"), "Two including one at the end");
 	}
 	
 	/**
@@ -1187,7 +1195,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		container.setOverlandMap (fow.getMap ());
 		
 		final URL xsdResource = getClass ().getResource ("/momime.unittests.mapstorage/MapStorage.xsd");
-		assertNotNull ("Map storage XSD could not be found on classpath", xsdResource);
+		assertNotNull (xsdResource, "Map storage XSD could not be found on classpath");
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));

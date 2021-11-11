@@ -149,7 +149,7 @@ public class ClientTestData
 		
 		// XSD
 		final URL xsdResource = getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION);
-		assertNotNull ("MoM IME Graphics XSD could not be found on classpath", xsdResource);
+		assertNotNull (xsdResource, "MoM IME Graphics XSD could not be found on classpath");
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
@@ -276,7 +276,7 @@ public class ClientTestData
 	{
 		// XSD
 		final URL xsdResource = getClass ().getResource (XmlLayoutConstants.XML_LAYOUT_XSD_LOCATION);
-		assertNotNull ("XML layout XSD could not be found on classpath", xsdResource);
+		assertNotNull (xsdResource, "XML layout XSD could not be found on classpath");
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		final Schema schema = schemaFactory.newSchema (xsdResource);

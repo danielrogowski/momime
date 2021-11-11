@@ -906,7 +906,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 						throw new RuntimeException ("pattern contained an unhandled char \"" + pattern.charAt (x) + "\"");
 				}
 				
-				assertEquals ("Mismatching colour at " + x + ", " + y, expectedColour, image.getRGB (x, y));
+				assertEquals (expectedColour, image.getRGB (x, y), "Mismatching colour at " + x + ", " + y);
 			}
 	}
 }

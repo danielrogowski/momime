@@ -208,7 +208,6 @@ public final class TestHeroItemCalculationsImpl
 		assertFalse (calc.haveRequiredBooksForItem (item, picks, db));
 		
 		// Now give us the other kind of book
-		when (playerPickUtils.getQuantityOfPick (picks, "MB02")).thenReturn (5);
 		assertTrue (calc.haveRequiredBooksForBonus ("IB01", picks, db));
 	}
 }

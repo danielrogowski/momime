@@ -302,11 +302,6 @@ public final class TestCityCalculationsImpl
 		final TileTypeEx centreTileType = new TileTypeEx ();
 		centreTileType.setGoldBonus (20);
 		when (db.findTileType ("TT01", "calculateGoldTradeBonus")).thenReturn (centreTileType);
-		
-		final TileTypeEx adjacentTileType = new TileTypeEx ();
-		adjacentTileType.setGoldBonus (10);
-		adjacentTileType.setGoldBonusSurroundingTiles (true);
-		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
 
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
@@ -358,11 +353,6 @@ public final class TestCityCalculationsImpl
 		centreTileType.setGoldBonus (20);
 		when (db.findTileType ("TT01", "calculateGoldTradeBonus")).thenReturn (centreTileType);
 		
-		final TileTypeEx adjacentTileType = new TileTypeEx ();
-		adjacentTileType.setGoldBonus (10);
-		adjacentTileType.setGoldBonusSurroundingTiles (true);
-		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
-
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
@@ -416,7 +406,6 @@ public final class TestCityCalculationsImpl
 		final TileTypeEx adjacentTileType = new TileTypeEx ();
 		adjacentTileType.setGoldBonus (10);
 		adjacentTileType.setGoldBonusSurroundingTiles (true);
-		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
 
 		final RaceEx uninterestingRace = new RaceEx ();
 		when (db.findRace ("RC01", "calculateGoldTradeBonus")).thenReturn (uninterestingRace);
@@ -472,11 +461,6 @@ public final class TestCityCalculationsImpl
 		centreTileType.setGoldBonus (20);
 		when (db.findTileType ("TT01", "calculateGoldTradeBonus")).thenReturn (centreTileType);
 		
-		final TileTypeEx adjacentTileType = new TileTypeEx ();
-		adjacentTileType.setGoldBonus (10);
-		adjacentTileType.setGoldBonusSurroundingTiles (true);
-		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
-
 		final RaceEx nomads = new RaceEx ();
 		nomads.setGoldTradeBonus (50);
 		when (db.findRace ("RC02", "calculateGoldTradeBonus")).thenReturn (nomads);
@@ -1907,7 +1891,6 @@ public final class TestCityCalculationsImpl
 
 		// Retorts, to prove this value does not get included in the output, as we have no religious buildings
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
 		
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -3660,6 +3643,7 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryBuildingUtils (buildingUtils);
 		calc.setCityProductionUtils (cityProductionUtils);
 		
+		when (buildingUtils.totalBonusProductionPerPersonFromBuildings (buildings, new MapCoordinates3DEx (20, 10, 1), "B", "RE01", db)).thenReturn (0);
 		when (buildingUtils.totalBonusProductionPerPersonFromBuildings (buildings, new MapCoordinates3DEx (20, 10, 1), "B", "RE02", db)).thenReturn (2);
 		
 		// Run method
@@ -4901,9 +4885,7 @@ public final class TestCityCalculationsImpl
 		
 		// Which units we have the required buildings for
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (0))).thenReturn (true);
 		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (1))).thenReturn (true);
-		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (2))).thenReturn (true);
 		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (3))).thenReturn (false);
 		when (memoryBuildingUtils.meetsUnitRequirements (buildings, new MapCoordinates3DEx (20, 10, 1), unitDefs.get (4))).thenReturn (true);
 

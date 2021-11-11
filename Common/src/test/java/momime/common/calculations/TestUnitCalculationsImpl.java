@@ -110,11 +110,6 @@ public final class TestUnitCalculationsImpl
 		u2.setCombatSide (UnitCombatSideID.ATTACKER);
 		u2.setCombatHeading (1);
 		fow.getUnit ().add (u2);
-
-		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (u2, null, null, null, players, fow, db)).thenReturn (xu2);
-		when (xu2.getMovementSpeed ()).thenReturn (1);
-		when (xu2.getControllingPlayerID ()).thenReturn (1);
 		
 		// No combat position
 		final MemoryUnit u3 = new MemoryUnit ();
@@ -125,11 +120,6 @@ public final class TestUnitCalculationsImpl
 		u3.setCombatHeading (1);
 		fow.getUnit ().add (u3);
 
-		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (u3, null, null, null, players, fow, db)).thenReturn (xu3);
-		when (xu3.getMovementSpeed ()).thenReturn (1);
-		when (xu3.getControllingPlayerID ()).thenReturn (1);
-		
 		// Wrong player
 		final MemoryUnit u4 = new MemoryUnit ();
 		u4.setStatus (UnitStatusID.ALIVE);
@@ -142,7 +132,6 @@ public final class TestUnitCalculationsImpl
 
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
 		when (expand.expandUnitDetails (u4, null, null, null, players, fow, db)).thenReturn (xu4);
-		when (xu4.getMovementSpeed ()).thenReturn (1);
 		when (xu4.getControllingPlayerID ()).thenReturn (2);
 		
 		// Unit B that matches
@@ -568,6 +557,7 @@ public final class TestUnitCalculationsImpl
 		// Sample unit
 		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
 		when (unit.hasModifiedSkill ("US001")).thenReturn (true);
+		when (unit.hasModifiedSkill ("US002")).thenReturn (false);
 
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
@@ -647,7 +637,6 @@ public final class TestUnitCalculationsImpl
 		when (flyingUnit.hasModifiedSkill ("US001")).thenReturn (true);
 
 		final ExpandedUnitDetails walkingUnit = mock (ExpandedUnitDetails.class);
-		when (walkingUnit.hasModifiedSkill ("US002")).thenReturn (true);
 		
 		// Other lists
 		final Set<String> unitStackSkills = new HashSet<String> ();
@@ -684,10 +673,13 @@ public final class TestUnitCalculationsImpl
 		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		assertThrows (MomException.class, () ->
+		final MomException e = assertThrows (MomException.class, () ->
 		{
 			calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		});
+		
+		// Check for the expected error 
+		assertEquals ("createUnitStack: Selected units list is empty", e.getMessage ());
 	}
 	
 	/**
@@ -721,12 +713,8 @@ public final class TestUnitCalculationsImpl
 			spearmen.setUnitID ("UN001");
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
-			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
 			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
 			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, n));
-			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
-			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			selectedUnits.add (xuSpearmen);
 		}
 
@@ -735,10 +723,13 @@ public final class TestUnitCalculationsImpl
 		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		assertThrows (MomException.class, () ->
+		final MomException e = assertThrows (MomException.class, () ->
 		{
 			calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		});
+		
+		// Check for the expected error 
+		assertEquals ("createUnitStack: All selected units are not in the same starting location, expected (20, 10, 0) but Unit URN 0 is at (20, 10, 1)", e.getMessage ());
 	}
 	
 	/**
@@ -772,12 +763,12 @@ public final class TestUnitCalculationsImpl
 			spearmen.setUnitID ("UN001");
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
-			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
+			//when (xuSpearmen.getUnit ()).thenReturn (spearmen);
+			//when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
 			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
 			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
 			when (xuSpearmen.getOwningPlayerID ()).thenReturn (n + 1);
-			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
+			//when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			selectedUnits.add (xuSpearmen);
 		}
 
@@ -786,10 +777,13 @@ public final class TestUnitCalculationsImpl
 		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		assertThrows (MomException.class, () ->
+		final MomException e = assertThrows (MomException.class, () ->
 		{
 			calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		});
+		
+		// Check for the expected error 
+		assertEquals ("createUnitStack: All selected units are not owned by the same player", e.getMessage ());
 	}
 	
 	/**
@@ -823,8 +817,6 @@ public final class TestUnitCalculationsImpl
 			spearmen.setUnitID ("UN001");
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
-			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
 			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
 			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
 			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
@@ -871,7 +863,6 @@ public final class TestUnitCalculationsImpl
 
 		final UnitEx triremeDef = new UnitEx ();
 		triremeDef.setTransportCapacity (2);
-		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triremeDef);
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
@@ -893,14 +884,20 @@ public final class TestUnitCalculationsImpl
 			spearmen.setUnitID ("UN001");
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
-			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
-			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
-			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
-			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
-			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			
-			when (expand.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
+			if (n == 0)
+			{
+				when (xuSpearmen.getUnit ()).thenReturn (spearmen);
+				when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+				when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+				when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
+			}
+			
+			if (n < 2)
+				when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
+			
+			if (n > 0)
+				when (expand.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 			if (n == 0)
@@ -916,7 +913,6 @@ public final class TestUnitCalculationsImpl
 		
 		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
 		when (xuTrireme.getUnit ()).thenReturn (trireme);
-		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
 		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
 		when (xuTrireme.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
 		when (xuTrireme.getOwningPlayerID ()).thenReturn (1);
@@ -962,11 +958,9 @@ public final class TestUnitCalculationsImpl
 		
 		// Unit defintions
 		final UnitEx spearmenDef = new UnitEx ();
-		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 
 		final UnitEx triremeDef = new UnitEx ();
 		triremeDef.setTransportCapacity (2);
-		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triremeDef);
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
@@ -988,14 +982,12 @@ public final class TestUnitCalculationsImpl
 			spearmen.setUnitID ("UN001");
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
-			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
 			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
 			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
 			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
 			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			
-			when (expand.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
+			//when (expand.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 			selectedUnits.add (xuSpearmen);
@@ -1009,8 +1001,6 @@ public final class TestUnitCalculationsImpl
 		trireme.setUnitID ("UN002");
 		
 		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
-		when (xuTrireme.getUnit ()).thenReturn (trireme);
-		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
 		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
 		when (xuTrireme.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
 		when (xuTrireme.getOwningPlayerID ()).thenReturn (1);
@@ -1060,7 +1050,6 @@ public final class TestUnitCalculationsImpl
 
 		final UnitEx triremeDef = new UnitEx ();
 		triremeDef.setTransportCapacity (2);
-		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triremeDef);
 
 		final UnitEx drakeDef = new UnitEx ();
 		when (db.findUnit ("UN003", "createUnitStack")).thenReturn (drakeDef);
@@ -1095,12 +1084,9 @@ public final class TestUnitCalculationsImpl
 			spearmen.setUnitID ("UN001");
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
-			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
-			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
-			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
-			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
-			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
+			
+			if (n < 2)
+				when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			
 			when (expand.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
@@ -1117,11 +1103,6 @@ public final class TestUnitCalculationsImpl
 			drake.setUnitID ("UN003");
 			
 			final ExpandedUnitDetails xuDrake = mock (ExpandedUnitDetails.class);
-			when (xuDrake.getUnit ()).thenReturn (drake);
-			when (xuDrake.getMemoryUnit ()).thenReturn (drake);
-			when (xuDrake.getUnitDefinition ()).thenReturn (drakeDef);
-			when (xuDrake.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
-			when (xuDrake.getOwningPlayerID ()).thenReturn (1);
 			when (xuDrake.getUnitURN ()).thenReturn (n + 4);
 			when (xuDrake.hasModifiedSkill ("US001")).thenReturn (true);
 			
@@ -1141,7 +1122,6 @@ public final class TestUnitCalculationsImpl
 		
 		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
 		when (xuTrireme.getUnit ()).thenReturn (trireme);
-		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
 		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
 		when (xuTrireme.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
 		when (xuTrireme.getOwningPlayerID ()).thenReturn (1);

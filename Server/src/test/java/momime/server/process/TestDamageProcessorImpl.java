@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -139,7 +140,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null),
+		when (expand.expandUnitDetails (eq (attacker), anyList (), isNull (), isNull (),
 			eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
 		when (expand.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
 
@@ -239,7 +240,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
 		
-		verify (combatStartAndEnd, times (0)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), any (PlayerServerDetails.class), eq (null), eq (mom));
+		verify (combatStartAndEnd, times (0)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), any (PlayerServerDetails.class), isNull (), eq (mom));
 	}
 
 	/**
@@ -318,7 +319,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null),
+		when (expand.expandUnitDetails (eq (attacker), anyList (), isNull (), isNull (),
 			eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
 		when (expand.expandUnitDetails (attacker, null, null, null,
 			players, trueMap, db)).thenReturn (xuAttacker);
@@ -416,7 +417,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
 		
 		// Defending player won
-		verify (combatStartAndEnd, times (1)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), eq (null), eq (mom));
+		verify (combatStartAndEnd, times (1)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), isNull (), eq (mom));
 	}
 
 	/**

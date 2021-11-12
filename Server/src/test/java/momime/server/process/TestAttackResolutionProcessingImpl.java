@@ -342,11 +342,11 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (eq (defender), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
-		when (expand.expandUnitDetails (eq (defender), anyList (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), isNull (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), anyList (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (eq (attacker), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
+		when (expand.expandUnitDetails (eq (attacker), isNull (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 		when (unitCalc.canMakeRangedAttack (xuAttacker)).thenReturn (true);
 		
 		// Defender has already taken 3 hits, and can take 5 more
@@ -461,12 +461,12 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (eq (defender), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
-		when (expand.expandUnitDetails (eq (defender), anyList (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), isNull (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), anyList (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (eq (attacker), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
-		when (expand.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
+		when (expand.expandUnitDetails (eq (attacker), isNull (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
+		when (expand.expandUnitDetails (eq (attacker), anyList (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 		
 		// Attacker has already taken 2 hits, and can take 6 more
 		final UnitDamage attackerDamageTaken = new UnitDamage ();
@@ -590,11 +590,11 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (eq (defender), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
-		when (expand.expandUnitDetails (eq (defender), anyList (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), isNull (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), anyList (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (eq (attacker), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
+		when (expand.expandUnitDetails (eq (attacker), isNull (), isNull (), isNull (), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();

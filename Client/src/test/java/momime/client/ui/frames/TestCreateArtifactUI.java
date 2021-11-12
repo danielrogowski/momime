@@ -3,6 +3,7 @@ package momime.client.ui.frames;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -155,7 +156,7 @@ public final class TestCreateArtifactUI extends ClientTestData
 		when (heroItemCalculations.calculateCraftingCost (any (HeroItem.class), eq (db))).thenReturn (9999);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.getReducedOverlandCastingCost (any (Spell.class), any (HeroItem.class), eq (null), eq (pub.getPick ()), eq (spellSetting), eq (db))).thenReturn (9999);
+		when (spellUtils.getReducedOverlandCastingCost (any (Spell.class), any (HeroItem.class), isNull (), eq (pub.getPick ()), eq (spellSetting), eq (db))).thenReturn (9999);
 
 		// The spell being cast
 		final Spell spellDef = new Spell ();

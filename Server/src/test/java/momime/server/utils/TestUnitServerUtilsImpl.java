@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1076,7 +1077,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
+		when (expand.expandUnitDetails (any (AvailableUnit.class), isNull (), isNull (), isNull (),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
@@ -1146,7 +1147,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
+		when (expand.expandUnitDetails (any (AvailableUnit.class), isNull (), isNull (), isNull (),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
@@ -1224,7 +1225,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
+		when (expand.expandUnitDetails (any (AvailableUnit.class), isNull (), isNull (), isNull (),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		
 		// Map cell and surrounding terrain that we're trying to add to

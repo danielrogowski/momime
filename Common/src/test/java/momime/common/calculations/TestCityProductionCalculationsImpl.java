@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -127,9 +128,9 @@ public final class TestCityProductionCalculationsImpl
 
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (0)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (1);
+			eq (buildingDefs.get (0)), isNull (), eq (pub.getPick ()), eq (db))).thenReturn (1);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (2)), eq (null), eq (pub.getPick ()), eq (db))).thenReturn (3);
+			eq (buildingDefs.get (2)), isNull (), eq (pub.getPick ()), eq (db))).thenReturn (3);
 		
 		// Spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();

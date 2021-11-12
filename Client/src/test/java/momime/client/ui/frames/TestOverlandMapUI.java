@@ -181,7 +181,6 @@ public final class TestOverlandMapUI extends ClientTestData
 		pd1.setHuman (true);
 		
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 		trans.setFlagColour ("800000");
 		
@@ -193,11 +192,10 @@ public final class TestOverlandMapUI extends ClientTestData
 		
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
-		when (client.getOurTransientPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "updateAmountPerTurn")).thenReturn (player1);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players) , eq (pd1.getPlayerID ()), anyString ())).thenReturn (player1);
 		
 		// Config
 		final MomImeClientConfig config = new MomImeClientConfig (); 

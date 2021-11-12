@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -3492,7 +3493,7 @@ public final class TestCityCalculationsImpl
 		// Additions
 		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
 		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
-			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+			isNull (), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
@@ -3701,7 +3702,7 @@ public final class TestCityCalculationsImpl
 		// Additions
 		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
 		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
-			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+			isNull (), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
@@ -3760,7 +3761,7 @@ public final class TestCityCalculationsImpl
 		// Additions
 		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
 		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
-			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+			isNull (), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
@@ -3832,7 +3833,7 @@ public final class TestCityCalculationsImpl
 		// Additions
 		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
 		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
-			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+			isNull (), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
@@ -3918,7 +3919,7 @@ public final class TestCityCalculationsImpl
 		// Additions
 		final CityProductionUtils cityProductionUtils = mock (CityProductionUtils.class);
 		when (cityProductionUtils.addProductionAmountToBreakdown (any (CityProductionBreakdown.class), anyInt (),
-			eq (null), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
+			isNull (), eq (db))).thenReturn (ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();

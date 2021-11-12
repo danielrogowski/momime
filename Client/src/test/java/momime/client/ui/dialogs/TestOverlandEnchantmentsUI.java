@@ -66,9 +66,12 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final WizardEx wizard = new WizardEx ();
-		wizard.setPortraitImageFile ("/momime.client.graphics/wizards/WZ12.png");
-		when (db.findWizard ("WZ01", "OverlandEnchantmentsUI")).thenReturn (wizard);		
+		if (!anotherWizard)
+		{
+			final WizardEx wizard = new WizardEx ();
+			wizard.setPortraitImageFile ("/momime.client.graphics/wizards/WZ12.png");
+			when (db.findWizard ("WZ01", "OverlandEnchantmentsUI")).thenReturn (wizard);
+		}
 		
 		final Spell spellDef = new Spell ();
 		spellDef.getSpellName ().add (createLanguageText (Language.ENGLISH, "Just Cause"));
@@ -115,7 +118,6 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		trans1.setFlagColour ("FF0000");
 		
 		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
-		when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Us");
 
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
@@ -127,7 +129,8 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		trans2.setFlagColour ("FF0000");
 		
 		final PlayerPublicDetails player2 = new PlayerPublicDetails (pd2, pub2, trans2);
-		when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Someone");
+		if (anotherWizard)
+			when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Someone");
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
@@ -139,10 +142,15 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		when (client.getClientDB ()).thenReturn (db);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd1.getPlayerID ()), anyString ())).thenReturn (player1);
-		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd1.getPlayerID ()))).thenReturn (player1);
-		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd2.getPlayerID ()), anyString ())).thenReturn (player2);
-		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd2.getPlayerID ()))).thenReturn (player2);
+		
+		if (!anotherWizard)
+			when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd1.getPlayerID ()), anyString ())).thenReturn (player1);
+		
+		if (anotherWizard)
+		{
+			when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd2.getPlayerID ()), anyString ())).thenReturn (player2);
+			when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd2.getPlayerID ()))).thenReturn (player2);
+		}
 		
 		// FOW (just to add the spell into)
 		final FogOfWarMemory fow = new FogOfWarMemory ();

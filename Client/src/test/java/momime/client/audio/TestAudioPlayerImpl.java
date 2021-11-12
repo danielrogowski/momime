@@ -299,7 +299,6 @@ public final class TestAudioPlayerImpl
 		doAnswer (delayHalfSecond).when (player4).play ();
 		doAnswer (delayHalfSecond).when (player5).play ();
 		doAnswer (delayHalfSecond).when (player6).play ();
-		doAnswer (delayHalfSecond).when (player7).play ();
 		
 		// Mock factory
 		final AdvancedPlayerFactory factory = mock (AdvancedPlayerFactory.class);

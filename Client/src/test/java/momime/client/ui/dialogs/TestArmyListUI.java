@@ -152,7 +152,6 @@ public final class TestArmyListUI extends ClientTestData
 		// Mock the minimap bitmaps provided by the RHP
 		final MiniMapBitmapGenerator gen = mock (MiniMapBitmapGenerator.class);
 		when (gen.generateMiniMapBitmap (0)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x004000));
-		when (gen.generateMiniMapBitmap (1)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x402000));
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/ArmyListUI.xml"));

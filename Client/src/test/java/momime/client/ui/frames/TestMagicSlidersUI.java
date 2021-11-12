@@ -1,5 +1,7 @@
 package momime.client.ui.frames;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -137,8 +139,8 @@ public final class TestMagicSlidersUI extends ClientTestData
 		final Spell spell2 = new Spell ();
 		spell2.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell Binding"));
 		
-		when (db.findSpell ("SP001", "updateProductionLabels (r)")).thenReturn (spell1);
-		when (db.findSpell ("SP002", "updateProductionLabels (c)")).thenReturn (spell2);
+		when (db.findSpell (eq ("SP001"), anyString ())).thenReturn (spell1);
+		when (db.findSpell (eq ("SP002"), anyString ())).thenReturn (spell2);
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Initial slider values
@@ -182,6 +184,7 @@ public final class TestMagicSlidersUI extends ClientTestData
 		// Lets say we have Archmage, giving +50% bonus to magic power spent on skill improvement
 		final PlayerPickUtils pickUtils = mock (PlayerPickUtils.class);
 		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, pub.getPick (), db)).thenReturn (50);
+		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, null, pub.getPick (), db)).thenReturn (0);
 		
 		// Spell research
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();

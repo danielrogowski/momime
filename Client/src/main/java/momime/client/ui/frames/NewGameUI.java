@@ -3356,30 +3356,16 @@ public final class NewGameUI extends MomClientFrameUI
 		// Overall panel
 		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
-		
-		// NEW GAME PANEL
-		humanOpponentsLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getHumanOpponents ()));
-		aiOpponentsLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getAiOpponents ()));
-		mapSizeLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getMapSize ()));
-		landProportionLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getLandProportion ()));
-		nodesLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getNodes ()));
-		difficultyLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getDifficulty ()));
-		turnSystemLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getTurnSystem ()));
-		fogOfWarLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getFogOfWar ()));
-		unitSettingsLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getUnitSettings ()));
-		spellSettingsLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getSpellSettings ()));
-		debugOptionsLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getDebugOptions ()));
-		gameNameLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getGameName ()));
-		customizeLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomize ()));
-		
+
 		changeTurnSystemAction.clearItems ();
-		for (final TurnSystem turnSystem : TurnSystem.values ())
-		{
-			final List<LanguageText> languageText = (turnSystem == TurnSystem.SIMULTANEOUS) ?
-				getLanguages ().getTurnSystems ().getSimultaneous () : getLanguages ().getTurnSystems ().getOnePlayerAtATime ();
-				
-			changeTurnSystemAction.addItem (turnSystem, getLanguageHolder ().findDescription (languageText));
-		}
+		if (getLanguages ().getTurnSystems () != null)
+			for (final TurnSystem turnSystem : TurnSystem.values ())
+			{
+				final List<LanguageText> languageText = (turnSystem == TurnSystem.SIMULTANEOUS) ?
+					getLanguages ().getTurnSystems ().getSimultaneous () : getLanguages ().getTurnSystems ().getOnePlayerAtATime ();
+					
+				changeTurnSystemAction.addItem (turnSystem, getLanguageHolder ().findDescription (languageText));
+			}
 		
 		changeDebugOptionsAction.clearItems ();
 		for (final boolean debugOptions : new boolean [] {false, true})
@@ -3388,152 +3374,200 @@ public final class NewGameUI extends MomClientFrameUI
 			
 			changeDebugOptionsAction.addItem (debugOptions, getLanguageHolder ().findDescription (languageText));
 		}
-
-		// CUSTOM MAP SIZE PANEL
-		mapSizeEdit.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getMapSize ()));
-		mapWrapsLeftToRight.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getWrapsLeftRight ()));
-		mapWrapsTopToBottom.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getWrapsTopBottom ()));
-		mapZonesLabel.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getZones ()));
-		normalLairCountLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getNormalLairCount ()));
-		weakLairCountLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getWeakLairCount ()));
-		towersOfWizardryLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getTowers ()));
-		towersOfWizardrySeparationLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getTowersSeparation ()));
-		continentalRaceChanceLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getContinental ()));
-		citySeparationLabel.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getCitySeparation ()));
 		
-		// Where these labels are stored in the language file doesn't match where the settings are stored in the session description,
-		// I think this got messed up in 0.9.8.3 but its not really a big deal
-		riverCountLabel.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getRivers ()));
-		raiderCityCountLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getRaiderCityCount ()));
-		arcanusNodeCountLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getArcanusCount ()));
-		myrrorNodeCountLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMyrrorCount ()));
+		// NEW GAME PANEL
+		if (getLanguages ().getNewGameScreen () != null)
+		{
+			humanOpponentsLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getHumanOpponents ()));
+			aiOpponentsLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getAiOpponents ()));
+			mapSizeLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getMapSize ()));
+			landProportionLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getLandProportion ()));
+			nodesLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getNodes ()));
+			difficultyLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getDifficulty ()));
+			turnSystemLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getTurnSystem ()));
+			fogOfWarLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getFogOfWar ()));
+			unitSettingsLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getUnitSettings ()));
+			spellSettingsLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getSpellSettings ()));
+			debugOptionsLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getDebugOptions ()));
+			gameNameLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getGameName ()));
+			customizeLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomize ()));
 		
-		// CUSTOM LAND PROPORTION PANEL
-		landPercentageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getPercentageMapIsLand ()));
-		hillsPercentageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getHillsProportion ()));
-		mountainsPercentageLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getMountainsProportion ()));
-		treesPercentageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTreesProportion ()));
-		treeAreaSizePrefix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTreeAreaTileCountPrefix ()));
-		treeAreaSizeSuffix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTreeAreaTileCountSuffix ()));
-		desertsPercentageLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getDesertProportion ()));
-		desertAreaSizePrefix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getDesertAreaTileCountPrefix ()));
-		desertAreaSizeSuffix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getDesertAreaTileCountSuffix ()));
-		swampsPercentageLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getSwampProportion ()));
-		swampAreaSizePrefix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getSwampAreaTileCountPrefix ()));
-		swampAreaSizeSuffix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getSwampAreaTileCountSuffix ()));
-		tundraDistancePrefix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTundraPrefix ()));
-		tundraDistanceSuffix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTundraSuffix ()));
-		arcanusMineralChancePrefix.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getArcanusPrefix ()));
-		arcanusMineralChanceSuffix.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getArcanusSuffix ()));
-		myrrorMineralChancePrefix.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getMyrrorPrefix ()));
-		myrrorMineralChanceSuffix.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getMyrrorSuffix ()));
-		
-		// CUSTOM NODES PANEL
-		doubleNodeAuraMagicPowerPrefix.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMagicPowerPrefix ()));
-		doubleNodeAuraMagicPowerSuffix.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMagicPowerSuffix ()));
-		arcanusNodeSizePrefix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getArcanusNodeAuraPrefix ()));
-		arcanusNodeSizeSuffix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getArcanusNodeAuraSuffix ()));
-		myrrorNodeSizePrefix.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMyrrorNodeAuraPrefix ()));
-		myrrorNodeSizeSuffix.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMyrrorNodeAuraSuffix ()));
-		
-		// CUSTOM DIFFICULTY PANEL (1 of 3)
-		spellPicksLabel.setText												(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getSpellPicks ()));
-		humanSpellPicksLabel.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getHumanSpellPicks ()));
-		aiSpellPicksLabel.setText												(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiSpellPicks ()));
-		startingGoldLabel.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getGold ()));
-		humanStartingGoldLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getHumanGold ()));
-		aiStartingGoldLabel.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiGold ()));
-		aiPopulationGrowthRateMultiplierLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiPopulationGrowthRateMultiplier ()));
-		aiWizardsPopulationGrowthRateMultiplierLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiPopulationGrowthRateMultiplierWizards ()));
-		aiRaidersPopulationGrowthRateMultiplierLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiPopulationGrowthRateMultiplierRaiders ()));
-		aiProductionRateMultiplierLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiProductionRateMultiplier ()));
-		aiWizardsProductionRateMultiplierLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiProductionRateMultiplierWizards ()));
-		aiRaidersProductionRateMultiplierLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiProductionRateMultiplierRaiders ()));
-		aiSpellResearchMultiplierLabel.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiSpellResearchMultiplier ()));
-		aiUpkeepMultiplierLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiUpkeepMultiplier ()));
-		allowCustomWizards.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getCustomWizards ()));
-		eachWizardOnlyOnce.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getEachWizardOnlyOnce ()));
-		fameRazingPenalty.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getFameRazingPenalty ()));
-		wizardCityStartSizeLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getWizardCitySize ()));
-		maxCitySizeLabel.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getMaxCitySize ()));
-		raiderCityStartSizeLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getRaiderCitySizePrefix ()));
-		raiderCityStartSizeAnd.setText										(getLanguageHolder ().findDescription (getLanguages ().getSimple ().getAnd ()));
-		raiderCitySizeCapPrefix.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getRaiderCityGrowthPrefix ()));
-		raiderCitySizeCapSuffix.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getRaiderCityGrowthSuffix ()));
-		
-		// CUSTOM DIFFICULTY PANEL (2 of 3)
-		towersMonsters.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTowerMonsters ()));
-		towersTreasure.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTowerTreasure ()));
-		normalLairsLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalLairs ()));
-		arcanusNormalLairMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalArcanusLairMonsters ()));
-		arcanusNormalLairTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalArcanusLairTreasure ()));
-		myrrorNormalLairMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalMyrrorLairMonsters ()));
-		myrrorNormalLairTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalMyrrorLairTreasure ()));
-		weakLairsLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakLairs ()));
-		arcanusWeakLairMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakArcanusLairMonsters ()));
-		arcanusWeakLairTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakArcanusLairTreasure ()));
-		myrrorWeakLairMonsters.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairMonsters ()));
-		myrrorWeakLairTreasure.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairTreasure ()));
-		
-		// CUSTOM DIFFICULTY PANEL (3 of 3)
-		arcanusNodeMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getArcanusNodeMonsters ()));
-		arcanusNodeTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getArcanusNodeTreasure ()));
-		myrrorNodeMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getMyrrorNodeMonsters ()));
-		myrrorNodeTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getMyrrorNodeTreasure ()));
-		
-		// CUSTOM FOG OF WAR PANEL
-		fowTerrain.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getTerrainNodesAuras ()));
-		fowTerrainAlways.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getAlways ()));
-		fowTerrainRemember.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getRemember ()));
-		fowTerrainForget.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getForget ()));
-		fowCities.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getCitiesSpellsCombatAreaEffects ()));
-		fowCitiesAlways.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getAlways ()));
-		fowCitiesRemember.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getRemember ()));
-		fowCitiesForget.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getForget ()));
-		canSeeEnemyCityConstruction.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getConstructing ()));
-		fowUnits.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getUnits ()));
-		fowUnitsAlways.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getAlways ()));
-		fowUnitsRemember.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getRemember ()));
-		fowUnitsForget.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getForget ()));
-		
-		// CUSTOM UNIT SETTINGS PANEL
-		exceedMaxUnitsDuringCombatLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getCanExceedMaximumUnitsDuringCombat ()));
-		maximumHeroesLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroes ()));
-		maxHeroItemBonusesLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroItemBonuses ()));
-		maxHeroItemSpellChargesLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroItemSpellCharges ()));
-		maxHeroItemsInBankLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroItemsInBank ()));
-		rollHeroSkillsAtStartLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getRollHeroSkillsAtStartOfGame ()));
-		maximumHeroesUnlimitedLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getUnlimited ()));
-		maxHeroItemBonusesUnlimitedLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getUnlimited ()));
-		maxHeroItemsInBankUnlimitedLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getUnlimited ()));
-		
-		// CUSTOM SPELL SETTINGS PANEL
-		switchResearch.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearch ()));
-		switchResearchNo.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearchNo ()));
-		switchResearchNotStarted.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearchNotStarted ()));
-		switchResearchLose.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearchLose ()));
-		switchResearchFreely.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearchFreely ()));
-		spellBookCountForFirstReductionLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getBooksToObtainFirstReduction ()));
-		eachBookGives.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getEachBook ()));
-		castingCostReductionPrefix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionPrefix ()));
-		castingCostReductionSuffix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionSuffix ()));
-		researchBonusPrefix.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusPrefix ()));
-		researchBonusSuffix.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusSuffix ()));
-		castingCostReductionAdditive.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionCombinationAdd ()));
-		castingCostReductionMultiplicative.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionCombinationMultiply ()));
-		researchBonusAdditive.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusCombinationAdd ()));
-		researchBonusMultiplicative.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusCombinationMultiply ()));
-		castingCostReductionCapLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionCap ()));
-		researchBonusCapLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusCap ()));
-		stolenFromFortressLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getStolenFromFortress ()));
-		
-		// DEBUG OPTIONS PANEL
-		disableFogOfWarLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDebugTab ().getDisableFogOfWar ()));
+			// CUSTOM MAP SIZE PANEL
+			if (getLanguages ().getNewGameScreen ().getCustomMapSizeTab () != null)
+			{
+				mapSizeEdit.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getMapSize ()));
+				mapWrapsLeftToRight.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getWrapsLeftRight ()));
+				mapWrapsTopToBottom.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getWrapsTopBottom ()));
+				mapZonesLabel.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getZones ()));
+				normalLairCountLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getNormalLairCount ()));
+				weakLairCountLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getWeakLairCount ()));
+				towersOfWizardryLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getTowers ()));
+				towersOfWizardrySeparationLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getTowersSeparation ()));
+				continentalRaceChanceLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getContinental ()));
+				citySeparationLabel.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getCitySeparation ()));
+			}
+			
+			// CUSTOM LAND PROPORTION PANEL
+			// Where these labels are stored in the language file doesn't match where the settings are stored in the session description,
+			// I think this got messed up in 0.9.8.3 but its not really a big deal
+			if (getLanguages ().getNewGameScreen ().getCustomLandProportionTab () != null)
+			{
+				riverCountLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getRivers ()));
+				landPercentageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getPercentageMapIsLand ()));
+				hillsPercentageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getHillsProportion ()));
+				mountainsPercentageLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getMountainsProportion ()));
+				treesPercentageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTreesProportion ()));
+				treeAreaSizePrefix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTreeAreaTileCountPrefix ()));
+				treeAreaSizeSuffix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTreeAreaTileCountSuffix ()));
+				desertsPercentageLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getDesertProportion ()));
+				desertAreaSizePrefix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getDesertAreaTileCountPrefix ()));
+				desertAreaSizeSuffix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getDesertAreaTileCountSuffix ()));
+				swampsPercentageLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getSwampProportion ()));
+				swampAreaSizePrefix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getSwampAreaTileCountPrefix ()));
+				swampAreaSizeSuffix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getSwampAreaTileCountSuffix ()));
+				tundraDistancePrefix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTundraPrefix ()));
+				tundraDistanceSuffix.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTundraSuffix ()));
+				arcanusMineralChancePrefix.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getArcanusPrefix ()));
+				arcanusMineralChanceSuffix.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getArcanusSuffix ()));
+				myrrorMineralChancePrefix.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getMyrrorPrefix ()));
+				myrrorMineralChanceSuffix.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getMyrrorSuffix ()));
+			}
+			
+			// CUSTOM NODES PANEL
+			if (getLanguages ().getNewGameScreen ().getCustomNodesTab () != null)
+			{
+				arcanusNodeCountLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getArcanusCount ()));
+				myrrorNodeCountLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMyrrorCount ()));
+				doubleNodeAuraMagicPowerPrefix.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMagicPowerPrefix ()));
+				doubleNodeAuraMagicPowerSuffix.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMagicPowerSuffix ()));
+				arcanusNodeSizePrefix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getArcanusNodeAuraPrefix ()));
+				arcanusNodeSizeSuffix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getArcanusNodeAuraSuffix ()));
+				myrrorNodeSizePrefix.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMyrrorNodeAuraPrefix ()));
+				myrrorNodeSizeSuffix.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getMyrrorNodeAuraSuffix ()));
+			}
+			
+			// CUSTOM DIFFICULTY PANEL (1 of 3)
+			if (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 () != null)
+			{
+				raiderCityCountLabel.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getRaiderCityCount ()));
+				spellPicksLabel.setText												(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getSpellPicks ()));
+				humanSpellPicksLabel.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getHumanSpellPicks ()));
+				aiSpellPicksLabel.setText												(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiSpellPicks ()));
+				startingGoldLabel.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getGold ()));
+				humanStartingGoldLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getHumanGold ()));
+				aiStartingGoldLabel.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiGold ()));
+				aiPopulationGrowthRateMultiplierLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiPopulationGrowthRateMultiplier ()));
+				aiWizardsPopulationGrowthRateMultiplierLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiPopulationGrowthRateMultiplierWizards ()));
+				aiRaidersPopulationGrowthRateMultiplierLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiPopulationGrowthRateMultiplierRaiders ()));
+				aiProductionRateMultiplierLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiProductionRateMultiplier ()));
+				aiWizardsProductionRateMultiplierLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiProductionRateMultiplierWizards ()));
+				aiRaidersProductionRateMultiplierLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiProductionRateMultiplierRaiders ()));
+				aiSpellResearchMultiplierLabel.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiSpellResearchMultiplier ()));
+				aiUpkeepMultiplierLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiUpkeepMultiplier ()));
+				allowCustomWizards.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getCustomWizards ()));
+				eachWizardOnlyOnce.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getEachWizardOnlyOnce ()));
+				fameRazingPenalty.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getFameRazingPenalty ()));
+				wizardCityStartSizeLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getWizardCitySize ()));
+				maxCitySizeLabel.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getMaxCitySize ()));
+				raiderCityStartSizeLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getRaiderCitySizePrefix ()));
+				raiderCityStartSizeAnd.setText										(getLanguageHolder ().findDescription (getLanguages ().getSimple ().getAnd ()));
+				raiderCitySizeCapPrefix.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getRaiderCityGrowthPrefix ()));
+				raiderCitySizeCapSuffix.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getRaiderCityGrowthSuffix ()));
+			}
+			
+			// CUSTOM DIFFICULTY PANEL (2 of 3)
+			if (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 () != null)
+			{
+				towersMonsters.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTowerMonsters ()));
+				towersTreasure.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTowerTreasure ()));
+				normalLairsLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalLairs ()));
+				arcanusNormalLairMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalArcanusLairMonsters ()));
+				arcanusNormalLairTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalArcanusLairTreasure ()));
+				myrrorNormalLairMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalMyrrorLairMonsters ()));
+				myrrorNormalLairTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalMyrrorLairTreasure ()));
+				weakLairsLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakLairs ()));
+				arcanusWeakLairMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakArcanusLairMonsters ()));
+				arcanusWeakLairTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakArcanusLairTreasure ()));
+				myrrorWeakLairMonsters.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairMonsters ()));
+				myrrorWeakLairTreasure.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairTreasure ()));
+			}
+			
+			// CUSTOM DIFFICULTY PANEL (3 of 3)
+			if (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 () != null)
+			{
+				arcanusNodeMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getArcanusNodeMonsters ()));
+				arcanusNodeTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getArcanusNodeTreasure ()));
+				myrrorNodeMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getMyrrorNodeMonsters ()));
+				myrrorNodeTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getMyrrorNodeTreasure ()));
+			}
+			
+			// CUSTOM FOG OF WAR PANEL
+			if (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab () != null)
+			{
+				fowTerrain.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getTerrainNodesAuras ()));
+				fowTerrainAlways.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getAlways ()));
+				fowTerrainRemember.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getRemember ()));
+				fowTerrainForget.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getForget ()));
+				fowCities.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getCitiesSpellsCombatAreaEffects ()));
+				fowCitiesAlways.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getAlways ()));
+				fowCitiesRemember.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getRemember ()));
+				fowCitiesForget.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getForget ()));
+				canSeeEnemyCityConstruction.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getConstructing ()));
+				fowUnits.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getUnits ()));
+				fowUnitsAlways.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getAlways ()));
+				fowUnitsRemember.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getRemember ()));
+				fowUnitsForget.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getForget ()));
+			}
+			
+			// CUSTOM UNIT SETTINGS PANEL
+			if (getLanguages ().getNewGameScreen ().getCustomUnitsTab () != null)
+			{
+				exceedMaxUnitsDuringCombatLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getCanExceedMaximumUnitsDuringCombat ()));
+				maximumHeroesLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroes ()));
+				maxHeroItemBonusesLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroItemBonuses ()));
+				maxHeroItemSpellChargesLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroItemSpellCharges ()));
+				maxHeroItemsInBankLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroItemsInBank ()));
+				rollHeroSkillsAtStartLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getRollHeroSkillsAtStartOfGame ()));
+				maximumHeroesUnlimitedLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getUnlimited ()));
+				maxHeroItemBonusesUnlimitedLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getUnlimited ()));
+				maxHeroItemsInBankUnlimitedLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getUnlimited ()));
+			}
+			
+			// CUSTOM SPELL SETTINGS PANEL
+			if (getLanguages ().getNewGameScreen ().getCustomSpellsTab () != null)
+			{
+				switchResearch.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearch ()));
+				switchResearchNo.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearchNo ()));
+				switchResearchNotStarted.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearchNotStarted ()));
+				switchResearchLose.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearchLose ()));
+				switchResearchFreely.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getSwitchResearchFreely ()));
+				spellBookCountForFirstReductionLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getBooksToObtainFirstReduction ()));
+				eachBookGives.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getEachBook ()));
+				castingCostReductionPrefix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionPrefix ()));
+				castingCostReductionSuffix.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionSuffix ()));
+				researchBonusPrefix.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusPrefix ()));
+				researchBonusSuffix.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusSuffix ()));
+				castingCostReductionAdditive.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionCombinationAdd ()));
+				castingCostReductionMultiplicative.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionCombinationMultiply ()));
+				researchBonusAdditive.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusCombinationAdd ()));
+				researchBonusMultiplicative.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusCombinationMultiply ()));
+				castingCostReductionCapLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getCastingReductionCap ()));
+				researchBonusCapLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusCap ()));
+				stolenFromFortressLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getStolenFromFortress ()));
+			}
+			
+			// DEBUG OPTIONS PANEL
+			if (getLanguages ().getNewGameScreen ().getCustomDebugTab () != null)
+				disableFogOfWarLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDebugTab ().getDisableFogOfWar ()));
+		}
 		
 		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
-		flagColourRedTitle.setText		(getLanguageHolder ().findDescription (getLanguages ().getChooseFlagColourScreen ().getRed ()));
-		flagColourGreenTitle.setText	(getLanguageHolder ().findDescription (getLanguages ().getChooseFlagColourScreen ().getGreen ()));
-		flagColourBlueTitle.setText		(getLanguageHolder ().findDescription (getLanguages ().getChooseFlagColourScreen ().getBlue ()));
+		if (getLanguages ().getChooseFlagColourScreen () != null)
+		{
+			flagColourRedTitle.setText		(getLanguageHolder ().findDescription (getLanguages ().getChooseFlagColourScreen ().getRed ()));
+			flagColourGreenTitle.setText	(getLanguageHolder ().findDescription (getLanguages ().getChooseFlagColourScreen ().getGreen ()));
+			flagColourBlueTitle.setText		(getLanguageHolder ().findDescription (getLanguages ().getChooseFlagColourScreen ().getBlue ()));
+		}
 		
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
 		
@@ -3574,7 +3608,7 @@ public final class NewGameUI extends MomClientFrameUI
 	private final void languageOrCardChanged ()
 	{
 		title.setForeground (MomUIConstants.GOLD);
-		if (newGamePanel.isVisible ())
+		if ((newGamePanel.isVisible ()) && (getLanguages ().getNewGameScreen () != null))
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getTitle ()));
 		else if (mapSizePanel.isVisible ())
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomMapSizeTab ().getTitle ()));
@@ -3582,9 +3616,9 @@ public final class NewGameUI extends MomClientFrameUI
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomLandProportionTab ().getTitle ()));
 		else if (nodesPanel.isVisible ())
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodesTab ().getTitle ()));
-		else if (difficulty1Panel.isVisible ())
+		else if ((difficulty1Panel.isVisible ()) && (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 () != null))
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getTitle ()));
-		else if (difficulty2Panel.isVisible ())
+		else if ((difficulty2Panel.isVisible ()) && (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 () != null))
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTitle ()));
 		else if (difficulty3Panel.isVisible ())
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getTitle ()));
@@ -4943,23 +4977,26 @@ public final class NewGameUI extends MomClientFrameUI
 		public final String getColumnName (final int column)
 		{
 			final List<LanguageText> languageText;
-			switch (column)
-			{
-				case 0:
-					languageText = getLanguages ().getWaitForPlayersToJoinScreen ().getListColumnName ();
-					break;
-					
-				case 1:
-					languageText = getLanguages ().getWaitForPlayersToJoinScreen ().getListColumnWizard ();
-					break;
-					
-				case 2:
-					languageText = getLanguages ().getWaitForPlayersToJoinScreen ().getListColumnHumanOrAI ();
-					break;
-					
-				default:
-					languageText = null;
-			}
+			if (getLanguages ().getWaitForPlayersToJoinScreen () == null)
+				languageText = null;
+			else
+				switch (column)
+				{
+					case 0:
+						languageText = getLanguages ().getWaitForPlayersToJoinScreen ().getListColumnName ();
+						break;
+						
+					case 1:
+						languageText = getLanguages ().getWaitForPlayersToJoinScreen ().getListColumnWizard ();
+						break;
+						
+					case 2:
+						languageText = getLanguages ().getWaitForPlayersToJoinScreen ().getListColumnHumanOrAI ();
+						break;
+						
+					default:
+						languageText = null;
+				}
 			
 			return (languageText == null) ? null : getLanguageHolder ().findDescription (languageText);
 		}

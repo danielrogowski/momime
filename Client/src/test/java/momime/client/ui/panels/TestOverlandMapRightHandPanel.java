@@ -72,10 +72,11 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 	/**
 	 * All the tests need to set the panel up in the same way, so do so via this common method
 	 * 
+	 * @param isSpellPanel Whether this is the test to show the spell panel, which requires a couple of extra mocks
 	 * @return Panel to test with
 	 * @throws Exception If there is a problem
 	 */
-	private final PanelAndFrame createPanel () throws Exception
+	private final PanelAndFrame createPanel (final boolean isSpellPanel) throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -157,15 +158,18 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		final SpellBookSection section = new SpellBookSection ();
-		section.getSpellTargetPrompt ().add (createLanguageText (Language.ENGLISH, "Select a friendly city to cast your SPELL_NAME spell on"));
-		when (db.findSpellBookSection (SpellBookSectionID.CITY_ENCHANTMENTS, "OverlandMapRightHandPanel")).thenReturn (section);
-		
-		final Spell spell = new Spell ();
-		spell.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
-		spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Heavenly Light"));
-		
-		when (db.findSpell ("SP001", "OverlandMapRightHandPanel")).thenReturn (spell);
+		if (isSpellPanel)
+		{
+			final SpellBookSection section = new SpellBookSection ();
+			section.getSpellTargetPrompt ().add (createLanguageText (Language.ENGLISH, "Select a friendly city to cast your SPELL_NAME spell on"));
+			when (db.findSpellBookSection (SpellBookSectionID.CITY_ENCHANTMENTS, "OverlandMapRightHandPanel")).thenReturn (section);
+			
+			final Spell spell = new Spell ();
+			spell.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
+			spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Heavenly Light"));
+			
+			when (db.findSpell ("SP001", "OverlandMapRightHandPanel")).thenReturn (spell);
+		}
 
 		final TileTypeEx tileType = new TileTypeEx ();
 		tileType.setCanBuildCity (true);
@@ -173,6 +177,8 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		tileType.setProductionBonus (4);
 		tileType.setGoldBonus (10);		
 		when (db.findTileType ("TT01", "surveyorLocationOrLanguageChanged")).thenReturn (tileType);
+		
+		when (db.findTileType ("FOW", "surveyorLocationOrLanguageChanged")).thenReturn (new TileTypeEx ());
 		
 		final MapFeatureEx mapFeature = new MapFeatureEx ();
 		mapFeature.setCanBuildCity (true);
@@ -238,7 +244,6 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		trans2.setFlagColour ("FF0080");
 		
 		final PlayerPublicDetails player2 = new PlayerPublicDetails (pd2, pub2, trans2);
-		when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Mr. Pants");
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
@@ -248,7 +253,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "updateAmountPerTurn")).thenReturn (player1);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd1.getPlayerID ()), anyString ())).thenReturn (player1);
 		
 		// Resource values
 		final ResourceValueUtils resources = mock (ResourceValueUtils.class);
@@ -327,7 +332,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 	@Test
 	public final void testUnitsPanel () throws Exception
 	{
-		final PanelAndFrame panel = createPanel ();
+		final PanelAndFrame panel = createPanel (false);
 		panel.panel.setTop (OverlandMapRightHandPanelTop.UNITS);
 		panel.panel.setBottom (OverlandMapRightHandPanelBottom.SPECIAL_ORDERS);
 		
@@ -342,7 +347,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 	@Test
 	public final void testSurveyorPanel_Normal () throws Exception
 	{
-		final PanelAndFrame panel = createPanel ();
+		final PanelAndFrame panel = createPanel (false);
 		panel.panel.setTop (OverlandMapRightHandPanelTop.SURVEYOR);
 		panel.panel.setBottom (OverlandMapRightHandPanelBottom.CANCEL);
 		
@@ -357,7 +362,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 	@Test
 	public final void testSurveyorPanel_Corrupted () throws Exception
 	{
-		final PanelAndFrame panel = createPanel ();
+		final PanelAndFrame panel = createPanel (false);
 		final MomPersistentPlayerPrivateKnowledge ppk = panel.panel.getClient ().getOurPersistentPlayerPrivateKnowledge ();
 		ppk.getFogOfWarMemory ().getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).getTerrainData ().setCorrupted (1);
 		
@@ -378,7 +383,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 	@Test
 	public final void testTargetSpellPanel () throws Exception
 	{
-		final PanelAndFrame panel = createPanel ();
+		final PanelAndFrame panel = createPanel (true);
 		panel.panel.setTop (OverlandMapRightHandPanelTop.TARGET_SPELL);
 		panel.panel.setBottom (OverlandMapRightHandPanelBottom.CANCEL);
 		
@@ -398,7 +403,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 	@Test
 	public final void testEconomyPanel_OurTurn () throws Exception
 	{
-		final PanelAndFrame panel = createPanel ();
+		final PanelAndFrame panel = createPanel (false);
 		panel.panel.setTop (OverlandMapRightHandPanelTop.ECONOMY);
 		panel.panel.setBottom (OverlandMapRightHandPanelBottom.NEXT_TURN_BUTTON);
 		
@@ -413,7 +418,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 	@Test
 	public final void testEconomyPanel_OtherPlayersTurn_OnePlayerAtATime () throws Exception
 	{
-		final PanelAndFrame panel = createPanel ();
+		final PanelAndFrame panel = createPanel (false);
 		panel.panel.setTop (OverlandMapRightHandPanelTop.ECONOMY);
 		panel.panel.setBottom (OverlandMapRightHandPanelBottom.PLAYER);
 
@@ -428,7 +433,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 	@Test
 	public final void testEconomyPanel_OtherPlayersTurn_Simultaneous () throws Exception
 	{
-		final PanelAndFrame panel = createPanel ();
+		final PanelAndFrame panel = createPanel (false);
 		panel.panel.setTop (OverlandMapRightHandPanelTop.ECONOMY);
 		panel.panel.setBottom (OverlandMapRightHandPanelBottom.PLAYER);
 		

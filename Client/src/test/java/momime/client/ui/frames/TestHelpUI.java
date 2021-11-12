@@ -64,10 +64,11 @@ import momime.common.utils.SpellUtils;
 public final class TestHelpUI extends ClientTestData
 {
 	/**
-	 * @return HelpUI form ready to test with
+	 * Tests displaying help text about a retort
 	 * @throws Exception If there is a problem
 	 */
-	private final HelpUI createHelpUI () throws Exception
+	@Test
+	public final void testHelpUI_Retort () throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -84,6 +85,72 @@ public final class TestHelpUI extends ClientTestData
 			System.lineSeparator () + System.lineSeparator () +
 			"The Alchemy retort is the only way that Gnolls, Klackons, Lizardmen or Trolls can build units with magic weapons, since these races cannot build Alchemists' Guilds."));
 		when (db.findPick (eq ("RT01"), anyString ())).thenReturn (retort);
+
+		// Mock entries from the language XML
+		final HelpScreen helpScreenLang = new HelpScreen ();
+		helpScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Help"));
+		helpScreenLang.getSpellBookSection ().add (createLanguageText (Language.ENGLISH, "Spell book section: SPELL_BOOK_SECTION"));
+		helpScreenLang.getSpellBookResearchCostNotOurs ().add (createLanguageText (Language.ENGLISH, "Research cost: RESEARCH_TOTAL PRODUCTION_TYPE"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock entries from client XML
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the graphics XML
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		
+		// EL replacer
+		final StandardEvaluationContext context = new StandardEvaluationContext ();
+		context.setRootObject (new SpringEvaluationContextRoot (gfx, client));
+		
+		final SpringExpressionReplacerImpl replacer = new SpringExpressionReplacerImpl ();
+		replacer.setEvaluationContext (context);
+		replacer.setClasspathResource (true);
+		replacer.setHtmlImage (true);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		layout.buildMaps ();
+		
+		// Set up form
+		final HelpUI help = new HelpUI ();
+		help.setNewTurnMessagesLayout (layout);
+		help.setUtils (utils);
+		help.setLanguageHolder (langHolder);
+		help.setLanguageChangeMaster (langMaster);
+		help.setClient (client);
+		help.setLargeFont (CreateFontsForTests.getLargeFont ());
+		help.setSmallFont (CreateFontsForTests.getSmallFont ());
+		help.setTextUtils (new TextUtilsImpl ());
+		help.setSpringExpressionReplacer (replacer);
+		
+		help.showPickID ("RT01");
+		Thread.sleep (5000);
+		help.setVisible (false);
+	}
+
+	/**
+	 * Tests displaying help text about a spell book / magic realm
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHelpUI_Book () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final Pick book = new Pick ();
 		book.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Life Book"));
@@ -94,11 +161,162 @@ public final class TestHelpUI extends ClientTestData
 			book.getBookImageFile ().add ("/momime.client.graphics/picks/life-" + n + ".png");
 
 		when (db.findPick (eq ("MB01"), anyString ())).thenReturn (book);
+
+		// Mock entries from the language XML
+		final HelpScreen helpScreenLang = new HelpScreen ();
+		helpScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Help"));
+		helpScreenLang.getSpellBookSection ().add (createLanguageText (Language.ENGLISH, "Spell book section: SPELL_BOOK_SECTION"));
+		helpScreenLang.getSpellBookResearchCostNotOurs ().add (createLanguageText (Language.ENGLISH, "Research cost: RESEARCH_TOTAL PRODUCTION_TYPE"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock entries from client XML
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the graphics XML
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		
+		// EL replacer
+		final StandardEvaluationContext context = new StandardEvaluationContext ();
+		context.setRootObject (new SpringEvaluationContextRoot (gfx, client));
+		
+		final SpringExpressionReplacerImpl replacer = new SpringExpressionReplacerImpl ();
+		replacer.setEvaluationContext (context);
+		replacer.setClasspathResource (true);
+		replacer.setHtmlImage (true);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		layout.buildMaps ();
+		
+		// Set up form
+		final HelpUI help = new HelpUI ();
+		help.setNewTurnMessagesLayout (layout);
+		help.setUtils (utils);
+		help.setLanguageHolder (langHolder);
+		help.setLanguageChangeMaster (langMaster);
+		help.setClient (client);
+		help.setLargeFont (CreateFontsForTests.getLargeFont ());
+		help.setSmallFont (CreateFontsForTests.getSmallFont ());
+		help.setTextUtils (new TextUtilsImpl ());
+		help.setSpringExpressionReplacer (replacer);
+		
+		help.showPickID ("MB01");
+		Thread.sleep (5000);
+		help.setVisible (false);
+	}
+
+	/**
+	 * Tests displaying help text about a unit skill
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHelpUI_UnitSkill () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final UnitSkillEx unitSkill = new UnitSkillEx ();
 		unitSkill.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "PFTitle"));
 		unitSkill.getUnitSkillHelpText ().add (createLanguageText (Language.ENGLISH, "PFText"));
 		when (db.findUnitSkill (eq ("US020"), anyString ())).thenReturn (unitSkill);
+
+		// Mock entries from the language XML
+		final HelpScreen helpScreenLang = new HelpScreen ();
+		helpScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Help"));
+		helpScreenLang.getSpellBookSection ().add (createLanguageText (Language.ENGLISH, "Spell book section: SPELL_BOOK_SECTION"));
+		helpScreenLang.getSpellBookResearchCostNotOurs ().add (createLanguageText (Language.ENGLISH, "Research cost: RESEARCH_TOTAL PRODUCTION_TYPE"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+		
+		// Spell book section
+		final SpellBookSection section = new SpellBookSection ();
+		section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Combat Enchantments"));
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock entries from client XML
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the graphics XML
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		
+		// Unit skills
+		final BufferedImage skillIcon = utils.loadImage ("/momime.client.graphics/unitSkills/US020-icon.png");
+		
+		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
+		when (unitClientUtils.getUnitSkillSingleIcon (any (ExpandedUnitDetails.class), eq ("US020"))).thenReturn (skillIcon);
+		
+		// Unit variable stats in help text
+		final UnitStatsLanguageVariableReplacer unitStatsReplacer = mock (UnitStatsLanguageVariableReplacer.class);
+		when (unitStatsReplacer.replaceVariables ("PFTitle")).thenReturn ("Path Finding");
+		when (unitStatsReplacer.replaceVariables ("PFText")).thenReturn ("Pathfinding allows the unit and other land units stacked with it to move across any land square at the cost of ½ movement point, as if they were on a road.");
+		
+		// EL replacer
+		final StandardEvaluationContext context = new StandardEvaluationContext ();
+		context.setRootObject (new SpringEvaluationContextRoot (gfx, client));
+		
+		final SpringExpressionReplacerImpl replacer = new SpringExpressionReplacerImpl ();
+		replacer.setEvaluationContext (context);
+		replacer.setClasspathResource (true);
+		replacer.setHtmlImage (true);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		layout.buildMaps ();
+		
+		// Set up form
+		final HelpUI help = new HelpUI ();
+		help.setNewTurnMessagesLayout (layout);
+		help.setUtils (utils);
+		help.setLanguageHolder (langHolder);
+		help.setLanguageChangeMaster (langMaster);
+		help.setUnitClientUtils (unitClientUtils);
+		help.setUnitStatsReplacer (unitStatsReplacer);
+		help.setClient (client);
+		help.setLargeFont (CreateFontsForTests.getLargeFont ());
+		help.setSmallFont (CreateFontsForTests.getSmallFont ());
+		help.setTextUtils (new TextUtilsImpl ());
+		help.setSpringExpressionReplacer (replacer);
+
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		
+		help.showUnitSkillID ("US020", xu);
+		Thread.sleep (5000);
+		help.setVisible (false);
+	}
+
+	/**
+	 * Tests displaying help text about a unit attribute
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHelpUI_UnitAttribute () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final UnitSkillEx unitAttribute = new UnitSkillEx ();
 		unitAttribute.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "MeleeTitle"));
@@ -126,75 +344,22 @@ public final class TestHelpUI extends ClientTestData
 			"to require a scroll bar to appear."));
 		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (unitAttribute);
 		
-		final CombatAreaEffect cae = new CombatAreaEffect ();
-		cae.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CSE048.png");
-		cae.getCombatAreaEffectDescription ().add (createLanguageText (Language.ENGLISH, "Counter Magic"));
-		cae.getCombatAreaEffectHelpText ().add (createLanguageText (Language.ENGLISH, "Creates a standing dispel magic spell over the entire battlefield." +
-			System.lineSeparator () + System.lineSeparator () +
-			"A spell cast by the enemy wizard or an enemy hero must first overcome the effects of this dispel magic spell (of strength equal to the magic power poured into the counter magic spell) before it can exert its effects." +
-			System.lineSeparator () + System.lineSeparator () +
-			"Every spell cast by the enemy drains the magic power (strength) of the counter magic spell by 5 mana points and, therefore, lessens its effectiveness against subsequent spells."));
-		when (db.findCombatAreaEffect (eq ("CSE048"), anyString ())).thenReturn (cae);
-		
-		final CitySpellEffect citySpellEffect = new CitySpellEffect ();
-		citySpellEffect.getCitySpellEffectName ().add (createLanguageText (Language.ENGLISH, "Chaos Rift"));
-		citySpellEffect.getCitySpellEffectHelpText ().add (createLanguageText (Language.ENGLISH, "Opens a great magical vortex over an enemy city." +
-			System.lineSeparator () + System.lineSeparator () +
-			"Each turn, units inside the city sustain five strength 8 Lightning Bolt attacks, and there is a 5% chance of a building being destroyed."));
-		when (db.findCitySpellEffect (eq ("SE110"), anyString ())).thenReturn (citySpellEffect);
-
 		// Mock entries from the language XML
 		final HelpScreen helpScreenLang = new HelpScreen ();
 		helpScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Help"));
 		helpScreenLang.getSpellBookSection ().add (createLanguageText (Language.ENGLISH, "Spell book section: SPELL_BOOK_SECTION"));
 		helpScreenLang.getSpellBookResearchCostNotOurs ().add (createLanguageText (Language.ENGLISH, "Research cost: RESEARCH_TOTAL PRODUCTION_TYPE"));
 
-		final HeroItemInfoScreen heroItemInfoScreenLang = new HeroItemInfoScreen ();
-		heroItemInfoScreenLang.getItemSlotHelpTextPrefix ().add (createLanguageText (Language.ENGLISH, "The following types of hero items can be used in this slot:"));
-
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		when (lang.getHelpScreen ()).thenReturn (helpScreenLang);
-		when (lang.getHeroItemInfoScreen ()).thenReturn (heroItemInfoScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguages (lang);
-		
-		// Spell book section
-		final SpellBookSection section = new SpellBookSection ();
-		section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Combat Enchantments"));
-		when (db.findSpellBookSection (eq (SpellBookSectionID.COMBAT_ENCHANTMENTS), anyString ())).thenReturn (section);
-		
-		// Production types
-		final ProductionTypeEx research = new ProductionTypeEx();
-		research.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "RP"));
-		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "HelpUI")).thenReturn (research);
-
-		final ProductionTypeEx mana = new ProductionTypeEx ();
-		mana.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
-		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "HelpUI")).thenReturn (mana);
-		
-		final CityViewElement citySpellEffectGfx = new CityViewElement ();
-		citySpellEffectGfx.setCityViewImageFile ("/momime.client.graphics/cityView/sky/arcanus-SE110-mini.png");
-		when (db.findCityViewElementSpellEffect ("SE110")).thenReturn (citySpellEffectGfx);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Mock entries from client XML
-		final Spell spellDef1 = new Spell ();
-		spellDef1.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
-		spellDef1.setResearchCost (180);
-		spellDef1.getSpellName ().add (createLanguageText (Language.ENGLISH, "Counter Magic"));
-		spellDef1.getSpellDescription ().add (createLanguageText (Language.ENGLISH, "All enemy spell cast in combat must resist being dispelled while this spell is in effect."));
-		spellDef1.getSpellHelpText ().add (createLanguageText (Language.ENGLISH,
-			"Creates a reserve of counter magic power which resists all spells cast by an opponent wizard as if you had cast an equally-strong dispel magic." +
-			System.lineSeparator () + System.lineSeparator () +
-			"Each spell casting attempt by the opposing wizard reduces the strength of the counter magic reserve by five mana."));
-		when (db.findSpell ("SP048", "HelpUI")).thenReturn (spellDef1);
-
-		final Spell spellDef2 = new Spell ();		
-		when (db.findSpell ("SP110", "HelpUI")).thenReturn (spellDef2);
-		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
 		
@@ -239,25 +404,363 @@ public final class TestHelpUI extends ClientTestData
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.COMBAT_AREA_EFFECTS, "HelpText")).thenReturn (caeBackground);
 		
 		// Unit skills
-		final BufferedImage skillIcon = utils.loadImage ("/momime.client.graphics/unitSkills/US020-icon.png");
-		
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
-		when (unitClientUtils.getUnitSkillSingleIcon (any (ExpandedUnitDetails.class), eq ("US020"))).thenReturn (skillIcon);
+		when (unitClientUtils.getUnitSkillSingleIcon (any (ExpandedUnitDetails.class), eq ("UA01"))).thenReturn (null);
 		
 		// Unit variable stats in help text
 		final UnitStatsLanguageVariableReplacer unitStatsReplacer = mock (UnitStatsLanguageVariableReplacer.class);
-		when (unitStatsReplacer.replaceVariables ("PFTitle")).thenReturn ("Path Finding");
-		when (unitStatsReplacer.replaceVariables ("PFText")).thenReturn ("Pathfinding allows the unit and other land units stacked with it to move across any land square at the cost of ½ movement point, as if they were on a road.");
-		
 		when (unitStatsReplacer.replaceVariables ("MeleeTitle")).thenReturn ("Melee");
+		
+		// EL replacer
+		final StandardEvaluationContext context = new StandardEvaluationContext ();
+		context.setRootObject (new SpringEvaluationContextRoot (gfx, client));
+		
+		final SpringExpressionReplacerImpl replacer = new SpringExpressionReplacerImpl ();
+		replacer.setEvaluationContext (context);
+		replacer.setClasspathResource (true);
+		replacer.setHtmlImage (true);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		layout.buildMaps ();
+		
+		// Set up form
+		final HelpUI help = new HelpUI ();
+		help.setNewTurnMessagesLayout (layout);
+		help.setUtils (utils);
+		help.setLanguageHolder (langHolder);
+		help.setLanguageChangeMaster (langMaster);
+		help.setUnitClientUtils (unitClientUtils);
+		help.setUnitStatsReplacer (unitStatsReplacer);
+		help.setClient (client);
+		help.setLargeFont (CreateFontsForTests.getLargeFont ());
+		help.setSmallFont (CreateFontsForTests.getSmallFont ());
+		help.setTextUtils (new TextUtilsImpl ());
+		help.setSpringExpressionReplacer (replacer);
+
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		
+		help.showUnitSkillID ("UA01", xu);
+		Thread.sleep (5000);
+		help.setVisible (false);
+	}
+
+	/**
+	 * Tests displaying help text about a combat area effect
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHelpUI_CombatAreaEffect () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatAreaEffect cae = new CombatAreaEffect ();
+		cae.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CSE048.png");
+		cae.getCombatAreaEffectDescription ().add (createLanguageText (Language.ENGLISH, "Counter Magic"));
+		cae.getCombatAreaEffectHelpText ().add (createLanguageText (Language.ENGLISH, "Creates a standing dispel magic spell over the entire battlefield." +
+			System.lineSeparator () + System.lineSeparator () +
+			"A spell cast by the enemy wizard or an enemy hero must first overcome the effects of this dispel magic spell (of strength equal to the magic power poured into the counter magic spell) before it can exert its effects." +
+			System.lineSeparator () + System.lineSeparator () +
+			"Every spell cast by the enemy drains the magic power (strength) of the counter magic spell by 5 mana points and, therefore, lessens its effectiveness against subsequent spells."));
+		when (db.findCombatAreaEffect (eq ("CSE048"), anyString ())).thenReturn (cae);
+		
+		// Mock entries from the language XML
+		final HelpScreen helpScreenLang = new HelpScreen ();
+		helpScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Help"));
+		helpScreenLang.getSpellBookSection ().add (createLanguageText (Language.ENGLISH, "Spell book section: SPELL_BOOK_SECTION"));
+		helpScreenLang.getSpellBookResearchCostNotOurs ().add (createLanguageText (Language.ENGLISH, "Research cost: RESEARCH_TOTAL PRODUCTION_TYPE"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock entries from client XML
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the graphics XML
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		
+		// EL replacer
+		final StandardEvaluationContext context = new StandardEvaluationContext ();
+		context.setRootObject (new SpringEvaluationContextRoot (gfx, client));
+		
+		final SpringExpressionReplacerImpl replacer = new SpringExpressionReplacerImpl ();
+		replacer.setEvaluationContext (context);
+		replacer.setClasspathResource (true);
+		replacer.setHtmlImage (true);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		layout.buildMaps ();
+		
+		// Set up form
+		final HelpUI help = new HelpUI ();
+		help.setNewTurnMessagesLayout (layout);
+		help.setUtils (utils);
+		help.setLanguageHolder (langHolder);
+		help.setLanguageChangeMaster (langMaster);
+		help.setClient (client);
+		help.setLargeFont (CreateFontsForTests.getLargeFont ());
+		help.setSmallFont (CreateFontsForTests.getSmallFont ());
+		help.setTextUtils (new TextUtilsImpl ());
+		help.setSpringExpressionReplacer (replacer);
+		
+		help.showCombatAreaEffectID ("CSE048");
+		Thread.sleep (5000);
+		help.setVisible (false);
+	}
+
+	/**
+	 * Tests displaying help text about a city spell effect
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHelpUI_CitySpellEffect () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect citySpellEffect = new CitySpellEffect ();
+		citySpellEffect.getCitySpellEffectName ().add (createLanguageText (Language.ENGLISH, "Chaos Rift"));
+		citySpellEffect.getCitySpellEffectHelpText ().add (createLanguageText (Language.ENGLISH, "Opens a great magical vortex over an enemy city." +
+			System.lineSeparator () + System.lineSeparator () +
+			"Each turn, units inside the city sustain five strength 8 Lightning Bolt attacks, and there is a 5% chance of a building being destroyed."));
+		when (db.findCitySpellEffect (eq ("SE110"), anyString ())).thenReturn (citySpellEffect);
+
+		// Mock entries from the language XML
+		final HelpScreen helpScreenLang = new HelpScreen ();
+		helpScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Help"));
+		helpScreenLang.getSpellBookSection ().add (createLanguageText (Language.ENGLISH, "Spell book section: SPELL_BOOK_SECTION"));
+		helpScreenLang.getSpellBookResearchCostNotOurs ().add (createLanguageText (Language.ENGLISH, "Research cost: RESEARCH_TOTAL PRODUCTION_TYPE"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+		
+		// City spell effect
+		final CityViewElement citySpellEffectGfx = new CityViewElement ();
+		citySpellEffectGfx.setCityViewImageFile ("/momime.client.graphics/cityView/sky/arcanus-SE110-mini.png");
+		when (db.findCityViewElementSpellEffect ("SE110")).thenReturn (citySpellEffectGfx);
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock entries from client XML
+		final Spell spellDef2 = new Spell ();		
+		when (db.findSpell ("SP110", "HelpUI")).thenReturn (spellDef2);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the graphics XML
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Spells
 		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
-		when (spellClientUtils.findImageForSpell ("SP048", 3)).thenReturn (utils.loadImage (cae.getCombatAreaEffectImageFile ()));
-		
 		when (spellClientUtils.listUpkeepsOfSpell (spellDef2, new ArrayList<PlayerPick> ())).thenReturn ("Upkeep: 5 Mana per turn");
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
+		// EL replacer
+		final StandardEvaluationContext context = new StandardEvaluationContext ();
+		context.setRootObject (new SpringEvaluationContextRoot (gfx, client));
+		
+		final SpringExpressionReplacerImpl replacer = new SpringExpressionReplacerImpl ();
+		replacer.setEvaluationContext (context);
+		replacer.setClasspathResource (true);
+		replacer.setHtmlImage (true);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		layout.buildMaps ();
+		
+		// Set up form
+		final HelpUI help = new HelpUI ();
+		help.setNewTurnMessagesLayout (layout);
+		help.setUtils (utils);
+		help.setLanguageHolder (langHolder);
+		help.setLanguageChangeMaster (langMaster);
+		help.setSpellClientUtils (spellClientUtils);
+		help.setSpellUtils (spellUtils);
+		help.setClient (client);
+		help.setLargeFont (CreateFontsForTests.getLargeFont ());
+		help.setSmallFont (CreateFontsForTests.getSmallFont ());
+		help.setTextUtils (new TextUtilsImpl ());
+		help.setSpringExpressionReplacer (replacer);
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (3);
+
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerPublicDetails castingPlayer = new PlayerPublicDetails (pd, pub, null);
+
+		help.showCitySpellEffectID ("SE110", "SP110", castingPlayer);
+		Thread.sleep (5000);
+		help.setVisible (false);
+	}
+
+	/**
+	 * Tests displaying help text about a spell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHelpUI_Spell () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Mock entries from the language XML
+		final HelpScreen helpScreenLang = new HelpScreen ();
+		helpScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Help"));
+		helpScreenLang.getSpellBookSection ().add (createLanguageText (Language.ENGLISH, "Spell book section: SPELL_BOOK_SECTION"));
+		helpScreenLang.getSpellBookResearchCostNotOurs ().add (createLanguageText (Language.ENGLISH, "Research cost: RESEARCH_TOTAL PRODUCTION_TYPE"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+		
+		// Spell book section
+		final SpellBookSection section = new SpellBookSection ();
+		section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Combat Enchantments"));
+		when (db.findSpellBookSection (eq (SpellBookSectionID.COMBAT_ENCHANTMENTS), anyString ())).thenReturn (section);
+		
+		// Production types
+		final ProductionTypeEx research = new ProductionTypeEx();
+		research.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "RP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "HelpUI")).thenReturn (research);
+
+		final ProductionTypeEx mana = new ProductionTypeEx ();
+		mana.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "HelpUI")).thenReturn (mana);
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock entries from client XML
+		final Spell spellDef1 = new Spell ();
+		spellDef1.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
+		spellDef1.setResearchCost (180);
+		spellDef1.getSpellName ().add (createLanguageText (Language.ENGLISH, "Counter Magic"));
+		spellDef1.getSpellDescription ().add (createLanguageText (Language.ENGLISH, "All enemy spell cast in combat must resist being dispelled while this spell is in effect."));
+		spellDef1.getSpellHelpText ().add (createLanguageText (Language.ENGLISH,
+			"Creates a reserve of counter magic power which resists all spells cast by an opponent wizard as if you had cast an equally-strong dispel magic." +
+			System.lineSeparator () + System.lineSeparator () +
+			"Each spell casting attempt by the opposing wizard reduces the strength of the counter magic reserve by five mana."));
+		when (db.findSpell ("SP048", "HelpUI")).thenReturn (spellDef1);
+
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the graphics XML
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		
+		// Spells
+		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
+		when (spellClientUtils.findImageForSpell ("SP048", 3)).thenReturn (utils.loadImage ("/momime.client.graphics/combat/effects/CSE048.png"));
+		
+		when (spellClientUtils.listUpkeepsOfSpell (spellDef1, null)).thenReturn ("Upkeep: 5 Mana per turn");
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
+		// EL replacer
+		final StandardEvaluationContext context = new StandardEvaluationContext ();
+		context.setRootObject (new SpringEvaluationContextRoot (gfx, client));
+		
+		final SpringExpressionReplacerImpl replacer = new SpringExpressionReplacerImpl ();
+		replacer.setEvaluationContext (context);
+		replacer.setClasspathResource (true);
+		replacer.setHtmlImage (true);
+
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		layout.buildMaps ();
+		
+		// Set up form
+		final HelpUI help = new HelpUI ();
+		help.setNewTurnMessagesLayout (layout);
+		help.setUtils (utils);
+		help.setLanguageHolder (langHolder);
+		help.setLanguageChangeMaster (langMaster);
+		help.setSpellClientUtils (spellClientUtils);
+		help.setSpellUtils (spellUtils);
+		help.setClient (client);
+		help.setLargeFont (CreateFontsForTests.getLargeFont ());
+		help.setSmallFont (CreateFontsForTests.getSmallFont ());
+		help.setTextUtils (new TextUtilsImpl ());
+		help.setSpringExpressionReplacer (replacer);
+
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (3);
+		
+		final PlayerPublicDetails castingPlayer = new PlayerPublicDetails (pd, null, null);
+		
+		help.showSpellID ("SP048", castingPlayer);
+		Thread.sleep (5000);
+		help.setVisible (false);
+	}
+
+	/**
+	 * Tests displaying help text about a hero item slot type
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testHelpUI_HeroItemSlotType () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Mock entries from the language XML
+		final HelpScreen helpScreenLang = new HelpScreen ();
+		helpScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Help"));
+		helpScreenLang.getSpellBookSection ().add (createLanguageText (Language.ENGLISH, "Spell book section: SPELL_BOOK_SECTION"));
+		helpScreenLang.getSpellBookResearchCostNotOurs ().add (createLanguageText (Language.ENGLISH, "Research cost: RESEARCH_TOTAL PRODUCTION_TYPE"));
+
+		final HeroItemInfoScreen heroItemInfoScreenLang = new HeroItemInfoScreen ();
+		heroItemInfoScreenLang.getItemSlotHelpTextPrefix ().add (createLanguageText (Language.ENGLISH, "The following types of hero items can be used in this slot:"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpScreenLang);
+		when (lang.getHeroItemInfoScreen ()).thenReturn (heroItemInfoScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock entries from client XML
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the graphics XML
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Hero item slots
 		final HeroItemSlotType slotType = new HeroItemSlotType ();
@@ -300,133 +803,12 @@ public final class TestHelpUI extends ClientTestData
 		help.setUtils (utils);
 		help.setLanguageHolder (langHolder);
 		help.setLanguageChangeMaster (langMaster);
-		help.setUnitClientUtils (unitClientUtils);
-		help.setUnitStatsReplacer (unitStatsReplacer);
-		help.setSpellClientUtils (spellClientUtils);
-		help.setSpellUtils (spellUtils);
 		help.setClient (client);
 		help.setLargeFont (CreateFontsForTests.getLargeFont ());
 		help.setSmallFont (CreateFontsForTests.getSmallFont ());
 		help.setTextUtils (new TextUtilsImpl ());
 		help.setSpringExpressionReplacer (replacer);
 		
-		return help;
-	}
-	
-	/**
-	 * Tests displaying help text about a retort
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testHelpUI_Retort () throws Exception
-	{
-		final HelpUI help = createHelpUI ();
-		help.showPickID ("RT01");
-		Thread.sleep (5000);
-		help.setVisible (false);
-	}
-
-	/**
-	 * Tests displaying help text about a spell book / magic realm
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testHelpUI_Book () throws Exception
-	{
-		final HelpUI help = createHelpUI ();
-		help.showPickID ("MB01");
-		Thread.sleep (5000);
-		help.setVisible (false);
-	}
-
-	/**
-	 * Tests displaying help text about a unit skill
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testHelpUI_UnitSkill () throws Exception
-	{
-		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		
-		final HelpUI help = createHelpUI ();
-		help.showUnitSkillID ("US020", xu);
-		Thread.sleep (5000);
-		help.setVisible (false);
-	}
-
-	/**
-	 * Tests displaying help text about a unit attribute
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testHelpUI_UnitAttribute () throws Exception
-	{
-		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		
-		final HelpUI help = createHelpUI ();
-		help.showUnitSkillID ("UA01", xu);
-		Thread.sleep (5000);
-		help.setVisible (false);
-	}
-
-	/**
-	 * Tests displaying help text about a combat area effect
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testHelpUI_CombatAreaEffect () throws Exception
-	{
-		final HelpUI help = createHelpUI ();
-		help.showCombatAreaEffectID ("CSE048");
-		Thread.sleep (5000);
-		help.setVisible (false);
-	}
-
-	/**
-	 * Tests displaying help text about a city spell effect
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testHelpUI_CitySpellEffect () throws Exception
-	{
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (3);
-
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerPublicDetails castingPlayer = new PlayerPublicDetails (pd, pub, null);
-
-		final HelpUI help = createHelpUI ();
-		help.showCitySpellEffectID ("SE110", "SP110", castingPlayer);
-		Thread.sleep (5000);
-		help.setVisible (false);
-	}
-
-	/**
-	 * Tests displaying help text about a spell
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testHelpUI_Spell () throws Exception
-	{
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (3);
-		
-		final PlayerPublicDetails castingPlayer = new PlayerPublicDetails (pd, null, null);
-		
-		final HelpUI help = createHelpUI ();
-		help.showSpellID ("SP048", castingPlayer);
-		Thread.sleep (5000);
-		help.setVisible (false);
-	}
-
-	/**
-	 * Tests displaying help text about a hero item slot type
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testHelpUI_HeroItemSlotType () throws Exception
-	{
-		final HelpUI help = createHelpUI ();
 		help.showHeroItemSlotTypeID ("IST01");
 		Thread.sleep (5000);
 		help.setVisible (false);

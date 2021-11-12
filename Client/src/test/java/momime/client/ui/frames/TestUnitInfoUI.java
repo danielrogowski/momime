@@ -146,7 +146,6 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (xu.getUnit ()).thenReturn (unit);
 		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
 		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
@@ -155,7 +154,6 @@ public final class TestUnitInfoUI extends ClientTestData
 		
 		final UnitSkillEx movementSkill = new UnitSkillEx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
-		when (unitCalc.findPreferredMovementSkillGraphics (xu, db)).thenReturn (movementSkill);
 
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
@@ -294,7 +292,6 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (xu.getUnit ()).thenReturn (unit);
 		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
 		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
@@ -303,7 +300,6 @@ public final class TestUnitInfoUI extends ClientTestData
 		
 		final UnitSkillEx movementSkill = new UnitSkillEx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
-		when (unitCalc.findPreferredMovementSkillGraphics (xu, db)).thenReturn (movementSkill);
 
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);

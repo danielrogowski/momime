@@ -55,9 +55,7 @@ import momime.common.database.ProductionTypeEx;
 import momime.common.database.ProductionTypeImage;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillEx;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -155,6 +153,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 		// Cell renderers
 		final UnitAttributeListCellRenderer attributeRenderer = new UnitAttributeListCellRenderer ();
 		attributeRenderer.setLanguageHolder (langHolder);
+		attributeRenderer.setClient (client);
 
 		final UnitSkillListCellRenderer skillRenderer = new UnitSkillListCellRenderer ();
 		skillRenderer.setLanguageHolder (langHolder);
@@ -309,7 +308,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		when (xu.getUnit ()).thenReturn (unit);
 		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
-		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getOwningPlayer ()).thenReturn (player);
 		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
@@ -362,7 +360,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 			unit.getUnitHasSkill ().add (attr);
 
 			modifiedSkillIDs.add (attrID);
-			when (xu.filterModifiedSkillValue (attrID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE)).thenReturn (1);		// Just to get past check
+			when (xu.hasModifiedSkill (attrID)).thenReturn (true);
 		}
 		when (xu.listModifiedSkillIDs ()).thenReturn (modifiedSkillIDs);
 		
@@ -378,17 +376,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		// Unit name
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
 		
-		// Attribute icons
-		unitAttrNo = 0;
-		for (final String unitAttributeImage : new String [] {"meleeNormal", null, "plusToHit", "defenceNormal", "resist", "hitPoints", "plusToBlock"})
-		{
-			unitAttrNo++;
-			final String useAttributeImage = (unitAttributeImage != null) ? "/momime.client.graphics/unitSkills/" + unitAttributeImage + ".png" :
-				"/momime.client.graphics/rangedAttacks/rock/iconNormal.png";
-			
-			when (unitClientUtils.getUnitSkillComponentBreakdownIcon (xu, "UA0" + unitAttrNo)).thenReturn (utils.loadImage (useAttributeImage));
-		}
-		
 		// Cell renderers
 		final UnitStatsLanguageVariableReplacer replacer = mock (UnitStatsLanguageVariableReplacer.class);
 		for (int n = 1; n <= 5; n++)
@@ -397,6 +384,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 		// Cell renderers
 		final UnitAttributeListCellRenderer attributeRenderer = new UnitAttributeListCellRenderer ();
 		attributeRenderer.setLanguageHolder (langHolder);
+		attributeRenderer.setClient (client);
 
 		final UnitSkillListCellRenderer skillRenderer = new UnitSkillListCellRenderer ();
 		skillRenderer.setUnitStatsReplacer (replacer);

@@ -56,10 +56,13 @@ public final class TestWizardBanishedUI extends ClientTestData
 		banishedWizardDef.setEvaporatingAnimation ("WIZARD_EVAPORATING_01");
 		when (db.findWizard ("WZ01", "WizardBanishedUI (A)")).thenReturn (banishedWizardDef);
 
-		final WizardEx banishingWizardDef = new WizardEx ();
-		banishingWizardDef.setBanishingImageFile ("/momime.client.graphics/wizards/WZ03-banishing.png");
-		banishingWizardDef.setBanishingHandImageFile ("/momime.client.graphics/wizards/WZ03-banishing-hand.png");
-		when (db.findWizard ("WZ03", "WizardBanishedUI (B)")).thenReturn (banishingWizardDef);
+		if (isEnemyWizard)
+		{
+			final WizardEx banishingWizardDef = new WizardEx ();
+			banishingWizardDef.setBanishingImageFile ("/momime.client.graphics/wizards/WZ03-banishing.png");
+			banishingWizardDef.setBanishingHandImageFile ("/momime.client.graphics/wizards/WZ03-banishing-hand.png");
+			when (db.findWizard ("WZ03", "WizardBanishedUI (B)")).thenReturn (banishingWizardDef);
+		}
 		
 		// Client
 		final MomClient client = mock (MomClient.class);

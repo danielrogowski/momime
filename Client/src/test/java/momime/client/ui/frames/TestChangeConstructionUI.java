@@ -2,7 +2,6 @@ package momime.client.ui.frames;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -93,7 +92,6 @@ public final class TestChangeConstructionUI extends ClientTestData
 			upkeep.setDoubleAmount (n * -2);
 			building.getBuildingPopulationProductionModifier ().add (upkeep);
 			
-			when (db.findBuilding (eq (building.getBuildingID ()), anyString ())).thenReturn (building);
 			buildings.add (building);
 		}
 		
@@ -119,10 +117,6 @@ public final class TestChangeConstructionUI extends ClientTestData
 			units.add (unit);
 		}
 		
-		doReturn (buildings).when (db).getBuilding ();
-		doReturn (units).when (db).getUnits ();
-		when (db.findRace ("RC01", "updateWhatCanBeConstructed")).thenReturn (race);
-
 		final ProductionTypeImage plusOneImageContainer = new ProductionTypeImage ();
 		plusOneImageContainer.setProductionImageFile ("/momime.client.graphics/production/gold/1.png");
 		plusOneImageContainer.setProductionValue ("1");
@@ -172,7 +166,6 @@ public final class TestChangeConstructionUI extends ClientTestData
 		
 		// Client city calculations derive language strings
 		final ClientCityCalculations clientCityCalc = mock (ClientCityCalculations.class);
-		when (clientCityCalc.describeWhatBuildingAllows ("BL04", new MapCoordinates3DEx (20, 10, 0))).thenReturn ("This is what the Granary allows");
 		when (clientCityCalc.describeWhatBuildingAllows ("BL05", new MapCoordinates3DEx (20, 10, 0))).thenReturn ("This is what the Fighters' Guild allows");
 		
 		// Mock dummy language change master, since the language won't be changing
@@ -201,7 +194,6 @@ public final class TestChangeConstructionUI extends ClientTestData
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getClientDB ()).thenReturn (db);
-		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		// What city can construct
 		final ClientCityCalculations clientCityCalculations = mock (ClientCityCalculations.class);

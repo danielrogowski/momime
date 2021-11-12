@@ -22,7 +22,6 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.JoinGameScreen;
 import momime.client.languages.database.Simple;
 import momime.client.languages.database.TurnSystems;
-import momime.client.languages.database.WaitForPlayersToJoinScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.LandProportion;
@@ -66,14 +65,10 @@ public final class TestJoinGameUI extends ClientTestData
 		final TurnSystems turnSystemsLang = new TurnSystems ();
 		turnSystemsLang.getOnePlayerAtATime ().add (createLanguageText (Language.ENGLISH, "One player at a time"));
 		
-		final WaitForPlayersToJoinScreen waitForPlayersToJoinScreenLang = new WaitForPlayersToJoinScreen ();
-		waitForPlayersToJoinScreenLang.getCustom ().add (createLanguageText (Language.ENGLISH, "Custom"));
-
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		when (lang.getSimple ()).thenReturn (simpleLang);
 		when (lang.getJoinGameScreen ()).thenReturn (joinGameScreenLang);
 		when (lang.getTurnSystems ()).thenReturn (turnSystemsLang);
-		when (lang.getWaitForPlayersToJoinScreen ()).thenReturn (waitForPlayersToJoinScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguages (lang);

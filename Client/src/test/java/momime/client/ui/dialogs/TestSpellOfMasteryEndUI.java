@@ -58,38 +58,47 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		
 		for (int n = 1; n <= 5; n++)
 		{
-			final WizardEx castingWizardDef = new WizardEx ();
-			castingWizardDef.setChantingAnimation ("WIZARD_CHANTING_0" + n);
-			castingWizardDef.setBallAnimation ("WIZARD_BALL_0" + n);
-			when (db.findWizard (eq ("WZ0" + n), anyString ())).thenReturn (castingWizardDef);
+			if ((n == 1) || (n == 2) || (n == 5))
+			{
+				final WizardEx castingWizardDef = new WizardEx ();
+				castingWizardDef.setChantingAnimation ("WIZARD_CHANTING_0" + n);
+				castingWizardDef.setBallAnimation ("WIZARD_BALL_0" + n);
+				when (db.findWizard (eq ("WZ0" + n), anyString ())).thenReturn (castingWizardDef);
+			}
 			
 			// Chanting anim
-			final AnimationEx chantingAnim = new AnimationEx ();
-			for (int f = 1; f <= 8; f++)
+			if (n == 1)
 			{
-				final int frameNumber = (f <= 5) ? f : (10 - f);
+				final AnimationEx chantingAnim = new AnimationEx ();
+				for (int f = 1; f <= 8; f++)
+				{
+					final int frameNumber = (f <= 5) ? f : (10 - f);
+					
+					final AnimationFrame frame = new AnimationFrame ();
+					frame.setImageFile ("/momime.client.graphics/wizards/WZ0" + n + "-chanting-frame-" + frameNumber + ".png");
+					chantingAnim.getFrame ().add (frame);
+				}
 				
-				final AnimationFrame frame = new AnimationFrame ();
-				frame.setImageFile ("/momime.client.graphics/wizards/WZ0" + n + "-chanting-frame-" + frameNumber + ".png");
-				chantingAnim.getFrame ().add (frame);
+				when (db.findAnimation (eq ("WIZARD_CHANTING_0" + n), anyString ())).thenReturn (chantingAnim);
 			}
-			
-			when (db.findAnimation (eq ("WIZARD_CHANTING_0" + n), anyString ())).thenReturn (chantingAnim);
 			
 			// Ball anim
-			final AnimationEx ballAnim = new AnimationEx ();
-			for (int f = 1; f <= 60; f++)
+			if ((n == 2) || (n == 5))
 			{
-				String s = Integer.valueOf (f).toString ();
-				while (s.length () < 2)
-					s = "0" + s;
-				
-				final AnimationFrame frame = new AnimationFrame ();
-				frame.setImageFile ("/momime.client.graphics/wizards/WZ0" + n + "-ball-frame-" + s + ".png");
-				ballAnim.getFrame ().add (frame);
-			}
+				final AnimationEx ballAnim = new AnimationEx ();
+				for (int f = 1; f <= 60; f++)
+				{
+					String s = Integer.valueOf (f).toString ();
+					while (s.length () < 2)
+						s = "0" + s;
+					
+					final AnimationFrame frame = new AnimationFrame ();
+					frame.setImageFile ("/momime.client.graphics/wizards/WZ0" + n + "-ball-frame-" + s + ".png");
+					ballAnim.getFrame ().add (frame);
+				}
 			
-			when (db.findAnimation (eq ("WIZARD_BALL_0" + n), anyString ())).thenReturn (ballAnim);
+				when (db.findAnimation (eq ("WIZARD_BALL_0" + n), anyString ())).thenReturn (ballAnim);
+			}
 		}
 		
 		// Client

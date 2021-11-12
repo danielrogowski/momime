@@ -134,7 +134,6 @@ public final class TestAlchemyUI extends ClientTestData
 		// Resources we have
 		final ResourceValueUtils resourceUtils = mock (ResourceValueUtils.class);
 		when (resourceUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (125);
-		when (resourceUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (75);
 		
 		// Set up form
 		final AlchemyUI alchemy = new AlchemyUI ();

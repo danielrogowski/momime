@@ -52,7 +52,6 @@ import momime.common.database.ProductionTypeEx;
 import momime.common.database.ProductionTypeImage;
 import momime.common.database.RaceEx;
 import momime.common.database.RacePopulationTask;
-import momime.common.database.TileSetEx;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
@@ -120,11 +119,6 @@ public final class TestCityViewUI extends ClientTestData
 		granaryGfx.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
 		when (db.findCityViewElementBuilding (eq ("BL01"), anyString ())).thenReturn (granaryGfx);
 		
-		final TileSetEx overlandMapTileSet = new TileSetEx ();
-		overlandMapTileSet.setTileWidth (20);
-		overlandMapTileSet.setTileHeight (18);
-		when (db.findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
-		
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
 		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
@@ -154,9 +148,12 @@ public final class TestCityViewUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Client DB
-		final Building granary = new Building ();
-		granary.setProductionCost (200);
-		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (granary);
+		if (ourCity)
+		{
+			final Building granary = new Building ();
+			granary.setProductionCost (200);
+			when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (granary);
+		}
 		
 		when (db.getMostExpensiveConstructionCost ()).thenReturn (1000);
 		
@@ -195,13 +192,18 @@ public final class TestCityViewUI extends ClientTestData
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (null, null, null);
-		when (multiplayerSessionUtils.findPlayerWithID (players, 1)).thenReturn (player1);
-		when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Nigel");
-		
-		final PlayerPublicDetails player2 = new PlayerPublicDetails (null, null, null);
-		when (multiplayerSessionUtils.findPlayerWithID (players, 2)).thenReturn (player2);
-		when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Jafar");
+		if (ourCity)
+		{
+			final PlayerPublicDetails player1 = new PlayerPublicDetails (null, null, null);
+			when (multiplayerSessionUtils.findPlayerWithID (players, 1)).thenReturn (player1);
+			when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Nigel");
+		}		
+		else
+		{
+			final PlayerPublicDetails player2 = new PlayerPublicDetails (null, null, null);
+			when (multiplayerSessionUtils.findPlayerWithID (players, 2)).thenReturn (player2);
+			when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Jafar");
+		}
 				
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();

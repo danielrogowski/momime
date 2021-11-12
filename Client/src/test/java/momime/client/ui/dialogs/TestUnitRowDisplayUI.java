@@ -112,7 +112,6 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 			attrDef.setUnitSkillID ("UA0" + attrNo);
 			attrDef.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
 			
-			when (db.findUnitSkill (attrDef.getUnitSkillID (), "UnitRowDisplayUI")).thenReturn (attrDef);
 			unitSkills.add (attrDef);
 		}
 		
@@ -172,12 +171,19 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		when (xu.listModifiedSkillIDs ()).thenReturn (unitSkillIDs);
 
 		// Attributes
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
 		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (2);
 		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (xu, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (meleeIcon);
+		
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (true);
 		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (15);
-
 		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (xu, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (hpIcon);
-			
+
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (false);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (false);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (false);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (false);
+		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "getModifiedImage")).thenReturn (player1);

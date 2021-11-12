@@ -96,12 +96,13 @@ public final class TestCreateArtifactUI extends ClientTestData
 		}
 		doReturn (itemTypes).when (db).getHeroItemType ();
 		
-		for (int n = 1; n <= 37; n++)
+		for (int n = 1; n <= 10; n++)
 		{
 			final HeroItemBonus bonus = new HeroItemBonus ();
 			bonus.setHeroItemBonusID ("IB" + ((n < 10) ? "0" : "") + n);
 			bonus.setCraftingCostMultiplierApplies ((n % 2) == 0);
 			bonus.getHeroItemBonusDescription ().add (createLanguageText (Language.ENGLISH, "Name of " + bonus.getHeroItemBonusID ()));
+			
 			when (db.findHeroItemBonus (eq (bonus.getHeroItemBonusID ()), anyString ())).thenReturn (bonus);
 		}
 		

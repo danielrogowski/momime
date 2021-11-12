@@ -52,15 +52,19 @@ public final class TestWizardWonUI extends ClientTestData
 		
 		// Client
 		final MomClient client = mock (MomClient.class);
-		when (client.getClientDB ()).thenReturn (db);
+		if (standardPhotoID != null)
+			when (client.getClientDB ()).thenReturn (db);
 		
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 
-		final WizardEx winningWizardDef = new WizardEx ();
-		winningWizardDef.setWorldHandsImageFile ("/momime.client.graphics/animations/worlds/hands-male-mid.png");
-		winningWizardDef.setTalkingAnimation ("WIZARD_TALKING_01");
-		when (db.findWizard ("WZ01", "WizardWonUI")).thenReturn (winningWizardDef);
+		if (standardPhotoID != null)
+		{
+			final WizardEx winningWizardDef = new WizardEx ();
+			winningWizardDef.setWorldHandsImageFile ("/momime.client.graphics/animations/worlds/hands-male-mid.png");
+			winningWizardDef.setTalkingAnimation ("WIZARD_TALKING_01");
+			when (db.findWizard ("WZ01", "WizardWonUI")).thenReturn (winningWizardDef);
+		}
 		
 		// Animations
 		final AnimationEx worldsAnim = new AnimationEx ();
@@ -91,19 +95,22 @@ public final class TestWizardWonUI extends ClientTestData
 		
 		when (gfx.findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_WON_SPARKLES, "WizardWonUI (S)")).thenReturn (sparklesAnim);
 
-		final AnimationEx talkingAnim = new AnimationEx ();
-		for (int n = 1; n <= 20; n++)
+		if (standardPhotoID != null)
 		{
-			String s = Integer.valueOf (n).toString ();
-			while (s.length () < 2)
-				s = "0" + s;
+			final AnimationEx talkingAnim = new AnimationEx ();
+			for (int n = 1; n <= 20; n++)
+			{
+				String s = Integer.valueOf (n).toString ();
+				while (s.length () < 2)
+					s = "0" + s;
+				
+				final AnimationFrame frame = new AnimationFrame ();
+				frame.setImageFile ("/momime.client.graphics/wizards/WZ01-talk-frame-" + s + ".png");
+				talkingAnim.getFrame ().add (frame);
+			}
 			
-			final AnimationFrame frame = new AnimationFrame ();
-			frame.setImageFile ("/momime.client.graphics/wizards/WZ01-talk-frame-" + s + ".png");
-			talkingAnim.getFrame ().add (frame);
+			when (db.findAnimation ("WIZARD_TALKING_01", "WizardWonUI (T)")).thenReturn (talkingAnim);
 		}
-		
-		when (db.findAnimation ("WIZARD_TALKING_01", "WizardWonUI (T)")).thenReturn (talkingAnim);
 		
 		// Mock entries from the language XML
 		final WizardWonScreen wizardWonScreenLang = new WizardWonScreen ();

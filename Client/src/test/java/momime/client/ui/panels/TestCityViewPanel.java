@@ -142,7 +142,6 @@ public final class TestCityViewPanel extends ClientTestData
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
-		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// City data

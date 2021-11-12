@@ -130,7 +130,6 @@ public final class TestCombatUI extends ClientTestData
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitOverlandImageFile ("/momime.client.graphics/units/UN197/overland.png");
-		when (db.findUnit ("UN197", "setSelectedUnitInCombat")).thenReturn (unitDef);
 		
 		final TileTypeEx tileType = new TileTypeEx ();
 		when (db.findTileType ("TT01", "CombatUI")).thenReturn (tileType);
@@ -144,7 +143,9 @@ public final class TestCombatUI extends ClientTestData
 		{
 			final CombatAreaEffect cae = new CombatAreaEffect ();
 			cae.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CAE0" + n + ".png");
-			when (db.findCombatAreaEffect ("CAE0" + n, "generateCombatAreaEffectIcons")).thenReturn (cae);
+			
+			if ((n != 3) && (n != 6))
+				when (db.findCombatAreaEffect ("CAE0" + n, "generateCombatAreaEffectIcons")).thenReturn (cae);
 		}
 		
 		// Overland map
@@ -296,6 +297,10 @@ public final class TestCombatUI extends ClientTestData
 		when (xuSelectedUnit.getUnitDefinition ()).thenReturn (unitDef);
 		when (xuSelectedUnit.getOwningPlayerID ()).thenReturn (atkPd.getPlayerID ());
 		when (expand.expandUnitDetails (selectedUnit, null, null, null, players, fow, db)).thenReturn (xuSelectedUnit);
+
+		when (xuSelectedUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (true);
+		when (xuSelectedUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
+		when (xuSelectedUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (true);
 		
 		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);
 		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (2);

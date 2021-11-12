@@ -76,7 +76,7 @@ public final class TestWizardsUI extends ClientTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		for (int n = 1; n <= 14; n++)
+		for (int n = 1; n <= 13; n++)
 		{
 			final WizardEx wizard = new WizardEx ();
 			wizard.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
@@ -116,7 +116,8 @@ public final class TestWizardsUI extends ClientTestData
 			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
 			
-			when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
+			if (n <= 14)
+				when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
 		}
 		
 		final MomClient client = mock (MomClient.class);

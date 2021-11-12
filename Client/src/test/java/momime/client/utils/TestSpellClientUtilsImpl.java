@@ -3,8 +3,6 @@ package momime.client.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -391,14 +389,10 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 	public final void testListSavingThrowsOfSpell_ModifiedSavingThrow_NoSpellValidUnitTargetRecords () throws Exception
 	{
 		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		final UnitSkillEx attr = new UnitSkillEx ();
 		attr.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Resistance"));
-		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (attr);
 		
 		final MomClient client = mock (MomClient.class);
-		when (client.getClientDB ()).thenReturn (db);
 		
 		// Mock entries from the language XML
 		final HelpScreen helpLang = new HelpScreen ();
@@ -432,14 +426,10 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 	public final void testListSavingThrowsOfSpell_ModifiedSavingThrow_WithSpellValidUnitTargetRecords () throws Exception
 	{
 		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		final UnitSkillEx attr = new UnitSkillEx ();
 		attr.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Resistance"));
-		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (attr);
 		
 		final MomClient client = mock (MomClient.class);
-		when (client.getClientDB ()).thenReturn (db);
 		
 		// Mock entries from the language XML
 		final HelpScreen helpLang = new HelpScreen ();
@@ -478,14 +468,10 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 	public final void testListSavingThrowsOfSpell_MultipleSavingThrow () throws Exception
 	{
 		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		final UnitSkillEx attr = new UnitSkillEx ();
 		attr.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Resistance"));
-		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (attr);
 
 		final MomClient client = mock (MomClient.class);
-		when (client.getClientDB ()).thenReturn (db);
 		
 		// Mock entries from the language XML
 		final HelpScreen helpLang = new HelpScreen ();
@@ -1068,13 +1054,9 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 	{
 		// Mock image
 		final BufferedImage buildingFrame1 = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		final BufferedImage buildingFrame2 = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		final BufferedImage buildingFrame3 = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
 		
 		final NdgUIUtils uiUtils = mock (NdgUIUtils.class);
 		when (uiUtils.loadImage ("BL15-frame1.png")).thenReturn (buildingFrame1);
-		when (uiUtils.loadImage ("BL15-frame2.png")).thenReturn (buildingFrame2);
-		when (uiUtils.loadImage ("BL15-frame3.png")).thenReturn (buildingFrame3);
 		
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);

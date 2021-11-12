@@ -111,8 +111,6 @@ public final class TestOptionsUI extends ClientTestData
 		anim.setUtils (utils);
 		
 		// Language choices
-		final MomLanguagesEx languages = mock (MomLanguagesEx.class);
-		
 		final List<LanguageOptionEx> languageOptions = new ArrayList<LanguageOptionEx> ();
 		for (final Language language : Language.values ())
 		{
@@ -121,7 +119,6 @@ public final class TestOptionsUI extends ClientTestData
 			option.setLanguageDescription (language.toString ());
 			languageOptions.add (option);
 		}
-		when (languages.getLanguageOptions ()).thenReturn (languageOptions);
 
 		// Config
 		final MomImeClientConfig config = new MomImeClientConfig ();

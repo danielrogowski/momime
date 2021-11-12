@@ -30,7 +30,6 @@ import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
-import momime.common.database.Pick;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSection;
@@ -64,20 +63,12 @@ public final class TestSpellBookUI extends ClientTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		for (int n = 1; n < 8; n++)
+		for (int n = 1; n <= 2; n++)
 		{
 			final SpellBookSection section = new SpellBookSection ();
 			section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Spell book section " + (n+1)));
 			when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + n), "SpellBookUI")).thenReturn (section);
 		}
-
-		final SpellBookSection sectionResearch = new SpellBookSection ();
-		sectionResearch.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Researchable spells"));
-		when (db.findSpellBookSection (SpellBookSectionID.RESEARCHABLE_NOW, "SpellBookUI")).thenReturn (sectionResearch);
-		
-		final SpellBookSection sectionUnknown = new SpellBookSection ();
-		sectionUnknown.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Unknown spells"));
-		when (db.findSpellBookSection (SpellBookSectionID.RESEARCHABLE, "SpellBookUI")).thenReturn (sectionUnknown);
 		
 		final ProductionTypeEx research = new ProductionTypeEx ();
 		research.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "RP"));
@@ -86,14 +77,6 @@ public final class TestSpellBookUI extends ClientTestData
 		final ProductionTypeEx mana = new ProductionTypeEx ();
 		mana.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "SpellBookUI")).thenReturn (mana);
-
-		final Pick redPick = new Pick ();
-		redPick.setPickBookshelfTitleColour ("FF0000");
-		when (db.findPick ("MB01", "languageOrPageChanged")).thenReturn (redPick);
-		
-		final Pick greenPick = new Pick ();
-		greenPick.setPickBookshelfTitleColour ("00FF00");
-		when (db.findPick ("MB02", "languageOrPageChanged")).thenReturn (greenPick);
 		
 		// Mock entries from the language XML
 		final SpellBookScreen spellBookScreenLang = new SpellBookScreen ();
@@ -157,8 +140,11 @@ public final class TestSpellBookUI extends ClientTestData
 			spell.setResearchCost (n * 10);
 			spells.add (spell);
 			
-			when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), spellSettings, db)).thenReturn (n * 5);
-			when (spellUtils.getReducedCombatCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 2);
+			if ((n == 10) || (n == 20) || (n == 21))
+			{
+				when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), spellSettings, db)).thenReturn (n * 5);
+				when (spellUtils.getReducedCombatCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 2);
+			}
 		}
 		doReturn (spells).when (db).getSpell ();
 		

@@ -64,9 +64,7 @@ import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.ExpandedUnitDetails;
@@ -263,26 +261,14 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		final BufferedImage plusToHitImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("plusToHit.png")).thenReturn (plusToHitImage);
 
-		final BufferedImage meleeWepGrade1Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.loadImage ("melee1.png")).thenReturn (meleeWepGrade1Image);
-		
 		final BufferedImage meleeWepGrade2Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("melee2.png")).thenReturn (meleeWepGrade2Image);
 		
-		final BufferedImage meleeWepGrade3Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.loadImage ("melee3.png")).thenReturn (meleeWepGrade3Image);
-
 		final BufferedImage rat1Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("rat1.png")).thenReturn (rat1Image);
 
-		final BufferedImage rat2wepGrade1Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.loadImage ("rat2-1.png")).thenReturn (rat2wepGrade1Image);
-		
 		final BufferedImage rat2wepGrade2Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("rat2-2.png")).thenReturn (rat2wepGrade2Image);
-		
-		final BufferedImage rat2wepGrade3Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.loadImage ("rat2-3.png")).thenReturn (rat2wepGrade3Image);
 		
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -398,7 +384,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
 		when (unit.getModifiedExperienceLevel ()).thenReturn (expLvl);
-		when (unit.getUnitType ()).thenReturn (unitTypeDef);
 		
 		// Set up object to test
 		final UnitClientUtilsImpl unitClientUtils = new UnitClientUtilsImpl ();
@@ -681,7 +666,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findUnit ("UN001", "playCombatActionSound")).thenReturn (unitGfx);
-		when (db.findCombatAction ("X", "playCombatActionSound")).thenReturn (defaultAction);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -753,20 +737,8 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.COMBAT_AREA_EFFECTS, "generateAttributeImage")).thenReturn (caeComponentBackground);
 		when (utils.loadImage ("c.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_CAE));
 		
-		// Player's memory
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		priv.setFogOfWarMemory (fow);
-		
-		// Player's list
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
 		// Unit
-		final AvailableUnit unit = new AvailableUnit ();
-		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (xu.getUnit ()).thenReturn (unit);
 		
 		// Unit stats
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -774,8 +746,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
-		when (client.getPlayers ()).thenReturn (players);
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Set up object to test
 		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
@@ -794,9 +764,15 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		// Generate image for when the unit has a single basic stat value of 1
 		when (xu.getModifiedSkillValue ("UA01")).thenReturn (1);
-		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE)).thenReturn (1);		
-		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH)).thenReturn (1);		
-		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE)).thenReturn (1);		
+		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE)).thenReturn (1);
+		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.POSITIVE)).thenReturn (0);
+		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.POSITIVE)).thenReturn (0);
+		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.HERO_SKILLS, UnitSkillPositiveNegative.POSITIVE)).thenReturn (0);
+		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.HERO_ITEMS, UnitSkillPositiveNegative.POSITIVE)).thenReturn (0);
+		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.SPELL_EFFECTS, UnitSkillPositiveNegative.POSITIVE)).thenReturn (0);
+		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.STACK, UnitSkillPositiveNegative.POSITIVE)).thenReturn (0);
+		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.POSITIVE)).thenReturn (0);
+		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.PENALTIES, UnitSkillPositiveNegative.POSITIVE)).thenReturn (0);
 		
 		checkImage (obj.generateAttributeImage (xu, "UA01"),
 			"SB                                                                   " + System.lineSeparator () +
@@ -806,8 +782,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		// Generate image for when the unit has a makeup of 3 basic + 4 wep grade + 5 experience + 6 hero skills + 2 CAE = 20
 		when (xu.getModifiedSkillValue ("UA01")).thenReturn (20);
-		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE)).thenReturn (20);		
-		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH)).thenReturn (20);		
 		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE)).thenReturn (3);		
 		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.POSITIVE)).thenReturn (4);		
 		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.POSITIVE)).thenReturn (5);		
@@ -822,8 +796,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		// Generate image for when the unit has a makeup of 4 basic + 5 wep grade + 7 experience + 8 hero skills + 3 CAE = 27 - 6 penalty = 21
 		when (xu.getModifiedSkillValue ("UA01")).thenReturn (21);
-		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE)).thenReturn (27);		
-		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH)).thenReturn (21);		
 		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.BASIC, UnitSkillPositiveNegative.POSITIVE)).thenReturn (4);		
 		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.WEAPON_GRADE, UnitSkillPositiveNegative.POSITIVE)).thenReturn (5);		
 		when (xu.filterModifiedSkillValue ("UA01", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.POSITIVE)).thenReturn (7);		

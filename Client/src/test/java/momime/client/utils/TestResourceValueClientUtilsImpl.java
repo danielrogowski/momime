@@ -218,13 +218,11 @@ public final class TestResourceValueClientUtilsImpl extends ClientTestData
 	{
 		// Create different colour sample images
 		final BufferedImage plusOneImage = createSolidImage (1, 1, PLUS_ONE);
-		final BufferedImage plusHalfImage = createSolidImage (1, 1, PLUS_HALF);
 		final BufferedImage plusOneMana = createSolidImage (1, 1, PLUS_ONE_MANA);
 		final BufferedImage plusHalfMana = createSolidImage (1, 1, PLUS_HALF_MANA);
 		
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);
-		when (utils.loadImage ("I+half")).thenReturn (plusHalfImage);
 		when (utils.loadImage ("M+1")).thenReturn (plusOneMana);
 		when (utils.loadImage ("M+half")).thenReturn (plusHalfMana);
 
@@ -336,7 +334,6 @@ public final class TestResourceValueClientUtilsImpl extends ClientTestData
 		// Create different colour sample images
 		final BufferedImage plusOneImage = createSolidImage (1, 1, PLUS_ONE);
 		final BufferedImage plusTenImage = createSolidImage (1, 1, PLUS_TEN);
-		final BufferedImage plusHalfImage = createSolidImage (1, 1, PLUS_HALF);
 		final BufferedImage plusOneMana = createSolidImage (1, 1, PLUS_ONE_MANA);
 		final BufferedImage plusTenMana = createSolidImage (1, 1, PLUS_TEN_MANA);
 		final BufferedImage plusHalfMana = createSolidImage (1, 1, PLUS_HALF_MANA);
@@ -344,7 +341,6 @@ public final class TestResourceValueClientUtilsImpl extends ClientTestData
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);
 		when (utils.loadImage ("I+10")).thenReturn (plusTenImage);
-		when (utils.loadImage ("I+half")).thenReturn (plusHalfImage);
 		when (utils.loadImage ("M+1")).thenReturn (plusOneMana);
 		when (utils.loadImage ("M+10")).thenReturn (plusTenMana);
 		when (utils.loadImage ("M+half")).thenReturn (plusHalfMana);

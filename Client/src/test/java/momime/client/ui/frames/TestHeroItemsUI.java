@@ -98,7 +98,9 @@ public final class TestHeroItemsUI extends ClientTestData
 			
 			final HeroItemSlotType slot = new HeroItemSlotType ();
 			slot.setHeroItemSlotTypeImageFile ("/momime.client.graphics/heroItems/slots/" + slotImageFilename + ".png");
-			when (db.findHeroItemSlotType ("IST0" + slotTypeNumber, "HeroTableCellRenderer")).thenReturn (slot);
+			
+			if (slotTypeNumber != 1)
+				when (db.findHeroItemSlotType ("IST0" + slotTypeNumber, "HeroTableCellRenderer")).thenReturn (slot);
 		}
 		
 		// Mock entries from the language XML

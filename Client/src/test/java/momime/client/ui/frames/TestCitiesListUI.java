@@ -22,7 +22,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.calculations.MiniMapBitmapGenerator;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -208,11 +207,6 @@ public final class TestCitiesListUI extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
 
-		// Mock the minimap bitmaps provided by the RHP
-		final MiniMapBitmapGenerator gen = mock (MiniMapBitmapGenerator.class);
-		when (gen.generateMiniMapBitmap (0)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x004000));
-		when (gen.generateMiniMapBitmap (1)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x402000));
-		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CitiesListUI.xml"));
 		final XmlLayoutContainerEx rowLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CitiesListUI-Row.xml"));
@@ -240,7 +234,6 @@ public final class TestCitiesListUI extends ClientTestData
 		cities.setWizardClientUtils (wizardClientUtils);
 		cities.setMemoryBuildingUtils (memoryBuildingUtils);
 		cities.setCityProductionCalculations (prod);
-		cities.setMiniMapBitmapGenerator (gen);
 		cities.setCitiesListCellRenderer (renderer);
 		
 		// Display form		

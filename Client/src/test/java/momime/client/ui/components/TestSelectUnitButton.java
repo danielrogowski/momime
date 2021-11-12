@@ -115,7 +115,6 @@ public final class TestSelectUnitButton
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
-		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
 		when (client.getClientDB ()).thenReturn (db);
 
 		// Session utils
@@ -127,8 +126,6 @@ public final class TestSelectUnitButton
 		
 		final MomPersistentPlayerPrivateKnowledge ppk = new MomPersistentPlayerPrivateKnowledge ();
 		ppk.setFogOfWarMemory (fow);
-		
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 		
 		// Set up unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -217,7 +214,6 @@ public final class TestSelectUnitButton
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
-		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
 		when (client.getClientDB ()).thenReturn (db);
 
 		// Session utils
@@ -229,8 +225,6 @@ public final class TestSelectUnitButton
 		
 		final MomPersistentPlayerPrivateKnowledge ppk = new MomPersistentPlayerPrivateKnowledge ();
 		ppk.setFogOfWarMemory (fow);
-		
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 		
 		// Set up unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);

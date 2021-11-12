@@ -3,6 +3,9 @@ package momime.server.process;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -10,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -43,6 +48,7 @@ import momime.server.utils.UnitServerUtilsImpl;
 /**
  * Tests the AttackResolutionProcessingImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestAttackResolutionProcessingImpl extends ServerTestData
 {
 	/**
@@ -336,10 +342,11 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (defender, null, null, null, players, fow, db)).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), anyList (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (attacker, null, null, null, players, fow, db)).thenReturn (xuAttacker);
+		when (expand.expandUnitDetails (eq (attacker), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 		when (unitCalc.canMakeRangedAttack (xuAttacker)).thenReturn (true);
 		
 		// Defender has already taken 3 hits, and can take 5 more
@@ -364,7 +371,8 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 			players, fow, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, potentialDamageToDefender, null, null, null, null)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, xuAttacker, attackingPlayer, defendingPlayer, potentialDamageToDefender,
+			new MapCoordinates3DEx (20, 10, 1), null, fow.getBuilding (), db)).thenReturn (3);
 		
 		// Range penalty
 		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
@@ -385,8 +393,11 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 			steps, players, fow, combatMapSize, db);
 		
 		// Check results
-		//assertEquals (0, attacker.getDamageTaken ());
-		//assertEquals (3+3, defender.getDamageTaken ());
+		assertEquals (0, attacker.getUnitDamage ().size ());
+		
+		assertEquals (2, defender.getUnitDamage ().size ());
+		assertEquals (3, defender.getUnitDamage ().get (0).getDamageTaken ());
+		assertEquals (3, defender.getUnitDamage ().get (1).getDamageTaken ());
 	}
 
 	/**
@@ -450,10 +461,12 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (defender, null, null, null, players, fow, db)).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), anyList (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (attacker, null, null, null, players, fow, db)).thenReturn (xuAttacker);
+		when (expand.expandUnitDetails (eq (attacker), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
+		when (expand.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 		
 		// Attacker has already taken 2 hits, and can take 6 more
 		final UnitDamage attackerDamageTaken = new UnitDamage ();
@@ -490,8 +503,10 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 			players, fow, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, potentialDamageToDefender, null, null, null, null)).thenReturn (3);
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, potentialDamageToAttacker, null, null, null, null)).thenReturn (4);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, xuAttacker, attackingPlayer, defendingPlayer, potentialDamageToDefender,
+			new MapCoordinates3DEx (20, 10, 1), null, fow.getBuilding (), db)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuAttacker, xuDefender, attackingPlayer, defendingPlayer, potentialDamageToAttacker,
+			new MapCoordinates3DEx (20, 10, 1), null, fow.getBuilding (), db)).thenReturn (4);
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -508,8 +523,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 			steps, players, fow, combatMapSize, db);
 		
 		// Check results
-		//assertEquals (2+4, attacker.getDamageTaken ());
-		//assertEquals (3+3, defender.getDamageTaken ());
+		assertEquals (2, attacker.getUnitDamage ().size ());
+		assertEquals (2, attacker.getUnitDamage ().get (0).getDamageTaken ());
+		assertEquals (4, attacker.getUnitDamage ().get (1).getDamageTaken ());
+
+		assertEquals (2, defender.getUnitDamage ().size ());
+		assertEquals (3, defender.getUnitDamage ().get (0).getDamageTaken ());
+		assertEquals (3, defender.getUnitDamage ().get (1).getDamageTaken ());
 	}
 
 	/**
@@ -570,10 +590,11 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (defender, null, null, null, players, fow, db)).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (expand.expandUnitDetails (eq (defender), anyList (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (attacker, null, null, null, players, fow, db)).thenReturn (xuAttacker);
+		when (expand.expandUnitDetails (eq (attacker), isNull (), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();
@@ -594,10 +615,12 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final DamageType damageTypeToAttacker = new DamageType ();
 		
 		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US001", players, fow, db)).thenReturn (null);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US002",
 			players, fow, db)).thenReturn (potentialDamageToDefender1);
 		
 		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, damageTypeToAttacker, DamageResolutionTypeID.DOOM, null, null, null, 1);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US003", players, fow, db)).thenReturn (null);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US004",
 			players, fow, db)).thenReturn (potentialDamageToDefender2);
 
@@ -620,8 +643,11 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 			steps, players, fow, combatMapSize, db);
 		
 		// Check results
-		//assertEquals (0, attacker.getDamageTaken ());
-		//assertEquals (3+5, defender.getDamageTaken ());		// NB. would be +7, but this is more damage than the unit has HP so it gets reduced to 5
+		assertEquals (0, attacker.getUnitDamage ().size ());
+
+		assertEquals (2, defender.getUnitDamage ().size ());
+		assertEquals (3, defender.getUnitDamage ().get (0).getDamageTaken ());
+		assertEquals (7, defender.getUnitDamage ().get (1).getDamageTaken ());
 	}
 
 	/**
@@ -692,7 +718,8 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, steps.get (0).getSpellStep (), null, null, null, null)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, steps.get (0).getSpellStep (),
+			new MapCoordinates3DEx (20, 10, 1), null, fow.getBuilding (), db)).thenReturn (3);
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -709,6 +736,8 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 			steps, players, fow, combatMapSize, db);
 		
 		// Check results
-		//assertEquals (3+3, defender.getDamageTaken ());
+		assertEquals (2, defender.getUnitDamage ().size ());
+		assertEquals (3, defender.getUnitDamage ().get (0).getDamageTaken ());
+		assertEquals (3, defender.getUnitDamage ().get (1).getDamageTaken ());
 	}
 }

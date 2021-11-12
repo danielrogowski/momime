@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -31,7 +33,6 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
-import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
@@ -72,6 +73,7 @@ import momime.server.messages.MomGeneralServerKnowledge;
 /**
  * Tests the CombatProcessingImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCombatProcessingImpl extends ServerTestData
 {
 	/**
@@ -129,11 +131,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// One of each kind of test unit
 		final ExpandedUnitDetails dwarfHero = mock (ExpandedUnitDetails.class);
 		when (dwarfHero.isHero ()).thenReturn (true);
+		when (dwarfHero.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (false);
 		when (dwarfHero.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
 		when (dwarfHero.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (1);
 		
 		final ExpandedUnitDetails spearmen = mock (ExpandedUnitDetails.class);
 		when (spearmen.isHero ()).thenReturn (false);
+		when (spearmen.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (false);
 		when (spearmen.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
 		when (spearmen.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (1);
 		
@@ -981,7 +985,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
-		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
@@ -1169,9 +1172,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeEx tt = new TileTypeEx ();
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
-		
 		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
@@ -1183,7 +1183,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
-		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
@@ -1362,10 +1361,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeEx tt = new TileTypeEx ();
-		tt.setMagicRealmID ("X");
-		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
-		
 		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
@@ -1377,7 +1372,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
-		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
@@ -1566,7 +1560,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
-		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
@@ -1717,7 +1710,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
-		when (db.findUnit ("UN193", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (phantomWarriors);
 		
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
@@ -2761,9 +2753,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeEx tt = new TileTypeEx ();
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -2912,9 +2901,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final TileTypeEx tt = new TileTypeEx ();
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -3065,10 +3051,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeEx tt = new TileTypeEx ();
-		tt.setMagicRealmID ("X");
-		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -3218,10 +3200,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final TileTypeEx tt = new TileTypeEx ();
-		tt.setMagicRealmID ("X");
-		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
 		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -3468,13 +3446,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			return null;
 		}).when (xu).setCombatPosition (capturePosition.capture ());
 
-		final ArgumentCaptor<Integer> captureMovesLeft = ArgumentCaptor.forClass (Integer.class);
-		doAnswer ((i) ->
-		{
-			tu.setDoubleCombatMovesLeft (captureMovesLeft.getValue ());
-			return null;
-		}).when (xu).setDoubleCombatMovesLeft (captureMovesLeft.capture ());
-		
 		// Players' memories of unit
 		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();
 		attackingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
@@ -3639,21 +3610,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getMemoryUnit ()).thenReturn (tu);
-		when (xu.getUnitURN ()).thenReturn (101);
 		when (xu.getCombatLocation ()).thenReturn (combatLocation);
 		
 		// We need combatPosition to be read/written a few times and the updates from the getter to reflect in the setter.
 		// So this is a bit awkward to set up with a mock.  Similarly with doubleCombatMovesLeft.
 		when (xu.getCombatPosition ()).thenAnswer ((i) -> (MapCoordinates2DEx) tu.getCombatPosition ());
-		when (xu.getDoubleCombatMovesLeft ()).thenAnswer ((i) -> tu.getDoubleCombatMovesLeft ());
 		
-		final ArgumentCaptor<MapCoordinates2DEx> capturePosition = ArgumentCaptor.forClass (MapCoordinates2DEx.class);
-		doAnswer ((i) ->
-		{
-			tu.setCombatPosition (capturePosition.getValue ());
-			return null;
-		}).when (xu).setCombatPosition (capturePosition.capture ());
-
 		final ArgumentCaptor<Integer> captureMovesLeft = ArgumentCaptor.forClass (Integer.class);
 		doAnswer ((i) ->
 		{
@@ -3677,8 +3639,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPlayerMemoryOfUnit.setCombatPosition (new MapCoordinates2DEx (1, 7));
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (101, attackingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A")).thenReturn (attackingPlayerMemoryOfUnit);
-		when (unitUtils.findUnitURN (101, defendingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-D")).thenReturn (defendingPlayerMemoryOfUnit);
 		
 		// Players in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -3701,8 +3661,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Movement points to enter each tile
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
 		
 		// The unit we're attacking
 		final MemoryUnit defender = new MemoryUnit ();
@@ -3832,15 +3790,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			return null;
 		}).when (xu).setCombatPosition (capturePosition.capture ());
 
-		final ArgumentCaptor<Integer> captureMovesLeft = ArgumentCaptor.forClass (Integer.class);
-		doAnswer ((i) ->
-		{
-			tu.setDoubleCombatMovesLeft (captureMovesLeft.getValue ());
-			return null;
-		}).when (xu).setDoubleCombatMovesLeft (captureMovesLeft.capture ());
-		
 		// Unit speed
-		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (3);
 		when (xu.getMovementSpeed ()).thenReturn (3);
 		
 		// Players' memories of unit
@@ -3884,11 +3834,11 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Movement points to enter each tile
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
 
 		// The unit we're attacking
 		final MemoryUnit defender = new MemoryUnit ();
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, moveTo, db, false)).thenReturn (defender);
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, new MapCoordinates2DEx (3, 8), db, false)).thenReturn (defender);
+		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, new MapCoordinates2DEx (2, 8), db, false)).thenReturn (null);
 		
 		// Set up object to test
 		final DamageProcessor damageProcessor = mock (DamageProcessor.class);

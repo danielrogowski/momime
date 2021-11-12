@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -42,6 +44,7 @@ import momime.server.messages.MomGeneralServerKnowledge;
 /**
  * Tests the PlayerMessageProcessingImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestPlayerMessageProcessingImpl
 {
 	/**
@@ -428,15 +431,12 @@ public final class TestPlayerMessageProcessingImpl
 		// Units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final MemoryUnit unit1 = new MemoryUnit ();
 		final MemoryUnit unit2 = new MemoryUnit ();
-		when (unitUtils.findUnitURN (1, trueMap.getUnit (), "continueMovement")).thenReturn (unit1);
 		when (unitUtils.findUnitURN (2, trueMap.getUnit (), "continueMovement")).thenReturn (unit2);
 		
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
 		when (expand.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> unitStack1 = new ArrayList<ExpandedUnitDetails> ();

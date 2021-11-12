@@ -16,6 +16,8 @@ import momime.common.database.Language;
 import momime.common.database.LanguageText;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -24,6 +26,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the CalculationBoxUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCalculationBoxUI extends ClientTestData
 {
 	/**

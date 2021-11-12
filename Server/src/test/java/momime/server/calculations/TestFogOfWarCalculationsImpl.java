@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -21,6 +23,7 @@ import momime.server.ServerTestData;
 /**
  * Tests the FogOfWarCalculations class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestFogOfWarCalculationsImpl extends ServerTestData
 {
 	/**

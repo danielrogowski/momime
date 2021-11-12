@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -66,6 +68,7 @@ import momime.server.utils.CombatMapServerUtils;
 /**
  * Tests the SpellQueueingImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSpellQueueingImpl extends ServerTestData
 {
 	/**
@@ -156,7 +159,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can't be cast overland
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (false);
@@ -208,7 +210,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can't be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (false);
@@ -263,7 +264,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast overland
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
@@ -326,7 +326,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
@@ -382,7 +381,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
@@ -494,12 +492,9 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		sd.setSpellSetting (settings);
 		
 		// Session variables
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
@@ -1051,7 +1046,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		gc.setCombatAttackerCastingSkillRemaining (15);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1944,7 +1938,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db, true)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
@@ -2079,7 +2072,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db, true)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
@@ -2221,11 +2213,9 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation, db, true)).thenReturn (null);
 		
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
-		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit (), db)).thenReturn (9);
 		
 		// Combat terrain cell
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -2260,15 +2250,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 	@Test
 	public final void testProgressOverlandCasting_NothingQueued () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
-		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
-		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (7);
@@ -2289,10 +2270,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -2319,9 +2297,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
-		
-		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
 		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2360,7 +2335,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
@@ -2402,9 +2376,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
-		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
-		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (7);
@@ -2442,7 +2413,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
@@ -2492,9 +2462,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
 		
-		// General server knowledge
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
-		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (7);
@@ -2535,7 +2502,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);

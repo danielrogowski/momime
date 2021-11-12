@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -46,6 +48,7 @@ import momime.common.utils.SpellUtils;
 /**
  * Tests the CreateArtifactUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCreateArtifactUI extends ClientTestData
 {
 	/**

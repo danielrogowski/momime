@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -33,6 +35,7 @@ import momime.server.calculations.FogOfWarCalculations;
 /**
  * Tests the FogOfWarMidTurnVisibilityImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 {
 	/**

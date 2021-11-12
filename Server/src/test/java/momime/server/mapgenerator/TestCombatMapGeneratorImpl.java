@@ -15,6 +15,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
@@ -50,6 +52,7 @@ import momime.unittests.mapstorage.StoredCombatMap;
 /**
  * Tests the CombatMapGeneratorImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCombatMapGeneratorImpl extends ServerTestData
 {
 	/**

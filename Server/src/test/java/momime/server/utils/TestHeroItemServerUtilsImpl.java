@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -29,6 +31,7 @@ import momime.common.utils.SpellUtils;
 /**
  * Tests the HeroItemServerUtilsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestHeroItemServerUtilsImpl
 {
 	/**
@@ -120,7 +123,6 @@ public final class TestHeroItemServerUtilsImpl
 		{
 			final HeroItemBonus bonus = new HeroItemBonus ();
 			bonus.setBonusCraftingCost (100 * n);
-			when (db.findHeroItemBonus ("IB0" + n, "validateHeroItem")).thenReturn (bonus);
 		}
 		
 		// Item settings

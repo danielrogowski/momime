@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -49,6 +51,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the ServerUnitCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestServerUnitCalculationsImpl extends ServerTestData
 {
 	/**
@@ -109,10 +112,8 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		
 		final UnitEx triremeDef = new UnitEx ();
 		triremeDef.setTransportCapacity (2);
-		when (db.findUnit ("UN001", "recheckTransportCapacity")).thenReturn (triremeDef);
 		
 		final UnitEx spearmenDef = new UnitEx ();
-		when (db.findUnit ("UN002", "recheckTransportCapacity")).thenReturn (spearmenDef);
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting (); 
@@ -153,7 +154,6 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
 		when (expand.expandUnitDetails (trireme, null, null, null, players, trueMap, db)).thenReturn (xuTrireme);
 		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
-		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
 
 		when (unitCalc.calculateDoubleMovementToEnterTileType (xuTrireme, unitStackSkills, "TT01", db)).thenReturn (2);
 		
@@ -170,7 +170,9 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
 			when (expand.expandUnitDetails (spearmen, null, null, null, players, trueMap, db)).thenReturn (xuSpearmen);
 			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
-			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
+			
+			if (n == 1)
+				when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
 
 			when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT01", db)).thenReturn (null);
 			
@@ -434,6 +436,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 
 		// We don't have a MB07, but we do have a MB08
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (pub.getPick (), "MB07")).thenReturn (0);
 		when (playerPickUtils.getQuantityOfPick (pub.getPick (), "MB08")).thenReturn (1);
 		
 		// Spell

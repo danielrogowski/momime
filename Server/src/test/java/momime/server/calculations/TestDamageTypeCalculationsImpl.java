@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -21,6 +23,7 @@ import momime.common.utils.ExpandedUnitDetails;
 /**
  * Tests the DamageTypeCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestDamageTypeCalculationsImpl
 {
 	/**
@@ -35,10 +38,8 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
 		final Pick magicRealm = new Pick ();
-		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
 		final UnitSkillEx melee = new UnitSkillEx ();
 		melee.setDamageTypeID ("DT01");
@@ -46,15 +47,11 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (false);
-		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
 		final DamageType damageType = new DamageType ();
 		damageType.setEnhancedVersion ("DT02");
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
-		
-		final DamageType enhanced = new DamageType ();
-		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
@@ -80,11 +77,9 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTH");
-		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
 		final Pick magicRealm = new Pick ();
 		magicRealm.setEnhancesDamageType (true);
-		when (db.findPick ("LTH", "determineSkillDamageType")).thenReturn (magicRealm);
 		
 		final UnitSkillEx melee = new UnitSkillEx ();
 		melee.setDamageTypeID ("DT01");
@@ -92,7 +87,6 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (false);
-		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
 		final DamageType damageType = new DamageType ();
@@ -104,7 +98,6 @@ public final class TestDamageTypeCalculationsImpl
 		
 		// Unit making the attack
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
-		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
 		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		
 		// Set up object to test
@@ -126,10 +119,8 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
 		final Pick magicRealm = new Pick ();
-		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
 		final UnitSkillEx melee = new UnitSkillEx ();
 		melee.setDamageTypeID ("DT01");
@@ -137,7 +128,6 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (true);
-		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
 		final DamageType damageType = new DamageType ();
@@ -171,10 +161,6 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
-		
-		final Pick magicRealm = new Pick ();
-		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
 		final UnitSkillEx melee = new UnitSkillEx ();
 		melee.setDamageTypeID ("DT01");
@@ -182,19 +168,13 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (true);
-		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
 		final DamageType damageType = new DamageType ();
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageType enhanced = new DamageType ();
-		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
-		
 		// Unit making the attack
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
-		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
-		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
@@ -216,26 +196,19 @@ public final class TestDamageTypeCalculationsImpl
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
 		final Pick magicRealm = new Pick ();
-		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setDamageTypeID ("DT01");
-		when (db.findRangedAttackType ("RAT01", "determineSkillDamageType")).thenReturn (rat);
 		
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (false);
-		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
 		final DamageType damageType = new DamageType ();
 		damageType.setEnhancedVersion ("DT02");
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
-		
-		final DamageType enhanced = new DamageType ();
-		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
@@ -260,23 +233,12 @@ public final class TestDamageTypeCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitEx unitDef = new UnitEx ();
-		unitDef.setUnitMagicRealm ("LTH");
-		unitDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
-		
 		final Pick magicRealm = new Pick ();
 		magicRealm.setEnhancesDamageType (true);
-		when (db.findPick ("LTH", "determineSkillDamageType")).thenReturn (magicRealm);
 		
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setDamageTypeID ("DT01");
-		when (db.findRangedAttackType ("RAT01", "determineSkillDamageType")).thenReturn (rat);
 		
-		final WeaponGrade weaponGrade = new WeaponGrade ();
-		weaponGrade.setEnhancesDamageType (false);
-		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
-
 		// Damage types
 		final DamageType damageType = new DamageType ();
 		damageType.setEnhancedVersion ("DT02");
@@ -287,7 +249,6 @@ public final class TestDamageTypeCalculationsImpl
 		
 		// Unit making the attack
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
-		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
 		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (attacker.getRangedAttackType ()).thenReturn (rat);
 		
@@ -311,18 +272,14 @@ public final class TestDamageTypeCalculationsImpl
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
 		final Pick magicRealm = new Pick ();
-		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setDamageTypeID ("DT01");
-		when (db.findRangedAttackType ("RAT01", "determineSkillDamageType")).thenReturn (rat);
 		
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (true);
-		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
 		final DamageType damageType = new DamageType ();
@@ -358,30 +315,19 @@ public final class TestDamageTypeCalculationsImpl
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
-		
-		final Pick magicRealm = new Pick ();
-		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setDamageTypeID ("DT01");
-		when (db.findRangedAttackType ("RAT01", "determineSkillDamageType")).thenReturn (rat);
 		
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (true);
-		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
 		final DamageType damageType = new DamageType ();
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageType enhanced = new DamageType ();
-		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
-		
 		// Unit making the attack
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
-		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
-		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (attacker.getRangedAttackType ()).thenReturn (rat);
 		
 		// Set up object to test
@@ -488,6 +434,7 @@ public final class TestDamageTypeCalculationsImpl
 		// Unit being hit
 		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
 		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
+		when (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (defender.hasModifiedSkill ("US001")).thenReturn (true);
 		
 		// Set up object to test
@@ -517,6 +464,7 @@ public final class TestDamageTypeCalculationsImpl
 		// Unit being hit
 		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
 		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
+		when (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (defender.hasModifiedSkill ("US001")).thenReturn (true);
 		
 		// Set up object to test

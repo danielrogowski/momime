@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import java.awt.datatransfer.DataFlavor;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -46,6 +48,7 @@ import momime.common.utils.ResourceValueUtils;
 /**
  * Tests the HeroItemsUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestHeroItemsUI extends ClientTestData
 {
 	/**

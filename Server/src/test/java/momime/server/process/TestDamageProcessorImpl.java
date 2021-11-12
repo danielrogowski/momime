@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystemType;
 import com.ndg.map.CoordinateSystemUtils;
@@ -30,13 +32,10 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.DamageType;
 import momime.common.database.FogOfWarSetting;
-import momime.common.database.NegatedBySkill;
-import momime.common.database.NegatedByUnitID;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -61,6 +60,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the DamageProcessorImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestDamageProcessorImpl extends ServerTestData
 {
 	/**
@@ -554,14 +554,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final NegatedBySkill immunityToIllusions = new NegatedBySkill ();
-		immunityToIllusions.setNegatedByUnitID (NegatedByUnitID.ENEMY_UNIT);
-		immunityToIllusions.setNegatedBySkillID ("US001");
-		
-		final UnitSkillEx illusionaryAttackSkill = new UnitSkillEx ();
-		illusionaryAttackSkill.getNegatedBySkill ().add (immunityToIllusions);
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "resolveAttack")).thenReturn (illusionaryAttackSkill);
 
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -640,11 +632,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		
 		final ExpandedUnitDetails xuDefender3 = mock (ExpandedUnitDetails.class);
 		when (expand.expandUnitDetails (defender3, null, null, null, players, trueMap, db)).thenReturn (xuDefender3);
-		
-		// Middle unit is immune to illusions
-		when (xuDefender1.hasModifiedSkill ("US001")).thenReturn (false);
-		when (xuDefender2.hasModifiedSkill ("US001")).thenReturn (true);
-		when (xuDefender3.hasModifiedSkill ("US001")).thenReturn (false);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);

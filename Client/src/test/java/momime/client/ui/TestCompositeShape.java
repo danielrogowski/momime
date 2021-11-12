@@ -11,10 +11,13 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the CompositeShape class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCompositeShape
 {
 	/**

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -17,6 +16,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -35,7 +36,6 @@ import momime.common.database.Plane;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -63,6 +63,7 @@ import momime.server.utils.UnitSkillDirectAccess;
 /**
  * Tests the FogOfWarMidTurnMultiChangesImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 {
 	/**
@@ -173,7 +174,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (unitOne.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients")).thenReturn (unitOne);
-		when (unitUtils.findUnitURN (unitTwo.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients")).thenReturn (unitTwo);
 		when (unitUtils.findUnitURN (unitThree.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients")).thenReturn (unitThree);
 		
 		// Players list
@@ -354,15 +354,10 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
-		
-		final UnitSkillEx expSkillDef = new UnitSkillEx ();
-		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE), anyString ())).thenReturn (expSkillDef);
 		
 		final Pick magicRealm = new Pick ();
 		magicRealm.setHealEachTurn (true);
 		magicRealm.setGainExperienceEachTurn (true);
-		when (db.findPick ("LTN", "healUnitsAndGainExperience")).thenReturn (magicRealm);
 
 		// Session description
 		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
@@ -425,7 +420,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
 		when (expand.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
-		when (xu2.getUnitDefinition ()).thenReturn (unitDef);
 		when (xu2.getFullFigureCount ()).thenReturn (2);
 		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (8);
 		
@@ -442,8 +436,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (expand.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
 		when (xu3.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu3.getUnitDefinition ()).thenReturn (unitDef);
-		when (xu3.getFullFigureCount ()).thenReturn (2);
-		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (8);
 		
 		// Summoned unit that has taken no damage
 		final MemoryUnit unit4 = new MemoryUnit ();
@@ -457,9 +449,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
 		when (expand.expandUnitDetails (unit4, null, null, null, players, trueMap, db)).thenReturn (xu4);
 		when (xu4.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
-		when (xu4.getUnitDefinition ()).thenReturn (unitDef);
-		when (xu4.getFullFigureCount ()).thenReturn (2);
-		when (xu4.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (8);
 		
 		// Dead hero
 		final UnitDamage unit5dmg1 = new UnitDamage ();
@@ -473,15 +462,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		unit5.getUnitDamage ().add (unit5dmg1);
 		for (int n = 0; n < 5; n++)
 			unit5.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
-		when (direct.getDirectSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
 
-		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
-		when (xu5.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
-		when (xu5.getUnitDefinition ()).thenReturn (unitDef);
-		when (xu5.getFullFigureCount ()).thenReturn (1);
-		when (xu5.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (10);
-		
 		// Units list
 		trueMap.getUnit ().add (unit1);
 		trueMap.getUnit ().add (unit2);
@@ -537,11 +518,9 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 
 		final Pick normalUnit = new Pick ();
 		normalUnit.setGainExperienceEachTurn (true);
-		when (db.findPick ("N", "grantExperienceToUnitsInCombat")).thenReturn (normalUnit);
 		
 		final Pick summonedUnit = new Pick ();
 		summonedUnit.setGainExperienceEachTurn (false);
-		when (db.findPick ("S", "grantExperienceToUnitsInCombat")).thenReturn (summonedUnit);
 		
 		// Other lists and objects needed for mocks
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -576,20 +555,12 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		unit2.setCombatHeading (1);
 		trueMap.getUnit ().add (unit2);
 		when (direct.getDirectSkillValue (unit2.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
-
-		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
-		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Normal unit, not in combat, on the correct side
 		final MemoryUnit unit3 = new MemoryUnit ();
 		unit3.setStatus (UnitStatusID.ALIVE);
 		trueMap.getUnit ().add (unit3);
 		when (direct.getDirectSkillValue (unit3.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
-
-		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
-		when (xu3.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Summoned unit, in combat, on the correct side
 		final MemoryUnit unit4 = new MemoryUnit ();
@@ -614,10 +585,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		unit5.setCombatHeading (1);
 		trueMap.getUnit ().add (unit5);
 		when (direct.getDirectSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
-
-		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
-		when (xu5.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Normal unit, in combat, on the correct side
 		final MemoryUnit unit6 = new MemoryUnit ();
@@ -822,8 +789,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			final MemoryUnit mu2 = new MemoryUnit ();
 			mu2.setUnitURN (n);
 			mu2.setUnitLocation (new MapCoordinates3DEx (moveFrom));
-			when (unitUtils.findUnitURN (n, fow2.getUnit (), "moveUnitStackOneCellOnServerAndClients")).thenReturn (mu2);
-			when (unitUtils.findUnitURN (n, fow2.getUnit ())).thenReturn (mu2);
 
 			final MemoryUnit mu3 = new MemoryUnit ();
 			mu3.setUnitURN (n);
@@ -835,7 +800,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			mu4.setUnitURN (n);
 			mu4.setUnitLocation (new MapCoordinates3DEx (moveFrom));
 			when (unitUtils.findUnitURN (n, fow4.getUnit (), "moveUnitStackOneCellOnServerAndClients")).thenReturn (mu4);
-			when (unitUtils.findUnitURN (n, fow4.getUnit ())).thenReturn (mu4);
 		}
 		
 		// Set up object to test
@@ -1263,17 +1227,20 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			spearmen.setOwningPlayerID (playerID);
 			fow.getUnit ().add (spearmen);
 			
-			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (expand.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
-			when (xuSpearmen.getMovementSpeed ()).thenReturn (1);
-
 			final MemoryUnit hellHounds = new MemoryUnit ();
 			hellHounds.setOwningPlayerID (playerID);
 			fow.getUnit ().add (hellHounds);
 
-			final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
-			when (expand.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
-			when (xuHellHounds.getMovementSpeed ()).thenReturn (2);
+			if (playerID == 2)
+			{
+				final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+				when (expand.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
+				when (xuSpearmen.getMovementSpeed ()).thenReturn (1);
+				
+				final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
+				when (expand.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
+				when (xuHellHounds.getMovementSpeed ()).thenReturn (2);
+			}
 		}
 
 		// Set up object to test

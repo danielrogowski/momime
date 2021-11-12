@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.areas.storage.MapArea2D;
@@ -35,6 +37,7 @@ import momime.server.database.ServerDatabaseValues;
 /**
  * Tests the CityAI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCityAIImpl extends ServerTestData
 {
 	/**
@@ -47,14 +50,14 @@ public final class TestCityAIImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		for (int x = 1; x <= 5; x++)
+		for (int x = 1; x <= 4; x++)
 		{
 			final TileTypeEx tileType = new TileTypeEx ();
 			tileType.setCanBuildCity (x != 4);		// So 24, 10 is invalid because of tile type
 			when (db.findTileType ("TT0" + x, "chooseCityLocation")).thenReturn (tileType);
 		}		
 		
-		for (int x = 1; x <= 5; x++)
+		for (int x = 2; x <= 3; x++)
 		{
 			final MapFeatureEx mapFeature = new MapFeatureEx ();
 			mapFeature.setCanBuildCity (x != 3);		// So 23, 10 is invalid because of map feature (e.g. lair)
@@ -93,7 +96,7 @@ public final class TestCityAIImpl extends ServerTestData
 		
 		// Quality evaluations
 		final AICityCalculations aiCityCalc = mock (AICityCalculations.class);
-		for (int x = 1; x <= 5; x++)
+		for (int x = 1; x <= 2; x++)
 			when (aiCityCalc.evaluateCityQuality (new MapCoordinates3DEx (20 + x, 10, 1), true, true, knownMap, sd, db)).thenReturn (x * 100);
 		
 		// Set up object to test

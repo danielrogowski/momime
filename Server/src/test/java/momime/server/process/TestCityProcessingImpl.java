@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.areas.storage.MapArea3D;
@@ -36,7 +38,6 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Plane;
 import momime.common.database.RaceEx;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
@@ -81,6 +82,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the CityProcessingImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCityProcessingImpl extends ServerTestData
 {
 	/** buildingID for a Granary */
@@ -442,12 +444,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 		building.setBuildingID ("BL01");
 		building.setProductionCost (1000);
 		when (db.findBuilding ("BL01", "growCitiesAndProgressConstructionProjects")).thenReturn (building);
-		when (db.findUnit ("BL01", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (UnitEx.class, null, null));
 		
 		final UnitEx unit = new UnitEx ();
 		unit.setUnitID ("UN001");
 		unit.setProductionCost (100);
-		when (db.findBuilding ("UN001", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (UnitEx.class, null, null));
 		when (db.findUnit ("UN001", "growCitiesAndProgressConstructionProjects")).thenReturn (unit);				
 		
 		// Session description
@@ -995,9 +995,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Building granaryDef = new Building ();
-		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
-		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
@@ -1162,8 +1159,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 			cityLocation1, "TR03", db)).thenReturn (breakdown1);
 		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			cityLocation2, "TR03", db)).thenReturn (breakdown2);
-		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			cityLocation3, "TR03", db)).thenReturn (breakdown3);
 		
 		final ServerCityCalculations serverCityCalculations = mock (ServerCityCalculations.class);
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);

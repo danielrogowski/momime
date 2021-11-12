@@ -15,6 +15,8 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -69,6 +71,7 @@ import momime.common.utils.PlayerPickUtils;
 /**
  * Tests the UnitInfoPanel class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestUnitInfoPanel extends ClientTestData
 {
 	/**

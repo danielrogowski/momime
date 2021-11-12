@@ -4,6 +4,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -27,6 +29,7 @@ import momime.common.messages.NumberedHeroItem;
 /**
  * Tests the HeroItemInfoUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestHeroItemInfoUI extends ClientTestData
 {
 	/**

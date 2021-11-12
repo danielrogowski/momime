@@ -13,6 +13,8 @@ import javax.xml.bind.Marshaller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -38,6 +40,7 @@ import momime.common.database.UnitSkillTypeID;
 /**
  * Tests the OptionsUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestOptionsUI extends ClientTestData
 {
 	/** Class logger */

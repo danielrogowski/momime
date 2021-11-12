@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -35,6 +37,7 @@ import momime.server.calculations.ServerUnitCalculations;
 /**
  * Tests the AISpellCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestAISpellCalculationsImpl
 {
 	/**
@@ -79,7 +82,7 @@ public final class TestAISpellCalculationsImpl
 		ai.setResourceValueUtils (resources);
 		
 		// Run method
-		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null, spellSettings, null));
+		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null, spellSettings, db));
 	
 		// Now we have channeler retort, so upkeep reduced to 3
 		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);

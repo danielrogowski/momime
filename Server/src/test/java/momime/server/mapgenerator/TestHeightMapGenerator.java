@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import momime.server.ServerTestData;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.random.RandomUtils;
@@ -16,6 +18,7 @@ import com.ndg.random.RandomUtilsImpl;
 /**
  * Tests the HeightMapGenerator class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestHeightMapGenerator extends ServerTestData
 {
 	/**

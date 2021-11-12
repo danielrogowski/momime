@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -22,6 +24,7 @@ import momime.common.database.LanguageText;
 /**
  * Tests the EditStringUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestEditStringUI extends ClientTestData
 {
 	/**

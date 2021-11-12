@@ -4,6 +4,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
@@ -31,6 +33,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 /**
  * Tests the WizardBanishedUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestWizardBanishedUI extends ClientTestData
 {
 	/**

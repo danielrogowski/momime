@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.random.RandomUtils;
 import com.ndg.random.RandomUtilsImpl;
@@ -34,6 +36,7 @@ import momime.common.messages.OverlandMapTerrainData;
 /**
  * Tests the OverlandMapBitmapGeneratorImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestOverlandMapBitmapGeneratorImpl extends ClientTestData
 {
 	/**

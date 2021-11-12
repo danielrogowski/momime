@@ -12,6 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -64,6 +66,7 @@ import momime.common.utils.ResourceValueUtils;
 /**
  * Tests the OverlandMapRightHandPanel class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestOverlandMapRightHandPanel extends ClientTestData
 {
 	/**

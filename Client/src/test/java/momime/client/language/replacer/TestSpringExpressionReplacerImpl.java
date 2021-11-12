@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 /**
@@ -14,6 +16,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
  * NB. Its extremely difficult to test the classpath resource lookup since the resulting URL will vary greatly depending
  * on the location of the source code during a build or test run, though this is covered by the inline images in TestHelpUI
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSpringExpressionReplacerImpl
 {
 	/**

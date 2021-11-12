@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -30,7 +32,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
-import momime.common.database.Plane;
 import momime.common.database.UnitCombatSideID;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.CaptureCityDecisionID;
@@ -71,6 +72,7 @@ import momime.server.utils.OverlandMapServerUtils;
 /**
  * Tests the CombatStartAndEndImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCombatStartAndEndImpl extends ServerTestData
 {
 	/**
@@ -207,10 +209,13 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		{
 			if (n < 3)
 				attackingUnitURNs.add (n);
-			
-			final MemoryUnit attackingUnit = new MemoryUnit ();
-			attackingUnit.setOwningPlayerID (attackingPd.getPlayerID ());
-			when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (attackingUnit);
+
+			if (n == 1)
+			{
+				final MemoryUnit attackingUnit = new MemoryUnit ();
+				attackingUnit.setOwningPlayerID (attackingPd.getPlayerID ());
+				when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (attackingUnit);
+			}
 		}
 		
 		// Defender has a unit (otherwise there's no defender)
@@ -357,9 +362,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 			if (n < 3)
 				attackingUnitURNs.add (n);
 			
-			final MemoryUnit attackingUnit = new MemoryUnit ();
-			attackingUnit.setOwningPlayerID (attackingPd.getPlayerID ());
-			when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (attackingUnit);
+			if (n == 1)
+			{
+				final MemoryUnit attackingUnit = new MemoryUnit ();
+				attackingUnit.setOwningPlayerID (attackingPd.getPlayerID ());
+				when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (attackingUnit);
+			}
 		}
 		
 		// Defender likewise is counterattacking with 2 out of 3 units
@@ -369,9 +377,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 			if (n < 6)
 				defendingUnitURNs.add (n);
 			
-			final MemoryUnit defendingUnit = new MemoryUnit ();
-			defendingUnit.setOwningPlayerID (defendingPd.getPlayerID ());
-			when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-D")).thenReturn (defendingUnit);
+			if (n == 4)
+			{
+				final MemoryUnit defendingUnit = new MemoryUnit ();
+				defendingUnit.setOwningPlayerID (defendingPd.getPlayerID ());
+				when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-D")).thenReturn (defendingUnit);
+			}
 		}
 
 		// Attacking and defending locations
@@ -511,9 +522,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 			if (n < 3)
 				attackingUnitURNs.add (n);
 
-			final MemoryUnit attackingUnit = new MemoryUnit ();
-			attackingUnit.setOwningPlayerID (attackingPd.getPlayerID ());
-			when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (attackingUnit);
+			if (n == 1)
+			{
+				final MemoryUnit attackingUnit = new MemoryUnit ();
+				attackingUnit.setOwningPlayerID (attackingPd.getPlayerID ());
+				when (unitUtils.findUnitURN (n, trueMap.getUnit (), "startCombat-A")).thenReturn (attackingUnit);
+			}
 		}
 		
 		// No defending units
@@ -540,10 +554,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Casting skill of each player
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.calculateModifiedCastingSkill (attackingPriv.getResourceValue (), attackingPlayer, players,
-			attackingPriv.getFogOfWarMemory (), db, false)).thenReturn (28);
-		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingPlayer, players,
-			defendingPriv.getFogOfWarMemory (), db, false)).thenReturn (22);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -933,16 +943,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
-		myrror.setPlaneNumber (1);
-		
-		final List<Plane> planes = new ArrayList<Plane> ();
-		planes.add (arcanus);
-		planes.add (myrror);
-
-		when (db.getPlane ()).thenReturn (planes);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();

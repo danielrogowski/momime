@@ -18,6 +18,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -40,6 +42,7 @@ import momime.server.ServerTestData;
 /**
  * Tests the ServerDatabaseConverters class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestServerDatabaseConvertersImpl extends ServerTestData
 {
 	/**

@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.client.ui.renderer.CitiesListEntry;
 import momime.common.messages.OverlandMapCityData;
@@ -15,6 +17,7 @@ import momime.common.messages.OverlandMapCityData;
 /**
  * Tests the CitiesListSorter class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCitiesListSorter
 {
 	/**

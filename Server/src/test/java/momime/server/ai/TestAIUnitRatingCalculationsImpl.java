@@ -14,6 +14,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
@@ -36,6 +38,7 @@ import momime.server.utils.UnitSkillDirectAccessImpl;
 /**
  * Tests the AIUnitRatingCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 {
 	/** Class logger */
@@ -57,10 +60,6 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		final UnitSkillEx skillOne = new UnitSkillEx ();
 		skillOne.setAiRatingAdditive (10);
 		when (db.findUnitSkill ("US001", "calculateUnitRating")).thenReturn (skillOne);
-
-		final UnitSkillEx skillTwo = new UnitSkillEx ();
-		skillTwo.setAiRatingAdditive (20);
-		when (db.findUnitSkill ("US002", "calculateUnitRating")).thenReturn (skillTwo);
 
 		final UnitSkillEx skillThree = new UnitSkillEx ();
 		when (db.findUnitSkill ("US003", "calculateUnitRating")).thenReturn (skillThree);
@@ -87,7 +86,10 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		when (xu.getModifiedSkillValue ("US003")).thenReturn (6);
 		
 		unitSkills.add ("US004");
+		when (xu.getModifiedSkillValue ("US004")).thenReturn (0);
+		
 		unitSkills.add ("US005");
+		when (xu.getModifiedSkillValue ("US005")).thenReturn (0);
 		
 		when (xu.listModifiedSkillIDs ()).thenReturn (unitSkills);
 		

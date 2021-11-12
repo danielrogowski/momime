@@ -12,10 +12,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Does consistency checks on the XSD itself
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestLanguageXSD
 {
 	/**

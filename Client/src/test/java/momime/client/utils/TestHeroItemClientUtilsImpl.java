@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.MomException;
 import momime.common.database.HeroItemBonus;
@@ -18,6 +20,7 @@ import momime.common.database.HeroItemBonusStat;
 /**
  * Tests the HeroItemClientUtilsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestHeroItemClientUtilsImpl
 {
 	/**

@@ -10,6 +10,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -58,6 +60,7 @@ import momime.common.utils.SpellUtils;
 /**
  * Tests the HelpUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestHelpUI extends ClientTestData
 {
 	/**

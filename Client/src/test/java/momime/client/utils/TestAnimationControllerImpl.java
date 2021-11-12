@@ -13,6 +13,8 @@ import java.util.List;
 import javax.swing.JComponent;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.NdgUIUtils;
 
@@ -25,6 +27,7 @@ import momime.common.database.AnimationFrame;
 /**
  * Tests the AnimationControllerImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestAnimationControllerImpl
 {
 	/**

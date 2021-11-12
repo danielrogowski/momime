@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.server.ServerToClientSessionConnection;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -44,6 +46,7 @@ import momime.server.ai.SpellAI;
 /**
  * Tests the PlayerPickServerUtilsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestPlayerPickServerUtilsImpl
 {
 	/**
@@ -211,13 +214,6 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Mock some types of pick
 		final CommonDatabase db = mock (CommonDatabase.class);
-		for (int n = 1; n <= 3; n++)
-		{
-			final Pick pick = new Pick ();
-			pick.setPickID ("MB0" + n);
-			pick.setPickCost (n);
-			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
-		}
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -258,13 +254,6 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Mock some types of pick
 		final CommonDatabase db = mock (CommonDatabase.class);
-		for (int n = 1; n <= 3; n++)
-		{
-			final Pick pick = new Pick ();
-			pick.setPickID ("MB0" + n);
-			pick.setPickCost (n);
-			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
-		}
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -307,13 +296,11 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Mock some types of pick
 		final CommonDatabase db = mock (CommonDatabase.class);
-		for (int n = 1; n <= 3; n++)
-		{
-			final Pick pick = new Pick ();
-			pick.setPickID ("MB0" + n);
-			pick.setPickCost (n);
-			when (db.findPick ("MB0" + n, "validateCustomPicks")).thenReturn (pick);
-		}
+		
+		final Pick pick = new Pick ();
+		pick.setPickID ("MB02");
+		pick.setPickCost (2);
+		when (db.findPick ("MB02", "validateCustomPicks")).thenReturn (pick);
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -351,7 +338,7 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Mock some types of pick
 		final CommonDatabase db = mock (CommonDatabase.class);
-		for (int n = 1; n <= 3; n++)
+		for (int n = 2; n <= 3; n++)
 		{
 			final Pick pick = new Pick ();
 			pick.setPickID ("MB0" + n);
@@ -400,7 +387,7 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Mock some types of pick
 		final CommonDatabase db = mock (CommonDatabase.class);
-		for (int n = 1; n <= 3; n++)
+		for (int n = 2; n <= 3; n++)
 		{
 			final Pick pick = new Pick ();
 			pick.setPickID ("MB0" + n);
@@ -821,7 +808,7 @@ public final class TestPlayerPickServerUtilsImpl
 		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
 		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
 		
-		for (int n = 1; n <= 4; n++)
+		for (int n = 1; n <= 3; n++)
 		{
 			final Spell spell = new Spell ();
 			spell.setSpellRealm ("MB01");
@@ -884,17 +871,6 @@ public final class TestPlayerPickServerUtilsImpl
 		sixPicks.getSpellCount ().add (common);
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
-		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
-		
-		for (int n = 1; n <= 4; n++)
-		{
-			final Spell spell = new Spell ();
-			spell.setSpellRealm ("MB01");
-			spell.setSpellRank ("SR01");
-			
-			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
-		}
 		
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -943,15 +919,6 @@ public final class TestPlayerPickServerUtilsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
 		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
-		
-		for (int n = 1; n <= 4; n++)
-		{
-			final Spell spell = new Spell ();
-			spell.setSpellRealm ("MB01");
-			spell.setSpellRank ("SR01");
-			
-			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
-		}
 		
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1010,14 +977,11 @@ public final class TestPlayerPickServerUtilsImpl
 		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
 		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
 		
-		for (int n = 1; n <= 4; n++)
-		{
-			final Spell spell = new Spell ();
-			spell.setSpellRealm ("MB01");
-			spell.setSpellRank ("SR01");
-			
-			when (db.findSpell ("SP00" + n, "validateInitialSpellSelection")).thenReturn (spell);
-		}
+		final Spell spell = new Spell ();
+		spell.setSpellRealm ("MB01");
+		spell.setSpellRank ("SR01");
+		
+		when (db.findSpell ("SP001", "validateInitialSpellSelection")).thenReturn (spell);
 		
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1081,7 +1045,7 @@ public final class TestPlayerPickServerUtilsImpl
 		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
 		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
 		
-		for (int n = 1; n <= 4; n++)
+		for (int n = 1; n <= 3; n++)
 		{
 			final Spell spell = new Spell ();
 			spell.setSpellRealm ("MB01");
@@ -1147,7 +1111,7 @@ public final class TestPlayerPickServerUtilsImpl
 		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
 		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
 		
-		for (int n = 1; n <= 4; n++)
+		for (int n = 1; n <= 3; n++)
 		{
 			final Spell spell = new Spell ();
 			spell.setSpellRealm ("MB01");
@@ -1213,7 +1177,7 @@ public final class TestPlayerPickServerUtilsImpl
 		when (db.findPick ("MB01", "countFreeSpellsLeftToChoose")).thenReturn (pick);
 		when (db.findPickType ("X", "countFreeSpellsLeftToChoose")).thenReturn (pickType);
 		
-		for (int n = 1; n <= 4; n++)
+		for (int n = 1; n <= 3; n++)
 		{
 			final Spell spell = new Spell ();
 			spell.setSpellRealm ((n == 3) ? "MB02" : "MB01");		// <---
@@ -1289,13 +1253,11 @@ public final class TestPlayerPickServerUtilsImpl
 		final RaceEx race = new RaceEx ();
 		race.setNativePlane (1);
 		
-		final Plane arcanus = new Plane ();
 		final Plane myrror = new Plane ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
-		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
 		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
 
 		// Set up player
@@ -1329,13 +1291,11 @@ public final class TestPlayerPickServerUtilsImpl
 		final RaceEx race = new RaceEx ();
 		race.setNativePlane (1);
 		
-		final Plane arcanus = new Plane ();
 		final Plane myrror = new Plane ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
-		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
 		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
 
 		// Set up player
@@ -1375,7 +1335,6 @@ public final class TestPlayerPickServerUtilsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
 		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
-		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1387,7 +1346,6 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		// Picks we have
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.getQuantityOfPick (ppk.getPick (), "RT08")).thenReturn (1);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
@@ -1415,7 +1373,6 @@ public final class TestPlayerPickServerUtilsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
 		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
-		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
 
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();

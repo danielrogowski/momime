@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
@@ -21,6 +23,7 @@ import momime.common.database.PickType;
 /**
  * Tests the PlayerPickClientUtilsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestPlayerPickClientUtilsImpl extends ClientTestData
 {
 	/**

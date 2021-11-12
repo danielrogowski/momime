@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -61,6 +63,7 @@ import momime.server.messages.MomGeneralServerKnowledge;
 /**
  * Tests the FogOfWarMidTurnChangesImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 {
 	/**
@@ -119,8 +122,11 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 					players.add (player);
 					
 					// Mock whether the player has up to date info for this terrain already or not
-					final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-					when (dup.copyTerrainAndNodeAura (tc, mc)).thenReturn (!upToDateInfo);
+					if (canSee)
+					{
+						final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+						when (dup.copyTerrainAndNodeAura (tc, mc)).thenReturn (!upToDateInfo);
+					}
 				}
 
 		// Set up object to test
@@ -223,8 +229,11 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 					players.add (player);
 					
 					// Mock whether the player has up to date info for this terrain already or not
-					final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-					when (dup.copyCityData (tc, mc, fowSettings.isSeeEnemyCityConstruction (), false)).thenReturn (!upToDateInfo);
+					if (canSee)
+					{
+						final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+						when (dup.copyCityData (tc, mc, fowSettings.isSeeEnemyCityConstruction (), false)).thenReturn (!upToDateInfo);
+					}
 				}
 		
 		// Set up object to test
@@ -1800,14 +1809,6 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		mu1.setCombatLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) tu.getCombatLocation ()));
 		when (unitUtils.findUnitURN (mu1.getUnitURN (), fow1.getUnit (), "killUnitOnServerAndClients")).thenReturn (mu1);
 		
-		final MemoryUnit mu2 = new MemoryUnit ();
-		mu2.setOwningPlayerID (tu.getOwningPlayerID ());
-		mu2.setUnitURN (tu.getUnitURN ());
-		mu2.setStatus (tu.getStatus ());
-		mu2.setUnitID (tu.getUnitID ());
-		mu2.setCombatLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) tu.getCombatLocation ()));
-		when (unitUtils.findUnitURN (mu2.getUnitURN (), fow2.getUnit (), "killUnitOnServerAndClients")).thenReturn (mu2);
-		
 		// Set up object to test
 		final PendingMovementUtils pendingMovementUtils = mock (PendingMovementUtils.class);
 		
@@ -1943,13 +1944,15 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 					players.add (player);
 
 					// Mock finding the player
-					when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "addExistingTrueMaintainedSpellToClients")).thenReturn (player);
+					if ((canSee) && (human) && (upToDateInfo))
+						when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "addExistingTrueMaintainedSpellToClients")).thenReturn (player);
 					
 					// Mock whether the player can see the spell
 					when (vis.canSeeSpellMidTurn (trueSpell, trueTerrain, trueMap.getUnit (), player, db, fowSettings)).thenReturn (canSee);
 					
 					// Mock whether the player has up to date info for this spell already or not
-					when (dup.copyMaintainedSpell (trueSpell, fow.getMaintainedSpell ())).thenReturn (!upToDateInfo);
+					if (canSee)
+						when (dup.copyMaintainedSpell (trueSpell, fow.getMaintainedSpell ())).thenReturn (!upToDateInfo);
 				}
 		
 		// Set up object to test
@@ -2055,7 +2058,8 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				players.add (player);
 
 				// Mock finding the player
-				when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "switchOffMaintainedSpellOnServerAndClients")).thenReturn (player);
+				if ((canSee) && (human))
+					when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "switchOffMaintainedSpellOnServerAndClients")).thenReturn (player);
 				
 				// Mock whether the player can see the spell
 				when (vis.canSeeSpellMidTurn (trueSpell, trueTerrain, trueMap.getUnit (), player, db, fowSettings)).thenReturn (canSee);
@@ -2174,7 +2178,8 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				players.add (player);
 
 				// Mock finding the player
-				when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "addBuildingOnServerAndClients")).thenReturn (player);
+				if ((canSee) && (human))
+					when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "addBuildingOnServerAndClients")).thenReturn (player);
 			}
 		
 		// The human player owns the city
@@ -2317,7 +2322,8 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				players.add (player);
 
 				// Mock finding the player
-				when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "addBuildingOnServerAndClients")).thenReturn (player);
+				if ((canSee) && (human))
+					when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "addBuildingOnServerAndClients")).thenReturn (player);
 			}
 		
 		// The human player owns the city
@@ -2466,7 +2472,8 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				players.add (player);
 
 				// Mock finding the player
-				when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "destroyBuildingOnServerAndClients")).thenReturn (player);
+				if ((canSee) && (human))
+					when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "destroyBuildingOnServerAndClients")).thenReturn (player);
 			}
 		
 		// The human player owns the city

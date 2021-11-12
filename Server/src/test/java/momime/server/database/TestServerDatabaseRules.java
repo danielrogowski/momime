@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.DamageType;
@@ -20,6 +22,7 @@ import momime.server.ServerTestData;
 /**
  * Dumps rules out from the XML so its easier to check them against the MoM wiki
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestServerDatabaseRules extends ServerTestData
 {
 	/**

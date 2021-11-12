@@ -11,10 +11,13 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the SpellSorter class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSpellSorter
 {
 	/**

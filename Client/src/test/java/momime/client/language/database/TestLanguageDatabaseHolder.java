@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.client.languages.database.ShortcutKeyLang;
 import momime.common.database.Language;
@@ -14,6 +16,7 @@ import momime.common.database.LanguageText;
 /**
  * Tests the LanguageDatabaseHolder class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestLanguageDatabaseHolder
 {
 	/**

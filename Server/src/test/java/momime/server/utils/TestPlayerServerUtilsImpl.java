@@ -9,12 +9,15 @@ import java.util.List;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Tests the PlayerServerUtilsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestPlayerServerUtilsImpl
 {
 	/**

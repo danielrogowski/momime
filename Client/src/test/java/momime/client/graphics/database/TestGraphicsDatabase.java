@@ -10,6 +10,8 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import momime.client.ClientTestData;
@@ -20,6 +22,7 @@ import momime.common.database.CommonXsdResourceResolver;
  * So we can't tell whether entries are missing, but we can do
  * basic checks against the XSD like optional/mandatory fields and that no unknown fields are present.
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestGraphicsDatabase extends ClientTestData
 {
 	/**

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -30,6 +32,7 @@ import momime.common.utils.ResourceValueUtils;
 /**
  * Tests the AIUnitCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestAIUnitCalculationsImpl
 {
 	/**
@@ -71,14 +74,12 @@ public final class TestAIUnitCalculationsImpl
 		
 		when (xu.listModifiedUpkeepProductionTypeIDs ()).thenReturn (upkeeps);
 		when (xu.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (5);
-		when (xu.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (2);
 		
 		// Resources we have (note we aren't generating enough rations but that's ignored)
 		final SpellSetting spellSettings = new SpellSetting ();
 
 		final ResourceValueUtils resources = mock (ResourceValueUtils.class);
 		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (6);
-		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (1);
 		
 		// Set up object to test
 		final AIUnitCalculationsImpl ai = new AIUnitCalculationsImpl ();

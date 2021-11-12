@@ -10,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
@@ -31,6 +33,7 @@ import momime.common.messages.servertoclient.RenderCityData;
 /**
  * Tests the CityViewPanel class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCityViewPanel extends ClientTestData
 {
 	/**

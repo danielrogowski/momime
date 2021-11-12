@@ -3,6 +3,8 @@ package momime.server.ai;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemBonusStat;
@@ -10,6 +12,7 @@ import momime.common.database.HeroItemBonusStat;
 /**
  * Tests the AIHeroItemRatingCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestAIHeroItemRatingCalculationsImpl
 {
 	/**

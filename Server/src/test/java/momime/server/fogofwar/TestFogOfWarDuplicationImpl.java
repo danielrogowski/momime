@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
@@ -32,6 +34,7 @@ import momime.server.utils.UnitSkillDirectAccessImpl;
 /**
  * Tests the FogOfWarDuplication class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestFogOfWarDuplicationImpl
 {
 	/**

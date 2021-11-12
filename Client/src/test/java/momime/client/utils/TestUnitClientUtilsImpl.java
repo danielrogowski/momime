@@ -23,6 +23,8 @@ import javax.swing.WindowConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -73,6 +75,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Tests the UnitClientUtilsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestUnitClientUtilsImpl extends ClientTestData
 {
 	/** Class logger */

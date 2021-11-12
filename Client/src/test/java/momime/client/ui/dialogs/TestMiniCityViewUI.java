@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -44,6 +46,7 @@ import momime.common.messages.servertoclient.RenderCityData;
 /**
  * Tests the MiniCityViewUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestMiniCityViewUI extends ClientTestData
 {
 	/**

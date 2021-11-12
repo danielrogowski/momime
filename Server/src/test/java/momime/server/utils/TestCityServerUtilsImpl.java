@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -39,6 +41,7 @@ import momime.server.ServerTestData;
 /**
  * Tests the CityServerUtilsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCityServerUtilsImpl extends ServerTestData
 {
 	/**
@@ -108,7 +111,6 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
 
 		final CityCalculations cityCalc = mock (CityCalculations.class);
 		
@@ -193,13 +195,10 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Building_HasAlready () throws Exception
 	{
 		// Mock details
-		final RaceEx raceDef = new RaceEx ();
-		
 		final Building blacksmithDef = new Building ();
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding ("BL08", "validateCityConstruction")).thenReturn (blacksmithDef);
-		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -220,10 +219,8 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
 		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (new MemoryBuilding ());		// <---
-		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
 		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, blacksmithDef, sys)).thenReturn (true);
 		
 		// Set up object
 		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
@@ -274,10 +271,8 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
 		when (buildingUtils.findBuilding (trueMap.getBuilding (), cityLocation, "BL08")).thenReturn (null);
-		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (true);
 
 		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, blacksmithDef, sys)).thenReturn (true);
 		
 		// Set up object
 		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
@@ -330,7 +325,6 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		when (buildingUtils.meetsBuildingRequirements (trueMap.getBuilding (), cityLocation, blacksmithDef)).thenReturn (false);
 
 		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation, blacksmithDef, sys)).thenReturn (true);
 		
 		// Set up object
 		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
@@ -478,7 +472,6 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.meetsUnitRequirements (trueMap.getBuilding (), cityLocation, unitDef)).thenReturn (true);
 		
 		// Set up object
 		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
@@ -525,7 +518,6 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 
 		// Validation checks
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
-		when (buildingUtils.meetsUnitRequirements (trueMap.getBuilding (), cityLocation, unitDef)).thenReturn (true);
 		
 		// Set up object
 		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();

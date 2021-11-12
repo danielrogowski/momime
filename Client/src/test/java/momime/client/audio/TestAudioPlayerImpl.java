@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
 import com.ndg.random.RandomUtils;
@@ -19,6 +21,7 @@ import com.ndg.random.RandomUtils;
 /**
  * Tests the AudioPlayerImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestAudioPlayerImpl
 {
 	/**

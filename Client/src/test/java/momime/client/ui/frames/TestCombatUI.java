@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.xml.bind.Unmarshaller;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -74,6 +76,7 @@ import momime.common.utils.ResourceValueUtils;
 /**
  * Tests the CombatUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCombatUI extends ClientTestData
 {
 	/**

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.client.MomClient;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -20,6 +22,7 @@ import momime.common.messages.NewTurnMessageData;
 /**
  * Tests the NewTurnMessageProcessingImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestNewTurnMessageProcessingImpl
 {
 	/**

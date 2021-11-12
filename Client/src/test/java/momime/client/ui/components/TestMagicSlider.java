@@ -9,6 +9,8 @@ import javax.swing.JPanel;
 import momime.common.database.CommonDatabaseConstants;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.NdgUIUtils;
@@ -17,6 +19,7 @@ import com.ndg.swing.NdgUIUtilsImpl;
 /**
  * Tests the MagicSlider class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestMagicSlider
 {
 	/**

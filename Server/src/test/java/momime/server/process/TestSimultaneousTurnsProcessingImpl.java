@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.areas.storage.MapArea2D;
@@ -64,6 +66,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the SimultaneousTurnsProcessingImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 {
 	/**
@@ -183,9 +186,6 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move2Stack.add (xu2);
 		
 		when (unitUtils.findUnitURN (move2Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move2Unit);
-		
-		final OneCellPendingMovement move2Cell = new OneCellPendingMovement (player2, move2, null, false);
-		when (midTurn.determineOneCellPendingMovement (move2Stack, player2, move2, move2Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (move2Cell);
 		
 		// Move where the destination is unreachable
 		final PendingMovement move3 = new PendingMovement ();
@@ -614,8 +614,6 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		
 		when (unitUtils.findUnitURN (move1Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCombat")).thenReturn (move1Unit);
 		
-		when (midTurn.determineOneCellPendingMovement (move1Stack, player2, move1, move1Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (null);
-
 		// Set up test object
 		final SimultaneousTurnsProcessingImpl proc = new SimultaneousTurnsProcessingImpl ();
 		proc.setFogOfWarMidTurnMultiChanges (midTurn);
@@ -1022,12 +1020,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		
 		final UnitEx normalUnitDef = new UnitEx ();
 		normalUnitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
-		when (db.findUnit ("UN001", "processSpecialOrders-d")).thenReturn (normalUnitDef);
 		
-		final UnitEx heroUnitDef = new UnitEx ();
-		heroUnitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
-		when (db.findUnit ("UN002", "processSpecialOrders-d")).thenReturn (heroUnitDef);
-
 		final Plane arcanus = new Plane ();
 		final Plane myrror = new Plane ();
 		myrror.setPlaneNumber (1);
@@ -1143,6 +1136,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		settlers.add (settler2);
 
 		when (unitServerUtils.listUnitsWithSpecialOrder (trueMap.getUnit (), UnitSpecialOrder.BUILD_CITY)).thenReturn (settlers);
+		when (unitServerUtils.listUnitsWithSpecialOrder (trueMap.getUnit (), UnitSpecialOrder.PLANE_SHIFT)).thenReturn (new ArrayList<MemoryUnit> ());
 		
 		// Terrain where the settlers are
 		final OverlandMapTerrainData terrain1 = new OverlandMapTerrainData ();

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
@@ -40,6 +42,7 @@ import momime.common.utils.CombatMapUtilsImpl;
 /**
  * Tests the CombatMapBitmapGeneratorImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCombatMapBitmapGeneratorImpl extends ClientTestData
 {
 	/**

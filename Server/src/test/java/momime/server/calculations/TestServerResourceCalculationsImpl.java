@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -36,10 +39,10 @@ import momime.common.database.NodeStrength;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Plane;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.RoundingDirectionID;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
-import momime.common.database.UnitEx;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -79,6 +82,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the ServerResourceCalculations class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestServerResourceCalculationsImpl extends ServerTestData
 {
 	/**
@@ -100,24 +104,6 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		planes.add (myrror);
 
 		when (db.getPlane ()).thenReturn (planes);
-		
-		final ProductionTypeAndUndoubledValue shadowDemonsUpkeep = new ProductionTypeAndUndoubledValue ();
-		shadowDemonsUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		
-		final UnitEx shadowDemonsDef = new UnitEx ();
-		shadowDemonsDef.getUnitUpkeep ().add (shadowDemonsUpkeep);
-		when (db.findUnit ("UN172", "recalculateAmountsPerTurn")).thenReturn (shadowDemonsDef);
-
-		final ProductionTypeAndUndoubledValue warlocksRations = new ProductionTypeAndUndoubledValue ();
-		warlocksRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-
-		final ProductionTypeAndUndoubledValue warlocksGold = new ProductionTypeAndUndoubledValue ();
-		warlocksGold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		
-		final UnitEx warlocksDef = new UnitEx ();
-		warlocksDef.getUnitUpkeep ().add (warlocksGold);
-		warlocksDef.getUnitUpkeep ().add (warlocksRations);
-		when (db.findUnit ("UN065", "recalculateAmountsPerTurn")).thenReturn (warlocksDef);
 		
 		final ProductionTypeAndUndoubledValue crusadeUpkeep = new ProductionTypeAndUndoubledValue ();
 		crusadeUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
@@ -416,15 +402,11 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final ProductionTypeAndUndoubledValue gargoylesUpkeep = new ProductionTypeAndUndoubledValue ();
-		gargoylesUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		
-		final UnitEx gargoylesDef = new UnitEx ();
-		gargoylesDef.getUnitUpkeep ().add (gargoylesUpkeep);
-		when (db.findUnit ("UN157", "listConsumersOfProductionType")).thenReturn (gargoylesDef);
-		
 		final Building wizardsGuildDef = new Building ();
 		when (db.findBuilding ("BL21", "listConsumersOfProductionType")).thenReturn (wizardsGuildDef);
+		
+		final Building parthenonDef = new Building ();
+		when (db.findBuilding ("BL24", "listConsumersOfProductionType")).thenReturn (parthenonDef);
 		
 		final Spell entangleDef = new Spell ();
 		when (db.findSpell ("SP033", "listConsumersOfProductionType")).thenReturn (entangleDef);
@@ -439,6 +421,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		
 		// Building consumption
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
+		when (buildingUtils.findBuildingConsumption (parthenonDef, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (0);
 		when (buildingUtils.findBuildingConsumption (wizardsGuildDef, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (3);
 		
 		// Map
@@ -541,14 +524,6 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		when (expand.expandUnitDetails (gargoyles, null, null, null, players, trueMap, db)).thenReturn (xuGargoyles);
 		when (xuGargoyles.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
 		
-		final ExpandedUnitDetails xuGargoylesOtherStatus = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (gargoylesOtherStatus, null, null, null, players, trueMap, db)).thenReturn (xuGargoylesOtherStatus);
-		when (xuGargoylesOtherStatus.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
-		
-		final ExpandedUnitDetails xuGargoylesOtherPlayer = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (gargoylesOtherPlayer, null, null, null, players, trueMap, db)).thenReturn (xuGargoylesOtherPlayer);
-		when (xuGargoylesOtherPlayer.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
-		
 		// Create dummy implementation for the factory that is usually provided by spring
 		final MomResourceConsumerFactory factory = new MomResourceConsumerFactory ()
 		{
@@ -603,135 +578,204 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	}
 
 	/**
-	 * Tests the accumulateGlobalProductionValues method
+	 * Tests the accumulateGlobalProductionValues method where the full amount of one resource is copied to another
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAccumulateGlobalProductionValues () throws Exception
+	public final void testAccumulateGlobalProductionValues_FullAmount () throws Exception
 	{
-		final CommonDatabase db = loadServerDatabase ();
-		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
+		// Mock production types
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setProductionTypeID ("RE01");
+		productionType.setAccumulatesInto ("RE02");
+		
+		when (db.getProductionTypes ()).thenReturn (Arrays.asList (productionType));
+		
+		// Only needed for mocks
+		final SpellSetting spellSettings = new SpellSetting ();
 
 		// Player
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (3);
-		pd.setHuman (true);
-		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
-		// Set up test object
+		// Amount of resource
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
-
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (9);
+		
+		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
 		
-		// Research resource has no accumulation defined
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (10);
-		
-		// Mana accumulates into itself
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (12);
-
-		// Gold accumulates into itself
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (7);
-
-		// Rations are accumulates into gold, halved + rounded down
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
-
-		// Call method
+		// Run method
 		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
 		// Check results
-		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, 10);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, 12);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 7);
-		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, 9);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 4);		// from rations
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), "RE02", 9);
+	}
+	
+	/**
+	 * Tests the accumulateGlobalProductionValues method where half of one resource is copied to another, rounded down
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAccumulateGlobalProductionValues_RoundDown () throws Exception
+	{
+		// Mock production types
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setProductionTypeID ("RE01");
+		productionType.setAccumulatesInto ("RE02");
+		productionType.setAccumulationHalved (RoundingDirectionID.ROUND_DOWN);
+		
+		when (db.getProductionTypes ()).thenReturn (Arrays.asList (productionType));
+		
+		// Only needed for mocks
+		final SpellSetting spellSettings = new SpellSetting ();
 
-		// Negate all the per turn amounts and run it again (this is here to prove how the rounding down works on a negative value)
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (-10);
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (-12);
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (-7);
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
+		// Player
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
+		// Amount of resource
+		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (9);
+		
+		// Set up object to test
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
+		calc.setResourceValueUtils (utils);
+		
+		// Run method
 		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
-		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, -10);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -12);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -7);
-		verify (utils, times (0)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, -9);
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -4);		// from rations
+		// Check results
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), "RE02", 4);
 	}
-
+	
 	/**
-	 * Tests the accumulateGlobalProductionValues method when we have a +ve production amount that should be a multiple of 2 but isn't
+	 * Tests the accumulateGlobalProductionValues method where half of one resource is copied to another, rounded up
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive () throws Exception
+	public final void testAccumulateGlobalProductionValues_RoundUp () throws Exception
 	{
-		final CommonDatabase db = loadServerDatabase ();
-		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
-
-		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+		// Mock production types
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setProductionTypeID ("RE01");
+		productionType.setAccumulatesInto ("RE02");
+		productionType.setAccumulationHalved (RoundingDirectionID.ROUND_UP);
+		
+		when (db.getProductionTypes ()).thenReturn (Arrays.asList (productionType));
+		
+		// Only needed for mocks
+		final SpellSetting spellSettings = new SpellSetting ();
 
 		// Player
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (3);
-		pd.setHuman (true);
-
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
-		// Set up test object
-		final ResourceValueUtils utils = mock (ResourceValueUtils.class);
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (9);
-		
-		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
-		calc.setResourceValueUtils (utils);
-		
-		// Call method
-		assertThrows (MomException.class, () ->
-		{
-			calc.accumulateGlobalProductionValues (player, spellSettings, db);
-		});
-	}
-
-	/**
-	 * Tests the accumulateGlobalProductionValues method when we have a -ve production amount that should be a multiple of 2 but isn't
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative () throws Exception
-	{
-		final CommonDatabase db = loadServerDatabase ();
-		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
-
-		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
-
-		// Player
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (3);
-		pd.setHuman (true);
-		
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
-
-		// Set up test object
+		// Amount of resource
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (-9);
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (9);
 		
+		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
 		
-		// Call method
-		assertThrows (MomException.class, () ->
+		// Run method
+		calc.accumulateGlobalProductionValues (player, spellSettings, db);
+
+		// Check results
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), "RE02", 5);
+	}
+	
+	/**
+	 * Tests the accumulateGlobalProductionValues method where half of one resource is copied to another, and it must be an exact multiple of 2, and is
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAccumulateGlobalProductionValues_ExactMultiple () throws Exception
+	{
+		// Mock production types
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setProductionTypeID ("RE01");
+		productionType.setAccumulatesInto ("RE02");
+		productionType.setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+		
+		when (db.getProductionTypes ()).thenReturn (Arrays.asList (productionType));
+		
+		// Only needed for mocks
+		final SpellSetting spellSettings = new SpellSetting ();
+
+		// Player
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+
+		// Amount of resource
+		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (8);
+		
+		// Set up object to test
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
+		calc.setResourceValueUtils (utils);
+		
+		// Run method
+		calc.accumulateGlobalProductionValues (player, spellSettings, db);
+
+		// Check results
+		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), "RE02", 4);
+	}
+	
+	/**
+	 * Tests the accumulateGlobalProductionValues method where half of one resource is copied to another, and it must be an exact multiple of 2, and isn't
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAccumulateGlobalProductionValues_NotExactMultiple () throws Exception
+	{
+		// Mock production types
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx productionType = new ProductionTypeEx ();
+		productionType.setProductionTypeID ("RE01");
+		productionType.setAccumulatesInto ("RE02");
+		productionType.setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+		
+		when (db.getProductionTypes ()).thenReturn (Arrays.asList (productionType));
+		
+		// Only needed for mocks
+		final SpellSetting spellSettings = new SpellSetting ();
+
+		// Player
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+
+		// Amount of resource
+		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
+		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (9);
+		
+		// Set up object to test
+		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
+		calc.setResourceValueUtils (utils);
+
+		// Run method
+		final MomException e = assertThrows (MomException.class, () ->
 		{
 			calc.accumulateGlobalProductionValues (player, spellSettings, db);
 		});
+		
+		assertEquals ("accumulateGlobalProductionValues: Expect value for RE01 being accumulated into RE02 to be exact multiple of 2 but was 9", e.getMessage ());
 	}
 	
 	/**
@@ -790,7 +834,8 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 			status.setRemainingResearchCost (n * 50);
 			priv.getSpellResearchStatus ().add (status);
 			
-			when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), status.getSpellID ())).thenReturn (status);
+			if (n == 2)
+				when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), status.getSpellID ())).thenReturn (status);
 		}
 		
 		// Generate 40 research each turn; AI players get +10% so they get 44 

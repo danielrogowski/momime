@@ -13,6 +13,8 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -52,6 +54,7 @@ import momime.server.database.ServerDatabaseValues;
 /**
  * Tests the FogOfWarProcessing class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestFogOfWarProcessingImpl extends ServerTestData
 {
 	/**
@@ -178,9 +181,6 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		final Spell naturesEyeDef = new Spell ();
 		naturesEyeDef.setSpellRadius (5);
 		when (db.findSpell ("SP012", "markVisibleArea")).thenReturn (naturesEyeDef);
-
-		final Spell curseDef = new Spell ();
-		when (db.findSpell ("SP110", "markVisibleArea")).thenReturn (curseDef);
 		
 		// Map
 		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
@@ -241,6 +241,9 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		// We can see enemy cities that we have a curse on
 		final MemoryMaintainedSpellUtils spellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, null, null, null, new MapCoordinates3DEx (54, 32, 1), null)).thenReturn (new MemoryMaintainedSpell ());
+		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, null, null, null, new MapCoordinates3DEx (5, 5, 0), null)).thenReturn (null);
+		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null)).thenReturn (null);
+		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null)).thenReturn (null);
 		
 		// City scouting ranges
 		final ServerCityCalculations cityCalc = mock (ServerCityCalculations.class);
@@ -308,16 +311,12 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		unitFive.setOwningPlayerID (1);
 		trueMap.getUnit ().add (unitFive);
 
-		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (unitFive, null, null, null, players, trueMap, db)).thenReturn (xu5);
-		
 		// Unit scouting ranges
 		final ServerUnitCalculations unitCalc = mock (ServerUnitCalculations.class);
 		when (unitCalc.calculateUnitScoutingRange (xu1, db)).thenReturn (1);
 		when (unitCalc.calculateUnitScoutingRange (xu2, db)).thenReturn (2);
 		when (unitCalc.calculateUnitScoutingRange (xu3, db)).thenReturn (3);
 		when (unitCalc.calculateUnitScoutingRange (xu4, db)).thenReturn (1);
-		when (unitCalc.calculateUnitScoutingRange (xu5, db)).thenReturn (1);
 
 		// Nature's eye spell
 		final MemoryMaintainedSpell naturesEye = new MemoryMaintainedSpell ();

@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -41,6 +43,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the SpellCastingImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSpellCastingImpl
 {
 	/**
@@ -208,9 +211,10 @@ public final class TestSpellCastingImpl
 				hero.setStatus (UnitStatusID.GENERATED);
 			
 			if (n == 8)
+			{
 				theHero = hero;		// The one we'll actually summon
-			
-			when (unitServerUtils.findUnitWithPlayerAndID (trueMap.getUnit (), 7, "UN00" + n)).thenReturn (hero);				
+				when (unitServerUtils.findUnitWithPlayerAndID (trueMap.getUnit (), 7, "UN00" + n)).thenReturn (hero);
+			}
 		}
 		
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);

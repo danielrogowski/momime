@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.random.RandomUtils;
 
@@ -22,6 +24,7 @@ import momime.server.ServerTestData;
 /**
  * Tests the ServerSpellCalculations class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestServerSpellCalculationsImpl extends ServerTestData
 {
 	/**

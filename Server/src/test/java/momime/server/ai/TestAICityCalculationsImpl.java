@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -32,6 +34,7 @@ import momime.server.utils.CityServerUtils;
 /**
  * Tests the AICityCalculationsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestAICityCalculationsImpl extends ServerTestData
 {
 	/**

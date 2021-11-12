@@ -17,6 +17,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -68,6 +70,7 @@ import momime.server.messages.MomGeneralServerKnowledge;
 /**
  * Tests the OverlandMapServerUtilsImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 {
 	/**
@@ -320,7 +323,6 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		// Session utils
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackerPd.getPlayerID (), "attemptToMeldWithNode (a)")).thenReturn (attacker);
 		
 		// Units
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
@@ -425,7 +427,6 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 
 		// Session utils
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackerPd.getPlayerID (), "attemptToMeldWithNode (a)")).thenReturn (attacker);
 		
 		// Units
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
@@ -537,7 +538,6 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		// Session utils
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackerPd.getPlayerID (), "attemptToMeldWithNode (a)")).thenReturn (attacker);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defenderPd.getPlayerID (), "attemptToMeldWithNode (d)")).thenReturn (defender);
 		
 		// Units
@@ -615,16 +615,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 	public final void testAttemptToMeldWithNode_Failed_HumanAttacking () throws Exception
 	{
 		// Mock database
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
-		myrror.setPlaneNumber (1);
-		
-		final List<Plane> planes = new ArrayList<Plane> ();
-		planes.add (arcanus);
-		planes.add (myrror);
-
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.getPlane ()).thenReturn (planes);
 
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
@@ -688,9 +679,6 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		final ExpandedUnitDetails xuAttackingSpirit = mock (ExpandedUnitDetails.class);
 		when (xuAttackingSpirit.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
-		when (xuAttackingSpirit.getOwningPlayer ()).thenReturn (attacker);
-		when (xuAttackingSpirit.getOwningPlayerID ()).thenReturn (attackerPd.getPlayerID ());
-		when (xuAttackingSpirit.getUnitID ()).thenReturn ("GS");
 		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
 		
 		final ExpandedUnitDetails xuDefendingSpirit = mock (ExpandedUnitDetails.class);

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -63,6 +65,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the SpellProcessingImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestSpellProcessingImpl extends ServerTestData
 {
 	/**
@@ -265,9 +268,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Spell to cast
 		final Spell spell = new Spell ();
@@ -347,7 +347,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		
@@ -423,7 +422,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up test object
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
@@ -945,7 +943,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		cae.setCombatAreaEffectURN (4);
 		
 		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);
-		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE04", 7)).thenReturn (cae);
+		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE001", 7)).thenReturn (null);
+		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE002", 7)).thenReturn (null);
+		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE003", 7)).thenReturn (null);
+		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE004", 7)).thenReturn (cae);
 
 		// The spell being switched off
 		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
@@ -981,6 +982,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// Check spell was switched off
 		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
-		verify (midTurn, times (0)).removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, sd);
+		verify (midTurn, times (1)).removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, sd);
 	}
 }

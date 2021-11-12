@@ -12,6 +12,8 @@ import java.util.List;
 import javax.xml.bind.Unmarshaller;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.base.client.ClientToServerConnection;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -76,6 +78,7 @@ import momime.common.utils.PlayerPickUtilsImpl;
 /**
  * Tests the NewGameUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestNewGameUI extends ClientTestData
 {
 	/**

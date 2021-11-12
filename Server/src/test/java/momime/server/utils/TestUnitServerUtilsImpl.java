@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -64,6 +66,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 /**
  * Tests the UnitServerUtils class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestUnitServerUtilsImpl extends ServerTestData
 {
 	/**
@@ -258,7 +261,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
-		when (random.nextInt (3)).thenReturn (1);		// Fix skill choice
+		when (random.nextInt (2)).thenReturn (1);		// Fix skill choice
 
 		// Set up test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -266,7 +269,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Set up existing skills
 		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
-		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS03")).thenReturn (1);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
@@ -319,7 +321,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		// Fix random results
 		final RandomUtils random = mock (RandomUtils.class);
 		when (random.nextInt (5)).thenReturn (2);		// Fix name ID
-		when (random.nextInt (3)).thenReturn (1);		// Fix skill choice
 
 		// Set up test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -502,6 +503,10 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		// Set up existing skills
 		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS01")).thenReturn (0);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS02")).thenReturn (0);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS03")).thenReturn (0);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS04")).thenReturn (0);
 		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS05")).thenReturn (0, 0, 1, 1, 2, 2, 3, 3, 4, 4);	// Gets read twice each iteration
 		
 		// Set up object to test
@@ -569,6 +574,10 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		// Set up existing skills
 		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS01")).thenReturn (0);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS02")).thenReturn (0);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS03")).thenReturn (0);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS04")).thenReturn (0);
 		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS05")).thenReturn (0, 0, 1, 1, 2, 2, 3, 3, 4, 4);	// Gets read twice each iteration
 		
 		// Set up object to test
@@ -683,10 +692,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testCanUnitBeAddedHere () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -701,7 +707,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		final Set<String> testUnitSkills = new HashSet<String> ();
 
@@ -730,10 +735,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testCanUnitBeAddedHere_EnemyUnit () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -750,11 +752,8 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final Set<String> testUnitSkills = new HashSet<String> ();
-
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
 		
 		// Other units
 		final MemoryUnit enemyUnit = new MemoryUnit ();
@@ -781,10 +780,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testCanUnitBeAddedHere_StackOf8 () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -833,10 +829,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testCanUnitBeAddedHere_StackOf9 () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -853,11 +846,8 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final Set<String> testUnitSkills = new HashSet<String> ();
-
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
 		
 		// Other units
 		final MemoryUnit ourUnit = new MemoryUnit ();
@@ -885,11 +875,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testCanUnitBeAddedHere_Node () throws Exception
 	{
 		// We ARE trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		tt.setMagicRealmID ("A");		// <---
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -904,7 +890,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		final Set<String> testUnitSkills = new HashSet<String> ();
 
@@ -933,10 +918,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testCanUnitBeAddedHere_Impassable () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -951,7 +933,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		final Set<String> testUnitSkills = new HashSet<String> ();
 
@@ -980,10 +961,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testCanUnitBeAddedHere_OurCity () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1033,10 +1011,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testCanUnitBeAddedHere_EnemyCity () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1086,10 +1061,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testFindNearestLocationWhereUnitCanBeAdded_City () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -1156,17 +1128,10 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testFindNearestLocationWhereUnitCanBeAdded_Bumped () throws Exception
 	{
 		// Two tile types are clear, the middle one is a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final TileTypeEx tt2 = new TileTypeEx ();
 		tt2.setMagicRealmID ("A");
-
-		final TileTypeEx tt3 = new TileTypeEx ();
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
-		when (db.findTileType ("TT02", "isNodeLairTower")).thenReturn (tt2);
-		when (db.findTileType ("TT03", "isNodeLairTower")).thenReturn (tt3);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -1197,8 +1162,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		// Unit can enter tiles TT01 and TT02, but TT03 is impassable
 		final UnitCalculations calc = mock (UnitCalculations.class);
 		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
-			any (CommonDatabase.class))).thenReturn (1);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT02"),
 			any (CommonDatabase.class))).thenReturn (1);
 		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT03"),
 			any (CommonDatabase.class))).thenReturn (null);
@@ -1246,10 +1209,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	public final void testFindNearestLocationWhereUnitCanBeAdded_NoRoom () throws Exception
 	{
 		// We aren't trying to add on top of a node
-		final TileTypeEx tt = new TileTypeEx ();
-		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -1266,7 +1226,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (expand.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
-		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		// Map cell and surrounding terrain that we're trying to add to
 		for (int x = -1; x <= 1; x++)

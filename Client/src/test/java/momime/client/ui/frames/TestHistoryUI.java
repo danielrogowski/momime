@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
@@ -33,6 +35,7 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 /**
  * Tests the HistoryUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestHistoryUI extends ClientTestData
 {
 	/**

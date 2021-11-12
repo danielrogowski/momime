@@ -8,10 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import javax.swing.Action;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Tests the CycleAction class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestCycleAction
 {
 	/**

@@ -10,6 +10,8 @@ import java.util.List;
 import javax.xml.datatype.DatatypeFactory;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.SavedGamePoint;
@@ -38,6 +40,7 @@ import momime.common.messages.TurnSystem;
 /**
  * Tests the LoadGameUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestLoadGameUI extends ClientTestData
 {
 	/**

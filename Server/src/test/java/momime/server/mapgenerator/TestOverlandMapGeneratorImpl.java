@@ -25,6 +25,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -70,6 +72,7 @@ import momime.unittests.mapstorage.StoredOverlandMap;
 /**
  * Tests the OverlandMapGenerator class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestOverlandMapGeneratorImpl extends ServerTestData
 {
 	/**

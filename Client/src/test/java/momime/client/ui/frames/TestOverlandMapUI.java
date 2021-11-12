@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -59,6 +61,7 @@ import momime.common.utils.ResourceValueUtils;
 /**
  * Tests the OverlandMapUI class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestOverlandMapUI extends ClientTestData
 {
 	/**

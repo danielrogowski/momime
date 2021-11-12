@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import momime.common.MomException;
 import momime.common.database.UnitSkillAndValue;
@@ -15,6 +17,7 @@ import momime.common.messages.MemoryUnit;
 /**
  * Tests the UnitSkillDirectAccessImpl class
  */
+@ExtendWith(MockitoExtension.class)
 public final class TestUnitSkillDirectAccessImpl
 {
 	/**

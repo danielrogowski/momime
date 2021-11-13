@@ -52,7 +52,6 @@ import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.TurnSystem;
 import momime.common.utils.MemoryGridCellUtilsImpl;

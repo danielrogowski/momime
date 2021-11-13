@@ -3224,6 +3224,8 @@ but kept these separate to make it totally clear when production values are reco
 this value each time a dispel attempt is made (counter magic).</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="attacksPerRoundMinimum" type="xsd:unsignedShort" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="attacksPerRoundMaximum" type="xsd:unsignedShort" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffectGrantsSkill" type="momimecommon:unitSkillID">
 		        <xsd:annotation>
 		        	<xsd:documentation>Lists any unit skill that the CAE grants.  The unit skill may then have bonuses defined on it, like +stats from node auras or prayer.</xsd:documentation>

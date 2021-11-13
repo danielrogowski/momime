@@ -19,6 +19,8 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AttackSpellTargetID;
+import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -276,7 +278,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		final PlayerServerDetails castingPlayer = (playerID == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer;
 		final MomPersistentPlayerPrivateKnowledge castingPlayerPriv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
-		// Does opposing player have any CAEs cast that do some kind of damage each turn? (wrack, terror)
+		// Does opposing player have any CAEs cast that do some kind of damage each turn? (wrack, call lightning, terror)
 		Spell terrorSpell = null;
 		if (!combatEnded)
 		{
@@ -287,7 +289,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				if (!combatEnded)
 				{
 					final String combatAreaEffectID = damagingCAE.getSpellHasCombatEffect ().get (0);
-				
+					
 					if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
 						combatAreaEffectID, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
 					{
@@ -296,11 +298,37 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 							terrorSpell = damagingCAE;
 						else
 						{
-							final List<ResolveAttackTarget> targetUnits = new ArrayList<ResolveAttackTarget> ();
+							final List<MemoryUnit> enemyUnits = new ArrayList<MemoryUnit> ();
 							
 							for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 								if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 									(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+									
+									enemyUnits.add (thisUnit);
+							
+							if (enemyUnits.size () > 0)
+							{
+								// Does it hit all units or pick one randomgly?
+								if (damagingCAE.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT)
+								{
+									// How many times does it attack?
+									final CombatAreaEffect caeDef = mom.getServerDB ().findCombatAreaEffect (combatAreaEffectID, "startCombatTurn");
+									final int attacksPerRoundMinimum = (caeDef.getAttacksPerRoundMinimum () == null) ? 1 : caeDef.getAttacksPerRoundMinimum ();
+									final int attacksPerRoundMaximum = (caeDef.getAttacksPerRoundMaximum () == null) ? 1 : caeDef.getAttacksPerRoundMaximum ();
+									final int targetCount = attacksPerRoundMinimum + getRandomUtils ().nextInt (attacksPerRoundMaximum - attacksPerRoundMinimum + 1);
+									
+									final List<MemoryUnit> randomTargets = new ArrayList<MemoryUnit> ();
+									
+									for (int n = 0; n < targetCount; n++)
+										randomTargets.add (enemyUnits.get (getRandomUtils ().nextInt (enemyUnits.size ())));
+									
+									enemyUnits.clear ();
+									enemyUnits.addAll (randomTargets);
+								}
+								
+								// Now see which ones are valid targets (not immune to the damage)								
+								final List<ResolveAttackTarget> targetUnits = new ArrayList<ResolveAttackTarget> ();
+								for (final MemoryUnit thisUnit : enemyUnits)
 								{
 									final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, damagingCAE.getSpellRealm (),
 										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
@@ -312,10 +340,11 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 										
 										targetUnits.add (new ResolveAttackTarget (thisUnit));
 								}
-
-							if (targetUnits.size () > 0)
-								combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits,
-									attackingPlayer, defendingPlayer, null, null, null, null, damagingCAE, null, castingPlayer, combatLocation, mom);
+	
+								if (targetUnits.size () > 0)
+									combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits,
+										attackingPlayer, defendingPlayer, null, null, null, null, damagingCAE, null, castingPlayer, combatLocation, mom);
+							}
 						}
 					}
 			}

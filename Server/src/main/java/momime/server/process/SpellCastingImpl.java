@@ -18,6 +18,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitEx;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -225,7 +226,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @param castingPlayer Player who cast the attack spell
 	 * @param spell Which attack spell they cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
-	 * @param targetLocation Location where the spell is aimed
+	 * @param targetLocations Location(s) where the spell is aimed
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -235,7 +236,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 */
 	@Override
 	public final void castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
-		final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
+		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -244,12 +245,12 @@ public final class SpellCastingImpl implements SpellCasting
 		PlayerServerDetails defendingPlayer = null;
 		
 		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-			if ((targetLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE))
+			if ((targetLocations.contains (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE))
 			{
 				final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
-				if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+				if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, SpellBookSectionID.ATTACK_SPELLS, null,
 					castingPlayer.getPlayerDescription ().getPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 					priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 				{
@@ -271,7 +272,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @param spellID The spell that is destroying the buildings
 	 * @param castingPlayerID Who cast the spell
 	 * @param percentageChance The % chance of each building being destroyed
-	 * @param targetLocation The city being targeted
+	 * @param targetLocations The city(s) being targeted
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -281,12 +282,12 @@ public final class SpellCastingImpl implements SpellCasting
 	 */
 	@Override
 	public final void rollChanceOfEachBuildingBeingDestroyed (final String spellID, final int castingPlayerID, final int percentageChance,
-		final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
+		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final List<MemoryBuilding> destroyedBuildings = new ArrayList<MemoryBuilding> ();
 		for (final MemoryBuilding thisBuilding : mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ())
-			if ((thisBuilding.getCityLocation ().equals (targetLocation)) &&
+			if ((targetLocations.contains (thisBuilding.getCityLocation ())) &&
 				(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
 				(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) &&
 				(getRandomUtils ().nextInt (100) < percentageChance))
@@ -295,7 +296,8 @@ public final class SpellCastingImpl implements SpellCasting
 
 		// Have to do this even if 0 buildings got destroyed, as for Earthquake this is how the client knows to show the animation and clean up the NTM
 		getCityProcessing ().destroyBuildings (mom.getGeneralServerKnowledge ().getTrueMap (),
-			mom.getPlayers (), destroyedBuildings, spellID, castingPlayerID, targetLocation,
+			mom.getPlayers (), destroyedBuildings, spellID, castingPlayerID,
+			(targetLocations.size () == 1) ? targetLocations.get (0) : null,
 			mom.getSessionDescription (), mom.getServerDB ());
 	}
 

@@ -497,6 +497,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setChanceToHit (attackDamage.getChanceToHit ());
 		damageCalculationMsg.setTenTimesAverageDamage (attackDamage.getPotentialHits () * damageCalculationMsg.getChanceToHit ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
@@ -576,6 +577,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setChanceToHit (attackDamage.getChanceToHit ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
@@ -628,6 +630,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
 		// No to hit rolls - they automatically hit
@@ -665,6 +668,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
 		// Store the dice roll
@@ -704,6 +708,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
@@ -761,6 +766,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
@@ -832,6 +838,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
@@ -891,6 +898,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
@@ -963,6 +971,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
@@ -1024,6 +1033,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats
@@ -1070,6 +1080,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
 		// Set up defender stats
@@ -1125,6 +1136,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setDefenderUnitURN (xuDefender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (xuDefender.getOwningPlayerID ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
 		// Set up defender stats - note the minus here, so if 2 figures are already frozen, we can't roll for them again and use those rolls to freeze other figures

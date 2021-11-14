@@ -805,6 +805,9 @@
         </connectionErrors>
     </multiplayer>
     <unitName>
+        <unknownUnit language="en">
+            <text>unknown unit</text>
+        </unknownUnit>
         <theUnitOfNameSingular language="en">
             <text>the RACE_UNIT_NAME</text>
         </theUnitOfNameSingular>

@@ -59,11 +59,13 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 	@Override
 	public final void preProcess () throws IOException
 	{
+		// We might get null here, if we attacked a unit we can't see, which is rare but possible with some overland spells that hit all units on the both maps
 	    setDefenderUnit (getUnitUtils ().findUnitURN (getDefenderUnitURN (),
-	    	getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "DamageCalculationDefenceDataEx-du"));
+	    	getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ()));
 		    
+	    // PlayerID is sent in a separate field, just in case we can't find the unit
 	    setDefenderPlayer (getMultiplayerSessionUtils ().findPlayerWithID
-	    	(getClient ().getPlayers (), getDefenderUnit ().getOwningPlayerID (), "DamageCalculationDefenceDataEx-dp"));
+	    	(getClient ().getPlayers (), getDefenderUnitOwningPlayerID (), "DamageCalculationDefenceDataEx-dp"));
 	}
 	
 	/**
@@ -161,9 +163,12 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 						languageText = getLanguages ().getCombatDamage ().getDefenceStatistics ();
 			}
 		
+		final String defenderUnitName = (getDefenderUnit () != null) ? getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME) :
+			getLanguageHolder ().findDescription (getLanguages ().getUnitName ().getUnknownUnit ());
+		
 		String text = "          " + getLanguageHolder ().findDescription (languageText).replaceAll
 			("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ())).replaceAll
-			("DEFENDER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
+			("DEFENDER_RACE_UNIT_NAME", defenderUnitName).replaceAll
 			("DEFENDER_FIGURES", Integer.valueOf (getDefenderFigures ()).toString ()).replaceAll
 			("FINAL_HITS", Integer.valueOf (getFinalHits ()).toString ());
 

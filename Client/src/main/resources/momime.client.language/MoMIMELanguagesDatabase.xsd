@@ -85,6 +85,10 @@
     			</xsd:element>
     			
     			<xsd:element minOccurs="0" maxOccurs="1" name="unitName" type="momimelangs:unitName">
+					<xsd:key name="unitNameUnknownUnitPK">
+						<xsd:selector xpath="unknownUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="unitNameTheUnitOfNameSingularPK">
 						<xsd:selector xpath="theUnitOfNameSingular" />
 						<xsd:field xpath="@language" />
@@ -2780,6 +2784,7 @@
 	
 	<xsd:complexType name="unitName" nxe:submenu="Strings" nxe:singular="Unit name" nxe:plural="Unit name">
 		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unknownUnit" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theUnitOfNameSingular" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theUnitOfNamePlural" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aUnitOfNameSingular" />

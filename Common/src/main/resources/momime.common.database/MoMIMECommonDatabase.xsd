@@ -529,6 +529,10 @@
 						<xsd:selector xpath="spellValidMapFeatureTarget" />
 						<xsd:field xpath="@mapFeatureID" />
 					</xsd:key>
+					<xsd:key name="triggeredBySpellRealmPK">
+						<xsd:selector xpath="triggeredBySpellRealm" />
+						<xsd:field xpath="." />
+					</xsd:key>
 					<xsd:key name="spellValidBorderTargetPK">
 						<xsd:selector xpath="spellValidBorderTarget" />
 						<xsd:field xpath="." />
@@ -3407,6 +3411,11 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellSoundFile" type="momimecommon:imageFilename" nxe:label="Spell sound file" nxe:gridwidth="400" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="aiResearchOrder" type="momimecommon:aiResearchOrder" nxe:label="AI Research Order" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="summonAnywhere" type="xsd:boolean" nxe:label="Can summon anywhere?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="triggerAffectsSelf" type="xsd:boolean" nxe:label="Trigger Self?" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:documentation>Whether magic realm triggers will take effect when the caster casts spells from those realms too</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:unitID" nxe:label="Summoned unit">
 		        <xsd:annotation>
 		        	<xsd:documentation>For summoning spells, defines all possible units that can be summoned by the spell.
@@ -3433,6 +3442,14 @@ Technically one is chosen at random when the spell is cast, however there's no s
 						<nxe:showreferencedfield>combatAreaEffectDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 		        </xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="triggeredBySpellRealm" type="momimecommon:pickID" nxe:label="Trigger Realm" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:documentation>For several Very Rare overland enchantments that trigger some effect when a wizard casts spells of a particular magic realm</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidBorderTarget" type="momimecommon:combatTileBorderID" nxe:label="Valid border target">
 		        <xsd:annotation>

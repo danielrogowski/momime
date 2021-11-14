@@ -65,7 +65,7 @@ public interface SpellCasting
 	 * @param castingPlayer Player who cast the attack spell
 	 * @param spell Which attack spell they cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
-	 * @param targetLocation Location where the spell is aimed
+	 * @param targetLocations Location(s) where the spell is aimed
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -74,7 +74,7 @@ public interface SpellCasting
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
-		final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
+		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**
@@ -83,7 +83,7 @@ public interface SpellCasting
 	 * @param spellID The spell that is destroying the buildings
 	 * @param castingPlayerID Who cast the spell
 	 * @param percentageChance The % chance of each building being destroyed
-	 * @param targetLocation The city being targeted
+	 * @param targetLocations The city(s) being targeted
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -92,6 +92,6 @@ public interface SpellCasting
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void rollChanceOfEachBuildingBeingDestroyed (final String spellID, final int castingPlayerID, final int percentageChance,
-		final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
+		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

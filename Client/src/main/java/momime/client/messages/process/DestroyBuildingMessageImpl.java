@@ -23,6 +23,8 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
@@ -67,7 +69,7 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	{
 		// If its a city spell like Earthquake, show an animation for it and don't even remove the buildings yet - the animation handles that as well
 		boolean animated = false;
-		if (getBuildingDestructionSpellLocation () != null)
+		if ((getBuildingsDestroyedBySpellID () != null) && (getBuildingDestructionSpellLocation () != null))
 		{
 			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
 			if ((getBuildingDestructionSpellCastByPlayerID () != null) && (getBuildingDestructionSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ())) &&
@@ -82,10 +84,12 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 			// If we cast it OR its our city, and its a one time spell not a CAE that triggers every turn, then display a popup window for it.
 			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(getBuildingDestructionSpellLocation ().getZ ()).getRow ().get (getBuildingDestructionSpellLocation ().getY ()).getCell ().get (getBuildingDestructionSpellLocation ().getX ()).getCityData ();
+
+			final Spell spellDef = getClient ().getClientDB ().findSpell (getBuildingsDestroyedBySpellID (), "DestroyBuildingMessageImpl");
 			
 			if ((((getBuildingDestructionSpellCastByPlayerID () != null) && (getBuildingDestructionSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
 				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ()))) &&
-				(getClient ().getClientDB ().findSpell (getBuildingsDestroyedBySpellID (), "DestroyBuildingMessageImpl").getSpellHasCityEffect ().size () == 0))
+				(spellDef.getSpellHasCityEffect ().size () == 0) && (spellDef.getSpellBookSectionID () != SpellBookSectionID.OVERLAND_ENCHANTMENTS))
 			{
 				animated = true;
 				

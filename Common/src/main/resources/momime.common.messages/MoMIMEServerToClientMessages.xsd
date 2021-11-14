@@ -685,6 +685,7 @@ This can be null for unusual kinds of attack, e.g. Warp Wood.</xsd:documentation
 			<xsd:extension base="momimestoc:damageCalculationData">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="defenderUnitOwningPlayerID" type="mps:playerID" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="defenderFigures" type="momimecommon:figureCount" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeID" type="momimecommon:damageTypeID" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="storedDamageTypeID" type="momimecommon:storedDamageTypeID" />

@@ -2,9 +2,11 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -236,6 +238,50 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void castOverlandNow (final PlayerServerDetails player, final Spell spell, final Integer variableDamage, final HeroItem heroItem, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
+		// Does the magic realm of the cast spell trigger an affect from any overland enchantments?  e.g. casting Death/Chaos spells while Nature's Wrath in effect
+		if (spell.getSpellRealm () != null)
+		{
+			// Don't trigger the same spell multiple times, even if multiple enemy wizards have it cast
+			final Set<String> triggeredSpells = new HashSet<String> (); 
+			
+			for (final MemoryMaintainedSpell triggerSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+				if (!triggeredSpells.contains (triggerSpell.getSpellID ()))
+				{
+					final Spell triggerSpellDef = mom.getServerDB ().findSpell (triggerSpell.getSpellID (), "castOverlandNow");
+					if ((triggerSpellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
+						(triggerSpellDef.getTriggeredBySpellRealm ().contains (spell.getSpellRealm ())) &&
+						((triggerSpell.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()) ||
+							((triggerSpellDef.isTriggerAffectsSelf () != null) && (triggerSpellDef.isTriggerAffectsSelf ()))))
+					{
+						triggeredSpells.add (triggerSpell.getSpellID ());
+						
+						final PlayerServerDetails triggerSpellCaster = getMultiplayerSessionServerUtils ().findPlayerWithID
+							(mom.getPlayers (), triggerSpell.getCastingPlayerID (), "castOverlandNow");
+						
+						// Nature's Wrath attacks all cities owned by the player casting the offending spell
+						final List<MapCoordinates3DEx> targetLocations = new ArrayList<MapCoordinates3DEx> ();
+						for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
+							for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+								for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+								{
+									final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
+									if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+									{
+										final MapCoordinates3DEx targetLocation = new MapCoordinates3DEx (x, y, plane);
+										targetLocations.add (targetLocation);
+									}
+								}
+
+						// Roll all units at once
+						getSpellCasting ().castOverlandAttackSpell (triggerSpellCaster, triggerSpellDef, triggerSpell.getVariableDamage (), targetLocations, mom);
+						
+						// Roll all buildings at once
+						if (targetLocations.size () > 0)
+							getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (triggerSpell.getSpellID (), triggerSpell.getCastingPlayerID (), 5, targetLocations, mom);
+					}
+				}
+		}
+		
 		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -1397,7 +1443,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			else if (kind == KindOfSpell.ATTACK_UNITS)
-				getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), targetLocation, mom);
+				getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), mom);
 			
 			else if (kind == KindOfSpell.WARP_NODE)
 			{
@@ -1426,11 +1472,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			// Earthquake attacking both units and buildings
 			// The unit deaths we just send.  The buildings being destroyed control the animation on the client.
-			getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), targetLocation, mom);
+			getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), mom);
 			
 			// Now do the buildings
 			getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), 15,
-				targetLocation, mom);
+				Arrays.asList (targetLocation), mom);
 		}
 
 		else if (spell.getBuildingID () == null)
@@ -1811,8 +1857,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 								getDamageCalculator ().sendDamageHeader (null, unitsInCity, false,
 									castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), null, spellDef, castingPlayer);
 								
-								attackDamage = getDamageCalculator ().attackFromSpell
-									(spellDef, null, castingPlayer, null, castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), mom.getServerDB (), SpellCastType.OVERLAND);
+								attackDamage = getDamageCalculator ().attackFromSpell (spellDef, null, castingPlayer, null, castingPlayer,
+									(PlayerServerDetails) xu.getOwningPlayer (), mom.getServerDB (), SpellCastType.OVERLAND);
 							}
 							
 							// Its not enough to call armour piercing damage directly - must call this wrapper method so that it applies the damage to the unit as well
@@ -1852,7 +1898,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_CHAOS_RIFT)) && (spell.getCityLocation () != null) &&
 				((onlyOnePlayerID == 0) || (onlyOnePlayerID == spell.getCastingPlayerID ())))
 				
-				getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), spell.getCastingPlayerID (), 5, (MapCoordinates3DEx) spell.getCityLocation (), mom);
+				getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), spell.getCastingPlayerID (), 5,
+					Arrays.asList ((MapCoordinates3DEx) spell.getCityLocation ()), mom);
 	}
 	
 	/**

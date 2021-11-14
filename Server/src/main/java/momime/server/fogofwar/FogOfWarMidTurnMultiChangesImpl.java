@@ -368,6 +368,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			}
 		});
 		
+		// Find who has Herb Mastery cast
+		final Set<Integer> herbMasteryPlayerIDs = trueMap.getMaintainedSpell ().stream ().filter
+			(s -> s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_HERB_MASTERY)).map (s -> s.getCastingPlayerID ()).collect (Collectors.toSet ());
+		
 		// This can generate a lot of data - a unit update for every single one of our own units plus all units we can see (except summoned ones) - so collate the client messages
 		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
 
@@ -401,6 +405,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					final Integer healingRateBonus = healers.get (xu.getUnitLocation ());
 					if (healingRateBonus != null)
 						healingRate = healingRate + healingRateBonus;
+					
+					// Check Herb Mastery here - Regeneration can heal undead but Herb Mastery can't
+					if (herbMasteryPlayerIDs.contains (thisUnit.getOwningPlayerID ()))
+						healingRate = healingRate + 60;
 					
 					// How much is actually healed?
 					final int totalHealth = xu.getFullFigureCount () * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS);

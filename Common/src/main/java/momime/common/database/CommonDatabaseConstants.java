@@ -398,6 +398,9 @@ public final class CommonDatabaseConstants
 	
 	// spells
 	
+	/** Herb Mastery spell */
+	public final static String SPELL_ID_HERB_MASTERY = "SP038";
+	
 	/** Wind Mastery spell */
 	public final static String SPELL_ID_WIND_MASTERY = "SP057";
 	

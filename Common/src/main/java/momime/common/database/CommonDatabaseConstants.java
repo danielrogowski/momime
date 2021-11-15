@@ -425,6 +425,9 @@ public final class CommonDatabaseConstants
 	/** Chaos Rift spell */
 	public final static String SPELL_ID_CHAOS_RIFT = "SP110";
 	
+	/** Great Wasting spell */
+	public final static String SPELL_ID_GREAT_WASTING = "SP114";
+	
 	/** Just Cause spell */
 	public final static String SPELL_ID_JUST_CAUSE = "SP127";
 	

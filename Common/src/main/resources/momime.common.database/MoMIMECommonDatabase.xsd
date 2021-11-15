@@ -3411,6 +3411,12 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellSoundFile" type="momimecommon:imageFilename" nxe:label="Spell sound file" nxe:gridwidth="400" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="aiResearchOrder" type="momimecommon:aiResearchOrder" nxe:label="AI Research Order" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="summonAnywhere" type="xsd:boolean" nxe:label="Can summon anywhere?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="spellUnrestReduction" type="momimecommon:buildingUnrestReduction" nxe:label="Unrest Reduction" nxe:gridwidth="100">
+				<xsd:annotation>
+					<xsd:documentation>Currently this is only used for overland enchantments that modify unrest (Just Cause positively, Great Wasting negatively).
+But it might make sense in future to get rid of citySpellEffectUnrestReduction and move those values here.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="triggeredBySelf" type="xsd:boolean" nxe:label="Trigger Self?" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:documentation>Whether magic realm triggers will take effect when the caster casts spells from those realms too.

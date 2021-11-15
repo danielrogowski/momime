@@ -53,6 +53,7 @@ import momime.common.database.RacePopulationTask;
 import momime.common.database.RaceUnrest;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.RoundingDirectionID;
+import momime.common.database.Spell;
 import momime.common.database.TaxRate;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitEx;
@@ -3975,28 +3976,115 @@ public final class TestCityCalculationsImpl
 	}
 	
 	/**
-	 * Tests the createUnrestReductionFromSpell method with special rules for Just Cause
+	 * Tests the createUnrestReductionFromSpell method that we get the benefit of our positive overland enchantment
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCreateUnrestReductionFromSpell_JustCause () throws Exception
+	public final void testCreateUnrestReductionFromSpell_OurPositiveOverlandEnchantment () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellUnrestReduction (1);
+		when (db.findSpell ("SP001", "createUnrestReductionFromSpell")).thenReturn (spellDef);
+		
 		// Spell being added
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
-		spell.setSpellID (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE);
+		spell.setSpellID ("SP001");
+		spell.setCastingPlayerID (1);
 
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Call method
-		final CityUnrestBreakdownSpell breakdown = calc.createUnrestReductionFromSpell (spell, db);
+		final CityUnrestBreakdownSpell breakdown = calc.createUnrestReductionFromSpell (spell, 1, db);
 		
 		// Check results
-		assertEquals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE, breakdown.getSpellID ()); 
+		assertEquals ("SP001", breakdown.getSpellID ()); 
 		assertEquals (1, breakdown.getUnrestReduction ().intValue ());
+	}
+	
+	/**
+	 * Tests the createUnrestReductionFromSpell method that we don't get the benefit of someone else's positive overland enchantment
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCreateUnrestReductionFromSpell_EnemyPositiveOverlandEnchantment () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellUnrestReduction (1);
+		when (db.findSpell ("SP001", "createUnrestReductionFromSpell")).thenReturn (spellDef);
+		
+		// Spell being added
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCastingPlayerID (1);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		assertNull (calc.createUnrestReductionFromSpell (spell, 2, db));
+	}
+	
+	/**
+	 * Tests the createUnrestReductionFromSpell method that we get the penalty of someone else's negative overland enchantment
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCreateUnrestReductionFromSpell_EnemyNegativeOverlandEnchantment () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellUnrestReduction (-1);
+		when (db.findSpell ("SP001", "createUnrestReductionFromSpell")).thenReturn (spellDef);
+		
+		// Spell being added
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCastingPlayerID (1);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		final CityUnrestBreakdownSpell breakdown = calc.createUnrestReductionFromSpell (spell, 2, db);
+		
+		// Check results
+		assertEquals ("SP001", breakdown.getSpellID ()); 
+		assertEquals (-1, breakdown.getUnrestReduction ().intValue ());
+	}
+	
+	/**
+	 * Tests the createUnrestReductionFromSpell method that we don't get the penalty of our own negative overland enchantment
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCreateUnrestReductionFromSpell_OurNegativeOverlandEnchantment () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Spell spellDef = new Spell ();
+		spellDef.setSpellUnrestReduction (-1);
+		when (db.findSpell ("SP001", "createUnrestReductionFromSpell")).thenReturn (spellDef);
+		
+		// Spell being added
+		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+		spell.setSpellID ("SP001");
+		spell.setCastingPlayerID (1);
+
+		// Set up object to test
+		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		
+		// Call method
+		assertNull (calc.createUnrestReductionFromSpell (spell, 1, db));
 	}
 	
 	/**
@@ -4004,10 +4092,13 @@ public final class TestCityCalculationsImpl
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCreateUnrestReductionFromSpell_Other () throws Exception
+	public final void testCreateUnrestReductionFromSpell_CAE () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final Spell spellDef = new Spell ();
+		when (db.findSpell ("SP001", "createUnrestReductionFromSpell")).thenReturn (spellDef);
 		
 		final CitySpellEffect effect = new CitySpellEffect ();
 		effect.setCitySpellEffectUnrestReduction (2);
@@ -4024,7 +4115,7 @@ public final class TestCityCalculationsImpl
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Call method
-		final CityUnrestBreakdownSpell breakdown = calc.createUnrestReductionFromSpell (spell, db);
+		final CityUnrestBreakdownSpell breakdown = calc.createUnrestReductionFromSpell (spell, 0, db);
 		
 		// Check results
 		assertEquals ("SP001", breakdown.getSpellID ()); 

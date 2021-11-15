@@ -38,6 +38,7 @@ import momime.common.database.Race;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RaceUnrest;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.TaxRate;
 import momime.common.database.TileType;
 import momime.common.database.UnitEx;
@@ -725,19 +726,21 @@ public final class CityCalculationsImpl implements CityCalculations
 		if (spells != null)
 		{
 			// Don't process the same spell twice - for example if two different enemy wizards both cast Famine on our city, we don't get -50% unrest, just the normal -25%
-			final List<String> citySpellEffectApplied = new ArrayList<String> ();
+			final List<String> spellsApplied = new ArrayList<String> ();
 			
 			for (final MemoryMaintainedSpell spell : spells)
-				if (((spell.getCityLocation () == null) && (spell.getCitySpellEffectID () == null) &&
-						(spell.getCastingPlayerID () == cityData.getCityOwnerID ())) ||		// This is just to allow Just Cause into the method
-					((cityLocation.equals (spell.getCityLocation ())) && (spell.getCitySpellEffectID () != null) && (!citySpellEffectApplied.contains (spell.getCitySpellEffectID ()))))
+				if ((!spellsApplied.contains (spell.getSpellID ())) &&
+					(((spell.getCityLocation () == null) && (spell.getCitySpellEffectID () == null)) || 	// To allow overland enchantments like Just Cause or Great Wasting
+					((cityLocation.equals (spell.getCityLocation ())) && (spell.getCitySpellEffectID () != null))))
 				{
-					final CityUnrestBreakdownSpell spellBreakdown = createUnrestReductionFromSpell (spell, db);
+					final CityUnrestBreakdownSpell spellBreakdown = createUnrestReductionFromSpell (spell, cityData.getCityOwnerID (), db);
 					if (spellBreakdown != null)
+					{
 						breakdown.getSpellReducingUnrest ().add (spellBreakdown);
-					
-					if (spell.getCitySpellEffectID () != null)
-						citySpellEffectApplied.add (spell.getCitySpellEffectID ());
+						
+						// Only added it to the applied list if it actually applied, otherwise our Great Wasting would stop someone else's Great Wasting from affecting us
+						spellsApplied.add (spell.getSpellID ());
+					}
 				}
 		}
 
@@ -1228,21 +1231,27 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * Adds on unrest reduction (or penalty) from a spell
 	 * 
 	 * @param spell The spell to calculate for
+	 * @param cityOwnerID Who owns the city we are calculating unrest for
 	 * @param db Lookup lists built over the XML database
 	 * @return Breakdown if one was created; null if one was not
 	 * @throws RecordNotFoundException If the definition for the spell can't be found in the db
 	 */
-	final CityUnrestBreakdownSpell createUnrestReductionFromSpell (final MemoryMaintainedSpell spell, final CommonDatabase db)
+	final CityUnrestBreakdownSpell createUnrestReductionFromSpell (final MemoryMaintainedSpell spell, final int cityOwnerID, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		CityUnrestBreakdownSpell spellBreakdown = null;
 		
 		// Just Cause is a bit of a special case as it provides unrest reduction without having a city spell effect, so have to do from the spell directly
-		if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
+		final Spell spellDef = db.findSpell (spell.getSpellID (), "createUnrestReductionFromSpell");
+		if ((spellDef.getSpellUnrestReduction () != null) && (spellDef.getSpellUnrestReduction () != 0) &&
+				
+			// If its a positive effect, it has to be our spell; if its a negative effect, it has to be someone else's spell
+			(((spellDef.getSpellUnrestReduction () > 0) && (cityOwnerID == spell.getCastingPlayerID ())) ||
+				((spellDef.getSpellUnrestReduction () < 0) && (cityOwnerID != spell.getCastingPlayerID ()))))
 		{
 			spellBreakdown = new CityUnrestBreakdownSpell ();
 			spellBreakdown.setSpellID (spell.getSpellID ());
-			spellBreakdown.setUnrestReduction (1);
+			spellBreakdown.setUnrestReduction (spellDef.getSpellUnrestReduction ());
 		}
 		
 		// Other spells use data from XML to specify bonuses

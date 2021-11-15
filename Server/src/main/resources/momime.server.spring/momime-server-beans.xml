@@ -594,6 +594,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">
@@ -631,6 +632,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageCalculator" ref="damageCalculator" />
 		<property name="attackResolutionProcessing" ref="attackResolutionProcessing" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="spellTriggers" ref="spellTriggers" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -660,6 +662,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
+
+	<bean id="spellTriggers" class="momime.server.process.SpellTriggersImpl">
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="spellCasting" ref="spellCasting" />
 	</bean>
 
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">

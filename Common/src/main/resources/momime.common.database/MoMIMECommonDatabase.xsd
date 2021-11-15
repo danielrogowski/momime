@@ -3411,11 +3411,19 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellSoundFile" type="momimecommon:imageFilename" nxe:label="Spell sound file" nxe:gridwidth="400" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="aiResearchOrder" type="momimecommon:aiResearchOrder" nxe:label="AI Research Order" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="summonAnywhere" type="xsd:boolean" nxe:label="Can summon anywhere?" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="triggerAffectsSelf" type="xsd:boolean" nxe:label="Trigger Self?" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="0" maxOccurs="1" name="triggeredBySelf" type="xsd:boolean" nxe:label="Trigger Self?" nxe:showmaincolumn="false">
 				<xsd:annotation>
-					<xsd:documentation>Whether magic realm triggers will take effect when the caster casts spells from those realms too</xsd:documentation>
+					<xsd:documentation>Whether magic realm triggers will take effect when the caster casts spells from those realms too.
+e.g. Nature's Wrath does not affect the owner casting Chaos and Death spells, but Evil Omens DOES make the owner casting Life and Nature spells more expensive.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="triggerAffectsUnits" type="momimecommon:triggerAffectsUnits" nxe:label="Trigger Units" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:documentation>When overland enchantments trigger, sets which units are affected.
+triggeredBySelf sets when the effect triggers *at all*.  triggerAffectsUnits sets, when the trigger is activated, who is affected.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="destroyBuildingChance" type="momimecommon:percentage" nxe:label="% chance of buildings being destroyed" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:unitID" nxe:label="Summoned unit">
 		        <xsd:annotation>
 		        	<xsd:documentation>For summoning spells, defines all possible units that can be summoned by the spell.
@@ -5478,6 +5486,22 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 			<xsd:enumeration value="M"><xsd:annotation>
 				<xsd:documentation>Skill value is multiplied by this value, so 2 means double the skill value, e.g. Berserk doubles melee strength.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="MULTIPLY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="triggerAffectsUnits">
+        <xsd:annotation>
+        	<xsd:documentation>When overland enchantments trigger, sets which units are affected.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="I"><xsd:annotation>
+				<xsd:documentation>Enemy units inside their cities only; units not in cities are unaffected</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="INSIDE_CITIES" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="O"><xsd:annotation>
+				<xsd:documentation>All units outside cities including our own</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OUTSIDE_CITIES" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

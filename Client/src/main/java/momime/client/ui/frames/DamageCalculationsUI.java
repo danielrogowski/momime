@@ -35,7 +35,7 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 	private final static Log log = LogFactory.getLog (DamageCalculationsUI.class);
 	
 	/** How many messages we allow before we start rolling the old ones off the top of the list */
-	private final static int MAX_MESSAGES = 200;
+	private final static int MAX_MESSAGES = 500;
 
 	/** XML layout */
 	private XmlLayoutContainerEx damageCalculationsLayout;

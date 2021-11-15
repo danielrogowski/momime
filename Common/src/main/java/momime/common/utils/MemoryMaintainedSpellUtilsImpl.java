@@ -20,6 +20,7 @@ import momime.common.database.DamageType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.TriggerAffectsUnits;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -337,8 +338,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		result = TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY; 
 
     	// Casting something nasty on a friendly unit
-    	else if (((useSpellBookSection == SpellBookSectionID.UNIT_CURSES) || (useSpellBookSection == SpellBookSectionID.ATTACK_SPELLS)) &&
-    		(targetUnit.getOwningPlayerID () == castingPlayerID))
+    	// Note in some rare cases, attack spells actually can attack our own units; note we're checking the unmodified spell book section for this as it will have
+    	// been overriden to ATTACK_SPELLS to roll the damage
+    	else if (((useSpellBookSection == SpellBookSectionID.UNIT_CURSES) && (targetUnit.getOwningPlayerID () == castingPlayerID)) ||
+    		((useSpellBookSection == SpellBookSectionID.ATTACK_SPELLS) && (targetUnit.getOwningPlayerID () == castingPlayerID) &&
+    			((spell.getSpellBookSectionID () != SpellBookSectionID.OVERLAND_ENCHANTMENTS) || (spell.getTriggerAffectsUnits () != TriggerAffectsUnits.OUTSIDE_CITIES))))
     		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
     	
     	// Trying to raise dead an enemy unit with a spell that doesn't explicitly allow this

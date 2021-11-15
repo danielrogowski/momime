@@ -1,7 +1,10 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -10,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -19,6 +23,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.TriggerAffectsUnits;
 import momime.common.database.UnitEx;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -74,6 +79,9 @@ public final class SpellCastingImpl implements SpellCasting
 	
 	/** City processing methods */
 	private CityProcessing cityProcessing;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
 	/**
 	 * Processes casting a summoning spell overland, finding where there is space for the unit to go and adding it
@@ -221,7 +229,8 @@ public final class SpellCastingImpl implements SpellCasting
 	}
 	
 	/**
-	 * Processes casting an attack spell overland that hits all units in a stack (that are valid targets)
+	 * Processes casting an attack spell overland that hits all units in a stack (that are valid targets), or all units in multiple stacks.
+	 * If multiple targetLocations are specified then the units may not all belong to the same player.
 	 * 
 	 * @param castingPlayer Player who cast the attack spell
 	 * @param spell Which attack spell they cast
@@ -241,8 +250,8 @@ public final class SpellCastingImpl implements SpellCasting
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
-		final List<ResolveAttackTarget> targetUnits = new ArrayList<ResolveAttackTarget> ();
-		PlayerServerDetails defendingPlayer = null;
+		// Break up all the target units into separate lists for each player
+		final Map<Integer, List<ResolveAttackTarget>> targetUnitsForEachPlayer = new HashMap<Integer, List<ResolveAttackTarget>> ();
 		
 		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((targetLocations.contains (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE))
@@ -254,16 +263,25 @@ public final class SpellCastingImpl implements SpellCasting
 					castingPlayer.getPlayerDescription ().getPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 					priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 				{
-					targetUnits.add (new ResolveAttackTarget (tu));
+					// Does a list exist for this player yet?
+					List<ResolveAttackTarget> targetUnits = targetUnitsForEachPlayer.get (thisTarget.getOwningPlayerID ());
+					if (targetUnits == null)
+					{
+						targetUnits = new ArrayList<ResolveAttackTarget> ();
+						targetUnitsForEachPlayer.put (thisTarget.getOwningPlayerID (), targetUnits);
+					}
 					
-					if (defendingPlayer == null)
-						defendingPlayer = (PlayerServerDetails) thisTarget.getOwningPlayer ();
+					targetUnits.add (new ResolveAttackTarget (tu));
 				}
 			}
 		
-		if (targetUnits.size () > 0)
-			getDamageProcessor ().resolveAttack (null, targetUnits, castingPlayer, defendingPlayer,
+		for (final Entry<Integer, List<ResolveAttackTarget>> entry : targetUnitsForEachPlayer.entrySet ())
+		{
+			final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "castOverlandAttackSpell");
+			
+			getDamageProcessor ().resolveAttack (null, entry.getValue (), castingPlayer, defendingPlayer,
 				null, null, null, null, spell, variableDamage, castingPlayer, null, mom);
+		}
 	}
 	
 	/**
@@ -427,5 +445,21 @@ public final class SpellCastingImpl implements SpellCasting
 	public final void setCityProcessing (final CityProcessing obj)
 	{
 		cityProcessing = obj;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

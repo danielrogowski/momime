@@ -90,7 +90,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
 				attackingPlayer.getConnection ().sendMessageToClient (wrapper);
 			
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
+			if ((defendingPlayer != attackingPlayer) &&(defendingPlayer.getPlayerDescription ().isHuman ()))
 				defendingPlayer.getConnection ().sendMessageToClient (wrapper);
 		}
 	}

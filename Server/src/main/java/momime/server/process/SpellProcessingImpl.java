@@ -220,6 +220,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 	
+	/** Methods mainly dealing with when very rare overland enchantments are triggered */
+	private SpellTriggers spellTriggers;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -251,33 +254,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 					if ((triggerSpellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
 						(triggerSpellDef.getTriggeredBySpellRealm ().contains (spell.getSpellRealm ())) &&
 						((triggerSpell.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()) ||
-							((triggerSpellDef.isTriggerAffectsSelf () != null) && (triggerSpellDef.isTriggerAffectsSelf ()))))
+							((triggerSpellDef.isTriggeredBySelf () != null) && (triggerSpellDef.isTriggeredBySelf ()))))
 					{
 						triggeredSpells.add (triggerSpell.getSpellID ());
 						
-						final PlayerServerDetails triggerSpellCaster = getMultiplayerSessionServerUtils ().findPlayerWithID
-							(mom.getPlayers (), triggerSpell.getCastingPlayerID (), "castOverlandNow");
-						
-						// Nature's Wrath attacks all cities owned by the player casting the offending spell
-						final List<MapCoordinates3DEx> targetLocations = new ArrayList<MapCoordinates3DEx> ();
-						for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
-							for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-								for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
-								{
-									final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
-									if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
-									{
-										final MapCoordinates3DEx targetLocation = new MapCoordinates3DEx (x, y, plane);
-										targetLocations.add (targetLocation);
-									}
-								}
-
-						// Roll all units at once
-						getSpellCasting ().castOverlandAttackSpell (triggerSpellCaster, triggerSpellDef, triggerSpell.getVariableDamage (), targetLocations, mom);
-						
-						// Roll all buildings at once
-						if (targetLocations.size () > 0)
-							getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (triggerSpell.getSpellID (), triggerSpell.getCastingPlayerID (), 5, targetLocations, mom);
+						getSpellTriggers ().triggerSpell (triggerSpell, player.getPlayerDescription ().getPlayerID (), mom);
 					}
 				}
 		}
@@ -1475,8 +1456,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 			getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), mom);
 			
 			// Now do the buildings
-			getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), 15,
-				Arrays.asList (targetLocation), mom);
+			getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
+				spell.getDestroyBuildingChance (), Arrays.asList (targetLocation), mom);
 		}
 
 		else if (spell.getBuildingID () == null)
@@ -1965,6 +1946,35 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 					}
 				}
+			}
+	}
+	
+	/**
+	 * Triggers any overland enchantments that activate every turn with no specific trigger
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process units belonging to everyone; if specified will process only units owned by the specified player
+	 * @throws RecordNotFoundException If we encounter an unknown spell
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	@Override
+	public final void triggerOverlandEnchantments (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == spell.getCastingPlayerID ()))
+			{
+				final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "triggerOverlandEnchantments");
+				
+				// It has to be an overland enchantment that specifies some kind of damage, but no specific way to trigger it -
+				// then we just assume it is triggered every turn
+				if ((spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
+					(spellDef.getAttackSpellDamageResolutionTypeID () != null) && (spellDef.getTriggeredBySpellRealm ().size () == 0))
+					
+					getSpellTriggers ().triggerSpell (spell, null, mom);
 			}
 	}
 	
@@ -2510,5 +2520,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods mainly dealing with when very rare overland enchantments are triggered
+	 */
+	public final SpellTriggers getSpellTriggers ()
+	{
+		return spellTriggers;
+	}
+
+	/**
+	 * @param t Methods mainly dealing with when very rare overland enchantments are triggered
+	 */
+	public final void setSpellTriggers (final SpellTriggers t)
+	{
+		spellTriggers = t;
 	}
 }

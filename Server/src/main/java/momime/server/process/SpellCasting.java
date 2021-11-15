@@ -60,7 +60,8 @@ public interface SpellCasting
 	public OverlandCastingInfo createOverlandCastingInfo (final PlayerServerDetails player, final String ourSpellID);
 	
 	/**
-	 * Processes casting an attack spell overland that hits all units in a stack (that are valid targets)
+	 * Processes casting an attack spell overland that hits all units in a stack (that are valid targets), or all units in multiple stacks.
+	 * If multiple targetLocations are specified then the units may not all belong to the same player.
 	 * 
 	 * @param castingPlayer Player who cast the attack spell
 	 * @param spell Which attack spell they cast

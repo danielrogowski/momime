@@ -686,6 +686,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		// Stasis
 		getSpellProcessing ().rollToRemoveOverlandCurses (mom, onlyOnePlayerID);
+		
+		// Meteor swarm
+		getSpellProcessing ().triggerOverlandEnchantments (mom, onlyOnePlayerID);
 
 		// Global production - only need to do a simple recalc on turn 1, with no accumulation and no city growth
 		if (mom.getGeneralPublicKnowledge ().getTurnNumber () > 1)

@@ -167,20 +167,6 @@ public interface SpellProcessing
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
-	 * For Stasis.  Each turn, units with stasis get a resistance roll for a chance to free themselves.
-	 * 
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @param onlyOnePlayerID If zero, will process units belonging to everyone; if specified will process only units owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
-	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 */
-	public void rollToRemoveOverlandCurses (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
-
-	/**
 	 * For Chaos Rift.  Each turn, units in the city get struck by lightning bolts.
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -206,5 +192,33 @@ public interface SpellProcessing
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void citySpellEffectsAttackingBuildings (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+	
+	/**
+	 * For Stasis.  Each turn, units with stasis get a resistance roll for a chance to free themselves.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process units belonging to everyone; if specified will process only units owned by the specified player
+	 * @throws RecordNotFoundException If we encounter an unknown spell
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public void rollToRemoveOverlandCurses (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * Triggers any overland enchantments that activate every turn with no specific trigger
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process units belonging to everyone; if specified will process only units owned by the specified player
+	 * @throws RecordNotFoundException If we encounter an unknown spell
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public void triggerOverlandEnchantments (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

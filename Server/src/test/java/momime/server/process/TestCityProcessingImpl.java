@@ -63,6 +63,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
@@ -636,6 +637,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		// Set up object to test
 		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setCityCalculations (cityCalc);
@@ -644,6 +646,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setUnitServerUtils (unitServerUtils);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		
 		// Run method
 		proc.growCitiesAndProgressConstructionProjects (0, players, gsk, sd, db);

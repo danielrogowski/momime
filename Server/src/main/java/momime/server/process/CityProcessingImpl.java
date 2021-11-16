@@ -34,9 +34,11 @@ import momime.common.database.Plane;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSpellEffect;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
@@ -65,6 +67,7 @@ import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -158,6 +161,9 @@ public final class CityProcessingImpl implements CityProcessing
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -520,8 +526,22 @@ public final class CityProcessingImpl implements CityProcessing
 											}
 
 											// Now actually add the unit
-											getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, unit.getUnitID (), addLocation.getUnitLocation (),
+											final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, unit.getUnitID (), addLocation.getUnitLocation (),
 												cityLocation, null, null, cityOwner, UnitStatusID.ALIVE, players, sd, db);
+											
+											// If the caster has Doom Mastery cast then cast Chaos Channels on the new unit
+											if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (gsk.getTrueMap ().getMaintainedSpell (), cityData.getCityOwnerID (),
+												CommonDatabaseConstants.SPELL_ID_DOOM_MASTERY, null, null, null, null) != null)
+											{
+												final Spell chaosChannels = db.findSpell (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, "growCitiesAndProgressConstructionProjects");
+												final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+													(gsk.getTrueMap ().getMaintainedSpell (), chaosChannels, cityData.getCityOwnerID (), newUnit.getUnitURN ());
+												if ((unitSpellEffects != null) && (unitSpellEffects.size () > 0))
+													
+													getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (gsk, cityData.getCityOwnerID (),
+														CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, newUnit.getUnitURN (),
+														unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID (), false, null, null, null, true, players, db, sd);
+											}
 										}
 
 										// Zero production for the next construction project
@@ -1585,5 +1605,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

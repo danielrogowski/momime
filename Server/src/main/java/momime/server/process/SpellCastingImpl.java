@@ -2,6 +2,7 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -21,9 +22,11 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellValidTileTypeTarget;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
@@ -346,8 +349,87 @@ public final class SpellCastingImpl implements SpellCasting
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (),
 			players, targetLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
 			
-		getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation,
-			trueMap, players, sd, db);
+		getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, trueMap, players, sd, db);
+	}
+
+	/**
+	 * Change a change tile type kind of spell, like Change Terrain or Raise Volcano
+	 * 
+	 * @param spell Which spell was cast
+	 * @param targetLocation Tile to change
+	 * @param castingPlayerID Player who cast the spell
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param players List of players in the session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void changeTileType (final Spell spell, final MapCoordinates3DEx targetLocation, final int castingPlayerID, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		// Change Terrain or Raise Volcano
+		final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
+			(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+		
+		final Iterator<SpellValidTileTypeTarget> iter = spell.getSpellValidTileTypeTarget ().iterator ();				
+		boolean found = false;
+		while ((!found) && (iter.hasNext ()))
+		{
+			final SpellValidTileTypeTarget thisTileType = iter.next ();
+			if (thisTileType.getTileTypeID ().equals (terrainData.getTileTypeID ()))
+			{
+				if (thisTileType.getChangeToTileTypeID () == null)
+					throw new MomException ("Spell " + spell.getSpellID () + " is a change terrain type spell but has no tile type defined to change from " + thisTileType.getTileTypeID ());
+				
+				terrainData.setTileTypeID (thisTileType.getChangeToTileTypeID ());
+				
+				if (thisTileType.getChangeToTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO))
+					terrainData.setVolcanoOwnerID (castingPlayerID);
+				else
+					terrainData.setVolcanoOwnerID (null);
+				
+				if ((thisTileType.isMineralDestroyed () != null) && (thisTileType.isMineralDestroyed ()) && (terrainData.getMapFeatureID () != null))
+				{
+					// Minerals are destroyed, but not lairs
+					final MapFeatureEx mapFeature = db.findMapFeature (terrainData.getMapFeatureID (), "targetOverlandSpell");
+					if (mapFeature.getMapFeatureMagicRealm ().size () == 0)
+						terrainData.setMapFeatureID (null);
+				}
+				
+				if (thisTileType.getBuildingsDestroyedChance () != null)
+				{
+					// Every building here has a chance of being destroyed
+					final List<MemoryBuilding> destroyedBuildings = new ArrayList<MemoryBuilding> ();
+					for (final MemoryBuilding thisBuilding : trueMap.getBuilding ())
+						if ((thisBuilding.getCityLocation ().equals (targetLocation)) &&
+							(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
+							(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) &&
+							(getRandomUtils ().nextInt (100) < thisTileType.getBuildingsDestroyedChance ()))
+							
+							destroyedBuildings.add (thisBuilding);
+					
+					if (destroyedBuildings.size () > 0)
+						getCityProcessing ().destroyBuildings (trueMap,
+							players, destroyedBuildings, spell.getSpellID (), castingPlayerID, null, sd, db);
+				}
+				
+				found = true;
+			}
+		}
+		
+		if (found)
+		{
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (),
+				players, targetLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+
+			getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, trueMap, players, sd, db);
+		}
 	}
 
 	/**

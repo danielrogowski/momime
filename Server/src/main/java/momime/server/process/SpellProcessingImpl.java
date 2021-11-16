@@ -36,12 +36,10 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageType;
 import momime.common.database.HeroItem;
-import momime.common.database.MapFeatureEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellValidMapFeatureTarget;
-import momime.common.database.SpellValidTileTypeTarget;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
@@ -1007,7 +1005,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				(trueSpell.getCityLocation ().getZ ()).getRow ().get (trueSpell.getCityLocation ().getY ()).getCell ().get (trueSpell.getCityLocation ().getX ()).getCityData ();
 			if (cityData != null)
 			{
-				final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetOverlandSpell (C)");
+				final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "switchOffSpell (C)");
 				final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 				
 				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
@@ -1235,67 +1233,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			else if (kind == KindOfSpell.CHANGE_TILE_TYPE)
-			{
-				// Change Terrain or Raise Volcano
-				final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
-				
-				final Iterator<SpellValidTileTypeTarget> iter = spell.getSpellValidTileTypeTarget ().iterator ();				
-				boolean found = false;
-				while ((!found) && (iter.hasNext ()))
-				{
-					final SpellValidTileTypeTarget thisTileType = iter.next ();
-					if (thisTileType.getTileTypeID ().equals (terrainData.getTileTypeID ()))
-					{
-						if (thisTileType.getChangeToTileTypeID () == null)
-							throw new MomException ("Spell " + spell.getSpellID () + " is a change terrain type spell but has no tile type defined to change from " + thisTileType.getTileTypeID ());
-						
-						terrainData.setTileTypeID (thisTileType.getChangeToTileTypeID ());
-						
-						if (thisTileType.getChangeToTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO))
-							terrainData.setVolcanoOwnerID (castingPlayer.getPlayerDescription ().getPlayerID ());
-						else
-							terrainData.setVolcanoOwnerID (null);
-						
-						if ((thisTileType.isMineralDestroyed () != null) && (thisTileType.isMineralDestroyed ()) && (terrainData.getMapFeatureID () != null))
-						{
-							// Minerals are destroyed, but not lairs
-							final MapFeatureEx mapFeature = mom.getServerDB ().findMapFeature (terrainData.getMapFeatureID (), "targetOverlandSpell");
-							if (mapFeature.getMapFeatureMagicRealm ().size () == 0)
-								terrainData.setMapFeatureID (null);
-						}
-						
-						if (thisTileType.getBuildingsDestroyedChance () != null)
-						{
-							// Every building here has a chance of being destroyed
-							final List<MemoryBuilding> destroyedBuildings = new ArrayList<MemoryBuilding> ();
-							for (final MemoryBuilding thisBuilding : mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ())
-								if ((thisBuilding.getCityLocation ().equals (targetLocation)) &&
-									(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
-									(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) &&
-									(getRandomUtils ().nextInt (100) < thisTileType.getBuildingsDestroyedChance ()))
-									
-									destroyedBuildings.add (thisBuilding);
-							
-							if (destroyedBuildings.size () > 0)
-								getCityProcessing ().destroyBuildings (mom.getGeneralServerKnowledge ().getTrueMap (),
-									mom.getPlayers (), destroyedBuildings, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), null,
-									mom.getSessionDescription (), mom.getServerDB ());
-						}
-						
-						found = true;
-					}
-				}
-				
-				if (found)
-				{
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
-
-					getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation,
-						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-				}
-			}
+				getSpellCasting ().changeTileType (spell, targetLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			
 			else if (kind == KindOfSpell.CHANGE_MAP_FEATURE)
 			{
@@ -1962,6 +1901,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// It has to be an overland enchantment that specifies some kind of damage, but no specific way to trigger it -
 				// then we just assume it is triggered every turn.  Great Wasting is an exception as it does no actual damage but still triggers like this.
 				if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_GREAT_WASTING)) ||
+					(spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_ARMAGEDDON)) ||
 					((spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
 						(spellDef.getAttackSpellDamageResolutionTypeID () != null) && (spellDef.getTriggeredBySpellRealm ().size () == 0)))
 					

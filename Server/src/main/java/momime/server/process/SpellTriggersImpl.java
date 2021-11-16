@@ -95,9 +95,13 @@ public final class SpellTriggersImpl implements SpellTriggers
 					}
 				}
 
-		if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_GREAT_WASTING))
+		// Great Wasting and Armageddon are similar in that they both cast a lower level spell at 3-6 tiles per turn, the only difference is which spell it is
+		if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_GREAT_WASTING)) ||
+			(spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_ARMAGEDDON)))
 		{
-			final Spell corruption = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_CORRUPTION, "triggerSpell (C)");
+			final String singleTileSpellID = spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_GREAT_WASTING) ?
+				CommonDatabaseConstants.SPELL_ID_CORRUPTION : CommonDatabaseConstants.SPELL_ID_RAISE_VOLCANO;
+			final Spell singleTileSpell = mom.getServerDB ().findSpell (singleTileSpellID, "triggerSpell (C)");
 			
 			// Get a list of every map cell that's a valid target for corruption (this is so we don't target water tiles, or already corrupted tiles)
 			// except that corruption would normally not be targetable on cells we can't see.
@@ -107,7 +111,7 @@ public final class SpellTriggersImpl implements SpellTriggers
 					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
 						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
-						if (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (corruption, spell.getCastingPlayerID (), coords,
+						if (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (singleTileSpell, spell.getCastingPlayerID (), coords,
 							mom.getGeneralServerKnowledge ().getTrueMap (), null, mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
 							targetCells.add (coords);
@@ -129,9 +133,13 @@ public final class SpellTriggersImpl implements SpellTriggers
 				final MapCoordinates3DEx targetLocation = targetCells.get (getRandomUtils ().nextInt (targetCells.size ()));
 				targetCells.remove (targetLocation);
 				count--;
-				
-				getSpellCasting ().corruptTile (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			
+				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_GREAT_WASTING))
+					getSpellCasting ().corruptTile (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
+						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				else
+					getSpellCasting ().changeTileType (singleTileSpell, targetLocation, spell.getCastingPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
+						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}
 		}
 		

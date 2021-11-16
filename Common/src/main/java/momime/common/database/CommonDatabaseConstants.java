@@ -419,6 +419,9 @@ public final class CommonDatabaseConstants
 	/** Lightning Bolt spell */
 	public final static String SPELL_ID_LIGHTNING_BOLT = "SP091";
 	
+	/** Raise volcano spell */
+	public final static String SPELL_ID_RAISE_VOLCANO = "SP098";
+	
 	/** Warp Lightning spell */
 	public final static String SPELL_ID_WARP_LIGHTNING = "SP101";
 	
@@ -430,6 +433,9 @@ public final class CommonDatabaseConstants
 	
 	/** Great Wasting spell */
 	public final static String SPELL_ID_GREAT_WASTING = "SP114";
+	
+	/** Armageddon */
+	public final static String SPELL_ID_ARMAGEDDON = "SP120";
 	
 	/** Just Cause spell */
 	public final static String SPELL_ID_JUST_CAUSE = "SP127";

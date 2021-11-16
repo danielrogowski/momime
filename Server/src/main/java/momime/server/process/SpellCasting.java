@@ -114,4 +114,24 @@ public interface SpellCasting
 	public void corruptTile (final MapCoordinates3DEx targetLocation, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	
+	/**
+	 * Change a change tile type kind of spell, like Change Terrain or Raise Volcano
+	 * 
+	 * @param spell Which spell was cast
+	 * @param targetLocation Tile to change
+	 * @param castingPlayerID Player who cast the spell
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param players List of players in the session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void changeTileType (final Spell spell, final MapCoordinates3DEx targetLocation, final int castingPlayerID, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

@@ -440,6 +440,9 @@ public final class CommonDatabaseConstants
 	/** Doom Mastery */
 	public final static String SPELL_ID_DOOM_MASTERY = "SP117";
 	
+	/** Call the Void */
+	public final static String SPELL_ID_CALL_THE_VOID = "SP119";
+	
 	/** Armageddon */
 	public final static String SPELL_ID_ARMAGEDDON = "SP120";
 	

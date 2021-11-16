@@ -162,7 +162,8 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 		
 		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
-			(((kind == KindOfSpell.RAISE_DEAD) || (kind == KindOfSpell.ATTACK_UNITS)) && (!getMaintainedSpell ().isCastInCombat ())))
+			(((kind == KindOfSpell.RAISE_DEAD) || (kind == KindOfSpell.ATTACK_UNITS) || (kind == KindOfSpell.ATTACK_UNITS_AND_BUILDINGS)) &
+				(!getMaintainedSpell ().isCastInCombat ())))
 		{
 			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
 			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&

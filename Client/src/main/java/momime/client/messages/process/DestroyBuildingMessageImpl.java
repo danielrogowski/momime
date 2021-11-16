@@ -24,7 +24,6 @@ import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
@@ -89,7 +88,7 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 			
 			if ((((getBuildingDestructionSpellCastByPlayerID () != null) && (getBuildingDestructionSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
 				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ()))) &&
-				(spellDef.getSpellHasCityEffect ().size () == 0) && (spellDef.getSpellBookSectionID () != SpellBookSectionID.OVERLAND_ENCHANTMENTS))
+				(spellDef.getSpellHasCityEffect ().size () == 0) && (spellDef.getCombatCastAnimation () == null))
 			{
 				animated = true;
 				

@@ -1380,7 +1380,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 		
 		else if (kind == KindOfSpell.ATTACK_UNITS_AND_BUILDINGS)
 		{
-			// Earthquake attacking both units and buildings
+			// Earthquake or Call the Void attacking both units and buildings
+			// If it has a separate animation then show it
+			if (spell.getCombatCastAnimation () != null)
+			{
+				maintainedSpell.setCityLocation (targetLocation);
+				getFogOfWarMidTurnChanges ().sendTransientSpellToClients (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+			}
+			
 			// The unit deaths we just send.  The buildings being destroyed control the animation on the client.
 			getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), mom);
 			

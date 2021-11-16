@@ -7,17 +7,24 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.calculations.CityCalculationsImpl;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 
 /**
@@ -32,6 +39,15 @@ public final class SpellTriggersImpl implements SpellTriggers
 	
 	/** Casting for each type of spell */
 	private SpellCasting spellCasting;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Random utils */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * Handles an overland enchantment triggering its effect.
@@ -56,6 +72,7 @@ public final class SpellTriggersImpl implements SpellTriggers
 		
 		// Get a list of all cities owned by the offending player, or maybe ALL players if null.
 		// In any case we never include the cities owned by the casting player.
+		final List<MapCoordinates3DEx> ourCityLocations = new ArrayList<MapCoordinates3DEx> ();
 		final List<MapCoordinates3DEx> enemyCityLocations = new ArrayList<MapCoordinates3DEx> ();
 		final List<MapCoordinates3DEx> allCityLocations = new ArrayList<MapCoordinates3DEx> ();
 		
@@ -68,6 +85,9 @@ public final class SpellTriggersImpl implements SpellTriggers
 					{
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
 						allCityLocations.add (cityLocation);
+
+						if (cityData.getCityOwnerID () == spell.getCastingPlayerID ())
+							ourCityLocations.add (cityLocation);
 						
 						if ((cityData.getCityOwnerID () != spell.getCastingPlayerID ()) &&
 							((offendingPlayerID == null) || (cityData.getCityOwnerID () == offendingPlayerID)))
@@ -75,7 +95,47 @@ public final class SpellTriggersImpl implements SpellTriggers
 					}
 				}
 
-		if (spellDef.getAttackSpellDamageResolutionTypeID () != null)
+		if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_GREAT_WASTING))
+		{
+			final Spell corruption = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_CORRUPTION, "triggerSpell (C)");
+			
+			// Get a list of every map cell that's a valid target for corruption (this is so we don't target water tiles, or already corrupted tiles)
+			// except that corruption would normally not be targetable on cells we can't see.
+			final List<MapCoordinates3DEx> targetCells = new ArrayList<MapCoordinates3DEx> ();
+			for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
+						if (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (corruption, spell.getCastingPlayerID (), coords,
+							mom.getGeneralServerKnowledge ().getTrueMap (), null, mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							
+							targetCells.add (coords);
+					}
+			
+			// Now remove any cells that are too close to the caster's cities
+			for (final MapCoordinates3DEx cityLocation : ourCityLocations)
+			{
+				final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
+				for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+					if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+						targetCells.remove (coords);
+			}
+			
+			// Roll cells to corrupt
+			int count = 3 + getRandomUtils ().nextInt (4);
+			while ((count > 0) && (targetCells.size () > 0))
+			{
+				final MapCoordinates3DEx targetLocation = targetCells.get (getRandomUtils ().nextInt (targetCells.size ()));
+				targetCells.remove (targetLocation);
+				count--;
+				
+				getSpellCasting ().corruptTile (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			}
+		}
+		
+		else if (spellDef.getAttackSpellDamageResolutionTypeID () != null)
 		{
 			// How we figure out affected units depends on the TriggerAffectsUnits value
 			final List<MapCoordinates3DEx> unitLocations;
@@ -138,5 +198,53 @@ public final class SpellTriggersImpl implements SpellTriggers
 	public final void setSpellCasting (final SpellCasting c)
 	{
 		spellCasting = c;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Random utils
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random utils
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

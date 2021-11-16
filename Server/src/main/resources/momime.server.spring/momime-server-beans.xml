@@ -667,6 +667,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="spellTriggers" class="momime.server.process.SpellTriggersImpl">
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="spellCasting" ref="spellCasting" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">

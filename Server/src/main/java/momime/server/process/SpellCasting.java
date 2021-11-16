@@ -10,9 +10,12 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.server.MomSessionVariables;
 
@@ -94,5 +97,21 @@ public interface SpellCasting
 	 */
 	public void rollChanceOfEachBuildingBeingDestroyed (final String spellID, final int castingPlayerID, final int percentageChance,
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+
+	/**
+	 * @param targetLocation Tile to corrupt
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param players List of players in the session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void corruptTile (final MapCoordinates3DEx targetLocation, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

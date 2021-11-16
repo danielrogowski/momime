@@ -169,7 +169,7 @@ public interface MemoryMaintainedSpellUtils
 	 * @param castingPlayerID Player casting the spell
 	 * @param targetLocation Location we want to cast the spell at 
 	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param fow Area we can currently see
+	 * @param fow Area we can currently see; passing this as null disables the FOW check for some special scenarios
 	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target

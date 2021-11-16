@@ -410,6 +410,9 @@ public final class CommonDatabaseConstants
 	/** Disrupt Wall spell */
 	public final static String SPELL_ID_DISRUPT_WALL = "SP082";
 	
+	/** Corruption */
+	public final static String SPELL_ID_CORRUPTION = "SP085";
+
 	/** Wall of Fire spell */
 	public final static String SPELL_ID_WALL_OF_FIRE = "SP087";
 	

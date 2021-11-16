@@ -589,7 +589,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param castingPlayerID Player casting the spell
 	 * @param targetLocation Location we want to cast the spell at 
 	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param fow Area we can currently see
+	 * @param fow Area we can currently see; passing this as null disables the FOW check for some special scenarios
 	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
@@ -615,7 +615,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	
     	// Every other kind of spell must be targetted at a location we can see - you can't blindy throw Disenchant Area or
     	// Corruption at map cells with out of date info about enemy spells that may or may not still be there
-    	else if (fow.getPlane ().get (targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()) != FogOfWarStateID.CAN_SEE)
+    	else if ((fow != null) && (fow.getPlane ().get (targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get
+    		(targetLocation.getX ()) != FogOfWarStateID.CAN_SEE))
     		result = TargetSpellResult.CANNOT_SEE_TARGET;
     	
     	// Can only target certain tile types?

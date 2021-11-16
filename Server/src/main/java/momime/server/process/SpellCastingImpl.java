@@ -19,20 +19,23 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.TriggerAffectsUnits;
 import momime.common.database.UnitEx;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
@@ -317,6 +320,34 @@ public final class SpellCastingImpl implements SpellCasting
 			mom.getPlayers (), destroyedBuildings, spellID, castingPlayerID,
 			(targetLocations.size () == 1) ? targetLocations.get (0) : null,
 			mom.getSessionDescription (), mom.getServerDB ());
+	}
+	
+	/**
+	 * @param targetLocation Tile to corrupt
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param players List of players in the session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void corruptTile (final MapCoordinates3DEx targetLocation, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
+			(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+		terrainData.setCorrupted (5);
+			
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (),
+			players, targetLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+			
+		getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation,
+			trueMap, players, sd, db);
 	}
 
 	/**

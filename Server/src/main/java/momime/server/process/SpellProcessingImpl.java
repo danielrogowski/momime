@@ -1194,18 +1194,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, true, mom);
 			
 			else if (kind == KindOfSpell.CORRUPTION)
-			{
-				// Corruption
-				final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
-				terrainData.setCorrupted (5);
-				
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
-				
-				getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation,
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-			}
+				getSpellCasting ().corruptTile (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			
 			else if (kind == KindOfSpell.ENCHANT_ROAD)
 			{
@@ -1970,9 +1960,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "triggerOverlandEnchantments");
 				
 				// It has to be an overland enchantment that specifies some kind of damage, but no specific way to trigger it -
-				// then we just assume it is triggered every turn
-				if ((spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
-					(spellDef.getAttackSpellDamageResolutionTypeID () != null) && (spellDef.getTriggeredBySpellRealm ().size () == 0))
+				// then we just assume it is triggered every turn.  Great Wasting is an exception as it does no actual damage but still triggers like this.
+				if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_GREAT_WASTING)) ||
+					((spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
+						(spellDef.getAttackSpellDamageResolutionTypeID () != null) && (spellDef.getTriggeredBySpellRealm ().size () == 0)))
 					
 					getSpellTriggers ().triggerSpell (spell, null, mom);
 			}

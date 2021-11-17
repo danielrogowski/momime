@@ -115,6 +115,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (SpellProcessingImpl.class);
+	
+	/** All the possible spell choices that might be cast from Call Chaos */
+	private final static List<String> CALL_CHAOS_CHOICES = Arrays.asList
+		(CommonDatabaseConstants.SPELL_ID_HEALING, CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS,
+			CommonDatabaseConstants.SPELL_ID_WARP_CREATURE, CommonDatabaseConstants.SPELL_ID_FIRE_BOLT,
+			CommonDatabaseConstants.SPELL_ID_WARP_LIGHTNING, CommonDatabaseConstants.SPELL_ID_DOOM_BOLT,
+			CommonDatabaseConstants.SPELL_ID_DISINTEGRATE, null);		// Null at the end is the "do nothing" option
 
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -718,6 +725,44 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 			}
 			
+			// Call Chaos is so bizarre it needs its own section, because we need to pick the effect each unit will get BEFORE we call isUnitValidTargetForSpell
+			// because some units may be immune to disintegrate (high resistance) or healing (undead) or chaos channels (already is CC) for different reasons
+			else if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_CALL_CHAOS))
+			{
+				final List<ResolveAttackTarget> targetUnits = new ArrayList<ResolveAttackTarget> ();
+				
+				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+						(thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+						(thisUnit.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()))
+					{
+						final String randomSpellID = CALL_CHAOS_CHOICES.get (5 + getRandomUtils ().nextInt (2));//getRandomUtils ().nextInt (CALL_CHAOS_CHOICES.size ()));
+						if (randomSpellID != null)
+						{
+							final Spell randomSpell = mom.getServerDB ().findSpell (randomSpellID, "castCombatNow (CC)");
+							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, randomSpell.getSpellRealm (),
+								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+							
+							// For healing we have to fudge the playerID or its going to stop us from healing an enemy unit
+							final int thisCastingPlayerID = randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_HEALING) ? thisUnit.getOwningPlayerID () : castingPlayer.getPlayerDescription ().getPlayerID ();
+							
+							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, thisCastingPlayerID,
+								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
+								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							{
+								final ResolveAttackTarget thisTarget = new ResolveAttackTarget (thisUnit);
+								thisTarget.setSpellOverride (randomSpell);
+								targetUnits.add (thisTarget);
+							}
+						}
+					}
+				
+				if (targetUnits.size () > 0)
+					combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
+						targetUnits, attackingPlayer, defendingPlayer,
+						null, null, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+			}
+			
 			// Attack, healing or dispelling spells
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
 				(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
@@ -731,16 +776,18 @@ public final class SpellProcessingImpl implements SpellProcessing
 				else
 				{
 					for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					{
-						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-							xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
-							mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+						if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+							(thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+						{
+							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
-							targetUnits.add (thisUnit);
-					}
+							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
+								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+								
+								targetUnits.add (thisUnit);
+						}
 					
 					// Disenchant Area / True will target spells cast on the combat as well
 					if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)

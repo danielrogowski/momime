@@ -410,11 +410,17 @@ public final class CommonDatabaseConstants
 	/** Disrupt Wall spell */
 	public final static String SPELL_ID_DISRUPT_WALL = "SP082";
 	
+	/** Fire bolt spell */
+	public final static String SPELL_ID_FIRE_BOLT = "SP083";
+	
 	/** Corruption */
 	public final static String SPELL_ID_CORRUPTION = "SP085";
 
 	/** Wall of Fire spell */
 	public final static String SPELL_ID_WALL_OF_FIRE = "SP087";
+	
+	/** Warp creature */
+	public final static String SPELL_ID_WARP_CREATURE = "SP089";
 	
 	/** Lightning Bolt spell */
 	public final static String SPELL_ID_LIGHTNING_BOLT = "SP091";
@@ -434,8 +440,14 @@ public final class CommonDatabaseConstants
 	/** Chaos Rift spell */
 	public final static String SPELL_ID_CHAOS_RIFT = "SP110";
 	
+	/** Disintegrate spell */
+	public final static String SPELL_ID_DISINTEGRATE = "SP112";
+	
 	/** Great Wasting spell */
 	public final static String SPELL_ID_GREAT_WASTING = "SP114";
+	
+	/** Call Chaos spell */
+	public final static String SPELL_ID_CALL_CHAOS = "SP115";
 
 	/** Doom Mastery */
 	public final static String SPELL_ID_DOOM_MASTERY = "SP117";
@@ -445,6 +457,9 @@ public final class CommonDatabaseConstants
 	
 	/** Armageddon */
 	public final static String SPELL_ID_ARMAGEDDON = "SP120";
+	
+	/** Healing */
+	public final static String SPELL_ID_HEALING = "SP125";
 	
 	/** Just Cause spell */
 	public final static String SPELL_ID_JUST_CAUSE = "SP127";

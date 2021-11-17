@@ -449,6 +449,13 @@ public final class CommonDatabaseConstants
 	/** Call Chaos spell */
 	public final static String SPELL_ID_CALL_CHAOS = "SP115";
 
+	/** All the possible spell choices that might be cast from Call Chaos */
+	public final static List<String> CALL_CHAOS_CHOICES = Arrays.asList
+		(CommonDatabaseConstants.SPELL_ID_HEALING, CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS,
+			CommonDatabaseConstants.SPELL_ID_WARP_CREATURE, CommonDatabaseConstants.SPELL_ID_FIRE_BOLT,
+			CommonDatabaseConstants.SPELL_ID_WARP_LIGHTNING, CommonDatabaseConstants.SPELL_ID_DOOM_BOLT,
+			CommonDatabaseConstants.SPELL_ID_DISINTEGRATE, null);		// Null at the end is the "do nothing" option
+	
 	/** Doom Mastery */
 	public final static String SPELL_ID_DOOM_MASTERY = "SP117";
 	

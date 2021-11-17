@@ -309,6 +309,40 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 						
 						throw new MomException ("Spell " + spellDef.getSpellID () + " has no combat base damage defined, but has magic realm/lifeform type additional saving throw penalties defined");
 		}
+		
+		// Check all animations possible from Call Chaos have the same frame rate
+		final List<String> callChaosAnimations = new ArrayList<String> ();
+		getSpell ().stream ().filter (s -> CommonDatabaseConstants.CALL_CHAOS_CHOICES.contains (s.spellID)).forEach (s ->
+		{
+			if ((s.getCombatCastAnimation () != null) && (!callChaosAnimations.contains (s.getCombatCastAnimation ())))
+				callChaosAnimations.add (s.getCombatCastAnimation ()); 
+
+			if ((s.getCombatCastAnimationFly () != null) && (!callChaosAnimations.contains (s.getCombatCastAnimationFly ())))
+				callChaosAnimations.add (s.getCombatCastAnimationFly ()); 
+		});
+		
+		Double animSpeed = null;
+		for (final Animation anim : getAnimation ())
+			if (callChaosAnimations.contains (anim.getAnimationID ()))
+			{
+				if (animSpeed == null)
+					animSpeed = anim.getAnimationSpeed ();
+				else if (animSpeed == anim.getAnimationSpeed () * 2)
+				{
+					// If its exactly half the frame rate then just double the frame rate and copy all the frames
+					anim.setAnimationSpeed (animSpeed);
+					final List<AnimationFrame> frames = new ArrayList<AnimationFrame> (anim.getFrame ());
+					anim.getFrame ().clear ();
+					for (int frameNo = 0; frameNo < frames.size (); frameNo++)
+					{
+						anim.getFrame ().add (frames.get (frameNo));
+						anim.getFrame ().add (frames.get (frameNo));
+					}
+				}
+				else if (anim.getAnimationSpeed () != animSpeed)
+					throw new MomException ("All animations that may trigger from Call Chaos must have the same frame rate.  " +
+						callChaosAnimations.get (0) + " is set to " + animSpeed + " fps but " + anim.getAnimationID () + " is set to " + anim.getAnimationSpeed ());						
+			}
 
 		// Check all buildings and units to find the most expensive one
 		mostExpensiveConstructionCost = 0;

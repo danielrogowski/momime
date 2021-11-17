@@ -116,13 +116,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (SpellProcessingImpl.class);
 	
-	/** All the possible spell choices that might be cast from Call Chaos */
-	private final static List<String> CALL_CHAOS_CHOICES = Arrays.asList
-		(CommonDatabaseConstants.SPELL_ID_HEALING, CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS,
-			CommonDatabaseConstants.SPELL_ID_WARP_CREATURE, CommonDatabaseConstants.SPELL_ID_FIRE_BOLT,
-			CommonDatabaseConstants.SPELL_ID_WARP_LIGHTNING, CommonDatabaseConstants.SPELL_ID_DOOM_BOLT,
-			CommonDatabaseConstants.SPELL_ID_DISINTEGRATE, null);		// Null at the end is the "do nothing" option
-
 	/** Spell utils */
 	private SpellUtils spellUtils;
 	
@@ -736,7 +729,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
 						(thisUnit.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()))
 					{
-						final String randomSpellID = CALL_CHAOS_CHOICES.get (5 + getRandomUtils ().nextInt (2));//getRandomUtils ().nextInt (CALL_CHAOS_CHOICES.size ()));
+						final String randomSpellID = CommonDatabaseConstants.CALL_CHAOS_CHOICES.get
+							(5 + getRandomUtils ().nextInt (2));//getRandomUtils ().nextInt (CommonDatabaseConstants.CALL_CHAOS_CHOICES.size ()));
 						if (randomSpellID != null)
 						{
 							final Spell randomSpell = mom.getServerDB ().findSpell (randomSpellID, "castCombatNow (CC)");

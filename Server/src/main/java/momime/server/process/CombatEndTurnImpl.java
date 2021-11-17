@@ -500,8 +500,12 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		
 		// We are only regenerating - there is no animation for it - so just pass nulls for attackingPlayer + defendingPlayer
 		if (healedUnits.size () > 0)
+		{
+			final List<ResolveAttackTarget> unitWrappers = healedUnits.stream ().map (u -> new ResolveAttackTarget (u)).collect (Collectors.toList ());
+			
 			getFogOfWarMidTurnChanges ().sendDamageToClients (null, null, null,
-				healedUnits, null, null, null, null, null, players, mem.getMap (), db, fogOfWarSettings);
+				unitWrappers, null, null, null, null, null, players, mem.getMap (), db, fogOfWarSettings);
+		}
 	}
 
 	/**

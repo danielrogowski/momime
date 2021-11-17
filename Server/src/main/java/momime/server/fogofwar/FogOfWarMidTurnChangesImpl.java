@@ -74,6 +74,7 @@ import momime.server.calculations.FogOfWarCalculations;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.process.ResolveAttackTarget;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -1261,8 +1262,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void sendDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final List<MemoryUnit> tuDefenders, final String attackSkillID, final String attackSpellID, final List<DamageResolutionTypeID> specialDamageResolutionsApplied,
-		final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<ResolveAttackTarget> tuDefenders, final String attackSkillID, final String attackSpellID,
+		final List<DamageResolutionTypeID> specialDamageResolutionsApplied, final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked,
+		final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -1314,15 +1316,15 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 			
 			// Defending unit(s)
-			for (final MemoryUnit tuDefender : tuDefenders)
-				if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tuDefender, trueTerrain, thisPlayer, db, fogOfWarSettings))
+			for (final ResolveAttackTarget tuDefender : tuDefenders)
+				if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tuDefender.getDefender (), trueTerrain, thisPlayer, db, fogOfWarSettings))
 				{
 					// Update player's memory of defender on server
-					final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendDamageToClients-d");
-					muDefender.setCombatHeading (tuDefender.getCombatHeading ());
+					final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getDefender ().getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendDamageToClients-d");
+					muDefender.setCombatHeading (tuDefender.getDefender ().getCombatHeading ());
 
 					muDefender.getUnitDamage ().clear ();
-					tuDefender.getUnitDamage ().forEach (tuDamage ->
+					tuDefender.getDefender ().getUnitDamage ().forEach (tuDamage ->
 					{
 						final UnitDamage muDamage = new UnitDamage ();
 						muDamage.setDamageType (tuDamage.getDamageType ());
@@ -1334,9 +1336,13 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					if (msg != null)
 					{
 						final ApplyDamageMessageUnit msgUnit = new ApplyDamageMessageUnit ();
-						msgUnit.setDefenderUnitURN (tuDefender.getUnitURN ());
-						msgUnit.setDefenderDirection (tuDefender.getCombatHeading ());
-						msgUnit.getDefenderUnitDamage ().addAll (tuDefender.getUnitDamage ());
+						msgUnit.setDefenderUnitURN (tuDefender.getDefender ().getUnitURN ());
+						msgUnit.setDefenderDirection (tuDefender.getDefender ().getCombatHeading ());
+						msgUnit.getDefenderUnitDamage ().addAll (tuDefender.getDefender ().getUnitDamage ());
+						
+						if (tuDefender.getSpellOverride () != null)
+							msgUnit.setOverrideSpellID (tuDefender.getSpellOverride ().getSpellID ());
+						
 						msg.getDefenderUnit ().add (msgUnit);
 					}
 				}

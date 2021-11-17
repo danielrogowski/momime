@@ -279,7 +279,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// Must pass attacking/defendingPlayer as null if this is not combat damage, so overland damage isn't animated on clients.
 		getFogOfWarMidTurnChanges ().sendDamageToClients (attacker,
 			(combatLocation == null) ? null : attackingPlayer, (combatLocation == null) ? null : defendingPlayer,
-			defenderUnits, attackSkillID, (spell == null) ? null : spell.getSpellID (),
+			defenders, attackSkillID, (spell == null) ? null : spell.getSpellID (),
 			specialDamageResolutionsApplied, wreckTilePosition, sendWrecked, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		

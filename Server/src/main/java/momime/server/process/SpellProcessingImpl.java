@@ -827,16 +827,20 @@ public final class SpellProcessingImpl implements SpellProcessing
 					{
 						// Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,
 						// and handles showing the animation for us, so its convenient to reuse it for this.  Effectively we're just applying negative damage...
+						final List<ResolveAttackTarget> unitWrappers = new ArrayList<ResolveAttackTarget> ();
 						for (final MemoryUnit tu : targetUnits)
 						{
 							final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
 							final int heal = Math.min (dmg, spell.getCombatBaseDamage ());
 							if (heal > 0)
+							{
 								getUnitServerUtils ().healDamage (tu.getUnitDamage (), heal, false);
+								unitWrappers.add (new ResolveAttackTarget (tu));
+							}
 						}
 						
 						getFogOfWarMidTurnChanges ().sendDamageToClients (null, attackingPlayer, defendingPlayer,
-							targetUnits, null, spell.getSpellID (), null, null, null, mom.getPlayers (),
+							unitWrappers, null, spell.getSpellID (), null, null, null, mom.getPlayers (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 					}
 					else if (kind == KindOfSpell.RECALL)

@@ -29,6 +29,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.process.ResolveAttackTarget;
 
 /**
  * This contains all methods that allow changes in the server's true memory to be replicated into each player's memory and send update messages to each client
@@ -383,8 +384,9 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public void sendDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final List<MemoryUnit> tuDefenders, final String attackSkillID, final String attackSpellID, final List<DamageResolutionTypeID> specialDamageResolutionsApplied,
-		final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
+		final List<ResolveAttackTarget> tuDefenders, final String attackSkillID, final String attackSpellID,
+		final List<DamageResolutionTypeID> specialDamageResolutionsApplied, final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked,
+		final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 

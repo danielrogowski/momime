@@ -1146,6 +1146,11 @@ hit units at once, so that the animation shows all units being hit at once, rath
 			<xsd:element minOccurs="0" maxOccurs="1" name="defenderDirection" type="map:mapDirection">
 			    <xsd:annotation><xsd:documentation>May be null if the damage is an overland attack and the unit isn't even in combat, so has no direction.</xsd:documentation></xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="overrideSpellID" type="momimecommon:spellID">
+			    <xsd:annotation>
+					<xsd:documentation>Some attacks not only hit multiple defenders at once, but hit each defender with a different spell effect.  Mainly for Call Chaos.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="defenderUnitDamage" type="momimemsgs:unitDamage" />
 		</xsd:sequence>
 	</xsd:complexType>

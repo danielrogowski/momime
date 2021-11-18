@@ -171,7 +171,10 @@ public final class DamageProcessorImpl implements DamageProcessor
 				{
 					// What spell is this unit being attacked by?
 					final Spell thisSpell = (defender.getSpellOverride () != null) ? defender.getSpellOverride () : spell;
-					if (spellThisPass == null)
+					if ((spellThisPass == null) ||
+							
+						// If its Warp Lightning then recreate the steps every time to make the damage log look correct, and so we don't keep secondary steps from the previous unit
+						((spellThisPass == thisSpell) && (thisSpell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_WARP_LIGHTNING))))
 					{
 						spellThisPass = thisSpell;
 						spellStepsThisPass = new ArrayList<List<AttackResolutionStepContainer>> ();

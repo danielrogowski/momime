@@ -381,7 +381,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				{
 					getDamageCalculator ().sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, terrorSpell, castingPlayer);
 					final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell
-						(terrorSpell, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT);
+						(terrorSpell, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT, false);
 					
 					for (final ExpandedUnitDetails xu : unitsToRoll)
 						if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage, false))

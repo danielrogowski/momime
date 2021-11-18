@@ -68,6 +68,7 @@ public interface DamageProcessor
 	 * @param existingCurse Whether the resistance roll is to shake off an existing curse (false is normal setting, if its to try to avoid being cursed in the first place)
 	 * @param castingPlayer The player casting the spell
 	 * @param castType Whether spell is being cast in combat or overland
+	 * @param skipDamageHeader Whether to skip sending the damage header, if this is part of a bigger spell (used for Call Chaos)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the defender failed the resistance roll or not, i.e. true if something bad happens
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -79,7 +80,7 @@ public interface DamageProcessor
 	public boolean makeResistanceRoll (final MemoryUnit attacker, final MemoryUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final Spell spell, final Integer variableDamage, final boolean existingCurse,
-		final PlayerServerDetails castingPlayer, final SpellCastType castType, final MomSessionVariables mom)
+		final PlayerServerDetails castingPlayer, final SpellCastType castType, final boolean skipDamageHeader, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
 	/**

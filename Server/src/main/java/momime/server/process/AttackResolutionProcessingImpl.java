@@ -427,7 +427,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 								attackingPlayer : defendingPlayer;
 							
 							getSpellProcessing ().castCombatNow (castingPlayer, xuCombatCastingUnit, null, null, step.getSpellStep ().getSpell (), 0, 0, null,
-								combatLocation, defendingPlayer, attackingPlayer, defender.getUnit (), null, mom);
+								combatLocation, defendingPlayer, attackingPlayer, defender.getUnit (), null, true, mom);
 						}
 					}
 				}

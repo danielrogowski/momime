@@ -192,7 +192,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 						
 						spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
 							(thisSpell, useVariableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
-								(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT)));
+								(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT, false)));
 					}
 					
 					// Same spell as before
@@ -245,7 +245,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 							
 							spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
 								(spellThisPass, spellThisPass.getCombatBaseDamage () - stepNumber, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
-									(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT)));
+									(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT, false)));
 						}
 					}
 					
@@ -424,6 +424,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param existingCurse Whether the resistance roll is to shake off an existing curse (false is normal setting, if its to try to avoid being cursed in the first place)
 	 * @param castingPlayer The player casting the spell
 	 * @param castType Whether spell is being cast in combat or overland
+	 * @param skipDamageHeader Whether to skip sending the damage header, if this is part of a bigger spell (used for Call Chaos)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the defender failed the resistance roll or not, i.e. true if something bad happens
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -436,13 +437,14 @@ public final class DamageProcessorImpl implements DamageProcessor
 	public final boolean makeResistanceRoll (final MemoryUnit attacker, final MemoryUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final Spell spell, final Integer variableDamage, final boolean existingCurse,
-		final PlayerServerDetails castingPlayer, final SpellCastType castType, final MomSessionVariables mom)
+		final PlayerServerDetails castingPlayer, final SpellCastType castType, final boolean skipDamageHeader, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		getDamageCalculator ().sendDamageHeader (attacker, defenders, existingCurse, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		if (!skipDamageHeader)
+			getDamageCalculator ().sendDamageHeader (attacker, defenders, existingCurse, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
 	
 		// Spell might be being cast by a unit, or a hero casting a spell imbued in an item
 		final ExpandedUnitDetails xuUnitMakingAttack = (attacker == null) ? null : 
@@ -451,7 +453,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		
 		// Work out base saving throw plus any modifiers from hero items with -spell save
 		final AttackDamage potentialDamage = getDamageCalculator ().attackFromSpell
-			(spell, variableDamage, castingPlayer, xuUnitMakingAttack, attackingPlayer, defendingPlayer, mom.getServerDB (), castType);
+			(spell, variableDamage, castingPlayer, xuUnitMakingAttack, attackingPlayer, defendingPlayer, mom.getServerDB (), castType, skipDamageHeader);
 		
 		// Make the actual roll
 		// Now we know all the details about the type of attack, we can properly generate stats of the

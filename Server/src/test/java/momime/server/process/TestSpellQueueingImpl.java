@@ -1309,7 +1309,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
 		
 		// Check results
-		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, null, null, null, spell, 20, 30, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
+		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, null, null, null, spell, 20, 30, null, combatLocation,
+			defendingPlayer, attackingPlayer, null, null, false, mom);
 		assertEquals (0, attackingMsgs.getMessages ().size ());
 	}
 
@@ -1700,7 +1701,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, 101, null, mom);
 		
 		// Check results
-		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, null, null, null, spell, 20, 30, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, mom);
+		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, null, null, null, spell, 20, 30, null, combatLocation,
+			defendingPlayer, attackingPlayer, targetUnit, null, false, mom);
 		assertEquals (0, attackingMsgs.getMessages ().size ());
 	}
 
@@ -2239,7 +2241,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, combatTargetLocation, null, null, mom);
 		
 		// Check results
-		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, null, null, null, spell, 20, 30, null, combatLocation, defendingPlayer, attackingPlayer, null, combatTargetLocation, mom);
+		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, null, null, null, spell, 20, 30, null, combatLocation,
+			defendingPlayer, attackingPlayer, null, combatTargetLocation, false, mom);
 		assertEquals (0, attackingMsgs.getMessages ().size ());
 	}
 

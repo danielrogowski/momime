@@ -60,6 +60,7 @@ public interface SpellProcessing
 	 * @param attackingPlayer Attacking player in the combat
 	 * @param targetUnit Unit to target the spell on, if appropriate for spell book section, otherwise null
 	 * @param targetLocation Location to target the spell at, if appropriate for spell book section, otherwise null
+	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the spell cast was an attack that resulted in the combat ending
 	 * @throws MomException If there is a problem with any of the calculations
@@ -71,7 +72,7 @@ public interface SpellProcessing
 	public boolean castCombatNow (final PlayerServerDetails castingPlayer, final ExpandedUnitDetails xuCombatCastingUnit, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
-		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
+		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final boolean skipAnimation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;
 	
 	/**

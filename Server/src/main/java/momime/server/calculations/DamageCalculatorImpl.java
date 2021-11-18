@@ -328,6 +328,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param db Lookup lists built over the XML database
 	 * @param castType Whether spell is being cast in combat or overland
+	 * @param skipDamageHeader Whether to skip sending the damage header, if this is part of a bigger spell (used for Call Chaos)
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -336,7 +337,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final ExpandedUnitDetails castingUnit,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db, final SpellCastType castType)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db, final SpellCastType castType, final boolean skipDamageHeader)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
 		// Work out damage done - note this isn't applicable to all types of attack, e.g. Warp Wood has no attack value, so we might get null here
@@ -358,18 +359,21 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			
 			damage = ((damage == null) ? 0 : damage) + castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY);
 		
-		// Start breakdown message
-		final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
-		damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
-		damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
-		damageCalculationMsg.setPotentialHits (damage);
-		damageCalculationMsg.setDamageTypeID (spell.getAttackSpellDamageTypeID ());
-		damageCalculationMsg.setDamageResolutionTypeID (spell.getAttackSpellDamageResolutionTypeID ());
-		
-		if (damageType != null)
-			damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
-		
-		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		// Send breakdown message
+		if (!skipDamageHeader)
+		{
+			final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
+			damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+			damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
+			damageCalculationMsg.setPotentialHits (damage);
+			damageCalculationMsg.setDamageTypeID (spell.getAttackSpellDamageTypeID ());
+			damageCalculationMsg.setDamageResolutionTypeID (spell.getAttackSpellDamageResolutionTypeID ());
+			
+			if (damageType != null)
+				damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
+			
+			sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		}
 
 		// Fill in the damage object
 		final AttackDamage attackDamage = new AttackDamage (damage, 0, damageType, null, spell, null, null, 1);

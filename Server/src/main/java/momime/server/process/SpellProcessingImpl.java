@@ -404,6 +404,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @param attackingPlayer Attacking player in the combat
 	 * @param targetUnit Unit to target the spell on, if appropriate for spell book section, otherwise null
 	 * @param targetLocation Location to target the spell at, if appropriate for spell book section, otherwise null
+	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the spell cast was an attack that resulted in the combat ending
 	 * @throws MomException If there is a problem with any of the calculations
@@ -416,7 +417,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final boolean castCombatNow (final PlayerServerDetails castingPlayer, final ExpandedUnitDetails xuCombatCastingUnit, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
-		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
+		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final boolean skipAnimation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
 	{
 		// Which side is casting the spell
@@ -497,8 +498,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 				else if (spell.getCombatBaseDamage () == null)		// No saving throw is allowed, e.g. Web
 					addUnitSpell = true;
 				else
+					// Using skipAnimation for skipDamageHeader for now, until I find a place where they need to be set differently
 					addUnitSpell = getDamageProcessor ().makeResistanceRoll ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
-						targetUnit, attackingPlayer, defendingPlayer, spell, variableDamage, false, castingPlayer, SpellCastType.COMBAT, mom);
+						targetUnit, attackingPlayer, defendingPlayer, spell, variableDamage, false, castingPlayer, SpellCastType.COMBAT, skipAnimation, mom);
 				
 				if (addUnitSpell)
 				{
@@ -518,9 +520,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
 						castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (),
-						true, null, null, useVariableDamage, false, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+						true, null, null, useVariableDamage, skipAnimation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 				}
-				else
+				else if (!skipAnimation)
 				{
 					// Even though not adding a spell, still have to tell the client to show animation for the failed spell
 					final ShowSpellAnimationMessage anim = new ShowSpellAnimationMessage ();
@@ -1868,7 +1870,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 									castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), null, spellDef, castingPlayer);
 								
 								attackDamage = getDamageCalculator ().attackFromSpell (spellDef, null, castingPlayer, null, castingPlayer,
-									(PlayerServerDetails) xu.getOwningPlayer (), mom.getServerDB (), SpellCastType.OVERLAND);
+									(PlayerServerDetails) xu.getOwningPlayer (), mom.getServerDB (), SpellCastType.OVERLAND, false);
 							}
 							
 							// Its not enough to call armour piercing damage directly - must call this wrapper method so that it applies the damage to the unit as well
@@ -1965,7 +1967,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 								// Not in combat, so attacking/defending player not really relevant, but really all this is used for is
 								// which two players to send the damage calc to, so just send the unit and spell owner
 								removeSpell = !getDamageProcessor ().makeResistanceRoll (null, tu, castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (),
-									spellDef, null, true, castingPlayer, SpellCastType.OVERLAND, mom); 
+									spellDef, null, true, castingPlayer, SpellCastType.OVERLAND, false, mom); 
 							}
 							
 							if (removeSpell)

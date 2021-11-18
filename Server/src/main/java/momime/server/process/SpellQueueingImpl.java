@@ -494,7 +494,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			combatEnded = getSpellProcessing ().castCombatNow (player, xuCombatCastingUnit, combatCastingFixedSpellNumber, combatCastingSlotNumber, spell,
 				reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
-				combatTargetUnit, combatTargetLocation, mom);
+				combatTargetUnit, combatTargetLocation, false, mom);
 		}
 		else
 		{

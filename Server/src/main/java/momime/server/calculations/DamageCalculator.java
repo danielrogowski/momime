@@ -97,6 +97,7 @@ public interface DamageCalculator
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param db Lookup lists built over the XML database
 	 * @param castType Whether spell is being cast in combat or overland
+	 * @param skipDamageHeader Whether to skip sending the damage header, if this is part of a bigger spell (used for Call Chaos)
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -104,7 +105,7 @@ public interface DamageCalculator
 	 * @throws MomException If there is a problem with the game logic
 	 */
 	public AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final ExpandedUnitDetails castingUnit,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db, final SpellCastType castType)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db, final SpellCastType castType, final boolean skipDamageHeader)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException;
 	
 	/**

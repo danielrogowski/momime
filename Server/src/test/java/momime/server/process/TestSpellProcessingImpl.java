@@ -429,7 +429,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Run test
 		assertThrows (MomException.class, () ->
 		{
-			proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
+			proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, false, mom);
 		});
 	}
 	
@@ -532,7 +532,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
-		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
+		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, false, mom);
 		
 		// Prove right effect was added
 		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", attackingPd.getPlayerID (), 22, combatLocation, players, sd);
@@ -653,7 +653,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
-		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, mom);
+		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, false, mom);
 		
 		// Prove right effect was added
 		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, attackingPd.getPlayerID (), "SP001", targetUnit.getUnitURN (),
@@ -800,7 +800,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Run test
-		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, mom);
+		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, false, mom);
 		
 		// Prove unit was summoned
 		verify (combatProcessing, times (1)).setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, summonedUnit, combatLocation, combatLocation,

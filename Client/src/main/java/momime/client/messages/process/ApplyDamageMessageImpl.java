@@ -2,7 +2,9 @@ package momime.client.messages.process;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -259,6 +261,8 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				tickCount = 0;
 				Double animationSpeed = null;
 				
+				final Set<String> spellSoundsPlayed = new HashSet<String> ();
+				
 				for (final ApplyDamageMessageDefenderDetails spellTargetUnit : getDefenderUnits ())
 				{
 					final Spell thisSpell = (spellTargetUnit.getOverrideSpell () == null) ? defaultSpell : spellTargetUnit.getOverrideSpell ();
@@ -321,21 +325,22 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 						getCombatUI ().getCombatCastAnimations ().add (castAnim);
 						spellAnimations.add (new ApplyDamageSpellAnimation (spellTargetUnit, thisSpell, spellAnim, null, castAnim));
 					}
+					
+					// Play spell sound if there is one (some spells are silent, so should be no warning for this)
+					if ((thisSpell.getSpellSoundFile () != null) && (!spellSoundsPlayed.contains (thisSpell.getSpellSoundFile ())))
+						try
+						{
+							getSoundPlayer ().playAudioFile (thisSpell.getSpellSoundFile ());
+							spellSoundsPlayed.add (thisSpell.getSpellSoundFile ());
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
 				}
 
 				if ((tickCount > 0) && (animationSpeed != null))
 					duration = tickCount / animationSpeed;
-				
-				// Play spell sound if there is one (some spells are silent, so should be no warning for this)
-				if (defaultSpell.getSpellSoundFile () != null)
-					try
-					{
-						getSoundPlayer ().playAudioFile (defaultSpell.getSpellSoundFile ());
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
 			}
 		}
 	}
@@ -463,7 +468,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				else
 				{
 					// Hitting target
-					spellAnimation.getCastAnim ().setFrameNumber (tickNumber - INCOMING_SPELL_TICKS - 1);
+					spellAnimation.getCastAnim ().setFrameNumber ((tickNumber - INCOMING_SPELL_TICKS - 1) % spellAnimation.getSpellAnim ().getFrame ().size ());
 					spellAnimation.getCastAnim ().setAnim (spellAnimation.getSpellAnim ());
 				}
 			}
@@ -728,7 +733,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	{
 		expandUnitDetails = e;
 	}
-	
+
 	/**
 	 * @return The attacking unit; null if we can't see it
 	 */

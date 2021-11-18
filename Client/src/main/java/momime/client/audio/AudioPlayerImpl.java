@@ -136,11 +136,12 @@ public final class AudioPlayerImpl implements AudioPlayer
 			log.debug ("There was no existing player thread to stop (" + player + ", " + isLoop () + ")");
 		
 		// Set up new player
-		player = getAdvancedPlayerFactory ().createAdvancedPlayer ();
-		player.setInput (resourceName);
+		final AdvancedPlayer thisPlayer = getAdvancedPlayerFactory ().createAdvancedPlayer ();
+		player = thisPlayer;
+		thisPlayer.setInput (resourceName);
 		
 		// We don't need a playback listener, but the player requires one, so create a blank one
-		player.setPlayBackListener (new PlaybackListener () {});
+		thisPlayer.setPlayBackListener (new PlaybackListener () {});
 		
 		// Need to run the player in its own thread
 		lastThreadNumber++;
@@ -152,7 +153,7 @@ public final class AudioPlayerImpl implements AudioPlayer
 				try
 				{
 					log.debug ("Thread playing \"" + resourceName + "\" starting");
-					player.play ();
+					thisPlayer.play ();
 					log.debug ("Thread playing \"" + resourceName + "\" stopping = " + stopping);
 					
 					// Play another random file

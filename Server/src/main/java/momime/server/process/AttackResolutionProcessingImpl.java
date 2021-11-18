@@ -24,13 +24,12 @@ import momime.common.database.NegatedByUnitID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkill;
-import momime.common.messages.CombatMapSize;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
@@ -60,6 +59,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
 	
 	/**
 	 * When one unit initiates a basic attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
@@ -159,10 +161,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param combatLocation Location the combat is taking place; null if its damage from an overland spell
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return List of special damage resolutions done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit or other rule errors
@@ -173,11 +172,10 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	@Override
 	public final List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
-		final List<AttackResolutionStepContainer> steps,
-		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final CommonDatabase db)
+		final List<AttackResolutionStepContainer> steps, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		final ServerGridCellEx tc = (combatLocation == null) ? null : (ServerGridCellEx) mem.getMap ().getPlane ().get
+		final ServerGridCellEx tc = (combatLocation == null) ? null : (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
 		final MapAreaOfCombatTiles combatMap = (tc == null) ? null : tc.getCombatMap ();
@@ -202,7 +200,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			for (int stepRepetitionNo = 0; stepRepetitionNo < stepRepetitions; stepRepetitionNo++)
 			{
 				// If the unit being attacked is already dead, then don't bother proceeding
-				final ExpandedUnitDetails xuUnitBeingAttackedHPcheck = getExpandUnitDetails ().expandUnitDetails (unitBeingAttacked.getUnit (), null, null, null, players, mem, db);
+				final ExpandedUnitDetails xuUnitBeingAttackedHPcheck = getExpandUnitDetails ().expandUnitDetails (unitBeingAttacked.getUnit (), null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				final List<UnitDamage> damageTaken = (unitBeingAttacked == defender) ? damageToDefender : damageToAttacker;
 				if (getUnitUtils ().getTotalDamageTaken (damageTaken) < xuUnitBeingAttackedHPcheck.calculateHitPointsRemaining ())					
@@ -218,7 +217,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						if ((step.getSpellStep ().getDamageResolutionTypeID () == DamageResolutionTypeID.ILLUSIONARY))
 						{
 							// Borrow the list of immunities from the Illusionary Attack skill - I don't want to have to define immunties to damage types in the XSD just for this
-							final Iterator<NegatedBySkill> iter = db.findUnitSkill
+							final Iterator<NegatedBySkill> iter = mom.getServerDB ().findUnitSkill
 								(CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "processAttackResolutionStep").getNegatedBySkill ().iterator ();
 							while ((!downgradeIllusionaryAttack) && (iter.hasNext ()))
 							{
@@ -241,7 +240,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						if (unitMakingAttack == null)
 							throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitMakingAttack, attacking side = " + step.getCombatSide ());
 						
-						xuUnitMakingAttack = getExpandUnitDetails ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null, players, mem, db);
+						xuUnitMakingAttack = getExpandUnitDetails ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						// If this is a hasted ranged attack, make sure we actually have enough ammo to make both attacks
 						if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillStep ().getUnitSkillID ())) &&
@@ -250,160 +250,184 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							potentialDamage = null;
 						else
 							potentialDamage = getDamageCalculator ().attackFromUnitSkill
-								(unitMakingAttack, unitBeingAttacked, attackingPlayer, defendingPlayer, step.getUnitSkillStep ().getUnitSkillID (), players, mem, db);
+								(unitMakingAttack, unitBeingAttacked, attackingPlayer, defendingPlayer, step.getUnitSkillStep ().getUnitSkillID (),
+									mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					}
 					
 					// We may get null here, if the step says to attack with a skill that this unit doesn't have
 					if (potentialDamage != null)
 					{
-						// Work out to hit penalties
-						int penalty = 0;
-						
-						// If its a non-magical ranged attack, work out any distance penalty
-						if ((step.getUnitSkillStep () != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillStep ().getUnitSkillID ())))
-							penalty = penalty + getServerUnitCalculations ().calculateRangedAttackDistancePenalty
-								(xuUnitMakingAttack, xuUnitBeingAttackedHPcheck, combatMapCoordinateSystem);
-						
-						// If the unit has suffered too many attacks, its counterattack to hit chance goes down
-						if ((step != null) && (step.getCombatSide () == UnitCombatSideID.DEFENDER))
+						// Call Chaos can generate spells which aren't attacks
+						if (potentialDamage.getDamageResolutionTypeID () != null)
 						{
-							final Integer numberOfTimedAttacked = tc.getNumberOfTimedAttacked ().get (unitMakingAttack.getUnit ().getUnitURN ());
-							if ((numberOfTimedAttacked != null) && (numberOfTimedAttacked >= 2))
-								penalty = penalty + (numberOfTimedAttacked / 2);
-						}
-
-						// Can't reduce chance below 10%
-						if (penalty > 0)
-						{
-							final int newChanceToHitWithPenalty = potentialDamage.getChanceToHit () - penalty;							
-							potentialDamage.setChanceToHit (Math.max (newChanceToHitWithPenalty, 1));
-						}
-						
-						// Work out how much of the damage gets through
-						for (int repetitionNo = 0; repetitionNo < potentialDamage.getRepetitions (); repetitionNo++)
-						{
-							// Now we know all the details about the type of attack, we can properly generate stats of the
-							// unit being attacked, since it might have bonuses against certain kinds of incoming attack so
-							// can't just generate its details using nulls for the attack details
-							final List<ExpandedUnitDetails> xuUnitsMakingAttack;
-							if (xuUnitMakingAttack == null)
-								xuUnitsMakingAttack = null;
-							else
+							// Work out to hit penalties
+							int penalty = 0;
+							
+							// If its a non-magical ranged attack, work out any distance penalty
+							if ((step.getUnitSkillStep () != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillStep ().getUnitSkillID ())))
+								penalty = penalty + getServerUnitCalculations ().calculateRangedAttackDistancePenalty
+									(xuUnitMakingAttack, xuUnitBeingAttackedHPcheck, mom.getSessionDescription ().getCombatMapSize ());
+							
+							// If the unit has suffered too many attacks, its counterattack to hit chance goes down
+							if ((step != null) && (step.getCombatSide () == UnitCombatSideID.DEFENDER))
 							{
-								xuUnitsMakingAttack = new ArrayList<ExpandedUnitDetails> ();
-								xuUnitsMakingAttack.add (xuUnitMakingAttack);
+								final Integer numberOfTimedAttacked = tc.getNumberOfTimedAttacked ().get (unitMakingAttack.getUnit ().getUnitURN ());
+								if ((numberOfTimedAttacked != null) && (numberOfTimedAttacked >= 2))
+									penalty = penalty + (numberOfTimedAttacked / 2);
+							}
+	
+							// Can't reduce chance below 10%
+							if (penalty > 0)
+							{
+								final int newChanceToHitWithPenalty = potentialDamage.getChanceToHit () - penalty;							
+								potentialDamage.setChanceToHit (Math.max (newChanceToHitWithPenalty, 1));
 							}
 							
-							final ExpandedUnitDetails xuUnitBeingAttacked = getExpandUnitDetails ().expandUnitDetails (unitBeingAttacked.getUnit (), xuUnitsMakingAttack,
-								potentialDamage.getAttackFromSkillID (), potentialDamage.getAttackFromMagicRealmID (), players, mem, db);
-							
-							final int thisDamage;				
+							// Work out how much of the damage gets through
+							for (int repetitionNo = 0; repetitionNo < potentialDamage.getRepetitions (); repetitionNo++)
+							{
+								// Now we know all the details about the type of attack, we can properly generate stats of the
+								// unit being attacked, since it might have bonuses against certain kinds of incoming attack so
+								// can't just generate its details using nulls for the attack details
+								final List<ExpandedUnitDetails> xuUnitsMakingAttack;
+								if (xuUnitMakingAttack == null)
+									xuUnitsMakingAttack = null;
+								else
+								{
+									xuUnitsMakingAttack = new ArrayList<ExpandedUnitDetails> ();
+									xuUnitsMakingAttack.add (xuUnitMakingAttack);
+								}
+								
+								final ExpandedUnitDetails xuUnitBeingAttacked = getExpandUnitDetails ().expandUnitDetails (unitBeingAttacked.getUnit (), xuUnitsMakingAttack,
+									potentialDamage.getAttackFromSkillID (), potentialDamage.getAttackFromMagicRealmID (),
+										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+								
+								final int thisDamage;				
+								switch (potentialDamage.getDamageResolutionTypeID ())
+								{
+									case SINGLE_FIGURE:
+										thisDamage = getDamageCalculator ().calculateSingleFigureDamage (xuUnitBeingAttacked, xuUnitMakingAttack,
+											attackingPlayer, defendingPlayer, potentialDamage, combatLocation, combatMap,
+												mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
+										break;
+										
+									case ARMOUR_PIERCING:
+										thisDamage = getDamageCalculator ().calculateArmourPiercingDamage (xuUnitBeingAttacked, xuUnitMakingAttack,
+											attackingPlayer, defendingPlayer, potentialDamage, combatLocation, combatMap,
+												mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
+										break;
+										
+									case ILLUSIONARY:
+										thisDamage = getDamageCalculator ().calculateIllusionaryDamage (xuUnitBeingAttacked,  xuUnitMakingAttack,
+											attackingPlayer, defendingPlayer, potentialDamage, combatLocation, combatMap,
+												mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
+										break;
+					
+									case MULTI_FIGURE:
+										thisDamage = getDamageCalculator ().calculateMultiFigureDamage (xuUnitBeingAttacked, xuUnitMakingAttack,
+											attackingPlayer, defendingPlayer, potentialDamage, combatLocation, combatMap,
+												mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
+										break;
+										
+									case DOOM:
+										thisDamage = getDamageCalculator ().calculateDoomDamage
+											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, mom.getServerDB ());
+										break;
+				
+									case CHANCE_OF_DEATH:
+										thisDamage = getDamageCalculator ().calculateChanceOfDeathDamage
+											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, mom.getServerDB ());
+										break;
+				
+									case EACH_FIGURE_RESIST_OR_DIE:
+										thisDamage = getDamageCalculator ().calculateEachFigureResistOrDieDamage
+											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+										break;
+		
+									case EACH_FIGURE_RESIST_OR_LOSE_1HP:
+										thisDamage = getDamageCalculator ().calculateEachFigureResistOrLose1HPDamage
+											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+										break;
+		
+									case SINGLE_FIGURE_RESIST_OR_DIE:
+										thisDamage = getDamageCalculator ().calculateSingleFigureResistOrDieDamage
+											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+										break;
+										
+									case RESIST_OR_TAKE_DAMAGE:
+										thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
+											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, mom.getServerDB ());
+										break;
+										
+									case RESISTANCE_ROLLS:
+										thisDamage = getDamageCalculator ().calculateResistanceRollsDamage
+											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, mom.getServerDB ());
+										break;
+				
+									case DISINTEGRATE:
+										thisDamage = getDamageCalculator ().calculateDisintegrateDamage
+											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, mom.getServerDB ());
+										break;
+										
+									case FEAR:
+										thisDamage = 0;
+										getDamageCalculator ().calculateFearDamage
+											(unitBeingAttacked, xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+									break;
+										
+									case ZEROES_AMMO:
+										thisDamage = 0;
+										break;
+										
+									default:
+										throw new MomException ("processAttackResolutionStep trying to deal attack damage of type " + potentialDamage.getDamageResolutionTypeID () +
+											" to the unitBeingAttacked, which it does not know how to deal with yet");
+								}
+								
+								// Add damage to running total
+								if (thisDamage != 0)
+								{
+									getUnitServerUtils ().addDamage ((unitBeingAttacked == defender) ? damageToDefender : damageToAttacker,
+										potentialDamage.getDamageType ().getStoredDamageTypeID (), thisDamage);
+									
+									if (CommonDatabaseConstants.UNIT_SKILL_ID_LIFE_STEALING.equals (potentialDamage.getAttackFromSkillID ()))
+									{
+										if (unitBeingAttacked == defender)
+											lifeStealingDamageToDefender = lifeStealingDamageToDefender + thisDamage;
+										else
+											lifeStealingDamageToAttacker = lifeStealingDamageToAttacker + thisDamage;
+									}
+								}
+							}
+						
+							// Apply any special effect
 							switch (potentialDamage.getDamageResolutionTypeID ())
 							{
-								case SINGLE_FIGURE:
-									thisDamage = getDamageCalculator ().calculateSingleFigureDamage (xuUnitBeingAttacked, xuUnitMakingAttack,
-										attackingPlayer, defendingPlayer, potentialDamage, combatLocation, combatMap, mem.getBuilding (), db);
-									break;
-									
-								case ARMOUR_PIERCING:
-									thisDamage = getDamageCalculator ().calculateArmourPiercingDamage (xuUnitBeingAttacked, xuUnitMakingAttack,
-										attackingPlayer, defendingPlayer, potentialDamage, combatLocation, combatMap, mem.getBuilding (), db);
-									break;
-									
-								case ILLUSIONARY:
-									thisDamage = getDamageCalculator ().calculateIllusionaryDamage (xuUnitBeingAttacked,  xuUnitMakingAttack,
-										attackingPlayer, defendingPlayer, potentialDamage, combatLocation, combatMap, mem.getBuilding (), db);
-									break;
-				
-								case MULTI_FIGURE:
-									thisDamage = getDamageCalculator ().calculateMultiFigureDamage (xuUnitBeingAttacked, xuUnitMakingAttack,
-										attackingPlayer, defendingPlayer, potentialDamage, combatLocation, combatMap, mem.getBuilding (), db);
-									break;
-									
-								case DOOM:
-									thisDamage = getDamageCalculator ().calculateDoomDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
-									break;
-			
-								case CHANCE_OF_DEATH:
-									thisDamage = getDamageCalculator ().calculateChanceOfDeathDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
-									break;
-			
-								case EACH_FIGURE_RESIST_OR_DIE:
-									thisDamage = getDamageCalculator ().calculateEachFigureResistOrDieDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
-									break;
-	
-								case EACH_FIGURE_RESIST_OR_LOSE_1HP:
-									thisDamage = getDamageCalculator ().calculateEachFigureResistOrLose1HPDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
-									break;
-	
-								case SINGLE_FIGURE_RESIST_OR_DIE:
-									thisDamage = getDamageCalculator ().calculateSingleFigureResistOrDieDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
-									break;
-									
-								case RESIST_OR_TAKE_DAMAGE:
-									thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
-									break;
-									
-								case RESISTANCE_ROLLS:
-									thisDamage = getDamageCalculator ().calculateResistanceRollsDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
-									break;
-			
-								case DISINTEGRATE:
-									thisDamage = getDamageCalculator ().calculateDisintegrateDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, db);
-									break;
-									
-								case FEAR:
-									thisDamage = 0;
-									getDamageCalculator ().calculateFearDamage
-										(unitBeingAttacked, xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
-								break;
-									
 								case ZEROES_AMMO:
-									thisDamage = 0;
+									unitBeingAttacked.getUnit ().setAmmoRemaining (0);
+									
+									// Make sure ammo is zeroed on the client as well
+									if (!specialDamageResolutionsApplied.contains (potentialDamage.getDamageResolutionTypeID ()))
+										specialDamageResolutionsApplied.add (potentialDamage.getDamageResolutionTypeID ());
 									break;
 									
 								default:
-									throw new MomException ("processAttackResolutionStep trying to deal attack damage of type " + potentialDamage.getDamageResolutionTypeID () +
-										" to the unitBeingAttacked, which it does not know how to deal with yet");
-							}
-							
-							// Add damage to running total
-							if (thisDamage != 0)
-							{
-								getUnitServerUtils ().addDamage ((unitBeingAttacked == defender) ? damageToDefender : damageToAttacker,
-									potentialDamage.getDamageType ().getStoredDamageTypeID (), thisDamage);
-								
-								if (CommonDatabaseConstants.UNIT_SKILL_ID_LIFE_STEALING.equals (potentialDamage.getAttackFromSkillID ()))
-								{
-									if (unitBeingAttacked == defender)
-										lifeStealingDamageToDefender = lifeStealingDamageToDefender + thisDamage;
-									else
-										lifeStealingDamageToAttacker = lifeStealingDamageToAttacker + thisDamage;
-								}
+									break;
 							}
 						}
-					
-						// Apply any special effect
-						switch (potentialDamage.getDamageResolutionTypeID ())
+						else if (step.getSpellStep () != null)
 						{
-							case ZEROES_AMMO:
-								unitBeingAttacked.getUnit ().setAmmoRemaining (0);
-								
-								// Make sure ammo is zeroed on the client as well
-								if (!specialDamageResolutionsApplied.contains (potentialDamage.getDamageResolutionTypeID ()))
-									specialDamageResolutionsApplied.add (potentialDamage.getDamageResolutionTypeID ());
-								break;
-								
-							default:
-								break;
+							// Call Chaos rolled Warp Creature, Chaos Channels or Healing, which aren't attacks.
+							// Just use main casting routine all over again, because it takes care of things like making the resistance roll and choosing which of
+							// the 3 possible effects for Warp Creature.
+							final ExpandedUnitDetails xuCombatCastingUnit = (attacker == null) ? null : getExpandUnitDetails ().expandUnitDetails
+								(attacker.getUnit (), null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+							final PlayerServerDetails castingPlayer = (defender.getUnit ().getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()) ?
+								attackingPlayer : defendingPlayer;
+							
+							getSpellProcessing ().castCombatNow (castingPlayer, xuCombatCastingUnit, null, null, step.getSpellStep ().getSpell (), 0, 0, null,
+								combatLocation, defendingPlayer, attackingPlayer, defender.getUnit (), null, mom);
 						}
 					}
 				}
@@ -444,11 +468,13 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		// Instead we apply both, then the unit has -2 HP, and the heal routine will always heal healable damage first.
 		// So we convert 2 HP of the healable damage already taken into life stealing damage, ending up with the unit dying from
 		// taking 2 HP healable damage and 4 HP life stealing damage, and so it becomes undead.
-		final ExpandedUnitDetails xuDefender = getExpandUnitDetails ().expandUnitDetails (defender.getUnit (), null, null, null, players, mem, db);
+		final ExpandedUnitDetails xuDefender = getExpandUnitDetails ().expandUnitDetails (defender.getUnit (), null, null, null,
+			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		getUnitServerUtils ().healDamage (defender.getUnit ().getUnitDamage (), -xuDefender.calculateHitPointsRemaining (), true);
 		if (attacker != null)
 		{
-			final ExpandedUnitDetails xuAttacker = getExpandUnitDetails ().expandUnitDetails (attacker.getUnit (), null, null, null, players, mem, db);
+			final ExpandedUnitDetails xuAttacker = getExpandUnitDetails ().expandUnitDetails (attacker.getUnit (), null, null, null,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -xuAttacker.calculateHitPointsRemaining (), true);
 		}
 		
@@ -549,5 +575,21 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final SpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final SpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

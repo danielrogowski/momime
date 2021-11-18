@@ -218,7 +218,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, players, trueMap, combatMapSize, db);
+			steps, mom);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
@@ -394,7 +394,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, players, trueMap, combatMapSize, db);
+			steps, mom);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
@@ -535,8 +535,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
 		steps.add (new AttackResolutionStepContainer (spellDamage));
 		
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps,  players, trueMap, combatMapSize, db);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
@@ -695,14 +694,9 @@ public final class TestDamageProcessorImpl extends ServerTestData
 
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender1Wrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, players, trueMap, combatMapSize, db);
-		
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender2Wrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, players, trueMap, combatMapSize, db);
-		
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender3Wrapper, attackingPlayer, defendingPlayer, combatLocation,
-			steps, players, trueMap, combatMapSize, db);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender1Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender2Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender3Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,

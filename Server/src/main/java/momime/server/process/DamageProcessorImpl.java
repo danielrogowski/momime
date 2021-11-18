@@ -226,8 +226,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 						final List<AttackResolutionStepContainer> step = steps.get (stepNumber);
 						
 						final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
-							(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step,
-								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+							(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step, mom);
 						
 						for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)
 							if (!specialDamageResolutionsApplied.contains (thisSpecialDamageResolutionApplied))

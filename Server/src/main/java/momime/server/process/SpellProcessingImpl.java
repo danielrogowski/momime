@@ -730,7 +730,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(thisUnit.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()))
 					{
 						final String randomSpellID = CommonDatabaseConstants.CALL_CHAOS_CHOICES.get
-							(5 + getRandomUtils ().nextInt (2));//getRandomUtils ().nextInt (CommonDatabaseConstants.CALL_CHAOS_CHOICES.size ()));
+							(2);//getRandomUtils ().nextInt (CommonDatabaseConstants.CALL_CHAOS_CHOICES.size ()));
 						if (randomSpellID != null)
 						{
 							final Spell randomSpell = mom.getServerDB ().findSpell (randomSpellID, "castCombatNow (CC)");
@@ -1873,8 +1873,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							
 							// Its not enough to call armour piercing damage directly - must call this wrapper method so that it applies the damage to the unit as well
 							getAttackResolutionProcessing ().processAttackResolutionStep (null, new AttackResolutionUnit (xu.getMemoryUnit ()),
-								castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), null, Arrays.asList (new AttackResolutionStepContainer (attackDamage)),
-								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+								castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), null, Arrays.asList (new AttackResolutionStepContainer (attackDamage)), mom);
 							
 							// Above method applies damage on the server, but doesn't send it to the client or check if the unit is now dead, so need to do that here
 							if (xu.calculateAliveFigureCount () > 0)

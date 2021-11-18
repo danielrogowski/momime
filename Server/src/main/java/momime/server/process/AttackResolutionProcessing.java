@@ -15,9 +15,8 @@ import momime.common.database.AttackResolutionStep;
 import momime.common.database.CommonDatabase;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CombatMapSize;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.server.MomSessionVariables;
 
 /**
  * Methods for processing attack resolutions.  This would all just be part of DamageProcessor, these methods
@@ -57,10 +56,7 @@ public interface AttackResolutionProcessing
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param combatLocation Location the combat is taking place; null if its damage from an overland spell
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return List of special damage resolutions done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit or other rule errors
@@ -70,7 +66,6 @@ public interface AttackResolutionProcessing
 	 */
 	public List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
-		final List<AttackResolutionStepContainer> steps,
-		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final CommonDatabase db)
+		final List<AttackResolutionStepContainer> steps, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

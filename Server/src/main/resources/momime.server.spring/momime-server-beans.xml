@@ -692,6 +692,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="damageCalculator" ref="damageCalculator" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="spellProcessing" ref="spellProcessing" />
 	</bean>
 
 	<bean id="combatStartAndEnd" class="momime.server.process.CombatStartAndEndImpl">

@@ -732,7 +732,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(thisUnit.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()))
 					{
 						final String randomSpellID = CommonDatabaseConstants.CALL_CHAOS_CHOICES.get
-							(getRandomUtils ().nextInt (3));//getRandomUtils ().nextInt (CommonDatabaseConstants.CALL_CHAOS_CHOICES.size ()));
+							(getRandomUtils ().nextInt (CommonDatabaseConstants.CALL_CHAOS_CHOICES.size ()));
 						if (randomSpellID != null)
 						{
 							final Spell randomSpell = mom.getServerDB ().findSpell (randomSpellID, "castCombatNow (CC)");
@@ -837,7 +837,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 						
 						getFogOfWarMidTurnChanges ().sendDamageToClients (null, attackingPlayer, defendingPlayer,
-							unitWrappers, null, spell.getSpellID (), null, null, null, mom.getPlayers (),
+							unitWrappers, null, spell.getSpellID (), null, null, null, skipAnimation, mom.getPlayers (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 					}
 					else if (kind == KindOfSpell.RECALL)

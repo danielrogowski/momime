@@ -223,7 +223,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
+			specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		verify (calc, times (1)).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer,
@@ -399,7 +399,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
+			specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		verify (calc, times (1)).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer,
@@ -539,7 +539,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
-			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
+			null, "SP001", specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		verify (calc, times (1)).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
@@ -700,7 +700,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
-			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
+			null, "SP001", specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		verify (calc, times (1)).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);

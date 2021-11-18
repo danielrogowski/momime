@@ -289,7 +289,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		getFogOfWarMidTurnChanges ().sendDamageToClients (attacker,
 			(combatLocation == null) ? null : attackingPlayer, (combatLocation == null) ? null : defendingPlayer,
 			defenders, attackSkillID, (spell == null) ? null : spell.getSpellID (),
-			specialDamageResolutionsApplied, wreckTilePosition, sendWrecked, mom.getPlayers (),
+			specialDamageResolutionsApplied, wreckTilePosition, sendWrecked, false, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose

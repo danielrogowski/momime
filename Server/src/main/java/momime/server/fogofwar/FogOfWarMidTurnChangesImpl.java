@@ -1251,6 +1251,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param specialDamageResolutionsApplied List of special damage resolutions done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @param wreckTilePosition If the tile was attacked directly with Wall Crusher skill, the location of the tile that was attacked
 	 * @param wrecked If the tile was attacked directly with Wall Crusher skill, whether the attempt was successful or not
+	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param players List of players in the session
 	 * @param trueTerrain True terrain map
 	 * @param db Lookup lists built over the XML database
@@ -1264,7 +1265,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void sendDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<ResolveAttackTarget> tuDefenders, final String attackSkillID, final String attackSpellID,
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied, final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked,
-		final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
+		final boolean skipAnimation, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -1279,7 +1280,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if (thisPlayer.getPlayerDescription ().isHuman ())
 			{
 				msg = new ApplyDamageMessage ();
-				msg.setYourCombat ((thisPlayer == attackingPlayer) || (thisPlayer == defendingPlayer));
+				msg.setYourCombat ((!skipAnimation) && ((thisPlayer == attackingPlayer) || (thisPlayer == defendingPlayer)));
 				msg.setWreckTilePosition (wreckTilePosition);
 				msg.setWrecked (wrecked);
 				if (specialDamageResolutionsApplied != null)

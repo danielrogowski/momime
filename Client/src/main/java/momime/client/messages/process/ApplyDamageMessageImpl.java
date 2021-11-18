@@ -1,6 +1,5 @@
 package momime.client.messages.process;
 
-import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +22,7 @@ import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.CombatUICastAnimation;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.AnimationController;
@@ -277,14 +277,17 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 					final int adjustY = 2 * (-distance + ((spellAnim.getCombatCastOffsetY () == null) ? 0 : spellAnim.getCombatCastOffsetY ()));
 					
 					for (final ApplyDamageMessageDefenderDetails spellTargetUnit : getDefenderUnits ())
-						getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet),
-						adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet)));
-	
-					getCombatUI ().setCombatCastAnimationFrame (0);
-					getCombatUI ().setCombatCastAnimation (spellAnimFly);
-					getCombatUI ().setCombatCastAnimationInFront (true);
+					{
+						final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
+						castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+						castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+						castAnim.setAnim (spellAnimFly);
+						castAnim.setInFront (true);
+						
+						getCombatUI ().getCombatCastAnimations ().add (castAnim);
+					}
 				}
 				else if (spell.getCombatCastAnimation () != null)
 				{
@@ -298,14 +301,17 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 					final int adjustY = (spellAnim.getCombatCastOffsetY () == null) ? 0 : 2 * spellAnim.getCombatCastOffsetY ();
 					
 					for (final ApplyDamageMessageDefenderDetails spellTargetUnit : getDefenderUnits ())
-						getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet),
-						adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet)));
-	
-					getCombatUI ().setCombatCastAnimationFrame (0);
-					getCombatUI ().setCombatCastAnimation (spellAnim);
-					getCombatUI ().setCombatCastAnimationInFront ((spell.isCombatCastAnimationInFront () == null) ? true : spell.isCombatCastAnimationInFront ());
+					{
+						final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
+						castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+						castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+						castAnim.setAnim (spellAnim);
+						castAnim.setInFront ((spell.isCombatCastAnimationInFront () == null) ? true : spell.isCombatCastAnimationInFront ());
+						
+						getCombatUI ().getCombatCastAnimations ().add (castAnim);
+					}
 				}
 				
 				// Play spell sound if there is one (some spells are silent, so should be no warning for this)
@@ -432,25 +438,33 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				final int adjustX = 2 * ((xMultiplier * distance) + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
 				final int adjustY = 2 * (-distance + ((spellAnim.getCombatCastOffsetY () == null) ? 0 : spellAnim.getCombatCastOffsetY ()));
 				
-				getCombatUI ().getCombatCastAnimationPositions ().clear ();
-				for (final ApplyDamageMessageDefenderDetails spellTargetUnit : getDefenderUnits ())
-					getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-						(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet),
-					adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-						(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet)));
-
-				getCombatUI ().setCombatCastAnimationFrame (tickNumber % spellAnimFly.getFrame ().size ());
+				for (int defenderNo = 0; defenderNo < getDefenderUnits ().size (); defenderNo++)
+				{
+					final ApplyDamageMessageDefenderDetails spellTargetUnit = getDefenderUnits ().get (defenderNo);
+					final CombatUICastAnimation castAnim = getCombatUI ().getCombatCastAnimations ().get (defenderNo);
+					
+					castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+						(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+					castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+						(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+					
+					castAnim.setFrameNumber (tickNumber % spellAnimFly.getFrame ().size ());
+				}
 			}
 			else
 			{
 				// Hitting target
-				getCombatUI ().setCombatCastAnimationFrame ((tickNumber - INCOMING_SPELL_TICKS - 1) & spellAnim.getFrame ().size ());
-				getCombatUI ().setCombatCastAnimation (spellAnim);
+				for (final CombatUICastAnimation castAnim : getCombatUI ().getCombatCastAnimations ())
+				{
+					castAnim.setFrameNumber ((tickNumber - INCOMING_SPELL_TICKS - 1) & spellAnim.getFrame ().size ());
+					castAnim.setAnim (spellAnim);
+				}
 			}
 		}
 		else if (spellAnim != null)
 		{
-			getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
+			for (final CombatUICastAnimation castAnim : getCombatUI ().getCombatCastAnimations ())			
+				castAnim.setFrameNumber (tickNumber - 1);
 		}
 	}
 
@@ -549,8 +563,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		}
 		
 		getCombatUI ().setAttackAnim (null);
-		getCombatUI ().setCombatCastAnimation (null);
-		getCombatUI ().getCombatCastAnimationPositions ().clear ();
+		getCombatUI ().getCombatCastAnimations ().clear ();
 	}
 	
 	/**

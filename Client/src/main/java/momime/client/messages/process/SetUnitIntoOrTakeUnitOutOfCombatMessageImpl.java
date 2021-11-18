@@ -1,6 +1,5 @@
 package momime.client.messages.process;
 
-import java.awt.Point;
 import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
@@ -18,6 +17,7 @@ import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.CombatUICastAnimation;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.database.AnimationEx;
 import momime.common.database.Spell;
@@ -89,17 +89,17 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 				
 				final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 				final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
-				
-				getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-					(animPosition.getX (), animPosition.getY (), combatMapTileSet),
-				adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-					(animPosition.getX (), animPosition.getY (), combatMapTileSet)));
 
-				getCombatUI ().setCombatCastAnimationFrame (0);
-				getCombatUI ().setCombatCastAnimation (anim);
+				final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
+				castAnim.setAnim (anim);
 				
 				// Summoning circle anim appears behind; recall hero anim appears in front
-				getCombatUI ().setCombatCastAnimationInFront (getCombatPosition () == null);
+				castAnim.setInFront (getCombatPosition () == null);
+				
+				castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX (animPosition.getX (), animPosition.getY (), combatMapTileSet));
+				castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY (animPosition.getX (), animPosition.getY (), combatMapTileSet));
+
+				getCombatUI ().getCombatCastAnimations ().add (castAnim);
 			}
 			
 			// See if there's a sound effect defined in the graphics XML file
@@ -139,7 +139,8 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 	@Override
 	public final void tick (final int tickNumber)
 	{
-		getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
+		for (final CombatUICastAnimation castAnim : getCombatUI ().getCombatCastAnimations ())		
+			castAnim.setFrameNumber (tickNumber - 1);
 	}
 	
 	/**
@@ -162,10 +163,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 	{
 		// Remove the anim
 		if (anim != null)
-		{
-			getCombatUI ().setCombatCastAnimation (null);
-			getCombatUI ().getCombatCastAnimationPositions ().clear ();
-		}
+			getCombatUI ().getCombatCastAnimations ().clear ();
 		
 		if (getCombatPosition () == null)
 		{

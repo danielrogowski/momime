@@ -1,6 +1,5 @@
 package momime.client.messages.process;
 
-import java.awt.Point;
 import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
@@ -20,6 +19,7 @@ import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.CombatUICastAnimation;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
@@ -198,14 +198,15 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 							final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 							final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
 							
-							getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-								(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet),
-							adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-								(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet)));
-			
-							getCombatUI ().setCombatCastAnimationFrame (0);
-							getCombatUI ().setCombatCastAnimation (anim);
-							getCombatUI ().setCombatCastAnimationInFront (true);
+							final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
+							castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+								(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
+							castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+								(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
+							castAnim.setAnim (anim);
+							castAnim.setInFront (true);
+							
+							getCombatUI ().getCombatCastAnimations ().add (castAnim);
 						}
 						else
 							anim = null;
@@ -369,7 +370,10 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 			getWizardsUI ().repaintWizards ();
 		}
 		else if (getMaintainedSpell ().isCastInCombat ())
-			getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
+		{
+			for (final CombatUICastAnimation castAnim : getCombatUI ().getCombatCastAnimations ())
+				castAnim.setFrameNumber (tickNumber - 1);
+		}
 		else
 		{
 			getOverlandMapUI ().setOverlandCastAnimationFrame (tickNumber - 1);
@@ -462,10 +466,7 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 				getWizardsUI ().repaintWizards ();
 			}
 			else if (getMaintainedSpell ().isCastInCombat ())
-			{
-				getCombatUI ().setCombatCastAnimation (null);
-				getCombatUI ().getCombatCastAnimationPositions ().clear ();
-			}
+				getCombatUI ().getCombatCastAnimations ().clear ();
 			else
 			{
 				getOverlandMapUI ().setOverlandCastAnimation (null);

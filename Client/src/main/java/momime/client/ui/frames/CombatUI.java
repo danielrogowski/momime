@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -393,18 +392,9 @@ public final class CombatUI extends MomClientFrameUI
 	/** Colour to flash the combat screen when a CAE is being cast */
 	private Color flashColour = NO_FLASH_COLOUR;
 	
-	/** Animation to display for a spell being cast */
-	private AnimationEx combatCastAnimation;
-	
-	/** Whether the combat case animation appears behind or in front of the units */
-	private boolean combatCastAnimationInFront;
-	
-	/** Coords to display combat cast animation(s) at, in pixels */
-	private List<Point> combatCastAnimationPositions = new ArrayList<Point> ();
+	/** Animations to display for spells being cast */
+	private List<CombatUICastAnimation> combatCastAnimations = new ArrayList<CombatUICastAnimation> ();
 
-	/** Frame number to display of combat cast animation */
-	private int combatCastAnimationFrame;
-	
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -621,17 +611,17 @@ public final class CombatUI extends MomClientFrameUI
 					}
 				
 				// Draw casting animation behind units?
-				if ((getCombatCastAnimation () != null) && (!isCombatCastAnimationInFront ()))
-					try
-					{
-						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()).getImageFile ());
-						for (final Point p : getCombatCastAnimationPositions ())
-							g.drawImage (image, p.x, p.y, image.getWidth () * 2, image.getHeight () * 2, null);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+				for (final CombatUICastAnimation castAnim : getCombatCastAnimations ())
+					if ((!castAnim.isInFront ()) && (castAnim.getFrameNumber () < castAnim.getAnim ().getFrame ().size ()))
+						try
+						{
+							final BufferedImage image = getUtils ().loadImage (castAnim.getAnim ().getFrame ().get (castAnim.getFrameNumber ()).getImageFile ());
+							g.drawImage (image, castAnim.getPositionX (), castAnim.getPositionY (), image.getWidth () * 2, image.getHeight () * 2, null);
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
 				
 				// Draw units at the top first and work downwards
 				zOrderGraphics.clear ();
@@ -874,17 +864,17 @@ public final class CombatUI extends MomClientFrameUI
 					}
 				
 				// Draw casting animation in front of units?
-				if ((getCombatCastAnimation () != null) && (isCombatCastAnimationInFront ()))
-					try
-					{
-						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()).getImageFile ());
-						for (final Point p : getCombatCastAnimationPositions ())
-							g.drawImage (image, p.x, p.y, image.getWidth () * 2, image.getHeight () * 2, null);
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+				for (final CombatUICastAnimation castAnim : getCombatCastAnimations ())
+					if ((castAnim.isInFront ()) && (castAnim.getFrameNumber () < castAnim.getAnim ().getFrame ().size ()))
+						try
+						{
+							final BufferedImage image = getUtils ().loadImage (castAnim.getAnim ().getFrame ().get (castAnim.getFrameNumber ()).getImageFile ());
+							g.drawImage (image, castAnim.getPositionX (), castAnim.getPositionY (), image.getWidth () * 2, image.getHeight () * 2, null);
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
 			}
 			
 			@Override
@@ -2560,61 +2550,13 @@ public final class CombatUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Animation to display for a spell being cast
+	 * @return Animations to display for spells being cast
 	 */
-	public final AnimationEx getCombatCastAnimation ()
+	public final List<CombatUICastAnimation> getCombatCastAnimations ()
 	{
-		return combatCastAnimation;
-	}
-
-	/**
-	 * @param an Animation to display for a spell being cast
-	 */
-	public final void setCombatCastAnimation (final AnimationEx an)
-	{
-		combatCastAnimation = an;
-	}
-
-	/**
-	 * @return Whether the combat case animation appears behind or in front of the units
-	 */
-	public boolean isCombatCastAnimationInFront ()
-	{
-		return combatCastAnimationInFront;
-	}
-
-	/**
-	 * @param inFront Whether the combat case animation appears behind or in front of the units
-	 */
-	public final void setCombatCastAnimationInFront (final boolean inFront)
-	{
-		combatCastAnimationInFront = inFront;
-	}
-
-	/**
-	 * @return Coords to display combat cast animation(s) at, in pixels
-	 */	
-	public final List<Point> getCombatCastAnimationPositions ()
-	{
-		return combatCastAnimationPositions;
+		return combatCastAnimations;
 	}
 	
-	/**
-	 * @return Frame number to display of combat cast animation
-	 */
-	public final int getCombatCastAnimationFrame ()
-	{
-		return combatCastAnimationFrame;
-	}
-	
-	/**
-	 * @param frame Frame number to display of combat cast animation
-	 */
-	public final void setCombatCastAnimationFrame (final int frame)
-	{
-		combatCastAnimationFrame = frame;
-	}
-
 	/**
 	 * @return Client-side spell utils
 	 */

@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.io.IOException;
 
 import javax.xml.bind.JAXBException;
@@ -18,6 +17,7 @@ import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.CombatUICastAnimation;
 import momime.common.database.AnimationEx;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.Pick;
@@ -85,14 +85,14 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 				
 				final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 				final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
+
+				final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
+				castAnim.setAnim (anim);
+				castAnim.setInFront (true);
+				castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX (targetPosition.getX (), targetPosition.getY (), combatMapTileSet));
+				castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY (targetPosition.getX (), targetPosition.getY (), combatMapTileSet));
 				
-				getCombatUI ().getCombatCastAnimationPositions ().add (new Point
-					(adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX (targetPosition.getX (), targetPosition.getY (), combatMapTileSet),
-					adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY (targetPosition.getX (), targetPosition.getY (), combatMapTileSet)));
-	
-				getCombatUI ().setCombatCastAnimationFrame (0);
-				getCombatUI ().setCombatCastAnimation (anim);
-				getCombatUI ().setCombatCastAnimationInFront (true);
+				getCombatUI ().getCombatCastAnimations ().add (castAnim);
 			}
 			
 			// Disenchant Area / True flash the screen white/blue just like adding a CAE
@@ -165,8 +165,10 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 		if (isCastInCombat ())
 		{
 			if (anim != null)
-				getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
-			
+			{
+				for (final CombatUICastAnimation castAnim : getCombatUI ().getCombatCastAnimations ())
+					castAnim.setFrameNumber (tickNumber - 1);
+			}
 			else if (flashColour != null)
 			{
 				// Work out value between 0..1 for how much we are flashed up or down
@@ -201,10 +203,7 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 		{
 			// Remove the anim
 			if (anim != null)
-			{
-				getCombatUI ().setCombatCastAnimation (null);
-				getCombatUI ().getCombatCastAnimationPositions ().clear ();
-			}
+				getCombatUI ().getCombatCastAnimations ().clear ();
 			
 			// Make sure the combat screen isn't showing any colour
 			else if (flashColour != null)

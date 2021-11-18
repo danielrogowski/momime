@@ -757,7 +757,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (targetUnits.size () > 0)
 					combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
 						targetUnits, attackingPlayer, defendingPlayer,
-						null, null, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+						null, null, null, null, spell, variableDamage, castingPlayer, combatLocation, skipAnimation, mom);
 			}
 			
 			// Attack, healing or dispelling spells
@@ -818,7 +818,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
 							targetUnitWrappers, attackingPlayer, defendingPlayer,
-							wreckTileChance, wreckTilePosition, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+							wreckTileChance, wreckTilePosition, null, null, spell, variableDamage, castingPlayer, combatLocation, skipAnimation, mom);
 					}
 					else if (kind == KindOfSpell.HEALING)
 					{

@@ -41,6 +41,7 @@ public interface DamageProcessor
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
 	 * @param combatLocation Where the combat is taking place; null if its damage from an overland spell
+	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the attack resulted in the combat ending
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -53,7 +54,7 @@ public interface DamageProcessor
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer wreckTileChance, final MapCoordinates2DEx wreckTilePosition,
 		final Integer attackerDirection, final String attackSkillID,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
-		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		final MapCoordinates3DEx combatLocation, final boolean skipAnimation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**

@@ -286,7 +286,7 @@ public final class SpellCastingImpl implements SpellCasting
 			final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "castOverlandAttackSpell");
 			
 			getDamageProcessor ().resolveAttack (null, entry.getValue (), castingPlayer, defendingPlayer,
-				null, null, null, null, spell, variableDamage, castingPlayer, null, mom);
+				null, null, null, null, spell, variableDamage, castingPlayer, null, false, mom);
 		}
 	}
 	

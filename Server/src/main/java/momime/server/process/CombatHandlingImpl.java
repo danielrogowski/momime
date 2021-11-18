@@ -107,7 +107,7 @@ public final class CombatHandlingImpl implements CombatHandling
 				
 				// castingPlayer (the owner of the wall of fire) has to be the defendingPlayer
 				combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer, null, null, null, null, spellDef, null,
-					defendingPlayer, combatLocation, mom);
+					defendingPlayer, combatLocation, true, mom);
 			}
 		}
 		
@@ -202,7 +202,7 @@ public final class CombatHandlingImpl implements CombatHandling
 				throw new MomException ("damageFromVortex can't find the spell that summoned the vortex");
 			
 			combatEnded = getDamageProcessor ().resolveAttack (vortex, defenders, attackingPlayer, defendingPlayer, null, null, null, null,
-				magicVortexSpell, VORTEX_VARIABLE_DAMAGE, castingPlayer, (MapCoordinates3DEx) vortex.getCombatLocation (), mom);
+				magicVortexSpell, VORTEX_VARIABLE_DAMAGE, castingPlayer, (MapCoordinates3DEx) vortex.getCombatLocation (), true, mom);
 		}
 		
 		return combatEnded;

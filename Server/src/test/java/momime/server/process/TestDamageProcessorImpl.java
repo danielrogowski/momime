@@ -211,7 +211,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defenderUnits.add (defender);
 		
 		assertFalse (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom));
 
 		// Ensure steps were processed
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -387,7 +387,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defenderUnits.add (defender);
 		
 		assertTrue (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom));
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom));
 		
 		// Ensure steps were processed
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -527,7 +527,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defenderUnits.add (defender);
 		
 		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
-			null, spell, null, castingPlayer, combatLocation, mom));
+			null, spell, null, castingPlayer, combatLocation, false, mom));
 
 		// Ensure steps were processed
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
@@ -682,7 +682,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defenderUnits.add (defender3);
 		
 		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
-			null, spell, null, castingPlayer, combatLocation, mom));
+			null, spell, null, castingPlayer, combatLocation, false, mom));
 
 		// Ensure steps were processed
 		final AttackResolutionUnit defender1Wrapper = new AttackResolutionUnit (defender1);

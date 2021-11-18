@@ -3695,7 +3695,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defenders.add (new ResolveAttackTarget (defender));
 		
 		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, null, 4,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom);
 	}
 
 	/**
@@ -3881,6 +3881,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defenders.add (new ResolveAttackTarget (defender));
 
 		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, null, 3,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom);
 	}
 }

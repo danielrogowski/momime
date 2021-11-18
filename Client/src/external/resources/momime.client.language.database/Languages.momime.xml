@@ -1161,6 +1161,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <attackCurse language="en">
             <text>ATTACKER_NAME's ATTACK_TYPE requires resistance roll with POTENTIAL_HITS modifier to avoid being affected:</text>
         </attackCurse>
+        <attackBeneficial language="en">
+            <text>ATTACKER_NAME gives benefit of ATTACK_TYPE to enemy unit</text>
+        </attackBeneficial>
         <attackChanceOfDeath language="en">
             <text>ATTACKER_NAME's ATTACK_TYPE has POTENTIAL_HITS% chance of killing defender:</text>
         </attackChanceOfDeath>

@@ -732,17 +732,18 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(thisUnit.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()))
 					{
 						final String randomSpellID = CommonDatabaseConstants.CALL_CHAOS_CHOICES.get
-							(2);//getRandomUtils ().nextInt (CommonDatabaseConstants.CALL_CHAOS_CHOICES.size ()));
+							(getRandomUtils ().nextInt (3));//getRandomUtils ().nextInt (CommonDatabaseConstants.CALL_CHAOS_CHOICES.size ()));
 						if (randomSpellID != null)
 						{
 							final Spell randomSpell = mom.getServerDB ().findSpell (randomSpellID, "castCombatNow (CC)");
 							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, randomSpell.getSpellRealm (),
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
-							// For healing we have to fudge the playerID or its going to stop us from healing an enemy unit
-							final int thisCastingPlayerID = randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_HEALING) ? thisUnit.getOwningPlayerID () : castingPlayer.getPlayerDescription ().getPlayerID ();
+							// For healing we have to fudge the playerID or its going to stop us from healing an enemy unit; chaos channels is also a "friendly" enchantment
+							final int thisCastingPlayerID = ((randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_HEALING)) ||
+								(randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS))) ? thisUnit.getOwningPlayerID () : castingPlayer.getPlayerDescription ().getPlayerID ();
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, thisCastingPlayerID,
+							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (randomSpell, null, combatLocation, thisCastingPlayerID,
 								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							{

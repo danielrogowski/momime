@@ -497,6 +497,10 @@
 						<xsd:selector xpath="attackCurse" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="combatDamageAttackBeneficialPK">
+						<xsd:selector xpath="attackBeneficial" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="combatDamageAttackChanceOfDeathPK">
 						<xsd:selector xpath="attackChanceOfDeath" />
 						<xsd:field xpath="@language" />
@@ -2921,6 +2925,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackWithUnit" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackWithoutUnit" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackCurse" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackBeneficial" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackChanceOfDeath" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackEachFigureResistOrDie" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackEachFigureResistOrLose1HP" />

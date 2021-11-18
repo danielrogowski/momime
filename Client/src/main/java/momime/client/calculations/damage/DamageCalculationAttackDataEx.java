@@ -112,6 +112,12 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		
 		if ((spellDef != null) && (spellDef.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
 			languageText = getLanguages ().getCombatDamage ().getAttackCurse ();
+		
+		// Call Chaos casting beneficial spells Healing and Chaos Channels
+		else if ((spellDef != null) && ((spellDef.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+			(spellDef.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)))
+			languageText = getLanguages ().getCombatDamage ().getAttackBeneficial ();
+		
 		else
 			switch (getDamageResolutionTypeID ())
 			{

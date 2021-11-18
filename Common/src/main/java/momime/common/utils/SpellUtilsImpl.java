@@ -141,7 +141,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	{
 		final int unmodifiedCombatCastingCost;
 		if (variableDamage == null)
-			unmodifiedCombatCastingCost = spell.getCombatCastingCost ();
+			unmodifiedCombatCastingCost = (spell.getCombatCastingCost () == null) ? 0 : spell.getCombatCastingCost ();
 		else if (spell.getCombatManaPerAdditionalDamagePoint () != null)
 			unmodifiedCombatCastingCost = spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) * spell.getCombatManaPerAdditionalDamagePoint ());
 		else if (spell.getCombatAdditionalDamagePointsPerMana () != null)

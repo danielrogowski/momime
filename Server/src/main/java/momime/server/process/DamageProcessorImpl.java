@@ -180,8 +180,15 @@ public final class DamageProcessorImpl implements DamageProcessor
 						final List<AttackResolutionStepContainer> spellInnerSteps = new ArrayList<AttackResolutionStepContainer> ();
 						spellStepsThisPass.add (spellInnerSteps);
 						
+						// If its Call Chaos making a fire bolt attack then have to tweak damage up to 15
+						final Integer useVariableDamage;
+						if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_CALL_CHAOS)) && (thisSpell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_FIRE_BOLT)))
+							useVariableDamage = 15;
+						else
+							useVariableDamage = variableDamage;
+						
 						spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
-							(thisSpell, variableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
+							(thisSpell, useVariableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
 								(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT)));
 					}
 					

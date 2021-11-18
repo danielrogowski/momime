@@ -105,7 +105,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	private MemoryUnit attackerUnit;
 	
 	/** The defending unit(s) that we can see */
-	private List<ApplyDamageMessageDefenderDetails> defenderUnits;
+	private final List<ApplyDamageMessageDefenderDetails> defenderUnits = new ArrayList<ApplyDamageMessageDefenderDetails> ();
 	
 	/** How much damage the unit had taken before this attack; we use this to animate the damage slowly being applied */
 	private Integer attackerDamageTakenStart;
@@ -140,17 +140,11 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/** Current image of ranged attack */
 	private RangedAttackTypeCombatImage ratCurrentImage;
 	
-	/** Animation to display; null if the damage isn't coming from a spell or the spell has no animation */
-	private AnimationEx spellAnim;
-
-	/** Animation to display of the spell flying in from off screen; null if the damage isn't coming from a spell, the spell has no animation, or the spell has a stationary animation */
-	private AnimationEx spellAnimFly;
-	
 	/** Combat map tile set is required all over the place */
 	private TileSetEx combatMapTileSet;
 	
 	/** Details of spell graphics */
-	private Spell spell;
+	private final List<ApplyDamageSpellAnimation> spellAnimations = new ArrayList<ApplyDamageSpellAnimation> ();
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -170,12 +164,12 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		}
 
 		// Can we see the defender(s)?
-		defenderUnits = new ArrayList<ApplyDamageMessageDefenderDetails> ();
 		for (final ApplyDamageMessageUnit thisUnitDetails : getDefenderUnit ())
 		{
 			final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (thisUnitDetails.getDefenderUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ApplyDamageMessageImpl-d");
 			thisUnit.setCombatHeading (thisUnitDetails.getDefenderDirection ());
-			defenderUnits.add (new ApplyDamageMessageDefenderDetails (thisUnit, thisUnitDetails.getDefenderUnitDamage ()));
+			defenderUnits.add (new ApplyDamageMessageDefenderDetails (thisUnit, thisUnitDetails.getDefenderUnitDamage (),
+				(thisUnitDetails.getOverrideSpellID () == null) ? null : getClient ().getClientDB ().findSpell (thisUnitDetails.getOverrideSpellID (), "ApplyDamageMessageImpl")));
 		}
 		
 		// Perform any animation startup necessary.
@@ -259,68 +253,84 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			else if (getAttackSpellID () != null)
 			{
 				// Find spell graphics
-				spell = getClient ().getClientDB ().findSpell (getAttackSpellID (), "ApplyDamageMessageImpl");
+				final Spell defaultSpell = getClient ().getClientDB ().findSpell (getAttackSpellID (), "ApplyDamageMessageImpl");
 				
-				// Is there an animation to display for it?
-				if (spell.getCombatCastAnimationFly () != null)
+				// Check each unit individually as they might be showing a different spell
+				tickCount = 0;
+				Double animationSpeed = null;
+				
+				for (final ApplyDamageMessageDefenderDetails spellTargetUnit : getDefenderUnits ())
 				{
-					// Spell that flies in from off the combat map, like fire bolt
-					spellAnim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "ApplyDamageMessageImpl");
-					spellAnimFly = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimationFly (), "ApplyDamageMessageImpl (F)");
-					tickCount = INCOMING_SPELL_TICKS + spellAnim.getFrame ().size () + 1;
-					duration = tickCount / spellAnim.getAnimationSpeed ();
-
-					// Show anim on CombatUI
-					final int distance = INCOMING_SPELL_TICK_DISTANCE * INCOMING_SPELL_TICKS;
-					final int xMultiplier = (spell.getCombatCastAnimationFlyXMultiplier () == null) ? 0 : spell.getCombatCastAnimationFlyXMultiplier ();
-					final int adjustX = 2 * ((xMultiplier * distance) + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
-					final int adjustY = 2 * (-distance + ((spellAnim.getCombatCastOffsetY () == null) ? 0 : spellAnim.getCombatCastOffsetY ()));
-					
-					for (final ApplyDamageMessageDefenderDetails spellTargetUnit : getDefenderUnits ())
+					final Spell thisSpell = (spellTargetUnit.getOverrideSpell () == null) ? defaultSpell : spellTargetUnit.getOverrideSpell ();
+				
+					// Is there an animation to display for it?
+					if (thisSpell.getCombatCastAnimationFly () != null)
 					{
+						// Spell that flies in from off the combat map, like fire bolt
+						final AnimationEx spellAnim = getClient ().getClientDB ().findAnimation (thisSpell.getCombatCastAnimation (), "ApplyDamageMessageImpl");
+						final AnimationEx spellAnimFly = getClient ().getClientDB ().findAnimation (thisSpell.getCombatCastAnimationFly (), "ApplyDamageMessageImpl (F)");
+						animationSpeed = spellAnim.getAnimationSpeed ();
+						
+						final int thisTickCount = INCOMING_SPELL_TICKS + spellAnim.getFrame ().size () + 1;
+						if (thisTickCount > tickCount)
+							tickCount = thisTickCount;
+	
+						// Show anim on CombatUI
+						final int distance = INCOMING_SPELL_TICK_DISTANCE * INCOMING_SPELL_TICKS;
+						final int xMultiplier = (thisSpell.getCombatCastAnimationFlyXMultiplier () == null) ? 0 : thisSpell.getCombatCastAnimationFlyXMultiplier ();
+						final int adjustX = 2 * ((xMultiplier * distance) + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
+						final int adjustY = 2 * (-distance + ((spellAnim.getCombatCastOffsetY () == null) ? 0 : spellAnim.getCombatCastOffsetY ()));
+						
 						final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
+						final MapCoordinates2DEx combatPosition = (MapCoordinates2DEx) spellTargetUnit.getDefUnit ().getCombatPosition ();
 						castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+							(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
 						castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+							(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
 						castAnim.setAnim (spellAnimFly);
-						castAnim.setFrameCount (tickCount);
+						castAnim.setFrameCount (thisTickCount);
 						castAnim.setInFront (true);
 						
 						getCombatUI ().getCombatCastAnimations ().add (castAnim);
+						spellAnimations.add (new ApplyDamageSpellAnimation (spellTargetUnit, thisSpell, spellAnim, spellAnimFly, castAnim));
 					}
-				}
-				else if (spell.getCombatCastAnimation () != null)
-				{
-					// Spell that animates in place, like psionic blast
-					spellAnim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "ApplyDamageMessageImpl");
-					tickCount = spellAnim.getFrame ().size ();
-					duration = spellAnim.getFrame ().size () / spellAnim.getAnimationSpeed ();
-
-					// Show anim on CombatUI
-					final int adjustX = (spellAnim.getCombatCastOffsetX () == null) ? 0 : 2 * spellAnim.getCombatCastOffsetX ();
-					final int adjustY = (spellAnim.getCombatCastOffsetY () == null) ? 0 : 2 * spellAnim.getCombatCastOffsetY ();
-					
-					for (final ApplyDamageMessageDefenderDetails spellTargetUnit : getDefenderUnits ())
+					else if (thisSpell.getCombatCastAnimation () != null)
 					{
+						// Spell that animates in place, like psionic blast
+						final AnimationEx spellAnim = getClient ().getClientDB ().findAnimation (thisSpell.getCombatCastAnimation (), "ApplyDamageMessageImpl");
+						animationSpeed = spellAnim.getAnimationSpeed ();
+						
+						final int thisTickCount = spellAnim.getFrame ().size ();
+						if (thisTickCount > tickCount)
+							tickCount = thisTickCount;
+	
+						// Show anim on CombatUI
+						final int adjustX = (spellAnim.getCombatCastOffsetX () == null) ? 0 : 2 * spellAnim.getCombatCastOffsetX ();
+						final int adjustY = (spellAnim.getCombatCastOffsetY () == null) ? 0 : 2 * spellAnim.getCombatCastOffsetY ();
+						
 						final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
+						final MapCoordinates2DEx combatPosition = (MapCoordinates2DEx) spellTargetUnit.getDefUnit ().getCombatPosition ();
 						castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+							(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
 						castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+							(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
 						castAnim.setAnim (spellAnim);
-						castAnim.setFrameCount (tickCount);
-						castAnim.setInFront ((spell.isCombatCastAnimationInFront () == null) ? true : spell.isCombatCastAnimationInFront ());
+						castAnim.setFrameCount (thisTickCount);
+						castAnim.setInFront ((thisSpell.isCombatCastAnimationInFront () == null) ? true : thisSpell.isCombatCastAnimationInFront ());
 						
 						getCombatUI ().getCombatCastAnimations ().add (castAnim);
+						spellAnimations.add (new ApplyDamageSpellAnimation (spellTargetUnit, thisSpell, spellAnim, null, castAnim));
 					}
 				}
+
+				if ((tickCount > 0) && (animationSpeed != null))
+					duration = tickCount / animationSpeed;
 				
 				// Play spell sound if there is one (some spells are silent, so should be no warning for this)
-				if (spell.getSpellSoundFile () != null)
+				if (defaultSpell.getSpellSoundFile () != null)
 					try
 					{
-						getSoundPlayer ().playAudioFile (spell.getSpellSoundFile ());
+						getSoundPlayer ().playAudioFile (defaultSpell.getSpellSoundFile ());
 					}
 					catch (final Exception e)
 					{
@@ -430,44 +440,35 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 					if ((button.getUnit ().getUnit () == attackerUnit) || (getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == button.getUnit ().getUnit ())))
 						button.repaint ();
 		}
-		else if (spellAnimFly != null)
-		{
-			// Fly the spell in from off screen
-			if (tickNumber <= INCOMING_SPELL_TICKS)
+		
+		for (final ApplyDamageSpellAnimation spellAnimation : spellAnimations)
+			if (spellAnimation.getSpellAnimFly () != null)
 			{
-				final int distance = INCOMING_SPELL_TICK_DISTANCE * (INCOMING_SPELL_TICKS - tickNumber);
-				final int xMultiplier = (spell.getCombatCastAnimationFlyXMultiplier () == null) ? 0 : spell.getCombatCastAnimationFlyXMultiplier ();
-				final int adjustX = 2 * ((xMultiplier * distance) + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
-				final int adjustY = 2 * (-distance + ((spellAnim.getCombatCastOffsetY () == null) ? 0 : spellAnim.getCombatCastOffsetY ()));
-				
-				for (int defenderNo = 0; defenderNo < getDefenderUnits ().size (); defenderNo++)
+				// Fly the spell in from off screen
+				if (tickNumber <= INCOMING_SPELL_TICKS)
 				{
-					final ApplyDamageMessageDefenderDetails spellTargetUnit = getDefenderUnits ().get (defenderNo);
-					final CombatUICastAnimation castAnim = getCombatUI ().getCombatCastAnimations ().get (defenderNo);
+					final int distance = INCOMING_SPELL_TICK_DISTANCE * (INCOMING_SPELL_TICKS - tickNumber);
+					final int xMultiplier = (spellAnimation.getSpell ().getCombatCastAnimationFlyXMultiplier () == null) ? 0 : spellAnimation.getSpell ().getCombatCastAnimationFlyXMultiplier ();
+					final int adjustX = 2 * ((xMultiplier * distance) + ((spellAnimation.getSpellAnim ().getCombatCastOffsetX () == null) ? 0 : spellAnimation.getSpellAnim ().getCombatCastOffsetX ()));
+					final int adjustY = 2 * (-distance + ((spellAnimation.getSpellAnim ().getCombatCastOffsetY () == null) ? 0 : spellAnimation.getSpellAnim ().getCombatCastOffsetY ()));
 					
-					castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-						(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
-					castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-						(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
+					final MapCoordinates2DEx combatPosition = (MapCoordinates2DEx) spellAnimation.getSpellTargetUnit ().getDefUnit ().getCombatPosition ();
+					spellAnimation.getCastAnim ().setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+						(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
+					spellAnimation.getCastAnim ().setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+						(combatPosition.getX (), combatPosition.getY (), combatMapTileSet));
 					
-					castAnim.setFrameNumber (tickNumber % spellAnimFly.getFrame ().size ());
+					spellAnimation.getCastAnim ().setFrameNumber (tickNumber % spellAnimation.getSpellAnimFly ().getFrame ().size ());
+				}
+				else
+				{
+					// Hitting target
+					spellAnimation.getCastAnim ().setFrameNumber (tickNumber - INCOMING_SPELL_TICKS - 1);
+					spellAnimation.getCastAnim ().setAnim (spellAnimation.getSpellAnim ());
 				}
 			}
-			else
-			{
-				// Hitting target
-				for (final CombatUICastAnimation castAnim : getCombatUI ().getCombatCastAnimations ())
-				{
-					castAnim.setFrameNumber ((tickNumber - INCOMING_SPELL_TICKS - 1) & spellAnim.getFrame ().size ());
-					castAnim.setAnim (spellAnim);
-				}
-			}
-		}
-		else if (spellAnim != null)
-		{
-			for (final CombatUICastAnimation castAnim : getCombatUI ().getCombatCastAnimations ())			
-				castAnim.setFrameNumber (tickNumber - 1);
-		}
+			else if (spellAnimation.getSpellAnim () != null)
+				spellAnimation.getCastAnim ().setFrameNumber (tickNumber - 1);
 	}
 
 	/**
@@ -777,16 +778,22 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		/** Specific amounts and damage types that the unit is will have taken at the end of the attack */
 		private final List<UnitDamage> defenderDamageTakenEndDetails;
 		
+		/** Some attacks not only hit multiple defenders at once, but hit each defender with a different spell effect.  Mainly for Call Chaos. */
+		private final Spell overrideSpell;
+		
 		/**
 		 * @param aDefenderUnit Which unit this is
 		 * @param aDefenderDamageTakenEndDetails Specific amounts and damage types that the unit is will have taken at the end of the attack
+		 * @param anOverrideSpell Some attacks not only hit multiple defenders at once, but hit each defender with a different spell effect.  Mainly for Call Chaos.
 		 */
-		private ApplyDamageMessageDefenderDetails (final MemoryUnit aDefenderUnit, final List<UnitDamage> aDefenderDamageTakenEndDetails)
+		private ApplyDamageMessageDefenderDetails (final MemoryUnit aDefenderUnit, final List<UnitDamage> aDefenderDamageTakenEndDetails,
+			final Spell anOverrideSpell)
 		{
 			defUnit = aDefenderUnit;
 			defenderDamageTakenStart = getUnitUtils ().getTotalDamageTaken (defUnit.getUnitDamage ());
 			defenderDamageTakenEnd = getUnitUtils ().getTotalDamageTaken (aDefenderDamageTakenEndDetails);
 			defenderDamageTakenEndDetails = aDefenderDamageTakenEndDetails;
+			overrideSpell = anOverrideSpell;
 		}
 
 		/**
@@ -819,6 +826,92 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		public final List<UnitDamage> getDefenderDamageTakenEndDetails ()
 		{
 			return defenderDamageTakenEndDetails;
+		}
+		
+		/**
+		 * @return Some attacks not only hit multiple defenders at once, but hit each defender with a different spell effect.  Mainly for Call Chaos.
+		 */
+		public final Spell getOverrideSpell ()
+		{
+			return overrideSpell;
+		}
+	}
+	
+	/**
+	 * Stores details about one spell animation being drawn for one unit 
+	 */
+	public class ApplyDamageSpellAnimation
+	{
+		/** The unit the spell is hitting */
+		private final ApplyDamageMessageDefenderDetails spellTargetUnit;
+		
+		/** Details of spell graphics */
+		private final Spell spell;
+
+		/** Animation to display; null if the damage isn't coming from a spell or the spell has no animation */
+		private final AnimationEx spellAnim;
+
+		/** Animation to display of the spell flying in from off screen; null if the damage isn't coming from a spell, the spell has no animation, or the spell has a stationary animation */
+		private final AnimationEx spellAnimFly;
+		
+		/** Link to animation values on combatUI */
+		private final CombatUICastAnimation castAnim;
+
+		/**
+		 * @param aSpellTargetUnit The unit the spell is hitting
+		 * @param aSpell Details of spell graphics
+		 * @param aSpellAnim Animation to display; null if the damage isn't coming from a spell or the spell has no animation
+		 * @param aSpellAnimFly Animation to display of the spell flying in from off screen; null if the damage isn't coming from a spell, the spell has no animation, or the spell has a stationary animation
+		 * @param aCastAnim Link to animation values on combatUI
+		 */
+		private ApplyDamageSpellAnimation (final ApplyDamageMessageDefenderDetails aSpellTargetUnit,
+			final Spell aSpell, final AnimationEx aSpellAnim, final AnimationEx aSpellAnimFly, final CombatUICastAnimation aCastAnim)
+		{
+			spellTargetUnit = aSpellTargetUnit;
+			spell = aSpell;
+			spellAnim = aSpellAnim;
+			spellAnimFly = aSpellAnimFly;
+			castAnim = aCastAnim;
+		}
+		
+		/**
+		 * @return The unit the spell is hitting
+		 */
+		public final ApplyDamageMessageDefenderDetails getSpellTargetUnit ()
+		{
+			return spellTargetUnit;
+		}
+		
+		/**
+		 * @return Details of spell graphics
+		 */
+		public final Spell getSpell ()
+		{
+			return spell;
+		}
+
+		/**
+		 * @return Animation to display; null if the damage isn't coming from a spell or the spell has no animation
+		 */
+		public final AnimationEx getSpellAnim ()
+		{
+			return spellAnim;
+		}
+
+		/**
+		 * @return Animation to display of the spell flying in from off screen; null if the damage isn't coming from a spell, the spell has no animation, or the spell has a stationary animation
+		 */
+		public final AnimationEx getSpellAnimFly ()
+		{
+			return spellAnimFly;
+		}
+		
+		/**
+		 * @return Link to animation values on combatUI
+		 */
+		public final CombatUICastAnimation getCastAnim ()
+		{
+			return castAnim;
 		}
 	}
 }

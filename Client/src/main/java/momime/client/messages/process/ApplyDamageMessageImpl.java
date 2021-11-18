@@ -284,6 +284,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 						castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
 							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
 						castAnim.setAnim (spellAnimFly);
+						castAnim.setFrameCount (tickCount);
 						castAnim.setInFront (true);
 						
 						getCombatUI ().getCombatCastAnimations ().add (castAnim);
@@ -308,6 +309,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 						castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
 							(spellTargetUnit.getDefUnit ().getCombatPosition ().getX (), spellTargetUnit.getDefUnit ().getCombatPosition ().getY (), combatMapTileSet));
 						castAnim.setAnim (spellAnim);
+						castAnim.setFrameCount (tickCount);
 						castAnim.setInFront ((spell.isCombatCastAnimationInFront () == null) ? true : spell.isCombatCastAnimationInFront ());
 						
 						getCombatUI ().getCombatCastAnimations ().add (castAnim);

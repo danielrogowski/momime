@@ -204,6 +204,7 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 							castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
 								(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet));
 							castAnim.setAnim (anim);
+							castAnim.setFrameCount (anim.getFrame ().size ());
 							castAnim.setInFront (true);
 							
 							getCombatUI ().getCombatCastAnimations ().add (castAnim);

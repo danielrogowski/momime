@@ -612,7 +612,7 @@ public final class CombatUI extends MomClientFrameUI
 				
 				// Draw casting animation behind units?
 				for (final CombatUICastAnimation castAnim : getCombatCastAnimations ())
-					if ((!castAnim.isInFront ()) && (castAnim.getFrameNumber () < castAnim.getAnim ().getFrame ().size ()))
+					if ((!castAnim.isInFront ()) && (castAnim.getFrameNumber () < castAnim.getFrameCount ()))
 						try
 						{
 							final BufferedImage image = getUtils ().loadImage (castAnim.getAnim ().getFrame ().get (castAnim.getFrameNumber ()).getImageFile ());
@@ -865,7 +865,7 @@ public final class CombatUI extends MomClientFrameUI
 				
 				// Draw casting animation in front of units?
 				for (final CombatUICastAnimation castAnim : getCombatCastAnimations ())
-					if ((castAnim.isInFront ()) && (castAnim.getFrameNumber () < castAnim.getAnim ().getFrame ().size ()))
+					if ((castAnim.isInFront ()) && (castAnim.getFrameNumber () < castAnim.getFrameCount ()))
 						try
 						{
 							final BufferedImage image = getUtils ().loadImage (castAnim.getAnim ().getFrame ().get (castAnim.getFrameNumber ()).getImageFile ());

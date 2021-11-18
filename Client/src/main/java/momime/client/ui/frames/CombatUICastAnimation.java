@@ -17,6 +17,9 @@ public final class CombatUICastAnimation
 	/** The animation to draw */
 	private AnimationEx anim;
 	
+	/** Number of frames to display */
+	private int frameCount;
+	
 	/** Frame number to display */
 	private int frameNumber;
 	
@@ -71,6 +74,22 @@ public final class CombatUICastAnimation
 		anim = a;
 	}
 
+	/**
+	 * @return Number of frames to display
+	 */
+	public final int getFrameCount ()
+	{
+		return frameCount;
+	}
+
+	/**
+	 * @param c Number of frames to display
+	 */
+	public final void setFrameCount (final int c)
+	{
+		frameCount = c;
+	}
+	
 	/**
 	 * @return Frame number to display
 	 */

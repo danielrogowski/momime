@@ -88,6 +88,7 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 
 				final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
 				castAnim.setAnim (anim);
+				castAnim.setFrameCount (anim.getFrame ().size ());
 				castAnim.setInFront (true);
 				castAnim.setPositionX (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX (targetPosition.getX (), targetPosition.getY (), combatMapTileSet));
 				castAnim.setPositionY (adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY (targetPosition.getX (), targetPosition.getY (), combatMapTileSet));

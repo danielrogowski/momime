@@ -92,6 +92,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 
 				final CombatUICastAnimation castAnim = new CombatUICastAnimation ();
 				castAnim.setAnim (anim);
+				castAnim.setFrameCount (anim.getFrame ().size ());
 				
 				// Summoning circle anim appears behind; recall hero anim appears in front
 				castAnim.setInFront (getCombatPosition () == null);

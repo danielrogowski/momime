@@ -671,6 +671,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="spellDispelling" ref="spellDispelling" />
 	</bean>
 
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">

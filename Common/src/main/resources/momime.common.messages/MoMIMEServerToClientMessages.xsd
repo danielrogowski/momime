@@ -1344,7 +1344,8 @@ Each successfully dispelled spell will separately send out the usual FOW updates
 	
 	<xsd:complexType name="counterMagicResult">
 	    <xsd:annotation>
-    		<xsd:documentation>The result of one CAE attempting to counter a spell from even being cast.</xsd:documentation>
+    		<xsd:documentation>The result of one attempt to counter a spell from even being cast.
+Either spellID or combatAreaEffectID will be filled in but never both.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="owningPlayerID" type="mps:playerID">
@@ -1352,7 +1353,8 @@ Each successfully dispelled spell will separately send out the usual FOW updates
 		    		<xsd:documentation>The player who owns the CAE that is trying to counter the spell.  For nodes will be null.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="dispellingPower" type="momimecommon:spellCastingCost" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="chance" type="xsd:double" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="dispelled" type="xsd:boolean" />

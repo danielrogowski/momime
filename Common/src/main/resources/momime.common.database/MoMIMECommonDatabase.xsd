@@ -3429,6 +3429,7 @@ e.g. Nature's Wrath does not affect the owner casting Chaos and Death spells, bu
 triggeredBySelf sets when the effect triggers *at all*.  triggerAffectsUnits sets, when the trigger is activated, who is affected.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="triggerDispelPower" type="momimecommon:spellCastingCost" nxe:label="Dispel Power" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="destroyBuildingChance" type="momimecommon:percentage" nxe:label="% chance of buildings being destroyed" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:unitID" nxe:label="Summoned unit">
 		        <xsd:annotation>

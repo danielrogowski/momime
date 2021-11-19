@@ -430,10 +430,12 @@ public final class SpellDispellingImpl implements SpellDispelling
 	 * 
 	 * @param castingPlayer Player who is trying to cast a spell
 	 * @param spell The spell they are trying to cast
-	 * @param unmodifiedCombatCastingCost Unmodified mana cost of the spell they are trying to cast, including any extra MP for variable damage 
+	 * @param unmodifiedCastingCost Unmodified mana cost of the spell they are trying to cast, including any extra MP for variable damage 
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
 	 * @param defendingPlayer Defending player in the combat
 	 * @param attackingPlayer Attacking player in the combat
+	 * @param triggerSpellDef Additional spell that's trying to counter the spell from being cast
+	 * @param triggerSpellCasterPlayerID Player who cast the additional spell that's trying to counter the spell from being cast
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param sd Session description
@@ -446,8 +448,9 @@ public final class SpellDispellingImpl implements SpellDispelling
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final boolean processCountering (final PlayerServerDetails castingPlayer, final Spell spell, final int unmodifiedCombatCastingCost,
+	public final boolean processCountering (final PlayerServerDetails castingPlayer, final Spell spell, final int unmodifiedCastingCost,
 		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
+		final Spell triggerSpellDef, final Integer triggerSpellCasterPlayerID,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
@@ -469,7 +472,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 				
 			multiplier++;
 		
-		final int castingCost = unmodifiedCombatCastingCost * multiplier;
+		final int castingCost = unmodifiedCastingCost * multiplier;
 		
 		// As soon as one CAE blocks it, we don't bother keep rolling any more
 		boolean dispelled = false;
@@ -480,7 +483,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 		
 		// Look for CAEs in this location that have a dispelling power value defined
 		for (final MemoryCombatAreaEffect cae : trueCAEs)
-			if ((!dispelled) && (combatLocation.equals (cae.getMapLocation ())) &&
+			if ((!dispelled) && (combatLocation != null) && (combatLocation.equals (cae.getMapLocation ())) &&
 				((cae.getCastingPlayerID () == null) || (!cae.getCastingPlayerID ().equals (castingPlayer.getPlayerDescription ().getPlayerID ()))))
 			{
 				final CombatAreaEffect caeDef = db.findCombatAreaEffect (cae.getCombatAreaEffectID (), "processCountering");
@@ -515,6 +518,22 @@ public final class SpellDispellingImpl implements SpellDispelling
 					}
 				}
 			}
+		
+		// Is there an additional spell (that isn't a CAE) that will try to counter it?
+		// NB. wiki says that Runemaster doesn't affect countering, only dispelling
+		if ((!dispelled) && (triggerSpellDef != null))
+		{
+			final CounterMagicResult result = new CounterMagicResult ();
+			result.setOwningPlayerID (triggerSpellCasterPlayerID);
+			result.setSpellID (triggerSpellDef.getSpellID ());
+			result.setDispellingPower (triggerSpellDef.getTriggerDispelPower ());
+			result.setChance (Integer.valueOf (result.getDispellingPower ()).doubleValue () / (castingCost + result.getDispellingPower ()));
+			result.setDispelled ((getRandomUtils ().nextInt (castingCost + result.getDispellingPower ()) < result.getDispellingPower ()));
+			results.add (result);
+			
+			if (result.isDispelled ())
+				dispelled = true;
+		}
 		
 		// Any results to send to any human players?
 		if ((results.size () > 0) && ((attackingPlayer.getPlayerDescription ().isHuman ()) || (defendingPlayer.getPlayerDescription ().isHuman ())))

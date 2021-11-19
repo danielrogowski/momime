@@ -16,7 +16,6 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
-import momime.common.database.CombatAreaEffect;
 import momime.common.database.LanguageText;
 import momime.common.database.Spell;
 import momime.common.messages.servertoclient.CounterMagicResult;
@@ -80,11 +79,18 @@ public final class CounterMagicResultsMessageImpl extends CounterMagicResultsMes
 			else
 				languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getTheirCounterMagicSuccess () : getLanguages ().getDispelMagic ().getTheirCounterMagicFail ();
 
+			// This is the spell or CAE that is doing the dispelling
+			final String caeName;
+			if (result.getSpellID () != null)
+				caeName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell
+					(result.getSpellID (), "CounterMagicResultsMessageImpl (R)").getSpellName ());
+			else
+				caeName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findCombatAreaEffect
+					(result.getCombatAreaEffectID (), "CounterMagicResultsMessageImpl (S)").getCombatAreaEffectDescription ());
+
 			// Replace vars
-			final CombatAreaEffect caeDef = getClient ().getClientDB ().findCombatAreaEffect (result.getCombatAreaEffectID (), "CounterMagicResultsMessageImpl (C)");
-			
 			String line = getLanguageHolder ().findDescription (languageText).replaceAll
-				("COMBAT_AREA_EFFECT_NAME", getLanguageHolder ().findDescription (caeDef.getCombatAreaEffectDescription ())).replaceAll
+				("COMBAT_AREA_EFFECT_NAME", caeName).replaceAll
 				("DISPELLING_POWER", getTextUtils ().intToStrCommas (result.getDispellingPower ())).replaceAll
 				("PERCENTAGE", Integer.valueOf ((int) (result.getChance () * 100d)).toString ());
 			

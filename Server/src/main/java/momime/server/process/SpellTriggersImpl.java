@@ -49,12 +49,18 @@ public final class SpellTriggersImpl implements SpellTriggers
 	/** Random utils */
 	private RandomUtils randomUtils;
 	
+	/** Dispel magic processing */
+	private SpellDispelling spellDispelling;
+	
 	/**
 	 * Handles an overland enchantment triggering its effect.
 	 * 
 	 * @param spell Overland enchantment that was triggered
-	 * @param offendingPlayerID Player who caused the trigger, if a player action triggers this effect; null if it just triggers automatically every turn
+	 * @param offendingPlayer Player who caused the trigger, if a player action triggers this effect; null if it just triggers automatically every turn
+	 * @param offendingSpell The spell that triggered this overland enchantement effect; null if it just triggers automatically every turn
+	 * @param offendingUnmodifiedCastingCost Unmodified mana cost of the spell that triggered this effect, including any extra MP for variable damage 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether the spell was successfully cast or not; so false = was dispelled
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -62,7 +68,8 @@ public final class SpellTriggersImpl implements SpellTriggers
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void triggerSpell (final MemoryMaintainedSpell spell, final Integer offendingPlayerID, final MomSessionVariables mom)
+	public final boolean triggerSpell (final MemoryMaintainedSpell spell,
+		final PlayerServerDetails offendingPlayer, final Spell offendingSpell, final Integer offendingUnmodifiedCastingCost, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "triggerSpell");
@@ -90,7 +97,7 @@ public final class SpellTriggersImpl implements SpellTriggers
 							ourCityLocations.add (cityLocation);
 						
 						if ((cityData.getCityOwnerID () != spell.getCastingPlayerID ()) &&
-							((offendingPlayerID == null) || (cityData.getCityOwnerID () == offendingPlayerID)))
+							((offendingPlayer == null) || (cityData.getCityOwnerID () == offendingPlayer.getPlayerDescription ().getPlayerID ())))
 							enemyCityLocations.add (cityLocation);
 					}
 				}
@@ -174,6 +181,13 @@ public final class SpellTriggersImpl implements SpellTriggers
 		if ((spellDef.getDestroyBuildingChance () != null) && (enemyCityLocations.size () > 0))
 			getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), spell.getCastingPlayerID (),
 				spellDef.getDestroyBuildingChance (), enemyCityLocations, mom);
+		
+		boolean passesCounteringAttempts = true;
+		if (spellDef.getTriggerDispelPower () != null)
+			passesCounteringAttempts = getSpellDispelling ().processCountering (offendingPlayer, offendingSpell, offendingUnmodifiedCastingCost, null,
+				offendingPlayer, castingPlayer, spellDef, castingPlayer.getPlayerDescription ().getPlayerID (),
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		return passesCounteringAttempts;
 	}
 
 	/**
@@ -254,5 +268,21 @@ public final class SpellTriggersImpl implements SpellTriggers
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Dispel magic processing
+	 */
+	public final SpellDispelling getSpellDispelling ()
+	{
+		return spellDispelling;
+	}
+
+	/**
+	 * @param p Dispel magic processing
+	 */
+	public final void setSpellDispelling (final SpellDispelling p)
+	{
+		spellDispelling = p;
 	}
 }

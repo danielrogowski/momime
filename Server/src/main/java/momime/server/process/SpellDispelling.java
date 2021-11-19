@@ -53,10 +53,12 @@ public interface SpellDispelling
 	 * 
 	 * @param castingPlayer Player who is trying to cast a spell
 	 * @param spell The spell they are trying to cast
-	 * @param unmodifiedCombatCastingCost Unmodified mana cost of the spell they are trying to cast, including any extra MP for variable damage 
+	 * @param unmodifiedCastingCost Unmodified mana cost of the spell they are trying to cast, including any extra MP for variable damage 
 	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
 	 * @param defendingPlayer Defending player in the combat
 	 * @param attackingPlayer Attacking player in the combat
+	 * @param triggerSpellDef Additional spell that's trying to counter the spell from being cast
+	 * @param triggerSpellCasterPlayerID Player who cast the additional spell that's trying to counter the spell from being cast
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param players List of players in the session
 	 * @param sd Session description
@@ -68,8 +70,9 @@ public interface SpellDispelling
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public boolean processCountering (final PlayerServerDetails castingPlayer, final Spell spell, final int unmodifiedCombatCastingCost,
+	public boolean processCountering (final PlayerServerDetails castingPlayer, final Spell spell, final int unmodifiedCastingCost,
 		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
+		final Spell triggerSpellDef, final Integer triggerSpellCasterPlayerID,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 }

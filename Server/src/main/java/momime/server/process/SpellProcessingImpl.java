@@ -240,8 +240,12 @@ public final class SpellProcessingImpl implements SpellProcessing
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Does the magic realm of the cast spell trigger an affect from any overland enchantments?  e.g. casting Death/Chaos spells while Nature's Wrath in effect
+		boolean passesCounteringAttempts = true;
 		if (spell.getSpellRealm () != null)
 		{
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			final int unmodifiedOverlandCastingCost = getSpellUtils ().getUnmodifiedOverlandCastingCost (spell, heroItem, variableDamage, pub.getPick (), mom.getServerDB ());
+			
 			// Don't trigger the same spell multiple times, even if multiple enemy wizards have it cast
 			final Set<String> triggeredSpells = new HashSet<String> (); 
 			
@@ -256,134 +260,138 @@ public final class SpellProcessingImpl implements SpellProcessing
 					{
 						triggeredSpells.add (triggerSpell.getSpellID ());
 						
-						getSpellTriggers ().triggerSpell (triggerSpell, player.getPlayerDescription ().getPlayerID (), mom);
+						if (!getSpellTriggers ().triggerSpell (triggerSpell, player, spell, unmodifiedOverlandCastingCost, mom))
+							passesCounteringAttempts = false;
 					}
 				}
 		}
 		
-		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
-		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
-		final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
-
-		// Overland enchantments
-		if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+		if (passesCounteringAttempts)
 		{
-			// Check if the player already has this overland enchantment cast
-			// If they do, they can't have it twice so nothing to do, they just lose the cast
-			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
+			// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+			final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
+			final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
+			final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
+	
+			// Overland enchantments
+			if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
 			{
-				// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
-				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
-					(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-						null, null, false, null, null, variableDamage, false, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-
-				// Does this overland enchantment give a global combat area effect? (Not all do)
-				if (spell.getSpellHasCombatEffect ().size () > 0)
+				// Check if the player already has this overland enchantment cast
+				// If they do, they can't have it twice so nothing to do, they just lose the cast
+				if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
 				{
-					// Pick one at random
-					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ()));
-					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID, spell.getSpellID (),
-						player.getPlayerDescription ().getPlayerID (), spell.getOverlandCastingCost (), null, mom.getPlayers (), mom.getSessionDescription ());
-				}
-				
-				// If it is Detect Magic, the player now learns what spells everyone is casting overland
-				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC))
-					getSpellCasting ().sendOverlandCastingInfo (spell.getSpellID (), player.getPlayerDescription ().getPlayerID (),
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
-			}
-		}
-		
-		// Enchant item / Create artifact
-		else if (kind == KindOfSpell.CREATE_ARTIFACT)
-		{
-			// Put new item in mom.getPlayers ()' bank on the server
-			final NumberedHeroItem numberedHeroItem = getHeroItemServerUtils ().createNumberedHeroItem (heroItem, mom.getGeneralServerKnowledge ());
-			priv.getUnassignedHeroItem ().add (numberedHeroItem);
-
-			// Put new item in mom.getPlayers ()' bank on the client
-			if (player.getPlayerDescription ().isHuman ())
-			{
-				final AddUnassignedHeroItemMessage addItemMsg = new AddUnassignedHeroItemMessage ();
-				addItemMsg.setHeroItem (numberedHeroItem);
-				player.getConnection ().sendMessageToClient (addItemMsg);
-			
-				// Show on new turn messages for the player who summoned it
-				final NewTurnMessageCreateArtifact createArtifactSpell = new NewTurnMessageCreateArtifact ();
-				createArtifactSpell.setMsgType (NewTurnMessageTypeID.CREATE_ARTIFACT);
-				createArtifactSpell.setSpellID (spell.getSpellID ());
-				createArtifactSpell.setHeroItemName (heroItem.getHeroItemName ());
-
-				trans.getNewTurnMessage ().add (createArtifactSpell);
-			}
-		}
-
-		// Summoning, except Floating Island where you need to pick a target
-		else if ((kind == KindOfSpell.SUMMONING) && ((spell.isSummonAnywhere () == null) || (!spell.isSummonAnywhere ())))
-		{
-			// Find the location of the wizards' summoning circle 'building'
-			final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
-				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
-
-			if (summoningCircleLocation != null)
-				getSpellCasting ().castOverlandSummoningSpell (spell, player, (MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), true, mom);
-		}
-
-		// Any kind of overland spell that needs the player to choose a target
-		else if ((sectionID == SpellBookSectionID.CITY_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
-			(sectionID == SpellBookSectionID.CITY_CURSES) || (sectionID == SpellBookSectionID.UNIT_CURSES) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
-			(sectionID == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS) ||
-			(sectionID == SpellBookSectionID.ATTACK_SPELLS) ||
-			(sectionID == SpellBookSectionID.SUMMONING) || (sectionID == SpellBookSectionID.ENEMY_WIZARD_SPELLS) || (kind == KindOfSpell.RAISE_DEAD))
-		{
-			// Add it on server - note we add it without a target chosen and without adding it on any
-			// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.
-			final MemoryMaintainedSpell maintainedSpell = getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
-				(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-				null, null, false, null, null, variableDamage, false, null, mom.getServerDB (), mom.getSessionDescription ());
-
-			if (player.getPlayerDescription ().isHuman ())
-			{
-				// Tell client to pick a target for this spell
-				final NewTurnMessageSpell targetSpell = new NewTurnMessageSpell ();
-				targetSpell.setMsgType (NewTurnMessageTypeID.TARGET_SPELL);
-				targetSpell.setSpellID (spell.getSpellID ());
-				trans.getNewTurnMessage ().add (targetSpell);
-			}
-			else
-				getSpellAI ().decideSpellTarget (player, spell, maintainedSpell, mom);
-		}
-		
-		// Special spells (Spell of Mastery and a few other unique spells that you don't even pick a target for)
-		else if (sectionID == SpellBookSectionID.SPECIAL_SPELLS)
-		{
-			final PlayAnimationMessage msg = new PlayAnimationMessage ();
-			msg.setAnimationID (AnimationID.FINISHED_SPELL_OF_MASTERY);
-			msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-			
-			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
-			
-			// Defeat everyone except the winner
-			for (final PlayerServerDetails defeatedPlayer : mom.getPlayers ())
-				if (defeatedPlayer != player)
-				{
-					final MomPersistentPlayerPublicKnowledge defeatedPub = (MomPersistentPlayerPublicKnowledge) defeatedPlayer.getPersistentPlayerPublicKnowledge ();
-					if ((PlayerKnowledgeUtils.isWizard (defeatedPub.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
+					// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
+					getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
+						(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
+							null, null, false, null, null, variableDamage, false, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+	
+					// Does this overland enchantment give a global combat area effect? (Not all do)
+					if (spell.getSpellHasCombatEffect ().size () > 0)
 					{
-						defeatedPub.setWizardState (WizardState.DEFEATED);
-						if (defeatedPlayer.getPlayerDescription ().isHuman ())
-							mom.updateHumanPlayerToAI (defeatedPlayer.getPlayerDescription ().getPlayerID ());
+						// Pick one at random
+						final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ()));
+						getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID, spell.getSpellID (),
+							player.getPlayerDescription ().getPlayerID (), spell.getOverlandCastingCost (), null, mom.getPlayers (), mom.getSessionDescription ());
 					}
+					
+					// If it is Detect Magic, the player now learns what spells everyone is casting overland
+					if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC))
+						getSpellCasting ().sendOverlandCastingInfo (spell.getSpellID (), player.getPlayerDescription ().getPlayerID (),
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 				}
+			}
 			
-			// Let the remaining player win (this kicks them and ends the session)
-			getPlayerMessageProcessing ().checkIfWonGame (mom);
+			// Enchant item / Create artifact
+			else if (kind == KindOfSpell.CREATE_ARTIFACT)
+			{
+				// Put new item in mom.getPlayers ()' bank on the server
+				final NumberedHeroItem numberedHeroItem = getHeroItemServerUtils ().createNumberedHeroItem (heroItem, mom.getGeneralServerKnowledge ());
+				priv.getUnassignedHeroItem ().add (numberedHeroItem);
+	
+				// Put new item in mom.getPlayers ()' bank on the client
+				if (player.getPlayerDescription ().isHuman ())
+				{
+					final AddUnassignedHeroItemMessage addItemMsg = new AddUnassignedHeroItemMessage ();
+					addItemMsg.setHeroItem (numberedHeroItem);
+					player.getConnection ().sendMessageToClient (addItemMsg);
+				
+					// Show on new turn messages for the player who summoned it
+					final NewTurnMessageCreateArtifact createArtifactSpell = new NewTurnMessageCreateArtifact ();
+					createArtifactSpell.setMsgType (NewTurnMessageTypeID.CREATE_ARTIFACT);
+					createArtifactSpell.setSpellID (spell.getSpellID ());
+					createArtifactSpell.setHeroItemName (heroItem.getHeroItemName ());
+	
+					trans.getNewTurnMessage ().add (createArtifactSpell);
+				}
+			}
+	
+			// Summoning, except Floating Island where you need to pick a target
+			else if ((kind == KindOfSpell.SUMMONING) && ((spell.isSummonAnywhere () == null) || (!spell.isSummonAnywhere ())))
+			{
+				// Find the location of the wizards' summoning circle 'building'
+				final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
+					CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+	
+				if (summoningCircleLocation != null)
+					getSpellCasting ().castOverlandSummoningSpell (spell, player, (MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), true, mom);
+			}
+	
+			// Any kind of overland spell that needs the player to choose a target
+			else if ((sectionID == SpellBookSectionID.CITY_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+				(sectionID == SpellBookSectionID.CITY_CURSES) || (sectionID == SpellBookSectionID.UNIT_CURSES) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
+				(sectionID == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS) ||
+				(sectionID == SpellBookSectionID.ATTACK_SPELLS) ||
+				(sectionID == SpellBookSectionID.SUMMONING) || (sectionID == SpellBookSectionID.ENEMY_WIZARD_SPELLS) || (kind == KindOfSpell.RAISE_DEAD))
+			{
+				// Add it on server - note we add it without a target chosen and without adding it on any
+				// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.
+				final MemoryMaintainedSpell maintainedSpell = getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
+					(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
+					null, null, false, null, null, variableDamage, false, null, mom.getServerDB (), mom.getSessionDescription ());
+	
+				if (player.getPlayerDescription ().isHuman ())
+				{
+					// Tell client to pick a target for this spell
+					final NewTurnMessageSpell targetSpell = new NewTurnMessageSpell ();
+					targetSpell.setMsgType (NewTurnMessageTypeID.TARGET_SPELL);
+					targetSpell.setSpellID (spell.getSpellID ());
+					trans.getNewTurnMessage ().add (targetSpell);
+				}
+				else
+					getSpellAI ().decideSpellTarget (player, spell, maintainedSpell, mom);
+			}
+			
+			// Special spells (Spell of Mastery and a few other unique spells that you don't even pick a target for)
+			else if (sectionID == SpellBookSectionID.SPECIAL_SPELLS)
+			{
+				final PlayAnimationMessage msg = new PlayAnimationMessage ();
+				msg.setAnimationID (AnimationID.FINISHED_SPELL_OF_MASTERY);
+				msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+				
+				getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+				
+				// Defeat everyone except the winner
+				for (final PlayerServerDetails defeatedPlayer : mom.getPlayers ())
+					if (defeatedPlayer != player)
+					{
+						final MomPersistentPlayerPublicKnowledge defeatedPub = (MomPersistentPlayerPublicKnowledge) defeatedPlayer.getPersistentPlayerPublicKnowledge ();
+						if ((PlayerKnowledgeUtils.isWizard (defeatedPub.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
+						{
+							defeatedPub.setWizardState (WizardState.DEFEATED);
+							if (defeatedPlayer.getPlayerDescription ().isHuman ())
+								mom.updateHumanPlayerToAI (defeatedPlayer.getPlayerDescription ().getPlayerID ());
+						}
+					}
+				
+				// Let the remaining player win (this kicks them and ends the session)
+				getPlayerMessageProcessing ().checkIfWonGame (mom);
+			}
+	
+			else
+				throw new MomException ("Completed casting an overland spell with a section ID that there is no code to deal with yet: " + sectionID);
 		}
-
-		else
-			throw new MomException ("Completed casting an overland spell with a section ID that there is no code to deal with yet: " + sectionID);
 	}
 	
 	/**
@@ -458,7 +466,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, castingPlayerPub.getPick ());
 			passesCounteringAttempts = getSpellDispelling ().processCountering
-				(castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer,
+				(castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer, null, null,
 					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 		}
 		
@@ -2007,7 +2015,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					((spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
 						(spellDef.getAttackSpellDamageResolutionTypeID () != null) && (spellDef.getTriggeredBySpellRealm ().size () == 0)))
 					
-					getSpellTriggers ().triggerSpell (spell, null, mom);
+					getSpellTriggers ().triggerSpell (spell, null, null, null, mom);
 			}
 	}
 	

@@ -514,7 +514,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingPub.getPick ())).thenReturn (15);
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
-		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer, trueMap, players, sd, db)).thenReturn (true);
+		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
+			null, null, trueMap, players, sd, db)).thenReturn (true);
 		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -635,7 +636,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingPub.getPick ())).thenReturn (15);
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
-		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer, trueMap, players, sd, db)).thenReturn (true);
+		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
+			null, null, trueMap, players, sd, db)).thenReturn (true);
 		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -779,7 +781,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingPub.getPick ())).thenReturn (15);
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
-		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer, trueMap, players, sd, db)).thenReturn (true);
+		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
+			null, null, trueMap, players, sd, db)).thenReturn (true);
 		
 		// Set up test object
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);

@@ -669,13 +669,25 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
 				final boolean haveRequiredSkill;
+				UnitSkillComponent overrideComponent = null;
+				
 				if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
 					haveRequiredSkill = (enemyUnits != null) && (enemyUnits.size () == 1) && (enemyUnits.get (0).hasModifiedSkill (skillDef.getUnitSkillID ()));
+				
+				else if (addsToSkill.isAffectsEntireStack ())
+					haveRequiredSkill = unitStackSkills.containsKey (skillDef.getUnitSkillID ());
+				
 				else
-					haveRequiredSkill = (addsToSkill.isAffectsEntireStack () ? unitStackSkills : modifiedSkillValues).containsKey (skillDef.getUnitSkillID ());
+				{
+					final UnitSkillValueBreakdown requiredSkill = modifiedSkillValues.get (skillDef.getUnitSkillID ());
+					haveRequiredSkill = (requiredSkill != null);
+					if ((requiredSkill != null) && (requiredSkill.getSource () == UnitSkillComponent.COMBAT_AREA_EFFECTS))		// So still show in green on unit details
+						overrideComponent = requiredSkill.getSource ();
+				}
 				
 				if (haveRequiredSkill)
-					getUnitDetailsUtils ().addSkillPenalty (mu, addsToSkill, modifiedSkillValues, attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformTypeID);
+					getUnitDetailsUtils ().addSkillPenalty (mu, addsToSkill, overrideComponent,
+						modifiedSkillValues, attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformTypeID);
 			}
 	}
 	

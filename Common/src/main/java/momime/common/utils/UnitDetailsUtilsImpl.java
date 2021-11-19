@@ -336,6 +336,7 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 	 * 
 	 * @param mu Minimal details for the unit calculated so far
 	 * @param addsToSkill The details of the skill the bonus is applied TO and any associated conditions
+	 * @param overrideComponent Component to add these bonuses as; null means work it out based on whether its a + or - and whether it affects whole stack or not
 	 * @param modifiedSkillValues Map of skill values calculated for the unit so far
 	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
 	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
@@ -346,7 +347,8 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final AddSkillBonusResult addSkillPenalty (final MinimalUnitDetails mu, final AddsToSkill addsToSkill, final Map<String, UnitSkillValueBreakdown> modifiedSkillValues,
+	public final AddSkillBonusResult addSkillPenalty (final MinimalUnitDetails mu, final AddsToSkill addsToSkill, final UnitSkillComponent overrideComponent,
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues,
 		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID)
 		throws MomException
 	{
@@ -418,7 +420,9 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 					
 					// How is the bonus calculated - fixed value, value from the skill, etc
 					UnitSkillComponent component;
-					if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
+					if (overrideComponent != null)
+						component = overrideComponent;
+					else if ((addsToSkill.isPenaltyToEnemy () != null) && (addsToSkill.isPenaltyToEnemy ()))
 						component = UnitSkillComponent.PENALTIES;
 					else
 						component = addsToSkill.isAffectsEntireStack () ? UnitSkillComponent.STACK : UnitSkillComponent.SPELL_EFFECTS;
@@ -439,9 +443,17 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 					else if (addsToSkill.getAddsToSkillValueType () == AddsToSkillValueType.DIVIDE)
 						newValue = currentSkillValue / addsToSkill.getAddsToSkillValue ();
 					
-					// Multiply by a value?
+					// Multiply by a value?  This is in 1/4s
 					else
-						newValue = currentSkillValue * addsToSkill.getAddsToSkillValue ();
+					{
+						int multipliedValue = (currentSkillValue * addsToSkill.getAddsToSkillValue ()) / 4;
+						
+						// Charm of Life always adds at least +1 HP
+						if ((multipliedValue <= currentSkillValue) && (addsToSkill.getAddsToSkillValue () < 8))
+							multipliedValue = currentSkillValue + 1;
+						
+						newValue = multipliedValue;
+					}
 
 					// LOCK and DIVIDE are used as penalties, so never allow these to improve an already bad stat
 					final int bonus;

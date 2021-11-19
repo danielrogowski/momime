@@ -5491,7 +5491,7 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DIVIDE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="M"><xsd:annotation>
-				<xsd:documentation>Skill value is multiplied by this value, so 2 means double the skill value, e.g. Berserk doubles melee strength.</xsd:documentation>
+				<xsd:documentation>Skill value is multiplied by this value, but stored in 1/4s, so 8 means double the skill value, e.g. Berserk doubles melee strength.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="MULTIPLY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>

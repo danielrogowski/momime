@@ -978,7 +978,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.UNIT_DOES_NOT_HAVE_SKILL, utils.addSkillPenalty (null, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.UNIT_DOES_NOT_HAVE_SKILL, utils.addSkillPenalty (null, addsToSkill, null, modifiedSkillValues, null, null, null));
 	}
 
 	/**
@@ -1002,7 +1002,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.INCORRECT_TYPE_OF_ADJUSTMENT, utils.addSkillPenalty (null, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.INCORRECT_TYPE_OF_ADJUSTMENT, utils.addSkillPenalty (null, addsToSkill, null, modifiedSkillValues, null, null, null));
 	}
 
 	/**
@@ -1025,7 +1025,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.INCORRECT_TYPE_OF_ADJUSTMENT, utils.addSkillPenalty (null, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.INCORRECT_TYPE_OF_ADJUSTMENT, utils.addSkillPenalty (null, addsToSkill, null, modifiedSkillValues, null, null, null));
 	}
 
 	/**
@@ -1055,7 +1055,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, null));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1091,7 +1091,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method (it still returns APPLIES because all the precondition checks passed, and this scenario is N/A for the addSkillBonus method)
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, null));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());
@@ -1125,7 +1125,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, null));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1145,7 +1145,7 @@ public final class TestUnitDetailsUtilsImpl
 		// Details about skill Penalty to add
 		final AddsToSkill addsToSkill = new AddsToSkill ();
 		addsToSkill.setAddsToSkillID ("US001");
-		addsToSkill.setAddsToSkillValue (3);
+		addsToSkill.setAddsToSkillValue (12);		// so x3
 		addsToSkill.setAddsToSkillValueType (AddsToSkillValueType.MULTIPLY);
 		
 		// Existing skill breakdown
@@ -1159,7 +1159,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, null));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1197,7 +1197,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, null));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1233,7 +1233,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.NOT_IN_COMBAT, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.NOT_IN_COMBAT, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, null));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());
@@ -1268,7 +1268,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.NO_INFO_ABOUT_INCOMING_ATTACK, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.NO_INFO_ABOUT_INCOMING_ATTACK, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, null));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());
@@ -1303,7 +1303,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.NO_INFO_ABOUT_INCOMING_ATTACK, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, null));
+		assertEquals (AddSkillBonusResult.NO_INFO_ABOUT_INCOMING_ATTACK, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, null));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());
@@ -1338,7 +1338,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, "US003", null, null));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, "US003", null, null));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1374,7 +1374,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.WRONG_ATTACK_SKILL, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, "US004", null, null));
+		assertEquals (AddSkillBonusResult.WRONG_ATTACK_SKILL, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, "US004", null, null));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());
@@ -1409,7 +1409,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.WRONG_ATTACK_SKILL, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, "MB01", null));
+		assertEquals (AddSkillBonusResult.WRONG_ATTACK_SKILL, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, "MB01", null));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());
@@ -1445,7 +1445,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, "US004", null, null));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, "US004", null, null));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1482,7 +1482,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.WRONG_ATTACK_SKILL, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, "US003", null, null));
+		assertEquals (AddSkillBonusResult.WRONG_ATTACK_SKILL, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, "US003", null, null));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());
@@ -1519,7 +1519,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, "MB01", null));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, "MB01", null));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1555,7 +1555,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, "MB01", null));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, "MB01", null));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1591,7 +1591,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.WRONG_ATTACK_MAGIC_REALM, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, "MB02", null));
+		assertEquals (AddSkillBonusResult.WRONG_ATTACK_MAGIC_REALM, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, "MB02", null));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());
@@ -1627,7 +1627,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, "MB01"));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, "MB01"));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1664,7 +1664,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.WRONG_MAGIC_REALM_LIFEFORM_TYPE_ID, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, "MB02"));
+		assertEquals (AddSkillBonusResult.WRONG_MAGIC_REALM_LIFEFORM_TYPE_ID, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, "MB02"));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());
@@ -1703,7 +1703,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, "MB01"));
+		assertEquals (AddSkillBonusResult.APPLIES, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, "MB01"));
 		
 		// Check results
 		assertEquals (2, breakdown.getComponents ().size ());
@@ -1743,7 +1743,7 @@ public final class TestUnitDetailsUtilsImpl
 		final UnitDetailsUtilsImpl utils = new UnitDetailsUtilsImpl ();
 		
 		// Run method
-		assertEquals (AddSkillBonusResult.WRONG_RANGED_ATTACK_TYPE, utils.addSkillPenalty (mu, addsToSkill, modifiedSkillValues, null, null, "MB01"));
+		assertEquals (AddSkillBonusResult.WRONG_RANGED_ATTACK_TYPE, utils.addSkillPenalty (mu, addsToSkill, null, modifiedSkillValues, null, null, "MB01"));
 		
 		// Check results
 		assertEquals (1, breakdown.getComponents ().size ());

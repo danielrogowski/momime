@@ -69,6 +69,7 @@ public interface UnitDetailsUtils
 	 * 
 	 * @param mu Minimal details for the unit calculated so far
 	 * @param addsToSkill The details of the skill the bonus is applied TO and any associated conditions
+	 * @param overrideComponent Component to add these bonuses as; null means work it out based on whether its a + or - and whether it affects whole stack or not
 	 * @param modifiedSkillValues Map of skill values calculated for the unit so far
 	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
 	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
@@ -78,7 +79,8 @@ public interface UnitDetailsUtils
 	 * @return Value describing whether the penalty was added or not, and if not, why not - just used for unit test
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public AddSkillBonusResult addSkillPenalty (final MinimalUnitDetails mu, final AddsToSkill addsToSkill, final Map<String, UnitSkillValueBreakdown> modifiedSkillValues,
+	public AddSkillBonusResult addSkillPenalty (final MinimalUnitDetails mu, final AddsToSkill addsToSkill, final UnitSkillComponent overrideComponent,
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues,
 		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID)
 		throws MomException;
 }

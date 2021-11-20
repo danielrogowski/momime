@@ -97,7 +97,9 @@ public final class SpellTriggersImpl implements SpellTriggers
 							ourCityLocations.add (cityLocation);
 						
 						if ((cityData.getCityOwnerID () != spell.getCastingPlayerID ()) &&
-							((offendingPlayer == null) || (cityData.getCityOwnerID () == offendingPlayer.getPlayerDescription ().getPlayerID ())))
+							((offendingPlayer == null) || (cityData.getCityOwnerID () == offendingPlayer.getPlayerDescription ().getPlayerID ())) &&
+							(!getMemoryMaintainedSpellUtils ().isCityProtectedAgainstSpellRealm (cityLocation, spellDef.getSpellRealm (), spell.getCastingPlayerID (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ())))
 							enemyCityLocations.add (cityLocation);
 					}
 				}

@@ -370,27 +370,40 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// Special spells (Spell of Mastery and a few other unique spells that you don't even pick a target for)
 			else if (sectionID == SpellBookSectionID.SPECIAL_SPELLS)
 			{
-				final PlayAnimationMessage msg = new PlayAnimationMessage ();
-				msg.setAnimationID (AnimationID.FINISHED_SPELL_OF_MASTERY);
-				msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-				
-				getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
-				
-				// Defeat everyone except the winner
-				for (final PlayerServerDetails defeatedPlayer : mom.getPlayers ())
-					if (defeatedPlayer != player)
-					{
-						final MomPersistentPlayerPublicKnowledge defeatedPub = (MomPersistentPlayerPublicKnowledge) defeatedPlayer.getPersistentPlayerPublicKnowledge ();
-						if ((PlayerKnowledgeUtils.isWizard (defeatedPub.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
+				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY))
+				{
+					final PlayAnimationMessage msg = new PlayAnimationMessage ();
+					msg.setAnimationID (AnimationID.FINISHED_SPELL_OF_MASTERY);
+					msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+					
+					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+					
+					// Defeat everyone except the winner
+					for (final PlayerServerDetails defeatedPlayer : mom.getPlayers ())
+						if (defeatedPlayer != player)
 						{
-							defeatedPub.setWizardState (WizardState.DEFEATED);
-							if (defeatedPlayer.getPlayerDescription ().isHuman ())
-								mom.updateHumanPlayerToAI (defeatedPlayer.getPlayerDescription ().getPlayerID ());
+							final MomPersistentPlayerPublicKnowledge defeatedPub = (MomPersistentPlayerPublicKnowledge) defeatedPlayer.getPersistentPlayerPublicKnowledge ();
+							if ((PlayerKnowledgeUtils.isWizard (defeatedPub.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
+							{
+								defeatedPub.setWizardState (WizardState.DEFEATED);
+								if (defeatedPlayer.getPlayerDescription ().isHuman ())
+									mom.updateHumanPlayerToAI (defeatedPlayer.getPlayerDescription ().getPlayerID ());
+							}
 						}
-					}
+					
+					// Let the remaining player win (this kicks them and ends the session)
+					getPlayerMessageProcessing ().checkIfWonGame (mom);
+				}
+				else
+				{
+					// Global attack spell that hits every unit on both planes (subject to being valid targets)
+					// First of all show anim for it - these show the mirror like overland enchantments
+					final ShowSpellAnimationMessage anim = new ShowSpellAnimationMessage ();
+					anim.setSpellID (spell.getSpellID ());
+					anim.setCastingPlayerID (player.getPlayerDescription ().getPlayerID ());
 				
-				// Let the remaining player win (this kicks them and ends the session)
-				getPlayerMessageProcessing ().checkIfWonGame (mom);
+					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), anim);
+				}
 			}
 	
 			else
@@ -541,6 +554,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					anim.setSpellID (spell.getSpellID ());
 					anim.setCastInCombat (true);
 					anim.setCombatTargetUnitURN (targetUnit.getUnitURN ());
+					anim.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 
 					if (attackingPlayer.getPlayerDescription ().isHuman ())
 						attackingPlayer.getConnection ().sendMessageToClient (anim);
@@ -614,6 +628,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				anim.setSpellID (spell.getSpellID ());
 				anim.setCastInCombat (true);
 				anim.setCombatTargetLocation (targetLocation);
+				anim.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 	
 				if (attackingPlayer.getPlayerDescription ().isHuman ())
 					attackingPlayer.getConnection ().sendMessageToClient (anim);
@@ -886,6 +901,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						anim.setSpellID (spell.getSpellID ());
 						anim.setCastInCombat (true);
 						anim.setCombatTargetLocation (targetLocation);
+						anim.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 						
 						if ((spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT) && (targetUnits.size () > 0))
 							anim.setCombatTargetUnitURN (targetUnits.get (0).getUnitURN ());

@@ -30,6 +30,7 @@ import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
+import momime.client.messages.process.ShowSpellAnimationMessageImpl;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.WizardsUI;
@@ -96,8 +97,11 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	/** Wizards UI */
 	private WizardsUI wizardsUI;
 	
-	/** The spell being drawn */
+	/** The spell being drawn, for overland enchantments */
 	private AddOrUpdateMaintainedSpellMessageImpl addSpellMessage;
+
+	/** The spell being drawn, for global attack spells */
+	private ShowSpellAnimationMessageImpl showSpellAnimationMessage;
 	
 	/** Text underneath */
 	private JLabel spellText;
@@ -126,10 +130,13 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		fadeAnim = getGraphicsDB ().findAnimation (MIRROR_ANIM, "OverlandEnchantmentsUI");
 		
 		// Get the player's colour and face
-		final BufferedImage mirror = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
-			true, null, null, null, getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID (), null);
+		final int castingPlayerID = (getAddSpellMessage () != null) ? getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () :
+			getShowSpellAnimationMessage ().getCastingPlayerID ();
 		
-		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID (), "OverlandEnchantmentsUI");
+		final BufferedImage mirror = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
+			true, null, null, null, castingPlayerID, null);
+		
+		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), castingPlayerID, "OverlandEnchantmentsUI");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
 		// Wizard portraits are stored exactly from the original LBXes (109x104) but stretched to compensate for original MoM using non-square 320x200 mode pixels (218x250).
@@ -142,7 +149,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		else if (pub.getStandardPhotoID () != null)
 			unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (pub.getStandardPhotoID (), "OverlandEnchantmentsUI").getPortraitImageFile ());
 		else
-			throw new MomException ("Player ID " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () + " has neither a custom or standard photo");
+			throw new MomException ("Player ID " + castingPlayerID + " has neither a custom or standard photo");
 		
 		final Image unclippedPortrait = unscaledPortrait.getScaledInstance
 			(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH);
@@ -152,7 +159,10 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 			(fadeAnim.getFrame ().size () - 1).getImageFile ()), 0, -5*2);
 		
 		// Get the pic of the spell
-		final Spell spell = getClient ().getClientDB ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID (), "OverlandEnchantmentsUI");
+		final String spellID = (getAddSpellMessage () != null) ? getAddSpellMessage ().getMaintainedSpell ().getSpellID () :
+			getShowSpellAnimationMessage ().getSpellID ();
+		
+		final Spell spell = getClient ().getClientDB ().findSpell (spellID, "OverlandEnchantmentsUI");
 		final BufferedImage unscaledSpellPic = getUtils ().loadImage (spell.getOverlandEnchantmentImageFile ());
 		final Image spellPic = unscaledSpellPic.getScaledInstance (unscaledSpellPic.getWidth () * 2, unscaledSpellPic.getHeight () * 2, Image.SCALE_SMOOTH);
 
@@ -172,7 +182,12 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 					// This somehow seems to get called twice in MiniCityViewUI, so protect against that
 					if (!unblocked)
 					{
-						getClient ().finishCustomDurationMessage (getAddSpellMessage ());
+						if (getAddSpellMessage () != null)
+							getClient ().finishCustomDurationMessage (getAddSpellMessage ());
+						
+						else if (getShowSpellAnimationMessage () != null)
+							getClient ().finishCustomDurationMessage (getShowSpellAnimationMessage ());
+						
 						unblocked = true;
 					}
 				}
@@ -242,25 +257,29 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		spellText = getUtils ().createLabel (new Color (Integer.parseInt (trans.getFlagColour (), 16)), getLargeFont ());
 		contentPane.add (spellText, "frmOverlandEnchantmentsText");
 
-		// Add or update the spell
-		final MemoryMaintainedSpell existingSpell = getMemoryMaintainedSpellUtils ().findSpellURN
-			(getAddSpellMessage ().getMaintainedSpell ().getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
-		
-		if (existingSpell == null)
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getAddSpellMessage ().getMaintainedSpell ());
-		else
-			existingSpell.setCastingPlayerID (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
-					
-		// Update other screens
-		getMagicSlidersUI ().spellsChanged ();
-		
-		// Update fame if cast Just Cause
-		if (getAddSpellMessage ().getMaintainedSpell ().getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
-			getWizardsUI ().wizardUpdated (player);
+		// Updates are only relevant if actually adding a spell; if animation message then its just the animation and nothing else
+		if (getAddSpellMessage () != null)
+		{
+			// Add or update the spell
+			final MemoryMaintainedSpell existingSpell = getMemoryMaintainedSpellUtils ().findSpellURN
+				(getAddSpellMessage ().getMaintainedSpell ().getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
+			
+			if (existingSpell == null)
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getAddSpellMessage ().getMaintainedSpell ());
+			else
+				existingSpell.setCastingPlayerID (castingPlayerID);
+						
+			// Update other screens
+			getMagicSlidersUI ().spellsChanged ();
+			
+			// Update fame if cast Just Cause
+			if (spellID.equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
+				getWizardsUI ().wizardUpdated (player);
+		}
 		
 		// If spell binding, use special music for it
 		Spell musicSpell = spell;
-		if (!getAddSpellMessage ().isNewlyCast ())
+		if ((getAddSpellMessage () != null) && (!getAddSpellMessage ().isNewlyCast ()))
 			for (final Spell spellBinding : getClient ().getClientDB ().getSpell ())
 				if ((spellBinding.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&
 					(spellBinding.getOverlandMaxDamage () == null) && (spellBinding.getCombatMaxDamage () == null))
@@ -342,35 +361,43 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		{
 			try
 			{
+				final String spellID = (getAddSpellMessage () != null) ? getAddSpellMessage ().getMaintainedSpell ().getSpellID () :
+					getShowSpellAnimationMessage ().getSpellID ();
+				
 				spellText.setText (getLanguageHolder ().findDescription
-					(getClient ().getClientDB ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID (), "OverlandEnchantmentsUI").getSpellName ()));
+					(getClient ().getClientDB ().findSpell (spellID, "OverlandEnchantmentsUI").getSpellName ()));
 			}
 			catch (final RecordNotFoundException e)
 			{
 				log.error (e, e);
 			}
 		}
-		
-		// Us binding
-		else if ((!getAddSpellMessage ().isNewlyCast ()) && (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()))
-			spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getBindingOurOverlandEnchantment ()));
-		
-		// Us casting
-		else if (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ())
-			spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getOurOverlandEnchantment ()));
-		
-		// Someone else binding or casting
 		else
 		{
-			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
-			final String playerName = (player != null) ? getWizardClientUtils ().getPlayerName (player) : null;
+			final int castingPlayerID = (getAddSpellMessage () != null) ? getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () :
+				getShowSpellAnimationMessage ().getCastingPlayerID ();
+		
+			// Us binding
+			if ((getAddSpellMessage () != null) && (!getAddSpellMessage ().isNewlyCast ()) && (castingPlayerID == getClient ().getOurPlayerID ()))
+				spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getBindingOurOverlandEnchantment ()));
 			
-			if (!getAddSpellMessage ().isNewlyCast ())
-				spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getBindingEnemyOverlandEnchantment ()).replaceAll
-					("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ())));
+			// Us casting
+			else if (castingPlayerID == getClient ().getOurPlayerID ())
+				spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getOurOverlandEnchantment ()));
+			
+			// Someone else binding or casting
 			else
-				spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getEnemyOverlandEnchantment ()).replaceAll
-					("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ())));
+			{
+				final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), castingPlayerID);
+				final String playerName = (player != null) ? getWizardClientUtils ().getPlayerName (player) : null;
+				
+				if ((getAddSpellMessage () != null) && (!getAddSpellMessage ().isNewlyCast ()))
+					spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getBindingEnemyOverlandEnchantment ()).replaceAll
+						("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + castingPlayerID)));
+				else
+					spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getEnemyOverlandEnchantment ()).replaceAll
+						("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + castingPlayerID)));
+			}
 		}
 	}
 	
@@ -471,7 +498,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	}
 	
 	/**
-	 * @return The spell being drawn
+	 * @return The spell being drawn, for overland enchantments
 	 */
 	public final AddOrUpdateMaintainedSpellMessageImpl getAddSpellMessage ()
 	{
@@ -479,11 +506,27 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @param spl The spell being drawn
+	 * @param spl The spell being drawn, for overland enchantments
 	 */
 	public final void setAddSpellMessage (final AddOrUpdateMaintainedSpellMessageImpl spl)
 	{
 		addSpellMessage = spl;
+	}
+
+	/**
+	 * @return The spell being drawn, for global attack spells
+	 */
+	public final ShowSpellAnimationMessageImpl getShowSpellAnimationMessage ()
+	{
+		return showSpellAnimationMessage;
+	}
+
+	/**
+	 * @param m The spell being drawn, for global attack spells
+	 */
+	public final void setShowSpellAnimationMessage (final ShowSpellAnimationMessageImpl m)
+	{
+		showSpellAnimationMessage = m;
 	}
 	
 	/**

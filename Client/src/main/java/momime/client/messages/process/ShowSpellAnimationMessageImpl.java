@@ -16,8 +16,10 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.CombatUICastAnimation;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.database.AnimationEx;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.Pick;
@@ -51,11 +53,17 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	/** Bitmap generator includes routines for calculating pixel coords */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
 
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+	
 	/** Animation to display; null to just flash a colour or process message instantly, or if animation is being handled by another frame */
 	private AnimationEx anim;
 	
 	/** Magic realm colour to flash the screen; null if have an actual animation to display or to process message instantly */
 	private Color flashColour;
+	
+	/** True for overland enchantments */
+	private boolean animatedByOtherFrame;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -69,6 +77,8 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 		
 		anim = null;
 		flashColour = null;
+		animatedByOtherFrame = false;
+		
 		if (isCastInCombat ())
 		{
 			if ((spell.getCombatCastAnimation () != null) && ((getCombatTargetUnitURN () != null) || getCombatTargetLocation () != null))
@@ -109,6 +119,15 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 				else
 					flashColour = Color.WHITE;
 			}
+		}
+		else
+		{
+			// Special global attack spells that animate like overland enchantments
+			animatedByOtherFrame = true;
+			
+			final OverlandEnchantmentsUI overlandEnchantmentsPopup = getPrototypeFrameCreator ().createOverlandEnchantments ();
+			overlandEnchantmentsPopup.setShowSpellAnimationMessage (this);
+			overlandEnchantmentsPopup.setVisible (true);
 		}
 
 		// See if there's a sound effect defined in the graphics XML file
@@ -186,12 +205,12 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	}
 	
 	/**
-	 * @return True to finish the message as soon as the animation finishes 
+	 * @return False for city anims and overland enchantments which have to be clicked on to close their window 
 	 */
 	@Override
 	public final boolean isFinishAfterDuration ()
 	{
-		return true;
+		return !animatedByOtherFrame;
 	}
 	
 	/**
@@ -290,5 +309,21 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	public final void setCombatMapBitmapGenerator (final CombatMapBitmapGenerator gen)
 	{
 		combatMapBitmapGenerator = gen;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

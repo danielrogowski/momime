@@ -5131,6 +5131,10 @@ which is why it is last in the list, so it will only be healed when all healable
 				<xsd:documentation>Single figure must resist or die (stoning touch)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SINGLE_FIGURE_RESIST_OR_DIE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="H"><xsd:annotation>
+				<xsd:documentation>Whole unit must resist or die (death wish)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="UNIT_RESIST_OR_DIE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="D"><xsd:annotation>
 				<xsd:documentation>Doom (constant damage)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DOOM" /></xsd:appinfo>

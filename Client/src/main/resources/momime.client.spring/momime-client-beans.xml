@@ -574,6 +574,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="updateWizardStateMessage" class="momime.client.messages.process.UpdateWizardStateMessageImpl" scope="prototype">

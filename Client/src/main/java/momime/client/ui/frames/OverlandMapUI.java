@@ -893,7 +893,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 										(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
 										getClient ().getOurPlayerID (), mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (),
-										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getPlayers ());
+										getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getPlayers (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
 									{
@@ -909,6 +909,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 									{
 										final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 										
+										final String spellRealm;
+										if (spell.getSpellRealm () == null)
+											spellRealm = "";
+										else
+											spellRealm = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPick (spell.getSpellRealm (), "OverlandMapUI").getBookshelfDescription ());
+										
 										final String buildingName;
 										if (spell.getBuildingID () == null)
 											buildingName = "";
@@ -916,7 +922,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 											buildingName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (spell.getBuildingID (), "OverlandMapUI").getBuildingName ());
 										
 										final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getCityLanguageText (validTarget)).replaceAll
-											("SPELL_NAME", spellName).replaceAll ("BUILDING_NAME", buildingName);
+											("SPELL_NAME", spellName).replaceAll ("BUILDING_NAME", buildingName).replaceAll ("SPELL_REALM", spellRealm);
 										
 										final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 										msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());
@@ -1028,8 +1034,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 								{
 									final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 									
+									final String spellRealm;
+									if (spell.getSpellRealm () == null)
+										spellRealm = "";
+									else
+										spellRealm = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPick (spell.getSpellRealm (), "OverlandMapUI").getBookshelfDescription ());
+									
 									final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargeting ().getLocationLanguageText (validTarget)).replaceAll
-										("SPELL_NAME", spellName);
+										("SPELL_NAME", spellName).replaceAll ("SPELL_REALM", spellRealm);
 									
 									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 									msg.setLanguageTitle (getLanguages ().getSpellTargeting ().getTitle ());

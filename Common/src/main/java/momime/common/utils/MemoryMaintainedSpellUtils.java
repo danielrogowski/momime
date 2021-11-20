@@ -105,6 +105,18 @@ public interface MemoryMaintainedSpellUtils
 	 */
 	public List<String> listCitySpellEffectsNotYetCastAtLocation (final List<MemoryMaintainedSpell> spells, final Spell spell,
 		final int castingPlayerID, final MapCoordinates3DEx cityLocation);
+
+	/**
+	 * @param cityLocation City to cast the spell on
+	 * @param pickID Magic realm of spell being cast on the city
+	 * @param castingPlayerID Player casting the spell
+	 * @param spells List of known existing spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the city is protected against this magic realm
+	 * @throws RecordNotFoundException If we can't find one of the city spell effects in the database
+	 */
+	public boolean isCityProtectedAgainstSpellRealm (final MapCoordinates3DEx cityLocation, final String pickID, final int castingPlayerID,
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException;
 	
 	/**
 	 * Checks whether the specified spell can be targetted at the specified unit.  There's lots of validation to do for this, and the
@@ -150,13 +162,14 @@ public interface MemoryMaintainedSpellUtils
 	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
 	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 */
 	public TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
 		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
-		final List<? extends PlayerPublicDetails> players)
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException; 
 
 	/**
@@ -177,8 +190,9 @@ public interface MemoryMaintainedSpellUtils
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final int castingPlayerID, final MapCoordinates3DEx targetLocation,
-		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+	public TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final int castingPlayerID,
+		final MapCoordinates3DEx targetLocation, final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow,
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**

@@ -375,6 +375,10 @@
 						<xsd:selector xpath="wizardHasDeathBooks" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellTargetingProtectedAgainstSpellRealmPK">
+						<xsd:selector xpath="protectedAgainstSpellRealm" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="spellTargetingLocationAlreadyCorruptedPK">
 						<xsd:selector xpath="locationAlreadyCorrupted" />
 						<xsd:field xpath="@language" />
@@ -2890,6 +2894,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotSeeCity" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotSeeUnit" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wizardHasDeathBooks" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="protectedAgainstSpellRealm" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="locationAlreadyCorrupted" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidTileType" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidMapFeature" />

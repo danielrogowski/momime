@@ -560,6 +560,10 @@
 						<xsd:selector xpath="citySpellEffectTileType" />
 						<xsd:field xpath="@tileTypeID" />
 					</xsd:key>
+					<xsd:key name="protectsAgainstSpellRealmPK">
+						<xsd:selector xpath="protectsAgainstSpellRealm" />
+						<xsd:field xpath="." />
+					</xsd:key>
 					<xsd:key name="citySpellEffectNamePK">
 						<xsd:selector xpath="citySpellEffectName" />
 						<xsd:field xpath="@language" />
@@ -1161,9 +1165,13 @@
 			<xsd:selector xpath="pick/pickProductionBonus" />
 			<xsd:field xpath="unitTypeID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:pickPK" name="spellFKpick">
+		<xsd:keyref refer="momimecommon:pickPK" name="spellFKpick1">
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="spellRealm" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:pickPK" name="spellFKpick2">
+			<xsd:selector xpath="spell/triggeredBySpellRealm" />
+			<xsd:field xpath="." />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:spellRankPK" name="spellFKspellRank">
 			<xsd:selector xpath="spell" />
@@ -1342,6 +1350,10 @@
 		<xsd:keyref refer="momimecommon:combatAreaEffectPK" name="citySpellEffectFKcombatAreaEffect">
 			<xsd:selector xpath="citySpellEffect" />
 			<xsd:field xpath="combatAreaEffectID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:pickPK" name="citySpellEffectFKpick">
+			<xsd:selector xpath="citySpellEffect/protectsAgainstSpellRealm" />
+			<xsd:field xpath="." />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:productionTypePK" name="citySpellEffectProductionModifierFKproductionType">
 			<xsd:selector xpath="citySpellEffect/citySpellEffectProductionModifier" />
@@ -3889,6 +3901,14 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectHealingRateBonus" type="momimecommon:healingRate" nxe:label="Healing Rate" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="purifyCorruptedTilesChance" type="momimecommon:percentage" nxe:label="Change to Purify Corruption %" nxe:gridwidth="160" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="protectsAgainstSpellRealm" type="momimecommon:pickID" nxe:label="Protects against Realm" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:documentation>For Consecration and Spell Ward</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectProductionModifier" type="momimecommon:citySpellEffectProductionModifier" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectTileType" type="momimecommon:citySpellEffectTileType" />
 		</xsd:sequence>

@@ -31,6 +31,9 @@ public enum TargetSpellResult
 	
 	/** For Evil Prescence, which has no effect on wizards who have death books */
 	WIZARD_HAS_DEATH_BOOKS,
+	
+	/** City is protected against spells of this magic realm (Consecration or Spell Ward) */
+	PROTECTED_AGAINST_SPELL_REALM,
 
 	/** Spell can't be targeted on this magic realm/lifeform type of unit, e.g. Star Fires can only be targeted on Chaos+Death units */
 	UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE,

@@ -151,6 +151,10 @@ public final class SpellTargetingEx extends SpellTargeting
 				languageText = getWizardHasDeathBooks ();
 				break;
 			 
+			case PROTECTED_AGAINST_SPELL_REALM:
+				languageText = getProtectedAgainstSpellRealm ();
+				break;
+			 
 			default:
 				throw new MomException ("SpellTargetingEx.getCityLanguageText doesn't know what to do with enum value " + targetSpellResult);
 		 }
@@ -202,6 +206,10 @@ public final class SpellTargetingEx extends SpellTargeting
 
 			case UNOWNED_NODE:
 				languageText = getUnownedNode ();
+				break;
+				
+			case PROTECTED_AGAINST_SPELL_REALM:
+				languageText = getProtectedAgainstSpellRealm ();
 				break;
 				
 			default:

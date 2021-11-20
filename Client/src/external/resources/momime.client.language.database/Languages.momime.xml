@@ -1069,6 +1069,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <wizardHasDeathBooks language="en">
             <text>SPELL_NAME has no effect on cities owned by wizards who have death books.</text>
         </wizardHasDeathBooks>
+        <protectedAgainstSpellRealm language="en">
+            <text>This city is protected against SPELL_REALM spells.</text>
+        </protectedAgainstSpellRealm>
         <locationAlreadyCorrupted language="en">
             <text>This location already has SPELL_NAME cast on it.</text>
         </locationAlreadyCorrupted>

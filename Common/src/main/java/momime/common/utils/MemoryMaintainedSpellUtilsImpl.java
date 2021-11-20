@@ -13,6 +13,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CitySpellEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -268,6 +269,39 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 
     	return citySpellEffectIDs;
 	}
+	
+	/**
+	 * @param cityLocation City to cast the spell on
+	 * @param pickID Magic realm of spell being cast on the city
+	 * @param castingPlayerID Player casting the spell
+	 * @param spells List of known existing spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the city is protected against this magic realm
+	 * @throws RecordNotFoundException If we can't find one of the city spell effects in the database
+	 */
+	@Override
+	public final boolean isCityProtectedAgainstSpellRealm (final MapCoordinates3DEx cityLocation, final String pickID, final int castingPlayerID,
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException
+	{
+		boolean prot = false;
+		
+		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
+		while ((!prot) && (iter.hasNext ()))
+		{
+			final MemoryMaintainedSpell thisSpell = iter.next ();
+			
+			// If we own the protection spell then allow us to still cast spells that are protected against.
+			// No reason to block casting beneficial spells like Wall of Fire.
+			if ((cityLocation.equals (thisSpell.getCityLocation ())) && (thisSpell.getCitySpellEffectID () != null) && (thisSpell.getCastingPlayerID () != castingPlayerID))
+			{
+				final CitySpellEffect effect = db.findCitySpellEffect (thisSpell.getCitySpellEffectID (), "isCityProtectedAgainstSpellRealm");
+				if (effect.getProtectsAgainstSpellRealm ().contains (pickID))
+					prot = true;
+			}
+		}
+		
+		return prot;
+	}
 
 	/**
 	 * Checks whether the specified spell can be targetted at the specified unit.  There's lots of validation to do for this, and the
@@ -508,6 +542,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
 	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
@@ -515,7 +550,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	@Override
 	public final TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
 		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
-		final List<? extends PlayerPublicDetails> players)
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
     	final TargetSpellResult result;
@@ -543,6 +578,10 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else
     			result = TargetSpellResult.VALID_TARGET;
     	}
+    	
+    	// Is the city specifically protected against this realm of magic?
+    	else if ((spell.getSpellRealm () != null) && (isCityProtectedAgainstSpellRealm (cityLocation, spell.getSpellRealm (), castingPlayerID, spells, db)))
+    		result = TargetSpellResult.PROTECTED_AGAINST_SPELL_REALM;
     	
     	// Attack spells don't need citySpellEffectIDs, so at this point those are done
     	else if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
@@ -598,8 +637,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final int castingPlayerID, final MapCoordinates3DEx targetLocation,
-		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+	public final TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final int castingPlayerID,
+		final MapCoordinates3DEx targetLocation, final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow,
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
     	final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get
@@ -646,7 +686,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	// If valid so far, then do checks for specific kinds of spells
     	if (result == TargetSpellResult.VALID_TARGET)
    		{
-    		if (kind == KindOfSpell.CORRUPTION)
+        	// Is the city specifically protected against this realm of magic?
+        	if ((spell.getSpellRealm () != null) && (isCityProtectedAgainstSpellRealm (targetLocation, spell.getSpellRealm (), castingPlayerID, mem.getMaintainedSpell (), db)))
+        		result = TargetSpellResult.PROTECTED_AGAINST_SPELL_REALM;
+    		
+        	else if (kind == KindOfSpell.CORRUPTION)
 	    	{
 		    	if (terrainData.getCorrupted () != null)
 		    		result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;

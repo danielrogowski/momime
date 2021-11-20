@@ -135,7 +135,7 @@ public final class ExpandUnitDetailsImpl implements ExpandUnitDetails
 		
 		// STEP 13 - Add bonuses from combat area effects
 		final List<String> skillsGrantedFromCombatAreaEffects = getExpandUnitDetailsUtils ().addSkillsFromCombatAreaEffects
-			(unit, mem.getCombatAreaEffect (), modifiedSkillValues, enemyUnits, db);
+			(unit, mem.getCombatAreaEffect (), modifiedSkillValues, enemyUnits, magicRealmLifeformType.getPickID (), db);
 		
 		// Small point here but, since CAEs can add skills we didn't previously have (which isn't the case with other kinds of bonuses), if the
 		// added skills are defined to grant further skills (which we did back in step 5) that won't happen.  But I don't think this is really needed.

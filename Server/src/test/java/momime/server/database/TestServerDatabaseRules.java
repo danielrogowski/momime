@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.DamageType;
 import momime.common.database.DamageTypeImmunity;
@@ -17,6 +18,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillEx;
+import momime.common.database.UnitSpellEffect;
 import momime.server.ServerTestData;
 
 /**
@@ -30,7 +32,8 @@ public final class TestServerDatabaseRules extends ServerTestData
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void dumpDamageTypeInfo () throws Exception {
+	public final void dumpDamageTypeInfo () throws Exception
+	{
 		final CommonDatabase db = loadServerDatabase ();
 		
 		for (final DamageType dt : db.getDamageType ())
@@ -142,4 +145,26 @@ public final class TestServerDatabaseRules extends ServerTestData
 					System.out.println ("  Blocked by: " + s2);
 			}
 	}
+	
+	/**
+	 * Looks for CAEs and spells that grant the same skills (Holy Arms / Holy Weapon)
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void checkHolyArms () throws Exception
+	{
+		final CommonDatabase db = loadServerDatabase ();
+		
+		for (final CombatAreaEffect cae : db.getCombatAreaEffect ())
+			for (final String caeUnitSkillID : cae.getCombatAreaEffectGrantsSkill ())
+				for (final Spell spell : db.getSpell ())
+					for (final UnitSpellEffect spellEffect : spell.getUnitSpellEffect ())
+						if (spellEffect.getUnitSkillID ().equals (caeUnitSkillID))
+							for (final UnitSkillEx unitSkill : db.getUnitSkills ())
+								if (unitSkill.getUnitSkillID ().equals (caeUnitSkillID))
+									System.out.println (cae.getCombatAreaEffectID () + " " + cae.getCombatAreaEffectDescription ().get (0).getText () + " and " +
+										spell.getSpellID () + " " + spell.getSpellName ().get (0).getText () + " both grant " +
+										unitSkill.getUnitSkillID () + " " + unitSkill.getUnitSkillDescription ().get (0).getText () + " which has " +
+										spell.getSpellValidUnitTarget ().size () + " valid targets defined against the spell");
+	}		
 }

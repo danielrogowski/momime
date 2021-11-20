@@ -179,7 +179,7 @@ public final class TestExpandUnitDetailsImpl
 		when (expandUnitDetailsUtils.buildInitialBreakdownFromBasicSkills (basicSkillValuesWithNegatedSkillsRemoved)).thenReturn (modifiedSkillValues);
 		
 		final List<String> skillsGrantedFromCombatAreaEffects = Arrays.asList ("US007");
-		when (expandUnitDetailsUtils.addSkillsFromCombatAreaEffects (unit, mem.getCombatAreaEffect (), modifiedSkillValues, enemyUnits, db)).thenReturn
+		when (expandUnitDetailsUtils.addSkillsFromCombatAreaEffects (unit, mem.getCombatAreaEffect (), modifiedSkillValues, enemyUnits, "MB02", db)).thenReturn
 			(skillsGrantedFromCombatAreaEffects);
 		
 		// Mock magic realm/lifeform type

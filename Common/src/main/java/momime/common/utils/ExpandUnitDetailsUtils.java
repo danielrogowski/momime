@@ -173,13 +173,15 @@ public interface ExpandUnitDetailsUtils
 	 * @param modifiedSkillValues Detailed breakdown of calculation of skill values
 	 * @param enemyUnits List of enemy units who may have skills that negate the skill we're checking for; typically this is the unit we're engaging in an attack with; in some
 	 * 	cases such as Invisibility, it may be ALL units we're in combat with; for situations not involved in combats or specific attacks, just pass null here
+	 * @param magicRealmLifeformTypeID Unit's modified magic realm/lifeform type
 	 * @param db Lookup lists built over the XML database
 	 * @return List of skills added that we didn't have before
 	 * @throws RecordNotFoundException If an expected data item can't be found
 	 * @throws MomException If a skill definition has an unknown negatedByUnitID value
 	 */
 	public List<String> addSkillsFromCombatAreaEffects (final AvailableUnit unit, final List<MemoryCombatAreaEffect> combatAreaEffects,
-		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final List<ExpandedUnitDetails> enemyUnits, final CommonDatabase db)
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final List<ExpandedUnitDetails> enemyUnits,
+		final String magicRealmLifeformTypeID, final CommonDatabase db)
 		throws RecordNotFoundException, MomException;
 	
 	/**

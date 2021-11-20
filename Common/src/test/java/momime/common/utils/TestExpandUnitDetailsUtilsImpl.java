@@ -1304,7 +1304,7 @@ public final class TestExpandUnitDetailsUtilsImpl
 		utils.setUnitUtils (unitUtils);
 		
 		// Run method
-		final List<String> skillsGrantedFromCombatAreaEffects = utils.addSkillsFromCombatAreaEffects (unit, combatAreaEffects, modifiedSkillValues, enemyUnits, db);
+		final List<String> skillsGrantedFromCombatAreaEffects = utils.addSkillsFromCombatAreaEffects (unit, combatAreaEffects, modifiedSkillValues, enemyUnits, "LTN", db);
 		
 		// Check results
 		assertEquals (2, skillsGrantedFromCombatAreaEffects.size ());

@@ -472,6 +472,7 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 	 * @param modifiedSkillValues Detailed breakdown of calculation of skill values
 	 * @param enemyUnits List of enemy units who may have skills that negate the skill we're checking for; typically this is the unit we're engaging in an attack with; in some
 	 * 	cases such as Invisibility, it may be ALL units we're in combat with; for situations not involved in combats or specific attacks, just pass null here
+	 * @param magicRealmLifeformTypeID Unit's modified magic realm/lifeform type
 	 * @param db Lookup lists built over the XML database
 	 * @return List of skills added that we didn't have before
 	 * @throws RecordNotFoundException If an expected data item can't be found
@@ -479,7 +480,8 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 	 */
 	@Override
 	public final List<String> addSkillsFromCombatAreaEffects (final AvailableUnit unit, final List<MemoryCombatAreaEffect> combatAreaEffects,
-		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final List<ExpandedUnitDetails> enemyUnits, final CommonDatabase db)
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final List<ExpandedUnitDetails> enemyUnits,
+		final String magicRealmLifeformTypeID, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
 		final List<String> skillsGrantedFromCombatAreaEffects = new ArrayList<String> ();
@@ -494,8 +496,21 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 					// Adds this skill if we don't already have it (like Mass Invisibility granting Invisibility); these are all valueless
 					if ((!modifiedSkillValues.containsKey (grantedSkillID)) && (!getUnitUtils ().isSkillNegated (grantedSkillID, modifiedSkillValues, enemyUnits, db)))
 					{
-						modifiedSkillValues.put (grantedSkillID, new UnitSkillValueBreakdown (UnitSkillComponent.COMBAT_AREA_EFFECTS));
-						skillsGrantedFromCombatAreaEffects.add (grantedSkillID);
+						// Look to see if we can find a spell that grants the same skill
+						final Spell spellThatGrantsSameSkill = db.getSpell ().stream ().filter (s -> s.getUnitSpellEffect ().stream ().anyMatch
+							(e -> e.getUnitSkillID ().equals (grantedSkillID))).findAny ().orElse (null);
+						
+						// Has the spell got any restrictions on what it can be cast on?  This is to stop Holy Arms giving Holy Weapon to summoned creatures or undead
+						boolean passesLifeformCheck = true;
+						if ((spellThatGrantsSameSkill != null) && (spellThatGrantsSameSkill.getSpellValidUnitTarget ().size () > 0))
+							passesLifeformCheck = spellThatGrantsSameSkill.getSpellValidUnitTarget ().stream ().anyMatch
+								(t -> t.getTargetMagicRealmID ().equals (magicRealmLifeformTypeID));
+						
+						if (passesLifeformCheck)
+						{
+							modifiedSkillValues.put (grantedSkillID, new UnitSkillValueBreakdown (UnitSkillComponent.COMBAT_AREA_EFFECTS));
+							skillsGrantedFromCombatAreaEffects.add (grantedSkillID);
+						}
 					}
 		
 		return skillsGrantedFromCombatAreaEffects;

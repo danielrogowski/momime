@@ -196,6 +196,20 @@ public interface SpellProcessing
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**
+	 * For Pestilence.  Each turn, there is a chance of 1000 people dying.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
+	 * @throws RecordNotFoundException If we encounter an unknown spell
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public void citySpellEffectsAttackingPopulation (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+	
+	/**
 	 * For Stasis.  Each turn, units with stasis get a resistance roll for a chance to free themselves.
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on

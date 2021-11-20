@@ -761,8 +761,8 @@ public final class WizardsUI extends MomClientFrameUI
 					final XmlLayoutComponent gemLocation = getWizardsLayout ().findComponent ("frmWizardsGem" + n);
 					if (gemLocation != null)
 					{
-						wizardCastAnimationX = gemLocation.getLeft () - 20;
-						wizardCastAnimationY = gemLocation.getTop ();
+						wizardCastAnimationX = gemLocation.getLeft () - 14;
+						wizardCastAnimationY = gemLocation.getTop () + 8;
 					}
 				}
 			}

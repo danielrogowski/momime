@@ -28,6 +28,7 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
+import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CitySpellEffect;
@@ -220,6 +221,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Methods mainly dealing with when very rare overland enchantments are triggered */
 	private SpellTriggers spellTriggers;
+	
+	/** Skill calculations */
+	private SkillCalculations skillCalculations;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -1358,18 +1362,49 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			else if (kind == KindOfSpell.ENEMY_WIZARD_SPELLS)
 			{
-				// For now this is just Drain Power
 				final PlayerServerDetails targetPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), targetPlayerID, "targetOverlandSpell (T)");
 				final MomPersistentPlayerPrivateKnowledge targetPriv = (MomPersistentPlayerPrivateKnowledge) targetPlayer.getPersistentPlayerPrivateKnowledge ();
 				
-				final int mana = getResourceValueUtils ().findAmountStoredForProductionType (targetPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-				final int roll = getRandomUtils ().nextInt (101) + 50;
-				final int manaLost = Math.min (mana, roll);
-				
-				if (manaLost > 0)
+				switch (spell.getSpellID ())
 				{
-					getResourceValueUtils ().addToAmountStored (targetPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -manaLost);
-					getServerResourceCalculations ().sendGlobalProductionValues (targetPlayer, null, false);
+					case CommonDatabaseConstants.SPELL_ID_DRAIN_POWER:
+					{
+						final int mana = getResourceValueUtils ().findAmountStoredForProductionType (targetPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+						final int roll = getRandomUtils ().nextInt (101) + 50;
+						final int manaLost = Math.min (mana, roll);
+						
+						if (manaLost > 0)
+						{
+							getResourceValueUtils ().addToAmountStored (targetPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -manaLost);
+							getServerResourceCalculations ().sendGlobalProductionValues (targetPlayer, null, false);
+						}
+						break;
+					}
+
+					case CommonDatabaseConstants.SPELL_ID_CRUEL_UNMINDING:
+					{
+						final int oldSkill = getResourceValueUtils ().calculateBasicCastingSkill (targetPriv.getResourceValue ());
+						if (oldSkill > 0)
+						{
+							int newSkill = oldSkill - (((getRandomUtils ().nextInt (10) + 1) * oldSkill) / 100);		// Takes off between 1% and 10%
+							if (newSkill >= oldSkill)
+								newSkill = oldSkill - 1;		// Force always losing at least 1 casting skill
+							
+							final int newSkillPoints = getSkillCalculations ().getSkillPointsRequiredForCastingSkill (newSkill);
+							final int skillLost = getResourceValueUtils ().findAmountStoredForProductionType
+								(targetPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT) - newSkillPoints;
+
+							if (skillLost > 0)
+							{
+								getResourceValueUtils ().addToAmountStored (targetPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, -skillLost);
+								getServerResourceCalculations ().sendGlobalProductionValues (targetPlayer, null, false);
+							}
+						}
+						break;
+					}
+
+					default:
+						throw new MomException ("No code to handle casting enemy wizard spell " + spell.getSpellID ());
 				}
 			}
 			
@@ -1940,6 +1975,54 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), spell.getCastingPlayerID (), 5,
 					Arrays.asList ((MapCoordinates3DEx) spell.getCityLocation ()), mom);
+	}
+	
+	/**
+	 * For Pestilence.  Each turn, there is a chance of 1000 people dying.
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
+	 * @throws RecordNotFoundException If we encounter an unknown spell
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	@Override
+	public final void citySpellEffectsAttackingPopulation (final MomSessionVariables mom, final int onlyOnePlayerID)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+			if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_PESTILENCE)) && (spell.getCityLocation () != null) &&
+				((onlyOnePlayerID == 0) || (onlyOnePlayerID == spell.getCastingPlayerID ())))
+			{
+				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(spell.getCityLocation ().getZ ()).getRow ().get (spell.getCityLocation ().getY ()).getCell ().get (spell.getCityLocation ().getX ()).getCityData ();
+				if ((cityData != null) && (cityData.getCityPopulation () >= 2000))
+					if (cityData.getCityPopulation () / 1000 > getRandomUtils ().nextInt (10) + 1)
+					{
+						cityData.setCityPopulation (cityData.getCityPopulation () - 1000);
+						
+						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "citySpellEffectsAttackingPopulation");
+						final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+						
+						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							(MapCoordinates3DEx) spell.getCityLocation (), mom.getSessionDescription (), mom.getServerDB ());
+							
+						// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
+						cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
+							(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							(MapCoordinates3DEx) spell.getCityLocation (), cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
+						
+						getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
+						
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getPlayers (), (MapCoordinates3DEx) spell.getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
+					}
+			}
 	}
 	
 	/**
@@ -2597,5 +2680,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setSpellTriggers (final SpellTriggers t)
 	{
 		spellTriggers = t;
+	}
+
+	/**
+	 * @return Skill calculations
+	 */
+	public final SkillCalculations getSkillCalculations ()
+	{
+		return skillCalculations;
+	}
+
+	/**
+	 * @param calc Skill calculations
+	 */
+	public final void setSkillCalculations (final SkillCalculations calc)
+	{
+		skillCalculations = calc;
 	}
 }

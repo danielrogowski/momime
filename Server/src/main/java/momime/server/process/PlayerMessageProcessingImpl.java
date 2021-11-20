@@ -683,6 +683,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// Chaos rift will fire attacks at both enemy units in the city and the buildings themselves
 		getSpellProcessing ().citySpellEffectsAttackingUnits (mom, onlyOnePlayerID);
 		getSpellProcessing ().citySpellEffectsAttackingBuildings (mom, onlyOnePlayerID);
+		getSpellProcessing ().citySpellEffectsAttackingPopulation (mom, onlyOnePlayerID);
 		
 		// Stasis
 		getSpellProcessing ().rollToRemoveOverlandCurses (mom, onlyOnePlayerID);

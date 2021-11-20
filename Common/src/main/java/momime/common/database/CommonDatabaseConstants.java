@@ -482,6 +482,9 @@ public final class CommonDatabaseConstants
 
 	/** Dark Rituals spell */
 	public final static String SPELL_ID_DARK_RITUALS = "SP163";	
+
+	/** Drain Power spell */
+	public final static String SPELL_ID_DRAIN_POWER = "SP171";	
 	
 	/** Wall of Darkness spell */
 	public final static String SPELL_ID_WALL_OF_DARKNESS = "SP178";
@@ -494,6 +497,12 @@ public final class CommonDatabaseConstants
 	
 	/** Famine spell */
 	public final static String SPELL_ID_FAMINE = "SP189";
+	
+	/** Cruel Unminding spell */
+	public final static String SPELL_ID_CRUEL_UNMINDING = "SP191";
+
+	/** Pestilence spell */
+	public final static String SPELL_ID_PESTILENCE = "SP196";
 	
 	/** Summoning circle spell */
 	public final static String SPELL_ID_SUMMONING_CIRCLE = "SP203";

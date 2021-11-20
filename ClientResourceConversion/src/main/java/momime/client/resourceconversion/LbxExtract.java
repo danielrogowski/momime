@@ -99,8 +99,8 @@ public final class LbxExtract
 			convertImage ("SPECFX.LBX", 11, n, "spells\\SP098\\cast-frame" + (n+1));
 		} */
 		
-		for (int n = 0; n <= 19; n++)
-			convertImage ("SPECFX.LBX", 12, n, "spells\\SP119\\cast-frame" + (n+1));
+		for (int n = 0; n <= 5; n++)
+			convertImage ("SPECFX.LBX", 41, n, "spells\\SP191\\cast-frame" + (n+1));
 		
 		//convertImage ("SPECIAL2.LBX", 4, 0, "unitSkills\\SC068-icon");
 		

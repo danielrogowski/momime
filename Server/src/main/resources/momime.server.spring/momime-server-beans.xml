@@ -634,6 +634,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="attackResolutionProcessing" ref="attackResolutionProcessing" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="spellTriggers" ref="spellTriggers" />
+		<property name="skillCalculations" ref="skillCalculations" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

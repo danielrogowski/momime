@@ -1565,9 +1565,29 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 				}
 			
-				// If its a city enchantment or curse, better recalculate everything on the city
 				else if (targetLocation != null)
 				{
+					// Consecration will remove all curses cast on the city
+					if (citySpellEffectID != null)
+					{
+						final CitySpellEffect citySpellEffect = mom.getServerDB ().findCitySpellEffect (citySpellEffectID, "targetOverlandSpell");
+						if (citySpellEffect.getProtectsAgainstSpellRealm ().size () > 0)
+						{
+							final List<MemoryMaintainedSpell> spellsToRemove = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+								(s -> (targetLocation.equals (s.getCityLocation ())) && (maintainedSpell.getCastingPlayerID () != s.getCastingPlayerID ())).collect (Collectors.toList ());
+							
+							// Still need to check spell realms
+							for (final MemoryMaintainedSpell spellToRemove : spellsToRemove)
+							{
+								final Spell spellToRemoveDef = mom.getServerDB ().findSpell (spellToRemove.getSpellID (), "targetOverlandSpell");
+								if (citySpellEffect.getProtectsAgainstSpellRealm ().contains (spellToRemoveDef.getSpellRealm ()))
+									getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+										spellToRemove.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+							}
+						}
+					}
+					
+					// If its a city enchantment or curse, better recalculate everything on the city
 					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
 					if (cityData != null)

@@ -59,6 +59,7 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.dialogs.ArmyListUI;
+import momime.client.ui.dialogs.ChooseCitySpellEffectUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -184,6 +185,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Spell Ward popup */
+	private ChooseCitySpellEffectUI chooseCitySpellEffectUI;
 	
 	/** Unit stack that's in the middle of moving from one cell to another */
 	private MoveUnitStackOverlandMessageImpl unitStackMoving;
@@ -897,13 +901,33 @@ public final class OverlandMapUI extends MomClientFrameUI
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
 									{
-										final TargetSpellMessage msg = new TargetSpellMessage ();
-										msg.setSpellID (spell.getSpellID ());
-										msg.setOverlandTargetLocation (mapLocation);
-										getClient ().getServerConnection ().sendMessageToServer (msg);
+										// Need to ask the player for which city spell effect they want?  (Spell Ward)
+										boolean choiceRequired = false;
+										if (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS)
+										{
+											final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
+												(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
+													getClient ().getOurPlayerID (), mapLocation);
+											if (citySpellEffectIDs.size () > 1)
+											{
+												choiceRequired = true;
+												getChooseCitySpellEffectUI ().setSpellID (spell.getSpellID ());
+												getChooseCitySpellEffectUI ().setCityLocation (mapLocation);
+												getChooseCitySpellEffectUI ().setCitySpellEffectChoices (citySpellEffectIDs);
+												getChooseCitySpellEffectUI ().setVisible (true);
+											}
+										}
 										
-										// Close out the "Target Spell" right hand panel
-										getOverlandMapProcessing ().updateMovementRemaining ();
+										if (!choiceRequired)
+										{
+											final TargetSpellMessage msg = new TargetSpellMessage ();
+											msg.setSpellID (spell.getSpellID ());
+											msg.setOverlandTargetLocation (mapLocation);
+											getClient ().getServerConnection ().sendMessageToServer (msg);
+											
+											// Close out the "Target Spell" right hand panel
+											getOverlandMapProcessing ().updateMovementRemaining ();
+										}
 									}
 									else
 									{
@@ -1980,6 +2004,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+	
+	/**
+	 * @return Spell Ward popup
+	 */
+	public final ChooseCitySpellEffectUI getChooseCitySpellEffectUI ()
+	{
+		return chooseCitySpellEffectUI;
+	}
+
+	/**
+	 * @param w Spell Ward popup
+	 */
+	public final void setChooseCitySpellEffectUI (final ChooseCitySpellEffectUI w)
+	{
+		chooseCitySpellEffectUI = w;
 	}
 	
 	/**

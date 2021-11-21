@@ -549,6 +549,11 @@ this indicates the damage chosen when casting the spell, beteween baseDamage and
 						<xsd:element minOccurs="0" maxOccurs="1" name="overlandTargetSpellURN" type="momimemsgs:spellURN" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="overlandTargetLocation" type="map:mapCoordinates3D" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="overlandTargetPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="chosenCitySpellEffectID" type="momimecommon:citySpellEffectID">
+						    <xsd:annotation>
+					    		<xsd:documentation>Only for when player actually needs to make a choice (Spell Ward).</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

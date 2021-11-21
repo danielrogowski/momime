@@ -1338,6 +1338,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="chooseCitySpellEffectUI" ref="chooseCitySpellEffectUI" />
 	</bean>
 
 	<bean id="magicSlidersLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1471,6 +1472,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="combatUI" ref="combatUI" />
+	</bean>
+
+	<bean id="chooseCitySpellEffectUI" class="momime.client.ui.dialogs.ChooseCitySpellEffectUI">
+		<property name="selectAdvisorLayout" ref="selectAdvisorLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="client" ref="client" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 
 	<bean id="razeCityLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

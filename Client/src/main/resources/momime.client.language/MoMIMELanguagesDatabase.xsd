@@ -177,6 +177,10 @@
 						<xsd:selector xpath="targetTypeOverlandEnchantment" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellCastingChooseCitySpellEffectTitlePK">
+						<xsd:selector xpath="chooseCitySpellEffectTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="dispelMagic" type="momimelangs:dispelMagic">
 					<xsd:key name="dispelMagicOurDispelMagicHeadingPK">
@@ -2851,6 +2855,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetTypeUnit" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetTypeLocation" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetTypeOverlandEnchantment" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="chooseCitySpellEffectTitle" />
 		</xsd:sequence>
     </xsd:complexType>
 	

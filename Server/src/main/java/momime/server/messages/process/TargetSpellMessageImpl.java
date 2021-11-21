@@ -165,12 +165,29 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 							error = "City is supposedly a valid target, yet couldn't find any citySpellEffectIDs to use or a building to create";
 						else
 						{
-							// Must be a valid target
-							// Choose an effect at random, unless this is a spell that creates a building
-							// In future this will need to be made choosable for Spell Ward
-							error = null;
 							if ((citySpellEffectIDs != null) && (citySpellEffectIDs.size () > 0))
-								citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
+							{
+								// Did the player request a specific city spell effect? (Spell Ward)
+								if (getChosenCitySpellEffectID () != null)
+								{
+									if (citySpellEffectIDs.contains (getChosenCitySpellEffectID ()))
+									{
+										error = null;
+										citySpellEffectID = getChosenCitySpellEffectID ();
+									}
+									else
+										error = "You requested an invalid city spell effect";
+								}
+								else
+								{
+									// Normal behaviour, where we just pick one at random (because really there's only ever going to be 1 to pick from)
+									error = null;
+									citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
+								}
+							}
+							else
+								// Creates a building, not a city spell effect
+								error = null;
 						}
 					}
 				}

@@ -899,6 +899,9 @@
         <targetTypeOverlandEnchantment language="en">
             <text>overland enchantment</text>
         </targetTypeOverlandEnchantment>
+        <chooseCitySpellEffectTitle language="en">
+            <text>Select the desired City Enchantment</text>
+        </chooseCitySpellEffectTitle>
     </spellCasting>
     <dispelMagic>
         <ourDispelMagicHeading language="en">

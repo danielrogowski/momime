@@ -885,6 +885,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	
 	/**
 	 * Rolls the number of actual hits for "single figure resist or die" damage, where only one figure has to make a resistance roll.  Used for stoning touch.
+	 * The fact that one such attack is made for each attacking figure is dealt with up in attackFromUnitSkill, because stoning touch has
+	 * damagePerFigure set to PER_FIGURE_SEPARATE.  As per example copied from the wiki:
+	 * 
+	 * A unit of 4 Cockatrices engages a unit of 2 War Bears.  The War Bears must make four resistance rolls, one for each Cockatrice.
+	 * Each time a roll fails, the unit is struck for the full health of a single War Bear figure, or 8 Damage.
+	 * In point of contrast, when exposed to the Stoning Gaze of 4 Gorgons, the bears will only make two resistance roll - one for each War Bear.
 	 * 
 	 * @param defender Unit being hit
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 

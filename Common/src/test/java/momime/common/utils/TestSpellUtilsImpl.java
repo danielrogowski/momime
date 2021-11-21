@@ -28,6 +28,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitEx;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -444,13 +445,16 @@ public final class TestSpellUtilsImpl
 		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
 		when (spellCalculations.calculateCastingCostReduction (8, spellSettings, spell, picks, db)).thenReturn (15.5);
 		
+		// Casting cost increase
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
 		// Set up object to test
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
 		utils.setSpellCalculations (spellCalculations);
 		
 		// 15.5% of 2000 is 310
-		assertEquals (2000 - 310, utils.getReducedCastingCost (spell, 2000, picks, spellSettings, db));
+		assertEquals (2000 - 310, utils.getReducedCastingCost (spell, 2000, picks, spells, spellSettings, db));
 	}
 	
 	/**

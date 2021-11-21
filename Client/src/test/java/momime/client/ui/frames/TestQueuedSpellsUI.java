@@ -34,6 +34,7 @@ import momime.common.database.Language;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -102,19 +103,21 @@ public final class TestQueuedSpellsUI extends ClientTestData
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "QueuedSpellListCellRenderer")).thenReturn (player);
 		
 		// Mock spell definitions
-		final SpellUtils spellUtils = mock (SpellUtils.class);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);		
 		for (int n = 1; n <= 5; n++)
 		{
 			final Spell spell = new Spell ();
 			spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell SP00" + n));
 
 			when (db.findSpell (eq ("SP00" + n), anyString ())).thenReturn (spell);
-			when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), spellSettings, db)).thenReturn (n * 100);
+			when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 100);
 		}
 		
 		// Mock queued spells
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		
 		for (int n = 1; n <= 5; n++)
 		{
 			final QueuedSpell queued = new QueuedSpell ();

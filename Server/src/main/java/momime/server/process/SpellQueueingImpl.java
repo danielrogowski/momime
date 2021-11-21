@@ -332,7 +332,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 				{
 					// Apply books/retorts that make spell cheaper to cast
 					reducedCombatCastingCost = getSpellUtils ().getReducedCombatCastingCost
-						(spell, variableDamage, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+						(spell, variableDamage, pub.getPick (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 					
 					// What our remaining skill?
 					final int ourSkill;
@@ -510,6 +511,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			else
 			{
 				reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, heroItem, variableDamage, pub.getPick (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 					mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 				
 				castInstantly = (priv.getQueuedSpell ().size () == 0) && (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (),
@@ -617,7 +619,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			final QueuedSpell queued = priv.getQueuedSpell ().get (0);
 			final Spell spell = mom.getServerDB ().findSpell (queued.getQueuedSpellID (), "progressOverlandCasting");
 			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), queued.getVariableDamage (), pub.getPick (),
-				mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 			final int leftToCast = Math.max (0, reducedCastingCost - priv.getManaSpentOnCastingCurrentSpell ());
 			final int manaAmount = Math.min (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (), manaRemaining), leftToCast);
 

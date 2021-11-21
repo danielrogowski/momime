@@ -333,6 +333,7 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="spellCalculations" ref="spellCalculations" />
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 	
 	<bean id="unitDetailsUtils" class="momime.common.utils.UnitDetailsUtilsImpl">

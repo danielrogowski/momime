@@ -1266,7 +1266,9 @@ public final class SpellBookUI extends MomClientFrameUI
 											else
 											{
 												overlandCost = (spell.getOverlandCastingCost () == null) ? null :
-													getSpellUtils ().getReducedOverlandCastingCost (spell, null, null, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+													getSpellUtils ().getReducedOverlandCastingCost (spell, null, null, pub.getPick (),
+														getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+														getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
 												combatCost = getReducedCombatCastingCost (spell, pub.getPick ());
 											}
@@ -1370,11 +1372,15 @@ public final class SpellBookUI extends MomClientFrameUI
 		
 		// If casting overland, then its the wizard casting, so show their cost reduction even though the combat MP costs are greyed out at the moment
 		else if ((getCastType () != SpellCastType.COMBAT) || (getCombatUI ().getCastingSource () == null))
-			combatCost = getSpellUtils ().getReducedCombatCastingCost (spell, null, picks, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+			combatCost = getSpellUtils ().getReducedCombatCastingCost (spell, null, picks,
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 		
 		// If its the wizard casting in combat, then again show their cost reduction
 		else if (getCombatUI ().getCastingSource ().getCastingUnit () == null)
-			combatCost = getSpellUtils ().getReducedCombatCastingCost (spell, null, picks, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+			combatCost = getSpellUtils ().getReducedCombatCastingCost (spell, null, picks,
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 		
 		// Its a unit or hero casting in combat, so show no reduction
 		else

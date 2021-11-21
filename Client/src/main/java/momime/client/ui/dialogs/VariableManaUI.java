@@ -246,7 +246,8 @@ public final class VariableManaUI extends MomClientDialogUI
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 	
 				final int modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargeted (), unmodifiedCost,
-					pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 				
 				// Show modified cost or not?
 				if (modifiedCost == unmodifiedCost)
@@ -338,7 +339,8 @@ public final class VariableManaUI extends MomClientDialogUI
 				final int modifiedCost;
 				if ((getCombatUI ().getCastingSource () == null) || (getCombatUI ().getCastingSource ().getCastingUnit () == null))
 					modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargeted (), unmodifiedCost,
-						pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+						pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+						getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 				else
 					modifiedCost = unmodifiedCost;
 				

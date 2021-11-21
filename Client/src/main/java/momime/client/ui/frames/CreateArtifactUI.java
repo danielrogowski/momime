@@ -597,7 +597,8 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 		
 		final int reducedCost = getSpellUtils ().getReducedOverlandCastingCost
-			(getSpell (), heroItem, null, pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+			(getSpell (), heroItem, null, pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 		
 		if (reducedCost < baseCost)
 			text = text + " / " + getTextUtils ().intToStrCommas (reducedCost) + " " + mpSuffix;

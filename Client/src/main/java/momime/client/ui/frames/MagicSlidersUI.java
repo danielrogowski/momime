@@ -666,7 +666,8 @@ public final class MagicSlidersUI extends MomClientFrameUI
 
 					manaPerTurn.setMaximum (getSpellUtils ().getReducedOverlandCastingCost
 						(spellBeingCast, queued.getHeroItem (), queued.getVariableDamage (),
-							pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()));
+							pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), 
+							getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()));
 					manaPerTurn.setValue (getClient ().getOurPersistentPlayerPrivateKnowledge ().getManaSpentOnCastingCurrentSpell ());					
 				}
 			}

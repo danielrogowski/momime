@@ -10,6 +10,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
 import momime.common.database.SpellValidUnitTarget;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -84,13 +85,15 @@ public interface SpellUtils
 	 * @param spell Spell we want to cast
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
+	 * @param spells Known spells
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Combat casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
 	 * @throws MomException If there is a problem
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public int getReducedCombatCastingCost (final Spell spell, final Integer variableDamage, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
+	public int getReducedCombatCastingCost (final Spell spell, final Integer variableDamage,
+		final List<PlayerPick> picks, final List<MemoryMaintainedSpell> spells, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -98,6 +101,7 @@ public interface SpellUtils
 	 * @param heroItem If this spell is Enchant Item or Create Artifact then the item being made; for all other spells pass null
 	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
+	 * @param spells Known spells
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Overland casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
@@ -105,7 +109,7 @@ public interface SpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	public int getReducedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final Integer variableDamage,
-		final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
+		final List<PlayerPick> picks, final List<MemoryMaintainedSpell> spells, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 	
 	/**
@@ -116,14 +120,15 @@ public interface SpellUtils
 	 * @param spell Spell we want to cast
 	 * @param castingCost The casting cost of the spell (base, or possibly increased if a variable mana spell e.g. fire bolt)
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
+	 * @param spells Known spells
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
 	 * @throws MomException If we find an invalid casting reduction type
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
-	public int getReducedCastingCost (final Spell spell, final int castingCost, final List<PlayerPick> picks,
-		final SpellSetting spellSettings, final CommonDatabase db)
+	public int getReducedCastingCost (final Spell spell, final int castingCost,
+		final List<PlayerPick> picks, final List<MemoryMaintainedSpell> spells, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 	
 	/**

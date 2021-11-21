@@ -4445,12 +4445,18 @@ Bonus Or +GOLD_BONUS%</text>
         <spellBookOverlandCostReduced language="en">
             <text>Overland casting cost: REDUCED_CASTING_COST PRODUCTION_TYPE (reduced from FULL_CASTING_COST PRODUCTION_TYPE)</text>
         </spellBookOverlandCostReduced>
+        <spellBookOverlandCostIncreased language="en">
+            <text>Overland casting cost: REDUCED_CASTING_COST PRODUCTION_TYPE (increased from FULL_CASTING_COST PRODUCTION_TYPE)</text>
+        </spellBookOverlandCostIncreased>
         <spellBookCombatCostFull language="en">
             <text>Combat casting cost: FULL_CASTING_COST PRODUCTION_TYPE</text>
         </spellBookCombatCostFull>
         <spellBookCombatCostReduced language="en">
             <text>Combat casting cost: REDUCED_CASTING_COST PRODUCTION_TYPE (reduced from FULL_CASTING_COST PRODUCTION_TYPE)</text>
         </spellBookCombatCostReduced>
+        <spellBookCombatCostIncreased language="en">
+            <text>Combat casting cost: REDUCED_CASTING_COST PRODUCTION_TYPE (increased from FULL_CASTING_COST PRODUCTION_TYPE)</text>
+        </spellBookCombatCostIncreased>
         <spellBookNoSavingThrow language="en">
             <text>Saving throw: None - spell effects cannot be resisted</text>
         </spellBookNoSavingThrow>

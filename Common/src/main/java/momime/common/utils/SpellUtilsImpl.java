@@ -16,6 +16,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
 import momime.common.database.SpellValidUnitTarget;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -33,6 +34,9 @@ public final class SpellUtilsImpl implements SpellUtils
 	
 	/** Hero item calculations */
 	private HeroItemCalculations heroItemCalculations;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	// Methods dealing with a single spell
 
@@ -206,6 +210,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @param spell Spell we want to cast
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
+	 * @param spells Known spells
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Combat casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
@@ -213,10 +218,11 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public int getReducedCombatCastingCost (final Spell spell, final Integer variableDamage, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
+	public final int getReducedCombatCastingCost (final Spell spell, final Integer variableDamage,
+		final List<PlayerPick> picks, final List<MemoryMaintainedSpell> spells, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		return getReducedCastingCost (spell, getUnmodifiedCombatCastingCost (spell, variableDamage, picks), picks, spellSettings, db);
+		return getReducedCastingCost (spell, getUnmodifiedCombatCastingCost (spell, variableDamage, picks), picks, spells, spellSettings, db);
 	}
 
 	/**
@@ -224,6 +230,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @param heroItem If this spell is Enchant Item or Create Artifact then the item being made; for all other spells pass null
 	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
+	 * @param spells Known spells
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Overland casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
@@ -231,11 +238,11 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public int getReducedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final Integer variableDamage,
-		final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
+	public final int getReducedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final Integer variableDamage,
+		final List<PlayerPick> picks, final List<MemoryMaintainedSpell> spells, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		return getReducedCastingCost (spell, getUnmodifiedOverlandCastingCost (spell, heroItem, variableDamage, picks, db), picks, spellSettings, db);
+		return getReducedCastingCost (spell, getUnmodifiedOverlandCastingCost (spell, heroItem, variableDamage, picks, db), picks, spells, spellSettings, db);
 	}
 
 	/**
@@ -246,6 +253,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @param spell Spell we want to cast
 	 * @param castingCost The casting cost of the spell (base, or possibly increased if a variable mana spell e.g. fire bolt)
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
+	 * @param spells Known spells
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
@@ -253,12 +261,31 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public final int getReducedCastingCost (final Spell spell, final int castingCost, final List<PlayerPick> picks,
-		final SpellSetting spellSettings, final CommonDatabase db)
+	public final int getReducedCastingCost (final Spell spell, final int castingCost,
+		final List<PlayerPick> picks, final List<MemoryMaintainedSpell> spells, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		// What magic realm ID is this spell?
 		final String magicRealmID = spell.getSpellRealm ();
+		
+		// Evil Omens makes Life and Nature spells 50% more expensive to cast
+		final int increasedCastingCost;
+		if (magicRealmID == null)
+			increasedCastingCost = castingCost;
+		else
+		{
+			// Search for spell definitions that make spells of this magic realm more expensive
+			int increasePercentage = 100;
+			for (final Spell increaseDef : db.getSpell ())
+				if ((increaseDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) && (increaseDef.getTriggerCastingCostIncrease () != null) &&
+					(increaseDef.getTriggeredBySpellRealm ().contains (magicRealmID)))
+					
+					// Does anyone have this cast?  (including ourselves)
+					if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, null, increaseDef.getSpellID (), null, null, null, null) != null)
+						increasePercentage = increasePercentage + increaseDef.getTriggerCastingCostIncrease ();
+			
+			increasedCastingCost = (castingCost * increasePercentage) / 100; 
+		}
 
 		// How many spell books do we have in this magic realm? Realm is null for Arcane spells
 		int bookCount;
@@ -270,8 +297,8 @@ public final class SpellUtilsImpl implements SpellUtils
 		// Do the calculation Calculation function returns a percentage reduction
 		final double reduction = getSpellCalculations ().calculateCastingCostReduction (bookCount, spellSettings, spell, picks, db) / 100;
 
-		final int reductionAmount = (int) (reduction * castingCost);
-		final int castingCostForCastingType = castingCost - reductionAmount;
+		final int reductionAmount = (int) (reduction * increasedCastingCost);
+		final int castingCostForCastingType = increasedCastingCost - reductionAmount;
 
 		return castingCostForCastingType;
 	}
@@ -686,5 +713,21 @@ public final class SpellUtilsImpl implements SpellUtils
 	public final void setHeroItemCalculations (final HeroItemCalculations calc)
 	{
 		heroItemCalculations = calc;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

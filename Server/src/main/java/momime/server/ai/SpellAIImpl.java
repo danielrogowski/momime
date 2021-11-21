@@ -634,7 +634,8 @@ public final class SpellAIImpl implements SpellAI
 					{
 						// Wizards get range penalty depending where the combat is in relation to their Fortress; units participating in the combat don't get this
 						final int reducedCombatCastingCost = getSpellUtils ().getReducedCombatCastingCost
-							(spell, variableDamage, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+							(spell, variableDamage, pub.getPick (), priv.getFogOfWarMemory ().getMaintainedSpell (),
+								mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 
 						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (player, combatLocation,
 							getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),

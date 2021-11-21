@@ -42,6 +42,8 @@ import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.database.UnitSetting;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.utils.SpellUtils;
@@ -150,13 +152,20 @@ public final class TestCreateArtifactUI extends ClientTestData
 		sd.setSpellSetting (spellSetting);
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
+		// Player's memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
 		// We can get all bonuses
 		final HeroItemCalculations heroItemCalculations = mock (HeroItemCalculations.class);
 		when (heroItemCalculations.haveRequiredBooksForBonus (anyString (), eq (pub.getPick ()), eq (db))).thenReturn (true);
 		when (heroItemCalculations.calculateCraftingCost (any (HeroItem.class), eq (db))).thenReturn (9999);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.getReducedOverlandCastingCost (any (Spell.class), any (HeroItem.class), isNull (), eq (pub.getPick ()), eq (spellSetting), eq (db))).thenReturn (9999);
+		when (spellUtils.getReducedOverlandCastingCost (any (Spell.class), any (HeroItem.class), isNull (), eq (pub.getPick ()), eq (mem.getMaintainedSpell ()),
+			eq (spellSetting), eq (db))).thenReturn (9999);
 
 		// The spell being cast
 		final Spell spellDef = new Spell ();

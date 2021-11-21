@@ -444,11 +444,18 @@ public final class HelpUI extends MomClientFrameUI
 					if (castingPub == null)
 						reducedCastingCost = spellDef.getOverlandCastingCost ();		// No info on caster's picks, so just assume no reduction
 					else
-						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, null, null, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, null, null, castingPub.getPick (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+							getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
-					final List<LanguageText> languageText = (spellDef.getOverlandCastingCost () == reducedCastingCost) ?
-						getLanguages ().getHelpScreen ().getSpellBookOverlandCostFull () : getLanguages ().getHelpScreen ().getSpellBookOverlandCostReduced ();
-					
+					final List<LanguageText> languageText;
+					if (reducedCastingCost == spellDef.getOverlandCastingCost ())
+						languageText = getLanguages ().getHelpScreen ().getSpellBookOverlandCostFull ();
+					else if (reducedCastingCost < spellDef.getOverlandCastingCost ())
+						languageText = getLanguages ().getHelpScreen ().getSpellBookOverlandCostReduced ();
+					else
+						languageText = getLanguages ().getHelpScreen ().getSpellBookOverlandCostIncreased ();
+
 					spellStats.append (System.lineSeparator () + getLanguageHolder ().findDescription (languageText).replaceAll
 						("PRODUCTION_TYPE", (manaSuffix != null) ? manaSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA).replaceAll
 						("FULL_CASTING_COST", getTextUtils ().intToStrCommas (spellDef.getOverlandCastingCost ())).replaceAll
@@ -462,10 +469,17 @@ public final class HelpUI extends MomClientFrameUI
 					if (castingPub == null)
 						reducedCastingCost = spellDef.getCombatCastingCost ();		// No info on caster's picks, so just assume no reduction
 					else
-						reducedCastingCost = getSpellUtils ().getReducedCombatCastingCost (spellDef, null, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+						reducedCastingCost = getSpellUtils ().getReducedCombatCastingCost (spellDef, null, castingPub.getPick (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+							getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
-					final List<LanguageText> languageText = (spellDef.getCombatCastingCost () == reducedCastingCost) ?
-						getLanguages ().getHelpScreen ().getSpellBookCombatCostFull () : getLanguages ().getHelpScreen ().getSpellBookCombatCostReduced ();
+					final List<LanguageText> languageText;
+					if (reducedCastingCost == spellDef.getCombatCastingCost ())
+						languageText = getLanguages ().getHelpScreen ().getSpellBookCombatCostFull ();
+					else if (reducedCastingCost < spellDef.getCombatCastingCost ())
+						languageText = getLanguages ().getHelpScreen ().getSpellBookCombatCostReduced ();
+					else
+						languageText = getLanguages ().getHelpScreen ().getSpellBookCombatCostIncreased ();
 					
 					spellStats.append (System.lineSeparator () + getLanguageHolder ().findDescription (languageText).replaceAll
 						("PRODUCTION_TYPE", (manaSuffix != null) ? manaSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA).replaceAll

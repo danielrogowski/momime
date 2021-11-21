@@ -35,6 +35,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSection;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -117,6 +118,7 @@ public final class TestSpellBookUI extends ClientTestData
 		// SP090 - SP099 are in section SC99 (in book, can research in future)
 		final List<Spell> spells = new ArrayList<Spell> ();
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final FogOfWarMemory mem = new FogOfWarMemory ();
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		
 		for (int n = 0; n < 100; n++)
@@ -142,14 +144,16 @@ public final class TestSpellBookUI extends ClientTestData
 			
 			if ((n == 10) || (n == 20) || (n == 21))
 			{
-				when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), spellSettings, db)).thenReturn (n * 5);
-				when (spellUtils.getReducedCombatCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 2);
+				when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 5);
+				when (spellUtils.getReducedCombatCastingCost (spell, null, pub.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 2);
 			}
 		}
 		doReturn (spells).when (db).getSpell ();
 		
 		// Research statuses - we know 0 of SP000 - SP009, 1 of SP010 - SP019 and so on
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+		
 		for (int m = 0; m < 10; m++)
 		{
 			final SpellBookSectionID sectionID;

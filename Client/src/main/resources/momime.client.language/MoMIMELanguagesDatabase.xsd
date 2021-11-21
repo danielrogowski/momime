@@ -2358,12 +2358,20 @@
 						<xsd:selector xpath="spellBookOverlandCostReduced" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="helpScreenSpellBookOverlandCostIncreasedPK">
+						<xsd:selector xpath="spellBookOverlandCostIncreased" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="helpScreenSpellBookCombatCostFullPK">
 						<xsd:selector xpath="spellBookCombatCostFull" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="helpScreenSpellBookCombatCostReducedPK">
 						<xsd:selector xpath="spellBookCombatCostReduced" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookCombatCostIncreasedPK">
+						<xsd:selector xpath="spellBookCombatCostIncreased" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="helpScreenSpellBookNoSavingThrowPK">
@@ -4479,8 +4487,10 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookResearchCostPartial" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookOverlandCostFull" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookOverlandCostReduced" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookOverlandCostIncreased" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookCombatCostFull" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookCombatCostReduced" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookCombatCostIncreased" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookNoSavingThrow" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookNoSavingThrowModifier" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookSingleSavingThrowModifier" />

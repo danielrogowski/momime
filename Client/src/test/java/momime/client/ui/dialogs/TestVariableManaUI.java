@@ -35,6 +35,8 @@ import momime.common.database.Language;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.utils.SpellUtilsImpl;
@@ -99,6 +101,13 @@ public final class TestVariableManaUI extends ClientTestData
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
+		
+		// Player's memory
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		priv.setFogOfWarMemory (mem);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -200,6 +209,13 @@ public final class TestVariableManaUI extends ClientTestData
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
+		
+		// Player's memory
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		priv.setFogOfWarMemory (mem);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);

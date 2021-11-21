@@ -94,7 +94,8 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 			
 			final int castingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), queued.getVariableDamage (),
-				pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+				pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
 			final String suffix = " " + getLanguageHolder ().findDescription
 				(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "QueuedSpellListCellRenderer").getProductionTypeSuffix ());

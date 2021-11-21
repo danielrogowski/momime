@@ -521,6 +521,10 @@
 						<xsd:selector xpath="attackSingleFigureResistOrDie" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="combatDamageAttackUnitResistOrDiePK">
+						<xsd:selector xpath="attackUnitResistOrDie" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="combatDamageAttackResistOrTakeDamagePK">
 						<xsd:selector xpath="attackResistOrTakeDamage" />
 						<xsd:field xpath="@language" />
@@ -611,6 +615,14 @@
 					</xsd:key>
 					<xsd:key name="combatDamageDefenceSingleFigureResistOrDieSurvivesPK">
 						<xsd:selector xpath="defenceSingleFigureResistOrDieSurvives" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceUnitResistOrDieDiesPK">
+						<xsd:selector xpath="defenceUnitResistOrDieDies" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceUnitResistOrDieSurvivesPK">
+						<xsd:selector xpath="defenceUnitResistOrDieSurvives" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="combatDamageDefenceResistOrTakeDamagePK">
@@ -2935,6 +2947,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackEachFigureResistOrDie" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackEachFigureResistOrLose1HP" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackSingleFigureResistOrDie" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackUnitResistOrDie" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackResistOrTakeDamage" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackZeroesAmmo" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackResistanceRolls" />
@@ -2958,6 +2971,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceEachFigureResistOrLose1HP" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceSingleFigureResistOrDieDies" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceSingleFigureResistOrDieSurvives" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceUnitResistOrDieDies" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceUnitResistOrDieSurvives" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceResistOrTakeDamage" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceResistanceRolls" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceDisintegrateDies" />

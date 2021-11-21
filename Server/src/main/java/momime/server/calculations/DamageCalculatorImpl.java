@@ -955,6 +955,74 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	}
 	
 	/**
+	 * Rolls the number of actual hits for "unit resist or die" damage, where the unit as a whole gets a single resistance roll and is killed off if it failed.  Used for death wish.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @return How much damage defender takes as a result of being attacked by attacker
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateUnitResistOrDieDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+	{
+		// Store values straight into the message
+		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+		damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
+		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
+
+		// Set up defender stats
+		damageCalculationMsg.setDefenderFigures (defender.calculateAliveFigureCount ());
+		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)));
+
+		// Is there a saving throw modifier?
+		int savingThrowModifier = (attackDamage.getPotentialHits () == null) ? 0 : attackDamage.getPotentialHits ();
+		
+		// Is there an additional saving throw modifier because of the magic realm/lifeform type of the target?
+		// (Dispel Evil and Holy Word have an additional -5 modifier against Undead)
+		if (attackDamage.getSpell () != null)
+		{
+			final SpellValidUnitTarget magicRealmLifeformTypeTarget = getSpellUtils ().findMagicRealmLifeformTypeTarget
+				(attackDamage.getSpell (), defender.getModifiedUnitMagicRealmLifeformType ().getPickID ());
+			if ((magicRealmLifeformTypeTarget != null) && (magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != null) &&
+				(magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier () != 0))
+				
+				savingThrowModifier = savingThrowModifier + magicRealmLifeformTypeTarget.getMagicRealmAdditionalSavingThrowModifier ();
+		}
+		
+		// Work out the target's effective resistance score, reduced by any saving throw modifier
+		damageCalculationMsg.setModifiedDefenceStrength (damageCalculationMsg.getUnmodifiedDefenceStrength () - savingThrowModifier);
+		
+		// Make resistance roll
+		final int totalHits;
+		final int unitDead;
+		if (getRandomUtils ().nextInt (10) >= damageCalculationMsg.getModifiedDefenceStrength ())
+		{
+			unitDead = 1;
+			
+			// Kill off full HP of unit
+			totalHits = defender.calculateHitPointsRemaining ();
+		}
+		else
+		{
+			unitDead = 0;
+			totalHits = 0;
+		}
+		
+		// Store and send final totals
+		damageCalculationMsg.setActualHits (unitDead);		
+		damageCalculationMsg.setFinalHits (totalHits);
+		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		
+		return totalHits;
+	}
+	
+	/**
 	 * Rolls the number of actual hits for "resist or take damage", where the unit takes damage equal to how
 	 * much they miss a resistance roll by.  Used for Life Drain.
 	 * 

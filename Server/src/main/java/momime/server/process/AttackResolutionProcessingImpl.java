@@ -354,6 +354,11 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 										break;
 										
+									case UNIT_RESIST_OR_DIE:
+										thisDamage = getDamageCalculator ().calculateUnitResistOrDieDamage
+											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+										break;
+										
 									case RESIST_OR_TAKE_DAMAGE:
 										thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
 											(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage, mom.getServerDB ());

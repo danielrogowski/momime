@@ -394,7 +394,7 @@ public final class CommonDatabaseConstants
 		(DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE,
 			DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, 	DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_LOSE_1HP,
 			DamageResolutionTypeID.RESISTANCE_ROLLS, DamageResolutionTypeID.DISINTEGRATE,
-			DamageResolutionTypeID.FEAR, DamageResolutionTypeID.TERROR);
+			DamageResolutionTypeID.FEAR, DamageResolutionTypeID.TERROR, DamageResolutionTypeID.UNIT_RESIST_OR_DIE);
 	
 	// spells
 	

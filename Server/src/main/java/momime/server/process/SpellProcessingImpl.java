@@ -403,6 +403,25 @@ public final class SpellProcessingImpl implements SpellProcessing
 					anim.setCastingPlayerID (player.getPlayerDescription ().getPlayerID ());
 				
 					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), anim);
+					
+					// Find all citySpellEffectIDs that block this realm of magic (Consecration and Spell Wards)
+					final List<String> protectedByCitySpellEffectIDs = mom.getServerDB ().getCitySpellEffect ().stream ().filter
+						(e -> e.getProtectsAgainstSpellRealm ().contains (spell.getSpellRealm ())).map
+						(e -> e.getCitySpellEffectID ()).collect (Collectors.toList ());
+					
+					// Get a list of all locations which have those citySpellEffectIDs cast
+					final List<MapCoordinates3DEx> excludedLocations = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+						(s -> (s.getCityLocation () != null) && (protectedByCitySpellEffectIDs.contains (s.getCitySpellEffectID ()))).map
+						(s -> (MapCoordinates3DEx) s.getCityLocation ()).collect (Collectors.toList ());
+					
+					// Target everywhere else that there are units
+					final List<MapCoordinates3DEx> unitLocations = mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
+						(u -> (u.getStatus () == UnitStatusID.ALIVE) && (u.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ()) &&
+							(!excludedLocations.contains (u.getUnitLocation ()))).map (u -> (MapCoordinates3DEx) u.getUnitLocation ()).distinct ().collect (Collectors.toList ());
+					
+					// Roll all units at once
+					if (unitLocations.size () > 0)
+						getSpellCasting ().castOverlandAttackSpell (player, spell, variableDamage, unitLocations, mom);
 				}
 			}
 	

@@ -1179,6 +1179,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <attackSingleFigureResistOrDie language="en">
             <text>ATTACKER_NAME's ATTACK_TYPE requires single figure to pass resistance roll with POTENTIAL_HITS modifier to survive:</text>
         </attackSingleFigureResistOrDie>
+        <attackUnitResistOrDie language="en">
+            <text>ATTACKER_NAME's ATTACK_TYPE requires unit to pass resistance roll with POTENTIAL_HITS modifier to survive:</text>
+        </attackUnitResistOrDie>
         <attackResistOrTakeDamage language="en">
             <text>ATTACKER_NAME's ATTACK_TYPE requires passing resistance roll with POTENTIAL_HITS modifier to avoid damage:</text>
         </attackResistOrTakeDamage>
@@ -1246,11 +1249,17 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
             <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll, unit loses FINAL_HITS HP.</text>
         </defenceEachFigureResistOrLose1HP>
         <defenceSingleFigureResistOrDieDies language="en">
-            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH and dies.</text>
+            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH and loses 1 figure with FINAL_HITS HP.</text>
         </defenceSingleFigureResistOrDieDies>
         <defenceSingleFigureResistOrDieSurvives language="en">
             <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH and survives.</text>
         </defenceSingleFigureResistOrDieSurvives>
+        <defenceUnitResistOrDieDies language="en">
+            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH and dies.</text>
+        </defenceUnitResistOrDieDies>
+        <defenceUnitResistOrDieSurvives language="en">
+            <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH and survives.</text>
+        </defenceUnitResistOrDieSurvives>
         <defenceResistOrTakeDamage language="en">
             <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, dice roll ACTUAL_HITS so unit loses FINAL_HITS HP.</text>
         </defenceResistOrTakeDamage>

@@ -169,6 +169,12 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 						setPotentialHits (-getPotentialHits ());
 					break;
 	
+				case UNIT_RESIST_OR_DIE:
+					languageText = getLanguages ().getCombatDamage ().getAttackUnitResistOrDie ();
+					if (getPotentialHits () != null)
+						setPotentialHits (-getPotentialHits ());
+					break;
+	
 				case RESIST_OR_TAKE_DAMAGE:
 					languageText = getLanguages ().getCombatDamage ().getAttackResistOrTakeDamage ();
 					if (getPotentialHits () != null)

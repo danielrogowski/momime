@@ -774,7 +774,14 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 		throws MomException
 	{
 		final Integer confusionSpellOwner = skillsFromSpellsCastOnThisUnit.get (CommonDatabaseConstants.UNIT_SKILL_ID_CONFUSION);
-		final Integer possessionSpellOwner = skillsFromSpellsCastOnThisUnit.get (CommonDatabaseConstants.UNIT_SKILL_ID_POSSESSION);
+		
+		Integer possessionSpellOwner = null;		
+		for (final String possessionSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_POSSESSION)
+		{
+			final Integer thisPossessionSpellOwner = skillsFromSpellsCastOnThisUnit.get (possessionSkillID);
+			if (thisPossessionSpellOwner != null)
+				possessionSpellOwner = thisPossessionSpellOwner;
+		}
 		
 		final int controllingPlayerID;
 		if ((mu.isMemoryUnit ()) && (mu.getMemoryUnit ().getConfusionEffect () == ConfusionEffect.CASTER_CONTROLLED) && (confusionSpellOwner != null))

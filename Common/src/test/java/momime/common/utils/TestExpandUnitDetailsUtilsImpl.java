@@ -1873,7 +1873,7 @@ public final class TestExpandUnitDetailsUtilsImpl
 		
 		// Spells cast on it
 		final Map<String, Integer> skillsFromSpellsCastOnThisUnit = new HashMap<String, Integer> ();
-		skillsFromSpellsCastOnThisUnit.put (CommonDatabaseConstants.UNIT_SKILL_ID_POSSESSION, 2);
+		skillsFromSpellsCastOnThisUnit.put (CommonDatabaseConstants.UNIT_SKILL_IDS_POSSESSION.get (0), 2);
 		
 		// Set up object to test
 		final ExpandUnitDetailsUtilsImpl utils = new ExpandUnitDetailsUtilsImpl ();

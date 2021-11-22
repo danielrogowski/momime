@@ -372,8 +372,8 @@ public final class CommonDatabaseConstants
 	/** All stasis skills */
 	public final static List<String> UNIT_SKILL_IDS_STASIS = Arrays.asList (UNIT_SKILL_ID_STASIS_FIRST_TURN, UNIT_SKILL_ID_STASIS_LATER_TURNS); 
 	
-	/** Possession (unit is under permanent control of caster) */
-	public final static String UNIT_SKILL_ID_POSSESSION = "SC172";
+	/** Possession and Creature Binding (unit is under permanent control of caster) */
+	public final static List<String> UNIT_SKILL_IDS_POSSESSION = Arrays.asList ("SC172", "SC073");
 	
 	/**
 	 * Special code used for hero item bonuses, meaning "type(s) of attack appropriate for the type of weapon", so is used to differentiate

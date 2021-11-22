@@ -26,11 +26,14 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
+import momime.common.database.Pick;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -354,6 +357,9 @@ public final class TestUnitMovementImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final Pick normalUnit = new Pick ();
+		normalUnit.setPickID (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
 		// Coordinate system
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		
@@ -390,9 +396,11 @@ public final class TestUnitMovementImpl
 
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		when (xu1.getUnitDefinition ()).thenReturn (unitDef);
+		when (xu1.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
 		when (xu2.getUnitDefinition ()).thenReturn (unitDef);
+		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu1, unitStackSkills, "TT02", db)).thenReturn (null);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu2, unitStackSkills, "TT02", db)).thenReturn (null);
@@ -422,7 +430,10 @@ public final class TestUnitMovementImpl
 		// 0, 0, 4 is impassable terrain but there's a transport there we could get in, except its already partly full (impassable terrain to that unit)
 		// Transport can hold 2 units, but there's 1 inside it already and we need 2 spaces, so its impassable even though we're within the 9 max units per cell
 		ourUnitCountAtLocation [0] [0] [4] = 2;
-		cellTransportCapacity [0] [0] [4] = 1; 
+		cellTransportCapacity [0] [0] [4] = 1;
+		
+		// No Spell Wards to block specific tiles
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 		
 		// Set up object to test
 		final UnitMovementImpl move = new UnitMovementImpl ();
@@ -431,7 +442,7 @@ public final class TestUnitMovementImpl
 		
 		// Call method
 		final Integer [] [] [] result = move.calculateDoubleMovementToEnterTile (unitStack, unitStackSkills, terrain,
-			cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, false, sys, db);
+			cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, false, spells, sys, db);
 		
 		// Check results
 		assertEquals (4, result [0] [0] [0].intValue ());

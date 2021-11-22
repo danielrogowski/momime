@@ -1,15 +1,19 @@
 package momime.common.calculations;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
@@ -21,6 +25,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
@@ -192,21 +197,38 @@ public final class UnitMovementImpl implements UnitMovement
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
 	 * @param doubleMovementRates Movement rate calculated for this unit stack to enter every possible tile type
 	 * @param towersImpassable If true then towers of wizardry are impassable (planar seal); if false can move onto them or attack them normally
+	 * @param spells Known spells
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return Movement cost for the unit stack to enter every map cell
 	 */
 	final Integer [] [] [] calculateDoubleMovementToEnterTile (final UnitStack unitStack, final Set<String> unitStackSkills, final MapVolumeOfMemoryGridCells terrain,
 		final int [] [] [] cellTransportCapacity, final int [] [] [] ourUnitCountAtLocation, final Map<String, Integer> doubleMovementRates, final boolean towersImpassable,
-		final CoordinateSystem sys, final CommonDatabase db)
+		final List<MemoryMaintainedSpell> spells, final CoordinateSystem sys, final CommonDatabase db)
 	{
+		// What magic realm(s) are the units in the stack?
+		final Set<String> unitStackMagicRealms = new HashSet<String> ();
+		unitStack.getUnits ().forEach (xu -> unitStackMagicRealms.add (xu.getModifiedUnitMagicRealmLifeformType ().getPickID ()));
+		unitStack.getTransports ().forEach (xu -> unitStackMagicRealms.add (xu.getModifiedUnitMagicRealmLifeformType ().getPickID ()));
+		
+		// Search for locations where some city spell effect stops some of the unit stack from entering
+		final Set<String> blockingCitySpellEffectIDs = db.getCitySpellEffect ().stream ().filter
+			(e -> (e.isBlockEntryByCreaturesOfRealm () != null) && (e.isBlockEntryByCreaturesOfRealm ()) &&
+				(!Collections.disjoint (e.getProtectsAgainstSpellRealm (), unitStackMagicRealms))).map (e -> e.getCitySpellEffectID ()).collect (Collectors.toSet ());
+		
+		final Set<MapCoordinates3DEx> blockedLocations = spells.stream ().filter
+			(s -> (s.getCityLocation () != null) && (blockingCitySpellEffectIDs.contains (s.getCitySpellEffectID ()))).map
+			(s -> (MapCoordinates3DEx) s.getCityLocation ()).collect (Collectors.toSet ());
+		
+		// Check every map cell
 		final Integer [] [] [] doubleMovementToEnterTile = new Integer [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
 		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
 				{
 					// If cell will be overfull, leave it as null = impassable
-					if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
+					if ((ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL) &&
+						(!blockedLocations.contains (new MapCoordinates3DEx (x, y, z))))
 					{
 						final OverlandMapTerrainData terrainData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
 						
@@ -419,7 +441,7 @@ public final class UnitMovementImpl implements UnitMovement
 			(map.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null);
 		
 		final Integer [] [] [] doubleMovementToEnterTile = calculateDoubleMovementToEnterTile (unitStack, unitStackSkills,
-			map.getMap (), cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, planarSeal, sd.getOverlandMapSize (), db);
+			map.getMap (), cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, planarSeal, map.getMaintainedSpell (), sd.getOverlandMapSize (), db);
 		
 		// Initialize all the map areas
 		for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)

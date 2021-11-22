@@ -258,7 +258,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 				{
 					final Spell triggerSpellDef = mom.getServerDB ().findSpell (triggerSpell.getSpellID (), "castOverlandNow");
 					if ((triggerSpellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
-						(triggerSpellDef.getTriggeredBySpellRealm ().contains (spell.getSpellRealm ())) &&
+							
+						// Any spell with a dispel power defined can also be triggered with an empty spell realm list (for Suppress Magic)
+						((triggerSpellDef.getTriggeredBySpellRealm ().contains (spell.getSpellRealm ())) ||
+							((triggerSpellDef.getTriggeredBySpellRealm ().size () == 0) && (triggerSpellDef.getTriggerDispelPower () != null))) &&
+						
 						((triggerSpell.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()) ||
 							((triggerSpellDef.isTriggeredBySelf () != null) && (triggerSpellDef.isTriggeredBySelf ()))))
 					{

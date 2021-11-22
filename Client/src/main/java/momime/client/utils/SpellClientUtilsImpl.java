@@ -202,6 +202,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 			{
 				// Overland enchantments
 				case OVERLAND_ENCHANTMENTS:
+				case SPECIAL_SPELLS:
 				{
 					final String imageName = spell.getOverlandEnchantmentImageFile ();
 					if (imageName != null)

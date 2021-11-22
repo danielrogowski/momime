@@ -415,8 +415,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(s -> (MapCoordinates3DEx) s.getCityLocation ()).collect (Collectors.toList ());
 					
 					// Target everywhere else that there are units
+					final boolean attackOwnUnits = (spell.isAttackSpellOwnUnits () != null) && (spell.isAttackSpellOwnUnits ());
 					final List<MapCoordinates3DEx> unitLocations = mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
-						(u -> (u.getStatus () == UnitStatusID.ALIVE) && (u.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ()) &&
+						(u -> (u.getStatus () == UnitStatusID.ALIVE) &&
+							((attackOwnUnits) || (u.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ())) &&
 							(!excludedLocations.contains (u.getUnitLocation ()))).map (u -> (MapCoordinates3DEx) u.getUnitLocation ()).distinct ().collect (Collectors.toList ());
 					
 					// Roll all units at once

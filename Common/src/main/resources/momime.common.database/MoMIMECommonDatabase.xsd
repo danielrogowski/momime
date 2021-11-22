@@ -3354,6 +3354,7 @@ spell upkeep, but cannot switch off the spell that's costing the upkeep)</xsd:do
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageResolutionTypeID" type="momimecommon:damageResolutionTypeID" nxe:label="Damage Res. Type" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellOwnUnits" type="xsd:boolean" nxe:label="Attack own units?" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatBaseDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Base Dmg" nxe:gridwidth="100">
 		        <xsd:annotation>
 		        	<xsd:documentation>If spell causes direct damage, this is the amount of damage is causes.

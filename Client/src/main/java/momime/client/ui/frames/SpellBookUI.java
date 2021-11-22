@@ -751,6 +751,22 @@ public final class SpellBookUI extends MomClientFrameUI
 				}
 			}
 			
+			// Check for Spell Ward blocking combat spells
+			else if ((getCastType () == SpellCastType.COMBAT) && (getMemoryMaintainedSpellUtils ().isBlockedCastingCombatSpellsOfRealm
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getOurPlayerID (),
+					getCombatUI ().getCombatLocation (), spell.getSpellRealm (), getClient ().getClientDB ())))
+			{
+				proceed = false;
+				final Pick pick = getClient ().getClientDB ().findPick (spell.getSpellRealm (), "castSpell");
+				
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+				msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getBlockedCastingCombatSpellsOfRealm ()).replaceAll
+					("SPELL_REALM", getLanguageHolder ().findDescription (pick.getBookshelfDescription ())));
+
+				msg.setVisible (true);
+			}
+			
 			// If its a combat spell then make sure there's at least something we can target it on
 			// Only do this for spells without variable damage, because otherwise we might raise or lower the saving throw modifier
 			// enough to make a difference as to whether there are any valid targets 

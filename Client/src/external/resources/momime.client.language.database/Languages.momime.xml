@@ -4218,6 +4218,9 @@ Bonus Or +GOLD_BONUS%</text>
         <noDeadHeroesToBeResurrected language="en">
             <text>No heroes died that could be brought back with a SPELL_NAME spell.</text>
         </noDeadHeroesToBeResurrected>
+        <blockedCastingCombatSpellsOfRealm language="en">
+        	<text>This city is protected against SPELL_REALM spells.</text>
+        </blockedCastingCombatSpellsOfRealm>
     </spellBookScreen>
     <selectAdvisorScreen>
         <title language="en">

@@ -194,6 +194,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 			(spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null))
 			msg = "You must specify which unit you want to raise from the dead.";
 		
+		// Can't cast combat spells when blocked by Spell Ward of that realm
+		else if ((combatLocation != null) && (spell.getSpellRealm () != null) &&
+			(getMemoryMaintainedSpellUtils ().isBlockedCastingCombatSpellsOfRealm (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				player.getPlayerDescription ().getPlayerID (), combatLocation, spell.getSpellRealm (), mom.getServerDB ())))
+			msg = "You are blocked from casting spells of that magic realm here.";
+		
 		else
 			msg = null;
 		

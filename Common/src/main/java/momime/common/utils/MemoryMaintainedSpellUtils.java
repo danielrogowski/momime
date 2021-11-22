@@ -1,6 +1,7 @@
 package momime.common.utils;
 
 import java.util.List;
+import java.util.Set;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -232,4 +233,27 @@ public interface MemoryMaintainedSpellUtils
 	 * @return Whether the location is a valid target or not
 	 */
 	public boolean isCombatLocationValidTargetForSpell (final Spell spell, final MapCoordinates2DEx targetLocation, final MapAreaOfCombatTiles map);
+
+	/**
+	 * @param spells Known spells
+	 * @param castingPlayerID Player casting the spell
+	 * @param combatLocation Location we want to cast the spell at 
+	 * @param pickID Magic realm of the spell we want to cast
+	 * @param db Lookup lists built over the XML database
+	 * @return True if there is a Spell Ward here that blocks casting combat spells of this magic realm
+	 * @throws RecordNotFoundException If we can't find one of the city spell effects
+	 */
+	public boolean isBlockedCastingCombatSpellsOfRealm (final List<MemoryMaintainedSpell> spells, final int castingPlayerID,
+		final MapCoordinates3DEx combatLocation, final String pickID, final CommonDatabase db) throws RecordNotFoundException;
+
+	/**
+	 * @param spells Known spells
+	 * @param castingPlayerID Player casting the spell
+	 * @param combatLocation Location we want to cast the spell at 
+	 * @param db Lookup lists built over the XML database
+	 * @return List of magic realms that we are not allowed to cast combat spells for
+	 * @throws RecordNotFoundException If we can't find one of the city spell effects
+	 */
+	public Set<String> listMagicRealmsBlockedAsCombatSpells (final List<MemoryMaintainedSpell> spells, final int castingPlayerID,
+		final MapCoordinates3DEx combatLocation, final CommonDatabase db) throws RecordNotFoundException;
 }

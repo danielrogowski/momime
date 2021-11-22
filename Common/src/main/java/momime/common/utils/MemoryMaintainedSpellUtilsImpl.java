@@ -1,8 +1,10 @@
 package momime.common.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -867,6 +869,66 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	}
     	
     	return result;
+	}
+	
+	/**
+	 * @param spells Known spells
+	 * @param castingPlayerID Player casting the spell
+	 * @param combatLocation Location we want to cast the spell at 
+	 * @param pickID Magic realm of the spell we want to cast
+	 * @param db Lookup lists built over the XML database
+	 * @return True if there is a Spell Ward here that blocks casting combat spells of this magic realm
+	 * @throws RecordNotFoundException If we can't find one of the city spell effects
+	 */
+	@Override
+	public final boolean isBlockedCastingCombatSpellsOfRealm (final List<MemoryMaintainedSpell> spells, final int castingPlayerID,
+		final MapCoordinates3DEx combatLocation, final String pickID, final CommonDatabase db) throws RecordNotFoundException
+	{
+		boolean found = false;
+		
+		if (pickID != null)
+		{
+			final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
+			while ((!found) && (iter.hasNext ()))
+			{
+				final MemoryMaintainedSpell thisSpell = iter.next ();
+				if ((thisSpell.getCastingPlayerID () != castingPlayerID) && (combatLocation.equals (thisSpell.getCityLocation ())) && (thisSpell.getCitySpellEffectID () != null))
+				{
+					final CitySpellEffect effect = db.findCitySpellEffect (thisSpell.getCitySpellEffectID (), "isBlockedCastingCombatSpellsOfRealm");
+					if ((effect.isBlockCastingCombatSpellsOfRealm () != null) && (effect.isBlockCastingCombatSpellsOfRealm ()) &&
+						(effect.getProtectsAgainstSpellRealm ().contains (pickID)))
+						
+						found = true;
+				}
+			}
+		}
+		
+		return found;
+	}
+
+	/**
+	 * @param spells Known spells
+	 * @param castingPlayerID Player casting the spell
+	 * @param combatLocation Location we want to cast the spell at 
+	 * @param db Lookup lists built over the XML database
+	 * @return List of magic realms that we are not allowed to cast combat spells for
+	 * @throws RecordNotFoundException If we can't find one of the city spell effects
+	 */
+	@Override
+	public final Set<String> listMagicRealmsBlockedAsCombatSpells (final List<MemoryMaintainedSpell> spells, final int castingPlayerID,
+		final MapCoordinates3DEx combatLocation, final CommonDatabase db) throws RecordNotFoundException
+	{
+		final Set<String> blocked = new HashSet<String> ();
+		
+		for (final MemoryMaintainedSpell thisSpell : spells)
+			if ((thisSpell.getCastingPlayerID () != castingPlayerID) && (combatLocation.equals (thisSpell.getCityLocation ())) && (thisSpell.getCitySpellEffectID () != null))
+			{
+				final CitySpellEffect effect = db.findCitySpellEffect (thisSpell.getCitySpellEffectID (), "listMagicRealmsBlockedAsCombatSpells");
+				if ((effect.isBlockCastingCombatSpellsOfRealm () != null) && (effect.isBlockCastingCombatSpellsOfRealm ()))
+					blocked.addAll (effect.getProtectsAgainstSpellRealm ());
+			}
+	
+		return blocked;
 	}
 	
 	/**

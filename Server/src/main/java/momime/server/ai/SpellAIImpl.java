@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -598,10 +599,14 @@ public final class SpellAIImpl implements SpellAI
 		final WeightedChoicesImpl<CombatAISpellChoice> choices = new WeightedChoicesImpl<CombatAISpellChoice> ();
 		choices.setRandomUtils (getRandomUtils ());
 		
+		// Are we completely blocked from casting spells of any particular magic realms?
+		final Set<String> blockedMagicRealms = getMemoryMaintainedSpellUtils ().listMagicRealmsBlockedAsCombatSpells
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getServerDB ());
+		
 		// Ignore "recall" spells then the AI would then have to understand its likelehood of losing a combat, and there's nothing like this yet
 		for (final Spell spell : mom.getServerDB ().getSpell ())
 			if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) &&
-				(getKindOfSpellUtils ().determineKindOfSpell (spell, null) != KindOfSpell.RECALL))
+				(getKindOfSpellUtils ().determineKindOfSpell (spell, null) != KindOfSpell.RECALL) && (!blockedMagicRealms.contains (spell.getSpellRealm ())))
 			{
 				// A lot of this is lifted from the same validation that requestCastSpell does
 				boolean knowSpell;
@@ -703,7 +708,10 @@ public final class SpellAIImpl implements SpellAI
 			if ((fixedSpellsRemaining != null) && (fixedSpellsRemaining > 0))
 			{
 				final Spell spell = mom.getServerDB ().findSpell (combatCastingUnit.getUnitDefinition ().getUnitCanCast ().get (fixedSpellNumber).getUnitSpellID (), "decideWhetherToCastFixedSpellInCombat");
-				getCombatSpellAI ().listChoicesForSpell (player, spell, combatLocation, combatCastingUnit, fixedSpellNumber, null, mom, choices);
+				if (!getMemoryMaintainedSpellUtils ().isBlockedCastingCombatSpellsOfRealm (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					player.getPlayerDescription ().getPlayerID (), combatLocation, spell.getSpellRealm (), mom.getServerDB ()))
+					
+					getCombatSpellAI ().listChoicesForSpell (player, spell, combatLocation, combatCastingUnit, fixedSpellNumber, null, mom, choices);
 			}
 		}
 		
@@ -740,7 +748,10 @@ public final class SpellAIImpl implements SpellAI
 				final Spell spell = mom.getServerDB ().findSpell (combatCastingUnit.getMemoryUnit ().getHeroItemSlot ().get
 					(slotNumber).getHeroItem ().getSpellID (), "decideWhetherToCastSpellImbuedInHeroItem");
 				
-				getCombatSpellAI ().listChoicesForSpell (player, spell, combatLocation, combatCastingUnit, null, slotNumber, mom, choices);
+				if (!getMemoryMaintainedSpellUtils ().isBlockedCastingCombatSpellsOfRealm (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					player.getPlayerDescription ().getPlayerID (), combatLocation, spell.getSpellRealm (), mom.getServerDB ()))
+				
+					getCombatSpellAI ().listChoicesForSpell (player, spell, combatLocation, combatCastingUnit, null, slotNumber, mom, choices);
 			}
 		}
 		

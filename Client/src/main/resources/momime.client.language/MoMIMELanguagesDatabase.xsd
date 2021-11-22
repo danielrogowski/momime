@@ -2066,6 +2066,10 @@
 						<xsd:selector xpath="noDeadHeroesToBeResurrected" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellBookScreenBlockedCastingCombatSpellsOfRealmPK">
+						<xsd:selector xpath="blockedCastingCombatSpellsOfRealm" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="selectAdvisorScreen" type="momimelangs:selectAdvisorScreen">
 					<xsd:key name="selectAdvisorScreenTitlePK">
@@ -4346,6 +4350,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyHasAllPossibleCombatSpellEffects" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noDeadUnitsToBeRaised" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noDeadHeroesToBeResurrected" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="blockedCastingCombatSpellsOfRealm" />
 		</xsd:sequence>
     </xsd:complexType>
 	

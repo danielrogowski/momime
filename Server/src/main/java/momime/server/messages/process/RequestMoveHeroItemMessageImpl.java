@@ -32,6 +32,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.utils.PlayerServerUtils;
 
 /**
  * Client sends to request that a hero item be moved from one location to another.
@@ -60,6 +61,9 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
+	/** Player utils */
+	private PlayerServerUtils playerServerUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -87,7 +91,9 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 			(getToUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 		
 		// Validate that the item is where they claim it is
-		if (getFromLocation () == null)
+		if (!getPlayerServerUtils ().isPlayerTurn (sender, mom.getGeneralPublicKnowledge (), mom.getSessionDescription ().getTurnSystem ()))
+			error = "You can't use move hero items when it isn't your turn";
+		else if (getFromLocation () == null)
 			error = "You tried to move a hero item from an unspecified location.";
 		else
 			switch (getFromLocation ())
@@ -337,5 +343,21 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return Player utils
+	 */
+	public final PlayerServerUtils getPlayerServerUtils ()
+	{
+		return playerServerUtils;
+	}
+	
+	/**
+	 * @param utils Player utils
+	 */
+	public final void setPlayerServerUtils (final PlayerServerUtils utils)
+	{
+		playerServerUtils = utils;
 	}
 }

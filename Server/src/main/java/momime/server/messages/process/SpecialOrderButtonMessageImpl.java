@@ -17,6 +17,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
+import momime.server.utils.PlayerServerUtils;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -29,6 +30,9 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
+	
+	/** Player utils */
+	private PlayerServerUtils playerServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -45,7 +49,12 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		final String error = getUnitServerUtils ().processSpecialOrder (getUnitURN (), getSpecialOrder (), (MapCoordinates3DEx) getMapLocation (), sender, mom);
+		final String error;
+		if (!getPlayerServerUtils ().isPlayerTurn (sender, mom.getGeneralPublicKnowledge (), mom.getSessionDescription ().getTurnSystem ()))
+			error = "You can't give units special orders when it isn't your turn";
+		else
+			error = getUnitServerUtils ().processSpecialOrder (getUnitURN (), getSpecialOrder (), (MapCoordinates3DEx) getMapLocation (), sender, mom);
+		
 		if (error != null)
 		{
 			// Return error
@@ -71,5 +80,21 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	public final void setUnitServerUtils (final UnitServerUtils utils)
 	{
 		unitServerUtils = utils;
+	}
+
+	/**
+	 * @return Player utils
+	 */
+	public final PlayerServerUtils getPlayerServerUtils ()
+	{
+		return playerServerUtils;
+	}
+	
+	/**
+	 * @param utils Player utils
+	 */
+	public final void setPlayerServerUtils (final PlayerServerUtils utils)
+	{
+		playerServerUtils = utils;
 	}
 }

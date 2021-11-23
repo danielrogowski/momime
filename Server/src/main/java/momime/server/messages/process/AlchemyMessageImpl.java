@@ -10,7 +10,9 @@ import momime.common.messages.clienttoserver.AlchemyMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.utils.PlayerServerUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +38,9 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
 	
+	/** Player utils */
+	private PlayerServerUtils playerServerUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -43,14 +48,19 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void process (@SuppressWarnings ("unused") final MultiplayerSessionThread thread, final PlayerServerDetails sender)
+	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
+		final MomSessionVariables mom = (MomSessionVariables) thread;
+		
 		String error = null;
 		String toProductionTypeID = null;
 
 		// Check value is sensible
-		if (getFromValue () <= 0)
+		if (!getPlayerServerUtils ().isPlayerTurn (sender, mom.getGeneralPublicKnowledge (), mom.getSessionDescription ().getTurnSystem ()))
+			error = "You can't use alchemy when it isn't your turn";
+		
+		else if (getFromValue () <= 0)
 			error = "Must specify a value of at least 1 to use alchemy";
 
 		else if (getFromProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD))
@@ -143,5 +153,21 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Player utils
+	 */
+	public final PlayerServerUtils getPlayerServerUtils ()
+	{
+		return playerServerUtils;
+	}
+	
+	/**
+	 * @param utils Player utils
+	 */
+	public final void setPlayerServerUtils (final PlayerServerUtils utils)
+	{
+		playerServerUtils = utils;
 	}
 }

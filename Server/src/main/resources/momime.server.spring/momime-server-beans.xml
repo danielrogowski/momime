@@ -134,12 +134,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="playerServerUtils" ref="playerServerUtils" />
 	</bean>
 	
 	<bean id="updateMagicPowerDistributionMessage" class="momime.server.messages.process.UpdateMagicPowerDistributionMessageImpl" scope="prototype" />
 	
 	<bean id="specialOrderButtonMessage" class="momime.server.messages.process.SpecialOrderButtonMessageImpl" scope="prototype">
 		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="playerServerUtils" ref="playerServerUtils" />
 	</bean>
 	
 	<bean id="captureCityDecisionMessage" class="momime.server.messages.process.CaptureCityDecisionMessageImpl" scope="prototype">
@@ -152,6 +154,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="playerServerUtils" ref="playerServerUtils" />
 	</bean>
 	
 	<bean id="requestUpdateUnitNameMessage" class="momime.server.messages.process.RequestUpdateUnitNameMessageImpl" scope="prototype">
@@ -225,6 +228,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="playerServerUtils" ref="playerServerUtils" />
 	</bean>
 
 	<bean id="requestRemoveQueuedSpellMessage" class="momime.server.messages.process.RequestRemoveQueuedSpellMessageImpl" scope="prototype">

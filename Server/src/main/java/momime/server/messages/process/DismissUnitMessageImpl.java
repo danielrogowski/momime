@@ -23,6 +23,7 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
+import momime.server.utils.PlayerServerUtils;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -45,6 +46,9 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
+	/** Player utils */
+	private PlayerServerUtils playerServerUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -65,11 +69,17 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 
 		// Validation
 		String error = null;
-		if (trueUnit == null)
+		if (!getPlayerServerUtils ().isPlayerTurn (sender, mom.getGeneralPublicKnowledge (), mom.getSessionDescription ().getTurnSystem ()))
+			error = "You can't dismiss units when it isn't your turn";
+		
+		else if (trueUnit == null)
 			error = "Can't find the unit you tried to dismiss";
 		
 		else if (!sender.getPlayerDescription ().getPlayerID ().equals (trueUnit.getOwningPlayerID ()))
 			error = "You tried to dimiss a unit that you don't own";
+
+		else if (trueUnit.getCombatLocation () != null)
+			error = "You can't dismiss units that are currently in combat";
 		
 		else
 			error = null;
@@ -163,5 +173,21 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return Player utils
+	 */
+	public final PlayerServerUtils getPlayerServerUtils ()
+	{
+		return playerServerUtils;
+	}
+	
+	/**
+	 * @param utils Player utils
+	 */
+	public final void setPlayerServerUtils (final PlayerServerUtils utils)
+	{
+		playerServerUtils = utils;
 	}
 }

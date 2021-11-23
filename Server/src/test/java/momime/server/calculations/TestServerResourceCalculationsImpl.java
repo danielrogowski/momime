@@ -160,6 +160,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		resourceValueUtils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		resourceValueUtils.setExpandUnitDetails (expand);
 		calc.setResourceValueUtils (resourceValueUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 
 		// We have some shadow demons (7 mana upkeep)
 		final MemoryUnit shadowDemons = new MemoryUnit ();

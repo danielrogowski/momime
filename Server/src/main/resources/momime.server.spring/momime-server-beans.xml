@@ -482,6 +482,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="momResourceConsumerFactory" ref="momResourceConsumerFactory" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="damageTypeCalculations" class="momime.server.calculations.DamageTypeCalculationsImpl">
@@ -552,6 +553,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">

@@ -407,6 +407,9 @@ public final class CommonDatabaseConstants
 	/** Spell Blast spell */
 	public final static String SPELL_ID_SPELL_BLAST = "SP058";
 	
+	/** Time Stop spell */
+	public final static String SPELL_ID_TIME_STOP = "SP080";
+	
 	/** Disrupt Wall spell */
 	public final static String SPELL_ID_DISRUPT_WALL = "SP082";
 	

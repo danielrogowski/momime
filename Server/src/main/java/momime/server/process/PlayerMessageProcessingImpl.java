@@ -35,6 +35,7 @@ import momime.common.database.UnitSpecialOrder;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPickCount;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -80,6 +81,7 @@ import momime.common.utils.CompareUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -180,6 +182,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Number of save points to keep for each session */
 	private int savePointKeepCount;
@@ -664,67 +669,76 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	private final void startPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		if (onlyOnePlayerID == 0)
+		// If someone has timeStop cast then even simultaneous turns games will only process one player
+		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_TIME_STOP, null, null, null, null);
+		final int useOnlyOnePlayerID = (timeStop != null) ? timeStop.getCastingPlayerID () : onlyOnePlayerID;
+
+		if (useOnlyOnePlayerID == 0)
 			log.info ("Start phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
 		else
 			log.info ("Start phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + getMultiplayerSessionServerUtils ().findPlayerWithID
-				(mom.getPlayers (), onlyOnePlayerID, "startPhase").getPlayerDescription ().getPlayerName () + "...");
+				(mom.getPlayers (), useOnlyOnePlayerID, "startPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Heal hurt units 1pt and gain 1exp
-		getFogOfWarMidTurnMultiChanges ().healUnitsAndGainExperience (onlyOnePlayerID,
+		getFogOfWarMidTurnMultiChanges ().healUnitsAndGainExperience (useOnlyOnePlayerID,
 			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 
 		// Allow another building to be sold
 		getMemoryGridCellUtils ().blankBuildingsSoldThisTurn (mom.getGeneralServerKnowledge ().getTrueMap ().getMap ());
 		
 		// Gaia's blessing can possibly change terrain near our cities
-		getSpellProcessing ().rollSpellTerrainEffectsEachTurn (mom, onlyOnePlayerID);
+		getSpellProcessing ().rollSpellTerrainEffectsEachTurn (mom, useOnlyOnePlayerID);
 		
-		// Chaos rift will fire attacks at both enemy units in the city and the buildings themselves
-		getSpellProcessing ().citySpellEffectsAttackingUnits (mom, onlyOnePlayerID);
-		getSpellProcessing ().citySpellEffectsAttackingBuildings (mom, onlyOnePlayerID);
-		getSpellProcessing ().citySpellEffectsAttackingPopulation (mom, onlyOnePlayerID);
+		// Many overland spell effects don't trigger while Time Stop is cast, even for the owner
+		if (timeStop == null)
+		{
+			// Chaos rift will fire attacks at both enemy units in the city and the buildings themselves
+			getSpellProcessing ().citySpellEffectsAttackingUnits (mom, useOnlyOnePlayerID);
+			getSpellProcessing ().citySpellEffectsAttackingBuildings (mom, useOnlyOnePlayerID);
+			getSpellProcessing ().citySpellEffectsAttackingPopulation (mom, useOnlyOnePlayerID);
+	
+			// Meteor swarm, Great Wasting, Armageddon
+			getSpellProcessing ().triggerOverlandEnchantments (mom, useOnlyOnePlayerID);
+		}
 		
 		// Stasis
-		getSpellProcessing ().rollToRemoveOverlandCurses (mom, onlyOnePlayerID);
+		getSpellProcessing ().rollToRemoveOverlandCurses (mom, useOnlyOnePlayerID);
 		
-		// Meteor swarm
-		getSpellProcessing ().triggerOverlandEnchantments (mom, onlyOnePlayerID);
-
 		// Global production - only need to do a simple recalc on turn 1, with no accumulation and no city growth
 		if (mom.getGeneralPublicKnowledge ().getTurnNumber () > 1)
 		{
-			getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, true, mom);
+			getServerResourceCalculations ().recalculateGlobalProductionValues (useOnlyOnePlayerID, true, mom);
 
 			// Do this AFTER calculating and accumulating production, so checking for units dying due to insufficient rations happens before city populations might change
 			// Also at this point the session may already have ended, if somebody cast Spell of Mastery
-			if (mom.getPlayers ().size () > 0)
-				getCityProcessing ().growCitiesAndProgressConstructionProjects (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
+			if ((mom.getPlayers ().size () > 0) && (timeStop == null))
+				getCityProcessing ().growCitiesAndProgressConstructionProjects (useOnlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
 					mom.getSessionDescription (), mom.getServerDB ());
 		}
 		
 		if (mom.getPlayers ().size () > 0)
 		{
 			// Send info about what everyone is casting to anybody who has Detect Magic cast
-			getSpellCasting ().sendOverlandCastingInfo (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, onlyOnePlayerID,
+			getSpellCasting ().sendOverlandCastingInfo (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, useOnlyOnePlayerID,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 			
 			// Give units their full movement back again
 			// NB. Do this after our cities may have constructed new units above
-			getFogOfWarMidTurnMultiChanges ().resetUnitOverlandMovement (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+			getFogOfWarMidTurnMultiChanges ().resetUnitOverlandMovement (useOnlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
 				mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			
 			// Now need to do one final recalc to take into account
 			// 1) Cities producing more food/gold due to increased population
 			// 2) Cities eating more food due to increased population
 			// 3) Completed buildings (both bonuses and increased maintenance)
-			getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, false, mom);
-			storePowerBaseHistory (onlyOnePlayerID, mom.getPlayers ());
+			getServerResourceCalculations ().recalculateGlobalProductionValues (useOnlyOnePlayerID, false, mom);
+			storePowerBaseHistory (useOnlyOnePlayerID, mom.getPlayers ());
 		}
 		
 		// Generate offers for heroes, mercenaries and items to hire or buy
 		for (final PlayerServerDetails player : mom.getPlayers ())
-			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == player.getPlayerDescription ().getPlayerID ()))
+			if ((useOnlyOnePlayerID == 0) || (useOnlyOnePlayerID == player.getPlayerDescription ().getPlayerID ()))
 			{
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -809,42 +823,59 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void switchToNextPlayer (final MomSessionVariables mom, final boolean loadingSavedGame)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_TIME_STOP, null, null, null, null);
+		
 		final PlayerServerDetails currentPlayer;
-		int playerIndex;
-
-		if (loadingSavedGame)
+		if (timeStop != null)
 		{
-			currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer (L)");
-			playerIndex = getMultiplayerSessionServerUtils ().indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
+			// Special handling for when someone has Time Stop cast
+			mom.getGeneralPublicKnowledge ().setCurrentPlayerID (timeStop.getCastingPlayerID ());
+			currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), timeStop.getCastingPlayerID (), "switchToNextPlayer (T)");
+			
+			if (!loadingSavedGame)
+			{
+				mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
+				saveGame (mom);
+			}
 		}
 		else
 		{
-			// Find the current player
-			if (mom.getGeneralPublicKnowledge ().getCurrentPlayerID () == null)	// First turn
-				playerIndex = mom.getPlayers ().size () - 1;		// So we make sure we trip the turn number over
-			else
-				playerIndex = getMultiplayerSessionServerUtils ().indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
-	
-			// Find the next player
-			if (playerIndex >= mom.getPlayers ().size () - 1)
+			int playerIndex;
+			if (loadingSavedGame)
 			{
-				playerIndex = 0;
-				mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
+				currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer (L)");
+				playerIndex = getMultiplayerSessionServerUtils ().indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
 			}
 			else
-				playerIndex++;
-	
-			currentPlayer = mom.getPlayers ().get (playerIndex);
-			mom.getGeneralPublicKnowledge ().setCurrentPlayerID (currentPlayer.getPlayerDescription ().getPlayerID ());
-			
-			// Save the game on turn number changes
-			if (playerIndex == 0)
-				saveGame (mom);
-		}
+			{
+				// Find the current player
+				if (mom.getGeneralPublicKnowledge ().getCurrentPlayerID () == null)	// First turn
+					playerIndex = mom.getPlayers ().size () - 1;		// So we make sure we trip the turn number over
+				else
+					playerIndex = getMultiplayerSessionServerUtils ().indexOfPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer");
 		
-		if (playerIndex == 0)
-			getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+				// Find the next player
+				if (playerIndex >= mom.getPlayers ().size () - 1)
+				{
+					playerIndex = 0;
+					mom.getGeneralPublicKnowledge ().setTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber () + 1);
+				}
+				else
+					playerIndex++;
+		
+				currentPlayer = mom.getPlayers ().get (playerIndex);
+				mom.getGeneralPublicKnowledge ().setCurrentPlayerID (currentPlayer.getPlayerDescription ().getPlayerID ());
+				
+				// Save the game on turn number changes
+				if (playerIndex == 0)
+					saveGame (mom);
+			}
+			
+			if (playerIndex == 0)
+				getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+		}
 
 		// Start phase for the new player
 		startPhase (mom, mom.getGeneralPublicKnowledge ().getCurrentPlayerID ());
@@ -898,24 +929,33 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			saveGame (mom);
 		}
 		
-		getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-			mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_TIME_STOP, null, null, null, null);
+		final int useOnlyOnePlayerID = (timeStop != null) ? timeStop.getCastingPlayerID () : 0;
+		
+		if (timeStop == null)
+			getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 		
 		// Process everybody's start phases together
-		startPhase (mom, 0);
+		startPhase (mom, useOnlyOnePlayerID);
 
 		// Tell all human players to take their go, and send each of them their New Turn Messages in the process
 		sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), mom.getSessionDescription ().getTurnSystem ());
 
-		// Every AI player has their turn
-		for (final PlayerServerDetails aiPlayer : mom.getPlayers ())
-			if (!aiPlayer.getPlayerDescription ().isHuman ())
+		// Process each player
+		for (final PlayerServerDetails player : mom.getPlayers ())
+			if ((timeStop != null) && (timeStop.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()))
+				nextTurnButton (mom, player);		// Auto end everybody else's turn except the player with Time Stop
+		
+			// Every AI player has their turn
+			else if (!player.getPlayerDescription ().isHuman ())
 			{
-				log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + aiPlayer.getPlayerDescription ().getPlayerName () + "...");
-				getMomAI ().aiPlayerTurn (aiPlayer, mom);
+				log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + player.getPlayerDescription ().getPlayerName () + "...");
+				getMomAI ().aiPlayerTurn (player, mom);
 			
 				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
-				nextTurnButton (mom, aiPlayer);
+				nextTurnButton (mom, player);
 			}
 	}
 
@@ -997,19 +1037,24 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void endPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		if (onlyOnePlayerID == 0)
+		// If someone has timeStop cast then even simultaneous turns games will only process one player
+		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_TIME_STOP, null, null, null, null);
+		final int useOnlyOnePlayerID = (timeStop != null) ? timeStop.getCastingPlayerID () : onlyOnePlayerID;
+		
+		if (useOnlyOnePlayerID == 0)
 			log.info ("End phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
 		else
 			log.info ("End phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + getMultiplayerSessionServerUtils ().findPlayerWithID
-				(mom.getPlayers (), onlyOnePlayerID, "endPhase").getPlayerDescription ().getPlayerName () + "...");
+				(mom.getPlayers (), useOnlyOnePlayerID, "endPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Put mana into casting spells
 		for (final PlayerServerDetails player : mom.getPlayers ())
-			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
+			if ((useOnlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == useOnlyOnePlayerID))
 				getSpellQueueing ().progressOverlandCasting (player, mom);
 		
 		// Progress multi-turn special orders
-		progressMultiTurnSpecialOrders (mom.getGeneralServerKnowledge ().getTrueMap (), onlyOnePlayerID,
+		progressMultiTurnSpecialOrders (mom.getGeneralServerKnowledge ().getTrueMap (), useOnlyOnePlayerID,
 			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 
 		// Kick off the next turn
@@ -1757,5 +1802,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

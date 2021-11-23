@@ -52,6 +52,7 @@ import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -107,6 +108,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
 	/**
 	 * Recalculates all per turn production values
 	 * Note: Delphi version could either calculate the values for one player or all players and was named RecalcProductionValues
@@ -137,26 +141,38 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		// Start from zero
 		getResourceValueUtils ().zeroAmountsPerTurn (priv.getResourceValue ());
 
-		// Subtract the amount of gold, food and mana that units are eating up in upkeep from the amount of resources that we'll make this turn
-		for (final MemoryUnit thisUnit : trueMap.getUnit ())
-			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
-			{
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
-				for (final String upkeepProductionTypeID : xu.listModifiedUpkeepProductionTypeIDs ())
-					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeepProductionTypeID, -xu.getModifiedUpkeepValue (upkeepProductionTypeID));
-			}
-
-		// Subtract the mana maintenance of all spells from the economy
-		for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
-			if (thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ())
-			{
-				final Spell spellDetails = db.findSpell (thisSpell.getSpellID (), "recalculateAmountsPerTurn");
-
-				// Note we deal with Channeler retort halving spell maintenance below, so there is no
-				// getModifiedUpkeepValue method for spells, we can just use the values right out of the database
-				for (final ProductionTypeAndUndoubledValue upkeep : spellDetails.getSpellUpkeep ())
-					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -upkeep.getUndoubledProductionValue ());
-			}
+		// If the wizard has Time Stop cast, then their own economy comes to a halt, generating no per turn values aside the upkeep of Time Stop itself
+		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.SPELL_ID_TIME_STOP, null, null, null, null);
+		if (timeStop != null)
+		{
+			final Spell spellDetails = db.findSpell (timeStop.getSpellID (), "recalculateAmountsPerTurn");
+			for (final ProductionTypeAndUndoubledValue upkeep : spellDetails.getSpellUpkeep ())
+				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -upkeep.getUndoubledProductionValue ());
+		}
+		else
+		{
+			// Subtract the amount of gold, food and mana that units are eating up in upkeep from the amount of resources that we'll make this turn
+			for (final MemoryUnit thisUnit : trueMap.getUnit ())
+				if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
+				{
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+					for (final String upkeepProductionTypeID : xu.listModifiedUpkeepProductionTypeIDs ())
+						getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeepProductionTypeID, -xu.getModifiedUpkeepValue (upkeepProductionTypeID));
+				}
+	
+			// Subtract the mana maintenance of all spells from the economy
+			for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
+				if (thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ())
+				{
+					final Spell spellDetails = db.findSpell (thisSpell.getSpellID (), "recalculateAmountsPerTurn");
+	
+					// Note we deal with Channeler retort halving spell maintenance below, so there is no
+					// getModifiedUpkeepValue method for spells, we can just use the values right out of the database
+					for (final ProductionTypeAndUndoubledValue upkeep : spellDetails.getSpellUpkeep ())
+						getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -upkeep.getUndoubledProductionValue ());
+				}
+		}
 		
 		// AI players get cheaper upkeep
 		if ((!player.getPlayerDescription ().isHuman ()) && (sd.getDifficultyLevel ().getAiUpkeepMultiplier () != 100))
@@ -170,147 +186,150 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		if ((manaConsumption < -1) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
 			getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, (-manaConsumption) / 2);
 		
-		// Gold upkeep of troops is reduced by wizard's fame
-		if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+		if (timeStop == null)
 		{
-			final int goldConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-			if (goldConsumption < 0)
+			// Gold upkeep of troops is reduced by wizard's fame
+			if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
 			{
-				int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player, players, trueMap, db);
-				if (fame > 0)
+				final int goldConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+				if (goldConsumption < 0)
 				{
-					// Can't actually generate gold from fame, so limit it to only what will cancel out our consumption
-					if (fame > -goldConsumption)
-						fame = -goldConsumption;
-					
-					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, fame);
-				}
-			}
-		}
-
-		// The gist of the ordering here is that, now we've dealt with mana consumption, we can now add on things that *might* generate mana
-		// In practice this is mostly irrelevant since *nothing* actually generates mana directly - it only generates magic power that can be converted into mana
-
-		// Calculates production and consumption from all cities on the map
-		for (final Plane plane : db.getPlane ())
-			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-				{
-					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player, players, trueMap, db);
+					if (fame > 0)
 					{
-						// Calculate all productions from this city
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
-
-						for (final CityProductionBreakdown cityProduction : getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
-							trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, true, false, db).getProductionType ())
-						{
-							int cityProductionValue = 0;
-							
-							// We have to pay gold upkeep even when banished
-							if ((cityProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER)) &&
-								(zeroedProductionTypes.contains (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER)))
-							{
-								// Don't charge magic power consumption from Wizards' Guild when banished, since they don't generate magic power
-								// plus they aren't getting the research points from the Wizards' Guild either
-							}
-							else
-								cityProductionValue = -cityProduction.getConsumptionAmount ();
-							
-							// If banished, we don't get positive benefits like research from library
-							if (!zeroedProductionTypes.contains (cityProduction.getProductionTypeID ()))
-								cityProductionValue = cityProductionValue + cityProduction.getCappedProductionAmount () + cityProduction.getConvertToProductionAmount ();
-							
-							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (), cityProductionValue);
-						}
+						// Can't actually generate gold from fame, so limit it to only what will cancel out our consumption
+						if (fame > -goldConsumption)
+							fame = -goldConsumption;
+						
+						getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, fame);
 					}
 				}
-
-		if (!zeroedProductionTypes.contains (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER))
-		{
-			// Find all the nodes we own where we have the corresponding mastery, e.g. find chaos nodes we own if we have chaos mastery
-			final List<String> doubledNodeMagicRealmIDs = db.getPick ().stream ().filter
-				(p -> (p.getNodeAndDispelBonus () != null) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), p.getPickID ()) > 0)).map
-				(p -> p.getNodeAndDispelBonus ()).collect (Collectors.toList ());
-			
-			final List<String> doubledNodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> doubledNodeMagicRealmIDs.contains (t.getMagicRealmID ())).map
-				(t -> t.getTileTypeID ()).collect (Collectors.toList ());
-			
-			final List<MapCoordinates3DEx> doubledNodeLocations = new ArrayList<MapCoordinates3DEx> ();
-			if (doubledNodeTileTypeIDs.size () > 0)
-				for (final Plane plane : db.getPlane ())
-					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-						for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-						{
-							final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-							if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (doubledNodeTileTypeIDs.contains (terrainData.getTileTypeID ())) &&
-								(player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
-								
-								doubledNodeLocations.add (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()));
-						}
-			
-			// Counts up how many node aura squares and volcanoes this player has
-			int nodeAuraSquares = 0;
-			int volcanoSquares = 0;
-			int warpedNodes = 0;
-			
-			final List<String> nodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> t.getMagicRealmID () != null).map (t -> t.getTileTypeID ()).collect (Collectors.toList ());
-			
+			}
+	
+			// The gist of the ordering here is that, now we've dealt with mana consumption, we can now add on things that *might* generate mana
+			// In practice this is mostly irrelevant since *nothing* actually generates mana directly - it only generates magic power that can be converted into mana
+	
+			// Calculates production and consumption from all cities on the map
 			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					{
-						final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
-						final OverlandMapTerrainData terrainData = tc.getTerrainData ();
-						if (terrainData != null)
+						final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 						{
-							if ((terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
+							// Calculate all productions from this city
+							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
+	
+							for (final CityProductionBreakdown cityProduction : getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
+								trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, true, false, db).getProductionType ())
 							{
-								// Non-warped Node auras
-								if ((terrainData.isWarped () == null) || (!terrainData.isWarped ()))
-								{
-									nodeAuraSquares++;
-									
-									// Count it twice if we have the mastery to get double magic power from this node
-									if (doubledNodeLocations.contains (tc.getAuraFromNode ()))
-										nodeAuraSquares++;
-								}
+								int cityProductionValue = 0;
 								
-								// Warped nodes, but make sure its the actual node tile and not just an aura
-								else if (nodeTileTypeIDs.contains (terrainData.getTileTypeID ()))
-									warpedNodes++;
+								// We have to pay gold upkeep even when banished
+								if ((cityProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER)) &&
+									(zeroedProductionTypes.contains (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER)))
+								{
+									// Don't charge magic power consumption from Wizards' Guild when banished, since they don't generate magic power
+									// plus they aren't getting the research points from the Wizards' Guild either
+								}
+								else
+									cityProductionValue = -cityProduction.getConsumptionAmount ();
+								
+								// If banished, we don't get positive benefits like research from library
+								if (!zeroedProductionTypes.contains (cityProduction.getProductionTypeID ()))
+									cityProductionValue = cityProductionValue + cityProduction.getCappedProductionAmount () + cityProduction.getConvertToProductionAmount ();
+								
+								getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (), cityProductionValue);
 							}
-
-							if ((terrainData.getVolcanoOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getVolcanoOwnerID ())))
-								volcanoSquares++;
 						}
 					}
-			
-			if (nodeAuraSquares > 0)
+	
+			if (!zeroedProductionTypes.contains (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER))
 			{
-				// Node mastery gives 2x magic power
-				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_NODE_MASTERY) > 0)
-					nodeAuraSquares = nodeAuraSquares * 2;
-		
-				// How much magic power does each square generate?
-				final int nodeAuraMagicPower = (nodeAuraSquares * sd.getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 2;
-				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, nodeAuraMagicPower);
-			}
-			
-			if (volcanoSquares > 0)
-				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, volcanoSquares);
-
-			if (warpedNodes > 0)
-			{
-				// Don't allow magic power to be negative
-				final int currentMagicPower = getResourceValueUtils ().findAmountPerTurnForProductionType
-					(priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+				// Find all the nodes we own where we have the corresponding mastery, e.g. find chaos nodes we own if we have chaos mastery
+				final List<String> doubledNodeMagicRealmIDs = db.getPick ().stream ().filter
+					(p -> (p.getNodeAndDispelBonus () != null) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), p.getPickID ()) > 0)).map
+					(p -> p.getNodeAndDispelBonus ()).collect (Collectors.toList ());
 				
-				final int magicPowerLoss = Math.min (warpedNodes * 5, currentMagicPower);
-				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, -magicPowerLoss);
+				final List<String> doubledNodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> doubledNodeMagicRealmIDs.contains (t.getMagicRealmID ())).map
+					(t -> t.getTileTypeID ()).collect (Collectors.toList ());
+				
+				final List<MapCoordinates3DEx> doubledNodeLocations = new ArrayList<MapCoordinates3DEx> ();
+				if (doubledNodeTileTypeIDs.size () > 0)
+					for (final Plane plane : db.getPlane ())
+						for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+							for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+							{
+								final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
+								if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (doubledNodeTileTypeIDs.contains (terrainData.getTileTypeID ())) &&
+									(player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
+									
+									doubledNodeLocations.add (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()));
+							}
+				
+				// Counts up how many node aura squares and volcanoes this player has
+				int nodeAuraSquares = 0;
+				int volcanoSquares = 0;
+				int warpedNodes = 0;
+				
+				final List<String> nodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> t.getMagicRealmID () != null).map (t -> t.getTileTypeID ()).collect (Collectors.toList ());
+				
+				for (final Plane plane : db.getPlane ())
+					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+						for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+						{
+							final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
+							final OverlandMapTerrainData terrainData = tc.getTerrainData ();
+							if (terrainData != null)
+							{
+								if ((terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
+								{
+									// Non-warped Node auras
+									if ((terrainData.isWarped () == null) || (!terrainData.isWarped ()))
+									{
+										nodeAuraSquares++;
+										
+										// Count it twice if we have the mastery to get double magic power from this node
+										if (doubledNodeLocations.contains (tc.getAuraFromNode ()))
+											nodeAuraSquares++;
+									}
+									
+									// Warped nodes, but make sure its the actual node tile and not just an aura
+									else if (nodeTileTypeIDs.contains (terrainData.getTileTypeID ()))
+										warpedNodes++;
+								}
+	
+								if ((terrainData.getVolcanoOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getVolcanoOwnerID ())))
+									volcanoSquares++;
+							}
+						}
+				
+				if (nodeAuraSquares > 0)
+				{
+					// Node mastery gives 2x magic power
+					if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_NODE_MASTERY) > 0)
+						nodeAuraSquares = nodeAuraSquares * 2;
+			
+					// How much magic power does each square generate?
+					final int nodeAuraMagicPower = (nodeAuraSquares * sd.getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 2;
+					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, nodeAuraMagicPower);
+				}
+				
+				if (volcanoSquares > 0)
+					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, volcanoSquares);
+	
+				if (warpedNodes > 0)
+				{
+					// Don't allow magic power to be negative
+					final int currentMagicPower = getResourceValueUtils ().findAmountPerTurnForProductionType
+						(priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+					
+					final int magicPowerLoss = Math.min (warpedNodes * 5, currentMagicPower);
+					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, -magicPowerLoss);
+				}
 			}
 		}
-
+		
 		// We never explicitly add Mana from Magic Power, this is calculated on the fly by getResourceValueUtils ().calculateAmountPerTurnForProductionType
 	}
 
@@ -719,7 +738,10 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 						// Per turn production amounts are now fine, so do the accumulation and effect calculations
 						accumulateGlobalProductionValues (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+						
+						// Research is zeroed out when Time Stop is in effect anyway, so no need to avoid calling this
 						progressResearch (player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						
 						resetCastingSkillRemainingThisTurnToFull (player, mom.getPlayers (), mom.getServerDB ());
 
 						// Continue casting spells
@@ -912,5 +934,21 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param s MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils s)
+	{
+		memoryMaintainedSpellUtils = s;
 	}
 }

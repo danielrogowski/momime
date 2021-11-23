@@ -547,11 +547,15 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 			}
 		};
 		
+		// No Time Stop
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
 		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setMemoryBuildingUtils (buildingUtils);
 		calc.setExpandUnitDetails (expand);
 		calc.setMomResourceConsumerFactory (factory);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		
 		// Run test
 		final List<MomResourceConsumer> consumptions = calc.listConsumersOfProductionType

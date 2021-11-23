@@ -381,47 +381,55 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	{
 		final List<MomResourceConsumer> consumers = new ArrayList<MomResourceConsumer> ();
 
-		// Units
-		for (final MemoryUnit thisUnit : trueMap.getUnit ())
-			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
-			{
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
-				final int consumptionAmount = xu.getModifiedUpkeepValue (productionTypeID);
-				if (consumptionAmount > 0)
-				{
-					final MomResourceConsumerUnit consumer = getMomResourceConsumerFactory ().createUnitConsumer ();
-					consumer.setPlayer (player);
-					consumer.setProductionTypeID (productionTypeID);
-					consumer.setConsumptionAmount (consumptionAmount);
-					consumer.setUnit (thisUnit);
-					consumers.add (consumer);
-				}
-			}
-
-		// Buildings
-		for (final MemoryBuilding thisBuilding : trueMap.getBuilding ())
+		// If we have Time Stop cast, that's the only consumption.  Not just the only spell, because summoned units use up mana too.
+		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (),
+			player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.SPELL_ID_TIME_STOP, null, null, null, null);
+		
+		if (timeStop == null)
 		{
-			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (thisBuilding.getCityLocation ().getZ ()).getRow ().get (thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ()).getCityData ();
-
-			if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
-			{
-				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
-				final int consumptionAmount = getMemoryBuildingUtils ().findBuildingConsumption (building, productionTypeID);
-				if (consumptionAmount > 0)
+			// Units
+			for (final MemoryUnit thisUnit : trueMap.getUnit ())
+				if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 				{
-					final MomResourceConsumerBuilding consumer = getMomResourceConsumerFactory ().createBuildingConsumer ();
-					consumer.setPlayer (player);
-					consumer.setProductionTypeID (productionTypeID);
-					consumer.setConsumptionAmount (consumptionAmount);
-					consumer.setBuilding (thisBuilding);
-					consumers.add (consumer);
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+					final int consumptionAmount = xu.getModifiedUpkeepValue (productionTypeID);
+					if (consumptionAmount > 0)
+					{
+						final MomResourceConsumerUnit consumer = getMomResourceConsumerFactory ().createUnitConsumer ();
+						consumer.setPlayer (player);
+						consumer.setProductionTypeID (productionTypeID);
+						consumer.setConsumptionAmount (consumptionAmount);
+						consumer.setUnit (thisUnit);
+						consumers.add (consumer);
+					}
+				}
+	
+			// Buildings
+			for (final MemoryBuilding thisBuilding : trueMap.getBuilding ())
+			{
+				final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (thisBuilding.getCityLocation ().getZ ()).getRow ().get (thisBuilding.getCityLocation ().getY ()).getCell ().get (thisBuilding.getCityLocation ().getX ()).getCityData ();
+	
+				if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+				{
+					final Building building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
+					final int consumptionAmount = getMemoryBuildingUtils ().findBuildingConsumption (building, productionTypeID);
+					if (consumptionAmount > 0)
+					{
+						final MomResourceConsumerBuilding consumer = getMomResourceConsumerFactory ().createBuildingConsumer ();
+						consumer.setPlayer (player);
+						consumer.setProductionTypeID (productionTypeID);
+						consumer.setConsumptionAmount (consumptionAmount);
+						consumer.setBuilding (thisBuilding);
+						consumers.add (consumer);
+					}
 				}
 			}
 		}
 
 		// Spells
 		for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
-			if (thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ())
+			if ((thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ()) &&
+				((timeStop == null) || (timeStop == thisSpell)))
 			{
 				final Spell spell = db.findSpell (thisSpell.getSpellID (), "listConsumersOfProductionType");
 

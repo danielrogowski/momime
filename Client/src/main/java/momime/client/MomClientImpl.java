@@ -80,6 +80,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.TurnSystem;
 
 /**
  * Main multiplayer controller class for the client
@@ -797,6 +798,28 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 				log.error (e, e);
 			}
 		});
+	}
+	
+	/**
+	 * Used to stop players taking action when its someone else's turn (one at a time turns) or after they hit Next Turn (simultaneous turns)
+	 * 
+	 * @return Whether its currently this player's turn or not
+	 */
+	@Override
+	public final boolean isPlayerTurn ()
+	{
+		final boolean valid;
+		
+		if (getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME)
+			valid = getGeneralPublicKnowledge ().getCurrentPlayerID () == getOurPlayerID ();
+		else
+		{
+			final MomTransientPlayerPublicKnowledge trans = getPlayers ().stream ().filter (p -> p.getPlayerDescription ().getPlayerID () == getOurPlayerID ()).map
+				(p -> (MomTransientPlayerPublicKnowledge) p.getTransientPlayerPublicKnowledge ()).findAny ().orElse (null);
+			valid = (trans != null) && (trans.getMovementAllocatedForTurnNumber () < getGeneralPublicKnowledge ().getTurnNumber ());
+		}
+
+		return valid;		
 	}
 	
 	/**

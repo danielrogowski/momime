@@ -975,6 +975,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="overlandMapProcessing" class="momime.client.process.OverlandMapProcessingImpl">
+		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
@@ -986,6 +987,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="combatMapProcessing" class="momime.client.process.CombatMapProcessingImpl">
@@ -1377,6 +1379,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="newTurnMessageRenderer" class="momime.client.ui.renderer.NewTurnMessageRenderer">

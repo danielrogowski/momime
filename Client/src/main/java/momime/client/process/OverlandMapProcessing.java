@@ -1,15 +1,17 @@
 package momime.client.process;
 
+import java.io.IOException;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryUnit;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 
 /**
@@ -146,9 +148,9 @@ public interface OverlandMapProcessing
 	 * @param specialOrder Special order to perform
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 * @throws IOException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	public void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException, MomException;
+	public void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * @param unit Unit to remove from the unitsLeftToMoveOverland list

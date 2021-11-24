@@ -1704,6 +1704,10 @@
 						<xsd:selector xpath="dismissPrompt" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="unitInfoScreenDismissNotYourTurnPK">
+						<xsd:selector xpath="dismissNotYourTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="unitInfoScreenRenamePK">
 						<xsd:selector xpath="rename" />
 						<xsd:field xpath="@language" />
@@ -2020,6 +2024,10 @@
 						<xsd:selector xpath="conversion" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="alchemyScreenNotYourTurnPK">
+						<xsd:selector xpath="notYourTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="spellBookScreen" type="momimelangs:spellBookScreen">
 					<xsd:key name="spellBookScreenTitlePK">
@@ -2224,6 +2232,10 @@
 					</xsd:key>
 					<xsd:key name="heroItemsScreenDestroyPK">
 						<xsd:selector xpath="destroy" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="heroItemsScreenNotYourTurnPK">
+						<xsd:selector xpath="notYourTurn" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
@@ -4039,6 +4051,14 @@
 					<xsd:selector xpath="wait" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
+				<xsd:key name="mapRightHandBarNotYourTurnTitlePK">
+					<xsd:selector xpath="notYourTurnTitle" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarNotYourTurnPK">
+					<xsd:selector xpath="notYourTurn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
 				<xsd:key name="mapRightHandBarOnePlayerAtATimeCurrentPlayerPK">
 					<xsd:selector xpath="onePlayerAtATimeCurrentPlayer" />
 					<xsd:field xpath="@language" />
@@ -4156,6 +4176,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="done" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="patrol" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wait" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notYourTurnTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notYourTurn" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="onePlayerAtATimeCurrentPlayer" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsWaitingLine1" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsWaitingLine2" />
@@ -4214,6 +4236,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="dismiss" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="dismissTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="dismissPrompt" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="dismissNotYourTurn" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rename" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="renamePrompt" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitCanCast" />
@@ -4334,6 +4357,7 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="conversion" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notYourTurn" />
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -4426,6 +4450,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alchemy" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="destroyTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="destroy" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notYourTurn" />
 		</xsd:sequence>
     </xsd:complexType>
 	

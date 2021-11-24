@@ -29,6 +29,7 @@ import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.clienttoserver.AlchemyMessage;
@@ -69,6 +70,9 @@ public final class AlchemyUI extends MomClientFrameUI
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** OK action */
 	private Action okAction;
@@ -143,24 +147,34 @@ public final class AlchemyUI extends MomClientFrameUI
 		
 		okAction = new LoggingAction ((ev) ->
 		{
-			// If we do not have alchemy retort, then the actual slider value represents half, so it is only possible to select even numbers
-			int fromValue = slider.getValue ();
-		
-			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "AlchemyUI");
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-
-			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
-				fromValue = fromValue * 2;
-
-			// Send message to the server
-			final AlchemyMessage msg = new AlchemyMessage ();
-			msg.setFromProductionTypeID (fromProductionTypeID);
-			msg.setFromValue (fromValue);
-		
-			getClient ().getServerConnection ().sendMessageToServer (msg);
-		
-			// Hide the form
-			getFrame ().setVisible (false);
+			if (!getClient ().isPlayerTurn ())
+			{
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setLanguageTitle (getLanguages ().getAlchemyScreen ().getTitle ());
+				msg.setLanguageText (getLanguages ().getAlchemyScreen ().getNotYourTurn ());
+				msg.setVisible (true);
+			}
+			else
+			{
+				// If we do not have alchemy retort, then the actual slider value represents half, so it is only possible to select even numbers
+				int fromValue = slider.getValue ();
+			
+				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "AlchemyUI");
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+	
+				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
+					fromValue = fromValue * 2;
+	
+				// Send message to the server
+				final AlchemyMessage msg = new AlchemyMessage ();
+				msg.setFromProductionTypeID (fromProductionTypeID);
+				msg.setFromValue (fromValue);
+			
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+				// Hide the form
+				getFrame ().setVisible (false);
+			}
 		});
 
 		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
@@ -493,5 +507,21 @@ public final class AlchemyUI extends MomClientFrameUI
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

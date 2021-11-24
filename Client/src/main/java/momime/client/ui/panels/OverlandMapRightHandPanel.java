@@ -1007,18 +1007,20 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			case SIMULTANEOUS:
 			{
 				playerLine2.setForeground (MomUIConstants.GOLD);
-				switch (getClient ().getGeneralPublicKnowledge ().getTurnPhase ())
-				{
-					case ALLOCATING_MOVES:
-						playerLine1.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsWaitingLine1 ()));
-						playerLine2.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsWaitingLine2 ()));
-						break;
-						
-					case PROCESSING_MOVES:
-						playerLine1.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsProcessingLine1 ()));
-						playerLine2.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsProcessingLine2 ()));
-						break;
-				}
+				if (getClient ().getGeneralPublicKnowledge ().getTurnPhase () != null)
+					switch (getClient ().getGeneralPublicKnowledge ().getTurnPhase ())
+					{
+						case ALLOCATING_MOVES:
+							playerLine1.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsWaitingLine1 ()));
+							playerLine2.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsWaitingLine2 ()));
+							break;
+							
+						case PROCESSING_MOVES:
+							playerLine1.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsProcessingLine1 ()));
+							playerLine2.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsProcessingLine2 ()));
+							break;
+					}
+				
 				break;
 			}
 		}

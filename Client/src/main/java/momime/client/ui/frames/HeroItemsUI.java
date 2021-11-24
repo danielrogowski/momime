@@ -209,17 +209,26 @@ public final class HeroItemsUI extends MomClientFrameUI
 				if ((requestMoveHeroItemMessage != null) && (canImport (support)))
 					try
 					{
-						final NumberedHeroItem item = (NumberedHeroItem) support.getTransferable ().getTransferData (getHeroItemFlavour ());
-						final int manaGained = getHeroItemCalculations ().calculateCraftingCost (item, getClient ().getClientDB ()) / 2;
-
 						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setLanguageTitle (getLanguages ().getHeroItemsScreen ().getDestroyTitle ());
-						msg.setText (getLanguageHolder ().findDescription (getLanguages ().getHeroItemsScreen ().getDestroy ()).replaceAll
-							("ITEM_NAME", item.getHeroItemName ()).replaceAll
-							("MANA_GAINED", getTextUtils ().intToStrCommas (manaGained)));
-						msg.setDestroyHeroItemMessage (requestMoveHeroItemMessage);
-						msg.setVisible (true);
 						
+						if (!getClient ().isPlayerTurn ())
+						{
+							msg.setLanguageTitle (getLanguages ().getHeroItemsScreen ().getTitle ());
+							msg.setLanguageText (getLanguages ().getHeroItemsScreen ().getNotYourTurn ());
+						}
+						else
+						{
+							final NumberedHeroItem item = (NumberedHeroItem) support.getTransferable ().getTransferData (getHeroItemFlavour ());
+							final int manaGained = getHeroItemCalculations ().calculateCraftingCost (item, getClient ().getClientDB ()) / 2;
+	
+							msg.setLanguageTitle (getLanguages ().getHeroItemsScreen ().getDestroyTitle ());
+							msg.setText (getLanguageHolder ().findDescription (getLanguages ().getHeroItemsScreen ().getDestroy ()).replaceAll
+								("ITEM_NAME", item.getHeroItemName ()).replaceAll
+								("MANA_GAINED", getTextUtils ().intToStrCommas (manaGained)));
+							msg.setDestroyHeroItemMessage (requestMoveHeroItemMessage);
+						}
+						
+						msg.setVisible (true);						
 						requestMoveHeroItemMessage = null;
 						imported = true;
 					}
@@ -296,7 +305,17 @@ public final class HeroItemsUI extends MomClientFrameUI
 					{
 						// Moving to bank is always OK
 						requestMoveHeroItemMessage.setToLocation (HeroItemLocationID.UNASSIGNED);
-						getClient ().getServerConnection ().sendMessageToServer (requestMoveHeroItemMessage);
+						
+						if (!getClient ().isPlayerTurn ())
+						{
+							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+							msg.setLanguageTitle (getLanguages ().getHeroItemsScreen ().getTitle ());
+							msg.setLanguageText (getLanguages ().getHeroItemsScreen ().getNotYourTurn ());
+							msg.setVisible (true);
+						}
+						else
+							getClient ().getServerConnection ().sendMessageToServer (requestMoveHeroItemMessage);
+						
 						imported = true;
 
 						requestMoveHeroItemMessage = null;
@@ -483,11 +502,21 @@ public final class HeroItemsUI extends MomClientFrameUI
 							final int slotNumber = getHeroTableCellRenderer ().getSlotNumberAt (x, y);
 							if (slotNumber >= 0)
 							{
-								// We've already checked that its allowed and filled out the "from" parts, so just send the message
-								requestMoveHeroItemMessage.setToLocation (HeroItemLocationID.HERO);
-								requestMoveHeroItemMessage.setToUnitURN (dropUnit.getUnitURN ());
-								requestMoveHeroItemMessage.setToSlotNumber (slotNumber);
-								getClient ().getServerConnection ().sendMessageToServer (requestMoveHeroItemMessage);
+								if (!getClient ().isPlayerTurn ())
+								{
+									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+									msg.setLanguageTitle (getLanguages ().getHeroItemsScreen ().getTitle ());
+									msg.setLanguageText (getLanguages ().getHeroItemsScreen ().getNotYourTurn ());
+									msg.setVisible (true);
+								}
+								else
+								{								
+									// We've already checked that its allowed and filled out the "from" parts, so just send the message
+									requestMoveHeroItemMessage.setToLocation (HeroItemLocationID.HERO);
+									requestMoveHeroItemMessage.setToUnitURN (dropUnit.getUnitURN ());
+									requestMoveHeroItemMessage.setToSlotNumber (slotNumber);
+									getClient ().getServerConnection ().sendMessageToServer (requestMoveHeroItemMessage);
+								}
 
 								requestMoveHeroItemMessage = null;
 								imported = true;

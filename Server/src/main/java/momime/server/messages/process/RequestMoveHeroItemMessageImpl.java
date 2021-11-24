@@ -92,7 +92,7 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 		
 		// Validate that the item is where they claim it is
 		if (!getPlayerServerUtils ().isPlayerTurn (sender, mom.getGeneralPublicKnowledge (), mom.getSessionDescription ().getTurnSystem ()))
-			error = "You can't use move hero items when it isn't your turn";
+			error = "You can't move or destroy hero items when it isn't your turn";
 		else if (getFromLocation () == null)
 			error = "You tried to move a hero item from an unspecified location.";
 		else

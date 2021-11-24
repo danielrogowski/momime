@@ -144,4 +144,11 @@ public interface MomClient
 	 * @param db Info we need in order to create games; sent from server
 	 */
 	public void setNewGameDatabase (final NewGameDatabase db);
+	
+	/**
+	 * Used to stop players taking action when its someone else's turn (one at a time turns) or after they hit Next Turn (simultaneous turns)
+	 * 
+	 * @return Whether its currently this player's turn or not
+	 */
+	public boolean isPlayerTurn ();
 }

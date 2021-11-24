@@ -83,16 +83,26 @@ public final class UnitInfoUI extends MomClientFrameUI
 		{
 			dismissAction = new LoggingAction ((ev) ->
 			{
-				// Show name of unit
-				String text = getLanguageHolder ().findDescription (getLanguages ().getUnitInfoScreen ().getDismissPrompt ());
-				getUnitStatsReplacer ().setUnit (getUnitInfoPanel ().getUnit ());
-				text = getUnitStatsReplacer ().replaceVariables (text);
-				
-				// Show message box
 				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setLanguageTitle (getLanguages ().getUnitInfoScreen ().getDismissTitle ());
-				msg.setText (text);
-				msg.setUnitToDismiss (getUnit ());
+				
+				if (!getClient ().isPlayerTurn ())
+				{
+					msg.setLanguageTitle (getLanguages ().getUnitInfoScreen ().getTitle ());
+					msg.setLanguageText (getLanguages ().getUnitInfoScreen ().getDismissNotYourTurn ());
+				}
+				else
+				{
+					// Show name of unit
+					String text = getLanguageHolder ().findDescription (getLanguages ().getUnitInfoScreen ().getDismissPrompt ());
+					getUnitStatsReplacer ().setUnit (getUnitInfoPanel ().getUnit ());
+					text = getUnitStatsReplacer ().replaceVariables (text);
+					
+					// Set up message box
+					msg.setLanguageTitle (getLanguages ().getUnitInfoScreen ().getDismissTitle ());
+					msg.setText (text);
+					msg.setUnitToDismiss (getUnit ());
+				}
+				
 				msg.setVisible (true);
 			});
 			

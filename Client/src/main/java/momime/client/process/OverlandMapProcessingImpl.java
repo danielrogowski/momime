@@ -1,5 +1,6 @@
 package momime.client.process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,9 +15,13 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
@@ -56,6 +61,9 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	/** Ordered list of units that we have to give orders to this turn */
 	private final List<MemoryUnit> unitsLeftToMoveOverland = new ArrayList<MemoryUnit> ();
 	
+	/** Language database holder */
+	private LanguageDatabaseHolder languageHolder;
+	
 	/** Multiplayer client */
 	private MomClient client;
 
@@ -91,6 +99,9 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/**
 	 * At the start of a turn, once all our movement has been reset and the server has sent any continuation moves to us, this gets called.
@@ -554,10 +565,10 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * @param specialOrder Special order to perform
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 * @throws IOException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	@Override
-	public final void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException, MomException
+	public final void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException, IOException
 	{
 		final List<Integer> movingUnitURNs = new ArrayList<Integer> ();
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
@@ -566,12 +577,22 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		
 		if (movingUnitURNs.size () > 0)
 		{
-			final SpecialOrderButtonMessage msg = new SpecialOrderButtonMessage ();
-			msg.setMapLocation (getOverlandMapUI ().getUnitMoveFrom ());
-			msg.setSpecialOrder (specialOrder);
-			msg.getUnitURN ().addAll (movingUnitURNs);
-			
-			getClient ().getServerConnection ().sendMessageToServer (msg);
+			if (!getClient ().isPlayerTurn ())
+			{
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setLanguageTitle (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getNotYourTurnTitle ());
+				msg.setLanguageText (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getNotYourTurn ());
+				msg.setVisible (true);
+			}
+			else
+			{
+				final SpecialOrderButtonMessage msg = new SpecialOrderButtonMessage ();
+				msg.setMapLocation (getOverlandMapUI ().getUnitMoveFrom ());
+				msg.setSpecialOrder (specialOrder);
+				msg.getUnitURN ().addAll (movingUnitURNs);
+				
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+			}
 		}
 	}
 	
@@ -629,6 +650,31 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void setProcessingContinuedMovement (final boolean cont)
 	{
 		processingContinuedMovement = cont;
+	}
+	
+	/**
+	 * @return Language database holder
+	 */
+	public final LanguageDatabaseHolder getLanguageHolder ()
+	{
+		return languageHolder;
+	}
+	
+	/**
+	 * @param holder Language database holder
+	 */
+	public final void setLanguageHolder (final LanguageDatabaseHolder holder)
+	{
+		languageHolder = holder;
+	}
+
+	/**
+	 * Convenience shortcut for accessing the Language XML database
+	 * @return New singular language XML
+	 */
+	public final MomLanguagesEx getLanguages ()
+	{
+		return getLanguageHolder ().getLanguages ();
 	}
 	
 	/**
@@ -805,5 +851,21 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

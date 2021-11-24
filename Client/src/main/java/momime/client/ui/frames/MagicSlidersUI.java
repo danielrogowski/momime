@@ -110,6 +110,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
 	
+	/** Combat UI */
+	private CombatUI combatUI;
+	
 	/** Mana title above the slider */
 	private JLabel manaTitle;
 	
@@ -501,8 +504,17 @@ public final class MagicSlidersUI extends MomClientFrameUI
 							
 							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 							msg.setLanguageTitle (getLanguages ().getSpellCasting ().getSwitchOffSpellTitle ());
-							msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll ("SPELL_NAME", spellName));
-							msg.setSwitchOffSpell (spell);
+							
+							if (!getClient ().isPlayerTurn ())
+								msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellNotYourTurn ());
+							else if (getCombatUI ().isVisible ())
+								msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellInCombat ());
+							else
+							{
+								msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll ("SPELL_NAME", spellName));
+								msg.setSwitchOffSpell (spell);
+							}
+							
 							msg.setVisible (true);
 						}
 						
@@ -947,6 +959,22 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	public final void setOverlandMapUI (final OverlandMapUI ui)
 	{
 		overlandMapUI = ui;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 	
 	/**

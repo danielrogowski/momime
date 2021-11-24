@@ -191,6 +191,9 @@ public final class CityViewUI extends MomClientFrameUI
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 	
+	/** Combat UI */
+	private CombatUI combatUI;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
 	
@@ -602,14 +605,21 @@ public final class CityViewUI extends MomClientFrameUI
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 					msg.setLanguageTitle (getLanguages ().getSpellCasting ().getSwitchOffSpellTitle ());
 
-					final String effectName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "CityViewUI").getCitySpellEffectName ());
-					
-					if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
-						msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpellNotOurs ()).replaceAll ("SPELL_NAME", effectName));
+					if (!getClient ().isPlayerTurn ())
+						msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellNotYourTurn ());
+					else if (getCombatUI ().isVisible ())
+						msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellInCombat ());
 					else
 					{
-						msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll ("SPELL_NAME", effectName));
-						msg.setSwitchOffSpell (spell);
+						final String effectName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "CityViewUI").getCitySpellEffectName ());
+						
+						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
+							msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpellNotOurs ()).replaceAll ("SPELL_NAME", effectName));
+						else
+						{
+							msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll ("SPELL_NAME", effectName));
+							msg.setSwitchOffSpell (spell);
+						}
 					}
 
 					msg.setVisible (true);
@@ -1801,5 +1811,21 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 }

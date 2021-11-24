@@ -887,6 +887,12 @@
 		<switchOffSpellNotOurs language="en">
 			<text>You didn't cast the SPELL_NAME spell and so cannot switch it off.</text>
 		</switchOffSpellNotOurs>
+		<switchOffSpellNotYourTurn language="en">
+			<text>You can't switch off spells when it isn't your turn.</text>
+		</switchOffSpellNotYourTurn>
+		<switchOffSpellInCombat language="en">
+			<text>You can't switch off spells when there is a combat in progress.</text>
+		</switchOffSpellInCombat>
 		<whoWillCastTitle language="en">
 			<text>Select who, or which item, will cast a spell</text>
 		</whoWillCastTitle>

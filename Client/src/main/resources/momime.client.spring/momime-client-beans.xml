@@ -1367,6 +1367,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellTableCellRenderer" ref="memoryMaintainedSpellTableCellRenderer" />
 		<property name="helpUI" ref="helpUI" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="combatUI" ref="combatUI" />
 	</bean>
 
 	<bean id="alchemyUI" class="momime.client.ui.frames.AlchemyUI">
@@ -1920,6 +1921,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="helpUI" ref="helpUI" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="combatUI" ref="combatUI" />
 		<property name="cityViewPanel" ref="cityViewPanel" />																				<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 		<property name="memoryMaintainedSpellListCellRenderer" ref="memoryMaintainedSpellListCellRenderer" />	<!-- So Spring will create and inject a new spell list renderer for each city view UI -->
 	</bean>
@@ -1966,10 +1968,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-		<property name="unitAttributeListCellRenderer" ref="unitAttributeListCellRenderer" />		<!-- So Spring will create and inject a new attribute list renderer for each unitInfoPanel -->
-		<property name="unitSkillListCellRenderer" ref="unitSkillListCellRenderer" />					<!-- So Spring will create and inject a new skill list renderer for each unitInfoPanel -->
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="helpUI" ref="helpUI" />
+		<property name="combatUI" ref="combatUI" />
+		<property name="unitAttributeListCellRenderer" ref="unitAttributeListCellRenderer" />		<!-- So Spring will create and inject a new attribute list renderer for each unitInfoPanel -->
+		<property name="unitSkillListCellRenderer" ref="unitSkillListCellRenderer" />					<!-- So Spring will create and inject a new skill list renderer for each unitInfoPanel -->
 	</bean>	
 
 	<bean id="changeConstructionUI" class="momime.client.ui.frames.ChangeConstructionUI" scope="prototype">

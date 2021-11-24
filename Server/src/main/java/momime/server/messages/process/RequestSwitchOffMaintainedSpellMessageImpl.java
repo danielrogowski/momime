@@ -17,6 +17,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.CombatMapUtils;
@@ -28,6 +29,7 @@ import momime.server.calculations.ServerResourceCalculations;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.DamageProcessor;
 import momime.server.process.SpellProcessing;
+import momime.server.utils.PlayerServerUtils;
 
 /**
  * Client sends this when they want to switch off a maintained spell (overland, unit or city).
@@ -59,6 +61,9 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
 	
+	/** Player utils */
+	private PlayerServerUtils playerServerUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -82,12 +87,16 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		
 		// Do some checks
 		final String error;
-		if (trueSpell == null)
+		if (!getPlayerServerUtils ().isPlayerTurn (sender, mom.getGeneralPublicKnowledge (), mom.getSessionDescription ().getTurnSystem ()))
+			error = "You can't switch off spells when it isn't your turn";
+		else if (trueSpell == null)
 			error = "Couldn't find the spell you wanted to switch off";
 		else if (!sender.getPlayerDescription ().getPlayerID ().equals (trueSpell.getCastingPlayerID ()))
 			error = "You cannot switch off another wizard's spells!";
 		else if ((spellDef.isPermanent () != null) && (spellDef.isPermanent ()))
 			error = "You cannot switch off permanent spells";
+		else if (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().anyMatch (u -> (u.getStatus () == UnitStatusID.ALIVE) && (u.getCombatLocation () != null)))
+			error = "You can't switch off spells when there is a combat in progress";
 		else
 			error = null;
 		
@@ -244,5 +253,21 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
 		combatStartAndEnd = cse;
+	}
+
+	/**
+	 * @return Player utils
+	 */
+	public final PlayerServerUtils getPlayerServerUtils ()
+	{
+		return playerServerUtils;
+	}
+	
+	/**
+	 * @param utils Player utils
+	 */
+	public final void setPlayerServerUtils (final PlayerServerUtils utils)
+	{
+		playerServerUtils = utils;
 	}
 }

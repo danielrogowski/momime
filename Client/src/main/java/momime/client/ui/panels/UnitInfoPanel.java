@@ -41,6 +41,7 @@ import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.AnimationContainer;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.HelpUI;
 import momime.client.ui.frames.HeroItemInfoUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
@@ -218,6 +219,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** Help text scroll */
 	private HelpUI helpUI;
+	
+	/** Combat UI */
+	private CombatUI combatUI;
 	
 	/**
 	 * Sets up the panel once all values have been injected
@@ -425,6 +429,10 @@ public final class UnitInfoPanel extends MomClientPanelUI
 								if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
 									msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpellNotOurs ()).replaceAll
 										("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+								else if (!getClient ().isPlayerTurn ())
+									msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellNotYourTurn ());
+								else if (getCombatUI ().isVisible ())
+									msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellInCombat ());
 								else
 								{
 									msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll
@@ -1199,5 +1207,21 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setUnitInfoLayout (final XmlLayoutContainerEx layout)
 	{
 		unitInfoLayout = layout;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 }

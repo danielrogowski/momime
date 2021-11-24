@@ -203,6 +203,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
+		<property name="playerServerUtils" ref="playerServerUtils" />
 	</bean>
 	
 	<bean id="endCombatTurnMessage" class="momime.server.messages.process.EndCombatTurnMessageImpl" scope="prototype">

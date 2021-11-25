@@ -13,7 +13,7 @@ import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TileType;
+import momime.common.database.TileTypeEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -62,10 +62,10 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	{
 		// What tileType is the map cell we're generating a combat map for?
 		final ServerGridCellEx mc = (ServerGridCellEx) trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
-		final TileType tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "generateCombatMap");
+		final TileTypeEx tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "generateCombatMap");
 
 		// Start map generation, this initializes all the map cells
-		final MapAreaOfCombatTiles map = setAllToGrass (combatMapCoordinateSystem);
+		final MapAreaOfCombatTiles map = setAllToDefaultTerrain (combatMapCoordinateSystem, tileType);
 		
 		// Generate height-based scenery
 		final HeightMapGenerator heightMap = new HeightMapGenerator (combatMapCoordinateSystem, combatMapCoordinateSystem.getZoneWidth (), combatMapCoordinateSystem.getZoneHeight (), 0);
@@ -95,9 +95,10 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	
 	/**
 	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @return Newly created map initialized with all cells set to grass; also sets all of the offMapEdge values
+	 * @param tileType Overland map tile type we are generating a combat map for
+	 * @return Newly created map initialized with all cells set to default (usually grass); also sets all of the offMapEdge values
 	 */
-	final MapAreaOfCombatTiles setAllToGrass (final CoordinateSystem combatMapCoordinateSystem)
+	final MapAreaOfCombatTiles setAllToDefaultTerrain (final CoordinateSystem combatMapCoordinateSystem, final TileTypeEx tileType)
 	{
 		// Create empty map
 		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
@@ -111,7 +112,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				// Create grass tile
 				final MomCombatTileLayer layer = new MomCombatTileLayer ();
 				layer.setLayer (CombatMapLayerID.TERRAIN);
-				layer.setCombatTileTypeID (ServerDatabaseValues.COMBAT_TILE_TYPE_GRASS);
+				layer.setCombatTileTypeID (tileType.getCombatTileTypeID ());
 				
 				final MomCombatTile cell = new MomCombatTile ();
 				cell.getTileLayer ().add (layer);

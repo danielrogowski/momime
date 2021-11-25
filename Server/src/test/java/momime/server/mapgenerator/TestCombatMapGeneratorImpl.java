@@ -29,6 +29,7 @@ import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
+import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapRowOfCombatTiles;
@@ -56,13 +57,16 @@ import momime.unittests.mapstorage.StoredCombatMap;
 public final class TestCombatMapGeneratorImpl extends ServerTestData
 {
 	/**
-	 * Tests the setAllToGrass method
+	 * Tests the setAllToDefaultTerrain method
 	 */
 	@Test
-	public final void testSetAllToGrass ()
+	public final void testSetAllToDefaultTerrain ()
 	{
+		final TileTypeEx tileType = new TileTypeEx ();
+		tileType.setCombatTileTypeID ("X");
+		
 		final CombatMapGeneratorImpl mapGen = new CombatMapGeneratorImpl ();
-		final MapAreaOfCombatTiles map = mapGen.setAllToGrass (createCombatMapCoordinateSystem ());
+		final MapAreaOfCombatTiles map = mapGen.setAllToDefaultTerrain (createCombatMapCoordinateSystem (), tileType);
 		
 		// Check results
 		int count = 0;
@@ -75,7 +79,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 				assertEquals (0, cell.getBorderID ().size ());
 				assertEquals (1, cell.getTileLayer ().size ());
 				assertEquals (CombatMapLayerID.TERRAIN, cell.getTileLayer ().get (0).getLayer ());
-				assertEquals (ServerDatabaseValues.COMBAT_TILE_TYPE_GRASS, cell.getTileLayer ().get (0).getCombatTileTypeID ());
+				assertEquals ("X", cell.getTileLayer ().get (0).getCombatTileTypeID ());
 			}
 
 		assertEquals (CommonDatabaseConstants.COMBAT_MAP_WIDTH * CommonDatabaseConstants.COMBAT_MAP_HEIGHT, count);
@@ -319,7 +323,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		// Terrain layer
 		final String terrainTileTypeID = utils.getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN);
 		String result;
-		if (terrainTileTypeID.equals (ServerDatabaseValues.COMBAT_TILE_TYPE_GRASS))
+		if (terrainTileTypeID.equals ("CTL01"))		// default/grass
 			result = ".";
 		else if (terrainTileTypeID.equals (ServerDatabaseValues.COMBAT_TILE_TYPE_DARK))
 			result = "v";

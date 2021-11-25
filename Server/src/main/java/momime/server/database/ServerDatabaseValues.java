@@ -63,9 +63,6 @@ public final class ServerDatabaseValues
 	
 	// combat maps
 	
-	/** Grass tiles */
-	public final static String COMBAT_TILE_TYPE_GRASS = "CTL01";
-
 	/** Dips in the terrain */
 	public final static String COMBAT_TILE_TYPE_DARK = "CTL02";
 	

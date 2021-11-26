@@ -497,7 +497,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(combatTargetLocation != null)))		// Cracks Call when targetted at a wall instead of a unit
 			{
 				// Check location is valid 
-				if (!getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatTargetLocation, gc.getCombatMap ()))
+				if (!getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatTargetLocation, gc.getCombatMap (), mom.getServerDB ()))
 					msg = "This location is not a valid target for this combat spell";
 			}
 		}

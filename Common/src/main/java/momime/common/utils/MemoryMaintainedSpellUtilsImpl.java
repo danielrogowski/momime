@@ -16,6 +16,8 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CitySpellEffect;
+import momime.common.database.CombatMapLayerID;
+import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -74,6 +76,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	
 	/** Sample unit method */
 	private SampleUnitUtils sampleUnitUtils;
+	
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -827,31 +832,54 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param spell Spell being cast
 	 * @param targetLocation Location we want to cast the spell at 
 	 * @param map Combat map terrain
+	 * @param db Lookup lists built over the XML database
 	 * @return Whether the location is a valid target or not
+	 * @throws RecordNotFoundException If we can't find the a combat tile type in the DB
+	 * @throws MomException If we encounter a spell book section we don't know how to handle
 	 */
 	@Override
-	public final boolean isCombatLocationValidTargetForSpell (final Spell spell, final MapCoordinates2DEx targetLocation, final MapAreaOfCombatTiles map)
+	public final boolean isCombatLocationValidTargetForSpell (final Spell spell, final MapCoordinates2DEx targetLocation, final MapAreaOfCombatTiles map,
+		final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
     	final boolean result;
 		final MomCombatTile tile = map.getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ());
-    	
-    	// Is it a spell that needs to be targetted at particular wall locations?
-    	// Otherwise things like Earth to Mud or Magic Vortex can be aimed anywhere
-    	if (spell.getSpellValidBorderTarget ().size () == 0)
-    		result = !tile.isOffMapEdge ();
+
+    	// Off the edge of the combat map is invalid regardless of what kind of spell it is
+    	if (tile.isOffMapEdge ())
+    		result = false;
     	else
     	{
-    		if ((tile.isWrecked ()) || (tile.getBorderID ().size () == 0))
-    			result = false;
-    		else
-    		{
-    			boolean found = false;
-    			for (final String combatTileBorderID : spell.getSpellValidBorderTarget ())
-    				if (tile.getBorderID ().contains (combatTileBorderID))
-    					found = true;
-    			
-    			result = found;
-    		}
+	    	// Simplify identifying some kinds of spells so don't have to repeat this all over the place
+	    	final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
+	    	
+	    	switch (kind)
+	    	{
+		    	// You can't turn water or cloud tiles to mud
+	    		case EARTH_TO_MUD:
+	    			final String combatTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN);
+	    			final CombatTileType combatTileType = db.findCombatTileType (combatTileTypeID, "isCombatLocationValidTargetForSpell");
+	    			result = (combatTileType.getCombatTileTypeRequiresSkill ().size () == 0);
+	    			break;
+	    
+	    		// Must be targeted at particular types of wall locations
+	    		case ATTACK_WALLS:
+	    		case ATTACK_UNITS_AND_WALLS:
+	        		if ((tile.isWrecked ()) || (tile.getBorderID ().size () == 0))
+	        			result = false;
+	        		else
+	        		{
+	        			boolean found = false;
+	        			for (final String combatTileBorderID : spell.getSpellValidBorderTarget ())
+	        				if (tile.getBorderID ().contains (combatTileBorderID))
+	        					found = true;
+	        			
+	        			result = found;
+	        		}
+	        		break;
+	        		
+	        	default:
+	        		throw new MomException ("isCombatLocationValidTargetForSpell doesn't know what to do with kind of spell " + kind);
+	    	}
     	}
     	
     	return result;
@@ -1075,5 +1103,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
 		sampleUnitUtils = s;
+	}
+
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+
+	/**
+	 * @param util Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils util)
+	{
+		combatMapUtils = util;
 	}
 }

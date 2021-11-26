@@ -864,7 +864,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						Integer wreckTileChance = null;
 						MapCoordinates2DEx wreckTilePosition = null;
 						if ((spell.getSpellValidBorderTarget ().size () > 0) && (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell
-							(spell, (MapCoordinates2DEx) targetUnit.getCombatPosition (), gc.getCombatMap ())))
+							(spell, (MapCoordinates2DEx) targetUnit.getCombatPosition (), gc.getCombatMap (), mom.getServerDB ())))
 						{
 							wreckTileChance = 1;
 							wreckTilePosition = (MapCoordinates2DEx) targetUnit.getCombatPosition ();

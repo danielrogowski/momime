@@ -230,9 +230,13 @@ public interface MemoryMaintainedSpellUtils
 	 * @param spell Spell being cast
 	 * @param targetLocation Location we want to cast the spell at 
 	 * @param map Combat map terrain
+	 * @param db Lookup lists built over the XML database
 	 * @return Whether the location is a valid target or not
+	 * @throws RecordNotFoundException If we can't find the a combat tile type in the DB
+	 * @throws MomException If we encounter a spell book section we don't know how to handle
 	 */
-	public boolean isCombatLocationValidTargetForSpell (final Spell spell, final MapCoordinates2DEx targetLocation, final MapAreaOfCombatTiles map);
+	public boolean isCombatLocationValidTargetForSpell (final Spell spell, final MapCoordinates2DEx targetLocation, final MapAreaOfCombatTiles map,
+		final CommonDatabase db) throws RecordNotFoundException, MomException;
 
 	/**
 	 * @param spells Known spells

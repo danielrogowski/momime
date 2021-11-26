@@ -1034,6 +1034,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="heroItemClientUtils" class="momime.client.utils.HeroItemClientUtilsImpl" />
 
 	<bean id="memoryMaintainedSpellClientUtils" class="momime.client.utils.MemoryMaintainedSpellClientUtilsImpl">
+		<property name="client" ref="client" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 	

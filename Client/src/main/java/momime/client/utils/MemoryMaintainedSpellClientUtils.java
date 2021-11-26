@@ -2,6 +2,8 @@ package momime.client.utils;
 
 import com.ndg.map.CoordinateSystem;
 
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MapAreaOfCombatTiles;
 
@@ -18,6 +20,9 @@ public interface MemoryMaintainedSpellClientUtils
 	 * @param map Combat map terrain
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @return Whether the location is a valid target or not
+	 * @throws RecordNotFoundException If we can't find the a combat tile type in the DB
+	 * @throws MomException If we encounter a spell book section we don't know how to handle
 	 */
-	public boolean isAnyCombatLocationValidTargetForSpell (final Spell spell, final MapAreaOfCombatTiles map, final CoordinateSystem combatMapCoordinateSystem);
+	public boolean isAnyCombatLocationValidTargetForSpell (final Spell spell, final MapAreaOfCombatTiles map, final CoordinateSystem combatMapCoordinateSystem)
+		throws RecordNotFoundException, MomException;
 }

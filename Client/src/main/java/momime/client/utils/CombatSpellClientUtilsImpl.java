@@ -151,7 +151,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 					// Cracks call can also be aimed at walls
 					if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
 						(spell.getSpellValidBorderTarget ().size () > 0) &&
-						(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain)))
+						(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain, getClient ().getClientDB ())))
 					{
 						msg.setCombatTargetLocation (combatCoords);
 						isValidTarget = true;
@@ -185,7 +185,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 					// Cracks call can also be aimed at walls even if the unit is flying
 					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
 						(spell.getSpellValidBorderTarget ().size () > 0) &&
-						(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain)))
+						(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain, getClient ().getClientDB ())))
 					{
 						msg.setCombatTargetLocation (combatCoords);
 						isValidTarget = true;
@@ -215,7 +215,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 				
 			// Combat spells targeted at a location have their own method too
 			case SPECIAL_COMBAT_SPELLS:
-				if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain))
+				if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain, getClient ().getClientDB ()))
 				{
 					msg.setCombatTargetLocation (combatCoords);
 					isValidTarget = true;

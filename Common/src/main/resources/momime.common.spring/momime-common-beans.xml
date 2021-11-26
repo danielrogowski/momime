@@ -316,6 +316,7 @@
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />

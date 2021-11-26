@@ -20,6 +20,8 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
+import momime.common.database.CombatMapLayerID;
+import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -3661,13 +3663,60 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 	
 	/**
-	 * Tests the isCombatLocationValidTargetForSpell method
+	 * Tests the isCombatLocationValidTargetForSpell method on Earth to Mud
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsCombatLocationValidTargetForSpell ()
+	public final void testIsCombatLocationValidTargetForSpell_EarthToMud () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CombatTileType combatTileType = new CombatTileType ();
+		when (db.findCombatTileType ("CTL01", "isCombatLocationValidTargetForSpell")).thenReturn (combatTileType);
+
 		// Spell being targetted
 		final Spell spell = new Spell ();
+		
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.EARTH_TO_MUD);
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles map = GenerateTestData.createCombatMap (sys);
+
+		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
+		when (combatMapUtils.getCombatTileTypeForLayer (map.getRow ().get (5).getCell ().get (10), CombatMapLayerID.TERRAIN)).thenReturn ("CTL01");
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
+		utils.setCombatMapUtils (combatMapUtils);
+		
+		// Spells not targetted at borders can hit anywhere
+		assertTrue (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map, db));
+		
+		// Unless its off the map edge
+		map.getRow ().get (1).getCell ().get (2).setOffMapEdge (true);
+		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (2, 1), map, db));
+	}
+
+	/**
+	 * Tests the isCombatLocationValidTargetForSpell method on Disrupt
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsCombatLocationValidTargetForSpell_Disrupt () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		spell.getSpellValidBorderTarget ().add ("CTB01");
+		
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.ATTACK_WALLS);
 		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
@@ -3675,28 +3724,21 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 
 		// Set up object to test
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
-		
-		// Spells not targetted at borders can hit anywhere
-		assertTrue (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
-		
-		// Unless its off the map edge
-		map.getRow ().get (1).getCell ().get (2).setOffMapEdge (true);
-		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (2, 1), map));
+		utils.setKindOfSpellUtils (kindOfSpellUtils);
 		
 		// Now we need a specific border
-		spell.getSpellValidBorderTarget ().add ("CTB01");
-		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
+		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map, db));
 		
 		// Put the wrong kind of border there
 		map.getRow ().get (5).getCell ().get (10).getBorderID ().add ("CTB02");
-		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
+		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map, db));
 		
 		// Now the spell can hit either
 		spell.getSpellValidBorderTarget ().add ("CTB02");
-		assertTrue (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
+		assertTrue (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map, db));
 		
 		// Border already destroyed
 		map.getRow ().get (5).getCell ().get (10).setWrecked (true);
-		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
+		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map, db));
 	}
 }

@@ -1035,7 +1035,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="memoryMaintainedSpellClientUtils" class="momime.client.utils.MemoryMaintainedSpellClientUtilsImpl">
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-	</bean>	
+	</bean>
+	
+	<bean id="combatSpellClientUtils" class="momime.client.utils.CombatSpellClientUtilsImpl">
+		<property name="client" ref="client" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="variableManaUI" ref="variableManaUI" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="spellClientUtils" ref="spellClientUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
 	
 	<!-- Language variable replacers -->
 	
@@ -1462,9 +1473,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="helpUI" ref="helpUI" />
 		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
 		<property name="variableManaUI" ref="variableManaUI" />
-		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="castCombatSpellFromUI" ref="castCombatSpellFromUI" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="combatSpellClientUtils" ref="combatSpellClientUtils" />
 	</bean>
 
 	<bean id="castCombatSpellFromUI" class="momime.client.ui.dialogs.CastCombatSpellFromUI">

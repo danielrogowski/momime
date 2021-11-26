@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -14,15 +13,19 @@ import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KindOfSpell;
+import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 
@@ -55,6 +58,15 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
+	/** Kind of spell utils */
+	private KindOfSpellUtils kindOfSpellUtils;
+	
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
+	
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
+	
 	/**
 	 * Handles doing final validation and building up the request message to cast a combat spell when the player clicks a tile in the combat map.
 	 * So this won't be called for combat spells that don't require any targeting, e.g. combat enchantments like Prayer.
@@ -73,6 +85,8 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 		final MapCoordinates2DEx combatCoords, final CastCombatSpellFrom castingSource, final MapAreaOfCombatTiles combatTerrain,
 		final MemoryUnit unitBeingRaised) throws IOException
 	{
+		final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
+		
 		// Is there a unit in the clicked cell?
 		final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt
 			(combatLocation, combatCoords, getClient ().getOurPlayerID (), getClient ().getPlayers (),
@@ -103,12 +117,26 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 			case SUMMONING:
 				if (xu == null)
 				{
-					isValidTarget = true;
-					msg.setCombatTargetLocation (combatCoords);
+					// What unit are we going to summon?
+					final ExpandedUnitDetails summonUnit;
+					if (kind == KindOfSpell.RAISE_DEAD)
+						summonUnit = getExpandUnitDetails ().expandUnitDetails (unitBeingRaised, null, null, null,
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					else
+						summonUnit = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), getClient ().getOurPlayerID (), null,
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
-					// Resurrecting an existing unit?
-					if (spell.getResurrectedHealthPercentage () != null)
-						msg.setCombatTargetUnitURN (unitBeingRaised.getUnitURN ());
+					final MomCombatTile tile = combatTerrain.getRow ().get (combatCoords.getY ()).getCell ().get (combatCoords.getX ());
+					
+					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (summonUnit, tile, getClient ().getClientDB ()) >= 0)
+					{
+						isValidTarget = true;
+						msg.setCombatTargetLocation (combatCoords);
+						
+						// Resurrecting an existing unit?
+						if (spell.getResurrectedHealthPercentage () != null)
+							msg.setCombatTargetUnitURN (unitBeingRaised.getUnitURN ());
+					}
 				}
 				break;
 
@@ -214,82 +242,16 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	 * @param combatTerrain Combat terrain
 	 * @param unitBeingRaised If casting a raise dead spell, which unit the player chose to raise
 	 * @return Whether the desired target tile is a valid place to cast the spell or not
-	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
-	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
-	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final boolean isCombatTileValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation,
 		final MapCoordinates2DEx combatCoords, final CastCombatSpellFrom castingSource, final MapAreaOfCombatTiles combatTerrain,
-		final MemoryUnit unitBeingRaised)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+		final MemoryUnit unitBeingRaised) throws IOException
 	{
-		// Is there a unit in the cell we're moving the mouse over?
-		final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt
-			(combatLocation, combatCoords, getClient ().getOurPlayerID (), getClient ().getPlayers (),
-			 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
-			 getClient ().getSessionDescription ().getCombatMapSize (),
-			 spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS);
-		
-		boolean validTarget;
-		switch (spell.getSpellBookSectionID ())
-		{
-			// Summoning spell - valid as long as there isn't a unit here
-			case SUMMONING:
-				validTarget = (xu == null);
-				break;
-				
-			// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
-			case UNIT_ENCHANTMENTS:
-			case UNIT_CURSES:
-			case ATTACK_SPELLS:
-			case SPECIAL_UNIT_SPELLS:
-			case DISPEL_SPELLS:
-				if (xu == null)
-				{
-					// Cracks call can also be aimed at walls
-					validTarget = (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
-						(spell.getSpellValidBorderTarget ().size () > 0) &&
-						(getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain));
-				}
-				else
-				{
-					final ExpandedUnitDetails xus = getExpandUnitDetails ().expandUnitDetails (xu.getUnit (), null, null, spell.getSpellRealm (),
-						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-
-					final Integer variableDamage;
-					if ((spell.getCombatMaxDamage () != null) &&
-						(castingSource.getHeroItemSlotNumber () == null) &&		// Can't put additional power into spells imbued into items
-						(castingSource.getFixedSpellNumber () == null))				// or casting fixed spells like Magicians' Fireball spell
-						
-						variableDamage = getVariableManaUI ().getVariableDamage ();
-					else
-						variableDamage = null;
-					
-					validTarget = (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, null, combatLocation, getClient ().getOurPlayerID (), castingSource.getCastingUnit (), variableDamage,
-							xus, true, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (),
-							getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
-					
-					// Cracks call can also be aimed at walls even if the unit is flying
-					if ((!validTarget) && (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) &&
-						(spell.getSpellValidBorderTarget ().size () > 0))
-						
-						validTarget = (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain));
-				}
-				break;
-				
-			// Combat spells targeted at a location have their own method too
-			case SPECIAL_COMBAT_SPELLS:
-				validTarget = getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatCoords, combatTerrain);
-				break;
-				
-			default:
-				throw new MomException ("CombatUI doesn't know targeting rules (drawing) for spells from section " + spell.getSpellBookSectionID ());
-		}
-		
-		return validTarget;
+		// This was doing exactly the same logic as buildCastCombatSpellMessage just without building up the message.
+		// Rather than repeating it all, just use the same method and test the result
+		return (buildCastCombatSpellMessage (spell, combatLocation, combatCoords, castingSource, combatTerrain, unitBeingRaised) != null);
 	}
 
 	/**
@@ -427,5 +389,53 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	public final MomLanguagesEx getLanguages ()
 	{
 		return getLanguageHolder ().getLanguages ();
+	}
+
+	/**
+	 * @return Kind of spell utils
+	 */
+	public final KindOfSpellUtils getKindOfSpellUtils ()
+	{
+		return kindOfSpellUtils;
+	}
+
+	/**
+	 * @param k Kind of spell utils
+	 */
+	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
+	{
+		kindOfSpellUtils = k;
+	}
+
+	/**
+	 * @return Sample unit method
+	 */
+	public final SampleUnitUtils getSampleUnitUtils ()
+	{
+		return sampleUnitUtils;
+	}
+
+	/**
+	 * @param s Sample unit method
+	 */
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
+	{
+		sampleUnitUtils = s;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 }

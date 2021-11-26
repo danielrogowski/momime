@@ -1046,6 +1046,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
+		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
 	</bean>
 	
 	<!-- Language variable replacers -->

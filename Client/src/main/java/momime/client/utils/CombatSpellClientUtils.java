@@ -4,11 +4,8 @@ import java.io.IOException;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.client.ui.renderer.CastCombatSpellFrom;
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
@@ -49,12 +46,9 @@ public interface CombatSpellClientUtils
 	 * @param combatTerrain Combat terrain
 	 * @param unitBeingRaised If casting a raise dead spell, which unit the player chose to raise
 	 * @return Whether the desired target tile is a valid place to cast the spell or not
-	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
-	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
-	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 * @throws IOException If there is a problem
 	 */
 	public boolean isCombatTileValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation,
 		final MapCoordinates2DEx combatCoords, final CastCombatSpellFrom castingSource, final MapAreaOfCombatTiles combatTerrain,
-		final MemoryUnit unitBeingRaised)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+		final MemoryUnit unitBeingRaised) throws IOException;
 }

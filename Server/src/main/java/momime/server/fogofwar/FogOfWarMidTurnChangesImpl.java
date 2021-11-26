@@ -39,6 +39,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -890,9 +891,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				final MemoryUnit mu = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellOnServerAndClients");
 				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null, players, trueMap, db);
 				if (xu.calculateAliveFigureCount () <= 0)
-				{
 					killed = true;
-	
+				else if ((mu.getCombatLocation () != null) && (mu.getCombatPosition () != null))
+				{
+					// Make sure the unit is still able to be on the combat tile it is on, and that we didn't lose our flight spell over water
+					final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
+						(mu.getCombatLocation ().getZ ()).getRow ().get (mu.getCombatLocation ().getY ()).getCell ().get (mu.getCombatLocation ().getX ());
+					
+					final MomCombatTile tile = gc.getCombatMap ().getRow ().get (mu.getCombatPosition ().getY ()).getCell ().get (mu.getCombatPosition ().getX ());
+					
+					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (xu, tile, db) < 0)
+						killed = true;
+				}
+				
+				if (killed)
+				{
 					// Work out if this is happening in combat or not
 					final KillUnitActionID action = (mu.getCombatLocation () == null) ? KillUnitActionID.HEALABLE_OVERLAND_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
 					

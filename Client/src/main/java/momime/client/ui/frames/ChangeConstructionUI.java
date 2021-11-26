@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 
@@ -48,12 +49,11 @@ import momime.common.database.Building;
 import momime.common.database.Unit;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
-import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -136,8 +136,8 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	/** Handles clicks on the units list */
 	private ListSelectionListener unitSelectionListener;
 	
-	/** expandUnitDetails method */
-	private ExpandUnitDetails expandUnitDetails;
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -274,25 +274,15 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		{
 			if (unitsList.getSelectedIndex () >= 0)
 			{
-				final AvailableUnit sampleUnit = new AvailableUnit ();
-				sampleUnit.setUnitID (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID ());
-				sampleUnit.setOwningPlayerID (getClient ().getOurPlayerID ());
-				sampleUnit.setUnitLocation (new MapCoordinates3DEx (getCityLocation ()));
 				try
 				{
-					final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), getClient ().getClientDB ());
-
-					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) getMultiplayerSessionUtils ().findPlayerWithID
-						(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener").getPersistentPlayerPublicKnowledge ();
-				
-					sampleUnit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
-						pub.getPick (), getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()));
-				
-					getUnitUtils ().initializeUnitSkills (sampleUnit, startingExperience, getClient ().getClientDB ());
+					final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID
+							(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener");
+						
+					final AvailableUnit sampleUnit = getSampleUnitUtils ().createSampleAvailableUnitFromCity (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID (),
+						player, new MapCoordinates3DEx (getCityLocation ()), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
+						
 					getUnitInfoPanel ().showUnit (sampleUnit);
 				}
 				catch (final Exception e)
@@ -361,14 +351,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			getClient ().getClientDB ()))
 		{
 			// Create a sample unit for it now, so the list box can keep it to redraw the unit every frame
-			final AvailableUnit sampleUnit = new AvailableUnit ();
-			sampleUnit.setUnitID (thisUnit.getUnitID ());
-			sampleUnit.setOwningPlayerID (getClient ().getOurPlayerID ());
-
-			// We don't have to get the weapon grade or experience right just to draw the figures
-			getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());
-			
-			final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (sampleUnit, null, null, null,
+			final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnit (thisUnit.getUnitID (), getClient ().getOurPlayerID (), null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 			final String movingActionID = getUnitCalculations ().determineCombatActionID (xu, true, getClient ().getClientDB ());
@@ -668,18 +651,18 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return expandUnitDetails method
+	 * @return Sample unit method
 	 */
-	public final ExpandUnitDetails getExpandUnitDetails ()
+	public final SampleUnitUtils getSampleUnitUtils ()
 	{
-		return expandUnitDetails;
+		return sampleUnitUtils;
 	}
 
 	/**
-	 * @param e expandUnitDetails method
+	 * @param s Sample unit method
 	 */
-	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
-		expandUnitDetails = e;
+		sampleUnitUtils = s;
 	}
 }

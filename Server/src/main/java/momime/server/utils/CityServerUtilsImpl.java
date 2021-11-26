@@ -32,7 +32,6 @@ import momime.common.database.Race;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
@@ -45,10 +44,10 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
-import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.database.ServerDatabaseValues;
@@ -98,8 +97,8 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
-	/** expandUnitDetails method */
-	private ExpandUnitDetails expandUnitDetails;
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
 	
 	/**
 	 * @param location Location we we base our search from
@@ -387,12 +386,8 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final int [] [] [] movementDirections					= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 		final boolean [] [] [] canMoveToInOneTurn			= new boolean [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 
-		final AvailableUnit dummyUnit = new AvailableUnit ();
-		dummyUnit.setUnitID (CommonDatabaseConstants.UNIT_ID_EXAMPLE);
-		getUnitUtils ().initializeUnitSkills (dummyUnit, 0, db);		// otherwise it does not even get the "walking" skill
-		
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
-		selectedUnits.add (getExpandUnitDetails ().expandUnitDetails (dummyUnit, null, null, null, players, fogOfWarMemory, db));
+		selectedUnits.add (getSampleUnitUtils ().createSampleUnit (CommonDatabaseConstants.UNIT_ID_EXAMPLE, 0, 0, players, fogOfWarMemory, db));
 		
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
@@ -663,18 +658,18 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	}
 
 	/**
-	 * @return expandUnitDetails method
+	 * @return Sample unit method
 	 */
-	public final ExpandUnitDetails getExpandUnitDetails ()
+	public final SampleUnitUtils getSampleUnitUtils ()
 	{
-		return expandUnitDetails;
+		return sampleUnitUtils;
 	}
 
 	/**
-	 * @param e expandUnitDetails method
+	 * @param s Sample unit method
 	 */
-	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
-		expandUnitDetails = e;
+		sampleUnitUtils = s;
 	}
 }

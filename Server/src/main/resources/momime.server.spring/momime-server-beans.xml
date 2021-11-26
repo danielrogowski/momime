@@ -380,7 +380,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
-		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 	</bean>
 
 	<bean id="unitServerUtils" class="momime.server.utils.UnitServerUtilsImpl">
@@ -400,6 +400,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 	</bean>
 
 	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtilsImpl">
@@ -414,7 +415,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 	</bean>
 
 	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">
@@ -661,6 +662,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
+		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 	</bean>
 
 	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">
@@ -894,6 +897,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="aiHeroItemRatingCalculations" ref="aiHeroItemRatingCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 	</bean>
 
 	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">
@@ -934,6 +938,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 	</bean>	
 	
 	<!-- Fog of War -->

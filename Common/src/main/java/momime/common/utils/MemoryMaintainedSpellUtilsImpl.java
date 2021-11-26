@@ -24,7 +24,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSpellEffect;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -73,8 +72,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
-	/** expandUnitDetails method */
-	private ExpandUnitDetails expandUnitDetails;
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -432,13 +431,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		{
     			// Test that the place where the old unit is is valid terrain for the new kind of unit
     			// Ignoring complicated situations here like, what if the old unit is being transported on a ship, or what if its stacked with a unit who has Wind Walking
-    			final AvailableUnit unit = new AvailableUnit ();
-				unit.setOwningPlayerID (castingPlayerID);
-				unit.setUnitID (spell.getSummonedUnit ().get (0));
-				
-				getUnitUtils ().initializeUnitSkills (unit, null, db);
-
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), castingPlayerID, null, players, mem, db);
 
 		    	final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (targetUnit.getUnitLocation ().getZ ()).getRow
 	    			().get (targetUnit.getUnitLocation ().getY ()).getCell ().get (targetUnit.getUnitLocation ().getX ()).getTerrainData ();
@@ -708,13 +701,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    		
 	    		else
 	   			{
-	    			final AvailableUnit unit = new AvailableUnit ();
-					unit.setOwningPlayerID (castingPlayerID);
-					unit.setUnitID (spell.getSummonedUnit ().get (0));
-					
-					getUnitUtils ().initializeUnitSkills (unit, null, db);
-	
-					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db);
+					final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), castingPlayerID, null, players, mem, db);
 	
 	    			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), terrainData.getTileTypeID (), db) == null)
 	    				result = TargetSpellResult.TERRAIN_IMPASSABLE;
@@ -1075,18 +1062,18 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	}
 
 	/**
-	 * @return expandUnitDetails method
+	 * @return Sample unit method
 	 */
-	public final ExpandUnitDetails getExpandUnitDetails ()
+	public final SampleUnitUtils getSampleUnitUtils ()
 	{
-		return expandUnitDetails;
+		return sampleUnitUtils;
 	}
 
 	/**
-	 * @param e expandUnitDetails method
+	 * @param s Sample unit method
 	 */
-	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
-		expandUnitDetails = e;
+		sampleUnitUtils = s;
 	}
 }

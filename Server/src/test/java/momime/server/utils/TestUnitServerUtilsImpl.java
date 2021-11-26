@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,7 +44,6 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpecialOrder;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -56,9 +54,9 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
-import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
@@ -1073,12 +1071,11 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 		
 		// Unit we're trying to add
-		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (any (AvailableUnit.class), isNull (), isNull (), isNull (),
-			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
+		when (sampleUnitUtils.createSampleUnit ("UN001", 2, 0, players, trueMap, db)).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		// Map cell and surrounding terrain that we're trying to add to
@@ -1107,7 +1104,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		utils.setUnitCalculations (calc);
-		utils.setExpandUnitDetails (expand);
+		utils.setSampleUnitUtils (sampleUnitUtils);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
@@ -1143,12 +1140,11 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 
 		// Unit we're trying to add
-		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (any (AvailableUnit.class), isNull (), isNull (), isNull (),
-			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
+		when (sampleUnitUtils.createSampleUnit ("UN001", 2, 0, players, trueMap, db)).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		// Map cell and surrounding terrain that we're trying to add to
@@ -1188,7 +1184,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		utils.setUnitCalculations (calc);
-		utils.setExpandUnitDetails (expand);
+		utils.setSampleUnitUtils (sampleUnitUtils);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method
@@ -1221,12 +1217,11 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 
 		// Unit we're trying to add
-		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (any (AvailableUnit.class), isNull (), isNull (), isNull (),
-			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
+		when (sampleUnitUtils.createSampleUnit ("UN001", 2, 0, players, trueMap, db)).thenReturn (testUnit);
 		
 		// Map cell and surrounding terrain that we're trying to add to
 		for (int x = -1; x <= 1; x++)
@@ -1248,7 +1243,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
 		utils.setUnitCalculations (calc);
-		utils.setExpandUnitDetails (expand);
+		utils.setSampleUnitUtils (sampleUnitUtils);
 		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 
 		// Run method

@@ -102,7 +102,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Set up test object
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterCombatTile (impassable, db)).thenReturn (-1);
+		when (calc.calculateDoubleMovementToEnterCombatTile (null, impassable, db)).thenReturn (-1);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitCalculations (calc);
@@ -3486,8 +3486,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Movement points to enter each tile
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
 		
 		// Non-flying unit
 		when (xu.unitIgnoresCombatTerrain (db)).thenReturn (false);
@@ -3833,7 +3833,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Movement points to enter each tile
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
 
 		// The unit we're attacking
 		final MemoryUnit defender = new MemoryUnit ();

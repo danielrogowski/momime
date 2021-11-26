@@ -57,6 +57,7 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PendingMovementUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
@@ -120,6 +121,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
 	
 	/**
 	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
@@ -589,12 +593,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Create test unit
-		final AvailableUnit testUnit = new AvailableUnit ();
-		testUnit.setUnitID (unitID);
-		testUnit.setOwningPlayerID (playerID);
-		getUnitUtils ().initializeUnitSkills (testUnit, 0, db);
-
-		final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (testUnit, null, null, null, players, trueMap, db);
+		final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnit (unitID, playerID, 0, players, trueMap, db);
 
 		// First try the centre
 		MapCoordinates3DEx addLocation = null;
@@ -957,10 +956,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	}
 	
 	/**
-	 * This is used for the AI picking where to target ion combat summoning spells like Fire Elemental.  As such it has to work the same way
+	 * This is used for the AI picking where to target in combat summoning spells like Fire Elemental.  As such it has to work the same way
 	 * a human player targets spells, in that the AI player is not allowed to know the location of any invisible units it cannot see.  It may
 	 * therefore pick a location which actually has a unit in it.  The spell casting code then deals with this.
 	 * 
+	 * @param xu Unit we are trying to summon in combat
 	 * @param combatLocation Location of combat to check
 	 * @param combatMap Scenery of the combat map at that location
 	 * @param startPosition Position in the combat map to start checking from
@@ -975,7 +975,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final MapCoordinates2DEx findFreeCombatPositionClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
+	public final MapCoordinates2DEx findFreeCombatPositionClosestTo (final ExpandedUnitDetails xu,
+		final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
 		final MapCoordinates2DEx startPosition, final int ourPlayerID, final List<PlayerServerDetails> players, final FogOfWarMemory mem,
 		final CommonDatabase db, final CoordinateSystem combatMapCoordinateSystem)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
@@ -985,7 +986,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		
 		// Check centre cell first
 		if ((getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
-				(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
+				(xu, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
 			(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem, true) == null))
 			
 			found = coords;
@@ -1008,7 +1009,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					{
 						// Is this cell unoccupied + passable terrain?
 						if ((getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
-								(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
+								(xu, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
 							(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem, true) == null))
 							
 							found = coords;
@@ -1029,6 +1030,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	/**
 	 * Like above, except this will avoid units even if they're invisible
 	 * 
+	 * @param xu Unit we are trying to summon in combat
 	 * @param combatLocation Location of combat to check
 	 * @param combatMap Scenery of the combat map at that location
 	 * @param startPosition Position in the combat map to start checking from
@@ -1039,7 +1041,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
 	@Override
-	public final MapCoordinates2DEx findFreeCombatPositionAvoidingInvisibleClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
+	public final MapCoordinates2DEx findFreeCombatPositionAvoidingInvisibleClosestTo (final ExpandedUnitDetails xu,
+		final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
 		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -1049,7 +1052,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		// Check centre cell first
 		if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords, db, true) == null) &&
 			(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
-				(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
+				(xu, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
 				
 			found = coords;
 		
@@ -1072,7 +1075,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 						// Is this cell unoccupied + passable terrain?
 						if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords, db, true) == null) &&
 							(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
-								(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
+								(xu, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
 							
 							found = coords;
 					}
@@ -1343,5 +1346,21 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Sample unit method
+	 */
+	public final SampleUnitUtils getSampleUnitUtils ()
+	{
+		return sampleUnitUtils;
+	}
+
+	/**
+	 * @param s Sample unit method
+	 */
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
+	{
+		sampleUnitUtils = s;
 	}
 }

@@ -754,13 +754,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Position on the combat field where we clicked to summon the unit
 		final MapCoordinates2DEx targetLocation = new MapCoordinates2DEx (9, 7);
 		
-		// Position where its actually going to appear
-		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		final MapCoordinates2DEx adjustedTargetLocation = new MapCoordinates2DEx (10, 7);
-		
-		when (unitServerUtils.findFreeCombatPositionAvoidingInvisibleClosestTo (combatLocation, gc.getCombatMap (), targetLocation,
-			trueMap.getUnit (), combatMapSize, db)).thenReturn (adjustedTargetLocation);
-		
 		// Mock the creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final MemoryUnit summonedUnit = new MemoryUnit ();
@@ -775,6 +768,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// Mock unit speed
 		when (xu.getMovementSpeed ()).thenReturn (49);
+		
+		// Position where its actually going to appear
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		final MapCoordinates2DEx adjustedTargetLocation = new MapCoordinates2DEx (10, 7);
+		
+		when (unitServerUtils.findFreeCombatPositionAvoidingInvisibleClosestTo (xu, combatLocation, gc.getCombatMap (), targetLocation,
+			trueMap.getUnit (), combatMapSize, db)).thenReturn (adjustedTargetLocation);
 		
 		// Counter magic
 		final SpellUtils spellUtils = mock (SpellUtils.class);

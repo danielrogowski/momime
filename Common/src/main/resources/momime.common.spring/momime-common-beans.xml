@@ -315,7 +315,7 @@
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
-		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />
@@ -398,5 +398,12 @@
 	</bean>
 
 	<bean id="kindOfSpellUtils" class="momime.common.utils.KindOfSpellUtilsImpl" />
+
+	<bean id="sampleUnitUtils" class="momime.common.utils.SampleUnitUtilsImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+	</bean>
 
 </beans>

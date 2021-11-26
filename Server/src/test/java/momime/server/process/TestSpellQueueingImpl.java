@@ -49,10 +49,13 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KindOfSpell;
+import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -109,12 +112,17 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// It can be cast overland
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (player, null, null, null, "SP001", null, null, null, null, null, mom);
@@ -160,12 +168,17 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.COMBAT_ENCHANTMENTS);
+		
 		// It can't be cast overland
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (false);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (player, null, null, null, "SP001", null, null, null, null, null, mom);
@@ -211,6 +224,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.OVERLAND_ENCHANTMENTS);
+
 		// It can't be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (false);
 		
@@ -220,6 +237,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (player, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -265,6 +283,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// It can be cast overland
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
 		
@@ -274,6 +296,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Test providing a cell target
 		proc.requestCastSpell (player, null, null, null, "SP001", null, null, combatTargetLocation, null, null, mom);
@@ -327,6 +350,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -336,6 +363,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (player, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -382,6 +410,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -391,6 +423,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (player, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -447,6 +480,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// It can be cast overland
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
 		
@@ -466,6 +503,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Call method
 		proc.requestCastSpell (player, null, null, null, "SP001", null, null, null, null, null, mom);
@@ -530,6 +568,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// It can be cast overland
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
 		
@@ -556,6 +598,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setSpellProcessing (spellProcessing);
 		proc.setPlayerMessageProcessing (msgProc);
 		proc.setServerResourceCalculations (serverResourceCalculations);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Call method
 		proc.requestCastSpell (player, null, null, null, "SP001", null, null, null, null, null, mom);
@@ -629,6 +672,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.COMBAT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -648,6 +695,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
 		proc.setCombatMapUtils (combatMapUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -721,6 +769,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.COMBAT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -746,6 +798,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
 		proc.setCombatMapUtils (combatMapUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -825,6 +878,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.COMBAT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -847,6 +904,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
 		proc.setCombatMapUtils (combatMapUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -926,6 +984,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.COMBAT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -959,6 +1021,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setSpellCalculations (spellCalc);
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -1038,6 +1101,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.COMBAT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -1074,6 +1141,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setSpellCalculations (spellCalc);
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -1153,6 +1221,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.COMBAT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -1190,6 +1262,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setSpellCalculations (spellCalc);
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -1269,6 +1342,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.COMBAT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -1316,6 +1393,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setSpellProcessing (spellProcessing);
 		proc.setMemoryCombatAreaEffectUtils (caeUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -1395,6 +1473,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -1437,6 +1519,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, 101, null, mom);
@@ -1517,6 +1600,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -1571,6 +1658,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setExpandUnitDetails (expand);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, 101, null, mom);
@@ -1651,6 +1739,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.UNIT_ENCHANTMENTS);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -1708,6 +1800,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setSpellProcessing (spellProcessing);
 		proc.setExpandUnitDetails (expand);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, 101, null, mom);
@@ -1788,6 +1881,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
+				
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -1834,6 +1931,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, combatTargetLocation, null, null, mom);
@@ -1917,6 +2015,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -1966,6 +2068,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
 		proc.setCombatMapServerUtils (combatMapServerUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, combatTargetLocation, null, null, mom);
@@ -1986,6 +2089,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Mock database
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
+		spell.getSummonedUnit ().add ("UN001");
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -2049,6 +2153,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
+				
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -2091,9 +2199,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
 		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit (), db)).thenReturn (8);
 		
+		// Unit that will be created
+		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (sampleUnitUtils.createSampleUnit ("UN001", attackingPd.getPlayerID (), null, players, trueMap, db)).thenReturn (xu);
+		
 		// Combat terrain cell
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (-1);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (-1);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -2105,6 +2218,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setCombatMapServerUtils (combatMapServerUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
+		proc.setSampleUnitUtils (sampleUnitUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, combatTargetLocation, null, null, mom);
@@ -2125,6 +2240,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Mock database
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
+		spell.getSummonedUnit ().add ("UN001");
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
@@ -2188,6 +2304,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (attackingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Which kind of spell
+		final KindOfSpellUtils kindOfSpellUtils = mock (KindOfSpellUtils.class);
+		when (kindOfSpellUtils.determineKindOfSpell (spell, null)).thenReturn (KindOfSpell.SUMMONING);
+		
 		// It can be cast in combat
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.COMBAT)).thenReturn (true);
 		
@@ -2231,9 +2351,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
 		
+		// Unit that will be created
+		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (sampleUnitUtils.createSampleUnit ("UN001", attackingPd.getPlayerID (), null, players, trueMap, db)).thenReturn (xu);
+		
 		// Combat terrain cell
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (1);
+		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (1);
 		
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);
@@ -2248,6 +2373,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setUnitCalculations (unitCalc);
 		proc.setSpellProcessing (spellProcessing);
 		proc.setCombatMapServerUtils (combatMapServerUtils);
+		proc.setKindOfSpellUtils (kindOfSpellUtils);
+		proc.setSampleUnitUtils (sampleUnitUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, combatTargetLocation, null, null, mom);

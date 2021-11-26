@@ -60,12 +60,13 @@ public interface UnitCalculations
 
 	/**
 	 * Flying units obviously ignore this although they still can't enter impassable terrain
+	 * @param xu The unit that is moving; if passed in as null then can't do this check on specific movement skills
 	 * @param tile Combat tile being entered
 	 * @param db Lookup lists built over the XML database
 	 * @return 2x movement points required to enter this tile; negative value indicates impassable; will never return zero
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
-	public int calculateDoubleMovementToEnterCombatTile (final MomCombatTile tile, final CommonDatabase db)
+	public int calculateDoubleMovementToEnterCombatTile (final ExpandedUnitDetails xu, final MomCombatTile tile, final CommonDatabase db)
 		throws RecordNotFoundException;
 	
 	/**

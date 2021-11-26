@@ -191,7 +191,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// ..then position units in an up-right fashion to fill the row
 			for (int n = 0; n < COMBAT_SETUP_UNITS_PER_ROW; n++)
 			{
-				if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0)
+				if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (null, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0)
 					maxUnitsInThisRow++;
 				
 				getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 2);
@@ -431,7 +431,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			for (int n = 0; n < unitsOnThisRow; n++)
 			{
 				// Make sure the cell is passable
-				while (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) < 0)
+				while (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (null, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) < 0)
 					getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 2);
 				
 				// Place unit
@@ -1265,7 +1265,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		{
 			// Bump to different cell if there's an invisible unit here
 			final MapCoordinates2DEx actualMoveTo = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-				(combatLocation, combatCell.getCombatMap (), moveTo, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+				(tu, combatLocation, combatCell.getCombatMap (), moveTo, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 					mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 			
 			// Update on client
@@ -1364,7 +1364,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					// How much movement did it take us to walk into this cell?
 					// Units that ignore combat terrain always spend a fixed amount per move, so don't even bother calling the method
 					reduceMovementRemaining (tu.getMemoryUnit (), ignoresCombatTerrain ? 2 : getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
-						(combatCell.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
+						(tu, combatCell.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
 					msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
 					combatCell.getLastCombatMoveDirection ().put (tu.getUnitURN (), d);
 					

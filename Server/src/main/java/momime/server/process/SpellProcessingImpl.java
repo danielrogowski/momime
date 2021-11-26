@@ -716,10 +716,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 	
 				// Show the "summoning" animation for it
+				final ExpandedUnitDetails xuTargetUnit = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						
 				final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
 				
 				final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-					(combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+					(xuTargetUnit, combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 						mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 	
 				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
@@ -727,8 +730,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 	
 				// Allow it to be moved this combat turn
-				targetUnit.setDoubleCombatMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
+				targetUnit.setDoubleCombatMovesLeft (2 * xuTargetUnit.getMovementSpeed ());
 			}
 			
 			// Combat summons
@@ -755,8 +757,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 					final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
 					
 					// Set it immediately into combat
+					final ExpandedUnitDetails xuSummonedUnit = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					
 					final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-						(combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+						(xuSummonedUnit, combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 							mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
 					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
@@ -764,8 +769,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 					
 					// Allow it to be moved this combat turn
-					tu.setDoubleCombatMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
+					tu.setDoubleCombatMovesLeft (2 * xuSummonedUnit.getMovementSpeed ());
 					
 					// Make sure we remove it after combat
 					tu.setWasSummonedInCombat (true);

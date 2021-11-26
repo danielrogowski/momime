@@ -90,6 +90,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -193,6 +194,9 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Combat UI */
 	private CombatUI combatUI;
+
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
 	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;
@@ -1136,14 +1140,7 @@ public final class CityViewUI extends MomClientFrameUI
 		else
 		{
 			// Create a dummy unit here, rather than on every paintComponent call
-			final AvailableUnit sample = new AvailableUnit ();
-			sample.setUnitID (cityData.getCurrentlyConstructingUnitID ());
-			sample.setOwningPlayerID (cityData.getCityOwnerID ());
-
-			// We don't have to get the weapon grade or experience right just to draw the figures
-			getUnitUtils ().initializeUnitSkills (sample, null, getClient ().getClientDB ());
-			
-			sampleUnit = getExpandUnitDetails ().expandUnitDetails (sample, null, null, null,
+			sampleUnit = getSampleUnitUtils ().createSampleUnit (cityData.getCurrentlyConstructingUnitID (), cityData.getCityOwnerID (), null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			final String movingActionID = getUnitCalculations ().determineCombatActionID (sampleUnit, true, getClient ().getClientDB ());
@@ -1827,5 +1824,21 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
+	}
+
+	/**
+	 * @return Sample unit method
+	 */
+	public final SampleUnitUtils getSampleUnitUtils ()
+	{
+		return sampleUnitUtils;
+	}
+
+	/**
+	 * @param s Sample unit method
+	 */
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
+	{
+		sampleUnitUtils = s;
 	}
 }

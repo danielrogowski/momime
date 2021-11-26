@@ -28,10 +28,9 @@ import momime.common.database.LanguageText;
 import momime.common.database.Pick;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitType;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.NewTurnMessageOfferUnits;
-import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitTypeUtils;
 import momime.common.utils.UnitUtils;
 
@@ -74,11 +73,8 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
 	
-	/** expandUnitDetails method */
-	private ExpandUnitDetails expandUnitDetails;
-	
-	/** Sample unit representing the unit on offer */
-	private AvailableUnit sampleUnit;
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
 	
 	/** The unit on offer */
 	private ExpandedUnitDetails xu;
@@ -130,15 +126,8 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 		final ExperienceLevel expLevel = UnitTypeUtils.findExperienceLevel (normalUnit, getLevelNumber ());
 		
 		// Now can create a sample unit
-		sampleUnit = new AvailableUnit ();
-		sampleUnit.setUnitID (getUnitID ());
-		sampleUnit.setOwningPlayerID (getClient ().getOurPlayerID ());
-
-		// We don't have to get the weapon grade or experience right just to draw the figures
-		getUnitUtils ().initializeUnitSkills (sampleUnit, expLevel.getExperienceRequired (), getClient ().getClientDB ());
-		
-		xu = getExpandUnitDetails ().expandUnitDetails (sampleUnit, null, null, null, getClient ().getPlayers (),
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+		xu = getSampleUnitUtils ().createSampleUnit (getUnitID (), getClient ().getOurPlayerID (), expLevel.getExperienceRequired (),
+			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	
 	/**
@@ -178,7 +167,7 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 			if (ui == null)
 			{
 				final HeroOrUnitsOfferUI offer = getPrototypeFrameCreator ().createHeroOrUnitsOffer ();
-				offer.setUnit (sampleUnit);
+				offer.setUnit (xu.getUnit ());
 				offer.setNewTurnMessageOffer (this);
 				
 				getClient ().getOffers ().put (getOfferURN (), offer);
@@ -423,18 +412,18 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 	}
 
 	/**
-	 * @return expandUnitDetails method
+	 * @return Sample unit method
 	 */
-	public final ExpandUnitDetails getExpandUnitDetails ()
+	public final SampleUnitUtils getSampleUnitUtils ()
 	{
-		return expandUnitDetails;
+		return sampleUnitUtils;
 	}
 
 	/**
-	 * @param e expandUnitDetails method
+	 * @param s Sample unit method
 	 */
-	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
-		expandUnitDetails = e;
+		sampleUnitUtils = s;
 	}
 }

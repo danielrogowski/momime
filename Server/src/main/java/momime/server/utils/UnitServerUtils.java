@@ -246,10 +246,11 @@ public interface UnitServerUtils
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**
-	 * This is used for the AI picking where to target ion combat summoning spells like Fire Elemental.  As such it has to work the same way
+	 * This is used for the AI picking where to target in combat summoning spells like Fire Elemental.  As such it has to work the same way
 	 * a human player targets spells, in that the AI player is not allowed to know the location of any invisible units it cannot see.  It may
 	 * therefore pick a location which actually has a unit in it.  The spell casting code then deals with this.
 	 * 
+	 * @param xu Unit we are trying to summon in combat
 	 * @param combatLocation Location of combat to check
 	 * @param combatMap Scenery of the combat map at that location
 	 * @param startPosition Position in the combat map to start checking from
@@ -263,7 +264,8 @@ public interface UnitServerUtils
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public MapCoordinates2DEx findFreeCombatPositionClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
+	public MapCoordinates2DEx findFreeCombatPositionClosestTo (final ExpandedUnitDetails xu,
+		final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
 		final MapCoordinates2DEx startPosition, final int ourPlayerID, final List<PlayerServerDetails> players, final FogOfWarMemory mem,
 		final CommonDatabase db, final CoordinateSystem combatMapCoordinateSystem)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
@@ -271,6 +273,7 @@ public interface UnitServerUtils
 	/**
 	 * Like above, except this will avoid units even if they're invisible
 	 * 
+	 * @param xu Unit we are trying to summon in combat
 	 * @param combatLocation Location of combat to check
 	 * @param combatMap Scenery of the combat map at that location
 	 * @param startPosition Position in the combat map to start checking from
@@ -280,7 +283,8 @@ public interface UnitServerUtils
 	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
-	public MapCoordinates2DEx findFreeCombatPositionAvoidingInvisibleClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
+	public MapCoordinates2DEx findFreeCombatPositionAvoidingInvisibleClosestTo (final ExpandedUnitDetails xu,
+		final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
 		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException;
 }

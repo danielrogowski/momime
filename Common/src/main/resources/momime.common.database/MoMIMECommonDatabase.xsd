@@ -656,7 +656,12 @@
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorderImage" type="momimecommon:combatTileBorderImage" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityViewElementSet" type="momimecommon:cityViewElementSet" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityViewElement" type="momimecommon:cityViewElement" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileType" type="momimecommon:combatTileType" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileType" type="momimecommon:combatTileType">
+					<xsd:key name="combatTileTypeRequiresSkillPK">
+						<xsd:selector xpath="combatTileTypeRequiresSkill" />
+						<xsd:field xpath="." />
+					</xsd:key>	
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorder" type="momimecommon:combatTileBorder" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatMapElement" type="momimecommon:combatMapElement" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileSet" type="momimecommon:tileSet">
@@ -1348,6 +1353,10 @@
 		<xsd:keyref refer="momimecommon:combatTileBorderPK" name="combatMapElementFKcombatTileBorder">
 			<xsd:selector xpath="combatMapElement" />
 			<xsd:field xpath="combatTileBorderID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="combatTileTypeFKunitSkill">
+			<xsd:selector xpath="combatTileType/combatTileTypeRequiresSkill" />
+			<xsd:field xpath="." />
 		</xsd:keyref>
 
 		<!-- CAEs from Heavenly Light and Cloud of Shadow, new for 0.9.6 -->
@@ -3596,9 +3605,17 @@ Zero value indicates the terrain in this layer has no effect on movement (e.g. h
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatMapLayer" type="momimecommon:combatMapLayerID" nxe:label="Layer" nxe:gridwidth="60" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="doubleMovement" type="momimecommon:combatTileTypeDoubleMovement" nxe:label="2x Movement to enter this tile" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="insideCity" type="xsd:boolean" nxe:label="Inside city?" nxe:gridWidth="80">
-			<xsd:annotation>
-				<xsd:documentation>Presence of this tile on any layer indicates this tile is part of the 4x4 area inside the city.</xsd:documentation>
-			</xsd:annotation>
+				<xsd:annotation>
+					<xsd:documentation>Presence of this tile on any layer indicates this tile is part of the 4x4 area inside the city.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileTypeRequiresSkill" type="momimecommon:unitSkillID">
+		        <xsd:annotation>
+		        	<xsd:documentation>Combat tile type is impassable unless unit has one of these skills.  Used for water+cloud tiles.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+		        </xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="combatTileTypeID" type="momimecommon:combatTileTypeID" use="required" nxe:label="Combat Tile Type ID" nxe:gridwidth="130" />

@@ -44,10 +44,13 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KindOfSpell;
+import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -116,6 +119,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 	
+	/** Kind of spell utils */
+	private KindOfSpellUtils kindOfSpellUtils;
+	
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
+	
 	/**
 	 * Client wants to cast a spell, either overland or in combat
 	 * We may not actually be able to cast it yet - big overland spells take a number of turns to channel, so this
@@ -152,6 +161,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		
 		// Find the spell in the player's search list
 		final Spell spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");
+		final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
 		
 		// Validation checks on the type of spell and whether it needs a target
 		String msg;
@@ -190,8 +200,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS))
 			msg = "You must specify a target location when casting special combat spells.";
 		
-		else if ((combatLocation != null) && (combatTargetUnitURN == null) &&
-			(spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null))
+		else if ((combatLocation != null) && (combatTargetUnitURN == null) && (kind == KindOfSpell.RAISE_DEAD))
 			msg = "You must specify which unit you want to raise from the dead.";
 		
 		// Can't cast combat spells when blocked by Spell Ward of that realm
@@ -389,12 +398,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "This unit or hero doesn't have enough mana remaining to cast the spell.";
 			}
 			
-			// Validation for specific types of combat spells
-			if (msg != null)
-			{
-				// Do nothing - more serious message already generated
-			}
-			else if ((combatTargetUnitURN != null) &&
+			// Validate unit target of combat spells
+			ExpandedUnitDetails xuCombatTargetUnit = null;
+			
+			if ((msg == null) && (combatTargetUnitURN != null) &&
 				((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
 				((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null)) ||
 				(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
@@ -408,11 +415,11 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "Cannot find the unit you are trying to target the spell on.";
 				else
 				{
-					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (combatTargetUnit, null, null, spell.getSpellRealm (),
+					xuCombatTargetUnit = getExpandUnitDetails ().expandUnitDetails (combatTargetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, null, combatLocation, player.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xu, true,
+						(spell, null, combatLocation, player.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xuCombatTargetUnit, true,
 							mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ());
 					
 					if (validTarget != TargetSpellResult.VALID_TARGET)
@@ -422,6 +429,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 						msg = "This unit is not a valid target for this spell for reason " + validTarget;
 					}
 				}
+			}
+			
+			// Validation for specific types of combat spells
+			if (msg != null)
+			{
+				// Do nothing - more serious message already generated
 			}
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
 			{
@@ -454,10 +467,20 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "You already have the maximum number of units in combat so cannot summon any more.";
 				
 				// Make sure the combat location is passable, i.e. can't summon on top of city wall corners
-				else if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
-					(gc.getCombatMap ().getRow ().get (combatTargetLocation.getY ()).getCell ().get (combatTargetLocation.getX ()), mom.getServerDB ()) < 0)
+				else
+				{
+					final ExpandedUnitDetails summonedUnit;
+					if (kind == KindOfSpell.RAISE_DEAD)
+						summonedUnit = xuCombatTargetUnit;
+					else
+						summonedUnit = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), player.getPlayerDescription ().getPlayerID (), null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
-					msg = "The terrain at your chosen location is impassable so you cannot summon a unit there.";
+					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+						(summonedUnit, gc.getCombatMap ().getRow ().get (combatTargetLocation.getY ()).getCell ().get (combatTargetLocation.getX ()), mom.getServerDB ()) < 0)
+					
+						msg = "The terrain at your chosen location is impassable so you cannot summon a unit there.";
+				}
 			}
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
 			{
@@ -937,5 +960,37 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Kind of spell utils
+	 */
+	public final KindOfSpellUtils getKindOfSpellUtils ()
+	{
+		return kindOfSpellUtils;
+	}
+
+	/**
+	 * @param k Kind of spell utils
+	 */
+	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
+	{
+		kindOfSpellUtils = k;
+	}
+
+	/**
+	 * @return Sample unit method
+	 */
+	public final SampleUnitUtils getSampleUnitUtils ()
+	{
+		return sampleUnitUtils;
+	}
+
+	/**
+	 * @param s Sample unit method
+	 */
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
+	{
+		sampleUnitUtils = s;
 	}
 }

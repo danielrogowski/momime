@@ -21,6 +21,7 @@ import momime.common.database.CombatAction;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileBorderBlocksMovementID;
+import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MovementRateRule;
@@ -195,13 +196,14 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 	/**
 	 * Flying units obviously ignore this although they still can't enter impassable terrain
+	 * @param xu The unit that is moving; if passed in as null then can't do this check on specific movement skills
 	 * @param tile Combat tile being entered
 	 * @param db Lookup lists built over the XML database
 	 * @return 2x movement points required to enter this tile; negative value indicates impassable; will never return zero
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
 	@Override
-	public final int calculateDoubleMovementToEnterCombatTile (final MomCombatTile tile, final CommonDatabase db)
+	public final int calculateDoubleMovementToEnterCombatTile (final ExpandedUnitDetails xu, final MomCombatTile tile, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		int result = -1;		// Impassable
@@ -210,18 +212,19 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		{
 			// Any types of wall here that block movement?  (not using iterator because there's going to be so few of these).
 			// NB. You still cannot walk across corners of city walls even when they've been wrecked.
-			boolean impassableBorderFound = false;
+			boolean impassableFound = false;
 			for (final String borderID : tile.getBorderID ())
 				if (db.findCombatTileBorder (borderID, "calculateDoubleMovementToEnterCombatTile").getBlocksMovement () == CombatTileBorderBlocksMovementID.WHOLE_TILE_IMPASSABLE)
-					impassableBorderFound = true;
+					impassableFound = true;
 			
-			if (!impassableBorderFound)
-			{
-				// Check each layer for the first which specifies movement
-				// This works in the opposite order than the Delphi code, here we check the lowest layer (terrain) first and overwrite the value with higher layers
-				// The delphi code started with the highest layer and worked down, but skipping as soon as it got a non-zero value
-				for (final CombatMapLayerID layer : CombatMapLayerID.values ())
-					
+			// Check each layer for the first which specifies movement
+			// This works in the opposite order than the Delphi code, here we check the lowest layer (terrain) first and overwrite the value with higher layers
+			// The delphi code started with the highest layer and worked down, but skipping as soon as it got a non-zero value
+			for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+				
+				// If we found anything that's impassable on any layer, just stop - nothing on a higher layer can make it passable
+				if (!impassableFound)
+				{
 					// Mud overrides anything else in the terrain layer, but movement rate can still be reduced by roads or set to impassable by buildings
 					if ((layer == CombatMapLayerID.TERRAIN) && (tile.isMud ()))
 						result = 1000;
@@ -230,12 +233,29 @@ public final class UnitCalculationsImpl implements UnitCalculations
 						final String combatTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (tile, layer);
 						if (combatTileTypeID != null)		// layers are often not all populated
 						{
-							final Integer movement = db.findCombatTileType (combatTileTypeID, "calculateDoubleMovementToEnterCombatTile").getDoubleMovement ();
-							if (movement != null)		// many tiles have no effect at all on movement, e.g. houses
-								result = movement;
+							// If the tile requires specific kinds of movement, see if we have them
+							final CombatTileType combatTileType = db.findCombatTileType (combatTileTypeID, "calculateDoubleMovementToEnterCombatTile");
+							if ((xu != null) && (combatTileType.getCombatTileTypeRequiresSkill ().size () > 0) &&
+								(combatTileType.getCombatTileTypeRequiresSkill ().stream ().noneMatch (s -> xu.hasModifiedSkill (s))))
+								
+								impassableFound = true;
+							else
+							{
+								final Integer movement = combatTileType.getDoubleMovement ();
+								if (movement != null)		// many tiles have no effect at all on movement, e.g. houses
+								{
+									if (movement < 0)
+										impassableFound = true;
+									else
+										result = movement;
+								}
+							}
 						}
 					}
-			}
+				}
+			
+			if (impassableFound)
+				result = -1;
 		}
 		
 		return result;
@@ -729,7 +749,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 					
 					// Check if our type of unit can move here
 					final MomCombatTile moveToTile = combatMap.getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
-					final int doubleMovementToEnterThisTile = calculateDoubleMovementToEnterCombatTile (moveToTile, db);
+					final int doubleMovementToEnterThisTile = calculateDoubleMovementToEnterCombatTile (unitBeingMoved, moveToTile, db);
 					
 					// Can we attack the tile itself?
 					boolean canAttackTile = false;
@@ -992,7 +1012,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 						((movementTypes [y] [x] == CombatMoveType.MOVE) && (doubleMovementDistances [y] [x] > 2)))
 					{
 						final MomCombatTile moveToTile = combatMap.getRow ().get (y).getCell ().get (x);
-						final int doubleMovementToEnterThisTile = calculateDoubleMovementToEnterCombatTile (moveToTile, db);
+						final int doubleMovementToEnterThisTile = calculateDoubleMovementToEnterCombatTile (unitBeingMoved, moveToTile, db);
 						
 						// Our own units prevent us moving here - so do enemy units, we cannot move onto them, only next to them
 						if ((doubleMovementToEnterThisTile < 0) || (ourUnits [y] [x]) || (enemyUnits [y] [x] != null))

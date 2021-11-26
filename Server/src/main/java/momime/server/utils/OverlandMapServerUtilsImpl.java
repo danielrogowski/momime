@@ -27,7 +27,6 @@ import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.UnitCombatSideID;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -38,8 +37,8 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -70,8 +69,8 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
-	/** expandUnitDetails method */
-	private ExpandUnitDetails expandUnitDetails;
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
 	
 	/**
 	 * Sets the race for all land squares connected to x, y
@@ -217,11 +216,8 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			final int attackingStrength = attackingSpirit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE);
 			
 			// Create test unit
-			final AvailableUnit defendingSpirit = new AvailableUnit ();
-			defendingSpirit.setUnitID (tc.getNodeSpiritUnitID ());
-			getUnitUtils ().initializeUnitSkills (defendingSpirit, -1, db);
-			
-			final int defendingStrength = getExpandUnitDetails ().expandUnitDetails (defendingSpirit, null, null, null, players, trueMap, db).getModifiedSkillValue
+			final int defendingStrength = getSampleUnitUtils ().createSampleUnit
+				(tc.getNodeSpiritUnitID (), tc.getTerrainData ().getNodeOwnerID (), null, players, trueMap, db).getModifiedSkillValue
 				(CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE);
 			
 			// Decide who wins
@@ -470,18 +466,18 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	}
 
 	/**
-	 * @return expandUnitDetails method
+	 * @return Sample unit method
 	 */
-	public final ExpandUnitDetails getExpandUnitDetails ()
+	public final SampleUnitUtils getSampleUnitUtils ()
 	{
-		return expandUnitDetails;
+		return sampleUnitUtils;
 	}
 
 	/**
-	 * @param e expandUnitDetails method
+	 * @param s Sample unit method
 	 */
-	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
-		expandUnitDetails = e;
+		sampleUnitUtils = s;
 	}
 }

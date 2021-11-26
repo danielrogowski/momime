@@ -278,6 +278,9 @@ public final class TestUnitCalculationsImpl
 		passableBorder.setBlocksMovement (CombatTileBorderBlocksMovementID.NO);
 		when (db.findCombatTileBorder ("CTB03", "calculateDoubleMovementToEnterCombatTile")).thenReturn (passableBorder);
 		
+		// Unit that is on the tile
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setCombatMapUtils (new CombatMapUtilsImpl ());		// Only search routine, easier to use the real one than mock it
@@ -290,24 +293,24 @@ public final class TestUnitCalculationsImpl
 		final MomCombatTile tile = new MomCombatTile ();
 		tile.getTileLayer ().add (grass);
 		
-		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
 		
 		// If its off the map edge, its automatically impassable
 		tile.setOffMapEdge (true);
-		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
 		tile.setOffMapEdge (false);
 		
 		// Borders with no blocking have no effect
 		tile.getBorderID ().add ("CTB03");
-		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
 		
 		// Borders with total blocking make tile impassable
 		tile.getBorderID ().set (0, "CTB02");
-		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
 
 		// Borders with edge blocking have no effect
 		tile.getBorderID ().set (0, "CTB01");
-		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
 		
 		// Building makes it impassable
 		final MomCombatTileLayer building = new MomCombatTileLayer ();
@@ -315,7 +318,7 @@ public final class TestUnitCalculationsImpl
 		building.setCombatTileTypeID ("CBL03");
 		tile.getTileLayer ().add (building);
 		
-		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
 		
 		// Road doesn't prevent it from being impassable
 		// Note have intentionally added the layers in the wrong order here - natural order is terrain-road-building
@@ -325,11 +328,11 @@ public final class TestUnitCalculationsImpl
 		road.setCombatTileTypeID ("CRL03");
 		tile.getTileLayer ().add (road);
 		
-		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
 		
 		// Change the building to a rock, which doesn't block movement, now the road works
 		tile.getTileLayer ().get (1).setCombatTileTypeID ("CBL01");
-		assertEquals (1, calc.calculateDoubleMovementToEnterCombatTile (tile, db));
+		assertEquals (1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
 	}
 	
 	/**

@@ -37,7 +37,6 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileType;
 import momime.common.database.UnitEx;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -58,6 +57,7 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -132,6 +132,9 @@ public final class UnitAIImpl implements UnitAI
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 	
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
+	
 	/**
 	 * Lists every unit this AI player can build at every city they own, as well as any units they can summon, sorted with the best units first.
 	 * This won't list heroes, since if we cast Summon Hero/Champion, we never know which one we're going to get.
@@ -175,26 +178,13 @@ public final class UnitAIImpl implements UnitAI
 						{
 							// Need real example of the unit so that we property take into account if we have
 							// e.g. retorts that make it cheaper to maintained summoned creatures, or so on 
-							final AvailableUnit unit = new AvailableUnit ();
-							unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
-							unit.setUnitID (unitDef.getUnitID ());
-							unit.setUnitLocation (cityLocation);
-
-							// Need to get experience and weapon grade right so we tend to construct units in cities with e.g. a Fighters' or Alchemists' Guild
-							final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
-								(priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMaintainedSpell (), cityLocation, db);
-							
-							unit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-								(priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMap (), cityLocation, pub.getPick (), sd.getOverlandMapSize (), db));
-							
-							getUnitUtils ().initializeUnitSkills (unit, startingExperience, db);
-							
-							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
+							final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnitFromCity (unitDef.getUnitID (), player, cityLocation,
+								players, priv.getFogOfWarMemory (), sd.getOverlandMapSize (), db);
 							
 							results.add (new AIConstructableUnit (unitDef, cityLocation, null,
-								getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
+								getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, players, priv.getFogOfWarMemory (), db),
 								getAiUnitCalculations ().determineAIUnitType (xu),
-								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
+								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, xu.getUnit (), sd.getSpellSetting (), db)));
 						}									
 					}
 				}
@@ -209,18 +199,13 @@ public final class UnitAIImpl implements UnitAI
 					for (final UnitEx unitDef : unitDefs)
 						if (!unitDef.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 						{
-							final AvailableUnit unit = new AvailableUnit ();
-							unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
-							unit.setUnitID (unitDef.getUnitID ());
-							
-							getUnitUtils ().initializeUnitSkills (unit, null, db);
-			
-							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
+							final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnit (unitDef.getUnitID (), player.getPlayerDescription ().getPlayerID (), null,
+								players, priv.getFogOfWarMemory (), db);
 							
 							results.add (new AIConstructableUnit (unitDef, null, spell,
-								getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
+								getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, players, priv.getFogOfWarMemory (), db),
 								getAiUnitCalculations ().determineAIUnitType (xu),
-								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
+								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, xu.getUnit (), sd.getSpellSetting (), db)));
 						}
 				}
 		
@@ -1342,5 +1327,21 @@ public final class UnitAIImpl implements UnitAI
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Sample unit method
+	 */
+	public final SampleUnitUtils getSampleUnitUtils ()
+	{
+		return sampleUnitUtils;
+	}
+
+	/**
+	 * @param s Sample unit method
+	 */
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
+	{
+		sampleUnitUtils = s;
 	}
 }

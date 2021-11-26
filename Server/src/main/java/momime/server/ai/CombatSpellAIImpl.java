@@ -24,6 +24,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -60,6 +61,9 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Sample unit method */
+	private SampleUnitUtils sampleUnitUtils;
 	
 	/**
 	 * Checks whether casting the specified spell in combat is valid, e.g. does it have a valid target, and lists out all possible choices for casting it (if any).
@@ -216,7 +220,14 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 				final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 					(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 				
-				summoningLocation = getUnitServerUtils ().findFreeCombatPositionClosestTo (combatLocation, gc.getCombatMap (),
+				final ExpandedUnitDetails summonedUnit;
+				if (choice.getTargetUnit () != null)
+					summonedUnit = choice.getTargetUnit ();
+				else
+					summonedUnit = getSampleUnitUtils ().createSampleUnit (choice.getSpell ().getSummonedUnit ().get (0),
+						player.getPlayerDescription ().getPlayerID (), null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				summoningLocation = getUnitServerUtils ().findFreeCombatPositionClosestTo (summonedUnit, combatLocation, gc.getCombatMap (),
 					new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
 					player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ());
@@ -344,5 +355,21 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Sample unit method
+	 */
+	public final SampleUnitUtils getSampleUnitUtils ()
+	{
+		return sampleUnitUtils;
+	}
+
+	/**
+	 * @param s Sample unit method
+	 */
+	public final void setSampleUnitUtils (final SampleUnitUtils s)
+	{
+		sampleUnitUtils = s;
 	}
 }

@@ -26,6 +26,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.DamageProcessor;
 import momime.server.process.SpellProcessing;
@@ -63,6 +64,9 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	
 	/** Player utils */
 	private PlayerServerUtils playerServerUtils;
+	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -137,6 +141,11 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 							(trueUnit.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer,
 							null, mom);
 					}
+			
+			// Regardless of whether the unit died, recheck the map cell it is in
+			if (trueUnit != null)
+				getServerUnitCalculations ().recheckTransportCapacity ((MapCoordinates3DEx) trueUnit.getUnitLocation (),
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			
 			// Spell no longer using mana
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
@@ -269,5 +278,21 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	public final void setPlayerServerUtils (final PlayerServerUtils utils)
 	{
 		playerServerUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

@@ -103,7 +103,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
 	 * 
 	 * @param mapLocation Location where the units need to be rechecked
-	 * @param playerID Whose units to recheck
 	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param fogOfWarSettings Fog of war settings from session description
@@ -115,11 +114,11 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void recheckTransportCapacity (final MapCoordinates3DEx mapLocation, final int playerID, final FogOfWarMemory trueMap,
+	public final void recheckTransportCapacity (final MapCoordinates3DEx mapLocation, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.debug ("recheckTransportCapacity checking location " + mapLocation + " for units owned by player ID " + playerID);
+		log.debug ("recheckTransportCapacity checking location " + mapLocation);
 
 		final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
 			(mapLocation.getZ ()).getRow ().get (mapLocation.getY ()).getCell ().get (mapLocation.getX ()).getTerrainData ();
@@ -127,7 +126,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		// List all the units at this location owned by this player
 		final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 		for (final MemoryUnit tu : trueMap.getUnit ())
-			if ((tu.getStatus () == UnitStatusID.ALIVE) && (mapLocation.equals (tu.getUnitLocation ())) && (playerID == tu.getOwningPlayerID ()))
+			if ((tu.getStatus () == UnitStatusID.ALIVE) && (mapLocation.equals (tu.getUnitLocation ())))
 				unitStack.add (getExpandUnitDetails ().expandUnitDetails (tu, null, null, null, players, trueMap, db));
 		
 		// Get a list of the unit stack skills

@@ -204,6 +204,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="playerServerUtils" ref="playerServerUtils" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 	
 	<bean id="endCombatTurnMessage" class="momime.server.messages.process.EndCombatTurnMessageImpl" scope="prototype">
@@ -524,10 +525,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="momResourceConsumerUnit" class="momime.server.process.resourceconsumer.MomResourceConsumerUnit" scope="prototype">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 	
 	<bean id="momResourceConsumerSpell" class="momime.server.process.resourceconsumer.MomResourceConsumerSpell" scope="prototype">
 		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 
 	<!-- Processing -->
@@ -643,6 +647,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="spellTriggers" ref="spellTriggers" />
 		<property name="skillCalculations" ref="skillCalculations" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

@@ -1245,7 +1245,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			moveUnitStackOneCellOnServerAndClients (unitStack, player, moveFrom, moveTo, players, gsk, sd, db);
 			
 			// Recheck the units left behind - maybe a ship plane shifted and all the units who used to be inside it are now swimming
-			getServerUnitCalculations ().recheckTransportCapacity (moveFrom, playerID, gsk.getTrueMap (), players, sd.getFogOfWarSetting (), db);
+			getServerUnitCalculations ().recheckTransportCapacity (moveFrom, gsk.getTrueMap (), players, sd.getFogOfWarSetting (), db);
 		}
 		else
 		{

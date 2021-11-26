@@ -96,6 +96,7 @@ import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
@@ -224,6 +225,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Skill calculations */
 	private SkillCalculations skillCalculations;
+	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -1290,6 +1294,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null,
 	    			targetWarpedNode ? targetLocation : null, null, mom);
+	    		
+	    		if (kind == KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS)
+	    			getServerUnitCalculations ().recheckTransportCapacity (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
+	    				mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			}
 
 			// The only targeted overland summoning spell is Floating Island
@@ -2741,5 +2749,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setSkillCalculations (final SkillCalculations calc)
 	{
 		skillCalculations = calc;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

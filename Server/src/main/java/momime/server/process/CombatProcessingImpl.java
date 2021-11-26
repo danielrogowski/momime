@@ -1482,21 +1482,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// First get a list of the map coordinates and players to check; this could be two cells if the defender won - they'll have units at the combatLocation and the
 		// attackers' transports may have been wiped out but the transported units are still sat at the point they attacked from.
 		final List<MapCoordinates3DEx> mapLocations = new ArrayList<MapCoordinates3DEx> ();
-		final List<Integer> playerIDs = new ArrayList<Integer> ();
 		for (final MemoryUnit tu : trueMap.getUnit ())
 			if ((tu.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (tu.getCombatLocation ())))
-			{
 				if (!mapLocations.contains (tu.getUnitLocation ()))
 					mapLocations.add ((MapCoordinates3DEx) tu.getUnitLocation ());
-				
-				if (!playerIDs.contains (tu.getOwningPlayerID ()))
-					playerIDs.add (tu.getOwningPlayerID ());
-			}
 		
-		// Now check all locations and all players
+		// Now check all locations
 		for (final MapCoordinates3DEx mapLocation : mapLocations)
-			for (final Integer playerID : playerIDs)
-				getServerUnitCalculations ().recheckTransportCapacity (mapLocation, playerID, trueMap, players, fogOfWarSettings, db);
+			getServerUnitCalculations ().recheckTransportCapacity (mapLocation, trueMap, players, fogOfWarSettings, db);
 	}
 	
 	/**

@@ -3,16 +3,20 @@ package momime.server.process.resourceconsumer;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
 import momime.common.messages.NewTurnMessageTypeID;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.process.SpellProcessing;
 
 /**
@@ -34,6 +38,12 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 
 	/** Spell processing methods */
 	private SpellProcessing spellProcessing;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
 	
 	/**
 	 * @return The player who's resources are being consumed
@@ -116,6 +126,9 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
+		final MemoryUnit trueUnit = (getSpell ().getUnitURN () == null) ? null : getUnitUtils ().findUnitURN
+			(getSpell ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "MomResourceConsumerSpell");
+		
 		getSpellProcessing ().switchOffSpell (getSpell ().getSpellURN (), mom);
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
@@ -127,6 +140,10 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (spellSwitchedOff);
 		}
+		
+		if (trueUnit != null)
+			getServerUnitCalculations ().recheckTransportCapacity ((MapCoordinates3DEx) trueUnit.getUnitLocation (),
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 	}
 
 	/**
@@ -143,5 +160,37 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	public final void setSpellProcessing (final SpellProcessing obj)
 	{
 		spellProcessing = obj;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

@@ -195,7 +195,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		calc.setFogOfWarMidTurnChanges (midTurn);
 		
 		// Run method
-		calc.recheckTransportCapacity (new MapCoordinates3DEx (21, 10, 1), 1, trueMap, players, fogOfWarSettings, db);
+		calc.recheckTransportCapacity (new MapCoordinates3DEx (21, 10, 1), trueMap, players, fogOfWarSettings, db);
 		
 		// Check 1 unit of spearmen was killed
 		verify (midTurn).killUnitOnServerAndClients (killedUnit, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);

@@ -1,5 +1,7 @@
 package momime.server.ai;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.utils.ExpandedUnitDetails;
@@ -15,6 +17,9 @@ final class CombatAISpellChoice
 	/** The unit to target the spell on, if it is aimed at a unit - could be ours or theirs, depending on the type of spell */
 	private final ExpandedUnitDetails targetUnit;
 	
+	/** Where the spell will be aimed - could be where to summon a unit, where to attack a wall, where to make muddy, or so on */
+	private final MapCoordinates2DEx targetLocation;
+	
 	/** For spells that his multiple targets (e.g. Flame Strike or Mass Healing), how many suitable targets will be hit */ 
 	private final Integer targetCount;
 	
@@ -27,15 +32,17 @@ final class CombatAISpellChoice
 	/**
 	 * @param aSpell The spell to cast
 	 * @param aTargetUnit The unit to target the spell on, if it is aimed at a unit - could be ours or theirs, depending on the type of spell
+	 * @param aTargetLocation Where the spell will be aimed - could be where to summon a unit, where to attack a wall, where to make muddy, or so on
 	 * @param aTargetCount For spells that his multiple targets (e.g. Flame Strike or Mass Healing), how many suitable targets will be hit
 	 * @param aCombatCastingFixedSpellNumber For casting fixed spells the unit knows (e.g. Giant Spiders casting web), indicates the spell number
 	 * @param aCombatCastingSlotNumber For casting spells imbued into hero items, this is the number of the slot (0, 1 or 2)
 	 */
-	CombatAISpellChoice (final Spell aSpell, final ExpandedUnitDetails aTargetUnit, final Integer aTargetCount,
-		final Integer aCombatCastingFixedSpellNumber, final Integer aCombatCastingSlotNumber) 
+	CombatAISpellChoice (final Spell aSpell, final ExpandedUnitDetails aTargetUnit, final MapCoordinates2DEx aTargetLocation,
+		final Integer aTargetCount, final Integer aCombatCastingFixedSpellNumber, final Integer aCombatCastingSlotNumber) 
 	{
 		spell = aSpell;
 		targetUnit = aTargetUnit;
+		targetLocation = aTargetLocation;
 		targetCount = aTargetCount;
 		combatCastingFixedSpellNumber = aCombatCastingFixedSpellNumber;
 		combatCastingSlotNumber = aCombatCastingSlotNumber;
@@ -89,6 +96,14 @@ final class CombatAISpellChoice
 		return targetUnit;
 	}
 
+	/**
+	 * @return Where the spell will be aimed - could be where to summon a unit, where to attack a wall, where to make muddy, or so on
+	 */
+	public final MapCoordinates2DEx getTargetLocation ()
+	{
+		return targetLocation;
+	}
+	
 	/**
 	 * @return For spells that his multiple targets (e.g. Flame Strike or Mass Healing), how many suitable targets will be hit
 	 */ 

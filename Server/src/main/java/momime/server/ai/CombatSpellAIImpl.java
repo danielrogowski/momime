@@ -127,12 +127,32 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 		if (valid)
 		{
 			// Do we need to pick a target?  Or if spell hits multiple targets, prove there is at least one?
-			if ((spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS) ||
-				((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getSummonedUnit ().size () > 0)))
+			if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
 			{
-				log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat which requires no unit checks");
-				final CombatAISpellChoice choice = new CombatAISpellChoice (spell, null, null, combatCastingFixedSpellNumber, combatCastingSlotNumber);
+				log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting combat enchantment " + spell.getSpellID () + " in combat which requires no unit checks");
+				final CombatAISpellChoice choice = new CombatAISpellChoice (spell, null, null, null, combatCastingFixedSpellNumber, combatCastingSlotNumber);
 				choices.add (choice.getWeighting (), choice);
+			}
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getSummonedUnit ().size () > 0))
+			{
+				// Pick where to summon it - because maybe won't find anywhere
+				final ExpandedUnitDetails summonedUnit = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), player.getPlayerDescription ().getPlayerID (), null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+				
+				final MapCoordinates2DEx summoningLocation = getUnitServerUtils ().findFreeCombatPositionClosestTo (summonedUnit, combatLocation, gc.getCombatMap (),
+					new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
+					player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ());
+				
+				if (summoningLocation != null)
+				{
+					log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting summoning spell " + spell.getSpellID () + " in combat at cell " + summoningLocation);
+					final CombatAISpellChoice choice = new CombatAISpellChoice (spell, null, summoningLocation, null, combatCastingFixedSpellNumber, combatCastingSlotNumber);
+					choices.add (choice.getWeighting (), choice);
+				}
 			}
 			else
 			{
@@ -148,6 +168,9 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 				else
 					targetCount = 0;		// Targetted at all units, so count how many
 
+				final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+				
 				for (final MemoryUnit targetUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 				{
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
@@ -162,9 +185,28 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 					{
 						if (targetCount == null)
 						{
-							log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat at Unit URN " + targetUnit.getUnitURN ());
-							final CombatAISpellChoice choice = new CombatAISpellChoice (spell, xu, null, combatCastingFixedSpellNumber, combatCastingSlotNumber);
-							choices.add (choice.getWeighting (), choice);
+							// If we're trying to raise dead a specific unit, we have to prove there's somewhere valid to bring it back
+							if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+							{
+								final MapCoordinates2DEx summoningLocation = getUnitServerUtils ().findFreeCombatPositionClosestTo (xu, combatLocation, gc.getCombatMap (),
+									new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
+									player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+									mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ());
+								
+								if (summoningLocation != null)
+								{
+									log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting raise dead spell " + spell.getSpellID () + " in combat at Unit URN " + targetUnit.getUnitURN ()  + " at cell " + summoningLocation);
+									final CombatAISpellChoice choice = new CombatAISpellChoice (spell, xu, summoningLocation, null, combatCastingFixedSpellNumber, combatCastingSlotNumber);
+									choices.add (choice.getWeighting (), choice);
+								}
+							}
+							else
+							{
+								// Some other spell aimed at a unit with no additional validation to do
+								log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat at Unit URN " + targetUnit.getUnitURN ());
+								final CombatAISpellChoice choice = new CombatAISpellChoice (spell, xu, null, null, combatCastingFixedSpellNumber, combatCastingSlotNumber);
+								choices.add (choice.getWeighting (), choice);
+							}
 						}
 						else
 							targetCount++;
@@ -175,7 +217,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 				if ((targetCount != null) && (targetCount > 0))
 				{
 					log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat which will hit " + targetCount + " target(s)");
-					final CombatAISpellChoice choice = new CombatAISpellChoice (spell, null, targetCount, combatCastingFixedSpellNumber, combatCastingSlotNumber);
+					final CombatAISpellChoice choice = new CombatAISpellChoice (spell, null, null, targetCount, combatCastingFixedSpellNumber, combatCastingSlotNumber);
 					choices.add (choice.getWeighting (), choice);
 				}
 			}
@@ -211,31 +253,10 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 			log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " decided to cast combat spell " + choice.getSpell ().getSpellID () + " (" +
 				choice.getSpell ().getSpellName () + ")");
 			
-			// If a summoning spell, pick a location for the unit
-			final MapCoordinates2DEx summoningLocation;
-			if (choice.getSpell ().getSpellBookSectionID () != SpellBookSectionID.SUMMONING)
-				summoningLocation = null;
-			else
-			{
-				final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-				
-				final ExpandedUnitDetails summonedUnit;
-				if (choice.getTargetUnit () != null)
-					summonedUnit = choice.getTargetUnit ();
-				else
-					summonedUnit = getSampleUnitUtils ().createSampleUnit (choice.getSpell ().getSummonedUnit ().get (0),
-						player.getPlayerDescription ().getPlayerID (), null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-				
-				summoningLocation = getUnitServerUtils ().findFreeCombatPositionClosestTo (summonedUnit, combatLocation, gc.getCombatMap (),
-					new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
-					player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ());
-			}
-			
 			if (getSpellQueueing ().requestCastSpell (player, (combatCastingUnit == null) ? null : combatCastingUnit.getUnitURN (),
 				choice.getCombatCastingFixedSpellNumber (), choice.getCombatCastingSlotNumber (),
-				choice.getSpell ().getSpellID (), null, combatLocation, summoningLocation, (choice.getTargetUnit () == null) ? null : choice.getTargetUnit ().getUnitURN (), null, mom))
+				choice.getSpell ().getSpellID (), null, combatLocation, choice.getTargetLocation (),
+				(choice.getTargetUnit () == null) ? null : choice.getTargetUnit ().getUnitURN (), null, mom))
 				
 				result = CombatAIMovementResult.ENDED_COMBAT;
 			else

@@ -969,7 +969,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
+	 * @return Closest free passable combat tile to startPosition, or null if it checks the whole combat map and no location is suitable
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
@@ -990,9 +990,10 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem, true) == null))
 			
 			found = coords;
-		
+
+		int cellsChecked = 1;
 		int ringNumber = 1;
-		while (found == null)
+		while ((found == null) && (cellsChecked < combatMapCoordinateSystem.getWidth () * combatMapCoordinateSystem.getHeight ()))
 		{
 			// Move left
 			getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 7);
@@ -1007,6 +1008,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					// Move in direction d
 					if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, d))
 					{
+						cellsChecked++;
+						
 						// Is this cell unoccupied + passable terrain?
 						if ((getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 								(xu, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
@@ -1037,7 +1040,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param trueUnits List of true units
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
-	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
+	 * @return Closest free passable combat tile to startPosition, or null if it checks the whole combat map and no location is suitable
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
 	@Override
@@ -1056,8 +1059,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				
 			found = coords;
 		
+		int cellsChecked = 1;
 		int ringNumber = 1;
-		while (found == null)
+		while ((found == null) && (cellsChecked < combatMapCoordinateSystem.getWidth () * combatMapCoordinateSystem.getHeight ()))
 		{
 			// Move left
 			getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 7);
@@ -1072,6 +1076,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					// Move in direction d
 					if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, d))
 					{
+						cellsChecked++;
+						
 						// Is this cell unoccupied + passable terrain?
 						if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords, db, true) == null) &&
 							(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile

@@ -259,7 +259,7 @@ public interface UnitServerUtils
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
+	 * @return Closest free passable combat tile to startPosition, or null if it checks the whole combat map and no location is suitable
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
@@ -280,7 +280,7 @@ public interface UnitServerUtils
 	 * @param trueUnits List of true units
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
-	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
+	 * @return Closest free passable combat tile to startPosition, or null if it checks the whole combat map and no location is suitable
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
 	public MapCoordinates2DEx findFreeCombatPositionAvoidingInvisibleClosestTo (final ExpandedUnitDetails xu,

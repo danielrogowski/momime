@@ -441,7 +441,7 @@ public final class TestUnitMovementImpl
 		move.setUnitCalculations (unitCalculations);
 		
 		// Call method
-		final Integer [] [] [] result = move.calculateDoubleMovementToEnterTile (unitStack, unitStackSkills, terrain,
+		final Integer [] [] [] result = move.calculateDoubleMovementToEnterTile (unitStack, unitStackSkills, 1, terrain,
 			cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, false, spells, sys, db);
 		
 		// Check results

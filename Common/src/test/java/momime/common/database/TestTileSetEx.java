@@ -550,10 +550,9 @@ public final class TestTileSetEx
 	
 	/**
 	 * Tests the findSmoothedTileType method looking for tile types that do exist
-	 * @throws RecordNotFoundException If no matching tile type is found
 	 */
 	@Test
-	public final void testFindSmoothedTileType_Exists () throws RecordNotFoundException
+	public final void testFindSmoothedTileType_Exists ()
 	{
 		// Set up some dummy tile types
 		final SmoothedTileTypeEx tileType1 = createTileType ("TT01", 0, null);
@@ -584,10 +583,9 @@ public final class TestTileSetEx
 
 	/**
 	 * Tests the findSmoothedTileType method looking for a tile type that doesn't exist
-	 * @throws RecordNotFoundException If no matching tile type is found
 	 */
 	@Test
-	public final void testFindSmoothedTileType_NotExists () throws RecordNotFoundException
+	public final void testFindSmoothedTileType_NotExists ()
 	{
 		// Set up some dummy tile types
 		final SmoothedTileTypeEx tileType1 = createTileType ("TT01", 0, null);
@@ -599,10 +597,7 @@ public final class TestTileSetEx
 		tileSet.getSmoothedTileType ().add (tileType2);
 		tileSet.getSmoothedTileType ().add (tileType3);
 		
-		// Verify exception gets thrown
-		assertThrows (RecordNotFoundException.class, () ->
-		{
-			tileSet.findSmoothedTileType ("TT03", 0, null);
-		});
+		// Verify get a null back
+		assertNull (tileSet.findSmoothedTileType ("TT03", 0, null));
 	}
 }

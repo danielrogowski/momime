@@ -16,6 +16,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.utils.Holder;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -192,6 +193,7 @@ public final class UnitMovementImpl implements UnitMovement
 	/**
 	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
 	 * @param unitStackSkills Collective list of skills of all units in the stack
+	 * @param movingPlayerID The player who is trying to move here
 	 * @param terrain Player knowledge of terrain
 	 * @param cellTransportCapacity Count of the number of free transport spaces at every map cell
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
@@ -201,10 +203,13 @@ public final class UnitMovementImpl implements UnitMovement
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return Movement cost for the unit stack to enter every map cell
+	 * @throws RecordNotFoundException If we can't find the definition of flight skills
 	 */
-	final Integer [] [] [] calculateDoubleMovementToEnterTile (final UnitStack unitStack, final Set<String> unitStackSkills, final MapVolumeOfMemoryGridCells terrain,
-		final int [] [] [] cellTransportCapacity, final int [] [] [] ourUnitCountAtLocation, final Map<String, Integer> doubleMovementRates, final boolean towersImpassable,
+	final Integer [] [] [] calculateDoubleMovementToEnterTile (final UnitStack unitStack, final Set<String> unitStackSkills, final int movingPlayerID,
+		final MapVolumeOfMemoryGridCells terrain, final int [] [] [] cellTransportCapacity, final int [] [] [] ourUnitCountAtLocation,
+		final Map<String, Integer> doubleMovementRates, final boolean towersImpassable,
 		final List<MemoryMaintainedSpell> spells, final CoordinateSystem sys, final CommonDatabase db)
+		throws RecordNotFoundException
 	{
 		// What magic realm(s) are the units in the stack?
 		final Set<String> unitStackMagicRealms = new HashSet<String> ();
@@ -219,6 +224,26 @@ public final class UnitMovementImpl implements UnitMovement
 		final Set<MapCoordinates3DEx> blockedLocations = spells.stream ().filter
 			(s -> (s.getCityLocation () != null) && (blockingCitySpellEffectIDs.contains (s.getCitySpellEffectID ()))).map
 			(s -> (MapCoordinates3DEx) s.getCityLocation ()).collect (Collectors.toSet ());
+
+		// Can the whole unit stack all fly?
+		final List<String> flightSkills = db.findCombatTileType
+			(CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD, "calculateDoubleMovementToEnterTile").getCombatTileTypeRequiresSkill ();
+		final Holder<Boolean> allCanFly = new Holder<Boolean> (true);
+		unitStack.getUnits ().forEach (xu ->
+		{
+			if (flightSkills.stream ().noneMatch (f -> xu.hasModifiedSkill (f)))
+				allCanFly.setValue (false);
+		});
+		unitStack.getTransports ().forEach (xu ->
+		{
+			if (flightSkills.stream ().noneMatch (f -> xu.hasModifiedSkill (f)))
+				allCanFly.setValue (false);
+		});
+		
+		// Unless every single unit can fly, we're blocked from entering anywhere with Flying Fortress
+		if (!allCanFly.getValue ())
+			spells.stream ().filter (s -> (s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS)) && (s.getCastingPlayerID () != movingPlayerID)).map
+				(s -> (MapCoordinates3DEx) s.getCityLocation ()).forEach (l -> blockedLocations.add (l));
 		
 		// Check every map cell
 		final Integer [] [] [] doubleMovementToEnterTile = new Integer [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
@@ -440,7 +465,7 @@ public final class UnitMovementImpl implements UnitMovement
 		final boolean planarSeal = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
 			(map.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null);
 		
-		final Integer [] [] [] doubleMovementToEnterTile = calculateDoubleMovementToEnterTile (unitStack, unitStackSkills,
+		final Integer [] [] [] doubleMovementToEnterTile = calculateDoubleMovementToEnterTile (unitStack, unitStackSkills, movingPlayerID,
 			map.getMap (), cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, planarSeal, map.getMaintainedSpell (), sd.getOverlandMapSize (), db);
 		
 		// Initialize all the map areas

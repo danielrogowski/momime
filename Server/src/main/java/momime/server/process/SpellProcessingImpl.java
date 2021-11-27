@@ -580,6 +580,26 @@ public final class SpellProcessingImpl implements SpellProcessing
 					getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
 						castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (),
 						true, null, null, useVariableDamage, skipAnimation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+					
+					// In some cases adding a new spell may kill a unit, potentially ending the combat (webbing a unit that's flying over water)
+					final MomCombatTile tile = gc.getCombatMap ().getRow ().get (targetUnit.getCombatPosition ().getY ()).getCell ().get (targetUnit.getCombatPosition ().getX ());
+					
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					
+					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (xu, tile, mom.getServerDB ()) < 0)
+					{
+						// Killing units but recording they took 0 damage will result in them coming back as undead
+						getUnitServerUtils ().addDamage (targetUnit.getUnitDamage (), StoredDamageTypeID.HEALABLE, xu.calculateHitPointsRemaining ());
+						
+						getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (targetUnit, KillUnitActionID.HEALABLE_COMBAT_DAMAGE,
+							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+						
+						if (getDamageProcessor ().countUnitsInCombat (combatLocation,
+							targetUnit.getCombatSide (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
+							
+							winningPlayer = castingPlayer;
+					}
 				}
 				else if (!skipAnimation)
 				{

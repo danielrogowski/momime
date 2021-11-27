@@ -648,6 +648,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellTriggers" ref="spellTriggers" />
 		<property name="skillCalculations" ref="skillCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

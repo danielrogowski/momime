@@ -33,6 +33,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CitySpellEffect;
 import momime.common.database.CitySpellEffectTileType;
+import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageType;
@@ -76,6 +77,7 @@ import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
+import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
@@ -228,6 +230,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
+	
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -644,10 +649,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 					areaBridge.setArea (gc.getCombatMap ());
 					areaBridge.setCoordinateSystem (mom.getSessionDescription ().getCombatMapSize ());
 					
+					final Set<String> muddableTiles = mom.getServerDB ().getCombatTileType ().stream ().filter
+						(tt -> tt.getCombatTileTypeRequiresSkill ().isEmpty ()).map (tt -> tt.getCombatTileTypeID ()).collect (Collectors.toSet ());
+					
 					getCombatMapOperations ().processCellsWithinRadius (areaBridge, targetLocation.getX (), targetLocation.getY (),
 						spell.getSpellRadius (), (tile) ->
 					{
-						tile.setMud (true);
+						if (muddableTiles.contains (getCombatMapUtils ().getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN)))
+							tile.setMud (true);
+						
 						return true;
 					});
 				}
@@ -2765,5 +2775,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+
+	/**
+	 * @param util Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils util)
+	{
+		combatMapUtils = util;
 	}
 }

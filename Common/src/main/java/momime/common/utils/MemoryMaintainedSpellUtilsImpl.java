@@ -318,6 +318,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param overrideSpellBookSection Usually null; filled in when a spell is of one type, but has a specially coded secondary effect of another type
 	 *		For example Wall of Fire is a city enchantment for placing it, but then when we roll for damage we have to treat it like an attack spell 
 	 * @param combatLocation The location that the combat is taking place; null for targetting overland spells
+	 * @param combatTerrain Generated combat map; null for targetting overland spells
 	 * @param castingPlayerID Player casting the spell
 	 * @param castingUnit Unit casting the spell, if its a hero casting a spell or using a spell imbued into an item, or a creature like Giant Spiders casting web; null if wizard casting
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
@@ -335,9 +336,10 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 */
 	@Override
 	public final TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final SpellBookSectionID overrideSpellBookSection, final MapCoordinates3DEx combatLocation,
-		final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage, final ExpandedUnitDetails targetUnit, final boolean isTargeting,
-		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException 
+		final MapAreaOfCombatTiles combatTerrain, final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage,
+		final ExpandedUnitDetails targetUnit, final boolean isTargeting, final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow,
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
     	final TargetSpellResult result;
     	final int targetUnitURN = targetUnit.getUnitURN ();
@@ -515,6 +517,18 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    					result = TargetSpellResult.NO_AMMUNITION;
 	    				else
 	    					result = TargetSpellResult.VALID_TARGET;
+	    			}
+	    			
+	    			// Cracks Call can't be used over ocean or cloud tiles
+	    			else if ((kind == KindOfSpell.ATTACK_UNITS_AND_WALLS) && (combatLocation != null) && (combatTerrain != null))
+	    			{
+	    				final MomCombatTile tile = combatTerrain.getRow ().get (targetUnit.getCombatPosition ().getY ()).getCell ().get (targetUnit.getCombatPosition ().getX ());
+	    				final String combatTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (tile, CombatMapLayerID.TERRAIN);
+	    				final CombatTileType combatTileType = db.findCombatTileType (combatTileTypeID, "isUnitValidTargetForSpell");
+	    				if (combatTileType.getCombatTileTypeRequiresSkill ().isEmpty ())
+	    	    			result = TargetSpellResult.VALID_TARGET;
+	    				else
+	    					result = TargetSpellResult.INVALID_TILE_TYPE;
 	    			}
 	    			
 					// Attack spell that rolls against something other than resistance, so always a valid target

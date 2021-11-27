@@ -236,7 +236,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 							final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 								sender.getPlayerDescription ().getPlayerID (), null, null, thisTarget, true, mom.getGeneralServerKnowledge ().getTrueMap (),
 								priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)												
 								
@@ -293,7 +293,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-							(spell, null, null, sender.getPlayerDescription ().getPlayerID (), null, null, xu, true,
+							(spell, null, null, null, sender.getPlayerDescription ().getPlayerID (), null, null, xu, true,
 							mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ());
 						
 						if (reason == TargetSpellResult.VALID_TARGET)

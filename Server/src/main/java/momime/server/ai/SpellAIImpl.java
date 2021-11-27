@@ -374,7 +374,7 @@ public final class SpellAIImpl implements SpellAI
 									final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 										mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 									if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
-										(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
+										(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
 											priv.getFogOfWarMemory (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 										
 										validTargetFound = true;
@@ -426,7 +426,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void decideSpellTarget (final PlayerServerDetails player, final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
+	public final void decideOverlandSpellTarget (final PlayerServerDetails player, final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -506,7 +506,7 @@ public final class SpellAIImpl implements SpellAI
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 						mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 					if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
-						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
+						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
 							priv.getFogOfWarMemory (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 					{
 						int thisUnitRating = getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());

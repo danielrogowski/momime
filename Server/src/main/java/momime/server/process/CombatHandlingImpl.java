@@ -27,6 +27,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.messages.ServerGridCell;
 import momime.server.utils.CombatMapServerUtils;
 
 /**
@@ -99,7 +100,7 @@ public final class CombatHandlingImpl implements CombatHandling
 			final Spell spellDef = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_WALL_OF_FIRE, "crossCombatBorder");
 						
 			// Specify 0 for castingPlayerID, since we can hurt ourselves
-			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spellDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, 0, null, null, xu,
+			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spellDef, SpellBookSectionID.ATTACK_SPELLS, combatLocation, combatMap, 0, null, null, xu,
 				false, mom.getGeneralServerKnowledge ().getTrueMap (), null, mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 			{
 				final List<ResolveAttackTarget> targetUnits = new ArrayList<ResolveAttackTarget> ();
@@ -135,6 +136,9 @@ public final class CombatHandlingImpl implements CombatHandling
 	{
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), vortex.getOwningPlayerID (), "damageFromVortex");
 		
+		final ServerGridCell gc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(vortex.getCombatLocation ().getZ ()).getRow ().get (vortex.getCombatLocation ().getY ()).getCell ().get (vortex.getCombatLocation ().getX ());
+		
 		// Build a list of all the units being attacked
 		final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();
 		
@@ -148,8 +152,8 @@ public final class CombatHandlingImpl implements CombatHandling
 			final ExpandedUnitDetails xuDoomUnit = getExpandUnitDetails ().expandUnitDetails (doomUnit, null, null, doomBoltSpell.getSpellRealm (),
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (doomBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), 0,
-				null, VORTEX_VARIABLE_DAMAGE, xuDoomUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
+			if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (doomBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), gc.getCombatMap (),
+				0, null, VORTEX_VARIABLE_DAMAGE, xuDoomUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
 				mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 			{
 				final ResolveAttackTarget doomUnitTarget = new ResolveAttackTarget (doomUnit);
@@ -176,8 +180,8 @@ public final class CombatHandlingImpl implements CombatHandling
 					final ExpandedUnitDetails xuLightningUnit = getExpandUnitDetails ().expandUnitDetails (lightningUnit, null, null, lightningBoltSpell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (lightningBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), 0,
-						null, VORTEX_VARIABLE_DAMAGE, xuLightningUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
+					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (lightningBoltSpell, null, (MapCoordinates3DEx) vortex.getCombatLocation (), gc.getCombatMap (),
+						0, null, VORTEX_VARIABLE_DAMAGE, xuLightningUnit, false, mom.getGeneralServerKnowledge ().getTrueMap (), null,
 						mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 					{
 						final ResolveAttackTarget lightningUnitTarget = new ResolveAttackTarget (lightningUnit);

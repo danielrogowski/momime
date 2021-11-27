@@ -377,7 +377,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					trans.getNewTurnMessage ().add (targetSpell);
 				}
 				else
-					getSpellAI ().decideSpellTarget (player, spell, maintainedSpell, mom);
+					getSpellAI ().decideOverlandSpellTarget (player, spell, maintainedSpell, mom);
 			}
 			
 			// Special spells (Spell of Mastery and a few other unique spells that you don't even pick a target for)
@@ -833,7 +833,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							final int thisCastingPlayerID = ((randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_HEALING)) ||
 								(randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS))) ? thisUnit.getOwningPlayerID () : castingPlayer.getPlayerDescription ().getPlayerID ();
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (randomSpell, null, combatLocation, thisCastingPlayerID,
+							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (randomSpell, null, combatLocation, gc.getCombatMap (), thisCastingPlayerID,
 								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							{
@@ -869,7 +869,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, gc.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (),
 								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 								
@@ -1280,7 +1280,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{
@@ -1502,7 +1502,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
@@ -1631,7 +1631,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final ExpandedUnitDetails thisTarget = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 							maintainedSpell.getCastingPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{

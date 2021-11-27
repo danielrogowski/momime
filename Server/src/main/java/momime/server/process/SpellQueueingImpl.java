@@ -419,8 +419,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, null, combatLocation, player.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xuCombatTargetUnit, true,
-							mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ());
+						(spell, null, combatLocation, gc.getCombatMap (), player.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xuCombatTargetUnit,
+							true, mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ());
 					
 					if (validTarget != TargetSpellResult.VALID_TARGET)
 					{

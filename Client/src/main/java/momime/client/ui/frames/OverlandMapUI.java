@@ -971,7 +971,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 										final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 										
-										final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null,
+										final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null,
 											getClient ().getOurPlayerID (), null, null, xu, true, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 											getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
 										

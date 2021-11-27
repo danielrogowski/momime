@@ -172,7 +172,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 						variableDamage = null;
 					
 					TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, null, combatLocation, getClient ().getOurPlayerID (), castingSource.getCastingUnit (), variableDamage,
+						(spell, null, combatLocation, combatTerrain, getClient ().getOurPlayerID (), castingSource.getCastingUnit (), variableDamage,
 						 xus, true, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 						 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getPlayers (), getClient ().getClientDB ());
 					

@@ -106,6 +106,10 @@ public final class SpellTargetingEx extends SpellTargeting
 				languageText = getChangeUnitTerrainImpassable ();
 				break;
 			 
+			case INVALID_TILE_TYPE:
+				languageText = getInvalidTileType ();
+				break;
+				
 			default:
 				throw new MomException ("SpellTargetingEx.getUnitLanguageText doesn't know what to do with enum value " + targetSpellResult);
 		 }

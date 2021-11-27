@@ -24,6 +24,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
@@ -575,6 +576,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Unit we're casting it on
 		final MemoryUnit targetUnit = new MemoryUnit ();
 		targetUnit.setUnitURN (101);
+		targetUnit.setCombatPosition (new MapCoordinates2DEx (3, 4));
+		
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		
 		// Spell to cast
 		final Spell spell = new Spell ();
@@ -602,6 +607,9 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
 		gc.setCombatAttackerCastingSkillRemaining (45);
+		
+		// Combat map
+		gc.setCombatMap (createCombatMap ());
 
 		// Players involved
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -653,6 +661,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellUtils (spellUtils);
 		proc.setSpellDispelling (spellDispelling);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
+		proc.setExpandUnitDetails (expand);
+		proc.setUnitCalculations (unitCalculations);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, false, mom);

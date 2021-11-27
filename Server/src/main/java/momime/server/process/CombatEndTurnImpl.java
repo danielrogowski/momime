@@ -334,7 +334,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 									
 									if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-										(damagingCAE, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+										(damagingCAE, SpellBookSectionID.ATTACK_SPELLS, combatLocation, tc.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (),
 											null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 											mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 										
@@ -369,7 +369,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-							(terrorSpell, SpellBookSectionID.ATTACK_SPELLS, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+							(terrorSpell, SpellBookSectionID.ATTACK_SPELLS, combatLocation, tc.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (),
 								null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 							

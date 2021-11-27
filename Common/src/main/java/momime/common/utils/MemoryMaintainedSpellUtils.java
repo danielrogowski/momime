@@ -129,6 +129,7 @@ public interface MemoryMaintainedSpellUtils
 	 * @param overrideSpellBookSection Usually null; filled in when a spell is of one type, but has a specially coded secondary effect of another type
 	 *		For example Wall of Fire is a city enchantment for placing it, but then when we roll for damage we have to treat it like an attack spell 
 	 * @param combatLocation The location that the combat is taking place; null for targetting overland spells
+	 * @param combatTerrain Generated combat map; null for targetting overland spells
 	 * @param castingPlayerID Player casting the spell
 	 * @param castingUnit Unit casting the spell, if its a hero casting a spell or using a spell imbued into an item, or a creature like Giant Spiders casting web; null if wizard casting
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
@@ -145,8 +146,9 @@ public interface MemoryMaintainedSpellUtils
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	public TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final SpellBookSectionID overrideSpellBookSection, final MapCoordinates3DEx combatLocation,
-		final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage, final ExpandedUnitDetails targetUnit, final boolean isTargeting,
-		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		final MapAreaOfCombatTiles combatTerrain, final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage,
+		final ExpandedUnitDetails targetUnit, final boolean isTargeting, final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow,
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException; 
 
 	/**

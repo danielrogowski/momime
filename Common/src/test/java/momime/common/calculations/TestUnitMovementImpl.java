@@ -25,6 +25,7 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
+import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
@@ -359,6 +360,9 @@ public final class TestUnitMovementImpl
 		
 		final Pick normalUnit = new Pick ();
 		normalUnit.setPickID (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		
+		final CombatTileType cloudTile = new CombatTileType ();
+		when (db.findCombatTileType (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD, "calculateDoubleMovementToEnterTile")).thenReturn (cloudTile);
 		
 		// Coordinate system
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();

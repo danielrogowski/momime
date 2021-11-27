@@ -407,6 +407,9 @@ public final class CommonDatabaseConstants
 	/** Spell Blast spell */
 	public final static String SPELL_ID_SPELL_BLAST = "SP058";
 	
+	/** Flying Fortress spell */
+	public final static String SPELL_ID_FLYING_FORTRESS = "SP077";
+	
 	/** Time Stop spell */
 	public final static String SPELL_ID_TIME_STOP = "SP080";
 	
@@ -534,6 +537,20 @@ public final class CommonDatabaseConstants
 	
 	/** Special bitmask for when smoothing is turned off */
 	public final static String TILE_BITMASK_NO_SMOOTHING = "NoSmooth";
+
+	// combat maps
+	
+	/** Dips in the terrain */
+	public final static String COMBAT_TILE_TYPE_DARK = "CTL02";
+	
+	/** Hills in the terrain */
+	public final static String COMBAT_TILE_TYPE_RIDGE = "CTL03";
+
+	/** Hills in the terrain */
+	public final static String COMBAT_TILE_TYPE_CLOUD = "CTL05";
+
+	/** Trees/rocks on the combat map */
+	public final static String COMBAT_TILE_TERRAIN_FEATURE = "CBL01";
 	
 	/**
 	 * Prevent instatiation of this class

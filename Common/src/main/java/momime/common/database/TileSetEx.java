@@ -196,11 +196,9 @@ public final class TileSetEx extends TileSet
 	 * @param overlandMapTileTypeID Overland map tile type ID to search for
 	 * @param planeNumber Plane number to search for
 	 * @param combatTileTypeID Combat map tile type ID to search for; pass null for searching for overland map tiles
-	 * @return Requested smoothed tile type
-	 * @throws RecordNotFoundException If no matching tile type is found
+	 * @return Requested smoothed tile type, or null if not found (there are no graphics for the cloud tile so this is valid)
 	 */
 	public final SmoothedTileTypeEx findSmoothedTileType (final String overlandMapTileTypeID, final Integer planeNumber, final String combatTileTypeID)
-		throws RecordNotFoundException
 	{
 		// Note the overlandMapTileTypeID and planeNumber *in the database* are optional, in which case will match regardless of what values are passed in
 		// This is why we have to do the search the hard way, rather than using a map
@@ -215,9 +213,6 @@ public final class TileSetEx extends TileSet
 				
 				match = thisTileType;
 		}
-		
-		if (match == null)
-			throw new RecordNotFoundException (SmoothedTileTypeEx.class, overlandMapTileTypeID + "/" + planeNumber + "/" + combatTileTypeID, "findSmoothedTileType");
 		
 		return match;
 	}

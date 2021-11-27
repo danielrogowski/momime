@@ -2,6 +2,7 @@ package momime.server.mapgenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.MapCoordinates2D;
@@ -12,6 +13,7 @@ import momime.common.database.CombatMapElement;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileTypeEx;
 import momime.common.messages.CombatMapSize;
@@ -23,7 +25,6 @@ import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.CombatMapServerUtils;
 
@@ -74,18 +75,25 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		
 		// Set troughs and hills
 		if (tileType.getCombatDarkTiles () != null)
-			setLowestTiles (heightMap, map, ServerDatabaseValues.COMBAT_TILE_TYPE_DARK, tileType.getCombatDarkTiles ());
+			setLowestTiles (heightMap, map, CommonDatabaseConstants.COMBAT_TILE_TYPE_DARK, tileType.getCombatDarkTiles ());
 		
 		if (tileType.getCombatRidgeTiles () != null)
-			setHighestTiles (heightMap, map, ServerDatabaseValues.COMBAT_TILE_TYPE_RIDGE, tileType.getCombatRidgeTiles ());
-		
+			setHighestTiles (heightMap, map, CommonDatabaseConstants.COMBAT_TILE_TYPE_RIDGE, tileType.getCombatRidgeTiles ());
+
+		// Special handling for Flying Fortress.  Could just put all the clouds in the XML but there'd be so much of it...
+		final boolean flyingFortress = (getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueTerrain.getMaintainedSpell (), null,
+			CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS, null, null, combatMapLocation, null) != null);
+			
 		// Place trees/rocks randomly
-		if (tileType.getCombatTerrainFeatures () != null)
-			setTerrainFeaturesRandomly (map, combatMapCoordinateSystem, ServerDatabaseValues.COMBAT_TILE_TERRAIN_FEATURE, tileType.getCombatTerrainFeatures ());
+		if ((!flyingFortress) && (tileType.getCombatTerrainFeatures () != null))
+			setTerrainFeaturesRandomly (map, combatMapCoordinateSystem, CommonDatabaseConstants.COMBAT_TILE_TERRAIN_FEATURE, tileType.getCombatTerrainFeatures ());
 		
 		// Place walls, buildings, houses, nodes, towers and anything else defined in the combat map elements in the server XML
 		// Purposefully do this 2nd, so if there happens to be a tree right where we need to put the Wizards' Fortress, the tree will be overwritten
 		placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
+
+		if (flyingFortress)
+			placeClouds (map, db);
 		
 		// Store the map against the grid cell on the server
 		mc.setCombatMap (map);
@@ -298,6 +306,23 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
 	}
 
+	/**
+	 * Places cloud tiles everywhere except the city
+	 * 
+	 * @param map Map to place cloud tiles in
+	 * @param db Server database XML
+	 */
+	final void placeClouds (final MapAreaOfCombatTiles map, final CommonDatabase db)
+	{
+		final List<String> cityTiles = db.getCombatTileType ().stream ().filter
+			(t -> (t.isInsideCity () != null) && (t.isInsideCity ())).map (t -> t.getCombatTileTypeID ()).collect (Collectors.toList ());
+			
+		for (final MapRowOfCombatTiles row : map.getRow ())
+			for (final MomCombatTile tile : row.getCell ())
+				if (!tile.getTileLayer ().stream ().anyMatch (l -> cityTiles.contains (l.getCombatTileTypeID ())))
+					tile.getTileLayer ().get (0).setCombatTileTypeID (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD);
+	}
+	
 	/**
 	 * @return MemoryBuilding utils
 	 */

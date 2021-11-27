@@ -61,17 +61,6 @@ public final class ServerDatabaseValues
 	/** Awareness - see areas around enemy cities */
 	public final static String SPELL_ID_AWARENESS = "SP209";
 	
-	// combat maps
-	
-	/** Dips in the terrain */
-	public final static String COMBAT_TILE_TYPE_DARK = "CTL02";
-	
-	/** Hills in the terrain */
-	public final static String COMBAT_TILE_TYPE_RIDGE = "CTL03";
-
-	/** Trees/rocks on the combat map */
-	public final static String COMBAT_TILE_TERRAIN_FEATURE = "CBL01";
-	
 	/**
 	 * Prevent instantiation
 	 */

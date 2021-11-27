@@ -325,9 +325,9 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		String result;
 		if (terrainTileTypeID.equals ("CTL01"))		// default/grass
 			result = ".";
-		else if (terrainTileTypeID.equals (ServerDatabaseValues.COMBAT_TILE_TYPE_DARK))
+		else if (terrainTileTypeID.equals (CommonDatabaseConstants.COMBAT_TILE_TYPE_DARK))
 			result = "v";
-		else if (terrainTileTypeID.equals (ServerDatabaseValues.COMBAT_TILE_TYPE_RIDGE))
+		else if (terrainTileTypeID.equals (CommonDatabaseConstants.COMBAT_TILE_TYPE_RIDGE))
 			result = "^";
 		else
 			throw new MomException ("outputCombatTile doesn't know a letter to output for terrain combat tile type \"" + terrainTileTypeID + "\"");
@@ -336,7 +336,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		final String featureTileTypeID = utils.getCombatTileTypeForLayer (tile, CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
 		if (featureTileTypeID == null)
 			result = result + " ";
-		else if (featureTileTypeID.equals (ServerDatabaseValues.COMBAT_TILE_TERRAIN_FEATURE))
+		else if (featureTileTypeID.equals (CommonDatabaseConstants.COMBAT_TILE_TERRAIN_FEATURE))
 			result = result + "T";
 		else if (featureTileTypeID.equals ("CBL02"))		// House
 			result = result + "H";

@@ -14,6 +14,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.database.AnimationEx;
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SmoothedTile;
 import momime.common.database.SmoothedTileTypeEx;
@@ -104,11 +105,17 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 					else
 					{
 						final SmoothedTileTypeEx smoothedTileType = combatMapTileSet.findSmoothedTileType (tileTypeID, combatLocation.getZ (), combatTileTypeID);
-						final String bitmask = getTileSetBitmaskGenerator ().generateCombatMapBitmask (combatTerrain, smoothedTileType, layer, x, y);
-						
-						// The cache works directly on unsmoothed bitmasks so no reduction to do
 						smoothedTileTypesLayer [y] [x] = smoothedTileType;
-						smoothedTilesLayer [y] [x] = smoothedTileType.getRandomImage (bitmask.toString ());
+						
+						if (smoothedTileType == null)
+							smoothedTilesLayer [y] [x] = null;
+						else
+						{
+							final String bitmask = getTileSetBitmaskGenerator ().generateCombatMapBitmask (combatTerrain, smoothedTileType, layer, x, y);
+							
+							// The cache works directly on unsmoothed bitmasks so no reduction to do
+							smoothedTilesLayer [y] [x] = smoothedTileType.getRandomImage (bitmask.toString ());
+						}
 					}
 				}
 		}
@@ -139,6 +146,16 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		{
 			combatMapBitmaps [frameNo] = new BufferedImage (640, 362, BufferedImage.TYPE_INT_ARGB);
 			g [frameNo] = combatMapBitmaps [frameNo].createGraphics ();
+		}
+		
+		// If its a cloud combat, the background is a single big image rather than lots of individual tiles.
+		// Look for the tile in particular rather than the Flying Fortress spell, in case it has been dispelled during the combat.
+		final String topLeftTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (combatTerrain.getRow ().get (0).getCell ().get (0), CombatMapLayerID.TERRAIN);
+		if (topLeftTileTypeID.equals (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD))
+		{
+			final BufferedImage cloudBackground = getUtils ().loadImage ("/momime.client.graphics/combat/terrain/cloud/cloudCombatTerrain.png");
+			for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
+				g [frameNo].drawImage (cloudBackground, 0, 0, null);
 		}
 		
 		// Terrain and road are static; building layer is drawn on the fly so buildings can get the correct zOrders relative to units moving in front of/behind them

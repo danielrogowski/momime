@@ -322,17 +322,17 @@
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-base</artifactId>
-			<version>0.5.2-SNAPSHOT</version>
+			<version>0.5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.multiplayer</groupId>
 			<artifactId>ndgmultiplayer-sessionbase</artifactId>
-			<version>0.5.2-SNAPSHOT</version>
+			<version>0.5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.map</groupId>
 			<artifactId>ndgmap</artifactId>
-			<version>0.5.1-SNAPSHOT</version>
+			<version>0.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

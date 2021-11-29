@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.common.MomException;
 import momime.server.MomSessionVariables;
 
 /**
@@ -61,7 +62,7 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	@Override
 	public final WorldUpdateResult process (final MomSessionVariables mom) throws IOException, JAXBException, XMLStreamException
 	{
-		return WorldUpdateResult.DONE;
+		throw new MomException (toString () + " not yet impelemented");
 	}
 
 	/**

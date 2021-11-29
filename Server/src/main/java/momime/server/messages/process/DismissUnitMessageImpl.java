@@ -1,5 +1,7 @@
 package momime.server.messages.process;
 
+import java.io.IOException;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -9,10 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.TurnSystem;
@@ -52,15 +51,13 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there was another kind of problem
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -97,17 +94,19 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 		{
 			// Do immediately or at end of turn?
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
+			{
 				getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.DISMISS, sender,
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+
+				// Unit probably had some maintenance (only need to do here - if actually killing unit by world updates then engine will already know it has to do this)
+				getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
+			}
 			else
 			{
 				// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server
-				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.DISMISS, mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+				mom.getWorldUpdates ().killUnit (getUnitURN (), KillUnitActionID.DISMISS);
+				mom.getWorldUpdates ().process (mom);
 			}
-			
-			// Unit probably had some maintenance
-			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 	}
 

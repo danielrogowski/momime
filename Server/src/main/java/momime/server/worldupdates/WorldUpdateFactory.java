@@ -29,4 +29,9 @@ public interface WorldUpdateFactory
 	 * @return New object with spring dependencies injected
 	 */
 	public RecalculateCityUpdate createRecalculateCityUpdate ();
+	
+	/**
+	 * @return New object with spring dependencies injected
+	 */
+	public RecalculateProductionUpdate createRecalculateProductionUpdate ();
 }

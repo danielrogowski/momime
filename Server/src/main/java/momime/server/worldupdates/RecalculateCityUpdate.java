@@ -6,14 +6,33 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
+import momime.common.calculations.CityCalculations;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerCityCalculations;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 /**
  * World update for recalculationg all city stats such as size and number of rebels 
  */
 public final class RecalculateCityUpdate implements WorldUpdate
 {
+	/** Server-only city calculations */
+	private ServerCityCalculations serverCityCalculations;
+	
+	/** City calculations */
+	private CityCalculations cityCalculations;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
 	/** The city location to check */
 	private MapCoordinates3DEx cityLocation;
 	
@@ -63,9 +82,93 @@ public final class RecalculateCityUpdate implements WorldUpdate
 	@Override
 	public final WorldUpdateResult process (final MomSessionVariables mom) throws IOException, JAXBException, XMLStreamException
 	{
+		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+		
+		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "RecalculateCityUpdate");
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+		
+		getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+			getCityLocation (), mom.getSessionDescription (), mom.getServerDB ());
+
+		tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), getCityLocation (), priv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
+
+		getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
+
+		// Send the updated city stats to any clients that can see the city
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+			getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
+		
 		return WorldUpdateResult.DONE;
 	}
 
+	/**
+	 * @return Server-only city calculations
+	 */
+	public final ServerCityCalculations getServerCityCalculations ()
+	{
+		return serverCityCalculations;
+	}
+
+	/**
+	 * @param calc Server-only city calculations
+	 */
+	public final void setServerCityCalculations (final ServerCityCalculations calc)
+	{
+		serverCityCalculations = calc;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
+	
 	/**
 	 * @return The city location to check
 	 */

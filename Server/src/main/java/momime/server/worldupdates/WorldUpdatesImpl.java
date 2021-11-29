@@ -98,7 +98,7 @@ public final class WorldUpdatesImpl implements WorldUpdates
 	public final boolean recheckTransportCapacity (final MapCoordinates3DEx mapLocation)
 	{
 		final RecheckTransportCapacityUpdate update = getWorldUpdateFactory ().createRecheckTransportCapacityUpdate ();
-		update.setMapLocation (mapLocation);
+		update.setMapLocation (new MapCoordinates3DEx (mapLocation));
 		
 		return add (update);
 	}
@@ -111,7 +111,20 @@ public final class WorldUpdatesImpl implements WorldUpdates
 	public final boolean recalculateCity (final MapCoordinates3DEx cityLocation)
 	{
 		final RecalculateCityUpdate update = getWorldUpdateFactory ().createRecalculateCityUpdate ();
-		update.setCityLocation (cityLocation);
+		update.setCityLocation (new MapCoordinates3DEx (cityLocation));
+		
+		return add (update);
+	}
+	
+	/**
+	 * @param playerID The player to recalculate production for
+	 * @return Whether the update was added; will return false if its a duplicate update already found to be in the list
+	 */
+	@Override
+	public final boolean recalculateProduction (final int playerID)
+	{
+		final RecalculateProductionUpdate update = getWorldUpdateFactory ().createRecalculateProductionUpdate ();
+		update.setPlayerID (playerID);
 		
 		return add (update);
 	}
@@ -140,13 +153,14 @@ public final class WorldUpdatesImpl implements WorldUpdates
 			log.debug ("Processing first world update out of " + updates.size () + " which is " + update);
 			
 			final WorldUpdateResult result = update.process (mom);
-			log.debug (update + " returned " + result + ", now there are " + updates.size () + " pending updates");
 			
 			if ((result == WorldUpdateResult.DONE) || (result == WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED))
 				updates.remove (0);
 			
 			if ((result == WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED) || (result == WorldUpdateResult.REDO_BECAUSE_EARLIER_UPDATES_ADDED))
 				resortList = true;
+			
+			log.debug (update + " returned " + result + ", now there are " + updates.size () + " pending updates");
 		}
 	}
 

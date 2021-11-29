@@ -1080,14 +1080,32 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serviceLocatorInterface" value="momime.server.worldupdates.WorldUpdateFactory" />
 	</bean>			
 
-	<bean id="killUnitUpdate" class="momime.server.worldupdates.KillUnitUpdate" scope="prototype" />
+	<bean id="killUnitUpdate" class="momime.server.worldupdates.KillUnitUpdate" scope="prototype">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="fogOfWarMidTurnVisibility" ref="fogOfWarMidTurnVisibility" />
+		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
+	</bean>
 	
 	<bean id="removeCombatAreaEffectUpdate" class="momime.server.worldupdates.RemoveCombatAreaEffectUpdate" scope="prototype" />
 	
 	<bean id="switchOffSpellUpdate" class="momime.server.worldupdates.SwitchOffSpellUpdate" scope="prototype" />
 	
-	<bean id="recheckTransportCapacityUpdate" class="momime.server.worldupdates.RecheckTransportCapacityUpdate" scope="prototype" />
+	<bean id="recheckTransportCapacityUpdate" class="momime.server.worldupdates.RecheckTransportCapacityUpdate" scope="prototype">
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
 	
-	<bean id="recalculateCityUpdate" class="momime.server.worldupdates.RecalculateCityUpdate" scope="prototype" />
+	<bean id="recalculateCityUpdate" class="momime.server.worldupdates.RecalculateCityUpdate" scope="prototype">
+		<property name="serverCityCalculations" ref="serverCityCalculations" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+	</bean>
+
+	<bean id="recalculateProductionUpdate" class="momime.server.worldupdates.RecalculateProductionUpdate" scope="prototype">
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+	</bean>
 	
 </beans>

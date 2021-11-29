@@ -22,7 +22,10 @@ enum KindOfWorldUpdate
 	RECHECK_TRANSPORT_CAPACITY (4),
 	
 	/** Recalculate all city stats such as size and number of rebels */
-	RECALCULATE_CITY (5);	
+	RECALCULATE_CITY (5),
+	
+	/** Recalculate the amount of each type of resource we are generating each turn now, e.g. because upkeep is less because something has been killed off */
+	RECALCULATE_PRODUCTION (6);
 	
 	/** Sort order for this kind of update */
 	private final int sortOrder;

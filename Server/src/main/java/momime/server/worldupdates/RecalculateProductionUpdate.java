@@ -5,16 +5,19 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerResourceCalculations;
 
 /**
- * World update for removing a combat area effect
+ * World update for recalculating per turn production amounts
  */
-public final class RemoveCombatAreaEffectUpdate implements WorldUpdate
+public final class RecalculateProductionUpdate implements WorldUpdate
 {
-	/** The combat area effect to remove */
-	private int combatAreaEffectURN;
+	/** Resource calculations */
+	private ServerResourceCalculations serverResourceCalculations;
+	
+	/** The player to recalculate production for */
+	private int playerID;
 	
 	/**
 	 * @return Enum indicating which kind of update this is
@@ -22,9 +25,9 @@ public final class RemoveCombatAreaEffectUpdate implements WorldUpdate
 	@Override
 	public final KindOfWorldUpdate getKindOfWorldUpdate ()
 	{
-		return KindOfWorldUpdate.REMOVE_COMBAT_AREA_EFFECT;
+		return KindOfWorldUpdate.RECALCULATE_PRODUCTION;
 	}
-
+	
 	/**
 	 * @param o Other object to compare against
 	 * @return Whether this and the other object hold the same values
@@ -33,8 +36,8 @@ public final class RemoveCombatAreaEffectUpdate implements WorldUpdate
 	public final boolean equals (final Object o)
 	{
 		final boolean e;
-		if (o instanceof RemoveCombatAreaEffectUpdate)
-			e = (getCombatAreaEffectURN () == ((RemoveCombatAreaEffectUpdate) o).getCombatAreaEffectURN ());
+		if (o instanceof RecalculateProductionUpdate)
+			e = (getPlayerID () == ((RecalculateProductionUpdate) o).getPlayerID ());
 		else
 			e = false;
 		
@@ -47,7 +50,7 @@ public final class RemoveCombatAreaEffectUpdate implements WorldUpdate
 	@Override
 	public final String toString ()
 	{
-		return "Remove combat area effect URN " + getCombatAreaEffectURN ();
+		return "Recalculate production for player ID " + getPlayerID ();
 	}
 	
 	/**
@@ -62,22 +65,39 @@ public final class RemoveCombatAreaEffectUpdate implements WorldUpdate
 	@Override
 	public final WorldUpdateResult process (final MomSessionVariables mom) throws IOException, JAXBException, XMLStreamException
 	{
-		throw new MomException (toString () + " not yet impelemented");
+		getServerResourceCalculations ().recalculateGlobalProductionValues (playerID, false, mom);
+		return WorldUpdateResult.DONE;
 	}
 
 	/**
-	 * @return The combat area effect to remove
+	 * @return Resource calculations
 	 */
-	public final int getCombatAreaEffectURN ()
+	public final ServerResourceCalculations getServerResourceCalculations ()
 	{
-		return combatAreaEffectURN;
+		return serverResourceCalculations;
 	}
 
 	/**
-	 * @param c The combat area effect to remove
+	 * @param calc Resource calculations
 	 */
-	public final void setCombatAreaEffectURN (final int c)
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
-		combatAreaEffectURN = c;
+		serverResourceCalculations = calc;
+	}
+	
+	/**
+	 * @return The player to recalculate production for
+	 */
+	public final int getPlayerID ()
+	{
+		return playerID;
+	}
+
+	/**
+	 * @param p The player to recalculate production for
+	 */
+	public final void setPlayerID (final int p)
+	{
+		playerID = p;
 	}
 }

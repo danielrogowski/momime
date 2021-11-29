@@ -54,6 +54,12 @@ public interface WorldUpdates
 	public boolean recalculateCity (final MapCoordinates3DEx cityLocation);
 	
 	/**
+	 * @param playerID The player to recalculate production for
+	 * @return Whether the update was added; will return false if its a duplicate update already found to be in the list
+	 */
+	public boolean recalculateProduction (final int playerID);
+	
+	/**
 	 * Processes all world updates in the update list
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on

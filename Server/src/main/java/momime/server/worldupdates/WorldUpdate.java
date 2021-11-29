@@ -22,10 +22,10 @@ interface WorldUpdate
 	 * Processes this update
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return True if this update generated any further updates (and hence the manager must resort the list)
+	 * @return Whether this update was processed and/or generated any further updates
 	 * @throws IOException If there was a problem
 	 * @throws JAXBException If there is a problem sending some message to the client
 	 * @throws XMLStreamException If there is a problem sending some message to the client
 	 */
-	public boolean process (final MomSessionVariables mom) throws IOException, JAXBException, XMLStreamException;
+	public WorldUpdateResult process (final MomSessionVariables mom) throws IOException, JAXBException, XMLStreamException;
 }

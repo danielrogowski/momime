@@ -1,7 +1,11 @@
 package momime.server.worldupdates;
 
 /**
- * Assigns sort order to each kind of update, so for example we always process city recalculations last
+ * Assigns sort order to each kind of update, so for example we always process city recalculations last.
+ * 
+ * Ordering here is to maintain referential integrity.  If we kill a unit but switch off the spells that were cast on it after, then by the time
+ * we process those spells, they will have a unitURN that doesn't exist, which means then we struggle to know which players can "see"
+ * the spells.  Basically any update that adds a update higher up the list should return REDO_BECAUSE_EARLIER_UPDATES_ADDED.
  */
 enum KindOfWorldUpdate
 {

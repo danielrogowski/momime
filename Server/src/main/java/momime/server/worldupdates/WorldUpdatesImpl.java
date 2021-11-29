@@ -7,6 +7,9 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.server.MomSessionVariables;
@@ -24,6 +27,9 @@ import momime.server.fogofwar.KillUnitActionID;
  */
 public final class WorldUpdatesImpl implements WorldUpdates
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (WorldUpdatesImpl.class);
+	
 	/** List of pending updates */
 	private final List<WorldUpdate> updates = new ArrayList<WorldUpdate> ();
 	
@@ -131,9 +137,15 @@ public final class WorldUpdatesImpl implements WorldUpdates
 			}
 			
 			final WorldUpdate update = updates.get (0);
-			updates.remove (0);
+			log.debug ("Processing first world update out of " + updates.size () + " which is " + update);
 			
-			if (update.process (mom))
+			final WorldUpdateResult result = update.process (mom);
+			log.debug (update + " returned " + result + ", now there are " + updates.size () + " pending updates");
+			
+			if ((result == WorldUpdateResult.DONE) || (result == WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED))
+				updates.remove (0);
+			
+			if ((result == WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED) || (result == WorldUpdateResult.REDO_BECAUSE_EARLIER_UPDATES_ADDED))
 				resortList = true;
 		}
 	}

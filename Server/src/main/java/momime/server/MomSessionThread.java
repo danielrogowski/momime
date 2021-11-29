@@ -52,6 +52,7 @@ import momime.server.mapgenerator.OverlandMapGeneratorImpl;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.HeroItemServerUtils;
+import momime.server.worldupdates.WorldUpdates;
 
 /**
  * Thread that handles everything going on in one MoM session
@@ -78,6 +79,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** Methods dealing with hero items */
 	private HeroItemServerUtils heroItemServerUtils;
+	
+	/** Engine for updating server's true copy of the game world */
+	private WorldUpdates worldUpdates;
 	
 	/**
 	 * Descendant server classes will want to override this to create a thread that knows how to process useful messages
@@ -362,6 +366,23 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		return new MomTransientPlayerPrivateKnowledge ();
 	}
 
+	/**
+	 * @return Engine for updating server's true copy of the game world
+	 */
+	@Override
+	public final WorldUpdates getWorldUpdates ()
+	{
+		return worldUpdates;
+	}
+	
+	/**
+	 * @param wu Engine for updating server's true copy of the game world
+	 */
+	public final void setWorldUpdates (final WorldUpdates wu)
+	{
+		worldUpdates = wu;
+	}
+	
 	/**
 	 * @return Overland map generator for this session
 	 */

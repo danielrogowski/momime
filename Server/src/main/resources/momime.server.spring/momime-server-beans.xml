@@ -1057,9 +1057,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<!-- <property name="gsk" ref="gsk" /> see comment above, this is done in the code instead -->
 	</bean>
 
+	<bean id="worldUpdates" class="momime.server.worldupdates.WorldUpdatesImpl" scope="prototype">
+		<property name="worldUpdateFactory" ref="worldUpdateFactory" />
+	</bean>
+
 	<bean id="sessionThread" class="momime.server.MomSessionThread" scope="prototype">
 		<property name="generalPublicKnowledge" ref="gpk" />
 		<property name="generalServerKnowledge" ref="gsk" />
+		<property name="worldUpdates" ref="worldUpdates" />
 		<property name="overlandMapGenerator" ref="overlandMapGenerator" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
@@ -1068,5 +1073,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 	</bean>
+	
+	<!-- World updates -->
+	
+	<bean id="worldUpdateFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.server.worldupdates.WorldUpdateFactory" />
+	</bean>			
+
+	<bean id="killUnitUpdate" class="momime.server.worldupdates.KillUnitUpdate" scope="prototype" />
+	
+	<bean id="removeCombatAreaEffectUpdate" class="momime.server.worldupdates.RemoveCombatAreaEffectUpdate" scope="prototype" />
+	
+	<bean id="switchOffSpellUpdate" class="momime.server.worldupdates.SwitchOffSpellUpdate" scope="prototype" />
+	
+	<bean id="recheckTransportCapacityUpdate" class="momime.server.worldupdates.RecheckTransportCapacityUpdate" scope="prototype" />
+	
+	<bean id="recalculateCityUpdate" class="momime.server.worldupdates.RecalculateCityUpdate" scope="prototype" />
 	
 </beans>

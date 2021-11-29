@@ -17,6 +17,7 @@ import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.worldupdates.WorldUpdates;
 
 /**
  * Container for all the values held against a session
@@ -99,4 +100,9 @@ public interface MomSessionVariables
 	 */
 	public void updateHumanPlayerToAI (final int playerID)
 		throws PlayerNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * @return Engine for updating server's true copy of the game world
+	 */
+	public WorldUpdates getWorldUpdates ();
 }

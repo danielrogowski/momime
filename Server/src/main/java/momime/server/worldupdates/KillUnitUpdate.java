@@ -290,6 +290,10 @@ public final class KillUnitUpdate implements WorldUpdate
 			// Unit probably had some upkeep
 			if (mom.getWorldUpdates ().recalculateProduction (trueUnit.getOwningPlayerID ()))
 				result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+			
+			// Unit might have been the only one who could see certain areas of the map
+			if (mom.getWorldUpdates ().recalculateFogOfWar (trueUnit.getOwningPlayerID ()))
+				result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
 		}
 		
 		return result;

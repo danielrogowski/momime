@@ -1,5 +1,7 @@
 package momime.server.messages.process;
 
+import java.io.IOException;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -10,10 +12,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -25,11 +24,8 @@ import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.ServerResourceCalculations;
-import momime.server.calculations.ServerUnitCalculations;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.DamageProcessor;
-import momime.server.process.SpellProcessing;
 import momime.server.utils.PlayerServerUtils;
 
 /**
@@ -43,12 +39,6 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
-	
-	/** Resource calculations */
-	private ServerResourceCalculations serverResourceCalculations;
-
-	/** Spell processing methods */
-	private SpellProcessing spellProcessing;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -65,21 +55,16 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	/** Player utils */
 	private PlayerServerUtils playerServerUtils;
 	
-	/** Server-only unit calculations */
-	private ServerUnitCalculations serverUnitCalculations;
-	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there was another kind of problem
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws JAXBException, XMLStreamException, MomException, PlayerNotFoundException, RecordNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
@@ -126,29 +111,22 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ()); 
 			
 			// Switch off spell + associated CAEs
-			if (getSpellProcessing ().switchOffSpell (getSpellURN (), mom))
-				
-				// Unit died - if it was in combat, did switching off the spell lose the combat?
-				if ((combatPlayers != null) && (combatPlayers.bothFound ()))
-					if (getDamageProcessor ().countUnitsInCombat ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
-						trueUnit.getCombatSide (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
-					{
-						final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
-						final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
-						
-						getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
-							attackingPlayer, defendingPlayer,
-							(trueUnit.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer,
-							null, mom);
-					}
+			mom.getWorldUpdates ().switchOffSpell (getSpellURN ());
+			mom.getWorldUpdates ().process (mom);
 			
-			// Regardless of whether the unit died, recheck the map cell it is in
-			if (trueUnit != null)
-				getServerUnitCalculations ().recheckTransportCapacity ((MapCoordinates3DEx) trueUnit.getUnitLocation (),
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
-			
-			// Spell no longer using mana
-			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
+			// Did switching off the spell lose the combat?
+			if ((combatPlayers != null) && (combatPlayers.bothFound ()))
+				if (getDamageProcessor ().countUnitsInCombat ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
+					trueUnit.getCombatSide (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
+				{
+					final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
+					final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
+					
+					getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
+						attackingPlayer, defendingPlayer,
+						(trueUnit.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer,
+						null, mom);
+				}
 		}
 	}
 
@@ -166,38 +144,6 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
 	{
 		memoryMaintainedSpellUtils = utils;
-	}
-
-	/**
-	 * @return Resource calculations
-	 */
-	public final ServerResourceCalculations getServerResourceCalculations ()
-	{
-		return serverResourceCalculations;
-	}
-
-	/**
-	 * @param calc Resource calculations
-	 */
-	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
-	{
-		serverResourceCalculations = calc;
-	}
-
-	/**
-	 * @return Spell processing methods
-	 */
-	public final SpellProcessing getSpellProcessing ()
-	{
-		return spellProcessing;
-	}
-
-	/**
-	 * @param obj Spell processing methods
-	 */
-	public final void setSpellProcessing (final SpellProcessing obj)
-	{
-		spellProcessing = obj;
 	}
 
 	/**
@@ -278,21 +224,5 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	public final void setPlayerServerUtils (final PlayerServerUtils utils)
 	{
 		playerServerUtils = utils;
-	}
-
-	/**
-	 * @return Server-only unit calculations
-	 */
-	public final ServerUnitCalculations getServerUnitCalculations ()
-	{
-		return serverUnitCalculations;
-	}
-
-	/**
-	 * @param calc Server-only unit calculations
-	 */
-	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
-	{
-		serverUnitCalculations = calc;
 	}
 }

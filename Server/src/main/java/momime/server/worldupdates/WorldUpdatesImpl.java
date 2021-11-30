@@ -130,6 +130,19 @@ public final class WorldUpdatesImpl implements WorldUpdates
 	}
 	
 	/**
+	 * @param playerID The player to recalculate visible area for
+	 * @return Whether the update was added; will return false if its a duplicate update already found to be in the list
+	 */
+	@Override
+	public final boolean recalculateFogOfWar (final int playerID)
+	{
+		final RecalculateFogOfWarUpdate update = getWorldUpdateFactory ().createRecalculateFogOfWarUpdate ();
+		update.setPlayerID (playerID);
+		
+		return add (update);
+	}
+	
+	/**
 	 * Processes all world updates in the update list
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -150,7 +163,7 @@ public final class WorldUpdatesImpl implements WorldUpdates
 			}
 			
 			final WorldUpdate update = updates.get (0);
-			log.debug ("Processing first world update out of " + updates.size () + " which is " + update);
+			log.debug ("Processing world update 1 of " + updates.size () + " which is " + update);
 			
 			final WorldUpdateResult result = update.process (mom);
 			

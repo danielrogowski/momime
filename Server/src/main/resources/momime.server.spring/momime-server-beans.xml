@@ -153,7 +153,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
-		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="playerServerUtils" ref="playerServerUtils" />
 	</bean>
 	
@@ -197,14 +196,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="requestSwitchOffMaintainedSpellMessage" class="momime.server.messages.process.RequestSwitchOffMaintainedSpellMessageImpl" scope="prototype">
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
-		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="playerServerUtils" ref="playerServerUtils" />
-		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 	
 	<bean id="endCombatTurnMessage" class="momime.server.messages.process.EndCombatTurnMessageImpl" scope="prototype">
@@ -1086,9 +1082,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 	</bean>
 	
-	<bean id="removeCombatAreaEffectUpdate" class="momime.server.worldupdates.RemoveCombatAreaEffectUpdate" scope="prototype" />
+	<bean id="removeCombatAreaEffectUpdate" class="momime.server.worldupdates.RemoveCombatAreaEffectUpdate" scope="prototype">
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="fogOfWarMidTurnVisibility" ref="fogOfWarMidTurnVisibility" />
+	</bean>
 	
-	<bean id="switchOffSpellUpdate" class="momime.server.worldupdates.SwitchOffSpellUpdate" scope="prototype" />
+	<bean id="switchOffSpellUpdate" class="momime.server.worldupdates.SwitchOffSpellUpdate" scope="prototype">
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="combatMapGenerator" ref="combatMapGenerator" />
+		<property name="fogOfWarMidTurnVisibility" ref="fogOfWarMidTurnVisibility" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="unitCalculations" ref="unitCalculations" />
+	</bean>
 	
 	<bean id="recheckTransportCapacityUpdate" class="momime.server.worldupdates.RecheckTransportCapacityUpdate" scope="prototype">
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
@@ -1106,6 +1114,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="recalculateProductionUpdate" class="momime.server.worldupdates.RecalculateProductionUpdate" scope="prototype">
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+	</bean>
+	
+	<bean id="recalculateFogOfWarUpdate" class="momime.server.worldupdates.RecalculateFogOfWarUpdate" scope="prototype">
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 	</bean>
 	
 </beans>

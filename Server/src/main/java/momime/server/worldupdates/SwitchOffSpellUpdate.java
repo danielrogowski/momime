@@ -5,14 +5,67 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
+import momime.common.calculations.UnitCalculations;
+import momime.common.database.CitySpellEffect;
+import momime.common.database.CombatAreaAffectsPlayersID;
+import momime.common.database.CombatAreaEffect;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
+import momime.common.database.UnitSkillEx;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
+import momime.common.messages.servertoclient.UpdateCombatMapMessage;
+import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandUnitDetails;
+import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.fogofwar.FogOfWarMidTurnVisibility;
+import momime.server.fogofwar.KillUnitActionID;
+import momime.server.knowledge.ServerGridCellEx;
+import momime.server.mapgenerator.CombatMapGenerator;
 
 /**
  * World update for switching off a maintained spell
  */
 public final class SwitchOffSpellUpdate implements WorldUpdate
 {
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Memory CAE utils */
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
+	
+	/** Map generator */
+	private CombatMapGenerator combatMapGenerator;
+	
+	/** FOW visibility checks */
+	private FogOfWarMidTurnVisibility fogOfWarMidTurnVisibility;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
+	
 	/** The spell to switch off */
 	private int spellURN;
 	
@@ -62,9 +115,326 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	@Override
 	public final WorldUpdateResult process (final MomSessionVariables mom) throws IOException, JAXBException, XMLStreamException
 	{
-		throw new MomException (toString () + " not yet impelemented");
+		WorldUpdateResult result = WorldUpdateResult.DONE;
+		
+		// If the spell generates a CAE, switch that off first
+		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN
+			(getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), "SwitchOffSpellUpdate");
+		final Spell spellDef = mom.getServerDB ().findSpell (trueSpell.getSpellID (), "SwitchOffSpellUpdate");
+
+		// Overland enchantments
+		if (spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+		{
+			// Check each combat area effect that this overland enchantment gives to see if we have any of them in effect - if so cancel them
+			for (final String combatAreaEffectID: spellDef.getSpellHasCombatEffect ())
+			{
+				final MemoryCombatAreaEffect cae = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), null, combatAreaEffectID, trueSpell.getCastingPlayerID ());
+				
+				if (cae != null)
+					if (mom.getWorldUpdates ().removeCombatAreaEffect (cae.getCombatAreaEffectURN ()))
+						result = WorldUpdateResult.REDO_BECAUSE_EARLIER_UPDATES_ADDED;
+			}
+		}
+		
+		else if (trueSpell.getCitySpellEffectID () != null)
+		{
+			final CitySpellEffect citySpellEffect = mom.getServerDB ().findCitySpellEffect (trueSpell.getCitySpellEffectID (), "SwitchOffSpellUpdate");
+			if (citySpellEffect.getCombatAreaEffectID () != null)
+			{
+				final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), (MapCoordinates3DEx) trueSpell.getCityLocation (),
+						citySpellEffect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
+				
+				if (trueCAE != null)
+					if (mom.getWorldUpdates ().removeCombatAreaEffect (trueCAE.getCombatAreaEffectURN ()))
+						result = WorldUpdateResult.REDO_BECAUSE_EARLIER_UPDATES_ADDED;
+			}
+			
+			// The only spells with a citySpellEffectID that can be cast in combat are Wall of Fire / Wall of Darkness.
+			// If these get cancelled, we need to regnerate the combat map.
+			else	if (((spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)) &&
+				spellDef.getCombatCastingCost () != null)
+			{
+				final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
+					((MapCoordinates3DEx) trueSpell.getCityLocation (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
+				if (combatPlayers.bothFound ())
+				{
+					final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
+					final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
+				
+					final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(trueSpell.getCityLocation ().getZ ()).getRow ().get (trueSpell.getCityLocation ().getY ()).getCell ().get (trueSpell.getCityLocation ().getX ());
+					
+					getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), mom.getServerDB (),
+						mom.getGeneralServerKnowledge ().getTrueMap (), (MapCoordinates3DEx) trueSpell.getCityLocation ());
+					
+					// Send the updated map
+					final UpdateCombatMapMessage combatMapMsg = new UpdateCombatMapMessage ();
+					combatMapMsg.setCombatLocation (trueSpell.getCityLocation ());
+					combatMapMsg.setCombatTerrain (gc.getCombatMap ());
+					
+					if (attackingPlayer.getPlayerDescription ().isHuman ())
+						attackingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
+
+					if (defendingPlayer.getPlayerDescription ().isHuman ())
+						defendingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
+				}
+			}
+		}
+		
+		
+		if (result == WorldUpdateResult.DONE)
+		{
+			// Switch off on server
+			getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+	
+			// Build the message ready to send it to whoever could see the spell
+			final SwitchOffMaintainedSpellMessage msg = new SwitchOffMaintainedSpellMessage ();
+			msg.setSpellURN (getSpellURN ());
+	
+			// Check which players could see the spell
+			for (final PlayerServerDetails player : mom.getPlayers ())
+			{
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+				if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), player, mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ()))
+				{
+					// Update player's memory on server
+					getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), priv.getFogOfWarMemory ().getMaintainedSpell ());
+	
+					// Update on client
+					if (player.getPlayerDescription ().isHuman ())
+						player.getConnection ().sendMessageToClient (msg);
+				}
+			}
+			
+			// If spell was cast on a unit, then see the spell gave it an HP boost.  If so then removing the spell may have killed it.
+			// e.g. Unit has 5 HP, cast Lionheart on it in combat gives +3 so now has 8 HP.  Unit takes 6 HP damage, then wins the combat.
+			// Lionheart gets cancelled so now unit has -1 HP.
+			if (trueSpell.getUnitURN () != null)
+			{
+				boolean killed = false;
+				final MemoryUnit mu = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "SwitchOffSpellUpdate");
+				ExpandedUnitDetails xu = null;
+				
+				if (trueSpell.getUnitSkillID () != null)
+				{
+					final UnitSkillEx unitSkill = mom.getServerDB ().findUnitSkill (trueSpell.getUnitSkillID (), "SwitchOffSpellUpdate");
+					if (unitSkill.getAddsToSkill ().stream ().anyMatch (s -> s.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)))
+					{
+						xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						if (xu.calculateAliveFigureCount () <= 0)
+							killed = true;
+					}
+				}
+				
+				if ((!killed) && (mu.getCombatLocation () != null) && (mu.getCombatPosition () != null))
+				{
+					// Make sure the unit is still able to be on the combat tile it is on, and that we didn't lose our flight spell over water
+					final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(mu.getCombatLocation ().getZ ()).getRow ().get (mu.getCombatLocation ().getY ()).getCell ().get (mu.getCombatLocation ().getX ());
+					
+					final MomCombatTile tile = gc.getCombatMap ().getRow ().get (mu.getCombatPosition ().getY ()).getCell ().get (mu.getCombatPosition ().getX ());
+
+					if (xu == null)
+						xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					
+					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (xu, tile, mom.getServerDB ()) < 0)
+						killed = true;
+				}
+				
+				if (killed)
+				{
+					// Work out if this is happening in combat or not
+					final KillUnitActionID action = (mu.getCombatLocation () == null) ? KillUnitActionID.HEALABLE_OVERLAND_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
+					if (mom.getWorldUpdates ().killUnit (trueSpell.getUnitURN (), action))
+						result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+				}
+				
+				// Regardless of whether the unit died, recheck the map cell it is in.  Maybe a unit over water lost a flight spell and killed itself,
+				// or maybe it lost a wind walking spell and will kill the whole stack.
+				if ((mu.getCombatLocation () == null) && (mu.getCombatPosition () == null))
+					if (mom.getWorldUpdates ().recheckTransportCapacity ((MapCoordinates3DEx) mu.getUnitLocation ()))
+						result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+			}
+			
+			// If the spell was cast on a city, better recalculate everything on the city
+			else if (trueSpell.getCityLocation () != null)
+			{
+				if (mom.getWorldUpdates ().recalculateCity ((MapCoordinates3DEx) trueSpell.getCityLocation ()))
+					result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+			}
+			
+			// If it was a global enchantment that gives +HP then recheck every unit (Charm of Life)
+			else if (spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+			{
+				// This is a pretty long winded way we have to find this, especially since the CAE will already have been switched off
+				// (it has to be done like that, as its the CAE that has the +HP boost defined on it, so if that isn't switched off first, we couldn't recheck the units)
+				for (final String combatAreaEffectID : spellDef.getSpellHasCombatEffect ())
+				{
+					final CombatAreaEffect caeDef = mom.getServerDB ().findCombatAreaEffect (combatAreaEffectID, "SwitchOffSpellUpdate");
+					if (caeDef.getCombatAreaAffectsPlayers () == CombatAreaAffectsPlayersID.CASTER_ONLY)
+						for (final String unitSkillID : caeDef.getCombatAreaEffectGrantsSkill ())
+						{
+							final UnitSkillEx unitSkill = mom.getServerDB ().findUnitSkill (unitSkillID, "SwitchOffSpellUpdate");
+							if (unitSkill.getAddsToSkill ().stream ().anyMatch (s -> s.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)))
+								for (final MemoryUnit mu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+									if ((mu.getOwningPlayerID () == trueSpell.getCastingPlayerID ()) && (mu.getStatus () == UnitStatusID.ALIVE))
+									{
+										final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
+											mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+										if (xu.calculateAliveFigureCount () <= 0)
+											if (mom.getWorldUpdates ().killUnit (mu.getUnitURN (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE))
+												result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+									}
+						}
+				}
+			}
+			
+			// The removed spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
+			if (mom.getWorldUpdates ().recalculateFogOfWar (trueSpell.getCastingPlayerID ()))
+				result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+			
+			// Spell probably had some upkeep
+			if (mom.getWorldUpdates ().recalculateProduction (trueSpell.getCastingPlayerID ()))
+				result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+		}
+		
+		return result;
 	}
 
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
+	}
+	
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+	
+	/**
+	 * @param utils Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils utils)
+	{
+		combatMapUtils = utils;
+	}
+	
+	/**
+	 * @return Map generator
+	 */
+	public final CombatMapGenerator getCombatMapGenerator ()
+	{
+		return combatMapGenerator;
+	}
+
+	/**
+	 * @param gen Map generator
+	 */
+	public final void setCombatMapGenerator (final CombatMapGenerator gen)
+	{
+		combatMapGenerator = gen;
+	}
+	
+	/**
+	 * @return FOW visibility checks
+	 */
+	public final FogOfWarMidTurnVisibility getFogOfWarMidTurnVisibility ()
+	{
+		return fogOfWarMidTurnVisibility;
+	}
+
+	/**
+	 * @param vis FOW visibility checks
+	 */
+	public final void setFogOfWarMidTurnVisibility (final FogOfWarMidTurnVisibility vis)
+	{
+		fogOfWarMidTurnVisibility = vis;
+	}
+	
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
+	}
+	
 	/**
 	 * @return The spell to switch off
 	 */

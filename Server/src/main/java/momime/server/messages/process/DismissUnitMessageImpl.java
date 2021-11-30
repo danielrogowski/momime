@@ -20,7 +20,6 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.utils.PlayerServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -41,9 +40,6 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 	
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
-	
-	/** Methods for updating true map + players' memory */
-	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** Player utils */
 	private PlayerServerUtils playerServerUtils;
@@ -156,22 +152,6 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
-	}
-
-	/**
-	 * @return Methods for updating true map + players' memory
-	 */
-	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
-	{
-		return fogOfWarMidTurnChanges;
-	}
-
-	/**
-	 * @param obj Methods for updating true map + players' memory
-	 */
-	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
-	{
-		fogOfWarMidTurnChanges = obj;
 	}
 
 	/**

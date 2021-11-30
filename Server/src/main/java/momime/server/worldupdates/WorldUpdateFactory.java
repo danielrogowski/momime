@@ -34,4 +34,9 @@ public interface WorldUpdateFactory
 	 * @return New object with spring dependencies injected
 	 */
 	public RecalculateProductionUpdate createRecalculateProductionUpdate ();
+
+	/**
+	 * @return New object with spring dependencies injected
+	 */
+	public RecalculateFogOfWarUpdate createRecalculateFogOfWarUpdate ();
 }

@@ -25,7 +25,10 @@ enum KindOfWorldUpdate
 	RECALCULATE_CITY (5),
 	
 	/** Recalculate the amount of each type of resource we are generating each turn now, e.g. because upkeep is less because something has been killed off */
-	RECALCULATE_PRODUCTION (6);
+	RECALCULATE_PRODUCTION (6),
+	
+	/** Recalculate area player can see */
+	RECALCULATE_FOG_OF_WAR (7);
 	
 	/** Sort order for this kind of update */
 	private final int sortOrder;

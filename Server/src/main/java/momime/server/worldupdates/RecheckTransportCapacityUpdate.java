@@ -65,7 +65,7 @@ public final class RecheckTransportCapacityUpdate implements WorldUpdate
 	{
 		final boolean e;
 		if (o instanceof RecheckTransportCapacityUpdate)
-			e = (getMapLocation () == ((RecheckTransportCapacityUpdate) o).getMapLocation ());
+			e = getMapLocation ().equals (((RecheckTransportCapacityUpdate) o).getMapLocation ());
 		else
 			e = false;
 		

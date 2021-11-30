@@ -54,7 +54,7 @@ public final class RecalculateCityUpdate implements WorldUpdate
 	{
 		final boolean e;
 		if (o instanceof RecalculateCityUpdate)
-			e = (getCityLocation () == ((RecalculateCityUpdate) o).getCityLocation ());
+			e = getCityLocation ().equals (((RecalculateCityUpdate) o).getCityLocation ());
 		else
 			e = false;
 		

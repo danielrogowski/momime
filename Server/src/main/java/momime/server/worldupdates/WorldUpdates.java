@@ -58,6 +58,12 @@ public interface WorldUpdates
 	 * @return Whether the update was added; will return false if its a duplicate update already found to be in the list
 	 */
 	public boolean recalculateProduction (final int playerID);
+
+	/**
+	 * @param playerID The player to recalculate visible area for
+	 * @return Whether the update was added; will return false if its a duplicate update already found to be in the list
+	 */
+	public boolean recalculateFogOfWar (final int playerID);
 	
 	/**
 	 * Processes all world updates in the update list

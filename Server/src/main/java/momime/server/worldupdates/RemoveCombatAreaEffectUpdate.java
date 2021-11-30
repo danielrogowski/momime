@@ -5,14 +5,26 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.servertoclient.CancelCombatAreaEffectMessage;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.server.MomSessionVariables;
+import momime.server.fogofwar.FogOfWarMidTurnVisibility;
 
 /**
  * World update for removing a combat area effect
  */
 public final class RemoveCombatAreaEffectUpdate implements WorldUpdate
 {
+	/** Memory CAE utils */
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	
+	/** FOW visibility checks */
+	private FogOfWarMidTurnVisibility fogOfWarMidTurnVisibility;
+	
 	/** The combat area effect to remove */
 	private int combatAreaEffectURN;
 	
@@ -62,9 +74,68 @@ public final class RemoveCombatAreaEffectUpdate implements WorldUpdate
 	@Override
 	public final WorldUpdateResult process (final MomSessionVariables mom) throws IOException, JAXBException, XMLStreamException
 	{
-		throw new MomException (toString () + " not yet impelemented");
+		// Get the CAE's details before we remove it
+		final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (getCombatAreaEffectURN (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), "RemoveCombatAreaEffectUpdate");
+		
+		// Remove on server
+		getMemoryCombatAreaEffectUtils ().removeCombatAreaEffectURN (getCombatAreaEffectURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect ());
+
+		// Build the message ready to send it to whoever can see the CAE
+		final CancelCombatAreaEffectMessage msg = new CancelCombatAreaEffectMessage ();
+		msg.setCombatAreaEffectURN (getCombatAreaEffectURN ());
+
+		// Check which players can see the CAE
+		for (final PlayerServerDetails player : mom.getPlayers ())
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			if (getFogOfWarMidTurnVisibility ().canSeeCombatAreaEffectMidTurn (trueCAE, priv.getFogOfWar (),
+				mom.getSessionDescription ().getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+			{
+				// Update player's memory on server
+				getMemoryCombatAreaEffectUtils ().removeCombatAreaEffectURN (getCombatAreaEffectURN (), priv.getFogOfWarMemory ().getCombatAreaEffect ());
+
+				// Update on client
+				if (player.getPlayerDescription ().isHuman ())
+					player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+		
+		return WorldUpdateResult.DONE;
 	}
 
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
+	}
+
+	/**
+	 * @return FOW visibility checks
+	 */
+	public final FogOfWarMidTurnVisibility getFogOfWarMidTurnVisibility ()
+	{
+		return fogOfWarMidTurnVisibility;
+	}
+
+	/**
+	 * @param vis FOW visibility checks
+	 */
+	public final void setFogOfWarMidTurnVisibility (final FogOfWarMidTurnVisibility vis)
+	{
+		fogOfWarMidTurnVisibility = vis;
+	}
+	
 	/**
 	 * @return The combat area effect to remove
 	 */

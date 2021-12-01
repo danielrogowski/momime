@@ -891,10 +891,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param cityLocation Location of the city
 	 * @param attackingPlayer Player who won the combat, who is taking ownership of the city
 	 * @param defendingPlayer Player who lost the combat, and who is losing the city
-	 * @param players List of players in this session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -903,38 +900,36 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void captureCity (final MapCoordinates3DEx cityLocation, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		final MomSessionVariables mom) throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-		
-		final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
 		// Destroy enemy wizards' fortress and/or summoning circle
 		final List<Integer> destroyedBuildingURNs = new ArrayList<Integer> ();
 		for (final String buildingID : new String [] {CommonDatabaseConstants.BUILDING_FORTRESS, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE})
 		{
-			final MemoryBuilding destroyedBuilding = getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, buildingID);
+			final MemoryBuilding destroyedBuilding = getMemoryBuildingUtils ().findBuilding
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), cityLocation, buildingID);
 			if (destroyedBuilding != null)
 				destroyedBuildingURNs.add (destroyedBuilding.getBuildingURN ());
 		}
 		
 		if (destroyedBuildingURNs.size () > 0)
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyedBuildingURNs, false, null, null, null, sd, db);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
+				destroyedBuildingURNs, false, null, null, null, mom.getSessionDescription (), mom.getServerDB ());
 		
 		// Deal with spells cast on the city:
 		// 1) Any spells the defender had cast on the city must be enchantments - which unfortunately we don't get - so cancel these
 		// 2) Any spells the attacker had cast on the city must be curses - we don't want to curse our own city - so cancel them
 		// 3) Any spells a 3rd player (neither the defender nor attacker) had cast on the city must be curses - and I'm sure they'd like to continue cursing the new city owner :D
-		getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
-			(trueMap, players, cityLocation,
-			attackingPlayer.getPlayerDescription ().getPlayerID (), db, sd);
+		// These are executed with the "process" method below
+		getFogOfWarMidTurnMultiChanges ().switchOffSpellsInLocationOnServerAndClients
+			(cityLocation, attackingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 	
 		if (defendingPlayer != null)
-			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
-				(trueMap, players, cityLocation,
-				defendingPlayer.getPlayerDescription ().getPlayerID (), db, sd);
+			getFogOfWarMidTurnMultiChanges ().switchOffSpellsInLocationOnServerAndClients
+				( cityLocation, defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 
 		// Take ownership of the city
 		tc.getCityData ().setCityOwnerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
@@ -943,29 +938,15 @@ public final class CityProcessingImpl implements CityProcessing
 		tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 		
 		// AI players generate more resources - which no longer includes rations (old versions did) - but to be on the safe side, recalc everything
-		getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (),
-			trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db);
-		
-		// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
-		tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels
-			(players, trueMap.getMap (),
-			trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			cityLocation, atkPriv.getTaxRateID (), db).getFinalTotal ());
-		
-		getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
-		
-		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (),
-			players, cityLocation, sd.getFogOfWarSetting ());
+		mom.getWorldUpdates ().recalculateCity (cityLocation);
+		mom.getWorldUpdates ().process (mom);
 	}
 	
 	/**
 	 * Destroys a city after it is taken in combat
 	 * 
 	 * @param cityLocation Location of the city
-	 * @param players List of players in this session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -973,30 +954,28 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void razeCity (final MapCoordinates3DEx cityLocation,
-		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
+	public final void razeCity (final MapCoordinates3DEx cityLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
-				(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		
 		// Cancel all spells cast on the city regardless of owner
-		getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
-			(trueMap, players, cityLocation, 0, db, sd);
+		getFogOfWarMidTurnMultiChanges ().switchOffSpellsInLocationOnServerAndClients (cityLocation, 0, true, mom);
 		
 		// Wreck all the buildings
-		getFogOfWarMidTurnMultiChanges ().destroyAllBuildingsInLocationOnServerAndClients (trueMap, players,
-			cityLocation, sd, db);
+		getFogOfWarMidTurnMultiChanges ().destroyAllBuildingsInLocationOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
+			cityLocation, mom.getSessionDescription (), mom.getServerDB ());
 		
 		// Wreck the city
 		tc.setCityData (null);
-		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players,
-			cityLocation, sd.getFogOfWarSetting ());
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+			cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 		
 		// Wreck the road
 		tc.getTerrainData ().setRoadTileTypeID (null);
-		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players,
-			cityLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+			cityLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 	}
 	
 	/**
@@ -1084,28 +1063,21 @@ public final class CityProcessingImpl implements CityProcessing
 		if (wizardState == WizardState.DEFEATED)
 		{
 			// Remove any CAEs the wizard still had cast
-			final List<MemoryCombatAreaEffect> defeatedCAEs = mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect ().stream ().filter
-				(c -> c.getCastingPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()).collect (Collectors.toList ());
-
-			for (final MemoryCombatAreaEffect defeatedCAE : defeatedCAEs)
-				getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-					defeatedCAE.getCombatAreaEffectURN (), mom.getPlayers (), mom.getSessionDescription ());
+			for (final MemoryCombatAreaEffect defeatedCAE : mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect ())
+				if (defeatedCAE.getCastingPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ())
+					mom.getWorldUpdates ().removeCombatAreaEffect (defeatedCAE.getCombatAreaEffectURN ());
 			
 			// Remove any spells the wizard still had cast
-			final List<MemoryMaintainedSpell> defeatedSpells = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
-				(s -> s.getCastingPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()).collect (Collectors.toList ());
-			
-			for (final MemoryMaintainedSpell defeatedSpell : defeatedSpells)
-				getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), defeatedSpell.getSpellURN (),
-					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			for (final MemoryMaintainedSpell defeatedSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+				if (defeatedSpell.getCastingPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ())
+					mom.getWorldUpdates ().switchOffSpell (defeatedSpell.getSpellURN ());
 
 			// Remove any units the wizard still had
-			final List<MemoryUnit> defeatedUnits = mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
-				(u -> u.getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()).collect (Collectors.toList ());
+			for (final MemoryUnit defeatedUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+				if (defeatedUnit.getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ())
+					mom.getWorldUpdates ().killUnit (defeatedUnit.getUnitURN (), KillUnitActionID.LACK_OF_PRODUCTION);
 			
-			for (final MemoryUnit defeatedUnit : defeatedUnits)
-				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defeatedUnit, KillUnitActionID.LACK_OF_PRODUCTION, mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+			mom.getWorldUpdates ().process (mom);
 			
 			// Unown and unwarp any nodes the wizard had captured and volcanoes the wizard raised
 			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)

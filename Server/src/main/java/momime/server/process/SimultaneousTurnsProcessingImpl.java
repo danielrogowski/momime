@@ -456,8 +456,9 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server.
 		final List<MemoryUnit> dismisses = getUnitServerUtils ().listUnitsWithSpecialOrder (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), UnitSpecialOrder.DISMISS);
 		for (final MemoryUnit trueUnit : dismisses)
-			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.DISMISS,
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+			mom.getWorldUpdates ().killUnit (trueUnit.getUnitURN (), KillUnitActionID.DISMISS);
+		
+		mom.getWorldUpdates ().process (mom);
 		
 		// Sell buildings
 		for (final Plane plane : mom.getServerDB ().getPlane ())
@@ -492,8 +493,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				if ((planeShifters.contains (tu)) && (tu.getUnitLocation ().equals (planeShifter.getUnitLocation ())))
 					unitStack.add (getExpandUnitDetails ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 			
-			getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (unitStack, mom.getPlayers (),
-				mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+			getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (unitStack, mom);
 			
 			// Remove the whole stack from the list of plane shifters; also clear their special orders
 			for (final ExpandedUnitDetails xu : unitStack)
@@ -556,10 +556,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				}
 			}
 			else
-			{
-				getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), settlerOwner, settler,
-					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-			}			
+				getCityServerUtils ().buildCityFromSettler (settlerOwner, settler, mom);
 		}
 		
 		// Get a list of all spirits with meld orders.
@@ -605,8 +602,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				final ExpandedUnitDetails xuSpirit = getExpandUnitDetails ().expandUnitDetails (spirit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
-				getOverlandMapServerUtils ().attemptToMeldWithNode (xuSpirit, mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				getOverlandMapServerUtils ().attemptToMeldWithNode (xuSpirit, mom);
 			}			
 		}
 	}

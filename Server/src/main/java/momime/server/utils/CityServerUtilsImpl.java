@@ -40,7 +40,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -49,12 +48,11 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.ServerCityCalculations;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Server side only helper methods for dealing with cities
@@ -72,9 +70,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	
 	/** Server-only overland map utils */
 	private OverlandMapServerUtils overlandMapServerUtils;
-	
-	/** Server-only city calculations */
-	private ServerCityCalculations serverCityCalculations;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -237,12 +232,9 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	}
 
 	/**
-	 * @param gsk Server knowledge data structure
 	 * @param player The player who owns the settler
 	 * @param settler The settler being converted into a city
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -250,49 +242,39 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void buildCityFromSettler (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final MemoryUnit settler,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public final void buildCityFromSettler (final PlayerServerDetails player, final MemoryUnit settler, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		// Add the city on the server
 		final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) settler.getUnitLocation ();
-		final MemoryGridCell tc = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-		final Unit settlerUnit = db.findUnit (settler.getUnitID (), "buildCityFromSettler");
+		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final Unit settlerUnit = mom.getServerDB ().findUnit (settler.getUnitID (), "buildCityFromSettler");
 		
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityOwnerID (player.getPlayerDescription ().getPlayerID ());
 		cityData.setCityPopulation (1000);
 		cityData.setCityRaceID (settlerUnit.getUnitRaceID ());
 		cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-		cityData.setCityName (getOverlandMapServerUtils ().generateCityName (gsk, db.findRace (cityData.getCityRaceID (), "buildCityFromSettler")));
+		cityData.setCityName (getOverlandMapServerUtils ().generateCityName (mom.getGeneralServerKnowledge (),
+			mom.getServerDB ().findRace (cityData.getCityRaceID (), "buildCityFromSettler")));
 		cityData.setOptionalFarmers (0);
 		tc.setCityData (cityData);
 		
 		// Cities automatically get a road
-		final Plane plane = db.findPlane (cityLocation.getZ (), "buildCityFromSettler");
+		final Plane plane = mom.getServerDB ().findPlane (cityLocation.getZ (), "buildCityFromSettler");
 		final String roadTileTypeID = ((plane.isRoadsEnchanted () != null) && (plane.isRoadsEnchanted ())) ?
 			CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
 
 		tc.getTerrainData ().setRoadTileTypeID (roadTileTypeID);
 
-		// Now city is created, can do initial calculations on it
-		getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (),
-			gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, sd, db);
+		// Killing the settler will trigger calculations on the city
+		mom.getWorldUpdates ().killUnit (settler.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		mom.getWorldUpdates ().process (mom);
 
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-
-		cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (),
-			gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
-
-		// Send city to anyone who can see it
-		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
-		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
-		
-		// Kill off the settler
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (settler, KillUnitActionID.PERMANENT_DAMAGE, gsk.getTrueMap (), players, sd.getFogOfWarSetting (), db);
-		
-		// Update our own FOW (the city can see further than the settler could)
-		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), player, players, "buildCityFromSettler", sd, db);
+		// Terrain update is for the road
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());		
 	}
 	
 	/**
@@ -527,22 +509,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
 	{
 		overlandMapServerUtils = utils;
-	}
-
-	/**
-	 * @return Server-only city calculations
-	 */
-	public final ServerCityCalculations getServerCityCalculations ()
-	{
-		return serverCityCalculations;
-	}
-
-	/**
-	 * @param calc Server-only city calculations
-	 */
-	public final void setServerCityCalculations (final ServerCityCalculations calc)
-	{
-		serverCityCalculations = calc;
 	}
 
 	/**

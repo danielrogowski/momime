@@ -517,8 +517,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, castingPlayerPub.getPick ());
 			passesCounteringAttempts = getSpellDispelling ().processCountering
-				(castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer, null, null,
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				(castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
 		}
 		
 		final MomPersistentPlayerPrivateKnowledge castingPlayerPriv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -591,9 +590,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 					{
 						// Killing units but recording they took 0 damage will result in them coming back as undead
 						getUnitServerUtils ().addDamage (targetUnit.getUnitDamage (), StoredDamageTypeID.HEALABLE, xu.calculateHitPointsRemaining ());
-						
-						getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (targetUnit, KillUnitActionID.HEALABLE_COMBAT_DAMAGE,
-							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+		
+						mom.getWorldUpdates ().killUnit (targetUnit.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
+						mom.getWorldUpdates ().process (mom);
 						
 						if (getDamageProcessor ().countUnitsInCombat (combatLocation,
 							targetUnit.getCombatSide (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) == 0)
@@ -1085,90 +1084,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	}
 	
 	/**
-	 * The method in the FOW class physically removed spells from the server and players' memory; this method
-	 * deals with all the knock on effects of spells being switched off, which isn't really much since spells don't grant money or anything when sold
-	 * so this is mostly here for consistency with the building and unit methods
-	 *
-	 * Does not recalc global production (which will now be reduced from not having to pay the maintenance of the cancelled spell),
-	 * this has to be done by the calling routine
-	 * 
-	 * NB. Delphi method was called OkToSwitchOffMaintainedSpell
-	 *
-	 * @param spellURN Which spell it is
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether switching off the spell resulted in the death of the unit it was cast on
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	@Override
-	public final boolean switchOffSpell (final int spellURN, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
-	{
-		// First find the spell
-		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN
-			(spellURN, mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), "switchOffSpell");
-		
-		// Any secondary effects we also need to switch off?
-		final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), trueSpell.getCastingPlayerID (), "switchOffSpell");
-		final Spell spell = mom.getServerDB ().findSpell (trueSpell.getSpellID (), "switchOffSpell");
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), trueSpell.getSpellID ());
-		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
-
-		// Overland enchantments
-		if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
-		{
-			// Check each combat area effect that this overland enchantment gives to see if we have any of them in effect - if so cancel them
-			for (final String combatAreaEffectID: spell.getSpellHasCombatEffect ())
-			{
-				final MemoryCombatAreaEffect cae = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), null, combatAreaEffectID, trueSpell.getCastingPlayerID ());
-				
-				if (cae != null)
-					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients
-						(mom.getGeneralServerKnowledge ().getTrueMap (), cae.getCombatAreaEffectURN (), mom.getPlayers (), mom.getSessionDescription ());
-			}
-		}
-
-		// Remove spell itself
-		final boolean unitDied = getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-			trueSpell.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-		
-		// If the spell was cast on a city, better recalculate everything on the city
-		if (trueSpell.getCityLocation () != null)
-		{
-			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(trueSpell.getCityLocation ().getZ ()).getRow ().get (trueSpell.getCityLocation ().getY ()).getCell ().get (trueSpell.getCityLocation ().getX ()).getCityData ();
-			if (cityData != null)
-			{
-				final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "switchOffSpell (C)");
-				final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
-				
-				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					(MapCoordinates3DEx) trueSpell.getCityLocation (), mom.getSessionDescription (), mom.getServerDB ());
-					
-				// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
-				cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
-					(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					(MapCoordinates3DEx) trueSpell.getCityLocation (), cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
-				
-				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
-				
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getPlayers (), (MapCoordinates3DEx) trueSpell.getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
-			}
-		}
-		
-		return unitDied;
-	}
-	
-	/**
 	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.
 	 * So this actually processes the actions from the spell once its target is chosen.
 	 * This assumes all necessary validation has been done to verify that the action is allowed.
@@ -1324,10 +1239,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null,
 	    			targetWarpedNode ? targetLocation : null, null, mom);
-	    		
-	    		if (kind == KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS)
-	    			getServerUnitCalculations ().recheckTransportCapacity (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
-	    				mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			}
 
 			// The only targeted overland summoning spell is Floating Island
@@ -1510,8 +1421,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					}
 				
 				if (planeShiftUnits.size () > 0)
-					getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (planeShiftUnits,
-						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+					getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (planeShiftUnits, mom);
 			}
 			
 			else if (kind == KindOfSpell.CHANGE_UNIT_ID)
@@ -1519,8 +1429,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final MapCoordinates3DEx unitLocation = (MapCoordinates3DEx) targetUnit.getUnitLocation ();
 				
 				// Kill the old unit
-				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (targetUnit, KillUnitActionID.PERMANENT_DAMAGE,
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+				mom.getWorldUpdates ().killUnit (targetUnit.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+				mom.getWorldUpdates ().process (mom);
 				
 				// Create new unit
 				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, unitLocation, false, mom);
@@ -1699,9 +1609,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 							{
 								final Spell spellToRemoveDef = mom.getServerDB ().findSpell (spellToRemove.getSpellID (), "targetOverlandSpell");
 								if (citySpellEffect.getProtectsAgainstSpellRealm ().contains (spellToRemoveDef.getSpellRealm ()))
-									getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-										spellToRemove.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+									mom.getWorldUpdates ().switchOffSpell (spellToRemove.getSpellURN ());
 							}
+							
+							mom.getWorldUpdates ().process (mom);
 						}
 					}
 					
@@ -2029,12 +1940,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xu.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 							else
-								getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (xu.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE,
-									mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+								mom.getWorldUpdates ().killUnit (xu.getUnitURN (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE);
 						}
 					}
 				}
 			}
+		
+		mom.getWorldUpdates ().process (mom);
 	}
 
 	/**
@@ -2166,12 +2078,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 							}
 							
 							if (removeSpell)
-								getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-									spell.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+								mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN ());
 						}
 					}
 				}
 			}
+		
+		mom.getWorldUpdates ().process (mom);
 	}
 	
 	/**

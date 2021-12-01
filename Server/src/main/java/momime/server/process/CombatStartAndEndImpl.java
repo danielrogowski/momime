@@ -407,11 +407,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			}
 			
 			// Cancel any spells that were cast in combat, note doing so can actually kill some units
-			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients
-				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
-			
-			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients
-				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
+			getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombat (combatLocation, mom);
 
 			// Work out moveToPlane - If attackers are capturing a tower from Myrror, in which case they jump to Arcanus as part of the move
 			final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (combatLocation);
@@ -515,8 +511,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
 			// This also removes ('kills') on the client monsters in a lair/node/tower who won
 			// Have to do this before we advance the attacker, otherwise we end up trying to advance the combat summoned units
-			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer,
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 			
 			// If its a border conflict, then we don't actually care who won - one side will already have been wiped out, and hence their
 			// PendingMovement will have been removed, leaving the winner's PendingMovement still to be processed, and the main
@@ -554,8 +549,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Kill any leftover defenders
 				for (final MemoryUnit trueUnit : leftoverDefenders)
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE,
-						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+					mom.getWorldUpdates ().killUnit (trueUnit.getUnitURN (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE);
+				
+				mom.getWorldUpdates ().process (mom);
 				
 				// Its possible to get a list of 0 here, if the only surviving attacking units were combat summons like phantom warriors which have now been removed
 				if (unitStack.size () > 0)
@@ -568,12 +564,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Deal with cities
 				if (useCaptureCityDecision == CaptureCityDecisionID.CAPTURE)
-					getCityProcessing ().captureCity (combatLocation, attackingPlayer, defendingPlayer,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+					getCityProcessing ().captureCity (combatLocation, attackingPlayer, defendingPlayer, mom);
 				
 				else if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
-					getCityProcessing ().razeCity (combatLocation,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+					getCityProcessing ().razeCity (combatLocation, mom);
 
 				// If they're already banished and this was their last city being taken, then treat it just like their wizard's fortress being taken
 				if ((!wasWizardsFortress) && (useCaptureCityDecision != null) &&
@@ -621,14 +615,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// If life stealing attacks created some undead, its possible we've now got over 9 units in the map cell so have to kill some off again.
 				// Its a bit backwards letting them get created, then killing them off, but there's too much else going on like removing dead units and combat
 				// summons and advancing attackers into the target square, that its difficult to know up front whether is space to create the undead or not.
-				getCombatProcessing ().killUnitsIfTooManyInMapCell (moveTo, zombies, mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-				getCombatProcessing ().killUnitsIfTooManyInMapCell (moveTo, undead, mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				getCombatProcessing ().killUnitsIfTooManyInMapCell (moveTo, zombies, mom);
+				getCombatProcessing ().killUnitsIfTooManyInMapCell (moveTo, undead, mom);
 	
 				// Recheck that transports have enough capacity to hold all units that require them (both for attacker and defender, and regardless who won)
-				getCombatProcessing ().recheckTransportCapacityAfterCombat (combatLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+				getCombatProcessing ().recheckTransportCapacityAfterCombat (combatLocation, mom);
 				
 				// Set all units CombatX, CombatY back to -1, -1 so we don't think they're in combat anymore.
 				// Have to do this after we advance the attackers, otherwise the attackers' CombatX, CombatY will already
@@ -651,8 +642,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Remove all combat area effects from spells like Prayer, Mass Invisibility, etc.
 				log.debug ("Removing all spell CAEs");
-				getFogOfWarMidTurnMultiChanges ().removeCombatAreaEffectsFromLocalisedSpells
-					(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				getFogOfWarMidTurnMultiChanges ().removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 				
 				// Assuming both sides may have taken losses, could have gained/lost a city, etc. etc., best to just recalculate production for both
 				// DefendingPlayer may still be nil

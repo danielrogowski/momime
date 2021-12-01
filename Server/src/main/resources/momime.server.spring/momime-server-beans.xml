@@ -404,7 +404,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
-		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
@@ -463,13 +462,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="serverUnitCalculations" class="momime.server.calculations.ServerUnitCalculationsImpl">
-		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
-		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
-		<property name="randomUtils" ref="randomUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 

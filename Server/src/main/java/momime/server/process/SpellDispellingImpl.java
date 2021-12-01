@@ -18,16 +18,13 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.CombatAreaEffect;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.CounterMagicResult;
@@ -151,7 +148,6 @@ public final class SpellDispellingImpl implements SpellDispelling
 		final Map<String, String> masteries = mom.getServerDB ().getPick ().stream ().filter (p -> p.getNodeAndDispelBonus () != null).collect (Collectors.toMap
 			(p -> p.getNodeAndDispelBonus (), p -> p.getPickID ()));
 		
-		boolean anyKilled = false;
 		for (final MemoryMaintainedSpell spellToDispel : targetSpells)
 			if ((spellToDispel.getUnitURN () == null) || (!spellLockedUnitURNs.contains (spellToDispel.getUnitURN ())))
 			{
@@ -236,8 +232,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 					}
 					
 					// Regular dispel
-					else if (getSpellProcessing ().switchOffSpell (spellToDispel.getSpellURN (), mom))
-						anyKilled = true;
+					else
+						mom.getWorldUpdates ().switchOffSpell (spellToDispel.getSpellURN ());
 				}			
 			}
 		
@@ -276,8 +272,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 					result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
 		
 					if (result.isDispelled ())
-						getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-							cae.getCombatAreaEffectURN (), mom.getPlayers (), mom.getSessionDescription ());
+						mom.getWorldUpdates ().removeCombatAreaEffect (cae.getCombatAreaEffectURN ());
 		
 					if (castingPlayer.getPlayerDescription ().isHuman ())
 						resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
@@ -386,8 +381,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 					result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
 
 					if (result.isDispelled ())
-						getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (vortex, KillUnitActionID.PERMANENT_DAMAGE,
-							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+						mom.getWorldUpdates ().killUnit (vortex.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 					
 					if (castingPlayer.getPlayerDescription ().isHuman ())
 						resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
@@ -422,7 +416,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 			}
 		}
 		
-		return anyKilled;
+		return mom.getWorldUpdates ().process (mom);
 	}
 	
 	/**
@@ -436,10 +430,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 	 * @param attackingPlayer Attacking player in the combat
 	 * @param triggerSpellDef Additional spell that's trying to counter the spell from being cast
 	 * @param triggerSpellCasterPlayerID Player who cast the additional spell that's trying to counter the spell from being cast
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the spell was successfully cast or not; so false = was dispelled
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -450,13 +441,12 @@ public final class SpellDispellingImpl implements SpellDispelling
 	@Override
 	public final boolean processCountering (final PlayerServerDetails castingPlayer, final Spell spell, final int unmodifiedCastingCost,
 		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
-		final Spell triggerSpellDef, final Integer triggerSpellCasterPlayerID,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		final Spell triggerSpellDef, final Integer triggerSpellCasterPlayerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		final List<CounterMagicResult> results = new ArrayList<CounterMagicResult> ();
 
-		final Map<String, String> masteries = db.getPick ().stream ().filter (p -> p.getNodeAndDispelBonus () != null).collect (Collectors.toMap
+		final Map<String, String> masteries = mom.getServerDB ().getPick ().stream ().filter (p -> p.getNodeAndDispelBonus () != null).collect (Collectors.toMap
 			(p -> p.getNodeAndDispelBonus (), p -> p.getPickID ()));
 		
 		// Retorts that make spells more difficult to dispel
@@ -479,14 +469,14 @@ public final class SpellDispellingImpl implements SpellDispelling
 		
 		// Need to copy the list as we might remove CAEs as we go
 		final List<MemoryCombatAreaEffect> trueCAEs = new ArrayList<MemoryCombatAreaEffect> ();
-		trueCAEs.addAll (trueMap.getCombatAreaEffect ());
+		trueCAEs.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect ());
 		
 		// Look for CAEs in this location that have a dispelling power value defined
 		for (final MemoryCombatAreaEffect cae : trueCAEs)
 			if ((!dispelled) && (combatLocation != null) && (combatLocation.equals (cae.getMapLocation ())) &&
 				((cae.getCastingPlayerID () == null) || (!cae.getCastingPlayerID ().equals (castingPlayer.getPlayerDescription ().getPlayerID ()))))
 			{
-				final CombatAreaEffect caeDef = db.findCombatAreaEffect (cae.getCombatAreaEffectID (), "processCountering");
+				final CombatAreaEffect caeDef = mom.getServerDB ().findCombatAreaEffect (cae.getCombatAreaEffectID (), "processCountering");
 				if ((caeDef.getDispellingPower () != null) &&
 						
 					// Nature nodes don't counter Nature spells
@@ -512,9 +502,12 @@ public final class SpellDispellingImpl implements SpellDispelling
 					{
 						cae.setCastingCost (cae.getCastingCost () + caeDef.getDispellingPower ());
 						if (cae.getCastingCost () > 0)
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCombatAreaEffect (cae, players, sd);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCombatAreaEffect (cae, mom.getPlayers (), mom.getSessionDescription ());
 						else
-							getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, sd);
+						{
+							mom.getWorldUpdates ().removeCombatAreaEffect (cae.getCombatAreaEffectURN ());
+							mom.getWorldUpdates ().process (mom);
+						}
 					}
 				}
 			}

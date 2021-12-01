@@ -21,7 +21,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.utils.ExpandedUnitDetails;
@@ -152,18 +151,14 @@ public interface CombatProcessing
 	 * 
 	 * @param unitLocation Location where the units are; if attackers won a combat then they will already have been advanced to the combat location after winning
 	 * @param unitsToRemove The units we can potentially kill off (this is the list returned from createUndead above)
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void killUnitsIfTooManyInMapCell (final MapCoordinates3DEx unitLocation, final List<MemoryUnit> unitsToRemove,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public void killUnitsIfTooManyInMapCell (final MapCoordinates3DEx unitLocation, final List<MemoryUnit> unitsToRemove, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 	
 	/**
@@ -178,10 +173,7 @@ public interface CombatProcessing
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
@@ -189,8 +181,7 @@ public interface CombatProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void purgeDeadUnitsAndCombatSummonsFromCombat (final MapCoordinates3DEx combatLocation,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 	
 	/**
@@ -267,17 +258,13 @@ public interface CombatProcessing
 	 * or perhaps a unit had Flight cast on it which was dispelled during combat.
 	 * 
 	 * @param combatLocation The combatLocation where the units need to be rechecked
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void recheckTransportCapacityAfterCombat (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+	public void recheckTransportCapacityAfterCombat (final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 }

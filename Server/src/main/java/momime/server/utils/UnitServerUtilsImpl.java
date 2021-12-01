@@ -457,21 +457,18 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				switch (specialOrder)
 				{
 					case BUILD_CITY:
-						getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), player,
-							unitsWithNecessarySkillID.get (0).getMemoryUnit (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						getCityServerUtils ().buildCityFromSettler (player, unitsWithNecessarySkillID.get (0).getMemoryUnit (), mom);
 						break;
 						
 					case MELD_WITH_NODE:
 						// If successful, this will generate messages about the node capture
-						getOverlandMapServerUtils ().attemptToMeldWithNode (unitsWithNecessarySkillID.get (0), mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						getOverlandMapServerUtils ().attemptToMeldWithNode (unitsWithNecessarySkillID.get (0), mom);
 						
 						getPlayerMessageProcessing ().sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);						
 						break;
 						
 					case PLANE_SHIFT:
-						getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (unitsWithNecessarySkillID, mom.getPlayers (),
-							mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+						getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (unitsWithNecessarySkillID, mom);
 						break;
 						
 					default:
@@ -917,10 +914,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * Checks for units naturally reaching 120 exp with Heroism cast on them, in which case we automatically switch off the spell
 	 * 
 	 * @param mu Unit to check
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -928,30 +922,25 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void checkIfNaturallyElite (final MemoryUnit mu, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public final void checkIfNaturallyElite (final MemoryUnit mu, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		final int exp = getUnitSkillDirectAccess ().getDirectSkillValue (mu.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		if (exp > 0)
 		{
-			final List<MemoryMaintainedSpell> spellsToRemove = new ArrayList<MemoryMaintainedSpell> ();
-			
 			// Look for any spells cast on the unit that give less exp than the unit already has naturally
-			for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
+			for (final MemoryMaintainedSpell thisSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 				if ((thisSpell.getUnitURN () != null) && (thisSpell.getUnitURN () == mu.getUnitURN ()) && (thisSpell.getUnitSkillID () != null))
 				{
-					final UnitSkillEx unitSkill = db.findUnitSkill (thisSpell.getUnitSkillID (), "checkIfNaturallyElite");
+					final UnitSkillEx unitSkill = mom.getServerDB ().findUnitSkill (thisSpell.getUnitSkillID (), "checkIfNaturallyElite");
 					for (final AddsToSkill addsToSkill : unitSkill.getAddsToSkill ())
 						if ((addsToSkill.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) &&
 							(exp >= addsToSkill.getAddsToSkillValue ()))
 							
-							spellsToRemove.add (thisSpell);
+							mom.getWorldUpdates ().switchOffSpell (thisSpell.getSpellURN ());
 				}
 			
-			// Remove them in a separate loop to avoid concurrent list modification
-			for (final MemoryMaintainedSpell thisSpell : spellsToRemove)
-				getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, thisSpell.getSpellURN (), players, db, sd);
+			mom.getWorldUpdates ().process (mom);
 		}
 	}
 	

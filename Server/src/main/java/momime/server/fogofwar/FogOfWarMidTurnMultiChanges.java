@@ -31,69 +31,44 @@ import momime.server.process.OneCellPendingMovement;
 public interface FogOfWarMidTurnMultiChanges
 {
 	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param combatLocation Location of combat that just ended
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx combatLocation, final CommonDatabase db, final MomSessionDescription sd)
+	public void switchOffSpellsCastInCombat (final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param combatLocation Location of combat that just ended
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public void switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx combatLocation, final CommonDatabase db, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
-	
-	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param cityLocation Location to turn spells off from
 	 * @param castingPlayerID Which player's spells to turn off; 0 = everybodys 
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param processChanges Whether to process the generated world updates or leave this up to the caller
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void switchOffMaintainedSpellsInLocationOnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx cityLocation, final int castingPlayerID,
-		final CommonDatabase db, final MomSessionDescription sd)
+	public void switchOffSpellsInLocationOnServerAndClients (final MapCoordinates3DEx cityLocation, final int castingPlayerID,
+		final boolean processChanges, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**
-	 * @param trueMap True server knowledge of buildings and terrain
+	 * Note this only lists out the world updates, it doesn't call process.
+	 * 
 	 * @param mapLocation Location the combat is taking place
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void removeCombatAreaEffectsFromLocalisedSpells (final FogOfWarMemory trueMap, final MapCoordinates3DEx mapLocation,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public void removeCombatAreaEffectsFromLocalisedSpells (final MapCoordinates3DEx mapLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -115,18 +90,14 @@ public interface FogOfWarMidTurnMultiChanges
 	
 	/**
 	 * @param onlyOnePlayerID If zero, will heal/exp units belonging to all players; if specified will heal/exp only units belonging to the specified player
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void healUnitsAndGainExperience (final int onlyOnePlayerID, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public void healUnitsAndGainExperience (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -269,18 +240,14 @@ public interface FogOfWarMidTurnMultiChanges
 	
 	/**
 	 * @param selectedUnits List of units who want to jump to the other plane
-	 * @param players Players list
-	 * @param gsk Server knowledge structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If an expected data item cannot be found
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void planeShiftUnitStack (final List<ExpandedUnitDetails> selectedUnits, final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
+	public void planeShiftUnitStack (final List<ExpandedUnitDetails> selectedUnits, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**

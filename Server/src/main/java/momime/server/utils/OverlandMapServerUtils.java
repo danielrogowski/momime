@@ -17,11 +17,10 @@ import momime.common.database.FogOfWarValue;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.server.MomSessionVariables;
 import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
@@ -57,18 +56,14 @@ public interface OverlandMapServerUtils
 	 * The only way it can fail is if the node is already owned by another player, in which case we only have a chance of success
 	 * 
 	 * @param attackingSpirit The Magic or Guardian spirit attempting to take the node; its location tells us where the node is
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param players List of players in this session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void attemptToMeldWithNode (final ExpandedUnitDetails attackingSpirit, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public void attemptToMeldWithNode (final ExpandedUnitDetails attackingSpirit, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 	
 	/**

@@ -10,14 +10,11 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 
 /**
@@ -59,10 +56,7 @@ public interface SpellDispelling
 	 * @param attackingPlayer Attacking player in the combat
 	 * @param triggerSpellDef Additional spell that's trying to counter the spell from being cast
 	 * @param triggerSpellCasterPlayerID Player who cast the additional spell that's trying to counter the spell from being cast
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the spell was successfully cast or not; so false = was dispelled
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -72,7 +66,6 @@ public interface SpellDispelling
 	 */
 	public boolean processCountering (final PlayerServerDetails castingPlayer, final Spell spell, final int unmodifiedCastingCost,
 		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
-		final Spell triggerSpellDef, final Integer triggerSpellCasterPlayerID,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		final Spell triggerSpellDef, final Integer triggerSpellCasterPlayerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 }

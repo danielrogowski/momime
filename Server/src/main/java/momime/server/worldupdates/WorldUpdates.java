@@ -70,12 +70,13 @@ public interface WorldUpdates
 	 * Processes all world updates in the update list
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether any of the updates processed included killing a unit
 	 * @throws JAXBException If there is a problem sending some message to the client
 	 * @throws XMLStreamException If there is a problem sending some message to the client
 	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
 	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	public void process (final MomSessionVariables mom)
+	public boolean process (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 }

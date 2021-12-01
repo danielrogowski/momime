@@ -2,21 +2,14 @@ package momime.server.calculations;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
 
@@ -33,24 +26,6 @@ public interface ServerUnitCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public int calculateUnitScoutingRange (final ExpandedUnitDetails unit, final CommonDatabase db) throws RecordNotFoundException, MomException;
-
-	/**
-	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
-	 * 
-	 * @param mapLocation Location where the units need to be rechecked
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public void recheckTransportCapacity (final MapCoordinates3DEx mapLocation, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
-		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
 	 * Non-magical ranged attack incurr a -10% to hit penalty for each 3 tiles distance between the attacking and defending unit on the combat map.

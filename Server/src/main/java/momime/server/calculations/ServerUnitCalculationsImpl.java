@@ -3,41 +3,23 @@ package momime.server.calculations;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerPickUtils;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.fogofwar.KillUnitActionID;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -45,29 +27,11 @@ import momime.server.utils.UnitServerUtils;
  */
 public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 {
-	/** Class logger */
-	private final static Log log = LogFactory.getLog (ServerUnitCalculationsImpl.class);
-	
-	/** expandUnitDetails method */
-	private ExpandUnitDetails expandUnitDetails;
-	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
 	
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
-	
-	/** MemoryGridCell utils */
-	private MemoryGridCellUtils memoryGridCellUtils;
-	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
-	
-	/** Methods for updating true map + players' memory */
-	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
-	
-	/** Random utils */
-	private RandomUtils randomUtils; 
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -97,80 +61,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		}
 
 		return scoutingRange;
-	}
-
-	/**
-	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
-	 * 
-	 * @param mapLocation Location where the units need to be rechecked
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	@Override
-	public final void recheckTransportCapacity (final MapCoordinates3DEx mapLocation, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
-		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
-	{
-		log.debug ("recheckTransportCapacity checking location " + mapLocation);
-
-		final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
-			(mapLocation.getZ ()).getRow ().get (mapLocation.getY ()).getCell ().get (mapLocation.getX ()).getTerrainData ();
-		
-		// List all the units at this location owned by this player
-		final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
-		for (final MemoryUnit tu : trueMap.getUnit ())
-			if ((tu.getStatus () == UnitStatusID.ALIVE) && (mapLocation.equals (tu.getUnitLocation ())))
-				unitStack.add (getExpandUnitDetails ().expandUnitDetails (tu, null, null, null, players, trueMap, db));
-		
-		// Get a list of the unit stack skills
-		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
-		
-		// Now check each unit in the stack
-		final List<ExpandedUnitDetails> impassableUnits = new ArrayList<ExpandedUnitDetails> ();
-		int spaceRequired = 0;
-		for (final ExpandedUnitDetails tu : unitStack)
-		{
-			final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills,
-				getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
-				
-			// Count space granted by transports
-			final Integer unitTransportCapacity = tu.getUnitDefinition ().getTransportCapacity ();
-			if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
-			{
-				// Transports on impassable terrain just get killed (maybe a ship had its flight spell dispelled during an overland combat)
-				if (impassable)
-				{
-					log.debug ("Killing Unit URN " + tu.getUnitURN () + " (transport on impassable terrain)");
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
-				}
-				else
-					spaceRequired = spaceRequired - unitTransportCapacity;
-			}
-			else if (impassable)
-			{
-				spaceRequired++;
-				impassableUnits.add (tu);
-			}
-		}
-		
-		// Need to kill off any units?
-		while ((spaceRequired > 0) && (impassableUnits.size () > 0))
-		{
-			final ExpandedUnitDetails killUnit = impassableUnits.get (getRandomUtils ().nextInt (impassableUnits.size ()));
-			log.debug ("Killing Unit URN " + killUnit.getUnitURN () + " (unit on impassable terrain)");
-			
-			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
-			
-			spaceRequired--;
-			impassableUnits.remove (killUnit);
-		}
 	}
 
 	/**
@@ -302,22 +192,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	}
 	
 	/**
-	 * @return expandUnitDetails method
-	 */
-	public final ExpandUnitDetails getExpandUnitDetails ()
-	{
-		return expandUnitDetails;
-	}
-
-	/**
-	 * @param e expandUnitDetails method
-	 */
-	public final void setExpandUnitDetails (final ExpandUnitDetails e)
-	{
-		expandUnitDetails = e;
-	}
-
-	/**
 	 * @return Server-only unit utils
 	 */
 	public final UnitServerUtils getUnitServerUtils ()
@@ -334,38 +208,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	}
 	
 	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
-	}
-
-	/**
-	 * @return MemoryGridCell utils
-	 */
-	public final MemoryGridCellUtils getMemoryGridCellUtils ()
-	{
-		return memoryGridCellUtils;
-	}
-
-	/**
-	 * @param utils MemoryGridCell utils
-	 */
-	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
-	{
-		memoryGridCellUtils = utils;
-	}
-
-	/**
 	 * @return Coordinate system utils
 	 */
 	public final CoordinateSystemUtils getCoordinateSystemUtils ()
@@ -379,38 +221,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
-	}
-
-	/**
-	 * @return Methods for updating true map + players' memory
-	 */
-	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
-	{
-		return fogOfWarMidTurnChanges;
-	}
-
-	/**
-	 * @param obj Methods for updating true map + players' memory
-	 */
-	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
-	{
-		fogOfWarMidTurnChanges = obj;
-	}
-
-	/**
-	 * @return Random utils
-	 */
-	public final RandomUtils getRandomUtils ()
-	{
-		return randomUtils;
-	}
-
-	/**
-	 * @param utils Random utils
-	 */
-	public final void setRandomUtils (final RandomUtils utils)
-	{
-		randomUtils = utils;
 	}
 
 	/**

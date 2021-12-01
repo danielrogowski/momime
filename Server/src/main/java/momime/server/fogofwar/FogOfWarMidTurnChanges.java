@@ -153,27 +153,6 @@ public interface FogOfWarMidTurnChanges
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
-	 * Kills off a unit, on the server and usually also on whichever clients can see the unit
-	 * There are a number of different possibilities for how we need to handle this, depending on how the unit died and whether it is a regular/summoned unit or a hero
-	 *
-	 * @param trueUnit The unit to set to alive
-	 * @param untransmittedAction Method by which the unit is being killed
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID untransmittedAction,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
-		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
-
-	/**
 	 * Sends transient spell casts to human players who are in range to see it.  This is purely for purposes of them displaying the animation,
 	 * the spell is then discarded and no actual updates take place on the server or client as a result of this, other than that the client stops asking the caster to target it.
 	 * 
@@ -247,25 +226,6 @@ public interface FogOfWarMidTurnChanges
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
-	 * Be very careful about calling this directly as it does not do things like cleaning up attached CAEs.  Maybe need to call switchOffSpell instead.
-	 * 
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param spellURN Which spell it is
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @return Whether switching off the spell resulted in the death of the unit it was cast on
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public boolean switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap, final int spellURN,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
-
-	/**
 	 * @param gsk Server knowledge structure to add the CAE to
 	 * @param combatAreaEffectID Which CAE is it
 	 * @param spellID Which spell was cast to produce this CAE; null for CAEs that aren't from spells, like node auras
@@ -281,21 +241,6 @@ public interface FogOfWarMidTurnChanges
 		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final Integer castingCost, final MapCoordinates3DEx mapLocation,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException;
-
-	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param combatAreaEffectURN Which CAE is it
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
-		final int combatAreaEffectURN, final List<PlayerServerDetails> players, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
 	 * @param gsk Server knowledge structure to add the building(s) to

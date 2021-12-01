@@ -187,8 +187,7 @@ public final class SpellTriggersImpl implements SpellTriggers
 		boolean passesCounteringAttempts = true;
 		if ((spellDef.getTriggerDispelPower () != null) && (!offendingSpell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN)))
 			passesCounteringAttempts = getSpellDispelling ().processCountering (offendingPlayer, offendingSpell, offendingUnmodifiedCastingCost, null,
-				offendingPlayer, castingPlayer, spellDef, castingPlayer.getPlayerDescription ().getPlayerID (),
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				offendingPlayer, castingPlayer, spellDef, castingPlayer.getPlayerDescription ().getPlayerID (), mom);
 		return passesCounteringAttempts;
 	}
 

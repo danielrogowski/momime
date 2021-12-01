@@ -39,7 +39,6 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
@@ -940,10 +939,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * 
 	 * @param unitLocation Location where the units are; if attackers won a combat then they will already have been advanced to the combat location after winning
 	 * @param unitsToRemove The units we can potentially kill off (this is the list returned from createUndead above)
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -951,11 +947,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public void killUnitsIfTooManyInMapCell (final MapCoordinates3DEx unitLocation, final List<MemoryUnit> unitsToRemove,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public final void killUnitsIfTooManyInMapCell (final MapCoordinates3DEx unitLocation, final List<MemoryUnit> unitsToRemove, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		int unitCountAtLocation = (int) trueMap.getUnit ().stream ().filter (u -> unitLocation.equals (u.getUnitLocation ())).count ();
+		int unitCountAtLocation = (int) mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter (u -> unitLocation.equals (u.getUnitLocation ())).count ();
 
 		while ((unitCountAtLocation > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL) && (unitsToRemove.size () > 0))
 		{
@@ -967,8 +962,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 			log.debug ("Killing off undead Unit URN " + trueUnit.getUnitURN () + " because there are more than " +
 				CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL + " units at " + unitLocation);
 			
-			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.DISMISS, trueMap, players, sd.getFogOfWarSetting (), db);
+			mom.getWorldUpdates ().killUnit (trueUnit.getUnitURN (), KillUnitActionID.DISMISS);
 		}
+		
+		mom.getWorldUpdates ().process (mom);
 	}
 	
 	/**
@@ -983,10 +980,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
@@ -995,8 +989,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	@Override
 	public final void purgeDeadUnitsAndCombatSummonsFromCombat (final MapCoordinates3DEx combatLocation,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		// Then check all the units
@@ -1006,7 +999,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		int monstersCount = 0;
 		
 		final List<MemoryUnit> copyOfTrueUnits = new ArrayList<MemoryUnit> ();
-		copyOfTrueUnits.addAll (trueMap.getUnit ());
+		copyOfTrueUnits.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 		for (final MemoryUnit trueUnit : copyOfTrueUnits)
 			
 			// Don't check combatPosition here - DEAD units should have no position
@@ -1017,7 +1010,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				boolean manuallyTellAttackerClientToKill = false;
 				boolean manuallyTellDefenderClientToKill = false;
 				if ((trueUnit.isWasSummonedInCombat ()) || ((trueUnit.getStatus () == UnitStatusID.DEAD) &&
-					(!db.findUnit (trueUnit.getUnitID (), "purgeDeadUnitsAndCombatSummonsFromCombat").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))))
+					(!mom.getServerDB ().findUnit (trueUnit.getUnitID (), "purgeDeadUnitsAndCombatSummonsFromCombat").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))))
 				{
 					if (trueUnit.getStatus () == UnitStatusID.DEAD)
 						deadCount++;
@@ -1041,7 +1034,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 						log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling defender to remove dead unit URN " + trueUnit.getUnitURN ());
 					
 					// Use regular kill routine
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+					mom.getWorldUpdates ().killUnit (trueUnit.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 				}
 				
 				// Special case where we have to tell the client to kill off the unit outside of the FOW routines?
@@ -1072,6 +1065,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 					}
 				}
 			}
+		
+		mom.getWorldUpdates ().process (mom);
 		
 		log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat permanently freed " +
 			deadCount + " dead units and " + summonedCount + " summons, and told attacking client to free " + monstersCount + " monster defenders who''re still alive");
@@ -1464,10 +1459,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * or perhaps a unit had Flight cast on it which was dispelled during combat.
 	 * 
 	 * @param combatLocation The combatLocation where the units need to be rechecked
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -1475,21 +1467,22 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void recheckTransportCapacityAfterCombat (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+	public final void recheckTransportCapacityAfterCombat (final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		// First get a list of the map coordinates and players to check; this could be two cells if the defender won - they'll have units at the combatLocation and the
 		// attackers' transports may have been wiped out but the transported units are still sat at the point they attacked from.
 		final List<MapCoordinates3DEx> mapLocations = new ArrayList<MapCoordinates3DEx> ();
-		for (final MemoryUnit tu : trueMap.getUnit ())
+		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((tu.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (tu.getCombatLocation ())))
 				if (!mapLocations.contains (tu.getUnitLocation ()))
 					mapLocations.add ((MapCoordinates3DEx) tu.getUnitLocation ());
 		
 		// Now check all locations
 		for (final MapCoordinates3DEx mapLocation : mapLocations)
-			getServerUnitCalculations ().recheckTransportCapacity (mapLocation, trueMap, players, fogOfWarSettings, db);
+			mom.getWorldUpdates ().recheckTransportCapacity (mapLocation);
+		
+		mom.getWorldUpdates ().process (mom);
 	}
 	
 	/**

@@ -9,9 +9,6 @@ import java.util.Set;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -24,13 +21,11 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CitySpellEffect;
 import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.SpellBookSectionID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -39,7 +34,6 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -52,18 +46,13 @@ import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
-import momime.common.messages.servertoclient.CancelCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
-import momime.common.messages.servertoclient.KillUnitMessage;
-import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
-import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
 import momime.common.utils.CombatMapUtils;
-import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
@@ -72,7 +61,6 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.FogOfWarCalculations;
-import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.ResolveAttackTarget;
@@ -84,9 +72,6 @@ import momime.server.utils.UnitServerUtils;
  */
 public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 {
-	/** Class logger */
-	private final static Log log = LogFactory.getLog (FogOfWarMidTurnChangesImpl.class);
-	
 	/** Single cell FOW calculations */
 	private FogOfWarCalculations fogOfWarCalculations;
 	
@@ -443,188 +428,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	}
 
 	/**
-	 * Kills off a unit, on the server and usually also on whichever clients can see the unit
-	 * There are a number of different possibilities for how we need to handle this, depending on how the unit died and whether it is a regular/summoned unit or a hero
-	 *
-	 * @param trueUnit The unit to set to alive
-	 * @param untransmittedAction Method by which the unit is being killed
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	@Override
-	public final void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID untransmittedAction,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
-		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
-	{
-		final boolean isHero = db.findUnit (trueUnit.getUnitID (), "killUnitOnServerAndClients").getUnitMagicRealm ().equals
-			(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
-		
-		// If the unit was a hero dying in combat, move any items they had into the pool for the winner of the combat to claim
-		final ServerGridCellEx gc = (trueUnit.getCombatLocation () == null) ? null :
-			(ServerGridCellEx) trueMap.getMap ().getPlane ().get (trueUnit.getCombatLocation ().getZ ()).getRow ().get
-				(trueUnit.getCombatLocation ().getY ()).getCell ().get (trueUnit.getCombatLocation ().getX ());
-
-		if ((trueUnit.getCombatLocation () != null) && (untransmittedAction != KillUnitActionID.PERMANENT_DAMAGE))
-			trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
-			{
-				gc.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
-				slot.setHeroItem (null);
-			});
-		
-		// Check which players could see the unit
-		for (final PlayerServerDetails player : players)
-		{
-			if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (trueUnit, trueMap.getMap (), player, db, fogOfWarSettings))
-			{
-				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-				
-				// Remove unit from players' memory on server - this doesn't suffer from the issue described below so we can just do it
-				getPendingMovementUtils ().removeUnitFromAnyPendingMoves (priv.getPendingMovement (), trueUnit.getUnitURN ());
-				getUnitUtils ().beforeKillingUnit (priv.getFogOfWarMemory (), trueUnit.getUnitURN ());	// Removes spells cast on unit
-				
-				// Map the transmittedAction to a unit status
-				final UnitStatusID newStatusInPlayersMemoryOnServer;
-				final UnitStatusID newStatusInPlayersMemoryOnClient;
-				
-				switch (untransmittedAction)
-				{
-					// Heroes are killed outright on the clients (even if ours, and just dismissing him and may resummon him later), but return to 'Generated' status on the server below
-					case PERMANENT_DAMAGE:
-					case DISMISS:
-						newStatusInPlayersMemoryOnServer = null;
-						newStatusInPlayersMemoryOnClient = null;
-						break;
-						
-					// If its our unit or hero dying from lack of production then the client still needs the unit object left around temporarily while it sorts the NTM out.
-					// But anybody else's units dying from lack of production can just be removed.
-				    case LACK_OF_PRODUCTION:
-						newStatusInPlayersMemoryOnServer = null;
-						if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
-							newStatusInPlayersMemoryOnClient = UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION;
-						else
-							newStatusInPlayersMemoryOnClient = null;
-						break;
-					
-					// If we're not involved in the combat, then units are remove immediately from the client.
-					// If its somebody else's hero dying, then they're remove immediately from the client.
-					// If its a regular unit dying in a combat we're involved in, or our own hero dying, then we might raise/animate dead it, so mark those as dead but don't remove them.
-				    case HEALABLE_COMBAT_DAMAGE:
-						if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
-							newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
-						else if (isHero)
-							newStatusInPlayersMemoryOnServer = null;
-						else if ((player.getPlayerDescription ().getPlayerID ().equals (gc.getAttackingPlayerID ())) || (player.getPlayerDescription ().getPlayerID ().equals (gc.getDefendingPlayerID ())))
-							newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
-						else
-							newStatusInPlayersMemoryOnServer = null;
-						
-						newStatusInPlayersMemoryOnClient = newStatusInPlayersMemoryOnServer;
-				    	break;
-				    	
-				    // As above, but immediately remove regular units even if we own them
-				    case HEALABLE_OVERLAND_DAMAGE:
-				    	if (isHero && (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
-							newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
-				    	else
-				    		newStatusInPlayersMemoryOnServer = null;
-
-						newStatusInPlayersMemoryOnClient = newStatusInPlayersMemoryOnServer;
-				    	break;
-				    	
-				    default:
-				    	throw new MomException ("killUnitOnServerAndClients doesn't know what unit status to convert " + untransmittedAction + " into");
-				}
-
-				// If still in combat, only set to DEAD in player's memory on server, rather than removing entirely
-				if (newStatusInPlayersMemoryOnServer == null)
-				{
-					log.debug ("Removing unit URN " + trueUnit.getUnitURN () + " from player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory on server");
-					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
-				}
-				else
-				{
-					log.debug ("Marking unit URN " + trueUnit.getUnitURN () + " as " + newStatusInPlayersMemoryOnServer + " in player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory on server");
-					getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "killUnitOnServerAndClients").setStatus (newStatusInPlayersMemoryOnServer);
-				}
-				
-				if (player.getPlayerDescription ().isHuman ())
-				{
-					// New status has to be set per player depending on who can see it
-					log.debug ("Telling client to mark unit URN " + trueUnit.getUnitURN () + " as " + newStatusInPlayersMemoryOnClient + " in player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory");
-
-					final KillUnitMessage msg = new KillUnitMessage ();
-					msg.setUnitURN (trueUnit.getUnitURN ());
-					msg.setNewStatus (newStatusInPlayersMemoryOnClient);
-					
-					player.getConnection ().sendMessageToClient (msg);
-				}
-			}
-		}
-
-		// Update the true copy of the unit as appropriate
-		getUnitUtils ().beforeKillingUnit (trueMap, trueUnit.getUnitURN ());	// Removes spells cast on unit
-		
-		switch (untransmittedAction)
-		{
-			// Complete remove unit
-			case PERMANENT_DAMAGE:
-				log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory");
-				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
-				break;
-
-			// Dismissed heroes go back to Generated
-			// Heroes dismissed by lack of production go back to Generated
-			case DISMISS:
-			case LACK_OF_PRODUCTION:
-				if (isHero)
-				{
-					log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated in server's true memory (dismissed or lack of production)");
-					trueUnit.setStatus (UnitStatusID.GENERATED);
-				}
-				else
-				{
-					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory (dismissed or lack of production)");
-					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
-				}
-				break;
-				
-			// Killed by taking damage in combat.
-			// All units killed by combat damage are kept around for the moment, since one of the players in the combat may Raise Dead them.
-			// Heroes are kept at DEAD even after the combat ends, in case the player resurrects them.
-			case HEALABLE_COMBAT_DAMAGE:
-				log.debug ("Marking unit with unit URN " + trueUnit.getUnitURN () + " as dead in server's true memory (combat damage)");
-				trueUnit.setStatus (UnitStatusID.DEAD);
-				break;
-
-			// Killed by taking damage overland.
-			// As above except we only need to mark heroes as DEAD, since there's no way to resurrect regular units on the overland map.
-			case HEALABLE_OVERLAND_DAMAGE:
-				if (isHero)
-				{
-					log.debug ("Marking hero with unit URN " + trueUnit.getUnitURN () + " as dead in server's true memory (overland damage)");
-					trueUnit.setStatus (UnitStatusID.DEAD);
-				}
-				else
-				{
-					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory (overland damage)");
-					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
-				}
-				break;
-				
-			default:
-				throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when action = " + untransmittedAction);
-		}
-	}
-
-	/**
 	 * Sends transient spell casts to human players who are in range to see it.  This is purely for purposes of them displaying the animation,
 	 * the spell is then discarded and no actual updates take place on the server or client as a result of this, other than that the client stops asking the caster to target it.
 	 * 
@@ -788,140 +591,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	}
 
 	/**
-	 * Be very careful about calling this directly as it does not do things like cleaning up attached CAEs.  Maybe need to call switchOffSpell instead.
-	 * 
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param spellURN Which spell it is
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @return Whether switching off the spell resulted in the death of the unit it was cast on
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	@Override
-	public final boolean switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap, final int spellURN,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
-	{
-		boolean killed = false;
-		
-		// Get the spell details before we remove it
-		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (spellURN, trueMap.getMaintainedSpell ());
-		if (trueSpell != null)
-		{
-			// Switch off on server
-			getMemoryMaintainedSpellUtils ().removeSpellURN (spellURN, trueMap.getMaintainedSpell ());
-	
-			// Build the message ready to send it to whoever could see the spell
-			final SwitchOffMaintainedSpellMessage msg = new SwitchOffMaintainedSpellMessage ();
-			msg.setSpellURN (spellURN);
-	
-			// Check which players could see the spell
-			for (final PlayerServerDetails player : players)
-			{
-				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-				if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, trueMap.getMap (), trueMap.getUnit (), player, db, sd.getFogOfWarSetting ()))
-				{
-					// Update player's memory on server
-					getMemoryMaintainedSpellUtils ().removeSpellURN (spellURN, priv.getFogOfWarMemory ().getMaintainedSpell ());
-	
-					// Update on client
-					if (player.getPlayerDescription ().isHuman ())
-						player.getConnection ().sendMessageToClient (msg);
-				}
-			}
-			
-			// Does the spell generate a CAE? e.g. Heavenly Light and Cloud of Shadow; if so then remove it
-			if (trueSpell.getCitySpellEffectID () != null)
-			{
-				final CitySpellEffect citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "switchOffMaintainedSpellOnServerAndClients");
-				if (citySpellEffect.getCombatAreaEffectID () != null)
-				{
-					final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
-						(trueMap.getCombatAreaEffect (), (MapCoordinates3DEx) trueSpell.getCityLocation (), citySpellEffect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
-					
-					if (trueCAE != null)
-						removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
-				}
-				
-				// The only spells with a citySpellEffectID that can be cast in combat are Wall of Fire / Wall of Darkness.
-				// If these get cancelled, we need to regnerate the combat map.
-				else
-				{
-					final Spell spellDef = db.findSpell (trueSpell.getSpellID (), "switchOffMaintainedSpellOnServerAndClients");
-					if (((spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)) &&
-						spellDef.getCombatCastingCost () != null)
-					{
-						final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-							((MapCoordinates3DEx) trueSpell.getCityLocation (), trueMap.getUnit (), players, db);
-						if (combatPlayers.bothFound ())
-						{
-							final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
-							final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
-						
-							final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
-								(trueSpell.getCityLocation ().getZ ()).getRow ().get (trueSpell.getCityLocation ().getY ()).getCell ().get (trueSpell.getCityLocation ().getX ());
-							
-							getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), db, trueMap, (MapCoordinates3DEx) trueSpell.getCityLocation ());
-							
-							// Send the updated map
-							final UpdateCombatMapMessage combatMapMsg = new UpdateCombatMapMessage ();
-							combatMapMsg.setCombatLocation (trueSpell.getCityLocation ());
-							combatMapMsg.setCombatTerrain (gc.getCombatMap ());
-							
-							if (attackingPlayer.getPlayerDescription ().isHuman ())
-								attackingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
-	
-							if (defendingPlayer.getPlayerDescription ().isHuman ())
-								defendingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
-						}
-					}
-				}
-			}
-			
-			// If spell was cast on a unit, then see if removing the spell killed it
-			// e.g. Unit has 5 HP, cast Lionheart on it in combat gives +3 so now has 8 HP.  Unit takes 6 HP damage, then wins the combat.
-			// Lionheart gets cancelled so now unit has -1 HP.
-			if (trueSpell.getUnitURN () != null)
-			{
-				final MemoryUnit mu = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellOnServerAndClients");
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null, players, trueMap, db);
-				if (xu.calculateAliveFigureCount () <= 0)
-					killed = true;
-				else if ((mu.getCombatLocation () != null) && (mu.getCombatPosition () != null))
-				{
-					// Make sure the unit is still able to be on the combat tile it is on, and that we didn't lose our flight spell over water
-					final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
-						(mu.getCombatLocation ().getZ ()).getRow ().get (mu.getCombatLocation ().getY ()).getCell ().get (mu.getCombatLocation ().getX ());
-					
-					final MomCombatTile tile = gc.getCombatMap ().getRow ().get (mu.getCombatPosition ().getY ()).getCell ().get (mu.getCombatPosition ().getX ());
-					
-					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (xu, tile, db) < 0)
-						killed = true;
-				}
-				
-				if (killed)
-				{
-					// Work out if this is happening in combat or not
-					final KillUnitActionID action = (mu.getCombatLocation () == null) ? KillUnitActionID.HEALABLE_OVERLAND_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
-					
-					killUnitOnServerAndClients (mu, action, trueMap, players, sd.getFogOfWarSetting (), db);
-				}
-			}
-	
-			// The removed spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
-			final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffMaintainedSpellOnServerAndClients");
-			getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, castingPlayer, players, "switchOffMaintainedSpellOnServerAndClients", sd, db);
-		}
-		
-		return killed;
-	}
-
-	/**
 	 * @param gsk Server knowledge structure to add the CAE to
 	 * @param combatAreaEffectID Which CAE is it
 	 * @param spellID Which spell was cast to produce this CAE; null for CAEs that aren't from spells, like node auras
@@ -978,48 +647,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			}
 	}
 
-	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param combatAreaEffectURN Which CAE is it
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	@Override
-	public final void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
-		final int combatAreaEffectURN, final List<PlayerServerDetails> players, final MomSessionDescription sd)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
-	{
-		// Get the CAE's details before we remove it
-		final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (combatAreaEffectURN, trueMap.getCombatAreaEffect (), "removeCombatAreaEffectFromServerAndClients");
-		
-		// Remove on server
-		getMemoryCombatAreaEffectUtils ().removeCombatAreaEffectURN (combatAreaEffectURN, trueMap.getCombatAreaEffect ());
-
-		// Build the message ready to send it to whoever can see the CAE
-		final CancelCombatAreaEffectMessage msg = new CancelCombatAreaEffectMessage ();
-		msg.setCombatAreaEffectURN (combatAreaEffectURN);
-
-		// Check which players can see the CAE
-		for (final PlayerServerDetails player : players)
-		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (getFogOfWarMidTurnVisibility ().canSeeCombatAreaEffectMidTurn (trueCAE, priv.getFogOfWar (), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))		// Cheating a little passing msgData as the CAE details, but we know they're correct
-			{
-				// Update player's memory on server
-				getMemoryCombatAreaEffectUtils ().removeCombatAreaEffectURN (combatAreaEffectURN, priv.getFogOfWarMemory ().getCombatAreaEffect ());
-
-				// Update on client
-				if (player.getPlayerDescription ().isHuman ())
-					player.getConnection ().sendMessageToClient (msg);
-			}
-		}
-	}
-	
 	/**
 	 * @param gsk Server knowledge structure to add the building(s) to
 	 * @param players List of players in the session, this can be passed in null for when buildings are being added to the map pre-game

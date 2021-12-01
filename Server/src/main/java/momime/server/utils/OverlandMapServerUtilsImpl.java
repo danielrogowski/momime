@@ -27,10 +27,8 @@ import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.UnitCombatSideID;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageNode;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -40,6 +38,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -189,10 +188,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * The only way it can fail is if the node is already owned by another player, in which case we only have a chance of success
 	 * 
 	 * @param attackingSpirit The Magic or Guardian spirit attempting to take the node; its location tells us where the node is
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param players List of players in this session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -200,11 +196,10 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void attemptToMeldWithNode (final ExpandedUnitDetails attackingSpirit, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public final void attemptToMeldWithNode (final ExpandedUnitDetails attackingSpirit, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(attackingSpirit.getUnitLocation ().getZ ()).getRow ().get (attackingSpirit.getUnitLocation ().getY ()).getCell ().get (attackingSpirit.getUnitLocation ().getX ());
 		
 		// Succeed?
@@ -217,8 +212,9 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			
 			// Create test unit
 			final int defendingStrength = getSampleUnitUtils ().createSampleUnit
-				(tc.getNodeSpiritUnitID (), tc.getTerrainData ().getNodeOwnerID (), null, players, trueMap, db).getModifiedSkillValue
-				(CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE);
+				(tc.getNodeSpiritUnitID (), tc.getTerrainData ().getNodeOwnerID (), null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
+						(CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE);
 			
 			// Decide who wins
 			successful = (getRandomUtils ().nextInt (defendingStrength + attackingStrength) < attackingStrength);
@@ -244,7 +240,8 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			
 			if (tc.getTerrainData ().getNodeOwnerID () != null)
 			{
-				final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, tc.getTerrainData ().getNodeOwnerID (), "attemptToMeldWithNode (d)");
+				final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
+					(mom.getPlayers (), tc.getTerrainData ().getNodeOwnerID (), "attemptToMeldWithNode (d)");
 				if (defendingPlayer.getPlayerDescription ().isHuman ())
 				{
 					final NewTurnMessageNode msg = new NewTurnMessageNode ();
@@ -263,27 +260,29 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			tc.setNodeSpiritUnitID (attackingSpirit.getUnitID ());
 			
 			// Resolve the node ownership out across the full area, updating the true map as well as players' memory of who can see each cell and informing the clients too
-			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-					for (final Plane plane : db.getPlane ())
+			for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 					{
-						final ServerGridCellEx aura = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
+						final ServerGridCellEx aura = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+							(z).getRow ().get (y).getCell ().get (x);
 						if (attackingSpirit.getUnitLocation ().equals (aura.getAuraFromNode ()))
 						{
 							// Update true map
 							aura.getTerrainData ().setNodeOwnerID (attackingSpirit.getOwningPlayerID ());
 							
 							// Update players' memory and clients
-							final MapCoordinates3DEx auraLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
+							final MapCoordinates3DEx auraLocation = new MapCoordinates3DEx (x, y, z);
 							
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players, auraLocation,
-								sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), auraLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 						}
 					}
 		}
 		
 		// Kill off the spirit
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit.getMemoryUnit (), KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
+		mom.getWorldUpdates ().killUnit (attackingSpirit.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		mom.getWorldUpdates ().process (mom);
 	}
 
 	/**

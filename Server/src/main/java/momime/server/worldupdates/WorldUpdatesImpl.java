@@ -148,6 +148,7 @@ public final class WorldUpdatesImpl implements WorldUpdates
 	 * Processes all world updates in the update list
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether any of the updates processed included killing a unit
 	 * @throws JAXBException If there is a problem sending some message to the client
 	 * @throws XMLStreamException If there is a problem sending some message to the client
 	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
@@ -155,10 +156,12 @@ public final class WorldUpdatesImpl implements WorldUpdates
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void process (final MomSessionVariables mom)
+	public final boolean process (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		boolean resortList = true;
+		boolean anyKilled = false;
+		
 		while (updates.size () > 0)
 		{
 			if (resortList)
@@ -170,6 +173,9 @@ public final class WorldUpdatesImpl implements WorldUpdates
 			final WorldUpdate update = updates.get (0);
 			log.debug ("Processing world update 1 of " + updates.size () + " which is " + update);
 			
+			if (update instanceof KillUnitUpdate)
+				anyKilled = true;
+			
 			final WorldUpdateResult result = update.process (mom);
 			
 			if ((result == WorldUpdateResult.DONE) || (result == WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED))
@@ -180,6 +186,8 @@ public final class WorldUpdatesImpl implements WorldUpdates
 			
 			log.debug (update + " returned " + result + ", now there are " + updates.size () + " pending updates");
 		}
+		
+		return anyKilled;
 	}
 
 	/**

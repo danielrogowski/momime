@@ -231,18 +231,14 @@ public interface UnitServerUtils
 	 * Checks for units naturally reaching 120 exp with Heroism cast on them, in which case we automatically switch off the spell
 	 * 
 	 * @param mu Unit to check
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void checkIfNaturallyElite (final MemoryUnit mu, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public void checkIfNaturallyElite (final MemoryUnit mu, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**

@@ -158,10 +158,7 @@ public interface CityProcessing
 	 * @param cityLocation Location of the city
 	 * @param attackingPlayer Player who won the combat, who is taking ownership of the city
 	 * @param defendingPlayer Player who lost the combat, and who is losing the city
-	 * @param players List of players in this session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -169,25 +166,20 @@ public interface CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void captureCity (final MapCoordinates3DEx cityLocation, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+		final MomSessionVariables mom) throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**
 	 * Destroys a city after it is taken in combat
 	 * 
 	 * @param cityLocation Location of the city
-	 * @param players List of players in this session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void razeCity (final MapCoordinates3DEx cityLocation,
-		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
+	public void razeCity (final MapCoordinates3DEx cityLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**

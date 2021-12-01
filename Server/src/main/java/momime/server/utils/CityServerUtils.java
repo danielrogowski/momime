@@ -19,7 +19,7 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
-import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.MomSessionVariables;
 
 /**
  * Server side only helper methods for dealing with cities
@@ -64,20 +64,16 @@ public interface CityServerUtils
 		final int optionalFarmers);
 
 	/**
-	 * @param gsk Server knowledge data structure
 	 * @param player The player who owns the settler
 	 * @param settler The settler being converted into a city
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void buildCityFromSettler (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final MemoryUnit settler,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public void buildCityFromSettler (final PlayerServerDetails player, final MemoryUnit settler, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**

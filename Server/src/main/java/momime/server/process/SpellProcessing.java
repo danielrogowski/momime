@@ -76,28 +76,6 @@ public interface SpellProcessing
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;
 	
 	/**
-	 * The method in the FOW class physically removed spells from the server and players' memory; this method
-	 * deals with all the knock on effects of spells being switched off, which isn't really much since spells don't grant money or anything when sold
-	 * so this is mostly here for consistency with the building and unit methods
-	 *
-	 * Does not recalc global production (which will now be reduced from not having to pay the maintenance of the cancelled spell),
-	 * this has to be done by the calling routine
-	 * 
-	 * NB. Delphi method was called OkToSwitchOffMaintainedSpell
-	 *
-	 * @param spellURN Which spell it is
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether switching off the spell resulted in the death of the unit it was cast on
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	public boolean switchOffSpell (final int spellURN, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
-	
-	/**
 	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.
 	 * So this actually processes the actions from the spell once its target is chosen.
 	 * This assumes all necessary validation has been done to verify that the action is allowed.

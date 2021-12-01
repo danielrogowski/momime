@@ -471,7 +471,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final EnforceProductionID enforceType, final boolean addOnStoredAmount, final MomSessionVariables mom) throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	private final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final EnforceProductionID enforceType,
+		final boolean addOnStoredAmount, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();

@@ -1,12 +1,13 @@
 package momime.server.worldupdates;
 
-import java.io.IOException;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.KillUnitActionID;
 
@@ -69,9 +70,12 @@ public interface WorldUpdates
 	 * Processes all world updates in the update list
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws IOException If there was a problem
 	 * @throws JAXBException If there is a problem sending some message to the client
 	 * @throws XMLStreamException If there is a problem sending some message to the client
+	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
+	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
+	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	public void process (final MomSessionVariables mom) throws IOException, JAXBException, XMLStreamException;
+	public void process (final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 }

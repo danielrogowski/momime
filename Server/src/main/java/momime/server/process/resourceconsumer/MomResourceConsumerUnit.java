@@ -3,7 +3,6 @@ package momime.server.process.resourceconsumer;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -14,8 +13,6 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.ServerUnitCalculations;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 
 /**
@@ -35,12 +32,6 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 	/** The amount of production being consumed */
 	private int consumptionAmount;
 
-	/** Methods for updating true map + players' memory */
-	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
-	
-	/** Server-only unit calculations */
-	private ServerUnitCalculations serverUnitCalculations;
-	
 	/**
 	 * @return The player who's resources are being consumed
 	 */
@@ -122,8 +113,8 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (getUnit (), KillUnitActionID.LACK_OF_PRODUCTION,
-			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+		mom.getWorldUpdates ().killUnit (getUnit ().getUnitURN (), KillUnitActionID.LACK_OF_PRODUCTION);
+		mom.getWorldUpdates ().process (mom);
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{
@@ -134,40 +125,5 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (unitKilled);
 		}
-		
-		getServerUnitCalculations ().recheckTransportCapacity ((MapCoordinates3DEx) getUnit ().getUnitLocation (),
-			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
-	}
-
-	/**
-	 * @return Methods for updating true map + players' memory
-	 */
-	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
-	{
-		return fogOfWarMidTurnChanges;
-	}
-
-	/**
-	 * @param obj Methods for updating true map + players' memory
-	 */
-	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
-	{
-		fogOfWarMidTurnChanges = obj;
-	}
-
-	/**
-	 * @return Server-only unit calculations
-	 */
-	public final ServerUnitCalculations getServerUnitCalculations ()
-	{
-		return serverUnitCalculations;
-	}
-
-	/**
-	 * @param calc Server-only unit calculations
-	 */
-	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
-	{
-		serverUnitCalculations = calc;
 	}
 }

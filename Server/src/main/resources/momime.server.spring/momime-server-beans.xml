@@ -519,16 +519,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityProcessing" ref="cityProcessing" />
 	</bean>
 
-	<bean id="momResourceConsumerUnit" class="momime.server.process.resourceconsumer.MomResourceConsumerUnit" scope="prototype">
-		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
-		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
-	</bean>
+	<bean id="momResourceConsumerUnit" class="momime.server.process.resourceconsumer.MomResourceConsumerUnit" scope="prototype" />
 	
-	<bean id="momResourceConsumerSpell" class="momime.server.process.resourceconsumer.MomResourceConsumerSpell" scope="prototype">
-		<property name="spellProcessing" ref="spellProcessing" />
-		<property name="unitUtils" ref="unitUtils" />
-		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
-	</bean>
+	<bean id="momResourceConsumerSpell" class="momime.server.process.resourceconsumer.MomResourceConsumerSpell" scope="prototype" />
 
 	<!-- Processing -->
 

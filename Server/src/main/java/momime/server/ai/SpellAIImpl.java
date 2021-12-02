@@ -299,109 +299,115 @@ public final class SpellAIImpl implements SpellAI
 				// Consider every possible spell we could cast overland and can afford maintainence of
 				for (final Spell spell : mom.getServerDB ().getSpell ())
 					if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
-						(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE) &&
-						(getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-							mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())))
-						
-						switch (spell.getSpellBookSectionID ())
-						{
-							// Consider casting any overland enchantment that we don't already have
-							case OVERLAND_ENCHANTMENTS:
-								if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-									player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
-								{
-									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting overland enchantment " + spell.getSpellID ());
-									considerSpells.add (2, spell);
-								}
-								break;
-								
-							// Consider summoning combat units that are the best we can get in that realm, and over minimum summoning cost
-							case SUMMONING:
-								if ((spell.getHeroItemBonusMaximumCraftingCost () == null) && (spell.getOverlandCastingCost () >= minSummonCost) &&
-									(summonableCombatUnits.containsKey (spell.getSpellRealm ())) && (summonableCombatUnits.get (spell.getSpellRealm ()).get (0).getSpell () == spell))
-								{
-									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting summoning spell " + spell.getSpellID ());
-									considerSpells.add (3, spell);
-								}
-								break;
-								
-							// City enchantments and curses - we don't pick the target until its finished casting, but must prove that there is a valid target to pick
-							case CITY_ENCHANTMENTS:
-							case CITY_CURSES:
-								// Ignore Spell of Return, Summoning Circle & Move Fortress or the AI will just keep wasting mana moving them around
-								if (spell.getBuildingID () == null)
-								{
-									boolean validTargetFound = false;
-									int z = 0;
-									while ((!validTargetFound) && (z < mom.getSessionDescription ().getOverlandMapSize ().getDepth ()))
+						(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
+					{
+						if (!getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+							mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ()))
+							
+							log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " won't try to cast " + spell.getSpellID () + " because it can't afford the maintenance"); 
+						else
+							switch (spell.getSpellBookSectionID ())
+							{
+								// Consider casting any overland enchantment that we don't already have
+								case OVERLAND_ENCHANTMENTS:
+									if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+										player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
 									{
-										int y = 0;
-										while ((!validTargetFound) && (y < mom.getSessionDescription ().getOverlandMapSize ().getHeight ()))
-										{
-											int x = 0;
-											while ((!validTargetFound) && (x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()))
-											{
-												final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
-												
-												// Routine checks everything, even down to whether there is even a city there or not, or whether the city already has that spell cast on it, so just let it handle it
-												if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
-													player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
-													priv.getFogOfWarMemory ().getBuilding (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
-													
-													validTargetFound = true;
-		
-												x++;
-											}
-											y++;
-										}
-										z++;
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting overland enchantment " + spell.getSpellID ());
+										considerSpells.add (2, spell);
 									}
+									break;
+									
+								// Consider summoning combat units that are the best we can get in that realm, and over minimum summoning cost
+								case SUMMONING:
+									if ((spell.getHeroItemBonusMaximumCraftingCost () == null) && (spell.getOverlandCastingCost () >= minSummonCost) &&
+										(summonableCombatUnits.containsKey (spell.getSpellRealm ())) && (summonableCombatUnits.get (spell.getSpellRealm ()).get (0).getSpell () == spell))
+									{
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting summoning spell " + spell.getSpellID ());
+										considerSpells.add (3, spell);
+									}
+									break;
+									
+								// City enchantments and curses - we don't pick the target until its finished casting, but must prove that there is a valid target to pick
+								case CITY_ENCHANTMENTS:
+								case CITY_CURSES:
+									// Ignore Spell of Return, Summoning Circle & Move Fortress or the AI will just keep wasting mana moving them around
+									if (spell.getBuildingID () == null)
+									{
+										boolean validTargetFound = false;
+										int z = 0;
+										while ((!validTargetFound) && (z < mom.getSessionDescription ().getOverlandMapSize ().getDepth ()))
+										{
+											int y = 0;
+											while ((!validTargetFound) && (y < mom.getSessionDescription ().getOverlandMapSize ().getHeight ()))
+											{
+												int x = 0;
+												while ((!validTargetFound) && (x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()))
+												{
+													final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+													
+													// Routine checks everything, even down to whether there is even a city there or not, or whether the city already has that spell cast on it, so just let it handle it
+													if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
+														player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
+														priv.getFogOfWarMemory ().getBuilding (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+														
+														validTargetFound = true;
+			
+													x++;
+												}
+												y++;
+											}
+											z++;
+										}
+										if (validTargetFound)
+										{
+											log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting city enchantment/curse spell " + spell.getSpellID ());
+											considerSpells.add (1, spell);
+										}
+									}
+									break;
+									
+								// Unit enchantments - again don't pick target until its finished casting
+								case UNIT_ENCHANTMENTS:
+									boolean validTargetFound = false;
+									final Iterator<MemoryUnit> iter = priv.getFogOfWarMemory ().getUnit ().iterator ();
+									while ((!validTargetFound) && (iter.hasNext ()))
+									{
+										final MemoryUnit mu = iter.next ();
+										final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
+											mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
+										if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
+											(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
+												priv.getFogOfWarMemory (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+											
+											validTargetFound = true;
+									}
+	
 									if (validTargetFound)
 									{
-										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting city enchantment/curse spell " + spell.getSpellID ());
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering unit enchantment spell " + spell.getSpellID ());
 										considerSpells.add (1, spell);
 									}
-								}
-								break;
-								
-							// Unit enchantments - again don't pick target until its finished casting
-							case UNIT_ENCHANTMENTS:
-								boolean validTargetFound = false;
-								final Iterator<MemoryUnit> iter = priv.getFogOfWarMemory ().getUnit ().iterator ();
-								while ((!validTargetFound) && (iter.hasNext ()))
-								{
-									final MemoryUnit mu = iter.next ();
-									final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
-										mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
-									if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
-										(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
-											priv.getFogOfWarMemory (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
-										
-										validTargetFound = true;
-								}
-
-								if (validTargetFound)
-								{
-									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering unit enchantment spell " + spell.getSpellID ());
-									considerSpells.add (1, spell);
-								}
-								
-								break;
-								
-							// Special spells with no target to choose (especially spell of mastery)
-							case SPECIAL_SPELLS:
-								if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY))
-									considerSpells.add (10, spell);
-								break;
-								
-							// This is fine, the AI doesn't cast every type of spell yet
-							default:
-						}
+									
+									break;
+									
+								// Special spells with no target to choose (especially spell of mastery)
+								case SPECIAL_SPELLS:
+									if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY))
+										considerSpells.add (10, spell);
+									break;
+									
+								// This is fine, the AI doesn't cast every type of spell yet
+								default:
+							}
+					}
 			}
 						
 			// If we found any, then pick one randomly
 			final Spell spell = considerSpells.nextWeightedValue ();
-			if (spell != null)
+			if (spell == null)
+				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " decided not to cast anything overland");
+			else
 			{
 				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " casting overland spell " + spell.getSpellID ());
 				getSpellQueueing ().requestCastSpell (player, null, null, null, spell.getSpellID (), null, null, null, null, null, mom);

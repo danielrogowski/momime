@@ -3,6 +3,9 @@ package momime.server.ai;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -29,6 +32,9 @@ import momime.server.calculations.ServerUnitCalculations;
  */
 public final class AISpellCalculationsImpl implements AISpellCalculations
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (AISpellCalculationsImpl.class);
+	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
@@ -83,8 +89,18 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 					consumption = consumption - (consumption / 2);
 				
 				// Are we generating enough spare mana?
-				if (consumption > getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), upkeep.getProductionTypeID (), spellSettings, db))
+				final int manaPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), upkeep.getProductionTypeID (), spellSettings, db);
+				final int goldPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db);
+				final int combinedPerTurn = manaPerTurn + ((getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0) ?
+					goldPerTurn : (goldPerTurn/2));
+				
+				if (consumption > combinedPerTurn)
+				{
 					ok = false;
+					if (log.isDebugEnabled ())
+						log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " can't afford " + consumption + " MP upkeep of " +
+							spell.getSpellID () + " when it has " + manaPerTurn + " MP + " + goldPerTurn + " GP = " + combinedPerTurn + " combined spare income per turn"); 
+				}
 			}
 		}
 		
@@ -104,7 +120,11 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 				getUnitUtils ().initializeUnitSkills (unit, 0, db);
 				
 				if (!getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, spellSettings, db))
+				{
 					ok = false;
+					log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " can't afford upkeep of " +
+						spell.getSpellID () + " because it can't afford the upkeep of one of the units it might summon"); 
+				}
 			}
 		}
 		

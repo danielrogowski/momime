@@ -3,12 +3,16 @@ package momime.server.ai;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
@@ -25,6 +29,9 @@ import momime.common.utils.ResourceValueUtils;
  */
 public final class AIUnitCalculationsImpl implements AIUnitCalculations
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (AIUnitCalculationsImpl.class);
+	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 	
@@ -124,8 +131,38 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 					
 					upkeep = upkeep - (upkeep / 2);
 				
-				if (upkeep > getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionTypeID, spellSettings, db))
+				final int productionPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionTypeID, spellSettings, db);
+				int combinedPerTurn = productionPerTurn;
+				
+				// If the unit has mana upkeep, then also consider how much gold we're generating
+				int goldPerTurn = 0;
+				if (productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA))
+				{
+					goldPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db);
+					combinedPerTurn = combinedPerTurn + ((getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0) ?
+						goldPerTurn : (goldPerTurn/2));
+				}
+				
+				if (upkeep > combinedPerTurn)
+				{
 					ok = false;
+					if (log.isDebugEnabled ())
+					{
+						if (productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA))
+						{
+							log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " can't afford " + upkeep + " MP upkeep of " +
+								unit.getUnitID () + " when it has " + productionPerTurn + " MP + " + goldPerTurn + " GP = " + combinedPerTurn + " combined spare income per turn"); 
+						}
+						else
+						{
+							final ProductionTypeEx productionType = db.findProductionType (productionTypeID, "canAffordUnitMaintenance");
+							log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " can't afford " + upkeep + " " +
+								productionType.getProductionTypeSuffix ().get (0).getText () + " upkeep of " +
+								unit.getUnitID () + " when it has " + productionPerTurn + " " +
+								productionType.getProductionTypeSuffix ().get (0).getText () + " spare per turn");
+						}
+					}
+				}
 			}
 		}
 		

@@ -1,7 +1,11 @@
 package momime.common.calculations;
 
-import java.text.DecimalFormat;
 import java.util.List;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -18,25 +22,11 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-
 /**
  * Calculations for dealing with spell casting cost reductions and research bonuses
  */
 public final class SpellCalculationsImpl implements SpellCalculations
 {
-	/** Class logger */
-	private final static Log log = LogFactory.getLog (SpellCalculationsImpl.class);
-	
-	/** Format used for doubles in debug messages */
-	private final static DecimalFormat DECIMAL_FORMATTER = new DecimalFormat ("0.000");
-	
 	/** Spell utils */
 	private SpellUtils spellUtils;
 	
@@ -91,8 +81,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 					throw new MomException ("calculateCastingCostReduction: Unknown combination type (books)");
 			}
 
-		log.debug (booksThatGiveReduction + " books give a base casting cost reduction of " + DECIMAL_FORMATTER.format (castingCostMultiplier) + "...");
-
 		// Get the values we need from the spell
 		final String spellMagicRealmID;
 		final String spellUnitTypeID;
@@ -130,7 +118,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 							((!isMagicRealmIdBlank) || (spellMagicRealmID == null)) &&
 							((!isItemCraftingSpells) || (itemCraftingSpell)) &&
 							((pickProductionBonus.getUnitTypeID () == null) || (pickProductionBonus.getUnitTypeID ().equals (spellUnitTypeID))))
-						{
+							
 							switch (spellSettings.getSpellBooksCastingReductionCombination ())
 							{
 								case ADDITIVE:
@@ -142,10 +130,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 								default:
 									throw new MomException ("calculateCastingCostReduction: Unknown combination type (retorts)");
 							}
-
-							log.debug (pickProductionBonus.getPercentageBonus () + "% further reduction from " + p.getQuantity () + "x " + p.getPickID () +
-								" improves casting cost reduction to " + DECIMAL_FORMATTER.format (castingCostMultiplier) + "...");
-						}
 					}
 			}
 
@@ -153,14 +137,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 		double castingCostPercentageReduction = (1d - castingCostMultiplier) * 100d;
 
 		if (castingCostPercentageReduction > spellSettings.getSpellBooksCastingReductionCap ())
-		{
-			log.debug ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) +
-				"% but this is capped at " + DECIMAL_FORMATTER.format (spellSettings.getSpellBooksCastingReductionCap ()));
-
 			castingCostPercentageReduction = spellSettings.getSpellBooksCastingReductionCap ();
-		}
-		else
-			log.debug ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) + "%");
 
 		return castingCostPercentageReduction;
 	}
@@ -207,8 +184,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 					throw new MomException ("calculateResearchBonus: Unknown combination type (books)");
 			}
 
-		log.debug (booksThatGiveBonus + " books give a base research bonus of " + DECIMAL_FORMATTER.format (researchBonus) + "...");
-
 		// Get the values we need from the spell
 		final String spellMagicRealmID;
 		final String spellUnitTypeID;
@@ -241,7 +216,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 							((pickProductionBonus.getMagicRealmID () == null) || (pickProductionBonus.getMagicRealmID ().equals (spellMagicRealmID))) &&
 							((!isMagicRealmIdBlank) || (spellMagicRealmID == null)) &&
 							((pickProductionBonus.getUnitTypeID () == null) || (pickProductionBonus.getUnitTypeID ().equals (spellUnitTypeID))))
-						{
+							
 							switch (spellSettings.getSpellBooksResearchBonusCombination ())
 							{
 								case ADDITIVE:
@@ -253,10 +228,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 								default:
 									throw new MomException ("calculateResearchBonus: Unknown combination type (retorts)");
 							}
-
-							log.debug (pickProductionBonus.getPercentageBonus () + "% further bonus from " + p.getQuantity () + "x " + p.getPickID () +
-								" improves research bonus reduction to " + DECIMAL_FORMATTER.format (researchBonus) + "...");
-						}
 					}
 			}
 
@@ -264,14 +235,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 		double researchPercentageBonus = (researchBonus - 1d) * 100d;
 
 		if (researchPercentageBonus > spellSettings.getSpellBooksResearchBonusCap ())
-		{
-			log.debug ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) +
-				"% but this is capped at " + DECIMAL_FORMATTER.format (spellSettings.getSpellBooksResearchBonusCap ()));
-
 			researchPercentageBonus = spellSettings.getSpellBooksResearchBonusCap ();
-		}
-		else
-			log.debug ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) + "%");
 
 		return researchPercentageBonus;
 	}

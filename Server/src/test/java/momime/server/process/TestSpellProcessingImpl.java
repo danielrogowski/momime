@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -34,7 +33,6 @@ import momime.common.database.UnitSpellEffect;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -441,9 +439,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	@Test
 	public final void testCastCombatNow_CombatEnchantment () throws Exception
 	{
-		// Database, session description and so on
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
@@ -503,7 +498,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Pick the 4th effect
@@ -516,7 +510,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
-			null, null, trueMap, players, sd, db)).thenReturn (true);
+			null, null, mom)).thenReturn (true);
 		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -645,7 +639,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
-			null, null, trueMap, players, sd, db)).thenReturn (true);
+			null, null, mom)).thenReturn (true);
 		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -792,7 +786,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
-			null, null, trueMap, players, sd, db)).thenReturn (true);
+			null, null, mom)).thenReturn (true);
 		
 		// Set up test object
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -832,169 +826,5 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Check values on unit
 		assertEquals (98, summonedUnit.getDoubleCombatMovesLeft ().intValue ());
 		assertTrue (summonedUnit.isWasSummonedInCombat ());
-	}
-	
-	/**
-	 * Tests the switchOffSpell method on a spell book section with no special processing (a unit enchantment)
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testSwitchOffSpell_UnitEnchantment () throws Exception
-	{
-		// Mock database
-		final Spell spell = new Spell ();
-		
-		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findSpell ("SP001", "switchOffSpell")).thenReturn (spell);
-		
-		// Other setup
-		final MomSessionDescription sd = new MomSessionDescription ();
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-
-		// Players
-		final PlayerDescription castingPd = new PlayerDescription ();
-		castingPd.setHuman (true);
-		castingPd.setPlayerID (7);
-
-		final MomPersistentPlayerPrivateKnowledge castingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails castingPlayer = new PlayerServerDetails (castingPd, null, castingPriv, null, null);
-
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		players.add (castingPlayer);
-		
-		// Session utils
-		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, castingPd.getPlayerID (), "switchOffSpell")).thenReturn (castingPlayer);
-		
-		// Research status
-		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
-		
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.findSpellResearchStatus (castingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (spellUtils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.UNIT_ENCHANTMENTS);
-		
-		// The spell being switched off
-		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
-		trueSpell.setSpellID ("SP001");
-		trueSpell.setSpellURN (3);
-		trueSpell.setCastingPlayerID (castingPd.getPlayerID ());
-		
-		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
-		when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), trueMap.getMaintainedSpell (), "switchOffSpell")).thenReturn (trueSpell);
-		
-		// Session variables
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		
-		// Set up test object
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
-		
-		final SpellProcessingImpl proc = new SpellProcessingImpl ();
-		proc.setSpellUtils (spellUtils);
-		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
-		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		
-		// Run test
-		proc.switchOffSpell (trueSpell.getSpellURN (), mom);
-		
-		// Check spell was switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
-	}
-
-	/**
-	 * Tests the switchOffSpell method to turn off an overland enchantment, where we also have to turn off the CAE
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testSwitchOffSpell_OverlandEnchantment () throws Exception
-	{
-		// Mock database - spell grants 5 effects
-		final Spell spell = new Spell ();
-		for (int n = 1; n <= 5; n++)
-			spell.getSpellHasCombatEffect ().add ("CSE00" + n);
-		
-		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findSpell ("SP001", "switchOffSpell")).thenReturn (spell);
-		
-		// Other setup
-		final MomSessionDescription sd = new MomSessionDescription ();
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-
-		// Players
-		final PlayerDescription castingPd = new PlayerDescription ();
-		castingPd.setHuman (true);
-		castingPd.setPlayerID (7);
-
-		final MomPersistentPlayerPrivateKnowledge castingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails castingPlayer = new PlayerServerDetails (castingPd, null, castingPriv, null, null);
-
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		players.add (castingPlayer);
-
-		// Session utils
-		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, castingPd.getPlayerID (), "switchOffSpell")).thenReturn (castingPlayer);
-		
-		// Research status
-		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
-		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
-		
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.findSpellResearchStatus (castingPriv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
-		when (spellUtils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
-		
-		// One of the effects is actually cast
-		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
-		cae.setCombatAreaEffectURN (4);
-		
-		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);
-		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE001", 7)).thenReturn (null);
-		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE002", 7)).thenReturn (null);
-		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE003", 7)).thenReturn (null);
-		when (caeUtils.findCombatAreaEffect (trueMap.getCombatAreaEffect (), null, "CSE004", 7)).thenReturn (cae);
-
-		// The spell being switched off
-		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
-		trueSpell.setSpellID ("SP001");
-		trueSpell.setSpellURN (3);
-		trueSpell.setCastingPlayerID (castingPd.getPlayerID ());
-		
-		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
-		when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), trueMap.getMaintainedSpell (), "switchOffSpell")).thenReturn (trueSpell);
-		
-		// Session variables
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		
-		// Set up test object
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
-		
-		final SpellProcessingImpl proc = new SpellProcessingImpl ();
-		proc.setSpellUtils (spellUtils);
-		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
-		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setMemoryCombatAreaEffectUtils (caeUtils);
-		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		
-		// Run test
-		proc.switchOffSpell (trueSpell.getSpellURN (), mom);
-		
-		// Check spell was switched off
-		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
-		verify (midTurn, times (1)).removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, sd);
 	}
 }

@@ -32,7 +32,6 @@ import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
@@ -69,6 +68,7 @@ import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.worldupdates.WorldUpdates;
 
 /**
  * Tests the CombatProcessingImpl class
@@ -987,7 +987,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
 		
 		// Session description
-		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1113,6 +1112,17 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1122,17 +1132,17 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (defenderAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (defenderDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1185,7 +1195,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
 		
 		// Session description
-		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1307,6 +1316,17 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
+
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -1317,17 +1337,17 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (defenderAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (defenderDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1374,7 +1394,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
 		
 		// Session description
-		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1496,6 +1515,17 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
+
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
@@ -1506,17 +1536,17 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (defenderAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (defenderDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1562,7 +1592,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
 		
 		// Session description
-		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1654,6 +1683,17 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1663,15 +1703,15 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, settings, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1712,7 +1752,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (db.findUnit ("UN002", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (hero);
 		
 		// Session description
-		final FogOfWarSetting settings = new FogOfWarSetting ();
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -1804,6 +1843,17 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fow = mock (FogOfWarMidTurnChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1813,15 +1863,15 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		
 		// Run test
-		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, settings, db);
+		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here

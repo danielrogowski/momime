@@ -110,7 +110,7 @@ public final class KillUnitUpdate implements WorldUpdate
 		
 		if (result == WorldUpdateResult.DONE)
 		{
-			final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "KillUnitUpdate");
+			final MemoryUnit trueUnit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "KillUnitUpdate (tu)");
 
 			final String unitMagicRealmID = mom.getServerDB ().findUnit (trueUnit.getUnitID (), "KillUnitUpdate").getUnitMagicRealm ();
 			final boolean isHero = unitMagicRealmID.equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
@@ -200,7 +200,7 @@ public final class KillUnitUpdate implements WorldUpdate
 					else
 					{
 						log.debug ("Marking unit URN " + trueUnit.getUnitURN () + " as " + newStatusInPlayersMemoryOnServer + " in player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory on server");
-						getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "KillUnitUpdate").setStatus (newStatusInPlayersMemoryOnServer);
+						getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "KillUnitUpdate (mu)").setStatus (newStatusInPlayersMemoryOnServer);
 					}
 					
 					if (player.getPlayerDescription ().isHuman ())

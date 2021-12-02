@@ -53,12 +53,14 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.UnitServerUtils;
 import momime.server.utils.UnitSkillDirectAccess;
+import momime.server.worldupdates.WorldUpdates;
 
 /**
  * Tests the FogOfWarMidTurnMultiChangesImpl class
@@ -67,19 +69,13 @@ import momime.server.utils.UnitSkillDirectAccess;
 public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 {
 	/**
-	 * Tests the switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients method
+	 * Tests the switchOffSpellsCastInCombat method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testSwitchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients () throws Exception
+	public final void testSwitchOffSpellsCastInCombat () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-
-		// 3 spells, one combat spell in the right location, one combat spell in the wrong location, one overland spell in the right location		
+		// 3 location spells, one combat spell in the right location, one combat spell in the wrong location, one overland spell in the right location		
 		final MemoryMaintainedSpell spellOne = new MemoryMaintainedSpell ();
 		spellOne.setSpellURN (1);
 		spellOne.setCastInCombat (true);
@@ -99,116 +95,79 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		trueMap.getMaintainedSpell ().add (spellOne);
 		trueMap.getMaintainedSpell ().add (spellTwo);
 		trueMap.getMaintainedSpell ().add (spellThree);
-		
-		// Players list
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		
-		// Set up object to test
-		final FogOfWarMidTurnChanges single = mock (FogOfWarMidTurnChanges.class);
-		
-		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
-		multi.setFogOfWarMidTurnChanges (single);
-		
-		// Run method
-		multi.switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), db, sd);
-		
-		// Check results
-		verify (single, times (0)).switchOffMaintainedSpellOnServerAndClients (trueMap, 1, players, db, sd);
-		verify (single, times (0)).switchOffMaintainedSpellOnServerAndClients (trueMap, 2, players, db, sd);
-		verify (single, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 3, players, db, sd);
-	}
-	
-	/**
-	 * Tests the switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients method
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testSwitchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients () throws Exception
-	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-
-		// 4 spells, one combat spell cast on a unit in the right location, one combat spell cast on a unit in the wrong location, one overland spell cast on a unit in the right location,
-		// and one combat spell in the right location but not cast on a unit 
-		final MemoryMaintainedSpell spellOne = new MemoryMaintainedSpell ();
-		spellOne.setSpellURN (1);
-		spellOne.setCastInCombat (true);
-		spellOne.setUnitURN (101);
-		
-		final MemoryUnit unitOne = new MemoryUnit ();
-		unitOne.setUnitURN (101);
-		unitOne.setCombatLocation (new MapCoordinates3DEx (20, 11, 1));
-
-		final MemoryMaintainedSpell spellTwo = new MemoryMaintainedSpell ();
-		spellTwo.setSpellURN (2);
-		spellTwo.setCastInCombat (false);
-		spellTwo.setUnitURN (102);
-
-		final MemoryUnit unitTwo = new MemoryUnit ();
-		unitTwo.setUnitURN (102);
-		unitTwo.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
-		
-		final MemoryMaintainedSpell spellThree = new MemoryMaintainedSpell ();
-		spellThree.setSpellURN (3);
-		spellThree.setCastInCombat (true);
-		spellThree.setUnitURN (103);
-
-		final MemoryUnit unitThree = new MemoryUnit ();
-		unitThree.setUnitURN (103);
-		unitThree.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
-		
+		// 3 unit spells, one combat spell cast on a unit in the right location, one combat spell cast on a unit in the wrong location,
+		// and oneoverland spell cast on a unit in the right location,
 		final MemoryMaintainedSpell spellFour = new MemoryMaintainedSpell ();
 		spellFour.setSpellURN (4);
 		spellFour.setCastInCombat (true);
-		spellFour.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		spellFour.setUnitURN (101);
 		
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.getMaintainedSpell ().add (spellOne);
-		trueMap.getMaintainedSpell ().add (spellTwo);
-		trueMap.getMaintainedSpell ().add (spellThree);
+		final MemoryUnit unitFour = new MemoryUnit ();
+		unitFour.setUnitURN (101);
+		unitFour.setCombatLocation (new MapCoordinates3DEx (20, 11, 1));
+
+		final MemoryMaintainedSpell spellFive = new MemoryMaintainedSpell ();
+		spellFive.setSpellURN (5);
+		spellFive.setCastInCombat (false);
+		spellFive.setUnitURN (102);
+
+		final MemoryUnit unitFive = new MemoryUnit ();
+		unitFive.setUnitURN (102);
+		unitFive.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		
+		final MemoryMaintainedSpell spellSix = new MemoryMaintainedSpell ();
+		spellSix.setSpellURN (6);
+		spellSix.setCastInCombat (true);
+		spellSix.setUnitURN (103);
+
+		final MemoryUnit unitSix = new MemoryUnit ();
+		unitSix.setUnitURN (103);
+		unitSix.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		
 		trueMap.getMaintainedSpell ().add (spellFour);
-		
+		trueMap.getMaintainedSpell ().add (spellFive);
+		trueMap.getMaintainedSpell ().add (spellSix);
+
 		// Units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (unitOne.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients")).thenReturn (unitOne);
-		when (unitUtils.findUnitURN (unitThree.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients")).thenReturn (unitThree);
+		when (unitUtils.findUnitURN (unitFour.getUnitURN (), trueMap.getUnit (), "switchOffSpellsCastInCombat")).thenReturn (unitFour);
+		when (unitUtils.findUnitURN (unitSix.getUnitURN (), trueMap.getUnit (), "switchOffSpellsCastInCombat")).thenReturn (unitSix);
 		
-		// Players list
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges single = mock (FogOfWarMidTurnChanges.class);
-		
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
-		multi.setFogOfWarMidTurnChanges (single);
 		multi.setUnitUtils (unitUtils);
 		
 		// Run method
-		multi.switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), db, sd);
+		multi.switchOffSpellsCastInCombat (new MapCoordinates3DEx (20, 10, 1), mom);
 		
 		// Check results
-		verify (single, times (0)).switchOffMaintainedSpellOnServerAndClients (trueMap, 1, players, db, sd);
-		verify (single, times (0)).switchOffMaintainedSpellOnServerAndClients (trueMap, 2, players, db, sd);
-		verify (single, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 3, players, db, sd);
-		verify (single, times (0)).switchOffMaintainedSpellOnServerAndClients (trueMap, 4, players, db, sd);
+		verify (wu, times (0)).switchOffSpell (1);
+		verify (wu, times (0)).switchOffSpell (2);
+		verify (wu, times (1)).switchOffSpell (3);
+		
+		verify (wu, times (0)).switchOffSpell (4);
+		verify (wu, times (0)).switchOffSpell (5);
+		verify (wu, times (1)).switchOffSpell (6);
 	}
 	
 	/**
-	 * Tests the switchOffMaintainedSpellsInLocationOnServerAndClients method, switching off spells for one player
+	 * Tests the switchOffSpellsInLocationOnServerAndClients method, switching off spells for one player
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testSwitchOffMaintainedSpellsInLocationOnServerAndClients_OnePlayer () throws Exception
+	public final void testSwitchOffSpellsInLocationOnServerAndClients_OnePlayer () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-
 		// 3 spells, one in the right location for the right player, one in the right location for the wrong player, one in the wrong location for the right player
 		final MemoryMaintainedSpell spellOne = new MemoryMaintainedSpell ();
 		spellOne.setSpellURN (1);
@@ -230,37 +189,35 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		trueMap.getMaintainedSpell ().add (spellTwo);
 		trueMap.getMaintainedSpell ().add (spellThree);
 		
-		// Players list
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges single = mock (FogOfWarMidTurnChanges.class);
-		
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
-		multi.setFogOfWarMidTurnChanges (single);
 		
 		// Run method
-		multi.switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), 3, db, sd);
+		multi.switchOffSpellsInLocationOnServerAndClients (new MapCoordinates3DEx (20, 10, 1), 3, true, mom);
 
 		// Check results
-		verify (single, times (0)).switchOffMaintainedSpellOnServerAndClients (trueMap, 1, players, db, sd);
-		verify (single, times (0)).switchOffMaintainedSpellOnServerAndClients (trueMap, 2, players, db, sd);
-		verify (single, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 3, players, db, sd);
+		verify (wu, times (0)).switchOffSpell (1);
+		verify (wu, times (0)).switchOffSpell (2);
+		verify (wu, times (1)).switchOffSpell (3);
 	}
 	
 	/**
-	 * Tests the switchOffMaintainedSpellsInLocationOnServerAndClients method, switching off spells for all players
+	 * Tests the switchOffSpellsInLocationOnServerAndClients method, switching off spells for all players
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testSwitchOffMaintainedSpellsInLocationOnServerAndClients_AllPlayers () throws Exception
+	public final void testSwitchOffSpellsInLocationOnServerAndClients_AllPlayers () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-
 		// 3 spells, one in the right location for the right player, one in the right location for the wrong player, one in the wrong location for the right player
 		final MemoryMaintainedSpell spellOne = new MemoryMaintainedSpell ();
 		spellOne.setSpellURN (1);
@@ -282,22 +239,26 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		trueMap.getMaintainedSpell ().add (spellTwo);
 		trueMap.getMaintainedSpell ().add (spellThree);
 		
-		// Players list
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges single = mock (FogOfWarMidTurnChanges.class);
-		
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
-		multi.setFogOfWarMidTurnChanges (single);
 		
 		// Run method
-		multi.switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), 0, db, sd);
+		multi.switchOffSpellsInLocationOnServerAndClients (new MapCoordinates3DEx (20, 10, 1), 0, true, mom);
 
 		// Check results
-		verify (single, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 1, players, db, sd);		// <--
-		verify (single, times (0)).switchOffMaintainedSpellOnServerAndClients (trueMap, 2, players, db, sd);
-		verify (single, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, 3, players, db, sd);
+		verify (wu, times (1)).switchOffSpell (1);		// <--
+		verify (wu, times (0)).switchOffSpell (2);
+		verify (wu, times (1)).switchOffSpell (3);
 	}
 	
 	/**
@@ -469,6 +430,16 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		trueMap.getUnit ().add (unit3);
 		trueMap.getUnit ().add (unit4);
 		trueMap.getUnit ().add (unit5);
+
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		// The damage list and exp lookups are more awkward to mock than if we just let it use the real methods
@@ -482,7 +453,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setExpandUnitDetails (expand);
 		
 		// Run method
-		multi.healUnitsAndGainExperience (0, trueMap, players, db, sd);
+		multi.healUnitsAndGainExperience (0, mom);
 		
 		// Check results
 		verify (unitServerUtils, times (1)).healDamage (unit1.getUnitDamage (), 2, false);		// 5% of 24 is 1.2, then round up

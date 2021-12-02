@@ -31,9 +31,7 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
@@ -972,35 +970,6 @@ public final class TestUnitUtilsImpl
 		units.add (u7);
 
 		assertEquals (2, utils.countAliveEnemiesAtLocation (units, 2, 3, 1, 4));
-	}
-	
-	/**
-	 * Tests the beforeKillingUnit method
-	 */
-	@Test
-	public final void testBeforeKillingUnit ()
-	{
-		// Set up test data
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		
-		final MemoryMaintainedSpell wrongUnit = new MemoryMaintainedSpell ();
-		wrongUnit.setUnitURN (6);
-		mem.getMaintainedSpell ().add (wrongUnit);
-
-		final MemoryMaintainedSpell rightUnit = new MemoryMaintainedSpell ();
-		rightUnit.setUnitURN (5);
-		mem.getMaintainedSpell ().add (rightUnit);
-
-		final MemoryMaintainedSpell noUnit = new MemoryMaintainedSpell ();
-		mem.getMaintainedSpell ().add (noUnit);
-		
-		// Run test
-		new UnitUtilsImpl ().beforeKillingUnit (mem, 5);
-		
-		// Check results
-		assertEquals (2, mem.getMaintainedSpell ().size ());
-		assertSame (wrongUnit, mem.getMaintainedSpell ().get (0));
-		assertSame (noUnit, mem.getMaintainedSpell ().get (1));
 	}
 	
 	/**

@@ -447,25 +447,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
-	 * Clears up any references to the specified unit from under the FogOfWarMemory structure, because the unit has just been killed
-	 * This is used even if the unit is not actually being freed, e.g. could be dismissing a hero or just setting a unit in combat to 'dead' but not actually freeing the unit
-	 * 
-	 * @param mem Fog of war memory structure to remove references from; can be player's memory or the true map on the server
-	 * @param unitURN Unit about to be killed
-	 */
-	@Override
-	public final void beforeKillingUnit (final FogOfWarMemory mem, final int unitURN)
-	{
-		final Iterator<MemoryMaintainedSpell> iter = mem.getMaintainedSpell ().iterator ();
-		while (iter.hasNext ())
-		{
-			final MemoryMaintainedSpell spell = iter.next ();
-			if ((spell.getUnitURN () != null) && (spell.getUnitURN () == unitURN))
-				iter.remove ();
-		}
-	}
-
-	/**
 	 * @param units List of units to check
 	 * @param combatLocation Location on overland map where the combat is taking place
 	 * @param combatPosition Position within the combat map to look at

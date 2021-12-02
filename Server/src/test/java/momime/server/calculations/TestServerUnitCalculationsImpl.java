@@ -3,7 +3,6 @@ package momime.server.calculations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -15,37 +14,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.messages.CombatMapSize;
-import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.server.ServerTestData;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.fogofwar.KillUnitActionID;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -100,107 +87,6 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		assertEquals (4, calc.calculateUnitScoutingRange (unit, db));
 	}
 
-	/**
-	 * Tests the recheckTransportCapacity method
-	 * @throws Exception If there if a problem
-	 */
-	@Test
-	public final void testRecheckTransportCapacity () throws Exception
-	{
-		// Server database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final UnitEx triremeDef = new UnitEx ();
-		triremeDef.setTransportCapacity (2);
-		
-		final UnitEx spearmenDef = new UnitEx ();
-		
-		// Session description
-		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting (); 
-		
-		// Map
-		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
-		
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (terrain);
-		
-		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setTerrainData (terrainData);
-		
-		// Terrain tile
-		final MemoryGridCellUtils gridCellUtils = mock (MemoryGridCellUtils.class);
-		when (gridCellUtils.convertNullTileTypeToFOW (terrainData, false)).thenReturn ("TT01");
-
-		// Players list
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		
-		// Unit skills
-		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		
-		final Set<String> unitStackSkills = new HashSet<String> ();
-		
-		// Units
-		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
-		
-		final MemoryUnit trireme = new MemoryUnit ();
-		trireme.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
-		trireme.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
-		trireme.setStatus (UnitStatusID.ALIVE);
-		trireme.setUnitID ("UN001");
-		trireme.setOwningPlayerID (1);
-		trueMap.getUnit ().add (trireme);
-		
-		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
-		when (expand.expandUnitDetails (trireme, null, null, null, players, trueMap, db)).thenReturn (xuTrireme);
-		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
-
-		when (unitCalc.calculateDoubleMovementToEnterTileType (xuTrireme, unitStackSkills, "TT01", db)).thenReturn (2);
-		
-		MemoryUnit killedUnit = null;
-		for (int n = 0; n < 3; n++)
-		{
-			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
-			spearmen.setStatus (UnitStatusID.ALIVE);
-			spearmen.setUnitID ("UN002");
-			spearmen.setOwningPlayerID (1);
-			trueMap.getUnit ().add (spearmen);
-			
-			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (expand.expandUnitDetails (spearmen, null, null, null, players, trueMap, db)).thenReturn (xuSpearmen);
-			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
-			
-			if (n == 1)
-				when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
-
-			when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT01", db)).thenReturn (null);
-			
-			if (n == 1)
-				killedUnit = spearmen;
-		}
-		
-		// Fix random numbers
-		final RandomUtils random = mock (RandomUtils.class);
-		when (random.nextInt (3)).thenReturn (1);
-		
-		// Set up object to test
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
-		
-		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
-		calc.setExpandUnitDetails (expand);
-		calc.setUnitCalculations (unitCalc);
-		calc.setMemoryGridCellUtils (gridCellUtils);
-		calc.setRandomUtils (random);
-		calc.setFogOfWarMidTurnChanges (midTurn);
-		
-		// Run method
-		calc.recheckTransportCapacity (new MapCoordinates3DEx (21, 10, 1), trueMap, players, fogOfWarSettings, db);
-		
-		// Check 1 unit of spearmen was killed
-		verify (midTurn).killUnitOnServerAndClients (killedUnit, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
-	}
-	
 	/**
 	 * Tests the calculateRangedAttackDistancePenalty method on a magic attack
 	 * @throws Exception If there if a problem

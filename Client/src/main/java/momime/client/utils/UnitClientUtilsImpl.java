@@ -309,7 +309,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	{
 		// Even if not actually freeing the unit, we still need to eliminate all references to it, except for it being in the main unit list
 		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement (), unit.getUnitURN ());
-		getUnitUtils ().beforeKillingUnit (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unit.getUnitURN ());	// Removes spells cast on unit
 		
 		if ((unit.getCombatLocation () != null) && (unit.getCombatLocation ().equals (getCombatUI ().getCombatLocation ())))
 			getCombatUI ().clearUnitToDrawFromLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), unit.getUnitID ());

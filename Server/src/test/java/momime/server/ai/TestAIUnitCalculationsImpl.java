@@ -19,6 +19,8 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.LanguageText;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -44,6 +46,13 @@ public final class TestAIUnitCalculationsImpl
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final LanguageText goldSuffix = new LanguageText ();
+		goldSuffix.setText ("GP");
+		
+		final ProductionTypeEx gold = new ProductionTypeEx ();
+		gold.getProductionTypeSuffix ().add (goldSuffix);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "canAffordUnitMaintenance")).thenReturn (gold);
 
 		// Player
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();

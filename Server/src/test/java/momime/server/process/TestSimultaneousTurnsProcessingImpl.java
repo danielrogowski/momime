@@ -62,6 +62,7 @@ import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
+import momime.server.worldupdates.WorldUpdates;
 
 /**
  * Tests the SimultaneousTurnsProcessingImpl class
@@ -1083,20 +1084,25 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd2.getPlayerID (), "processSpecialOrders-s")).thenReturn (player2);
 		
 		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Units to dismiss
 		final List<MemoryUnit> dismisses = new ArrayList<MemoryUnit> (); 
 		
 		final MemoryUnit dismissNormalUnit = new MemoryUnit ();
+		dismissNormalUnit.setUnitURN (1);
 		dismissNormalUnit.setUnitID ("UN001");
 		dismisses.add (dismissNormalUnit);
 
 		final MemoryUnit dismissHeroUnit = new MemoryUnit ();
+		dismissHeroUnit.setUnitURN (2);
 		dismissHeroUnit.setUnitID ("UN002");
 		dismisses.add (dismissHeroUnit);
 		
@@ -1208,15 +1214,15 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		proc.processSpecialOrders (mom);
 		
 		// Check units were dismissed
-		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissNormalUnit, KillUnitActionID.DISMISS, trueMap, players, fogOfWarSettings, db);
-		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissHeroUnit, KillUnitActionID.DISMISS, trueMap, players, fogOfWarSettings, db);
+		verify (wu, times (1)).killUnit (1, KillUnitActionID.DISMISS);
+		verify (wu, times (1)).killUnit (2, KillUnitActionID.DISMISS);
 		
 		// Check buildings were sold
 		verify (cityProc, times (1)).sellBuilding (trueMap, players, cityLocation, trueBuilding.getBuildingURN (), false, true, sd, db);
 		
 		// Check only 1 settler was allowed to build
-		verify (cityServerUtils, times (0)).buildCityFromSettler (gsk, player1, settler1, players, sd, db);
-		verify (cityServerUtils, times (1)).buildCityFromSettler (gsk, player2, settler2, players, sd, db);
+		verify (cityServerUtils, times (0)).buildCityFromSettler (player1, settler1, mom);
+		verify (cityServerUtils, times (1)).buildCityFromSettler (player2, settler2, mom);
 		
 		assertEquals (0, conn2.getMessages ().size ());
 		assertEquals (1, conn1.getMessages ().size ());
@@ -1226,6 +1232,6 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		
 		// Both spirits tried to meld (the melding method is mocked, so we don't even know whether they succeeded)
 		for (final ExpandedUnitDetails xuSpirit : xuSpirits)
-			verify (overlandMapServerUtils, times (1)).attemptToMeldWithNode (xuSpirit, trueMap, players, sd, db);
+			verify (overlandMapServerUtils, times (1)).attemptToMeldWithNode (xuSpirit, mom);
 	}
 }

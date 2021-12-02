@@ -58,11 +58,13 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.worldupdates.WorldUpdates;
 
 /**
  * Tests the OverlandMapServerUtilsImpl class
@@ -265,18 +267,6 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 	@Test
 	public final void testAttemptToMeldWithNode_Undefended_HumanAttacking () throws Exception
 	{
-		// Mock database
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
-		myrror.setPlaneNumber (1);
-		
-		final List<Plane> planes = new ArrayList<Plane> ();
-		planes.add (arcanus);
-		planes.add (myrror);
-
-		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.getPlane ()).thenReturn (planes);
-
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
@@ -322,15 +312,24 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		
 		// Units
-		final MemoryUnit attackingSpirit = new MemoryUnit ();
-		attackingSpirit.setStatus (UnitStatusID.ALIVE);
-		
 		final ExpandedUnitDetails xuAttackingSpirit = mock (ExpandedUnitDetails.class);
 		when (xuAttackingSpirit.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
 		when (xuAttackingSpirit.getOwningPlayer ()).thenReturn (attacker);
 		when (xuAttackingSpirit.getOwningPlayerID ()).thenReturn (attackerPd.getPlayerID ());
 		when (xuAttackingSpirit.getUnitID ()).thenReturn ("GS");
-		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
+		when (xuAttackingSpirit.getUnitURN ()).thenReturn (12);
+		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
@@ -340,7 +339,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		utils.attemptToMeldWithNode (xuAttackingSpirit, trueMap, players, sd, db);
+		utils.attemptToMeldWithNode (xuAttackingSpirit, mom);
 		
 		// Check results
 		assertEquals ("GS", nodeCell.getNodeSpiritUnitID ());
@@ -355,7 +354,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		assertNull (attackerMsg.getOtherUnitID ());
 		assertNull (attackerMsg.getOtherPlayerID ());
 
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (wu, times (1)).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
@@ -369,18 +368,6 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 	@Test
 	public final void testAttemptToMeldWithNode_Undefended_AIAttacking () throws Exception
 	{
-		// Mock database
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
-		myrror.setPlaneNumber (1);
-		
-		final List<Plane> planes = new ArrayList<Plane> ();
-		planes.add (arcanus);
-		planes.add (myrror);
-
-		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.getPlane ()).thenReturn (planes);
-
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
@@ -426,15 +413,24 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		
 		// Units
-		final MemoryUnit attackingSpirit = new MemoryUnit ();
-		attackingSpirit.setStatus (UnitStatusID.ALIVE);
-
 		final ExpandedUnitDetails xuAttackingSpirit = mock (ExpandedUnitDetails.class);
 		when (xuAttackingSpirit.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
 		when (xuAttackingSpirit.getOwningPlayer ()).thenReturn (attacker);
 		when (xuAttackingSpirit.getOwningPlayerID ()).thenReturn (attackerPd.getPlayerID ());
 		when (xuAttackingSpirit.getUnitID ()).thenReturn ("GS");
-		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
+		when (xuAttackingSpirit.getUnitURN ()).thenReturn (12);
+		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
@@ -444,7 +440,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		utils.attemptToMeldWithNode (xuAttackingSpirit, trueMap, players, sd, db);
+		utils.attemptToMeldWithNode (xuAttackingSpirit, mom);
 		
 		// Check results
 		assertEquals ("GS", nodeCell.getNodeSpiritUnitID ());
@@ -453,7 +449,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
 
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (wu, times (1)).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
@@ -468,16 +464,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 	public final void testAttemptToMeldWithNode_Successful_HumanAttacking () throws Exception
 	{
 		// Mock database
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
-		myrror.setPlaneNumber (1);
-		
-		final List<Plane> planes = new ArrayList<Plane> ();
-		planes.add (arcanus);
-		planes.add (myrror);
-
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.getPlane ()).thenReturn (planes);
 
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
@@ -540,15 +527,12 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		// Units
 		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
 		
-		final MemoryUnit attackingSpirit = new MemoryUnit ();
-		attackingSpirit.setStatus (UnitStatusID.ALIVE);
-
 		final ExpandedUnitDetails xuAttackingSpirit = mock (ExpandedUnitDetails.class);
 		when (xuAttackingSpirit.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
 		when (xuAttackingSpirit.getOwningPlayer ()).thenReturn (attacker);
 		when (xuAttackingSpirit.getOwningPlayerID ()).thenReturn (attackerPd.getPlayerID ());
 		when (xuAttackingSpirit.getUnitID ()).thenReturn ("GS");
-		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
+		when (xuAttackingSpirit.getUnitURN ()).thenReturn (12);
 		
 		final ExpandedUnitDetails xuDefendingSpirit = mock (ExpandedUnitDetails.class);
 		when (sampleUnitUtils.createSampleUnit ("MS", 3, null, players, trueMap, db)).thenReturn (xuDefendingSpirit);
@@ -560,6 +544,19 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		// Fix random result
 		final RandomUtils randomUtils = mock (RandomUtils.class);
 		when (randomUtils.nextInt (3)).thenReturn (1);		// 0-1 = Attacker wins, 2 = Defender wins
+
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
@@ -573,7 +570,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		utils.setUnitUtils (unitUtils);
 		
 		// Run method
-		utils.attemptToMeldWithNode (xuAttackingSpirit, trueMap, players, sd, db);
+		utils.attemptToMeldWithNode (xuAttackingSpirit, mom);
 		
 		// Check results
 		assertEquals ("GS", nodeCell.getNodeSpiritUnitID ());
@@ -596,7 +593,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		assertEquals ("GS", defenderMsg.getOtherUnitID ());
 		assertEquals (2, defenderMsg.getOtherPlayerID ().intValue ());
 		
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (wu, times (1)).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
@@ -670,12 +667,9 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		// Units
 		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
 
-		final MemoryUnit attackingSpirit = new MemoryUnit ();
-		attackingSpirit.setStatus (UnitStatusID.ALIVE);
-		
 		final ExpandedUnitDetails xuAttackingSpirit = mock (ExpandedUnitDetails.class);
 		when (xuAttackingSpirit.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
-		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
+		when (xuAttackingSpirit.getUnitURN ()).thenReturn (12);
 		
 		final ExpandedUnitDetails xuDefendingSpirit = mock (ExpandedUnitDetails.class);
 		when (sampleUnitUtils.createSampleUnit ("MS", 3, null, players, trueMap, db)).thenReturn (xuDefendingSpirit);
@@ -688,6 +682,18 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		final RandomUtils randomUtils = mock (RandomUtils.class);
 		when (randomUtils.nextInt (3)).thenReturn (2);		// 0-1 = Attacker wins, 2 = Defender wins
 		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -699,7 +705,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		utils.setUnitUtils (unitUtils);
 		
 		// Run method
-		utils.attemptToMeldWithNode (xuAttackingSpirit, trueMap, players, sd, db);
+		utils.attemptToMeldWithNode (xuAttackingSpirit, mom);
 		
 		// Check results
 		assertEquals ("MS", nodeCell.getNodeSpiritUnitID ());
@@ -709,7 +715,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
 		assertEquals (0, defenderTrans.getNewTurnMessage ().size ());
 		
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (wu, times (1)).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
 		verify (fogOfWarMidTurnChanges, times (0)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);

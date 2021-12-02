@@ -57,6 +57,7 @@ import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.UnitServerUtils;
+import momime.server.worldupdates.WorldUpdates;
 
 /**
  * Tests the DamageProcessorImpl class
@@ -160,11 +161,14 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ())).thenReturn (stepNumbers);
 		
 		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -234,8 +238,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		assertEquals (3, defender.getCombatHeading ().intValue ());
 		
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, KillUnitActionID.HEALABLE_COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, KillUnitActionID.HEALABLE_COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (wu, times (1)).killUnit (defender.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
+		verify (wu, times (0)).killUnit (attacker.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
 		
 		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
@@ -340,11 +344,14 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ())).thenReturn (stepNumbers);
 		
 		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -410,8 +417,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		assertEquals (3, defender.getCombatHeading ().intValue ());
 
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, KillUnitActionID.HEALABLE_COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, KillUnitActionID.HEALABLE_COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (wu, times (1)).killUnit (defender.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
+		verify (wu, times (0)).killUnit (attacker.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
 		
 		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);

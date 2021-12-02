@@ -347,6 +347,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 						action = KillUnitActionID.HEALABLE_OVERLAND_DAMAGE;
 					
 					mom.getWorldUpdates ().killUnit (attackingPlayerUnit.getUnitURN (), action);
+					mom.getWorldUpdates ().process (mom);
 					
 					if (combatLocation != null)
 						getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER,
@@ -387,6 +388,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 						action = KillUnitActionID.HEALABLE_OVERLAND_DAMAGE;
 					
 					mom.getWorldUpdates ().killUnit (defendingPlayerUnit.getUnitURN (), action);
+					mom.getWorldUpdates ().process (mom);
 					
 					if (combatLocation != null)
 						getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,
@@ -403,8 +405,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 				winningPlayer = attackingPlayer;
 			}
 		}
-		
-		mom.getWorldUpdates ().process (mom);
 		
 		// End the combat if one side was totally wiped out
 		if (combatEnded)

@@ -273,30 +273,34 @@ public final class KillUnitUpdate implements WorldUpdate
 			if (trueUnit.getCombatLocation () == null)
 			{
 				// Was the unit in a city?  If so recalculate the city; if not recalculate the unit stack
-				final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(trueUnit.getUnitLocation ().getZ ()).getRow ().get (trueUnit.getUnitLocation ().getY ()).getCell ().get (trueUnit.getUnitLocation ().getX ());
-				
-				if (tc.getCityData () != null)
+				// Units can have no location, for example generated heroes that were never actually used
+				if (trueUnit.getUnitLocation () != null)
 				{
-					// Units other than summoned units help reduce unrest if they are in a city
-					if (!mom.getServerDB ().findPick (unitMagicRealmID, "KillUnitUpdate").getUnitTypeID ().equals (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED))
-						if (mom.getWorldUpdates ().recalculateCity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
-							result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+					final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(trueUnit.getUnitLocation ().getZ ()).getRow ().get (trueUnit.getUnitLocation ().getY ()).getCell ().get (trueUnit.getUnitLocation ().getX ());
+					
+					if (tc.getCityData () != null)
+					{
+						// Units other than summoned units help reduce unrest if they are in a city
+						if (!mom.getServerDB ().findPick (unitMagicRealmID, "KillUnitUpdate").getUnitTypeID ().equals (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED))
+							if (mom.getWorldUpdates ().recalculateCity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
+								result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+					}
 				}
 				else
 				{
 					if (mom.getWorldUpdates ().recheckTransportCapacity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
 						result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
 				}
+			
+				// Unit probably had some upkeep
+				if (mom.getWorldUpdates ().recalculateProduction (trueUnit.getOwningPlayerID ()))
+					result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+				
+				// Unit might have been the only one who could see certain areas of the map
+				if (mom.getWorldUpdates ().recalculateFogOfWar (trueUnit.getOwningPlayerID ()))
+					result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
 			}
-			
-			// Unit probably had some upkeep
-			if (mom.getWorldUpdates ().recalculateProduction (trueUnit.getOwningPlayerID ()))
-				result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
-			
-			// Unit might have been the only one who could see certain areas of the map
-			if (mom.getWorldUpdates ().recalculateFogOfWar (trueUnit.getOwningPlayerID ()))
-				result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
 		}
 		
 		return result;

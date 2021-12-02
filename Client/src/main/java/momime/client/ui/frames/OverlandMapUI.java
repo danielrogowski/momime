@@ -908,7 +908,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 											final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
 												(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), spell,
 													getClient ().getOurPlayerID (), mapLocation);
-											if (citySpellEffectIDs.size () > 1)
+											if ((citySpellEffectIDs != null) && (citySpellEffectIDs.size () > 1))
 											{
 												choiceRequired = true;
 												getChooseCitySpellEffectUI ().setSpellID (spell.getSpellID ());

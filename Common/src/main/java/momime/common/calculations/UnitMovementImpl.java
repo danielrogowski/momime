@@ -31,6 +31,8 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.movement.MovementUtils;
+import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
@@ -61,6 +63,9 @@ public final class UnitMovementImpl implements UnitMovement
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Movement utils */
+	private MovementUtils movementUtils;
 	
 	/**
 	 * @param playerID Player whose units to count
@@ -117,77 +122,6 @@ public final class UnitMovementImpl implements UnitMovement
 			}
 
 		return movementRates;
-	}
-
-	/**
-	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
-	 * @param unitStackSkills Collective list of skills of all units in the stack
-	 * @param movingPlayerID The player who is trying to move here
-	 * @param map The player who is trying to move here's knowledge
-	 * @param players List of players in this session
-	 * @param sys Overland map coordinate system
-	 * @param db Lookup lists built over the XML database
-	 * @return Count of the number of free transport spaces at every map cell
-	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
-	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
-	 */
-	final int [] [] [] calculateCellTransportCapacity (final UnitStack unitStack, final Set<String> unitStackSkills, final int movingPlayerID, final FogOfWarMemory map,
-		final List<? extends PlayerPublicDetails> players, final CoordinateSystem sys, final CommonDatabase db)
-		throws PlayerNotFoundException, RecordNotFoundException, MomException 
-	{
-		// If its a transported movement, then by defintion the stack can move onto another transport if it wants to,
-		// so don't need to make any special considerations for moving units onto a transport
-		final int [] [] [] cellTransportCapacity;
-		if (unitStack.getTransports ().size () > 0)
-			cellTransportCapacity = null;
-		else
-		{
-			// Find how much spare transport capacity we have on every cell of the map.
-			// We add +capacity for every transport found, and -1 capacity for every unit that is on terrain impassable to itself (therefore must be in a transport).
-			// Then any spaces left with 1 or higher value have spare space units could be loaded into.
-			// Any units standing in towers have their values counted on both planes.
-			cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
-			for (final MemoryUnit thisUnit : map.getUnit ())
-				if ((thisUnit.getOwningPlayerID () == movingPlayerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getUnitLocation () != null))
-				{
-					final int x = thisUnit.getUnitLocation ().getX ();
-					final int y = thisUnit.getUnitLocation ().getY ();
-					final int z = thisUnit.getUnitLocation ().getZ ();
-					
-					final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
-					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, map, db);
-					
-					// Count space granted by transports
-					final Integer unitTransportCapacity = xu.getUnitDefinition ().getTransportCapacity ();
-					if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
-					{
-						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
-						{
-							for (int plane = 0; plane < sys.getDepth (); plane++)
-								cellTransportCapacity [plane] [y] [x] = cellTransportCapacity [plane] [y] [x] + unitTransportCapacity;
-						}
-						else
-							cellTransportCapacity [z] [y] [x] = cellTransportCapacity [z] [y] [x] + unitTransportCapacity;
-					}
-					
-					// Count space taken up by units already in transports
-					else
-					{
-						final String tileTypeID = getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false);
-						if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, unitStackSkills, tileTypeID, db) == null)
-							if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
-							{
-								for (int plane = 0; plane < sys.getDepth (); plane++)
-									cellTransportCapacity [plane] [y] [x]--;
-							}
-							else
-								cellTransportCapacity [z] [y] [x]--;
-					}
-				}			
-		}
-		
-		return cellTransportCapacity;
 	}
 	
 	/**
@@ -448,7 +382,8 @@ public final class UnitMovementImpl implements UnitMovement
 		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack.getUnits ());
 		
 		// Count of the number of free transport spaces at every map cell; these can make otherwise impassable terrain passable
-		final int [] [] [] cellTransportCapacity = calculateCellTransportCapacity (unitStack, unitStackSkills, movingPlayerID, map, players, sd.getOverlandMapSize (), db);
+		final int [] [] [] cellTransportCapacity = getMovementUtils ().calculateCellTransportCapacity
+			(unitStack, unitStackSkills, movingPlayerID, map, players, sd.getOverlandMapSize (), db);
 		
 		// Work out all the movement rates over all tile types of the unit stack.
 		// If a transporting move, only the movement speed of the transports matters.
@@ -571,5 +506,21 @@ public final class UnitMovementImpl implements UnitMovement
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Movement utils
+	 */
+	public final MovementUtils getMovementUtils ()
+	{
+		return movementUtils;
+	}
+
+	/**
+	 * @param u Movement utils
+	 */
+	public final void setMovementUtils (final MovementUtils u)
+	{
+		movementUtils = u;
 	}
 }

@@ -19,6 +19,7 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.PlayerPick;
+import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandedUnitDetails;
 
 /**

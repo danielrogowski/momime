@@ -1,4 +1,4 @@
-package momime.common.calculations;
+package momime.common.movement;
 
 import java.util.ArrayList;
 import java.util.List;

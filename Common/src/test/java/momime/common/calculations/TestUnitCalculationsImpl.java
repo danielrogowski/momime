@@ -56,6 +56,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
+import momime.common.movement.UnitStack;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;

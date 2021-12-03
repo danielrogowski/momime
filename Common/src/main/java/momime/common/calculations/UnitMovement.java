@@ -10,6 +10,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomSessionDescription;
+import momime.common.movement.UnitStack;
 
 /**
  * Methods dealing with unit movement

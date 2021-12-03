@@ -1,6 +1,7 @@
 package momime.common.movement;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.ndg.map.CoordinateSystem;
@@ -11,6 +12,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * There's a lot of methods involved in calculating movement.  All the component methods are here, then the main front end methods are in UnitMovementImpl
@@ -33,5 +35,15 @@ public interface MovementUtils
 	 */
 	public int [] [] [] calculateCellTransportCapacity (final UnitStack unitStack, final Set<String> unitStackSkills, final int movingPlayerID, final FogOfWarMemory map,
 		final List<? extends PlayerPublicDetails> players, final CoordinateSystem sys, final CommonDatabase db)
-		throws PlayerNotFoundException, RecordNotFoundException, MomException; 
+		throws PlayerNotFoundException, RecordNotFoundException, MomException;
+	
+	/**
+	 * @param unitStack Unit stack we are moving
+	 * @param db Lookup lists built over the XML database
+	 * @return Map indicating the doubled movement cost of entering every type of tile type for this unit stack
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
+	 */
+	public Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<ExpandedUnitDetails> unitStack,
+		final CommonDatabase db) throws RecordNotFoundException, MomException;
 }

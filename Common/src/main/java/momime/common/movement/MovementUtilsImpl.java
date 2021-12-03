@@ -1,6 +1,9 @@
 package momime.common.movement;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.ndg.map.CoordinateSystem;
@@ -10,7 +13,9 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapTerrainData;
@@ -106,6 +111,48 @@ public final class MovementUtilsImpl implements MovementUtils
 		return cellTransportCapacity;
 	}
 
+	/**
+	 * @param unitStack Unit stack we are moving
+	 * @param db Lookup lists built over the XML database
+	 * @return Map indicating the doubled movement cost of entering every type of tile type for this unit stack
+	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
+	 */
+	@Override
+	public final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<ExpandedUnitDetails> unitStack,
+		final CommonDatabase db) throws RecordNotFoundException, MomException
+	{
+		// Get list of all the skills that any unit in the stack has, in case any of them have path finding, wind walking, etc.
+		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
+
+		// Go through each tile type
+		final Map<String, Integer> movementRates = new HashMap<String, Integer> ();
+		for (final TileTypeEx tileType : db.getTileTypes ())
+			if (!tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN))
+			{
+				Integer worstMovementRate = 0;
+
+				// Check every unit - stop if we've found that terrain is impassable to someone
+				final Iterator<ExpandedUnitDetails> unitIter = unitStack.iterator ();
+				while ((worstMovementRate != null) && (unitIter.hasNext ()))
+				{
+					final ExpandedUnitDetails thisUnit = unitIter.next ();
+
+					final Integer thisMovementRate = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileType.getTileTypeID (), db);
+					if (thisMovementRate == null)
+						worstMovementRate = null;
+					else if (thisMovementRate > worstMovementRate)
+						worstMovementRate = thisMovementRate;
+				}
+
+				// No point putting it into the map if it is impassable - HashMap.get returns null for keys not in the map anyway
+				if (worstMovementRate != null)
+					movementRates.put (tileType.getTileTypeID (), worstMovementRate);
+			}
+
+		return movementRates;
+	}
+	
 	/**
 	 * @return expandUnitDetails method
 	 */

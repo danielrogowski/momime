@@ -2,10 +2,6 @@ package momime.common.calculations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +24,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
 import momime.common.database.Pick;
-import momime.common.database.TileTypeEx;
 import momime.common.database.UnitEx;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -36,7 +31,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.movement.UnitStack;
-import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 
@@ -120,77 +114,6 @@ public final class TestUnitMovementImpl
 					assertEquals (0, counts [z] [y] [x]);
 	}
 
-	/**
-	 * Tests the calculateDoubleMovementRatesForUnitStack method
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testCalculateDoubleMovementRatesForUnitStack () throws Exception
-	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);		
-		
-		// All possible tile types
-		final List<TileTypeEx> tileTypes = new ArrayList<TileTypeEx> ();
-		for (int n = 1; n <= 3; n++)
-		{
-			final TileTypeEx thisTileType = new TileTypeEx ();
-			thisTileType.setTileTypeID ("TT0" + n);
-			tileTypes.add (thisTileType);
-		}
-		
-		doReturn (tileTypes).when (db).getTileTypes ();
-
-		// Set up object to test
-		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
-		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-
-		final UnitMovementImpl move = new UnitMovementImpl ();
-		move.setExpandUnitDetails (expand);
-		move.setUnitCalculations (unitCalc);
-		
-		// Single unit
-		final List<ExpandedUnitDetails> units = new ArrayList<ExpandedUnitDetails> ();
-		
-		final ExpandedUnitDetails spearmenUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT01"), eq (db))).thenReturn (4);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT02"), eq (db))).thenReturn (6);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT03"), eq (db))).thenReturn (null);
-		
-		units.add (spearmenUnit);
-
-		final Map<String, Integer> spearmen = move.calculateDoubleMovementRatesForUnitStack (units, db);
-		assertEquals (2, spearmen.size ());
-		assertEquals (4, spearmen.get ("TT01").intValue ());
-		assertEquals (6, spearmen.get ("TT02").intValue ());
-		assertNull (spearmen.get ("TT03"));
-		
-		// Stacking a faster unit with it makes no difference - it always chooses the slowest movement rate
-		final ExpandedUnitDetails flyingUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (flyingUnit), anySet (), any (String.class), eq (db))).thenReturn (2);
-		
-		units.add (flyingUnit);
-		
-		final Map<String, Integer> flying = move.calculateDoubleMovementRatesForUnitStack (units, db);
-		assertEquals (2, flying.size ());
-		assertEquals (4, flying.get ("TT01").intValue ());
-		assertEquals (6, flying.get ("TT02").intValue ());
-		assertNull (flying.get ("TT03"));
-		
-		// Stack a slower unit
-		final ExpandedUnitDetails pathfindingUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (pathfindingUnit), anySet (), any (String.class), eq (db))).thenReturn (5);
-		
-		units.add (pathfindingUnit);
-		
-		final Map<String, Integer> pathfinding = move.calculateDoubleMovementRatesForUnitStack (units, db);
-		assertEquals (2, pathfinding.size ());
-		assertEquals (5, pathfinding.get ("TT01").intValue ());
-		assertEquals (6, pathfinding.get ("TT02").intValue ());
-		assertNull (pathfinding.get ("TT03"));
-	
-	}
-	
 	/**
 	 * Tests the calculateDoubleMovementToEnterTile method
 	 * @throws Exception If there is a problem

@@ -2,9 +2,7 @@ package momime.common.calculations;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +21,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -81,47 +78,6 @@ public final class UnitMovementImpl implements UnitMovement
 				count [thisUnit.getUnitLocation ().getZ ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
 
 		return count;
-	}
-	
-	/**
-	 * @param unitStack Unit stack we are moving
-	 * @param db Lookup lists built over the XML database
-	 * @return Map indicating the doubled movement cost of entering every type of tile type for this unit stack
-	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
-	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
-	 */
-	final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<ExpandedUnitDetails> unitStack,
-		final CommonDatabase db) throws RecordNotFoundException, MomException
-	{
-		// Get list of all the skills that any unit in the stack has, in case any of them have path finding, wind walking, etc.
-		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
-
-		// Go through each tile type
-		final Map<String, Integer> movementRates = new HashMap<String, Integer> ();
-		for (final TileTypeEx tileType : db.getTileTypes ())
-			if (!tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN))
-			{
-				Integer worstMovementRate = 0;
-
-				// Check every unit - stop if we've found that terrain is impassable to someone
-				final Iterator<ExpandedUnitDetails> unitIter = unitStack.iterator ();
-				while ((worstMovementRate != null) && (unitIter.hasNext ()))
-				{
-					final ExpandedUnitDetails thisUnit = unitIter.next ();
-
-					final Integer thisMovementRate = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileType.getTileTypeID (), db);
-					if (thisMovementRate == null)
-						worstMovementRate = null;
-					else if (thisMovementRate > worstMovementRate)
-						worstMovementRate = thisMovementRate;
-				}
-
-				// No point putting it into the map if it is impassable - HashMap.get returns null for keys not in the map anyway
-				if (worstMovementRate != null)
-					movementRates.put (tileType.getTileTypeID (), worstMovementRate);
-			}
-
-		return movementRates;
 	}
 	
 	/**
@@ -390,7 +346,7 @@ public final class UnitMovementImpl implements UnitMovement
 		
 		// Not sure this is necessarily correct - see example testCreateUnitStack_TransportOnly - if there are flying/swimming units
 		// moving alongside the transports but not inside them, then their movement rates should be considered as well?
-		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack
+		final Map<String, Integer> doubleMovementRates = getMovementUtils ().calculateDoubleMovementRatesForUnitStack
 			((unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits (), db);
 
 		// Count how many of OUR units are in every cell on the map - enemy units are fine, we'll just attack them :-)

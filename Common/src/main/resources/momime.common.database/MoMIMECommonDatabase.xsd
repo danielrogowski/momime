@@ -1907,6 +1907,7 @@
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="planeDescription" type="momimecommon:languageText" nxe:label="Description" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="planeRacesTitle" type="momimecommon:languageText" nxe:label="Races title" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="cloudCombatImageFile" type="momimecommon:imageFilename" nxe:label="Cloud combat image file" nxe:gridwidth="350" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="prerequisitePickToChooseNativeRace" type="momimecommon:pickID" nxe:label="Pre-requisite Pick to choose native race from this Plane" nxe:gridwidth="300">
 				<xsd:annotation>
 					<xsd:appinfo>

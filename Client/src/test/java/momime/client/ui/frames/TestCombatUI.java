@@ -49,6 +49,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
 import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Plane;
 import momime.common.database.SmoothedTile;
 import momime.common.database.TileSetEx;
 import momime.common.database.TileTypeEx;
@@ -116,6 +117,9 @@ public final class TestCombatUI extends ClientTestData
 
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Plane arcanus = new Plane ();
+		when (db.findPlane (0, "smoothCombatMapAndGenerateBitmaps")).thenReturn (arcanus);
 		
 		final WizardEx monsterWizardEx = new WizardEx ();
 		monsterWizardEx.getCombatPlayList ().add ("PLAY_LIST");
@@ -275,7 +279,7 @@ public final class TestCombatUI extends ClientTestData
 			combatMapBitmaps [n] = createSolidImage (640, 362, (new int [] {0x200000, 0x002000, 0x000020}) [n]);
 		
 		final CombatMapBitmapGenerator gen = mock (CombatMapBitmapGenerator.class);
-		when (gen.generateCombatMapBitmaps (combatMap)).thenReturn (combatMapBitmaps);
+		when (gen.generateCombatMapBitmaps (combatMap, arcanus)).thenReturn (combatMapBitmaps);
 		
 		// Mock other outputs from the bitmap generator, used to draw the building layer
 		final SmoothedTile [] [] buildingTiles = new SmoothedTile [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];

@@ -68,6 +68,7 @@ import momime.common.database.CombatTileBorderImage;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FrontOrBack;
 import momime.common.database.MapFeature;
+import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SmoothedTile;
 import momime.common.database.SmoothedTileTypeEx;
@@ -1190,8 +1191,10 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void smoothCombatMapAndGenerateBitmaps () throws IOException
 	{
+		final Plane combatPlane = getClient ().getClientDB ().findPlane (getCombatLocation ().getZ (), "smoothCombatMapAndGenerateBitmaps");
+		
 		getCombatMapBitmapGenerator ().smoothMapTerrain (getCombatLocation (), getCombatTerrain ());
-		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps (getCombatTerrain ());
+		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps (getCombatTerrain (), combatPlane);
 	}
 
 	/**
@@ -1202,7 +1205,9 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void regenerateBitmaps () throws IOException
 	{
-		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps (getCombatTerrain ());
+		final Plane combatPlane = getClient ().getClientDB ().findPlane (getCombatLocation ().getZ (), "regenerateBitmaps");
+
+		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps (getCombatTerrain (), combatPlane);
 	}
 
 	/**

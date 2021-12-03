@@ -24,10 +24,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
-import momime.common.messages.UnitStatusID;
 import momime.common.movement.MovementUtils;
 import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandUnitDetails;
@@ -63,22 +61,6 @@ public final class UnitMovementImpl implements UnitMovement
 	
 	/** Movement utils */
 	private MovementUtils movementUtils;
-	
-	/**
-	 * @param playerID Player whose units to count
-	 * @param units Player's knowledge of all units
-	 * @param sys Overland map coordinate system
-	 * @return Count how many of that player's units are in every cell on the map
-	 */
-	final int [] [] [] countOurAliveUnitsAtEveryLocation (final int playerID, final List<MemoryUnit> units, final CoordinateSystem sys)
-	{
-		final int [] [] [] count = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
-		for (final MemoryUnit thisUnit : units)
-			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getUnitLocation () != null))
-				count [thisUnit.getUnitLocation ().getZ ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
-
-		return count;
-	}
 	
 	/**
 	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
@@ -350,7 +332,7 @@ public final class UnitMovementImpl implements UnitMovement
 			((unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits (), db);
 
 		// Count how many of OUR units are in every cell on the map - enemy units are fine, we'll just attack them :-)
-		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getOverlandMapSize ());
+		final int [] [] [] ourUnitCountAtLocation = getMovementUtils ().countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getOverlandMapSize ());
 
 		// Now we can work out the movement cost of entering every tile, taking into account the tiles we can't enter because we'll have too many units there
 		final boolean planarSeal = (getMemoryMaintainedSpellUtils ().findMaintainedSpell

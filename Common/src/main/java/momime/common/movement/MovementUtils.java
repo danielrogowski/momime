@@ -12,6 +12,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
 
 /**
@@ -46,4 +47,12 @@ public interface MovementUtils
 	 */
 	public Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<ExpandedUnitDetails> unitStack,
 		final CommonDatabase db) throws RecordNotFoundException, MomException;
+	
+	/**
+	 * @param playerID Player whose units to count
+	 * @param units Player's knowledge of all units
+	 * @param sys Overland map coordinate system
+	 * @return Count how many of that player's units are in every cell on the map
+	 */
+	public int [] [] [] countOurAliveUnitsAtEveryLocation (final int playerID, final List<MemoryUnit> units, final CoordinateSystem sys);
 }

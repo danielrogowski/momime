@@ -154,6 +154,23 @@ public final class MovementUtilsImpl implements MovementUtils
 	}
 	
 	/**
+	 * @param playerID Player whose units to count
+	 * @param units Player's knowledge of all units
+	 * @param sys Overland map coordinate system
+	 * @return Count how many of that player's units are in every cell on the map
+	 */
+	@Override
+	public final int [] [] [] countOurAliveUnitsAtEveryLocation (final int playerID, final List<MemoryUnit> units, final CoordinateSystem sys)
+	{
+		final int [] [] [] count = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		for (final MemoryUnit thisUnit : units)
+			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getUnitLocation () != null))
+				count [thisUnit.getUnitLocation ().getZ ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
+
+		return count;
+	}
+	
+	/**
 	 * @return expandUnitDetails method
 	 */
 	public final ExpandUnitDetails getExpandUnitDetails ()

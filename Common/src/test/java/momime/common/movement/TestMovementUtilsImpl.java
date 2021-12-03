@@ -266,6 +266,79 @@ public final class TestMovementUtilsImpl
 		assertEquals (5, pathfinding.get ("TT01").intValue ());
 		assertEquals (6, pathfinding.get ("TT02").intValue ());
 		assertNull (pathfinding.get ("TT03"));
-	
+	}
+
+	/**
+	 * Tests the countOurAliveUnitsAtEveryLocation method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCountOurAliveUnitsAtEveryLocation () throws Exception
+	{
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+
+		// Null location
+		final MemoryUnit u1 = new MemoryUnit ();
+		u1.setOwningPlayerID (2);
+		u1.setStatus (UnitStatusID.ALIVE);
+		units.add (u1);
+
+		// 3 at first location
+		for (int n = 0; n < 3; n++)
+		{
+			final MemoryUnit u2 = new MemoryUnit ();
+			u2.setOwningPlayerID (2);
+			u2.setStatus (UnitStatusID.ALIVE);
+			u2.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+			units.add (u2);
+		}
+
+		// 4 at second location
+		for (int n = 0; n < 4; n++)
+		{
+			final MemoryUnit u2 = new MemoryUnit ();
+			u2.setOwningPlayerID (2);
+			u2.setStatus (UnitStatusID.ALIVE);
+			u2.setUnitLocation (new MapCoordinates3DEx (30, 20, 1));
+			units.add (u2);
+		}
+
+		// Wrong player
+		final MemoryUnit u2 = new MemoryUnit ();
+		u2.setOwningPlayerID (3);
+		u2.setStatus (UnitStatusID.ALIVE);
+		u2.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+		units.add (u2);
+
+		// Null status
+		final MemoryUnit u3 = new MemoryUnit ();
+		u3.setOwningPlayerID (2);
+		u3.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+		units.add (u3);
+
+		// Unit is dead
+		final MemoryUnit u4 = new MemoryUnit ();
+		u4.setOwningPlayerID (2);
+		u4.setStatus (UnitStatusID.DEAD);
+		u4.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+		units.add (u4);
+
+		// Set up object to test
+		final MovementUtilsImpl move = new MovementUtilsImpl ();
+		
+		// Run test
+		final int [] [] [] counts = move.countOurAliveUnitsAtEveryLocation (2, units, sys);
+
+		assertEquals (3, counts [0] [10] [20]);
+		assertEquals (4, counts [1] [20] [30]);
+
+		// Reset both the locations we already checked to 0, easier to check the whole array then
+		counts [0] [10] [20] = 0;
+		counts [1] [20] [30] = 0;
+		for (int z = 0; z < sys.getDepth (); z++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				for (int x = 0; x < sys.getWidth (); x++)
+					assertEquals (0, counts [z] [y] [x]);
 	}
 }

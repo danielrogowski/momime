@@ -286,11 +286,11 @@ public final class KillUnitUpdate implements WorldUpdate
 							if (mom.getWorldUpdates ().recalculateCity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
 								result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
 					}
-				}
-				else
-				{
-					if (mom.getWorldUpdates ().recheckTransportCapacity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
-						result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+					else
+					{
+						if (mom.getWorldUpdates ().recheckTransportCapacity ((MapCoordinates3DEx) trueUnit.getUnitLocation ()))
+							result = WorldUpdateResult.DONE_AND_LATER_UPDATES_ADDED;
+					}
 				}
 			
 				// Unit probably had some upkeep

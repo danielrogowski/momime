@@ -124,6 +124,11 @@ public interface ExpandedUnitDetails extends MinimalUnitDetails
 	public int calculateFullRangedAttackAmmo () throws MomException;
 
 	/**
+	 * @return Whether the unit can cast spells
+	 */
+	public boolean canCastSpells ();
+	
+	/**
 	 * @return How much mana the unit has total, before any is spent in combat
 	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
 	 */

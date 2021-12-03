@@ -20,7 +20,6 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
@@ -115,7 +114,7 @@ public final class CombatAIImpl implements CombatAI
 		final int result;
 
 		// Caster with MP remaining?
-		if (unit.getManaRemaining () >= 10)
+		if ((unit.getManaRemaining () >= 10) && (unit.canCastSpells ()))
 			result = 1;
 		
 		// Ranged attack?
@@ -123,15 +122,11 @@ public final class CombatAIImpl implements CombatAI
 			result = 2;
 		
 		// Caster skill?
+		else if (!unit.canCastSpells ())
+			result = 3;
+		
 		else
-		{
-			if ((!unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) &&
-				(!unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)))
-				
-				result = 3;
-			else
-				result = 4;
-		}
+			result = 4;
 		
 		return result;
 	}

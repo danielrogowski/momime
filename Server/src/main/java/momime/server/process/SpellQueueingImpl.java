@@ -287,7 +287,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 						// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
 						// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
 						String overridePickID = null;
-						if (xuCombatCastingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT))
+						if ((xuCombatCastingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) && (!xuCombatCastingUnit.isHero ()))
 						{
 							overridePickID = xuCombatCastingUnit.getModifiedUnitMagicRealmLifeformType ().getCastSpellsFromPickID ();
 							if (overridePickID == null)

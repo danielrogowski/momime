@@ -594,7 +594,7 @@ public final class SpellAIImpl implements SpellAI
 		// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
 		// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
 		String overridePickID = null;
-		if ((combatCastingUnit != null) && (combatCastingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)))
+		if ((combatCastingUnit != null) && (combatCastingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) && (!combatCastingUnit.isHero ()))
 		{
 			overridePickID = combatCastingUnit.getModifiedUnitMagicRealmLifeformType ().getCastSpellsFromPickID ();
 			if (overridePickID == null)

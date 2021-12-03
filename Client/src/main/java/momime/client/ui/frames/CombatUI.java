@@ -1280,10 +1280,7 @@ public final class CombatUI extends MomClientFrameUI
 			final ExpandedUnitDetails castingUnit = getExpandUnitDetails ().expandUnitDetails (getSelectedUnitInCombat (), null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
-			if ((getSelectedUnitInCombat ().getManaRemaining () > 0) &&
-				(castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)) ||
-					(castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)))
-				
+			if ((castingUnit.canCastSpells ()) && (castingUnit.getManaRemaining () > 0))
 				sources.add (new CastCombatSpellFrom (castingUnit, null, null));
 			
 			// Units with fixed spells, e.g. Giant Spiders casting Web

@@ -1056,8 +1056,10 @@ public final class SpellBookUI extends MomClientFrameUI
 			// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
 			// overrideMaximumMP isn't essential, but there's no point us listing spells in the spell book that the unit doesn't have enough MP to cast.
 			final ExpandedUnitDetails castingUnit = getCombatUI ().getCastingSource ().getCastingUnit ();
-
-			if (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT))
+			
+			// Heroes can get the caster unit skill from + Spell Skill items
+			// Check unit type rather than caster hero skill, just in case we put a + spell skill sword on a non-caster sword hero
+			if ((castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) && (!castingUnit.isHero ()))
 				overrideMaximumMP = castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
 			
 			if (overrideMaximumMP > 0)

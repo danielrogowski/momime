@@ -309,6 +309,17 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	}
 
 	/**
+	 * @return Whether the unit can cast spells
+	 */
+	@Override
+	public final boolean canCastSpells ()
+	{
+		// This isn't totally straightforward.  Non-caster heroes can get the unit cast skill by equipping + Spell Skill items - that doesn't mean they gain the ability to cast spells.
+		return (hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)) ||
+			((!isHero ()) && (hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT))); 
+	}	
+	
+	/**
 	 * @return How much mana the unit has total, before any is spent in combat
 	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
 	 */
@@ -316,6 +327,7 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	public final int calculateManaTotal () throws MomException
 	{
 		// Unit caster skill is easy, this directly says how many MP the unit has
+		// + 5-20 spell skill hero weapons also define their MP bonus like this, since it isn't dependant on the hero level
 		int total = hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) ?
 			getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) : 0;
 		

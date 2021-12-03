@@ -589,6 +589,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
+		gc.setCombatTurnCount (0);
 
 		// Players in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -687,6 +688,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
+		gc.setCombatTurnCount (0);
 
 		// Players in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -802,6 +804,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
+		gc.setCombatTurnCount (0);
 
 		// Players in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -918,6 +921,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setSpellCastThisCombatTurn (true);
+		gc.setCombatTurnCount (0);
 
 		// Players in combat, after a few turns the attacker wins
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);

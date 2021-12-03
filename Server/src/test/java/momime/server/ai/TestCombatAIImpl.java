@@ -18,7 +18,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
@@ -136,40 +135,89 @@ public final class TestCombatAIImpl
 	}
 	
 	/**
-	 * Tests the calculateUnitCombatAIOrder method
+	 * Tests the calculateUnitCombatAIOrder method on a caster unit with MP remaining
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testCalculateUnitCombatAIOrder () throws Exception
+	public final void testCalculateUnitCombatAIOrder_caster () throws Exception
 	{
 		// Sample unit
-		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
-		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getManaRemaining ()).thenReturn (10);
+		when (xu.canCastSpells ()).thenReturn (true);
 		
 		// Set up object to test
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		
 		final CombatAIImpl ai = new CombatAIImpl ();
-		ai.setExpandUnitDetails (expand);
+		
+		// Run method
+		assertEquals (1, ai.calculateUnitCombatAIOrder (xu));
+	}
+	
+	/**
+	 * Tests the calculateUnitCombatAIOrder method on a ranged attacker with ammo left
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateUnitCombatAIOrder_ranged () throws Exception
+	{
+		// Sample unit
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getManaRemaining ()).thenReturn (10);
+
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.canMakeRangedAttack (xu)).thenReturn (true);
+
+		// Set up object to test
+		final CombatAIImpl ai = new CombatAIImpl ();
 		ai.setUnitCalculations (unitCalculations);
 		
-		// Caster with MP remaining
-		when (xu.getManaRemaining ()).thenReturn (10);
-		assertEquals (1, ai.calculateUnitCombatAIOrder (xu));
-		
-		// Unit with a ranged attack
-		when (xu.getManaRemaining ()).thenReturn (9);
-		when (unitCalculations.canMakeRangedAttack (xu)).thenReturn (true);
+		// Run method
 		assertEquals (2, ai.calculateUnitCombatAIOrder (xu));
-		
-		// Unit without the caster skill
+	}
+	
+	/**
+	 * Tests the calculateUnitCombatAIOrder method on a normal unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateUnitCombatAIOrder_normal () throws Exception
+	{
+		// Sample unit
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getManaRemaining ()).thenReturn (10);
+		when (xu.canCastSpells ()).thenReturn (false);
+
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		when (unitCalculations.canMakeRangedAttack (xu)).thenReturn (false);
-		assertEquals (3, ai.calculateUnitCombatAIOrder (xu));
+
+		// Set up object to test
+		final CombatAIImpl ai = new CombatAIImpl ();
+		ai.setUnitCalculations (unitCalculations);
 		
-		// Caster without MP remaining
-		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)).thenReturn (false);
-		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)).thenReturn (true);
+		// Run method
+		assertEquals (3, ai.calculateUnitCombatAIOrder (xu));
+	}
+	
+	/**
+	 * Tests the calculateUnitCombatAIOrder method on a caster with low mana remaining
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateUnitCombatAIOrder_casterLowMana () throws Exception
+	{
+		// Sample unit
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getManaRemaining ()).thenReturn (9);
+		when (xu.canCastSpells ()).thenReturn (true);
+
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.canMakeRangedAttack (xu)).thenReturn (false);
+
+		// Set up object to test
+		final CombatAIImpl ai = new CombatAIImpl ();
+		ai.setUnitCalculations (unitCalculations);
+		
+		// Run method
 		assertEquals (4, ai.calculateUnitCombatAIOrder (xu));
 	}
 	

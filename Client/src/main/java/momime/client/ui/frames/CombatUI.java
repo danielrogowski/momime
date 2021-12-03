@@ -991,7 +991,7 @@ public final class CombatUI extends MomClientFrameUI
 					else if (getSpellBeingTargeted () != null)
 					{
 						final RequestCastSpellMessage msg = getCombatSpellClientUtils ().buildCastCombatSpellMessage (getSpellBeingTargeted (),
-							getCombatLocation (), combatCoords, getCastingSource (), getCombatTerrain (), getUnitBeingRaised ());
+							getCombatLocation (), combatCoords, getCastingSource (), getCombatTerrain (), getUnitBeingRaised (), true);
 						if (msg != null)
 						{
 							getClient ().getServerConnection ().sendMessageToServer (msg);

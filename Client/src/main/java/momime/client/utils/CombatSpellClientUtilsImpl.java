@@ -77,13 +77,14 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	 * @param castingSource Source that is currently casting a combat spell
 	 * @param combatTerrain Combat terrain
 	 * @param unitBeingRaised If casting a raise dead spell, which unit the player chose to raise
+	 * @param showErrorMessage If its not a valid cast, show message box to the player explaining why not?
 	 * @return Message to send to server to request spell cast if it is valid; if it is not valid for some reason then returns null
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final RequestCastSpellMessage buildCastCombatSpellMessage (final Spell spell, final MapCoordinates3DEx combatLocation,
 		final MapCoordinates2DEx combatCoords, final CastCombatSpellFrom castingSource, final MapAreaOfCombatTiles combatTerrain,
-		final MemoryUnit unitBeingRaised) throws IOException
+		final MemoryUnit unitBeingRaised, final boolean showErrorMessage) throws IOException
 	{
 		final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
 		
@@ -193,7 +194,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 					}
 
 					// If we can't target on this unit, tell the player why not
-					if (validTarget != TargetSpellResult.VALID_TARGET)
+					if ((showErrorMessage) && (validTarget != TargetSpellResult.VALID_TARGET))
 					{
 						final String spellName = getLanguageHolder ().findDescription
 							(getClient ().getClientDB ().findSpell (spell.getSpellID (), "CombatUI").getSpellName ());
@@ -251,7 +252,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	{
 		// This was doing exactly the same logic as buildCastCombatSpellMessage just without building up the message.
 		// Rather than repeating it all, just use the same method and test the result
-		return (buildCastCombatSpellMessage (spell, combatLocation, combatCoords, castingSource, combatTerrain, unitBeingRaised) != null);
+		return (buildCastCombatSpellMessage (spell, combatLocation, combatCoords, castingSource, combatTerrain, unitBeingRaised, false) != null);
 	}
 
 	/**

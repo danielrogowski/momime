@@ -26,12 +26,13 @@ public interface CombatSpellClientUtils
 	 * @param castingSource Source that is currently casting a combat spell
 	 * @param combatTerrain Combat terrain
 	 * @param unitBeingRaised If casting a raise dead spell, which unit the player chose to raise
+	 * @param showErrorMessage If its not a valid cast, show message box to the player explaining why not?
 	 * @return Message to send to server to request spell cast if it is valid; if it is not valid for some reason then returns null
 	 * @throws IOException If there is a problem
 	 */
 	public RequestCastSpellMessage buildCastCombatSpellMessage (final Spell spell, final MapCoordinates3DEx combatLocation,
 		final MapCoordinates2DEx combatCoords, final CastCombatSpellFrom castingSource, final MapAreaOfCombatTiles combatTerrain,
-		final MemoryUnit unitBeingRaised) throws IOException;
+		final MemoryUnit unitBeingRaised, final boolean showErrorMessage) throws IOException;
 
 	/**
 	 * As player is moving the mouse around the combat terrain, test whether the tile they are holding the mouse over at the moment

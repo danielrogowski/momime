@@ -9,6 +9,7 @@ import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Client side only helper methods for dealing with players/wizards
@@ -41,7 +42,7 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 		if (!player.getPlayerDescription ().isHuman ())
 		{
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if (pub.getWizardID () != null)
+			if ((pub.getWizardID () != null) && (!PlayerKnowledgeUtils.isCustomWizard (pub.getWizardID ())))
 				try
 				{
 					playerName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (pub.getWizardID (), "getPlayerName").getWizardName ());

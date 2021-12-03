@@ -73,6 +73,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (CombatProcessingImpl.class);
 
+	/** Max number of turns a combat is allow to last */ 
+	private final static int COMBAT_MAX_TURNS = 50;
+	
 	/** Max number of units to fill each row during combat set up */ 
 	private final static int COMBAT_SETUP_UNITS_PER_ROW = 4;
 	
@@ -620,11 +623,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// We cannot safely determine the players involved until we've proved there are actually some units on each side.
 		// Keep going until one side is wiped out or a human player needs to take their turn.
 		boolean aiPlayerTurn = true;
-		int consecutiveTurnsWithoutDoingAnything = 0;
-		int consecutiveTurns = 0;
 		CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
-		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()) && (consecutiveTurnsWithoutDoingAnything < 2) && (consecutiveTurns < 50))
+		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()) && (tc.getCombatTurnCount () < COMBAT_MAX_TURNS))
 		{
 			// Who should take their turn next?
 			// If human player hits Auto, then we want to play their turn for them through their AI, without switching players
@@ -653,8 +654,12 @@ public final class CombatProcessingImpl implements CombatProcessing
 				// Sequence is always (start new turn) - defender - attacker - (start new turn) - defender - attacker,
 				// so if its about to be the defender's turn, then take care of any start new turn things, like rolling for confusion
 				if (tc.getCombatCurrentPlayerID ().equals (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ()))
+				{
+					tc.setCombatTurnCount (tc.getCombatTurnCount () + 1);
+					
 					getCombatEndTurn ().combatBeforeEitherTurn ((PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (),
 						combatLocation, mom);
+				}
 				
 				// Roll for which units will be terrified and cannot move this turn; this also moves Magic Vortexes which could end the combat, or the whole session
 				final List<Integer> terrifiedUnitURNs = getCombatEndTurn ().startCombatTurn (combatLocation, tc.getCombatCurrentPlayerID (),
@@ -663,7 +668,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 				{
 					// Combat ended
 					tc.setCombatCurrentPlayerID (null);
-					consecutiveTurnsWithoutDoingAnything = 0;
 					aiPlayerTurn = false;
 				}
 				else
@@ -705,7 +709,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 					// Nothing to do here - we already notified them to take their turn so the loop & this method will just
 					// exit and combat will proceed when we receive messages from the player.
 					aiPlayerTurn = false;
-					consecutiveTurnsWithoutDoingAnything = 0;
 				}
 				else
 				{
@@ -715,20 +718,17 @@ public final class CombatProcessingImpl implements CombatProcessing
 					{
 						// Did something useful, so number of turns not doing anything useful resets to 0
 						case MOVED_OR_ATTACKED:
-							consecutiveTurnsWithoutDoingAnything = 0;
 							aiPlayerTurn = true;
 							break;
 							
 						// Did nothing useful
 						case NOTHING:
-							consecutiveTurnsWithoutDoingAnything++;
 							aiPlayerTurn = true;
 							break;
 							
 						// Did something useful that resulted in ending the combat; setting aiPlayerTurn to false is just a way to get the loop to exit
 						// Also setting consecutiveTurnsWithoutDoingAnything to 0 ensures we not call combatEnded a second time below 
 						case ENDED_COMBAT:
-							consecutiveTurnsWithoutDoingAnything = 0;
 							aiPlayerTurn = false;
 							break;
 							
@@ -750,21 +750,12 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if (mom.getPlayers ().size () > 0)
 				combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 					(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
-			
-			consecutiveTurns++;
 		}
 		
 		// If the combat is a stalemate, then just declare the defender as the winner
-		if ((combatPlayers.bothFound ()) && (consecutiveTurnsWithoutDoingAnything >= 2))
+		if ((combatPlayers.bothFound ()) && (tc.getCombatTurnCount () >= COMBAT_MAX_TURNS))
 		{
-			log.debug ("Combat at " + combatLocation + " ended as neither side took any meanginful action for last 2 turns");
-			getCombatStartAndEnd ().combatEnded (combatLocation, (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
-				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), null, mom);
-		}
-		
-		else if ((combatPlayers.bothFound ()) && (consecutiveTurns >= 50))
-		{
-			log.debug ("Combat at " + combatLocation + " ended as neither side took any action for last 50 turns");
+			log.debug ("Combat at " + combatLocation + " timed out");
 			getCombatStartAndEnd ().combatEnded (combatLocation, (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), null, mom);
 		}

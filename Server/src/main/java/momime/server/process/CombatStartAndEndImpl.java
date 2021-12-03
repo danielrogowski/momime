@@ -261,6 +261,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			log.debug ("Continuing combat setup");
 			
 			// Store the two players involved
+			tc.setCombatTurnCount (0);
 			tc.setAttackingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
 			tc.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
 			tc.getLastCombatMoveDirection ().clear ();
@@ -652,6 +653,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getServerResourceCalculations ().recalculateGlobalProductionValues (defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 
 				// Clear out combat related items
+				tc.setCombatTurnCount (null);
 				tc.setAttackingPlayerID (null);
 				tc.setDefendingPlayerID (null);
 				tc.setCombatCurrentPlayerID (null);

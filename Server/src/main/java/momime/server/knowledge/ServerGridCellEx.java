@@ -24,6 +24,9 @@ public final class ServerGridCellEx extends ServerGridCell
 	 */
 	private Double nodeLairTowerPowerProportion;
 
+	/** The number of turns the combat has been going */
+	private Integer combatTurnCount;
+	
 	/** The player who attacked to initiate the combat */
 	private Integer attackingPlayerID;
 	
@@ -107,6 +110,22 @@ public final class ServerGridCellEx extends ServerGridCell
 		nodeLairTowerPowerProportion = prop;
 	}
 
+	/**
+	 * @return The number of turns the combat has been going
+	 */
+	public final Integer getCombatTurnCount ()
+	{
+		return combatTurnCount;
+	}
+
+	/**
+	 * @param c The number of turns the combat has been going
+	 */
+	public final void setCombatTurnCount (final Integer c)
+	{
+		combatTurnCount = c;
+	}
+	
 	/**
 	 * @return The player who attacked to initiate the combat
 	 */

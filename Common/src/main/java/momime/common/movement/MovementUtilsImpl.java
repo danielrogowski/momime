@@ -1,28 +1,39 @@
 package momime.common.movement;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.utils.Holder;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitMovement;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 
 /**
  * There's a lot of methods involved in calculating movement.  All the component methods are here, then the main front end methods are in UnitMovementImpl
@@ -38,6 +49,15 @@ public final class MovementUtilsImpl implements MovementUtils
 	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+
+	/** Methods dealing with unit movement */
+	private UnitMovement unitMovement;
 	
 	/**
 	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
@@ -169,6 +189,244 @@ public final class MovementUtilsImpl implements MovementUtils
 
 		return count;
 	}
+
+	/**
+	 * Finds all places on the overland map our unit stack cannot go because either:
+	 * 1) We already have units there, and number of units there + number of units in stack will be > 9
+	 * 2) Its a Tower of Wizardry, and Planar Seal is cast (even our own)
+	 * 3) Spell Ward, and we have summoned creatures of the corresponding type (even our own)
+	 * 4) Someone else's Flying Fortress, and we have non-flying units
+	 * 
+	 * These are all pretty special circumstances that won't list out many coordinates.  What this doesn't include is locations
+	 * where the terrain itself is impassable, or we'd end up listing every known water tile if its a stack of land units.
+	 * 
+	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
+	 * @param movingPlayerID The player who is trying to move here
+	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @param spells Known spells
+	 * @param terrain Player knowledge of terrain
+	 * @param db Lookup lists built over the XML database
+	 * @return Set of all overland map locations this unit stack is blocked from entering for one of the above reasons
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 */
+	@Override
+	public final Set<MapCoordinates3DEx> determineBlockedLocations (final UnitStack unitStack, final int movingPlayerID,
+		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem,
+		final List<MemoryMaintainedSpell> spells, final MapVolumeOfMemoryGridCells terrain, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		// What magic realm(s) are the units in the stack?
+		final Set<String> unitStackMagicRealms = new HashSet<String> ();
+		unitStack.getUnits ().forEach (xu -> unitStackMagicRealms.add (xu.getModifiedUnitMagicRealmLifeformType ().getPickID ()));
+		unitStack.getTransports ().forEach (xu -> unitStackMagicRealms.add (xu.getModifiedUnitMagicRealmLifeformType ().getPickID ()));
+		
+		// Search for locations where some city spell effect stops some of the unit stack from entering
+		final Set<String> blockingCitySpellEffectIDs = db.getCitySpellEffect ().stream ().filter
+			(e -> (e.isBlockEntryByCreaturesOfRealm () != null) && (e.isBlockEntryByCreaturesOfRealm ()) &&
+				(!Collections.disjoint (e.getProtectsAgainstSpellRealm (), unitStackMagicRealms))).map (e -> e.getCitySpellEffectID ()).collect (Collectors.toSet ());
+		
+		final Set<MapCoordinates3DEx> blockedLocations = spells.stream ().filter
+			(s -> (s.getCityLocation () != null) && (blockingCitySpellEffectIDs.contains (s.getCitySpellEffectID ()))).map
+			(s -> (MapCoordinates3DEx) s.getCityLocation ()).collect (Collectors.toSet ());
+
+		// Can the whole unit stack all fly?
+		final List<String> flightSkills = db.findCombatTileType
+			(CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD, "calculateDoubleMovementToEnterTile").getCombatTileTypeRequiresSkill ();
+		final Holder<Boolean> allCanFly = new Holder<Boolean> (true);
+		unitStack.getUnits ().forEach (xu ->
+		{
+			if (flightSkills.stream ().noneMatch (f -> xu.hasModifiedSkill (f)))
+				allCanFly.setValue (false);
+		});
+		unitStack.getTransports ().forEach (xu ->
+		{
+			if (flightSkills.stream ().noneMatch (f -> xu.hasModifiedSkill (f)))
+				allCanFly.setValue (false);
+		});
+		
+		// Unless every single unit can fly, we're blocked from entering anywhere with Flying Fortress
+		if (!allCanFly.getValue ())
+			spells.stream ().filter (s -> (s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS)) && (s.getCastingPlayerID () != movingPlayerID)).map
+				(s -> (MapCoordinates3DEx) s.getCityLocation ()).forEach (l -> blockedLocations.add (l));
+		
+		// Towers are impassable if Planar Seal is cast; also check numbers of units we have in each cell here too
+		final boolean planarSeal = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(spells, null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null);
+				
+		for (int z = 0; z < overlandMapCoordinateSystem.getDepth (); z++)
+			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
+				for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
+					
+					if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
+						blockedLocations.add (new MapCoordinates3DEx (x, y, z));
+		
+					else if (planarSeal)
+					{
+						final OverlandMapTerrainData terrainData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
+							blockedLocations.add (new MapCoordinates3DEx (x, y, z));
+					}							
+		
+		return blockedLocations;
+	}
+	
+	/**
+	 * @param movingPlayerID The player who is trying to move
+	 * @param spells Known spells
+	 * @return All locations where we have an Earth Gate cast on a city
+	 */
+	@Override
+	public final Set<MapCoordinates3DEx> findEarthGates (final int movingPlayerID, final List<MemoryMaintainedSpell> spells)
+	{
+		return spells.stream ().filter (s -> (s.getCastingPlayerID () == movingPlayerID) && (s.getSpellID ().equals
+			(CommonDatabaseConstants.SPELL_ID_EARTH_GATE))).map (s -> (MapCoordinates3DEx) s.getCityLocation ()).collect
+				(Collectors.toSet ());
+	}
+	
+	/**
+	 * @param movingPlayerID The player who is trying to move
+	 * @param spells Known spells
+	 * @return All locations where we have an Astral Gate cast on a city, unless Planar Seal is cast in which case we always get an empty set
+	 */
+	@Override
+	public final Set<MapCoordinates2DEx> findAstralGates (final int movingPlayerID, final List<MemoryMaintainedSpell> spells)
+	{
+		final Set<MapCoordinates2DEx> astralGates;
+		
+		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+			(spells, null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null)
+			
+			astralGates = new HashSet<MapCoordinates2DEx> ();
+		else
+			astralGates = spells.stream ().filter (s -> (s.getCastingPlayerID () == movingPlayerID) && (s.getSpellID ().equals
+				(CommonDatabaseConstants.SPELL_ID_ASTRAL_GATE))).map (s -> new MapCoordinates2DEx (s.getCityLocation ().getX (), s.getCityLocation ().getY ())).collect
+					(Collectors.toSet ());
+		
+		return astralGates;
+	}
+	
+	/**
+	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
+	 * @param unitStackSkills Collective list of skills of all units in the stack
+	 * @param coords Where we are trying to move to
+	 * @param cellTransportCapacity Number of free spaces on transports at each map cell
+	 * @param doubleMovementRates Movement to enter each kind of overland map tile
+	 * @param terrain Player knowledge of terrain
+	 * @param db Lookup lists built over the XML database
+	 * @return Double number of movement points it costs to enter this tile; null if the tile is impassable
+	 */
+	@Override
+	public final Integer calculateDoubleMovementToEnterTile (final UnitStack unitStack, final Set<String> unitStackSkills, final MapCoordinates3DEx coords,
+		final int [] [] [] cellTransportCapacity, final Map<String, Integer> doubleMovementRates,
+		final MapVolumeOfMemoryGridCells terrain, final CommonDatabase db)
+	{
+		final OverlandMapTerrainData terrainData = terrain.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+		
+		Integer movementRate = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, true));
+		
+		// If the cell is otherwise impassable to us (i.e. land units trying to walk onto water) but there's enough space in a transport there, then allow it
+		if ((movementRate == null) && (cellTransportCapacity != null) && (cellTransportCapacity [coords.getZ ()] [coords.getY ()] [coords.getX ()] > 0))
+		{
+			// Work out how many spaces we -need-
+			// Can't do this up front because it varies depending on whether the terrain being moved to is impassable to each kind of unit in the stack
+			int spaceRequired = 0;
+			boolean impassableToTransport = false;
+			for (final ExpandedUnitDetails thisUnit : unitStack.getUnits ())
+			{															
+				final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills,
+					getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
+				
+				// Count space granted by transports
+				final Integer unitTransportCapacity = thisUnit.getUnitDefinition ().getTransportCapacity ();
+				if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
+				{
+					if (impassable)
+						impassableToTransport = true;
+					else
+						spaceRequired = spaceRequired - unitTransportCapacity;
+				}
+				
+				// Count space taken up by units already in transports
+				else if (impassable)									
+					spaceRequired++;
+			}							
+			
+			// If the cell is impassable to one of our transports then the free space is irrelevant, we just can't go there
+			if ((!impassableToTransport) && (cellTransportCapacity [coords.getZ ()] [coords.getY ()] [coords.getX ()] >= spaceRequired))
+				movementRate = 2;
+		}
+		
+		return movementRate;
+	}
+	
+	/**
+	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
+	 * @param unitStackSkills Collective list of skills of all units in the stack
+	 * @param moveFrom Coordinates of the cell we are moving from
+	 * @param movingPlayerID The player who is trying to move here
+	 * @param doubleMovementRemaining The lowest movement remaining for any of the units that are moving
+	 * @param blockedLocations Set of all overland map locations this unit stack is blocked from entering for any reasons other than impassable terrain
+	 * @param earthGates Earth gates we can use
+	 * @param astralGates Astral gates we can use
+	 * @param cellTransportCapacity Count of the number of free transport spaces at every map cell
+	 * @param doubleMovementRates Map indicating the doubled movement cost of entering every type of tile type for this unit stack
+	 * @param moves Array listing all cells we can reach and the paths to get there
+	 * @param cellsLeftToCheck List of cells that still need to be checked (we add adjacent cells to the end of this list)
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @param mem The player who is trying to move here's knowledge
+	 * @param db Lookup lists built over the XML database
+	 */
+	@Override
+	public final void processOverlandMovementCell (final UnitStack unitStack, final Set<String> unitStackSkills,
+		final MapCoordinates3DEx moveFrom, final int movingPlayerID, final int doubleMovementRemaining,
+		final Set<MapCoordinates3DEx> blockedLocations, final Set<MapCoordinates3DEx> earthGates, final Set<MapCoordinates2DEx> astralGates,
+		final int [] [] [] cellTransportCapacity, final Map<String, Integer> doubleMovementRates,
+		final OverlandMovementCell [] [] [] moves, final List<MapCoordinates3DEx> cellsLeftToCheck,
+		final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db)
+	{
+		final int doubleDistanceToHere = moves [moveFrom.getZ ()] [moveFrom.getY ()] [moveFrom.getX ()].getDoubleMovementDistance ();
+		final int doubleMovementRemainingToHere = doubleMovementRemaining - doubleDistanceToHere;
+		
+		// Are we stood in a tower?
+		int minPlane = moveFrom.getZ ();
+		int maxPlane = moveFrom.getZ ();
+
+		final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get
+			(moveFrom.getZ ()).getRow ().get (moveFrom.getY ()).getCell ().get (moveFrom.getX ()).getTerrainData ();
+		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
+		{
+			minPlane = 0;
+			maxPlane = overlandMapCoordinateSystem.getDepth () - 1;
+		}
+		
+		// Adjacent moves
+		for (int cellPlane = minPlane; cellPlane <= maxPlane; cellPlane++)
+			for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ()); d++)
+			{
+				final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveFrom.getX (), moveFrom.getY (), cellPlane);
+				if ((getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, d)) && (!blockedLocations.contains (coords)))
+					getUnitMovement ().considerPossibleMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.ADJACENT, d, coords, movingPlayerID,
+						doubleDistanceToHere, doubleMovementRemainingToHere, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+			}
+		
+		// Earth gates
+		if (earthGates.contains (moveFrom))
+			for (final MapCoordinates3DEx earthGate : earthGates)
+				if ((!earthGate.equals (moveFrom)) && (earthGate.getZ () == moveFrom.getZ ()) && (!blockedLocations.contains (earthGate)))
+					getUnitMovement ().considerPossibleMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.EARTH_GATE, 0, earthGate, movingPlayerID,
+						doubleDistanceToHere, doubleMovementRemainingToHere, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		// Astral gates
+		if (astralGates.contains (new MapCoordinates2DEx (moveFrom.getX (), moveFrom.getY ())))
+		{
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveFrom.getX (), moveFrom.getY (), 1 - moveFrom.getZ ());
+			if (!blockedLocations.contains (coords))
+				getUnitMovement ().considerPossibleMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.ASTRAL_GATE, 0, coords, movingPlayerID,
+					doubleDistanceToHere, doubleMovementRemainingToHere, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		}
+	}
+		
 	
 	/**
 	 * @return expandUnitDetails method
@@ -216,5 +474,53 @@ public final class MovementUtilsImpl implements MovementUtils
 	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Methods dealing with unit movement
+	 */
+	public final UnitMovement getUnitMovement ()
+	{
+		return unitMovement;
+	}
+
+	/**
+	 * @param u Methods dealing with unit movement
+	 */
+	public final void setUnitMovement (final UnitMovement u)
+	{
+		unitMovement = u;
 	}
 }

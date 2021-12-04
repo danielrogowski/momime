@@ -412,6 +412,9 @@
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="unitMovement" ref="unitMovement" />
 	</bean>
 	
 </beans>

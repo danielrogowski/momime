@@ -398,6 +398,9 @@ public final class CommonDatabaseConstants
 	
 	// spells
 	
+	/** Earth Gate spell */
+	public final static String SPELL_ID_EARTH_GATE = "SP037";
+	
 	/** Herb Mastery spell */
 	public final static String SPELL_ID_HERB_MASTERY = "SP038";
 	
@@ -486,6 +489,9 @@ public final class CommonDatabaseConstants
 	/** Stream of Life doubles population growth */
 	public final static String SPELL_ID_STREAM_OF_LIFE = "SP148";
 
+	/** Astral Gate spell */
+	public final static String SPELL_ID_ASTRAL_GATE = "SP153";
+	
 	/** Dark Rituals spell */
 	public final static String SPELL_ID_DARK_RITUALS = "SP163";	
 

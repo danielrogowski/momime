@@ -16,6 +16,9 @@ public final class OverlandMovementCell
 
 	/** What direction we moved to get here; only applicable for movementType ADJACENT; for other movement types and impassable cells, this will be 0 */
 	private int direction;
+
+	/** Movement cost to enter this tile; this basically serves as a cache so if we hit the same tile multiple times, we don't have to work this out again */
+	private int doubleMovementToEnterTile;
 	
 	/** How many movement points it took to get here; if this cell is known to be impassable, this will be MOVEMENT_DISTANCE_CANNOT_MOVE_HERE */
 	private int doubleMovementDistance;
@@ -71,6 +74,22 @@ public final class OverlandMovementCell
 		direction = d;
 	}
 
+	/**
+	 * @return Movement cost to enter this tile; this basically serves as a cache so if we hit the same tile multiple times, we don't have to work this out again
+	 */
+	public final int getDoubleMovementToEnterTile ()
+	{
+		return doubleMovementToEnterTile;
+	}
+
+	/**
+	 * @param m Movement cost to enter this tile; this basically serves as a cache so if we hit the same tile multiple times, we don't have to work this out again
+	 */
+	public final void setDoubleMovementToEnterTile (final int m)
+	{
+		doubleMovementToEnterTile = m;
+	}
+	
 	/**
 	 * @return How many movement points it took to get here; if this cell is known to be impassable, this will be MOVEMENT_DISTANCE_CANNOT_MOVE_HERE
 	 */

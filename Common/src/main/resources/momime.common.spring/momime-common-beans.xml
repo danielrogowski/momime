@@ -390,7 +390,7 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 
-	<bean id="unitMovement" class="momime.common.calculations.UnitMovementImpl">
+	<bean id="unitMovement" class="momime.common.movement.UnitMovementImpl">
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />

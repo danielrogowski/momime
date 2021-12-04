@@ -1,4 +1,4 @@
-package momime.common.calculations;
+package momime.common.movement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +17,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.utils.Holder;
 
 import momime.common.MomException;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Plane;
@@ -26,10 +27,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
-import momime.common.movement.MovementUtils;
-import momime.common.movement.OverlandMovementCell;
-import momime.common.movement.OverlandMovementType;
-import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;

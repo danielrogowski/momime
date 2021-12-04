@@ -19,7 +19,6 @@ import com.ndg.utils.Holder;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitMovement;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;

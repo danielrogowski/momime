@@ -1,4 +1,4 @@
-package momime.common.calculations;
+package momime.common.movement;
 
 import java.util.List;
 import java.util.Map;
@@ -14,9 +14,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomSessionDescription;
-import momime.common.movement.OverlandMovementCell;
-import momime.common.movement.OverlandMovementType;
-import momime.common.movement.UnitStack;
 
 /**
  * Methods dealing with unit movement

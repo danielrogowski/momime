@@ -7,7 +7,6 @@ import java.util.Set;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -27,6 +26,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
+import momime.common.movement.OverlandMovementCell;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.ResolveAttackTarget;
@@ -367,13 +367,11 @@ public interface FogOfWarMidTurnChanges
 	 *
 	 * @param moveFrom Location to move from
 	 * @param moveTo Location to determine direction to
-	 * @param movementDirections Movement directions from moveFrom to every location on the map
-	 * @param sys Overland map coordinate system
-	 * @return Direction to make one cell move in
-	 * @throws MomException If we can't find a route from moveFrom to moveTo
+	 * @param moves Array listing all cells we can reach and the paths to get there
+	 * @return First location to move to
 	 */
-	public int determineMovementDirection (final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo,
-		final int [] [] [] movementDirections, final CoordinateSystem sys) throws MomException;
+	public MapCoordinates3DEx determineMovementDirection (final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo,
+		final OverlandMovementCell [] [] [] moves);
 
 	/**
 	 * Reduces the amount of remaining movement that all units in this stack have left by the amount that it costs them to enter a grid cell of the specified type

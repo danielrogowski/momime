@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -52,6 +51,7 @@ import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
+import momime.common.movement.OverlandMovementCell;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
@@ -1086,32 +1086,26 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 *
 	 * @param moveFrom Location to move from
 	 * @param moveTo Location to determine direction to
-	 * @param movementDirections Movement directions from moveFrom to every location on the map
-	 * @param sys Overland map coordinate system
-	 * @return Direction to make one cell move in
-	 * @throws MomException If we can't find a route from moveFrom to moveTo
+	 * @param moves Array listing all cells we can reach and the paths to get there
+	 * @return First location to move to
 	 */
 	@Override
-	public final int determineMovementDirection (final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo,
-		final int [] [] [] movementDirections, final CoordinateSystem sys) throws MomException
+	public final MapCoordinates3DEx determineMovementDirection (final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo,
+		final OverlandMovementCell [] [] [] moves)
 	{
 		// The value at each cell of the directions grid is the direction we need to have come FROM to get there
 		// So we need to start at the destinationand follow backwards down the movement path until we
 		// get back to the From location, and the direction we want is the one that led us to the From location
-		final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveTo);
-
-		int direction = -1;
-		while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
+		MapCoordinates3DEx coords = new MapCoordinates3DEx (moveTo);
+		OverlandMovementCell cell = moves [coords.getZ ()] [coords.getY ()] [coords.getX ()]; 
+		
+		while (!cell.getMovedFrom ().equals (moveFrom)) 
 		{
-			direction = movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()];
-			if (!getCoordinateSystemUtils ().move3DCoordinates (sys, coords, getCoordinateSystemUtils ().normalizeDirection (sys.getCoordinateSystemType (), direction + 4)))
-				throw new MomException ("determineMovementDirection: Server map tracing moved to a cell off the map");
+			coords = cell.getMovedFrom ();
+			cell = moves [coords.getZ ()] [coords.getY ()] [coords.getX ()];
 		}
 
-		if (direction < 0)
-			throw new MomException ("determineMovementDirection: Failed to trace a route from the movement target " + moveTo + " back to the movement origin " + moveFrom);
-
-		return direction;
+		return new MapCoordinates3DEx (coords);
 	}
 
 	/**

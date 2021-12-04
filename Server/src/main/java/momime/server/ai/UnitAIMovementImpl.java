@@ -20,6 +20,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.movement.OverlandMovementCell;
 import momime.common.utils.MemoryGridCellUtils;
 
 /**
@@ -49,13 +50,13 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI tries to move units to any location that lacks defence or can be captured without a fight.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_Reinforce (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_Reinforce (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final List<AIDefenceLocation> underdefendedLocations, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
@@ -66,10 +67,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		// Check all locations we want to head to and find the closest one (or multiple closest ones)
 		for (final AIDefenceLocation location : underdefendedLocations)
 		{
-			final int doubleThisDistance = doubleMovementDistances [location.getMapLocation ().getZ ()] [location.getMapLocation ().getY ()] [location.getMapLocation ().getX ()];
-			if (doubleThisDistance >= 0)
+			final OverlandMovementCell cell = moves [location.getMapLocation ().getZ ()] [location.getMapLocation ().getY ()] [location.getMapLocation ().getX ()];
+			if (cell != null)
 			{
 				// We can get there, eventually
+				final int doubleThisDistance = cell.getDoubleMovementDistance ();
 				final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
 					getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location.getMapLocation ()));
 				
@@ -101,7 +103,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI tries to move units to attack defended stationary locations (nodes/lairs/towers/cities) where the sum of our UARs > the sum of their UARs.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param isRaiders Whether it is the raiders player
 	 * @param terrain Player knowledge of terrain
@@ -111,7 +113,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_AttackStationary (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_AttackStationary (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -134,11 +136,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					{					
 						final OverlandMapCityData cityData = mc.getCityData ();
 						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
-						final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+						final OverlandMovementCell cell = moves [z] [y] [x];
 						if (((cityData != null) || ((!isRaiders) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))) &&
-							(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (doubleThisDistance >= 0))
+							(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (cell != null))
 						{
 							// We can get there eventually, and stand a chance of beating them
+							final int doubleThisDistance = cell.getDoubleMovementDistance ();
 							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
 							
 							final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
@@ -173,7 +176,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI tries to move units to attack enemy unit stacks wandering around the map where the sum of our UARs > the sum of their UARs.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
@@ -182,7 +185,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_AttackWandering (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_AttackWandering (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -200,11 +203,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					final OverlandMapTerrainData terrainData = mc.getTerrainData ();
 					final OverlandMapCityData cityData = mc.getCityData ();
 					final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
-					final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+					final OverlandMovementCell cell = moves [z] [y] [x];
 					if ((cityData == null) && (!getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)) &&
-						(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (doubleThisDistance >= 0))
+						(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (cell != null))
 					{
 						// We can get there eventually, and stand a chance of beating them
+						final int doubleThisDistance = cell.getDoubleMovementDistance ();
 						final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
 						
 						final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
@@ -238,7 +242,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI tries to move units to scout any unknown terrain that is adjacent to at least one tile that we know to be land.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
@@ -247,7 +251,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_ScoutLand (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_ScoutLand (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db, final int playerID) throws RecordNotFoundException
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
@@ -265,8 +269,8 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					final MemoryGridCell mc = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x);
 					if ((mc.getTerrainData () == null) || (mc.getTerrainData ().getTileTypeID () == null))
 					{
-						int doubleThisDistance = doubleMovementDistances [z] [y] [x];
-						if (doubleThisDistance >= 0)
+						final OverlandMovementCell cell = moves [z] [y] [x];
+						if (cell != null)
 						{
 							// We can get there, eventually
 							// Now look for an adjacent land tile
@@ -293,6 +297,8 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
 
 								// Add on fudge factor to make us want to scout areas close to cities first
+								final int doubleThisDistance = cell.getDoubleMovementDistance ();
+								
 								final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance + getCityAI ().findDistanceToClosestCity (x, y, ourCitiesOnPlane, sys),
 									getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
 								
@@ -327,14 +333,14 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI tries to move units to scout any unknown terrain.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param playerID Player who is moving
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_ScoutAll (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_ScoutAll (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final int playerID)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
@@ -352,12 +358,13 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					final MemoryGridCell mc = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x);
 					if ((mc.getTerrainData () == null) || (mc.getTerrainData ().getTileTypeID () == null))
 					{
-						int doubleThisDistance = doubleMovementDistances [z] [y] [x];
-						if (doubleThisDistance >= 0)
+						final OverlandMovementCell cell = moves [z] [y] [x];
+						if (cell != null)
 						{
 							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
 
 							// Add on fudge factor to make us want to scout areas close to cities first
+							final int doubleThisDistance = cell.getDoubleMovementDistance ();
 							final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance + getCityAI ().findDistanceToClosestCity (x, y, ourCitiesOnPlane, sys),
 								getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
 							
@@ -392,7 +399,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * and if it can see any then will look to merge together our units into a bigger stack.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param isRaiders Whether it is the raiders player
@@ -403,7 +410,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_JoinStack (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_JoinStack (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders,
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
@@ -427,7 +434,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 						final int enemyUnitStackRating = (enemyUnitStack == null) ? 0 : enemyUnitStack.totalCombatUnitCurrentRatings (); 
 						if (((cityData != null) || ((!isRaiders) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))) &&
-							(enemyUnitStack != null) && (enemyUnitStackRating >= ourCurrentRating) && (doubleMovementDistances [z] [y] [x] >= 0))
+							(enemyUnitStack != null) && (enemyUnitStackRating >= ourCurrentRating) && (moves [z] [y] [x] != null))
 						{
 							// We don't care how far away it is - we care how strong they are, not how long it'll take us to get there
 							if ((weakestEnemyUnitStackWeCannotBeat == null) || (enemyUnitStackRating < weakestEnemyUnitStackWeCannotBeat))
@@ -452,13 +459,14 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 				if (ourUnitStack != units)
 				{
 					final MapCoordinates3DEx unitStackLocation = (MapCoordinates3DEx) ourUnitStack.get (0).getUnit ().getUnitLocation ();
-					final int doubleThisDistance = doubleMovementDistances [unitStackLocation.getZ ()] [unitStackLocation.getY ()] [unitStackLocation.getX ()];
-					if (doubleThisDistance >= 0)
+					final OverlandMovementCell cell = moves [unitStackLocation.getZ ()] [unitStackLocation.getY ()] [unitStackLocation.getX ()];
+					if (cell != null)
 					{
 						mergedStackRating = mergedStackRating + ourUnitStack.totalCombatUnitCurrentRatings ();
 						
 						final MapCoordinates3DEx location = new MapCoordinates3DEx (unitStackLocation);
 						
+						final int doubleThisDistance = cell.getDoubleMovementDistance ();
 						final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
 							getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
 						
@@ -490,12 +498,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for a tower garissoned by our units, and imagines that we are stood there and rechecks preceeding movement codes.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_PlaneShift (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
+	public final AIMovementDecision considerUnitMovement_PlaneShift (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
@@ -510,12 +518,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for a transport to get in (or stay where we are if we are already in one).
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_GetInTransport (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
+	public final AIMovementDecision considerUnitMovement_GetInTransport (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
@@ -530,7 +538,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for any of our locations (nodes/cities/towers) that we can reach, regardless of if they already have plenty of defence.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param isRaiders Whether it is the raiders player
 	 * @param terrain Player knowledge of terrain
@@ -540,7 +548,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_Overdefend (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_Overdefend (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -566,12 +574,13 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 							((cityData != null) ||
 								((!isRaiders) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))))
 						{
-							final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
-							if (doubleThisDistance >= 0)
+							final OverlandMovementCell cell = moves [z] [y] [x];
+							if (cell != null)
 							{
 								// We can get there, eventually
 								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
 								
+								final int doubleThisDistance = cell.getDoubleMovementDistance ();
 								final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
 									getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
 								
@@ -605,13 +614,13 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for a good place for settlers to build a city
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param desiredCityLocations Locations where we want to put cities
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_BuildCity (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_BuildCity (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final List<MapCoordinates3DEx> desiredCityLocations, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
@@ -637,10 +646,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			// Check all locations we want to head to and find the closest one (or multiple closest ones)
 			for (final MapCoordinates3DEx location : desiredCityLocations)
 			{
-				final int doubleThisDistance = doubleMovementDistances [location.getZ ()] [location.getY ()] [location.getX ()];
-				if (doubleThisDistance >= 0)
+				final OverlandMovementCell cell = moves [location.getZ ()] [location.getY ()] [location.getX ()];
+				if (cell != null)
 				{
 					// We can get there, eventually
+					final int doubleThisDistance = cell.getDoubleMovementDistance ();
 					final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
 						getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
 					
@@ -672,13 +682,13 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for a good place for engineers to build a road
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param desiredRoadLocations Locations where we want to put cities
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	 @Override
-	public final AIMovementDecision considerUnitMovement_BuildRoad (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_BuildRoad (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final List<MapCoordinates3DEx> desiredRoadLocations, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
@@ -704,10 +714,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			// Check all locations we want to head to and find the closest one (or multiple closest ones)
 			for (final MapCoordinates3DEx location : desiredRoadLocations)
 			{
-				final int doubleThisDistance = doubleMovementDistances [location.getZ ()] [location.getY ()] [location.getX ()];
-				if (doubleThisDistance >= 0)
+				final OverlandMovementCell cell = moves [location.getZ ()] [location.getY ()] [location.getX ()];
+				if (cell != null)
 				{
 					// We can get there, eventually
+					final int doubleThisDistance = cell.getDoubleMovementDistance ();
 					final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
 						getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
 					
@@ -739,12 +750,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for any corrupted land that priests need to purify
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_Purify (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
+	public final AIMovementDecision considerUnitMovement_Purify (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
@@ -759,13 +770,13 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for a node that a magic/guardian spirit can meld with
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param nodeCaptureLocations Locations where we have guarded nodes ready to capture
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_MeldWithNode (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_MeldWithNode (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
 		final List<MapCoordinates3DEx> nodeCaptureLocations, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
@@ -791,10 +802,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			// Check all locations we want to head to and find the closest one (or multiple closest ones)
 			for (final MapCoordinates3DEx location : nodeCaptureLocations)
 			{
-				final int doubleThisDistance = doubleMovementDistances [location.getZ ()] [location.getY ()] [location.getX ()];
-				if (doubleThisDistance >= 0)
+				final OverlandMovementCell cell = moves [location.getZ ()] [location.getY ()] [location.getX ()];
+				if (cell != null)
 				{
 					// We can get there, eventually
+					final int doubleThisDistance = cell.getDoubleMovementDistance ();
 					final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
 						getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
 					
@@ -826,12 +838,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI transports look for a suitable island to carry units to, if we are holding any.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_CarryUnits (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
+	public final AIMovementDecision considerUnitMovement_CarryUnits (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
@@ -846,12 +858,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI transports that are empty head for any islands where any unit stacks went on OVERDEFEND.
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_LoadUnits (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
+	public final AIMovementDecision considerUnitMovement_LoadUnits (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
@@ -867,12 +879,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * (This is intended for transport ships that have nothing better to do, so we're assuming we can't actually get *onto* the island).
 	 * 
 	 * @param units The units to move
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_FortressIsland (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
+	public final AIMovementDecision considerUnitMovement_FortressIsland (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		

@@ -41,6 +41,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.movement.OverlandMovementCell;
 import momime.common.movement.UnitMovement;
 import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandedUnitDetails;
@@ -364,27 +365,23 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Don't just create a straight line - what's the shortest distance for a basic unit like a spearman to walk from one city to the other, going around mountains for example?
-		final int [] [] [] doubleMovementDistances			= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 		selectedUnits.add (getSampleUnitUtils ().createSampleUnit (CommonDatabaseConstants.UNIT_ID_EXAMPLE, 0, 0, players, fogOfWarMemory, db));
 		
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
-		getUnitMovement ().calculateOverlandMovementDistances (firstCityLocation.getX (), firstCityLocation.getY (), firstCityLocation.getZ (),
-			playerID, fogOfWarMemory, unitStack, 0, doubleMovementDistances, movementDirections, canMoveToInOneTurn, players, sd, db);
+		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (firstCityLocation,
+			playerID, unitStack, 0, players, sd.getOverlandMapSize (), fogOfWarMemory, db);
 		
 		final List<MapCoordinates3DEx> missingRoadCells = new ArrayList<MapCoordinates3DEx> ();
-		if (doubleMovementDistances [secondCityLocation.getZ ()] [secondCityLocation.getY ()] [secondCityLocation.getX ()] >= 0)
+		if (moves [secondCityLocation.getZ ()] [secondCityLocation.getY ()] [secondCityLocation.getX ()] != null)
 		{
 			// Trace route between the two cities
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (secondCityLocation);
 			while (!coords.equals (firstCityLocation))
 			{
 				final int d = getCoordinateSystemUtils ().normalizeDirection (sd.getOverlandMapSize ().getCoordinateSystemType (),
-					movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()] + 4);
+					moves [coords.getZ ()] [coords.getY ()] [coords.getX ()].getDirection () + 4);
 				
 				if (!getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, d))
 					throw new MomException ("listMissingRoadCellsBetween: Road tracing moved to a cell off the map");

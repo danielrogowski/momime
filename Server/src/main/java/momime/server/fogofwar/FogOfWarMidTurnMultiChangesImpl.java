@@ -49,6 +49,7 @@ import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PlaneShiftUnitStackMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
+import momime.common.movement.OverlandMovementCell;
 import momime.common.movement.UnitMovement;
 import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandUnitDetails;
@@ -720,7 +721,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		boolean keepGoing = true;
 		boolean validMoveFound = false;
 		int doubleMovementRemaining = 0;
-		int [] [] [] movementDirections = null;
+		OverlandMovementCell [] [] [] moves = null;
 
 		MapCoordinates3DEx moveFrom = originalMoveFrom;
 		boolean combatInitiated = false;
@@ -734,27 +735,18 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 
 			// Find distances and route from our start point to every location on the map
-			final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-			movementDirections											= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-			final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-
-			getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
-				priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-				doubleMovementDistances, movementDirections, canMoveToInOneTurn, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
+				unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 
 			// Is there a route to where we want to go?
-			validMoveFound = (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
+			validMoveFound = (moves [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] != null);
 
 			// Make 1 move as long as there is a valid move, and we're not allocating movement in a simultaneous turns game
 			if ((validMoveFound) && (!forceAsPendingMovement))
 			{
-				// Get the direction to make our 1 move in
-				final int movementDirection = getFogOfWarMidTurnChanges ().determineMovementDirection (moveFrom, moveTo, movementDirections, mom.getSessionDescription ().getOverlandMapSize ());
+				// Get where our 1 move will take us to
+				final MapCoordinates3DEx oneStep = getFogOfWarMidTurnChanges ().determineMovementDirection (moveFrom, moveTo, moves);
 
-				// Work out where this moves us to
-				final MapCoordinates3DEx oneStep = new MapCoordinates3DEx (moveFrom);
-				getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), oneStep, movementDirection);
-				
 				MemoryGridCell oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 					(oneStep.getZ ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
 
@@ -835,15 +827,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			// best path again based on what else we learned about the terrain in our last move
 			if (!forceAsPendingMovement)
 			{
-				final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-				movementDirections											= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-				final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
+				moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
+					unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 
-				getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
-					priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-					doubleMovementDistances, movementDirections, canMoveToInOneTurn, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-
-				validMoveFound = (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
+				validMoveFound = (moves [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] != null);
 			}
 
 			if (validMoveFound)
@@ -856,22 +843,20 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					pending.getUnitURN ().add (thisUnit.getUnitURN ());
 
 				// Record the movement path
-				final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveTo);
-				while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
+				MapCoordinates3DEx coords = moveTo;
+				while (!coords.equals (moveFrom))
 				{
-					final int direction = movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()];
+					final OverlandMovementCell cell = moves [coords.getZ ()] [coords.getY ()] [coords.getX ()];
 					
 					final PendingMovementStep step = new PendingMovementStep ();
 					step.setMoveTo (new MapCoordinates3DEx (coords));
-					step.setDirection (direction);
+					if (cell.getDirection () > 0)
+						step.setDirection (cell.getDirection ());
 
-					if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, getCoordinateSystemUtils ().normalizeDirection
-						(mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), direction + 4)))
-						
-						throw new MomException ("moveUnitStack: Server map tracing moved to a cell off the map");
-
-					step.setMoveFrom (new MapCoordinates3DEx (coords));
+					step.setMoveFrom (cell.getMovedFrom ());
 					pending.getPath ().add (0, step);
+					
+					coords = cell.getMovedFrom ();
 				}
 
 				priv.getPendingMovement ().add (pending);
@@ -953,23 +938,15 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
 		// Find distances and route from our start point to every location on the map
-		final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-
-		getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
-			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-			doubleMovementDistances, movementDirections, canMoveToInOneTurn, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
+			unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 
 		// Is there a route to where we want to go?
 		final OneCellPendingMovement result;
-		if (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] < 0)
+		if (moves [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] == null)
 			result = null;
 		else
 		{
-			// Get the direction to make our 1 move in
-			final int movementDirection = getFogOfWarMidTurnChanges ().determineMovementDirection (moveFrom, moveTo, movementDirections, mom.getSessionDescription ().getOverlandMapSize ());
-
 			// Work out where this moves us to
 			// If we are MOVING onto to an empty tower (or one we already occupy) from Myrror then plane still must be 1,
 			//   or moveUnitStack thinks we can't click there, and it will adjust the plane when we actually move
@@ -977,8 +954,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			//   but we need to check whether a combat is initiated first, so for now create oneStep with moveTo set to Myrror
 			// If we are moving OFF of a tower onto Myrror, then plane must be 1 or we'll get off on the wrong plane
 			// So plane must always be set from moveTo
-			final MapCoordinates3DEx oneStep = new MapCoordinates3DEx (moveFrom.getX (), moveFrom.getY (), moveTo.getZ ());
-			getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), oneStep, movementDirection);
+			final MapCoordinates3DEx oneStep = getFogOfWarMidTurnChanges ().determineMovementDirection (moveFrom, moveTo, moves);
 
 			// Does this initiate a combat?
 			final boolean combatInitiated = getUnitCalculations ().willMovingHereResultInAnAttack (oneStep.getX (), oneStep.getY (), oneStep.getZ (),
@@ -1027,39 +1003,32 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final int doubleMovementRemaining = 0;
 		
 		// Find distances and route from our start point to every location on the map
-		final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-
-		getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
-			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-			doubleMovementDistances, movementDirections, canMoveToInOneTurn, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
+			unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 
 		// Is there a route to where we want to go?
 		final List<PendingMovementStep> result;
-		if (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] < 0)
+		if (moves [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] == null)
 			result = null;
 		else
 		{
 			// Record the movement path
 			result = new ArrayList<PendingMovementStep> ();
 
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveTo);
-			while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
+			MapCoordinates3DEx coords = moveTo;
+			while (!coords.equals (moveFrom))
 			{
-				final int direction = movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()];
-
+				final OverlandMovementCell cell = moves [coords.getZ ()] [coords.getY ()] [coords.getX ()];
+				
 				final PendingMovementStep step = new PendingMovementStep ();
 				step.setMoveTo (new MapCoordinates3DEx (coords));
-				step.setDirection (direction);
+				if (cell.getDirection () > 0)
+					step.setDirection (cell.getDirection ());
 
-				if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, getCoordinateSystemUtils ().normalizeDirection
-					(mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), direction + 4)))
-					
-					throw new MomException ("determineMovementPath: Server map tracing moved to a cell off the map");
-
-				step.setMoveFrom (new MapCoordinates3DEx (coords));
+				step.setMoveFrom (cell.getMovedFrom ());
 				result.add (0, step);
+				
+				coords = cell.getMovedFrom ();
 			}
 		}
 		

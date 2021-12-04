@@ -21,6 +21,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
+import momime.common.movement.OverlandMovementCell;
 import momime.server.MomSessionVariables;
 
 /**
@@ -144,7 +145,7 @@ public interface UnitAI
 	 * 
 	 * @param units The units to move
 	 * @param movementCodes List of movement codes to try
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
 	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
@@ -157,7 +158,7 @@ public interface UnitAI
 	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
-	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
+	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final OverlandMovementCell [] [] [] moves,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations,
 		final boolean isRaiders, final CoordinateSystem sys, final CommonDatabase db)

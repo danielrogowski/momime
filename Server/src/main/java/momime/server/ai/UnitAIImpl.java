@@ -50,6 +50,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
+import momime.common.movement.OverlandMovementCell;
 import momime.common.movement.UnitMovement;
 import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandUnitDetails;
@@ -613,7 +614,7 @@ public final class UnitAIImpl implements UnitAI
 	 * 
 	 * @param units The units to move
 	 * @param movementCodes List of movement codes to try
-	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
 	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
@@ -627,7 +628,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
 	@Override
-	public final AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final OverlandMovementCell [] [] [] moves,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations,
 		final boolean isRaiders, final CoordinateSystem sys, final CommonDatabase db)
@@ -644,67 +645,67 @@ public final class UnitAIImpl implements UnitAI
 			switch (movementCode)
 			{
 				case REINFORCE:
-					decision = getUnitAIMovement ().considerUnitMovement_Reinforce (units, doubleMovementDistances, underdefendedLocations, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_Reinforce (units, moves, underdefendedLocations, sys);
 					break;
 					
 				case ATTACK_STATIONARY:
-					decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (units, doubleMovementDistances, enemyUnits, isRaiders, terrain, sys, db);
+					decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (units, moves, enemyUnits, isRaiders, terrain, sys, db);
 					break;
 					
 				case ATTACK_WANDERING:
-					decision = getUnitAIMovement ().considerUnitMovement_AttackWandering (units, doubleMovementDistances, enemyUnits, terrain, sys, db);
+					decision = getUnitAIMovement ().considerUnitMovement_AttackWandering (units, moves, enemyUnits, terrain, sys, db);
 					break;
 					
 				case SCOUT_LAND:
-					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (units, doubleMovementDistances, terrain, sys, db, units.get (0).getUnit ().getOwningPlayerID ());
+					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (units, moves, terrain, sys, db, units.get (0).getUnit ().getOwningPlayerID ());
 					break;
 					
 				case SCOUT_ALL:
-					decision = getUnitAIMovement ().considerUnitMovement_ScoutAll (units, doubleMovementDistances, terrain, sys, units.get (0).getUnit ().getOwningPlayerID ());
+					decision = getUnitAIMovement ().considerUnitMovement_ScoutAll (units, moves, terrain, sys, units.get (0).getUnit ().getOwningPlayerID ());
 					break;
 					
 				case JOIN_STACK:
-					decision = getUnitAIMovement ().considerUnitMovement_JoinStack (units, doubleMovementDistances, ourUnitsInSameCategory, enemyUnits, isRaiders, terrain, sys, db);
+					decision = getUnitAIMovement ().considerUnitMovement_JoinStack (units, moves, ourUnitsInSameCategory, enemyUnits, isRaiders, terrain, sys, db);
 					break;
 					
 				case PLANE_SHIFT:
-					decision = getUnitAIMovement ().considerUnitMovement_PlaneShift (units, doubleMovementDistances, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_PlaneShift (units, moves, sys);
 					break;
 					
 				case GET_IN_TRANSPORT:
-					decision = getUnitAIMovement ().considerUnitMovement_GetInTransport (units, doubleMovementDistances, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_GetInTransport (units, moves, sys);
 					break;
 					
 				case OVERDEFEND:
-					decision = getUnitAIMovement ().considerUnitMovement_Overdefend (units, doubleMovementDistances, enemyUnits, isRaiders, terrain, sys, db);
+					decision = getUnitAIMovement ().considerUnitMovement_Overdefend (units, moves, enemyUnits, isRaiders, terrain, sys, db);
 					break;
 				
 				case BUILD_CITY:
-					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (units, doubleMovementDistances, desiredSpecialUnitLocations.get (AIUnitType.BUILD_CITY), sys);
+					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (units, moves, desiredSpecialUnitLocations.get (AIUnitType.BUILD_CITY), sys);
 					break;
 				
 				case BUILD_ROAD:
-					decision = getUnitAIMovement ().considerUnitMovement_BuildRoad (units, doubleMovementDistances, desiredSpecialUnitLocations.get (AIUnitType.BUILD_ROAD), sys);
+					decision = getUnitAIMovement ().considerUnitMovement_BuildRoad (units, moves, desiredSpecialUnitLocations.get (AIUnitType.BUILD_ROAD), sys);
 					break;
 				
 				case PURIFY:
-					decision = getUnitAIMovement ().considerUnitMovement_Purify (units, doubleMovementDistances, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_Purify (units, moves, sys);
 					break;
 					
 				case MELD_WITH_NODE:
-					decision = getUnitAIMovement ().considerUnitMovement_MeldWithNode (units, doubleMovementDistances, desiredSpecialUnitLocations.get (AIUnitType.MELD_WITH_NODE), sys);
+					decision = getUnitAIMovement ().considerUnitMovement_MeldWithNode (units, moves, desiredSpecialUnitLocations.get (AIUnitType.MELD_WITH_NODE), sys);
 					break;
 				
 				case CARRY_UNITS:
-					decision = getUnitAIMovement ().considerUnitMovement_CarryUnits (units, doubleMovementDistances, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_CarryUnits (units, moves, sys);
 					break;
 					
 				case LOAD_UNITS:
-					decision = getUnitAIMovement ().considerUnitMovement_LoadUnits (units, doubleMovementDistances, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_LoadUnits (units, moves, sys);
 					break;
 					
 				case FORTRESS_ISLAND:
-					decision = getUnitAIMovement ().considerUnitMovement_FortressIsland (units, doubleMovementDistances, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_FortressIsland (units, moves, sys);
 					break;
 					
 				default:
@@ -753,10 +754,6 @@ public final class UnitAIImpl implements UnitAI
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 		
 		// Work out where the unit can reach
-		final int [] [] [] doubleMovementDistances			= new int [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		
 		final MapCoordinates3DEx moveFrom = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 
 		// Get the list of units who are actually moving
@@ -774,15 +771,14 @@ public final class UnitAIImpl implements UnitAI
 			result = AIMovementResult.NO_MOVEMENT_LEFT;
 		else
 		{
-			getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (),
-				player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (),
-				unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
-				mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom,
+				player.getPlayerDescription ().getPlayerID (), unitStack, doubleMovementRemaining,
+				mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 			
 			// Use list of movement codes from the unit stack's category
 			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
 	
-			final AIMovementDecision destination = decideUnitMovement (units, category.getMovementCode (), doubleMovementDistances, underdefendedLocations,
+			final AIMovementDecision destination = decideUnitMovement (units, category.getMovementCode (), moves, underdefendedLocations,
 				ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredSpecialUnitLocations, isRaiders, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 			
 			// Move, if we found somewhere to go
@@ -795,16 +791,16 @@ public final class UnitAIImpl implements UnitAI
 				// If its a one-player-at-a-time game, then move only 1 cell.
 				// This is basically a copy of FogOfWarMidTurnChangesImpl.determineMovementDirection.
 				MapCoordinates3DEx coords = new MapCoordinates3DEx (destination.getDestination ());
+				OverlandMovementCell cell = moves [coords.getZ ()] [coords.getY ()] [coords.getX ()];
 				MapCoordinates3DEx lastCoords = null;
-				while (((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (!canMoveToInOneTurn [coords.getZ ()] [coords.getY ()] [coords.getX ()])) ||
-							((mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME) && ((coords.getX () != moveFrom.getX ()) || (coords.getY () != moveFrom.getY ()))))
+				
+				while (((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (!cell.isMoveToInOneTurn ())) ||
+							((mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME) && (!coords.equals (moveFrom))))
 				{
 					lastCoords = new MapCoordinates3DEx (coords);
-					final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (),
-						movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()] + 4);
 					
-					if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
-						throw new MomException ("decideAndExecuteUnitMovement: Server map tracing moved to a cell off the map");
+					coords = cell.getMovedFrom ();
+					cell = moves [coords.getZ ()] [coords.getY ()] [coords.getX ()];
 				}
 				
 				if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME)

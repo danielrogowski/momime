@@ -166,7 +166,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 *		This is used when executing pending movements at the start of one-player-at-a-time game turns.
 	 * @param originalMoveFrom Location to move from
 	 *
-	 * @param moveTo Location to move to
+	 * @param originalMoveTo Location to move to
 	 * 		Note about moveTo.getPlane () - the same comment as moveUnitStackOneCellOnServerAndClients *doesn't apply*, moveTo.getPlane ()
 	 *			will be whatever the player clicked on - if they click on a tower on Myrror, moveTo.getPlane () will be set to 1; the routine
 	 *			sorts the correct destination plane out for each cell that the unit stack moves
@@ -181,7 +181,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public boolean moveUnitStack (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
-		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
+		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx originalMoveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 	

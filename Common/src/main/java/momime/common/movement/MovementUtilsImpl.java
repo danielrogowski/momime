@@ -391,9 +391,9 @@ public final class MovementUtilsImpl implements MovementUtils
 		int minPlane = moveFrom.getZ ();
 		int maxPlane = moveFrom.getZ ();
 
-		final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get
+		final OverlandMapTerrainData moveFromTerrain = mem.getMap ().getPlane ().get
 			(moveFrom.getZ ()).getRow ().get (moveFrom.getY ()).getCell ().get (moveFrom.getX ()).getTerrainData ();
-		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
+		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (moveFromTerrain))
 		{
 			minPlane = 0;
 			maxPlane = overlandMapCoordinateSystem.getDepth () - 1;
@@ -403,10 +403,19 @@ public final class MovementUtilsImpl implements MovementUtils
 		for (int cellPlane = minPlane; cellPlane <= maxPlane; cellPlane++)
 			for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ()); d++)
 			{
-				final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveFrom.getX (), moveFrom.getY (), cellPlane);
-				if ((getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, d)) && (!blockedLocations.contains (coords)))
-					getUnitMovement ().considerPossibleMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.ADJACENT, d, coords, movingPlayerID,
-						doubleDistanceToHere, doubleMovementRemainingToHere, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+				final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (moveFrom.getX (), moveFrom.getY (), cellPlane);
+				if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, moveTo, d))
+				{
+					// If moving onto a tower then must set plane to be 0
+					final OverlandMapTerrainData moveToTerrain = mem.getMap ().getPlane ().get
+						(moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ()).getTerrainData ();
+					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (moveToTerrain))
+						moveTo.setZ (0);
+					
+					if (!blockedLocations.contains (moveTo))
+						getUnitMovement ().considerPossibleMove (unitStack, unitStackSkills, moveFrom, OverlandMovementType.ADJACENT, d, moveTo, movingPlayerID,
+							doubleDistanceToHere, doubleMovementRemainingToHere, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+				}
 			}
 		
 		// Earth gates

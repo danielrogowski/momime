@@ -9,8 +9,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
@@ -30,6 +35,7 @@ import momime.common.database.GenerateTestData;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -41,7 +47,7 @@ import momime.common.utils.MemoryGridCellUtils;
  * Tests the MovementUtilsImpl class
  */
 @ExtendWith(MockitoExtension.class)
-public final class TestMovementUtilsImpl
+public final class TestMovementUtilsImpl 
 {
 	/**
 	 * Tests the calculateCellTransportCapacity method for a move when transports are carrying the units
@@ -56,10 +62,10 @@ public final class TestMovementUtilsImpl
 		unitStack.getTransports ().add (null);
 		
 		// Set up object to test
-		final MovementUtilsImpl move = new MovementUtilsImpl ();
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
 		
 		// Call method
-		final int [] [] [] cellTransportCapacity = move.calculateCellTransportCapacity (unitStack, null, 2, null, null, null, null);
+		final int [] [] [] cellTransportCapacity = utils.calculateCellTransportCapacity (unitStack, null, 2, null, null, null, null);
 		
 		// Check results
 		assertNull (cellTransportCapacity);
@@ -180,13 +186,13 @@ public final class TestMovementUtilsImpl
 		final UnitStack unitStack = new UnitStack ();
 		
 		// Set up object to test
-		final MovementUtilsImpl move = new MovementUtilsImpl ();
-		move.setMemoryGridCellUtils (memoryGridCellUtils);
-		move.setExpandUnitDetails (expand);
-		move.setUnitCalculations (unitCalculations);
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		utils.setExpandUnitDetails (expand);
+		utils.setUnitCalculations (unitCalculations);
 		
 		// Call method
-		final int [] [] [] cellTransportCapacity = move.calculateCellTransportCapacity (unitStack, unitStackSkills, 2, map, players, sys, db);
+		final int [] [] [] cellTransportCapacity = utils.calculateCellTransportCapacity (unitStack, unitStackSkills, 2, map, players, sys, db);
 		
 		// Check results
 		assertNotNull (cellTransportCapacity);
@@ -223,9 +229,9 @@ public final class TestMovementUtilsImpl
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 
-		final MovementUtilsImpl move = new MovementUtilsImpl ();
-		move.setExpandUnitDetails (expand);
-		move.setUnitCalculations (unitCalc);
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setExpandUnitDetails (expand);
+		utils.setUnitCalculations (unitCalc);
 		
 		// Single unit
 		final List<ExpandedUnitDetails> units = new ArrayList<ExpandedUnitDetails> ();
@@ -237,7 +243,7 @@ public final class TestMovementUtilsImpl
 		
 		units.add (spearmenUnit);
 
-		final Map<String, Integer> spearmen = move.calculateDoubleMovementRatesForUnitStack (units, db);
+		final Map<String, Integer> spearmen = utils.calculateDoubleMovementRatesForUnitStack (units, db);
 		assertEquals (2, spearmen.size ());
 		assertEquals (4, spearmen.get ("TT01").intValue ());
 		assertEquals (6, spearmen.get ("TT02").intValue ());
@@ -249,7 +255,7 @@ public final class TestMovementUtilsImpl
 		
 		units.add (flyingUnit);
 		
-		final Map<String, Integer> flying = move.calculateDoubleMovementRatesForUnitStack (units, db);
+		final Map<String, Integer> flying = utils.calculateDoubleMovementRatesForUnitStack (units, db);
 		assertEquals (2, flying.size ());
 		assertEquals (4, flying.get ("TT01").intValue ());
 		assertEquals (6, flying.get ("TT02").intValue ());
@@ -261,7 +267,7 @@ public final class TestMovementUtilsImpl
 		
 		units.add (pathfindingUnit);
 		
-		final Map<String, Integer> pathfinding = move.calculateDoubleMovementRatesForUnitStack (units, db);
+		final Map<String, Integer> pathfinding = utils.calculateDoubleMovementRatesForUnitStack (units, db);
 		assertEquals (2, pathfinding.size ());
 		assertEquals (5, pathfinding.get ("TT01").intValue ());
 		assertEquals (6, pathfinding.get ("TT02").intValue ());
@@ -325,10 +331,10 @@ public final class TestMovementUtilsImpl
 		units.add (u4);
 
 		// Set up object to test
-		final MovementUtilsImpl move = new MovementUtilsImpl ();
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
 		
 		// Run test
-		final int [] [] [] counts = move.countOurAliveUnitsAtEveryLocation (2, units, sys);
+		final int [] [] [] counts = utils.countOurAliveUnitsAtEveryLocation (2, units, sys);
 
 		assertEquals (3, counts [0] [10] [20]);
 		assertEquals (4, counts [1] [20] [30]);
@@ -340,5 +346,498 @@ public final class TestMovementUtilsImpl
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
 					assertEquals (0, counts [z] [y] [x]);
+	}
+	
+	/**
+	 * Tests the processOverlandMovementCell method in the simplest situation where a unit is not at a tower, earth gate or astral gate
+	 */
+	@Test
+	public final void testProcessOverlandMovementCell_Simple ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		
+		// Terrain
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (terrain);
+		
+		// Special locations
+		final Set<MapCoordinates3DEx> blockedLocations = new HashSet<MapCoordinates3DEx> ();
+		blockedLocations.add (new MapCoordinates3DEx (19, 10, 0));
+		
+		final Set<MapCoordinates3DEx> earthGates = new HashSet<MapCoordinates3DEx> ();
+		earthGates.add (new MapCoordinates3DEx (40, 5, 0));		// Can't move to here if there's no gate to move from
+		
+		final Set<MapCoordinates2DEx> astralGates = new HashSet<MapCoordinates2DEx> ();
+		
+		// Unit stack
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Movement array
+		final List<MapCoordinates3DEx> cellsLeftToCheck = new ArrayList<MapCoordinates3DEx> ();
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		
+		// Where we are moving from
+		final OverlandMovementCell moveFromCell = new OverlandMovementCell ();
+		moveFromCell.setDoubleMovementDistance (2);
+		moves [0] [10] [20] = moveFromCell;
+		
+		// None of the 9 cells involved are towers
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		for (int x = 19; x <= 21; x++)
+			for (int y = 9; y <= 11; y++)
+			{
+				final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+				terrain.getPlane ().get (0).getRow ().get (y).getCell ().get (x).setTerrainData (terrainData);
+				when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (false);
+			}
+		
+		// Set up object to test
+		final UnitMovement unitMovement = mock (UnitMovement.class);
+		
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		utils.setUnitMovement (unitMovement);
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		utils.processOverlandMovementCell (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0), 1, 6, blockedLocations, earthGates, astralGates,
+			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
+		
+		// Check correct moves were generated
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		// Direction 7 is blocked
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		verifyNoMoreInteractions (unitMovement);
+	}
+
+	/**
+	 * Tests the processOverlandMovementCell method where a unit is at a tower so can move onto either plane
+	 */
+	@Test
+	public final void testProcessOverlandMovementCell_FromTower ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		
+		// Terrain
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (terrain);
+		
+		// Special locations
+		final Set<MapCoordinates3DEx> blockedLocations = new HashSet<MapCoordinates3DEx> ();
+		blockedLocations.add (new MapCoordinates3DEx (19, 10, 0));
+		blockedLocations.add (new MapCoordinates3DEx (21, 11, 1));
+		
+		final Set<MapCoordinates3DEx> earthGates = new HashSet<MapCoordinates3DEx> ();
+		earthGates.add (new MapCoordinates3DEx (40, 5, 0));		// Can't move to here if there's no gate to move from
+		
+		final Set<MapCoordinates2DEx> astralGates = new HashSet<MapCoordinates2DEx> ();
+		
+		// Unit stack
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Movement array
+		final List<MapCoordinates3DEx> cellsLeftToCheck = new ArrayList<MapCoordinates3DEx> ();
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		
+		// Where we are moving from
+		final OverlandMovementCell moveFromCell = new OverlandMovementCell ();
+		moveFromCell.setDoubleMovementDistance (2);
+		moves [0] [10] [20] = moveFromCell;
+		
+		// Starting cell is a tower
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		for (int x = 19; x <= 21; x++)
+			for (int y = 9; y <= 11; y++)
+				for (int z = 0; z <= 1; z++)
+				{
+					final boolean isTowerLocation = (x == 20) && (y == 10) && (z == 0);
+					final boolean isInvalidCell = (x == 20) && (y == 10) && (z == 1);
+					
+					if (!isInvalidCell)
+					{
+						final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+						terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).setTerrainData (terrainData);
+						when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (isTowerLocation);
+					}
+				}
+		
+		// Set up object to test
+		final UnitMovement unitMovement = mock (UnitMovement.class);
+		
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		utils.setUnitMovement (unitMovement);
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		utils.processOverlandMovementCell (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0), 1, 6, blockedLocations, earthGates, astralGates,
+			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
+		
+		// Check correct moves were generated
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		// Direction 7 on Arcanus is blocked
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		// Direction 4 on Myrror is blocked
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 7, new MapCoordinates3DEx (19, 10, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		verifyNoMoreInteractions (unitMovement);
+	}
+
+	/**
+	 * Tests the processOverlandMovementCell method when we're on Myrror standing next to a tower so one of our moves moves us to plane 0
+	 */
+	@Test
+	public final void testProcessOverlandMovementCell_ToTower ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		
+		// Terrain
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (terrain);
+		
+		// Special locations
+		final Set<MapCoordinates3DEx> blockedLocations = new HashSet<MapCoordinates3DEx> ();
+		blockedLocations.add (new MapCoordinates3DEx (19, 10, 1));
+		
+		final Set<MapCoordinates3DEx> earthGates = new HashSet<MapCoordinates3DEx> ();
+		earthGates.add (new MapCoordinates3DEx (40, 5, 0));		// Can't move to here if there's no gate to move from
+		
+		final Set<MapCoordinates2DEx> astralGates = new HashSet<MapCoordinates2DEx> ();
+		
+		// Unit stack
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Movement array
+		final List<MapCoordinates3DEx> cellsLeftToCheck = new ArrayList<MapCoordinates3DEx> ();
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		
+		// Where we are moving from
+		final OverlandMovementCell moveFromCell = new OverlandMovementCell ();
+		moveFromCell.setDoubleMovementDistance (2);
+		moves [1] [10] [20] = moveFromCell;
+		
+		// Cell in direction 4 is a tower
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		for (int x = 19; x <= 21; x++)
+			for (int y = 9; y <= 11; y++)
+			{
+				final boolean isTowerLocation = (x == 21) && (y == 11);
+				
+				final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+				terrain.getPlane ().get (1).getRow ().get (y).getCell ().get (x).setTerrainData (terrainData);
+				when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (isTowerLocation);
+			}
+		
+		// Set up object to test
+		final UnitMovement unitMovement = mock (UnitMovement.class);
+		
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		utils.setUnitMovement (unitMovement);
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		utils.processOverlandMovementCell (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), 1, 6, blockedLocations, earthGates, astralGates,
+			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
+		
+		// Check correct moves were generated
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,		// <--------
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		// Direction 7 is blocked
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1),
+			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		verifyNoMoreInteractions (unitMovement);
+	}
+
+	/**
+	 * Tests the processOverlandMovementCell method where we are stood at a city with an Earth Gate
+	 */
+	@Test
+	public final void testProcessOverlandMovementCell_EarthGate ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		
+		// Terrain
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (terrain);
+		
+		// Special locations
+		final Set<MapCoordinates3DEx> blockedLocations = new HashSet<MapCoordinates3DEx> ();
+		blockedLocations.add (new MapCoordinates3DEx (19, 10, 0));
+		blockedLocations.add (new MapCoordinates3DEx (50, 25, 0));
+		
+		final Set<MapCoordinates3DEx> earthGates = new HashSet<MapCoordinates3DEx> ();
+		earthGates.add (new MapCoordinates3DEx (20, 10, 0));		// Where we start from
+		earthGates.add (new MapCoordinates3DEx (40, 5, 0));
+		earthGates.add (new MapCoordinates3DEx (50, 25, 0));		// Blocked
+		earthGates.add (new MapCoordinates3DEx (45, 15, 1));		// Wrong plane
+		
+		final Set<MapCoordinates2DEx> astralGates = new HashSet<MapCoordinates2DEx> ();
+		
+		// Unit stack
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Movement array
+		final List<MapCoordinates3DEx> cellsLeftToCheck = new ArrayList<MapCoordinates3DEx> ();
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		
+		// Where we are moving from
+		final OverlandMovementCell moveFromCell = new OverlandMovementCell ();
+		moveFromCell.setDoubleMovementDistance (2);
+		moves [0] [10] [20] = moveFromCell;
+		
+		final OverlandMapTerrainData moveFromTerrain = new OverlandMapTerrainData ();
+		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (moveFromTerrain);
+		
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (moveFromTerrain)).thenReturn (false);
+		
+		// Set up object to test
+		final UnitMovement unitMovement = mock (UnitMovement.class);
+		
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		utils.setUnitMovement (unitMovement);
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		utils.processOverlandMovementCell (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0), 1, 6, blockedLocations, earthGates, astralGates,
+			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
+		
+		// Check correct moves were generated
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		// Direction 7 is blocked
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.EARTH_GATE, 0, new MapCoordinates3DEx (40, 5, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		verifyNoMoreInteractions (unitMovement);
+	}
+
+	/**
+	 * Tests the processOverlandMovementCell method where we are stood at a city with an Astral Gate (or on the corresponding cell on the other plane)
+	 */
+	@Test
+	public final void testProcessOverlandMovementCell_AstralGate ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		
+		// Terrain
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (terrain);
+		
+		// Special locations
+		final Set<MapCoordinates3DEx> blockedLocations = new HashSet<MapCoordinates3DEx> ();
+		blockedLocations.add (new MapCoordinates3DEx (19, 10, 0));
+		
+		final Set<MapCoordinates3DEx> earthGates = new HashSet<MapCoordinates3DEx> ();
+		earthGates.add (new MapCoordinates3DEx (40, 5, 0));		// Can't move to here if there's no gate to move from
+		
+		final Set<MapCoordinates2DEx> astralGates = new HashSet<MapCoordinates2DEx> ();
+		astralGates.add (new MapCoordinates2DEx (20, 10));
+		
+		// Unit stack
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Movement array
+		final List<MapCoordinates3DEx> cellsLeftToCheck = new ArrayList<MapCoordinates3DEx> ();
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		
+		// Where we are moving from
+		final OverlandMovementCell moveFromCell = new OverlandMovementCell ();
+		moveFromCell.setDoubleMovementDistance (2);
+		moves [0] [10] [20] = moveFromCell;
+		
+		final OverlandMapTerrainData moveFromTerrain = new OverlandMapTerrainData ();
+		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (moveFromTerrain);
+		
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (moveFromTerrain)).thenReturn (false);
+		
+		// Set up object to test
+		final UnitMovement unitMovement = mock (UnitMovement.class);
+		
+		final MovementUtilsImpl utils = new MovementUtilsImpl ();
+		utils.setMemoryGridCellUtils (memoryGridCellUtils);
+		utils.setUnitMovement (unitMovement);
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Run method
+		utils.processOverlandMovementCell (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0), 1, 6, blockedLocations, earthGates, astralGates,
+			cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, sys, mem, db);
+		
+		// Check correct moves were generated
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 1, new MapCoordinates3DEx (20, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 2, new MapCoordinates3DEx (21, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 3, new MapCoordinates3DEx (21, 10, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 4, new MapCoordinates3DEx (21, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 5, new MapCoordinates3DEx (20, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 6, new MapCoordinates3DEx (19, 11, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		// Direction 7 is blocked
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ADJACENT, 8, new MapCoordinates3DEx (19, 9, 0), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		verify (unitMovement).considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 0),
+			OverlandMovementType.ASTRAL_GATE, 0, new MapCoordinates3DEx (20, 10, 1), 1,
+			2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		verifyNoMoreInteractions (unitMovement);
 	}
 }

@@ -5,6 +5,16 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 /**
  * Stores details about how we can (or can't) move to a particular cell.  By starting at the cell the player clicks they want to go to, it must be possible to
  * trace back through all the cells required to reach there.
+ * 
+ * There has to be a traceable chain through the movement cells so we can start at chosen target and trace back through all the "movedFrom" cells and
+ * get back to the start.  This means that:
+ * 1) If clicking on a tower on Myrror, chosen target must adjust this immediately and treat moveTo as being on Arcanus before trying to trace the path.
+ * 	(This is handled purely client side - the movement routines and AI players see the movement array the way it really should be, with tower locations on
+ * 	 myrror greyed out and impassable).
+ * 2) If at a tower, the 16 adjacent moves generated will all have moveFrom with the plane being Arcanus.
+ * 3) If on Myrror and we generate an adjacent move to go to a tower, the move to cell for this will be on Arcanus, with moveFrom being on Myrror.
+ * 
+ * Cells with x, y coordinates of a tower and plane=Myrror in this array should be dead cells and never accessed.
  */
 public final class OverlandMovementCell
 {

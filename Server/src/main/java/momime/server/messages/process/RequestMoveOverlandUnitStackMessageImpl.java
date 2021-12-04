@@ -61,7 +61,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 		String error = null;
 		if (getUnitURN ().size () == 0)
 			error = "You must select at least one unit to move.";
-		else if ((getMoveFrom ().getX () == getMoveTo ().getX ()) && (getMoveFrom ().getY () == getMoveTo ().getY ()))
+		else if (getMoveFrom ().equals (getMoveTo ()))
 			error = "You cannot move from a location back to the same location.";
 
 		int doubleMovementRemaining = Integer.MAX_VALUE;

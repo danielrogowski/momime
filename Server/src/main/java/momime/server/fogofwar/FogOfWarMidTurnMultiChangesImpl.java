@@ -681,7 +681,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 *		This is used when executing pending movements at the start of one-player-at-a-time game turns.
 	 * @param originalMoveFrom Location to move from
 	 *
-	 * @param moveTo Location to move to
+	 * @param originalMoveTo Location to move to
 	 * 		Note about moveTo.getPlane () - the same comment as moveUnitStackOneCellOnServerAndClients *doesn't apply*, moveTo.getPlane ()
 	 *			will be whatever the player clicked on - if they click on a tower on Myrror, moveTo.getPlane () will be set to 1; the routine
 	 *			sorts the correct destination plane out for each cell that the unit stack moves
@@ -697,7 +697,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 */
 	@Override
 	public final boolean moveUnitStack (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
-		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
+		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx originalMoveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
@@ -724,6 +724,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		OverlandMovementCell [] [] [] moves = null;
 
 		MapCoordinates3DEx moveFrom = originalMoveFrom;
+		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (originalMoveTo);
 		boolean combatInitiated = false;
 
 		while (keepGoing)
@@ -758,11 +759,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					oneStep.setZ (0);
 				}
 				else
-				{
-					oneStep.setZ (moveTo.getZ ());
 					combatInitiated = getUnitCalculations ().willMovingHereResultInAnAttack (oneStep.getX (), oneStep.getY (), oneStep.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-				}
 				
 				// If we ran into some invisible units prior to our destination, then adjust destination
 				if ((combatInitiated) && (!oneStep.equals (moveTo)))
@@ -816,12 +814,11 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			}
 
 			// Check whether to loop again
-			keepGoing = (!forceAsPendingMovement) && (validMoveFound) && (!combatInitiated) && (doubleMovementRemaining > 0) &&
-				((moveFrom.getX () != moveTo.getX ()) || (moveFrom.getY () != moveTo.getY ()));
+			keepGoing = (!forceAsPendingMovement) && (validMoveFound) && (!combatInitiated) && (doubleMovementRemaining > 0) && (!moveFrom.equals (moveTo));
 		}
 
 		// If the unit stack failed to reach its destination this turn, create a pending movement object so they'll continue their movement next turn
-		if ((!combatInitiated) && ((moveFrom.getX () != moveTo.getX ()) || (moveFrom.getY () != moveTo.getY ())))
+		if ((!combatInitiated) && (!moveFrom.equals (moveTo)))
 		{
 			// Unless ForceAsPendingMovement is on, we'll have made at least one move so should recalc the
 			// best path again based on what else we learned about the terrain in our last move

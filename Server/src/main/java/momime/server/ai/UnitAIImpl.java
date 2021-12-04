@@ -790,7 +790,7 @@ public final class UnitAIImpl implements UnitAI
 				// If its a simultaneous turns game, then move as far as we can in one turn.
 				// If its a one-player-at-a-time game, then move only 1 cell.
 				// This is basically a copy of FogOfWarMidTurnChangesImpl.determineMovementDirection.
-				MapCoordinates3DEx coords = new MapCoordinates3DEx (destination.getDestination ());
+				MapCoordinates3DEx coords = destination.getDestination ();
 				OverlandMovementCell cell = moves [coords.getZ ()] [coords.getY ()] [coords.getX ()];
 				MapCoordinates3DEx lastCoords = null;
 				
@@ -811,7 +811,7 @@ public final class UnitAIImpl implements UnitAI
 				
 				if (coords == null)
 					result = AIMovementResult.NO_ROUTE_TO_DESTINATION;
-				else if ((coords.getX () == moveFrom.getX ()) && (coords.getY () == moveFrom.getY ()))
+				else if (coords.equals (moveFrom))
 					result = AIMovementResult.ALREADY_AT_DESTINATION;
 				else
 				{

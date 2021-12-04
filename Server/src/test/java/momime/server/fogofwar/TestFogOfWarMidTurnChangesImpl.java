@@ -43,6 +43,7 @@ import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
+import momime.common.movement.OverlandMovementCell;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.DummyServerToClientConnection;
@@ -823,5 +824,105 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
 				(trueMap, players.get (playerIndex), players, "destroyBuildingOnServerAndClients", sd, db);
+	}
+	
+	/**
+	 * Tests the determineMovementDirection method in the simplest situation where we moving from one cell to an adjacent cell 
+	 */
+	@Test
+	public final void testDetermineMovementDirection_SingleCell ()
+	{
+		// Movement array
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [2] [40] [60];
+		
+		final OverlandMovementCell move = new OverlandMovementCell ();
+		move.setMovedFrom (new MapCoordinates3DEx (20, 10, 0));
+		moves [0] [10] [21] = move;
+		
+		// Set up object to test
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		
+		// Run method
+		assertEquals (new MapCoordinates3DEx (21, 10, 0),
+			midTurn.determineMovementDirection (new MapCoordinates3DEx (20, 10, 0), new MapCoordinates3DEx (21, 10, 0), moves));
+	}
+
+	/**
+	 * Tests the determineMovementDirection method when our target is two cells away so we must return the cell in the middle 
+	 */
+	@Test
+	public final void testDetermineMovementDirection_TwoCells ()
+	{
+		// Movement array
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [2] [40] [60];
+		
+		final OverlandMovementCell move1 = new OverlandMovementCell ();
+		move1.setMovedFrom (new MapCoordinates3DEx (20, 10, 0));
+		moves [0] [10] [21] = move1;
+
+		final OverlandMovementCell move2 = new OverlandMovementCell ();
+		move2.setMovedFrom (new MapCoordinates3DEx (21, 10, 0));
+		moves [0] [10] [22] = move2;
+		
+		// Set up object to test
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		
+		// Run method
+		assertEquals (new MapCoordinates3DEx (21, 10, 0),
+			midTurn.determineMovementDirection (new MapCoordinates3DEx (20, 10, 0), new MapCoordinates3DEx (22, 10, 0), moves));
+	}
+
+	/**
+	 * Tests the determineMovementDirection method when we are crossing a tower from Arcanus to Myrror 
+	 */
+	@Test
+	public final void testDetermineMovementDirection_ArcanusToMyrror ()
+	{
+		// Movement array
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [2] [40] [60];
+		
+		final OverlandMovementCell move1 = new OverlandMovementCell ();
+		move1.setMovedFrom (new MapCoordinates3DEx (20, 10, 0));
+		moves [0] [10] [21] = move1;
+
+		// Tower is at 21, 10 so we go from (20, 10, 0) > (21, 10, tower) > (22, 10, 1) 
+		
+		final OverlandMovementCell move2 = new OverlandMovementCell ();
+		move2.setMovedFrom (new MapCoordinates3DEx (21, 10, 0));
+		moves [1] [10] [22] = move2;
+		
+		// Set up object to test
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		
+		// Run method
+		assertEquals (new MapCoordinates3DEx (21, 10, 0),
+			midTurn.determineMovementDirection (new MapCoordinates3DEx (20, 10, 0), new MapCoordinates3DEx (22, 10, 1), moves));
+	}
+
+	/**
+	 * Tests the determineMovementDirection method when we are crossing a tower from Arcanus to Myrror 
+	 */
+	@Test
+	public final void testDetermineMovementDirection_MyrrorToArcanus ()
+	{
+		// Movement array
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [2] [40] [60];
+		
+		final OverlandMovementCell move1 = new OverlandMovementCell ();
+		move1.setMovedFrom (new MapCoordinates3DEx (20, 10, 1));
+		moves [0] [10] [21] = move1;
+
+		// Tower is at 21, 10 so we go from (20, 10, 1) > (21, 10, tower) > (22, 10, 0) 
+		
+		final OverlandMovementCell move2 = new OverlandMovementCell ();
+		move2.setMovedFrom (new MapCoordinates3DEx (21, 10, 0));
+		moves [0] [10] [22] = move2;
+		
+		// Set up object to test
+		final FogOfWarMidTurnChangesImpl midTurn = new FogOfWarMidTurnChangesImpl ();
+		
+		// Run method
+		assertEquals (new MapCoordinates3DEx (21, 10, 0),
+			midTurn.determineMovementDirection (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (22, 10, 0), moves));
 	}
 }

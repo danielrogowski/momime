@@ -420,6 +420,18 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 				getClient ().getOurPlayerID (), unitStack, doubleMovementRemaining,  getClient ().getPlayers (),
 				getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 				getClient ().getClientDB ());
+			
+			// Client side tweak for towers - movement routines know that towers exist on plane 0 and so if trying to move onto a tower from Myrror,
+			// you would have to click it on Arcanus.  But want to show the tower as moveable on Myrror as well.
+			for (int y = 0; y < getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					if ((moves [1] [y] [x] == null) && (moves [0] [y] [x] != null))
+					{
+						final OverlandMapTerrainData terrainData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+							(0).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
+							moves [1] [y] [x] = moves [0] [y] [x];
+					}			
 
 			getOverlandMapUI ().setMoves (moves);
 		}			
@@ -544,6 +556,12 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		
 		if (movingUnitURNs.size () > 0)
 		{
+			// If moving onto a tower then force moveTo plane to be 0
+			if ((moveTo.getZ () > 0) && (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ()).getTerrainData ())))
+				
+				moveTo.setZ (0);
+			
 			final RequestMoveOverlandUnitStackMessage msg = new RequestMoveOverlandUnitStackMessage ();
 			msg.setMoveFrom (getOverlandMapUI ().getUnitMoveFrom ());
 			msg.setMoveTo (moveTo);

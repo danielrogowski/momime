@@ -589,7 +589,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 				
 				// Show pending movements
 				if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement ().size () > 0)
-				{
 					try
 					{
 						// All pending movements are now drawn with a boot - its too difficult to figure out what icon to draw
@@ -607,10 +606,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 							// Draw each step of the movement path where direction is filled in; note the steps may cross both planes so we have to check all of it
 							for (final PendingMovementStep step : pendingMovement.getPath ())
-								if ((step.getDirection () != null) && (Math.min (step.getMoveFrom ().getZ (), step.getMoveTo ().getZ ()) == mapViewPlane))
+								if ((step.getDirection () != null) && (Math.max (step.getMoveFrom ().getZ (), step.getMoveTo ().getZ ()) == mapViewPlane))
 								{
-									//final int dReversed = getCoordinateSystemUtils ().normalizeDirection (getClient ().getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), d+4);
-	
 									final int fromArrowX = (step.getMoveFrom ().getX () * overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
 									final int fromArrowY = (step.getMoveFrom ().getY () * overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
 
@@ -646,7 +643,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 					{
 						log.error (e, e);
 					}
-				}
 
 				// Draw casting animation?
 				if ((getOverlandCastAnimation () != null) &&

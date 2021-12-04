@@ -81,6 +81,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PendingMovement;
+import momime.common.messages.PendingMovementStep;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
@@ -603,53 +604,43 @@ public final class OverlandMapUI extends MomClientFrameUI
 						final int arrowZoomedHeight = (overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
 						
 						for (final PendingMovement pendingMovement : getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement ())
-							if (pendingMovement.getMoveTo ().getZ () == mapViewPlane)
-							{
-								// Note we actually start from the destination and walk backwards to the current unit location
-								final MapCoordinates2DEx coords = new MapCoordinates2DEx (pendingMovement.getMoveTo ().getX (), pendingMovement.getMoveTo ().getY ());
-								int moveOutFromDirectionImageNo = 0;
-								
-								for (final Integer d : pendingMovement.getPath ())
+
+							// Draw each step of the movement path where direction is filled in; note the steps may cross both planes so we have to check all of it
+							for (final PendingMovementStep step : pendingMovement.getPath ())
+								if ((step.getDirection () != null) && (Math.min (step.getMoveFrom ().getZ (), step.getMoveTo ().getZ ()) == mapViewPlane))
 								{
-									final int dReversed = getCoordinateSystemUtils ().normalizeDirection (getClient ().getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), d+4);
+									//final int dReversed = getCoordinateSystemUtils ().normalizeDirection (getClient ().getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), d+4);
+	
+									final int fromArrowX = (step.getMoveFrom ().getX () * overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
+									final int fromArrowY = (step.getMoveFrom ().getY () * overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
 
-									final int bootX = (((coords.getX () * overlandMapTileSet.getTileWidth ()) - ((bootImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
-									final int bootY = (((coords.getY () * overlandMapTileSet.getTileHeight ()) - ((bootImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+									final int toArrowX = (step.getMoveTo ().getX () * overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
+									final int toArrowY = (step.getMoveTo ().getY () * overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
 
-									final int arrowX = (coords.getX () * overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
-									final int arrowY = (coords.getY () * overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
-									
+									final int bootX = (((step.getMoveTo ().getX () * overlandMapTileSet.getTileWidth ()) - ((bootImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
+									final int bootY = (((step.getMoveTo ().getY () * overlandMapTileSet.getTileHeight ()) - ((bootImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+	
 									for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
 										for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
 										{
-											// Draw boot in centre
+											// Draw arrow moving out from the "from" tile
+											final BufferedImage fromArrowImage = getUtils ().loadImage ("/momime.client.graphics/overland/pendingMovement/moveOutOfMapCell-d" + step.getDirection () + ".png");
+											g.drawImage (fromArrowImage,
+												(mapZoomedWidth * xRepeat) - mapViewX + fromArrowX, (mapZoomedHeight * yRepeat) - mapViewY + fromArrowY,
+												arrowZoomedWidth, arrowZoomedHeight, null);
+
+											// Draw arrow moving into the "to" tile
+											final BufferedImage toArrowImage = getUtils ().loadImage ("/momime.client.graphics/overland/pendingMovement/moveInToMapCell-d" + step.getDirection () + ".png");
+											g.drawImage (toArrowImage,
+												(mapZoomedWidth * xRepeat) - mapViewX + toArrowX, (mapZoomedHeight * yRepeat) - mapViewY + toArrowY,
+												arrowZoomedWidth, arrowZoomedHeight, null);
+											
+											// Draw boot in centre of the "to" tile
 											g.drawImage (bootImage,
 												(mapZoomedWidth * xRepeat) - mapViewX + bootX, (mapZoomedHeight * yRepeat) - mapViewY + bootY,
 												bootZoomedWidth, bootZoomedHeight, null);
-											
-											// Draw arrow moving out from this square
-											if (moveOutFromDirectionImageNo > 0)
-											{
-												final BufferedImage arrowImage = getUtils ().loadImage ("/momime.client.graphics/overland/pendingMovement/moveOutOfMapCell-d" + moveOutFromDirectionImageNo + ".png");
-												g.drawImage (arrowImage,
-													(mapZoomedWidth * xRepeat) - mapViewX + arrowX, (mapZoomedHeight * yRepeat) - mapViewY + arrowY,
-													arrowZoomedWidth, arrowZoomedHeight, null);
-											}
-											
-											// Draw arrow moving into this square
-											final BufferedImage arrowImage = getUtils ().loadImage ("/momime.client.graphics/overland/pendingMovement/moveInToMapCell-d" + d + ".png");
-											g.drawImage (arrowImage,
-												(mapZoomedWidth * xRepeat) - mapViewX + arrowX, (mapZoomedHeight * yRepeat) - mapViewY + arrowY,
-												arrowZoomedWidth, arrowZoomedHeight, null);
 										}
-									
-									// Set arrow number to draw moving out from the next square
-									moveOutFromDirectionImageNo = d;
-									
-									// Move to next square
-									getCoordinateSystemUtils ().move2DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), coords, dReversed);
 								}
-							}
 					}
 					catch (final IOException e)
 					{

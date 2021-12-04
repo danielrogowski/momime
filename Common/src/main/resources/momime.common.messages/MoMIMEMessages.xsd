@@ -774,6 +774,18 @@ so the client knows which wizard portrait to show the animation over.</xsd:docum
         </xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:complexType name="pendingMovementStep">
+	    <xsd:annotation>
+    		<xsd:documentation>Each step in a pending movement.  Direction will only be filled in when its a simple move from one
+tile to an adjacent tile, but even then moveFrom and moveTo may be on different planes if we're walking on/off a tower of wizardry.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates3D" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="map:mapCoordinates3D" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="direction" type="map:mapDirection" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 	<xsd:complexType name="pendingMovement">
 	    <xsd:annotation>
     		<xsd:documentation>Stores details about a unit stack's future move.
@@ -787,7 +799,7 @@ They are used in simultaneous movement games for all movement, including AI play
 			<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates3D" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="map:mapCoordinates3D" />
 			<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN" />
-			<xsd:element minOccurs="1" maxOccurs="unbounded" name="path" type="map:mapDirection" />
+			<xsd:element minOccurs="1" maxOccurs="unbounded" name="path" type="momimemsgs:pendingMovementStep" />
 		</xsd:sequence>
 	</xsd:complexType>
 	

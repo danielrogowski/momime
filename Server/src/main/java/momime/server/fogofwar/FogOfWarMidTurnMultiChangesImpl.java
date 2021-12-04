@@ -41,6 +41,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
+import momime.common.messages.PendingMovementStep;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
@@ -859,13 +860,18 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
 				{
 					final int direction = movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()];
-
-					pending.getPath ().add (direction);
+					
+					final PendingMovementStep step = new PendingMovementStep ();
+					step.setMoveTo (new MapCoordinates3DEx (coords));
+					step.setDirection (direction);
 
 					if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, getCoordinateSystemUtils ().normalizeDirection
 						(mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), direction + 4)))
 						
 						throw new MomException ("moveUnitStack: Server map tracing moved to a cell off the map");
+
+					step.setMoveFrom (new MapCoordinates3DEx (coords));
+					pending.getPath ().add (0, step);
 				}
 
 				priv.getPendingMovement ().add (pending);
@@ -1009,7 +1015,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
 	 */
 	@Override
-	public final List<Integer> determineMovementPath (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner,
+	public final List<PendingMovementStep> determineMovementPath (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
@@ -1030,24 +1036,30 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			doubleMovementDistances, movementDirections, canMoveToInOneTurn, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		// Is there a route to where we want to go?
-		final List<Integer> result;
+		final List<PendingMovementStep> result;
 		if (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] < 0)
 			result = null;
 		else
 		{
 			// Record the movement path
-			result = new ArrayList<Integer> ();
+			result = new ArrayList<PendingMovementStep> ();
 
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (moveTo);
 			while ((coords.getX () != moveFrom.getX () || (coords.getY () != moveFrom.getY ())))
 			{
 				final int direction = movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()];
-				result.add (direction);
-	
+
+				final PendingMovementStep step = new PendingMovementStep ();
+				step.setMoveTo (new MapCoordinates3DEx (coords));
+				step.setDirection (direction);
+
 				if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, getCoordinateSystemUtils ().normalizeDirection
 					(mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), direction + 4)))
 					
 					throw new MomException ("determineMovementPath: Server map tracing moved to a cell off the map");
+
+				step.setMoveFrom (new MapCoordinates3DEx (coords));
+				result.add (0, step);
 			}
 		}
 		

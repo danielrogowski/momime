@@ -18,6 +18,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PendingMovement;
+import momime.common.messages.PendingMovementStep;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
 import momime.server.messages.MomGeneralServerKnowledge;
@@ -216,7 +217,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
 	 */
-	public List<Integer> determineMovementPath (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner,
+	public List<PendingMovementStep> determineMovementPath (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException;
 

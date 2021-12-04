@@ -29,6 +29,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PendingMovement;
+import momime.common.messages.PendingMovementStep;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.ExpandUnitDetails;
@@ -148,7 +149,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 						}
 						
 						// We're at a different location now, and know more about the map than when the path was calculated, so need to recalculate it
-						final List<Integer> path = getFogOfWarMidTurnMultiChanges ().determineMovementPath (unitStack, player,
+						final List<PendingMovementStep> path = getFogOfWarMidTurnMultiChanges ().determineMovementPath (unitStack, player,
 							(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), mom);
 						
 						// In the process we might now find that the location has become unreachable, because of what we've learned about the map

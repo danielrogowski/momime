@@ -29,6 +29,7 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageData;
 import momime.common.messages.PendingMovement;
+import momime.common.messages.PendingMovementStep;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
@@ -354,16 +355,26 @@ public final class TestPlayerMessageProcessingImpl
 		unitStack2.add (xu2);
 		
 		// Pending moves
+		final PendingMovementStep move1step1 = new PendingMovementStep ();
+		move1step1.setMoveFrom (new MapCoordinates3DEx (1, 10, 1));
+		move1step1.setMoveTo (new MapCoordinates3DEx (2, 10, 1));
+		move1step1.setDirection (3);
+		
 		final PendingMovement move1 = new PendingMovement ();
 		move1.setMoveFrom (new MapCoordinates3DEx (1, 10, 1));
 		move1.setMoveTo (new MapCoordinates3DEx (2, 10, 1));
-		move1.getPath ().add (3);
+		move1.getPath ().add (move1step1);
 		move1.getUnitURN ().add (1);
 
+		final PendingMovementStep move2step1 = new PendingMovementStep ();
+		move2step1.setMoveFrom (new MapCoordinates3DEx (4, 10, 1));
+		move2step1.setMoveTo (new MapCoordinates3DEx (3, 10, 1));
+		move2step1.setDirection (7);
+		
 		final PendingMovement move2 = new PendingMovement ();
 		move2.setMoveFrom (new MapCoordinates3DEx (4, 10, 1));
 		move2.setMoveTo (new MapCoordinates3DEx (3, 10, 1));
-		move2.getPath ().add (7);
+		move2.getPath ().add (move2step1);
 		move2.getUnitURN ().add (2);
 		
 		priv1.getPendingMovement ().add (move1);
@@ -446,16 +457,26 @@ public final class TestPlayerMessageProcessingImpl
 		unitStack2.add (xu2);
 		
 		// Pending moves
+		final PendingMovementStep move1step1 = new PendingMovementStep ();
+		move1step1.setMoveFrom (new MapCoordinates3DEx (1, 10, 1));
+		move1step1.setMoveTo (new MapCoordinates3DEx (2, 10, 1));
+		move1step1.setDirection (3);
+		
 		final PendingMovement move1 = new PendingMovement ();
 		move1.setMoveFrom (new MapCoordinates3DEx (1, 10, 1));
 		move1.setMoveTo (new MapCoordinates3DEx (2, 10, 1));
-		move1.getPath ().add (3);
+		move1.getPath ().add (move1step1);
 		move1.getUnitURN ().add (1);
 
+		final PendingMovementStep move2step1 = new PendingMovementStep ();
+		move2step1.setMoveFrom (new MapCoordinates3DEx (4, 10, 1));
+		move2step1.setMoveTo (new MapCoordinates3DEx (3, 10, 1));
+		move2step1.setDirection (7);
+		
 		final PendingMovement move2 = new PendingMovement ();
 		move2.setMoveFrom (new MapCoordinates3DEx (4, 10, 1));
 		move2.setMoveTo (new MapCoordinates3DEx (3, 10, 1));
-		move2.getPath ().add (7);
+		move2.getPath ().add (move2step1);
 		move2.getUnitURN ().add (2);
 		
 		priv1.getPendingMovement ().add (move1);

@@ -522,6 +522,16 @@ public final class UnitMovementImpl implements UnitMovement
 			cellsLeftToCheck.remove (0);
 		}
 		
+		// Before we return the array, null out any cells that were impassable
+		for (int z = 0; z < overlandMapCoordinateSystem.getDepth (); z++)
+			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
+				for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
+				{
+					final OverlandMovementCell move = moves [z] [y] [x];
+					if ((move != null) && (move.getDoubleMovementDistance () == MOVEMENT_DISTANCE_CANNOT_MOVE_HERE))
+						moves [z] [y] [x] = null;
+				}
+		
 		return moves;
 	}
 	

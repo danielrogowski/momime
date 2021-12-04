@@ -257,7 +257,7 @@ public final class MovementUtilsImpl implements MovementUtils
 			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
 				for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
 					
-					if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
+					if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
 						blockedLocations.add (new MapCoordinates3DEx (x, y, z));
 		
 					else if (planarSeal)

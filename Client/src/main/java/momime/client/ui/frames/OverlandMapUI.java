@@ -84,6 +84,7 @@ import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
+import momime.common.movement.OverlandMovementCell;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
@@ -199,11 +200,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 	private BufferedImage fogOfWarBitmap;
 
 	/** Area detailing which map cells we can/can't move to */
-	private int [] [] [] doubleMovementDistances;
+	private OverlandMovementCell [] [] [] moves;
 
-	/** Area detailing which map cells we can/can't move to in one turn */
-	private boolean [] [] [] canMoveToInOneTurn;
-	
 	/** The map location we're currently selecting/deselecting units at ready to choose an order for them or tell them where to move/attack */
 	private MapCoordinates3DEx unitMoveFrom;
 	
@@ -1082,8 +1080,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 						else if ((getOverlandMapRightHandPanel ().getTop () != OverlandMapRightHandPanelTop.SURVEYOR) &&
 							((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
 							(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
-							(getDoubleMovementDistances () != null) &&
-							(getDoubleMovementDistances () [mapViewPlane] [mapCellY] [mapCellX] >= 0))
+							(getMoves () != null) && (getMoves () [mapViewPlane] [mapCellY] [mapCellX] != null))
 							
 							// NB. We don't check here that we actually have a unit selected - MoveUnitStackTo does this for us
 							getOverlandMapProcessing ().moveUnitStackTo (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
@@ -1243,12 +1240,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 		if ((getOverlandMapRightHandPanel ().getTop () != OverlandMapRightHandPanelTop.SURVEYOR) &&
 			((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
 			(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
-			(getDoubleMovementDistances () != null) && (getUnitMoveFrom () != null))
+			(getMoves () != null) && (getUnitMoveFrom () != null))
 		{
 			// So its our turn, and have a current position, now have to check the direction pressed is a valid move
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (getUnitMoveFrom ());
 			if (getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), coords, d.getDirectionID ()))
-				if (getDoubleMovementDistances () [coords.getZ ()] [coords.getY ()] [coords.getX ()] >= 0)
+				if (getMoves () [coords.getZ ()] [coords.getY ()] [coords.getX ()] != null)
 					getOverlandMapProcessing ().moveUnitStackTo (coords);
 		}
 	}
@@ -1428,7 +1425,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void regenerateMovementTypesBitmap ()
 	{
 		// Regenerate shading bitmap
-		if ((getDoubleMovementDistances () == null) || (getCanMoveToInOneTurn () == null))
+		if (getMoves () == null)
 			movementTypesBitmap = null;
 		else
 		{
@@ -1436,16 +1433,19 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 			for (int x = 0; x < getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				{
+					final OverlandMovementCell move = moves [mapViewPlane] [y] [x];
 					
 					// Darken areas we cannot move to at all
-					if (getDoubleMovementDistances () [mapViewPlane] [y] [x] < 0)
+					if (move == null)
 						movementTypesBitmap.setRGB (x, y, CANNOT_MOVE_HERE_COLOUR);
 			
 					// Brighten areas we can move to in 1 turn
-					else if (getCanMoveToInOneTurn () [mapViewPlane] [y] [x])
+					else if (move.isMoveToInOneTurn ())
 						movementTypesBitmap.setRGB (x, y, MOVE_IN_ONE_TURN_COLOUR);
 
 					// Leave areas we can move to in multiple turns looking like normal
+				}
 		}
 
 		sceneryPanel.repaint ();
@@ -2121,32 +2121,16 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @return Area detailing which map cells we can/can't move to
 	 */
-	public final int [] [] [] getDoubleMovementDistances ()
+	public final OverlandMovementCell [] [] [] getMoves ()
 	{
-		return doubleMovementDistances;
+		return moves;
 	}
 
 	/**
-	 * @param a Area detailing which map cells we can/can't move to
+	 * @param m Area detailing which map cells we can/can't move to
 	 */
-	public final void setDoubleMovementDistances (final int [] [] [] a)
+	public final void setMoves (final OverlandMovementCell [] [] [] m)
 	{
-		doubleMovementDistances = a;
-	}
-
-	/**
-	 * @return Area detailing which map cells we can/can't move to in one turn
-	 */
-	public final boolean [] [] [] getCanMoveToInOneTurn ()
-	{
-		return canMoveToInOneTurn;
-	}
-
-	/**
-	 * @param a Area detailing which map cells we can/can't move to in one turn
-	 */
-	public final void setCanMoveToInOneTurn (final boolean [] [] [] a)
-	{
-		canMoveToInOneTurn = a;
+		moves = m;
 	}
 }

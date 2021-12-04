@@ -40,6 +40,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
+import momime.common.movement.OverlandMovementCell;
 import momime.common.movement.UnitMovement;
 import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandUnitDetails;
@@ -410,23 +411,17 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		if (doubleMovementRemaining == 0)
 		{
 			// No units picked to move - remove all shading from the map
-			getOverlandMapUI ().setDoubleMovementDistances (null);
-			getOverlandMapUI ().setCanMoveToInOneTurn (null);
+			getOverlandMapUI ().setMoves (null);
 		}
 		else
 		{
 			// Calculate distances to every point on the map
-			final int [] [] [] doubleMovementDistances			= new int [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
-			final int [] [] [] movementDirections					= new int [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
-			final boolean [] [] [] canMoveToInOneTurn			= new boolean [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
+			final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (getOverlandMapUI ().getUnitMoveFrom (),
+				getClient ().getOurPlayerID (), unitStack, doubleMovementRemaining,  getClient ().getPlayers (),
+				getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+				getClient ().getClientDB ());
 
-			getUnitMovement ().calculateOverlandMovementDistances (getOverlandMapUI ().getUnitMoveFrom ().getX (), getOverlandMapUI ().getUnitMoveFrom ().getY (), getOverlandMapUI ().getUnitMoveFrom ().getZ (),
-				getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unitStack,
-				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
-				getClient ().getPlayers (), getClient ().getSessionDescription (), getClient ().getClientDB ());
-
-			getOverlandMapUI ().setDoubleMovementDistances (doubleMovementDistances);
-			getOverlandMapUI ().setCanMoveToInOneTurn (canMoveToInOneTurn);
+			getOverlandMapUI ().setMoves (moves);
 		}			
 		getOverlandMapUI ().regenerateMovementTypesBitmap ();
 	}

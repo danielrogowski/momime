@@ -45,7 +45,6 @@ import momime.common.movement.UnitStack;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
@@ -75,9 +74,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
-
-	/** MemoryGridCell utils */
-	private MemoryGridCellUtils memoryGridCellUtils;
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -423,13 +419,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units)
 	{
-		// Work out what plane to look for units on
 		final MemoryGridCell mc = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
-		final int towerPlane;
-		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
-			towerPlane = 0;
-		else
-			towerPlane = plane;
 
 		// The easiest one to check for is an enemy city - even if there's no units there, it still counts as an attack so we can decide whether to raze or capture it
 		final boolean resultsInAttack;
@@ -437,7 +427,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			resultsInAttack = true;
 
 		// Lastly check for enemy units
-		else if (getUnitUtils ().findFirstAliveEnemyAtLocation (units, x, y, towerPlane, movingPlayerID) != null)
+		else if (getUnitUtils ().findFirstAliveEnemyAtLocation (units, x, y, plane, movingPlayerID) != null)
 			resultsInAttack = true;
 		else
 			resultsInAttack = false;
@@ -460,13 +450,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final boolean willMovingHereResultInAnAttackThatWeKnowAbout (final int x, final int y, final int plane, final int movingPlayerID,
 		final FogOfWarMemory mem, final CommonDatabase db)
 	{
-		// Work out what plane to look for units on
 		final MemoryGridCell mc = mem.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
-		final int towerPlane;
-		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
-			towerPlane = 0;
-		else
-			towerPlane = plane;
 
 		// The easiest one to check for is an enemy city - even if there's no units there, it still counts as an attack so we can decide whether to raze or capture it
 		final boolean resultsInAttack;
@@ -474,7 +458,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			resultsInAttack = true;
 
 		// Lastly check for enemy units
-		else if (getUnitUtils ().findFirstAliveEnemyWeCanSeeAtLocation (movingPlayerID, mem, x, y, towerPlane, movingPlayerID, db) != null)
+		else if (getUnitUtils ().findFirstAliveEnemyWeCanSeeAtLocation (movingPlayerID, mem, x, y, plane, movingPlayerID, db) != null)
 			resultsInAttack = true;
 		else
 			resultsInAttack = false;
@@ -1153,22 +1137,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
-	}
-
-	/**
-	 * @return MemoryGridCell utils
-	 */
-	public final MemoryGridCellUtils getMemoryGridCellUtils ()
-	{
-		return memoryGridCellUtils;
-	}
-
-	/**
-	 * @param utils MemoryGridCell utils
-	 */
-	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
-	{
-		memoryGridCellUtils = utils;
 	}
 
 	/**

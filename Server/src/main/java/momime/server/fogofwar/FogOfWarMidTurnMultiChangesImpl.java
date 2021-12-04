@@ -751,16 +751,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				MemoryGridCell oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 					(oneStep.getZ ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
 
-				// Adjust move to plane if moving onto or off of a tower
-				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (oneStepTrueTile.getTerrainData ()))
-				{
-					combatInitiated = getUnitCalculations ().willMovingHereResultInAnAttack (oneStep.getX (), oneStep.getY (), oneStep.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-					oneStep.setZ (0);
-				}
-				else
-					combatInitiated = getUnitCalculations ().willMovingHereResultInAnAttack (oneStep.getX (), oneStep.getY (), oneStep.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+				combatInitiated = getUnitCalculations ().willMovingHereResultInAnAttack (oneStep.getX (), oneStep.getY (), oneStep.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 				
 				// If we ran into some invisible units prior to our destination, then adjust destination
 				if ((combatInitiated) && (!oneStep.equals (moveTo)))
@@ -880,18 +872,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			log.debug ("Would have started combat, but processCombats is false");
 		else
 		{
-			// What plane will the monsters/defenders be on?
-			final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
-			
-			final int towerPlane;
-			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
-				towerPlane = 0;
-			else
-				towerPlane = moveTo.getZ ();
-			
 			// Scheduled the combat or start it immediately
-			final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (moveTo.getX (), moveTo.getY (), towerPlane);
+			final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (moveTo.getX (), moveTo.getY (), moveTo.getZ ());
 
 			final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 			for (final ExpandedUnitDetails tu : allUnits)
@@ -944,13 +926,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			result = null;
 		else
 		{
-			// Work out where this moves us to
-			// If we are MOVING onto to an empty tower (or one we already occupy) from Myrror then plane still must be 1,
-			//   or moveUnitStack thinks we can't click there, and it will adjust the plane when we actually move
-			// If we are ATTACKING a tower from Myrror then plane must be 0 as we call startCombat directly and this expects the plane to already be resolved correctly
-			//   but we need to check whether a combat is initiated first, so for now create oneStep with moveTo set to Myrror
-			// If we are moving OFF of a tower onto Myrror, then plane must be 1 or we'll get off on the wrong plane
-			// So plane must always be set from moveTo
 			final MapCoordinates3DEx oneStep = getFogOfWarMidTurnChanges ().determineMovementDirection (moveFrom, moveTo, moves);
 
 			// Does this initiate a combat?
@@ -958,14 +933,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				unitStackOwner.getPlayerDescription ().getPlayerID (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 			
-			// If attacking a tower from Myrror, need to tweak the combat location
-			if ((combatInitiated) && (oneStep.getZ () > 0))
-			{
-				final MemoryGridCell mc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (oneStep.getZ ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
-				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
-					oneStep.setZ (0);
-			}
-
 			// Set up result
 			result = new OneCellPendingMovement (unitStackOwner, pendingMovement, oneStep, combatInitiated);
 		}

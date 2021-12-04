@@ -159,6 +159,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		// If attacking a tower in Myrror, then Defending-AttackingFrom will be 0-1
 		// If attacking from a tower onto Myrror, then Defending-AttackingFrom will be 1-0 - both of these should be shown on Myrror only
 		// Any tower combats to/from Arcanus will be 0-0, and should appear on Arcanus only
+		// Really the only point of this is whether the grass should be drawn green or brown
 		// Hence the reason for the Max
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (defendingLocation.getX (), defendingLocation.getY (),
 			Math.max (defendingLocation.getZ (), attackingFrom.getZ ()));

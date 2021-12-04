@@ -86,7 +86,6 @@ public final class MovementUtilsImpl implements MovementUtils
 			// Find how much spare transport capacity we have on every cell of the map.
 			// We add +capacity for every transport found, and -1 capacity for every unit that is on terrain impassable to itself (therefore must be in a transport).
 			// Then any spaces left with 1 or higher value have spare space units could be loaded into.
-			// Any units standing in towers have their values counted on both planes.
 			cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
 			for (final MemoryUnit thisUnit : map.getUnit ())
 				if ((thisUnit.getOwningPlayerID () == movingPlayerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getUnitLocation () != null))
@@ -101,28 +100,14 @@ public final class MovementUtilsImpl implements MovementUtils
 					// Count space granted by transports
 					final Integer unitTransportCapacity = xu.getUnitDefinition ().getTransportCapacity ();
 					if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
-					{
-						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
-						{
-							for (int plane = 0; plane < sys.getDepth (); plane++)
-								cellTransportCapacity [plane] [y] [x] = cellTransportCapacity [plane] [y] [x] + unitTransportCapacity;
-						}
-						else
-							cellTransportCapacity [z] [y] [x] = cellTransportCapacity [z] [y] [x] + unitTransportCapacity;
-					}
+						cellTransportCapacity [z] [y] [x] = cellTransportCapacity [z] [y] [x] + unitTransportCapacity;
 					
 					// Count space taken up by units already in transports
 					else
 					{
 						final String tileTypeID = getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false);
 						if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, unitStackSkills, tileTypeID, db) == null)
-							if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
-							{
-								for (int plane = 0; plane < sys.getDepth (); plane++)
-									cellTransportCapacity [plane] [y] [x]--;
-							}
-							else
-								cellTransportCapacity [z] [y] [x]--;
+							cellTransportCapacity [z] [y] [x]--;
 					}
 				}			
 		}

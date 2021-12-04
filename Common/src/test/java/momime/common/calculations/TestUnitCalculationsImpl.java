@@ -60,7 +60,6 @@ import momime.common.movement.UnitStack;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
@@ -1226,7 +1225,6 @@ public final class TestUnitCalculationsImpl
 
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 		calc.setUnitUtils (new UnitUtilsImpl ());
 		
 		// Null terrain and city data
@@ -1272,11 +1270,6 @@ public final class TestUnitCalculationsImpl
 		unit.setUnitLocation (unitLocation);
 
 		assertFalse (calc.willMovingHereResultInAnAttack (20, 10, 1, 2, map, units));
-
-		// Tower that we've previously cleared but now occupied by enemy units and we're on Myrror
-		unit.setOwningPlayerID (1);
-
-		assertTrue (calc.willMovingHereResultInAnAttack (20, 10, 1, 2, map, units));
 
 		// Our city
 		final OverlandMapCityData cityData = new OverlandMapCityData ();

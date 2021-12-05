@@ -370,7 +370,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
-		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (firstCityLocation,
+		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (firstCityLocation,
 			playerID, unitStack, 0, players, sd.getOverlandMapSize (), fogOfWarMemory, db);
 		
 		final List<MapCoordinates3DEx> missingRoadCells = new ArrayList<MapCoordinates3DEx> ();

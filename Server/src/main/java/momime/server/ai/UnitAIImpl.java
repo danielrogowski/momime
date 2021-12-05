@@ -771,7 +771,7 @@ public final class UnitAIImpl implements UnitAI
 			result = AIMovementResult.NO_MOVEMENT_LEFT;
 		else
 		{
-			final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom,
+			final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom,
 				player.getPlayerDescription ().getPlayerID (), unitStack, doubleMovementRemaining,
 				mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 			

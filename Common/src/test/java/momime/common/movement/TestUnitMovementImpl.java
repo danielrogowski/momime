@@ -1,7 +1,9 @@
 package momime.common.movement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,19 +19,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.Pick;
-import momime.common.database.UnitEx;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.OverlandMapTerrainData;
-import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.MemoryGridCellUtils;
 
 /**
  * Tests the UnitMovementImpl class
@@ -38,110 +34,229 @@ import momime.common.utils.MemoryGridCellUtils;
 public final class TestUnitMovementImpl
 {
 	/**
-	 * Tests the calculateDoubleMovementToEnterTile method
-	 * @throws Exception If there is a problem
+	 * Tests the considerPossibleMove method where no previous route to the target cell was found
 	 */
 	@Test	
-	public final void testCalculateDoubleMovementToEnterTile () throws Exception
+	public final void testConsiderPossibleMove_NoPreviousRoute ()
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Pick normalUnit = new Pick ();
-		normalUnit.setPickID (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
-		
-		final CombatTileType cloudTile = new CombatTileType ();
-		when (db.findCombatTileType (CommonDatabaseConstants.COMBAT_TILE_TYPE_CLOUD, "calculateDoubleMovementToEnterTile")).thenReturn (cloudTile);
-		
-		// Coordinate system
+		// Session description
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		
+
 		// Terrain
-		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
-		
 		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
-
-		for (int x = 0; x < 5; x++)
-		{
-			final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-			terrain.getPlane ().get (0).getRow ().get (0).getCell ().get (x).setTerrainData (terrainData);
-			
-			if (x != 1)
-				when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, true)).thenReturn ((x < 2) ? "TT01" : "TT02");
-			
-			if ((x == 3) || (x == 4))
-				when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, false)).thenReturn ((x < 2) ? "TT01" : "TT02");
-		}
 		
-		when (memoryGridCellUtils.convertNullTileTypeToFOW (null, true)).thenReturn (null);
-		
-		// Map areas
-		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
-		final int [] [] [] ourUnitCountAtLocation = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
-
-		// Units
-		final UnitEx unitDef = new UnitEx ();
-		
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (terrain);
 		
 		// Unit stack
-		final Set<String> unitStackSkills = new HashSet<String> ();
-
-		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (xu1.getUnitDefinition ()).thenReturn (unitDef);
-		when (xu1.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
-
-		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (xu2.getUnitDefinition ()).thenReturn (unitDef);
-		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
-		
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu1, unitStackSkills, "TT02", db)).thenReturn (null);
-		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu2, unitStackSkills, "TT02", db)).thenReturn (null);
-		
 		final UnitStack unitStack = new UnitStack ();
-		unitStack.getUnits ().add (xu1);
-		unitStack.getUnits ().add (xu2);
-		
-		// Movement rates
+		final Set<String> unitStackSkills = new HashSet<String> ();
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
 		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
-		doubleMovementRates.put ("TT01", 4);
 		
-		// There's already 1 unit at 0, 0, 0 so the 2 we're moving can fit
-		ourUnitCountAtLocation [0] [0] [0] = 1;
-
-		// There's already 8 units at 0, 0, 1 so the 2 we're moving can't fit
-		// We're using max units per cell = 9 so 10 units won't fit
-		ourUnitCountAtLocation [0] [0] [1] = 8;
+		// Movement array
+		final List<MapCoordinates3DEx> cellsLeftToCheck = new ArrayList<MapCoordinates3DEx> ();
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
 		
-		// 0, 0, 2 is impassable terrain
-
-		// 0, 0, 3 is impassable terrain but there's a transport there we can get in and a unit standing beside it that is not inside the transport (passable terrain to that unit)
-		// Transport can hold 2 units, there's 1 unit beside the transport already there, so adding 2 inside the transport both fits in the transport and within our 9 max units per cell
-		ourUnitCountAtLocation [0] [0] [3] = 2;
-		cellTransportCapacity [0] [0] [3] = 2; 
-
-		// 0, 0, 4 is impassable terrain but there's a transport there we could get in, except its already partly full (impassable terrain to that unit)
-		// Transport can hold 2 units, but there's 1 inside it already and we need 2 spaces, so its impassable even though we're within the 9 max units per cell
-		ourUnitCountAtLocation [0] [0] [4] = 2;
-		cellTransportCapacity [0] [0] [4] = 1;
+		// Cost to enter tile
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		when (movementUtils.calculateDoubleMovementToEnterTile
+			(unitStack, unitStackSkills, new MapCoordinates3DEx (21, 11, 1), cellTransportCapacity, doubleMovementRates, mem.getMap (), db)).thenReturn (2);
 		
-		// No Spell Wards to block specific tiles
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		// Enemies in tile?
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.willMovingHereResultInAnAttackThatWeKnowAbout (21, 11, 1, 1, mem, db)).thenReturn (false);
 		
 		// Set up object to test
-		final UnitMovementImpl move = new UnitMovementImpl ();
-		move.setMemoryGridCellUtils (memoryGridCellUtils);
-		move.setUnitCalculations (unitCalculations);
+		final UnitMovementImpl utils = new UnitMovementImpl ();
+		utils.setMovementUtils (movementUtils);
+		utils.setUnitCalculations (unitCalculations);
 		
-		// Call method
-		final Integer [] [] [] result = move.calculateDoubleMovementToEnterTile (unitStack, unitStackSkills, 1, terrain,
-			cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, false, spells, sys, db);
+		// Run method
+		utils.considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
+			new MapCoordinates3DEx (21, 11, 1), 1, 2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
 		
-		// Check results
-		assertEquals (4, result [0] [0] [0].intValue ());
-		assertNull (result [0] [0] [1]);
-		assertNull (result [0] [0] [2]);
-		assertEquals (2, result [0] [0] [3].intValue ());
-		assertNull (result [0] [0] [4]);
+		// Check cell generated
+		final OverlandMovementCell move = moves [1] [11] [21];
+		assertNotNull (move);
+		assertEquals (new MapCoordinates3DEx (20, 10, 1), move.getMovedFrom ());
+		assertEquals (OverlandMovementType.ADJACENT, move.getMovementType ());
+		assertEquals (8, move.getDirection ());
+		assertEquals (4, move.getDoubleMovementDistance ());
+		assertEquals (2, move.getDoubleMovementToEnterTile ());
+		
+		// Check route from cell will be checked
+		assertEquals (1, cellsLeftToCheck.size ());
+		assertEquals (new MapCoordinates3DEx (21, 11, 1), cellsLeftToCheck.get (0));
+	}
+
+	/**
+	 * Tests the considerPossibleMove method where we can reach the cell, but it will start an attack so we can't move past the cell
+	 */
+	@Test	
+	public final void testConsiderPossibleMove_Attack ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+
+		// Terrain
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (terrain);
+		
+		// Unit stack
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Movement array
+		final List<MapCoordinates3DEx> cellsLeftToCheck = new ArrayList<MapCoordinates3DEx> ();
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		
+		// Cost to enter tile
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		when (movementUtils.calculateDoubleMovementToEnterTile
+			(unitStack, unitStackSkills, new MapCoordinates3DEx (21, 11, 1), cellTransportCapacity, doubleMovementRates, mem.getMap (), db)).thenReturn (2);
+		
+		// Enemies in tile?
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.willMovingHereResultInAnAttackThatWeKnowAbout (21, 11, 1, 1, mem, db)).thenReturn (true);
+		
+		// Set up object to test
+		final UnitMovementImpl utils = new UnitMovementImpl ();
+		utils.setMovementUtils (movementUtils);
+		utils.setUnitCalculations (unitCalculations);
+		
+		// Run method
+		utils.considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
+			new MapCoordinates3DEx (21, 11, 1), 1, 2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		// Check cell generated
+		final OverlandMovementCell move = moves [1] [11] [21];
+		assertNotNull (move);
+		assertEquals (new MapCoordinates3DEx (20, 10, 1), move.getMovedFrom ());
+		assertEquals (OverlandMovementType.ADJACENT, move.getMovementType ());
+		assertEquals (8, move.getDirection ());
+		assertEquals (4, move.getDoubleMovementDistance ());
+		assertEquals (2, move.getDoubleMovementToEnterTile ());
+		
+		// Check route from cell will be checked
+		assertEquals (0, cellsLeftToCheck.size ());
+	}
+	
+	/**
+	 * Tests the considerPossibleMove method where the target cell is impassable
+	 */
+	@Test	
+	public final void testConsiderPossibleMove_Impassable ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+
+		// Terrain
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (terrain);
+		
+		// Unit stack
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Movement array
+		final List<MapCoordinates3DEx> cellsLeftToCheck = new ArrayList<MapCoordinates3DEx> ();
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+		
+		// Tile is impassable
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		when (movementUtils.calculateDoubleMovementToEnterTile
+			(unitStack, unitStackSkills, new MapCoordinates3DEx (21, 11, 1), cellTransportCapacity, doubleMovementRates, mem.getMap (), db)).thenReturn (null);
+		
+		// Set up object to test
+		final UnitMovementImpl utils = new UnitMovementImpl ();
+		utils.setMovementUtils (movementUtils);
+		
+		// Run method
+		utils.considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
+			new MapCoordinates3DEx (21, 11, 1), 1, 2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		// Check cell generated
+		final OverlandMovementCell move = moves [1] [11] [21];
+		assertNotNull (move);
+		assertNull (move.getMovedFrom ());
+		assertNull (move.getMovementType ());
+		assertEquals (0, move.getDirection ());
+		assertEquals (UnitMovementImpl.MOVEMENT_DISTANCE_CANNOT_MOVE_HERE, move.getDoubleMovementDistance ());
+		assertEquals (UnitMovementImpl.MOVEMENT_DISTANCE_CANNOT_MOVE_HERE, move.getDoubleMovementToEnterTile ());
+		
+		// Check route from cell will be checked
+		assertEquals (0, cellsLeftToCheck.size ());
+	}
+	
+	/**
+	 * Tests the considerPossibleMove method where we already know the target cell is impassable so there's no point rechecking it
+	 */
+	@Test	
+	public final void testConsiderPossibleMove_KnownImpassable ()
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+
+		// Terrain
+		final MapVolumeOfMemoryGridCells terrain = GenerateTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (terrain);
+		
+		// Unit stack
+		final UnitStack unitStack = new UnitStack ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
+		final int [] [] [] cellTransportCapacity = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()]; 
+		final Map<String, Integer> doubleMovementRates = new HashMap<String, Integer> ();
+		
+		// Movement array
+		final List<MapCoordinates3DEx> cellsLeftToCheck = new ArrayList<MapCoordinates3DEx> ();
+		final OverlandMovementCell [] [] [] moves = new OverlandMovementCell [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
+
+		final OverlandMovementCell impassable = new OverlandMovementCell ();
+		impassable.setDoubleMovementToEnterTile (UnitMovementImpl.MOVEMENT_DISTANCE_CANNOT_MOVE_HERE);
+		impassable.setDoubleMovementDistance (UnitMovementImpl.MOVEMENT_DISTANCE_CANNOT_MOVE_HERE);
+		moves [1] [11] [21] = impassable;
+
+		// Set up object to test
+		final UnitMovementImpl utils = new UnitMovementImpl ();
+		
+		// Run method
+		utils.considerPossibleMove (unitStack, unitStackSkills, new MapCoordinates3DEx (20, 10, 1), OverlandMovementType.ADJACENT, 8,
+			new MapCoordinates3DEx (21, 11, 1), 1, 2, 4, cellTransportCapacity, doubleMovementRates, moves, cellsLeftToCheck, mem, db);
+		
+		// Check cell was unaltered
+		final OverlandMovementCell move = moves [1] [11] [21];
+		assertSame (impassable, move);
+		assertNotNull (move);
+		assertNull (move.getMovedFrom ());
+		assertNull (move.getMovementType ());
+		assertEquals (0, move.getDirection ());
+		assertEquals (UnitMovementImpl.MOVEMENT_DISTANCE_CANNOT_MOVE_HERE, move.getDoubleMovementDistance ());
+		assertEquals (UnitMovementImpl.MOVEMENT_DISTANCE_CANNOT_MOVE_HERE, move.getDoubleMovementToEnterTile ());
+		
+		// Check route from cell will be checked
+		assertEquals (0, cellsLeftToCheck.size ());
 	}
 }

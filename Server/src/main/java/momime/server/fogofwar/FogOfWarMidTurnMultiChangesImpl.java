@@ -736,7 +736,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 
 			// Find distances and route from our start point to every location on the map
-			moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
+			moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
 				unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 
 			// Is there a route to where we want to go?
@@ -816,7 +816,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			// best path again based on what else we learned about the terrain in our last move
 			if (!forceAsPendingMovement)
 			{
-				moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
+				moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
 					unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 
 				validMoveFound = (moves [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] != null);
@@ -917,7 +917,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
 		// Find distances and route from our start point to every location on the map
-		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
+		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
 			unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 
 		// Is there a route to where we want to go?
@@ -967,7 +967,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final int doubleMovementRemaining = 0;
 		
 		// Find distances and route from our start point to every location on the map
-		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
+		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom, unitStackOwner.getPlayerDescription ().getPlayerID (),
 			unitStack, doubleMovementRemaining, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 
 		// Is there a route to where we want to go?

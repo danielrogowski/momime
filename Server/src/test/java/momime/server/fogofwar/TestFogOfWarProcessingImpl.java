@@ -41,6 +41,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
@@ -326,6 +327,9 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		naturesEye.setCitySpellEffectID ("SE012");
 
 		trueMap.getMaintainedSpell ().add (naturesEye);
+		
+		// Astral gates
+		final MovementUtils movementUtils = mock (MovementUtils.class);
 
 		// Set up object to test
 		final FogOfWarProcessingImpl proc = new FogOfWarProcessingImpl ();
@@ -333,6 +337,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		proc.setServerCityCalculations (cityCalc);
 		proc.setServerUnitCalculations (unitCalc);
 		proc.setExpandUnitDetails (expand);
+		proc.setMovementUtils (movementUtils);
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		proc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 

@@ -416,7 +416,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		else
 		{
 			// Calculate distances to every point on the map
-			final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances2 (getOverlandMapUI ().getUnitMoveFrom (),
+			final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (getOverlandMapUI ().getUnitMoveFrom (),
 				getClient ().getOurPlayerID (), unitStack, doubleMovementRemaining,  getClient ().getPlayers (),
 				getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 				getClient ().getClientDB ());

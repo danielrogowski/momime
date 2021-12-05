@@ -959,6 +959,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="tileSetBitmaskGenerator" ref="tileSetBitmaskGenerator" />
+		<property name="movementUtils" ref="movementUtils" />
 	</bean>
 	
 	<bean id="miniMapBitmapGenerator" class="momime.client.calculations.MiniMapBitmapGeneratorImpl">

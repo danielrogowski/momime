@@ -3,6 +3,7 @@ package momime.server.fogofwar;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -44,6 +45,7 @@ import momime.common.messages.servertoclient.FogOfWarStateMessageData;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
@@ -63,7 +65,7 @@ import momime.server.database.ServerDatabaseValues;
  *
  * i.e. methods for when the true values remain the same but the visible area changes
  */
-public class FogOfWarProcessingImpl implements FogOfWarProcessing
+public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (FogOfWarProcessingImpl.class);
@@ -100,6 +102,9 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Movement utils */
+	private MovementUtils movementUtils;
 	
 	/**
 	 * Marks that we can see a particular cell
@@ -208,10 +213,10 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
 				ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null)
 		{
-			for (final Plane plane : db.getPlane ())
-				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-						canSee (priv.getFogOfWar (), trueMap.getMap (), x, y, plane.getPlaneNumber ());
+			for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+						canSee (priv.getFogOfWar (), trueMap.getMap (), x, y, z);
 		}
 		else
 		{
@@ -286,6 +291,12 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 						canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (), thisSpell.getCityLocation ().getX (),
 							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getZ (), spellDef.getSpellRadius ());
 				}
+			
+			// Astral Gate lets us see 1 cell on the opposite plane, so movement routines know whether its safe to cross
+			final Set<MapCoordinates2DEx> astralGates = getMovementUtils ().findAstralGates (player.getPlayerDescription ().getPlayerID (), trueMap.getMaintainedSpell ());
+			for (final MapCoordinates2DEx astralGate : astralGates)
+				for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
+					canSee (priv.getFogOfWar (), trueMap.getMap (), astralGate.getX (), astralGate.getY (), z);
 		}
 	}
 
@@ -1013,5 +1024,21 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Movement utils
+	 */
+	public final MovementUtils getMovementUtils ()
+	{
+		return movementUtils;
+	}
+
+	/**
+	 * @param u Movement utils
+	 */
+	public final void setMovementUtils (final MovementUtils u)
+	{
+		movementUtils = u;
 	}
 }

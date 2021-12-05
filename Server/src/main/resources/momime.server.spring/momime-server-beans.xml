@@ -1003,6 +1003,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="movementUtils" ref="movementUtils" />
 	</bean>
 	
 	<!-- Beans created each time a new session is started

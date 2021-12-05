@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Set;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
@@ -17,17 +18,20 @@ import momime.client.config.MomImeClientConfig;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.AnimationEx;
 import momime.common.database.CityImage;
+import momime.common.database.CityViewElement;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SmoothedTile;
 import momime.common.database.SmoothedTileTypeEx;
+import momime.common.database.Spell;
 import momime.common.database.TileSetEx;
 import momime.common.database.TileTypeEx;
 import momime.common.database.TileTypeRoad;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MemoryGridCell;
+import momime.common.movement.MovementUtils;
 
 /**
  * Generates large bitmap images showing the current state of the entire overland map and fog of war.  This includes terrain (tiles + map features)
@@ -57,6 +61,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	
 	/** Bitmask generator */
 	private TileSetBitmaskGenerator tileSetBitmaskGenerator;
+
+	/** Movement utils */
+	private MovementUtils movementUtils;
 	
 	/** Smoothed tiles to display at every map cell */
 	private SmoothedTile [] [] [] smoothedTiles;
@@ -308,6 +315,37 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 				getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.SOUTH.getDirectionID ());
 			}
 			getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
+		}
+		
+		// Astral gates (only where there isn't a city, also only astral gates owned by the player are visible)
+		final Set<MapCoordinates2DEx> astralGates = getMovementUtils ().findAstralGates
+			(getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
+		AnimationEx astralGateAnim = null;
+		
+		for (final MapCoordinates2DEx astralGate : astralGates)
+		{
+			final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(mapViewPlane).getRow ().get (astralGate.getY ()).getCell ().get (astralGate.getX ());
+			if (gc.getCityData () == null)
+			{
+				if (astralGateAnim == null)
+				{
+					final Spell astralGateSpell = getClient ().getClientDB ().findSpell (CommonDatabaseConstants.SPELL_ID_ASTRAL_GATE, "generateOverlandMapBitmaps");
+					final CityViewElement astralGateCityView = getClient ().getClientDB ().findCityViewElementSpellEffect (astralGateSpell.getSpellHasCityEffect ().get (0));
+					astralGateAnim = getClient ().getClientDB ().findAnimation (astralGateCityView.getCityViewAnimation (), "generateOverlandMapBitmaps");
+				}
+
+				// Astral gate images are badly off-centred so no way to automatically calculate the position, just hard code it
+				final int xpos = (astralGate.getX () * overlandMapTileSet.getTileWidth ()) - 1;
+				final int ypos = (astralGate.getY () * overlandMapTileSet.getTileHeight ()) - 15;
+				
+				// Astral gate anim is longer than 4 frames, but just use the first 4 aligned with the overland map frames
+				for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+				{
+					final BufferedImage image = getUtils ().loadImage (astralGateAnim.getFrame ().get (frameNo).getImageFile ());
+					g [frameNo].drawImage (image, xpos, ypos, null);
+				}
+			}
 		}
 		
 		// Node auras have to be drawn in a final pass, so they appear over the top of cities
@@ -576,6 +614,22 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		tileSetBitmaskGenerator = g;
 	}
 
+	/**
+	 * @return Movement utils
+	 */
+	public final MovementUtils getMovementUtils ()
+	{
+		return movementUtils;
+	}
+
+	/**
+	 * @param u Movement utils
+	 */
+	public final void setMovementUtils (final MovementUtils u)
+	{
+		movementUtils = u;
+	}
+	
 	/**
 	 * @return Smoothed tiles to display at every map cell
 	 */

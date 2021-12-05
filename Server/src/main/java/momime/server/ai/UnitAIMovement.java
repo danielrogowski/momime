@@ -110,16 +110,6 @@ public interface UnitAIMovement
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders,
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException;
-
-	/**
-	 * AI looks for a tower garissoned by our units, and imagines that we are stood there and rechecks preceeding movement codes.
-	 * 
-	 * @param units The units to move
-	 * @param moves Array listing all cells we can reach and the paths to get there
-	 * @param sys Overland map coordinate system
-	 * @return See AIMovementDecision for explanation of return values
-	 */
-	public AIMovementDecision considerUnitMovement_PlaneShift (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys);
 	
 	/**
 	 * AI looks for a transport to get in (final AIUnitsAndRatings units, or stay where we are if we are already in one).

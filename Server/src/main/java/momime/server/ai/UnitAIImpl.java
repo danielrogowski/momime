@@ -668,10 +668,6 @@ public final class UnitAIImpl implements UnitAI
 					decision = getUnitAIMovement ().considerUnitMovement_JoinStack (units, moves, ourUnitsInSameCategory, enemyUnits, isRaiders, terrain, sys, db);
 					break;
 					
-				case PLANE_SHIFT:
-					decision = getUnitAIMovement ().considerUnitMovement_PlaneShift (units, moves, sys);
-					break;
-					
 				case GET_IN_TRANSPORT:
 					decision = getUnitAIMovement ().considerUnitMovement_GetInTransport (units, moves, sys);
 					break;

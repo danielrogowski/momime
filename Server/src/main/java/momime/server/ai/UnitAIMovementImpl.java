@@ -495,26 +495,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	}
 
 	/**
-	 * AI looks for a tower garissoned by our units, and imagines that we are stood there and rechecks preceeding movement codes.
-	 * 
-	 * @param units The units to move
-	 * @param moves Array listing all cells we can reach and the paths to get there
-	 * @param sys Overland map coordinate system
-	 * @return See AIMovementDecision for explanation of return values
-	 */
-	@Override
-	public final AIMovementDecision considerUnitMovement_PlaneShift (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys)
-	{
-		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
-		
-		log.warn ("AI movement code PLANE_SHIFT is not yet implemented");
-		
-		final AIMovementDecision decision = null;
-		
-		return decision;
-	}
-	
-	/**
 	 * AI looks for a transport to get in (or stay where we are if we are already in one).
 	 * 
 	 * @param units The units to move

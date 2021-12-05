@@ -5414,11 +5414,6 @@ but the sum of our UARs if totalled across all reachable stacks of our units of 
 (This needs some care so that in simultaneous turns games, the two unit stacks don't keep crossing past each other).</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="JOIN_STACK" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="P"><xsd:annotation>
-				<xsd:documentation>If there is a reachable Tower that is garrisoned by our units, and if we imagine we are standing at the tower and recheck all
-preceeding movement codes then we would have something useful to do on the other plane, then head to the tower.</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="PLANE_SHIFT" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="T"><xsd:annotation>
 				<xsd:documentation>If we are in a transport then stay there.  If we aren't in a transport but can reach one that has space remaining, then head for it.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="GET_IN_TRANSPORT" /></xsd:appinfo>

@@ -753,7 +753,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		}
 		
 		// If the combat is a stalemate, then just declare the defender as the winner
-		if ((combatPlayers.bothFound ()) && (tc.getCombatTurnCount () >= COMBAT_MAX_TURNS))
+		if ((mom.getPlayers ().size () > 0) && (combatPlayers.bothFound ()) && (tc.getCombatTurnCount () != null) && (tc.getCombatTurnCount () >= COMBAT_MAX_TURNS))
 		{
 			log.debug ("Combat at " + combatLocation + " timed out");
 			getCombatStartAndEnd ().combatEnded (combatLocation, (PlayerServerDetails) combatPlayers.getAttackingPlayer (),

@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -613,6 +614,8 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		assertEquals ("MF02", fow.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (25).getTerrainData ().getMapFeatureID ());
 		assertEquals ("MF03", fow.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (37).getTerrainData ().getMapFeatureID ());
 		assertEquals ("MF03", fow.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (49).getTerrainData ().getMapFeatureID ());
+
+		verifyNoMoreInteractions (random);
 	}
 	
 	/**
@@ -1279,6 +1282,8 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE01", null, null, null, new MapCoordinates3DEx (40, 10, 0), null, sd);
 		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, null, null, new MapCoordinates3DEx (40, 10, 0), null, sd);
 		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, null, null, new MapCoordinates3DEx (41, 10, 0), null, sd);
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**
@@ -1380,5 +1385,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Check results
 		verify (midTurn, times (5)).addUnitOnServerAndClients (gsk, "UN009", coords, null, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
 		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN004", coords, null, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 }

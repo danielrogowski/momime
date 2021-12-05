@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -157,6 +158,8 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				}
 			}
 		}
+		
+		verifyNoMoreInteractions (dup);
 	}
 	
 	/**
@@ -267,6 +270,8 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				}
 			}
 		}
+		
+		verifyNoMoreInteractions (dup);
 	}
 
 	/*
@@ -393,6 +398,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 8; playerIndex++)
 			verify (proc, times (playerIndex == (trueSpell.getCastingPlayerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
 				(trueMap, players.get (playerIndex), players, "addExistingTrueMaintainedSpellToClients", sd, db);
+
+		verifyNoMoreInteractions (dup);
+		verifyNoMoreInteractions (proc);
 	}
 	
 	/**
@@ -537,6 +545,8 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
 				(trueMap, players.get (playerIndex), players, "addBuildingOnServerAndClients", sd, db);
+		
+		verifyNoMoreInteractions (proc);
 	}
 
 	/**
@@ -690,6 +700,8 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
 				(trueMap, players.get (playerIndex), players, "addBuildingOnServerAndClients", sd, db);
+		
+		verifyNoMoreInteractions (proc);
 	}
 	
 	/**
@@ -824,6 +836,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
 				(trueMap, players.get (playerIndex), players, "destroyBuildingOnServerAndClients", sd, db);
+
+		verifyNoMoreInteractions (buildingUtils);
+		verifyNoMoreInteractions (proc);
 	}
 	
 	/**

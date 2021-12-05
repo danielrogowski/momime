@@ -9,8 +9,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -281,18 +281,20 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (0, msg.getUnitPlacement ().size ());		// Is zero because these are added by positionCombatUnits (), which is mocked out
 		
 		// Check that units were added into combat on both sides
-		verify (combatProcessing, times (1)).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, defendingLocation,
+		verify (combatProcessing).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, defendingLocation,
 			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X, CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y,
 			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_ROWS, CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FACING,
 			UnitCombatSideID.DEFENDER, null, tc.getCombatMap (), mom);
 
-		verify (combatProcessing, times (1)).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, attackingFrom,
+		verify (combatProcessing).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, attackingFrom,
 			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y,
 			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_ROWS, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING,
 			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
 		
 		// Check the combat was started
-		verify (combatProcessing, times (1)).progressCombat (defendingLocation, true, false, mom);
+		verify (combatProcessing).progressCombat (defendingLocation, true, false, mom);
+		
+		verifyNoMoreInteractions	(combatProcessing);
 	}
 
 	/**
@@ -444,18 +446,20 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (0, msg.getUnitPlacement ().size ());		// Is zero because these are added by positionCombatUnits (), which is mocked out
 		
 		// Check that units were added into combat on both sides
-		verify (combatProcessing, times (1)).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, defendingLocation,
+		verify (combatProcessing).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, defendingLocation,
 			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X, CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y,
 			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_ROWS, CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FACING,
 			UnitCombatSideID.DEFENDER, defendingUnitURNs, tc.getCombatMap (), mom);
 
-		verify (combatProcessing, times (1)).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, attackingFrom,
+		verify (combatProcessing).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, attackingFrom,
 			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y,
 			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_ROWS, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING,
 			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
 		
 		// Check the combat was started
-		verify (combatProcessing, times (1)).progressCombat (defendingLocation, true, false, mom);
+		verify (combatProcessing).progressCombat (defendingLocation, true, false, mom);
+
+		verifyNoMoreInteractions	(combatProcessing);
 	}
 	
 	/**
@@ -592,20 +596,20 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (defendingPd.getPlayerID ().intValue (), msg.getDefendingPlayerID ());
 		
 		// Check that units were added into combat on both sides
-		verify (combatProcessing, times (1)).positionCombatUnits (eq (defendingLocation), any (StartCombatMessage.class), eq (attackingPlayer), isNull (),
+		verify (combatProcessing).positionCombatUnits (eq (defendingLocation), any (StartCombatMessage.class), eq (attackingPlayer), isNull (),
 			eq (combatMapCoordinateSystem), eq (defendingLocation),
 			eq (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X), eq (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y),
 			eq (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_ROWS), eq (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FACING),
 			eq (UnitCombatSideID.DEFENDER), isNull (), eq (tc.getCombatMap ()), eq (mom));
 
-		verify (combatProcessing, times (1)).positionCombatUnits (eq (defendingLocation), any (StartCombatMessage.class), eq (attackingPlayer), isNull (),
+		verify (combatProcessing).positionCombatUnits (eq (defendingLocation), any (StartCombatMessage.class), eq (attackingPlayer), isNull (),
 			eq (combatMapCoordinateSystem), eq (attackingFrom),
 			eq (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X), eq (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y),
 			eq (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_ROWS), eq (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING),
 			eq (UnitCombatSideID.ATTACKER), eq (attackingUnitURNs), eq (tc.getCombatMap ()), eq (mom));
 		
 		// Check the combat wasn't started
-		verify (combatProcessing, times (0)).progressCombat (defendingLocation, true, false, mom);
+		verifyNoMoreInteractions	(combatProcessing);
 	}
 	
 	/**
@@ -776,18 +780,22 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti, times (1)).switchOffSpellsCastInCombat (combatLocation, mom);
-		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
-		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
+
+		verifyNoMoreInteractions	(midTurnMulti);
+		verifyNoMoreInteractions	(fowProcessing);
+		verifyNoMoreInteractions	(serverResourceCalculations);
 	}
 
 	/**
@@ -920,22 +928,26 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti, times (1)).switchOffSpellsCastInCombat (combatLocation, mom);
-		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
-		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the attacker's units advanced forward
-		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
+		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
+		
+		verifyNoMoreInteractions	(midTurnMulti);
+		verifyNoMoreInteractions	(fowProcessing);
+		verifyNoMoreInteractions	(serverResourceCalculations);
 	}
 
 	/**
@@ -1071,22 +1083,26 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti, times (1)).switchOffSpellsCastInCombat (combatLocation, mom);
-		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
-		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the attacker's units advanced forward, in the process jumping to plane 0
-		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
+		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 0), players, gsk, sd, db);
+
+		verifyNoMoreInteractions	(midTurnMulti);
+		verifyNoMoreInteractions	(fowProcessing);
+		verifyNoMoreInteractions	(serverResourceCalculations);
 	}
 	
 	/**
@@ -1227,6 +1243,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 			trueMap.getUnit ().add (tu);
 		}
 		
+		// It isn't their Wizard's Fortress
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
+		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
+		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID ())).thenReturn (10);
+		
 		// Set up object to test
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
@@ -1244,8 +1266,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setOverlandMapServerUtils (overlandMapServerUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setCityProcessing (cityProcessing);
-		cse.setMemoryBuildingUtils (mock (MemoryBuildingUtils.class));
-		cse.setCityServerUtils (mock (CityServerUtils.class));
+		cse.setMemoryBuildingUtils (memoryBuildingUtils);
+		cse.setCityServerUtils (cityServerUtils);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
@@ -1264,29 +1286,35 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti, times (1)).switchOffSpellsCastInCombat (combatLocation, mom);
-		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
-		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the city owner was updated
-		verify (cityProcessing, times (1)).captureCity (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (cityProcessing).captureCity (combatLocation, attackingPlayer, defendingPlayer, mom);
 		
 		// Check the attacker's units advanced forward into the city
-		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
+		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
 		
 		// Check the attacker swiped gold from the defender
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped);
-		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
+		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped);
+		verify (resourceValueUtils).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
+		
+		verifyNoMoreInteractions	(midTurnMulti);
+		verifyNoMoreInteractions	(fowProcessing);
+		verifyNoMoreInteractions	(serverResourceCalculations);
+		verifyNoMoreInteractions	(resourceValueUtils);
+		verifyNoMoreInteractions	(cityProcessing);
 	}
 	
 	/**
@@ -1431,6 +1459,11 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 			trueMap.getUnit ().add (tu);
 		}
 		
+		// It isn't their Wizard's Fortress
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
+		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID ())).thenReturn (10);
+		
 		// Set up object to test
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
@@ -1449,7 +1482,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCityServerUtils (cityServerUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setCityProcessing (cityProcessing);
-		cse.setMemoryBuildingUtils (mock (MemoryBuildingUtils.class));
+		cse.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
@@ -1468,29 +1501,35 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		assertEquals (SelectNextUnitToMoveOverlandMessage.class.getName (), attackingMsgs.getMessages ().get (1).getClass ().getName ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti, times (1)).switchOffSpellsCastInCombat (combatLocation, mom);
-		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
-		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the city was trashed
-		verify (cityProcessing, times (1)).razeCity (combatLocation, mom);
+		verify (cityProcessing).razeCity (combatLocation, mom);
 		
 		// Check the attacker's units advanced forward into where the city used to be
-		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
+		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
 		
 		// Check the attacker swiped gold from the defender
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);
-		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
+		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);
+		verify (resourceValueUtils).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
+		
+		verifyNoMoreInteractions	(midTurnMulti);
+		verifyNoMoreInteractions	(fowProcessing);
+		verifyNoMoreInteractions	(serverResourceCalculations);
+		verifyNoMoreInteractions	(resourceValueUtils);
+		verifyNoMoreInteractions	(cityProcessing);
 	}
 
 	/**
@@ -1623,27 +1662,31 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	    assertNull (msg1.getGoldFromRazing ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti, times (1)).switchOffSpellsCastInCombat (combatLocation, mom);
-		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
-		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the attacker's units advanced forward
-		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
+		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
 			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
 		
 		// Check pending movement was removed
 		assertEquals (1, attackingPriv.getPendingMovement ().size ());
 		assertSame (attackerOtherPendingMovement, attackingPriv.getPendingMovement ().get (0));
 		assertNull (gc.getCombatAttackerPendingMovement ());
+		
+		verifyNoMoreInteractions	(midTurnMulti);
+		verifyNoMoreInteractions	(fowProcessing);
+		verifyNoMoreInteractions	(serverResourceCalculations);
 	}
 
 	/**
@@ -1770,25 +1813,26 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	    assertNull (msg1.getGoldFromRazing ());
 		
 		// Check other tidyups were done
-		verify (midTurnMulti, times (1)).switchOffSpellsCastInCombat (combatLocation, mom);
-		verify (combatProcessing, times (1)).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing, times (1)).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
-		verify (midTurnMulti, times (1)).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
+		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
+		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing, times (1)).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
 		
 		// Update both players' production
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
-		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
-		
-		// Check the attacker's units do not advanced forward
-		verify (midTurnMulti, times (0)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
+		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check pending movement was removed
 		assertNull (gc.getCombatAttackerPendingMovement ());
 		assertNull (gc.getCombatDefenderPendingMovement ());
+		
+		// Check the attacker's units do not advanced forward
+		verifyNoMoreInteractions	(midTurnMulti);
+		verifyNoMoreInteractions	(fowProcessing);
+		verifyNoMoreInteractions	(serverResourceCalculations);
 	}
 }

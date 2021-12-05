@@ -3,13 +3,12 @@ package momime.server.process;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -221,16 +220,16 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
+		verify (attackResolutionProc).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
 			steps, mom);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
+		verify (midTurnSingle).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
 			specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc, times (1)).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer,
+		verify (calc).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null);
 		
 		// Check units facing each other
@@ -238,13 +237,17 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		assertEquals (3, defender.getCombatHeading ().intValue ());
 		
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (wu, times (1)).killUnit (defender.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
-		verify (wu, times (0)).killUnit (attacker.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
+		verify (wu).killUnit (defender.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
+		verify (wu).process (mom);
 		
-		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
-		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
+		verify (midTurnMulti).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		
-		verify (combatStartAndEnd, times (0)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), any (PlayerServerDetails.class), isNull (), eq (mom));
+		verifyNoMoreInteractions (attackResolutionProc);
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (calc);
+		verifyNoMoreInteractions (midTurnSingle);
+		verifyNoMoreInteractions (midTurnMulti);
+		verifyNoMoreInteractions (combatStartAndEnd);
 	}
 
 	/**
@@ -400,16 +403,16 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
+		verify (attackResolutionProc).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
 			steps, mom);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
+		verify (midTurnSingle).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc, times (1)).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer,
+		verify (calc).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null);
 		
 		// Check units facing each other
@@ -417,14 +420,20 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		assertEquals (3, defender.getCombatHeading ().intValue ());
 
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (wu, times (1)).killUnit (defender.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
-		verify (wu, times (0)).killUnit (attacker.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
+		verify (wu).killUnit (defender.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
+		verify (wu).process (mom);
 		
-		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
-		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
+		verify (midTurnMulti).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		
 		// Defending player won
-		verify (combatStartAndEnd, times (1)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), isNull (), eq (mom));
+		verify (combatStartAndEnd).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), isNull (), eq (mom));
+		
+		verifyNoMoreInteractions (attackResolutionProc);
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (calc);
+		verifyNoMoreInteractions (midTurnSingle);
+		verifyNoMoreInteractions (midTurnMulti);
+		verifyNoMoreInteractions (combatStartAndEnd);
 	}
 
 	/**
@@ -542,14 +551,18 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<AttackResolutionStepContainer> steps = new ArrayList<AttackResolutionStepContainer> ();
 		steps.add (new AttackResolutionStepContainer (spellDamage));
 		
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
+		verify (attackResolutionProc).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
+		verify (midTurnSingle).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
 			null, "SP001", specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc, times (1)).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		verify (calc).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		
+		verifyNoMoreInteractions (attackResolutionProc);
+		verifyNoMoreInteractions (calc);
+		verifyNoMoreInteractions (midTurnSingle);
 	}
 	
 	/**
@@ -701,16 +714,20 @@ public final class TestDamageProcessorImpl extends ServerTestData
 
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender1Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender2Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender3Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
+		verify (attackResolutionProc).processAttackResolutionStep (null, defender1Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
+		verify (attackResolutionProc).processAttackResolutionStep (null, defender2Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
+		verify (attackResolutionProc).processAttackResolutionStep (null, defender3Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		verify (midTurnSingle, times (1)).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
+		verify (midTurnSingle).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
 			null, "SP001", specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc, times (1)).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		verify (calc).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		
+		verifyNoMoreInteractions (attackResolutionProc);
+		verifyNoMoreInteractions (calc);
+		verifyNoMoreInteractions (midTurnSingle);
 	}
 	
 	/**

@@ -10,8 +10,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -783,8 +783,9 @@ public final class TestCityCalculationsImpl
 		assertEquals (1, breakdown.getTileTypeProduction ().get (1).getDoubleProductionAmountEachTile ());
 		assertEquals (3, breakdown.getTileTypeProduction ().get (1).getDoubleProductionAmountAllTiles ());
 		
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (breakdown, 20, ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (breakdown, 3, ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (breakdown, 20, ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (breakdown, 3, ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
+		verifyNoMoreInteractions (cityProductionUtils);
 	}
 
 	/**
@@ -3509,7 +3510,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (3, gold.getDoubleProductionAmountEachPopulation ());
 		assertEquals (18, gold.getDoubleProductionAmountAllPopulation ());
 		
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (gold, 18, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (gold, 18, null, db);
+		verifyNoMoreInteractions (cityProductionUtils);
 	}
 	
 	/**
@@ -3671,10 +3673,11 @@ public final class TestCityCalculationsImpl
 		assertEquals (5, productionValues.getProductionType ().get (1).getPopulationTaskProduction ().get (0).getDoubleProductionAmountEachPopulation ());
 		assertEquals (25, productionValues.getProductionType ().get (1).getPopulationTaskProduction ().get (0).getDoubleProductionAmountAllPopulation ());
 		
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 10,
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 10,
 			ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 25,
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 25,
 			ProductionAmountBucketID.BEFORE_PERCENTAGE_BONUSES, db);
+		verifyNoMoreInteractions (cityProductionUtils);
 	}
 	
 	/**
@@ -3732,8 +3735,9 @@ public final class TestCityCalculationsImpl
 		assertEquals (3, productionValues.getProductionType ().get (1).getPickTypeProduction ().get (0).getDoubleProductionAmountEachPick ());
 		assertEquals (15, productionValues.getProductionType ().get (1).getPickTypeProduction ().get (0).getDoubleProductionAmountAllPicks ());
 		
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 10, null, db);
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 15, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 10, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 15, null, db);
+		verifyNoMoreInteractions (cityProductionUtils);
 	}
 	
 	/**
@@ -3787,8 +3791,9 @@ public final class TestCityCalculationsImpl
 		assertEquals (1, productionValues.getProductionType ().get (1).getPlaneProduction ().get (0).getFortressPlane ());
 		assertEquals (3, productionValues.getProductionType ().get (1).getPlaneProduction ().get (0).getDoubleProductionAmountFortressPlane ());
 		
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 2, null, db);
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 3, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 2, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 3, null, db);
+		verifyNoMoreInteractions (cityProductionUtils);
 	}
 	
 	/**
@@ -3866,7 +3871,8 @@ public final class TestCityCalculationsImpl
 		assertEquals ("BL01", productionValues.getProductionType ().get (2).getBuildingBreakdown ().get (0).getBuildingID ());
 		assertEquals (25, productionValues.getProductionType ().get (2).getBuildingBreakdown ().get (0).getPercentageBonus ());
 		
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 3, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 3, null, db);
+		verifyNoMoreInteractions (cityProductionUtils);
 	}
 	
 	/**
@@ -3970,9 +3976,10 @@ public final class TestCityCalculationsImpl
 		assertEquals (50, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getBuildingMineralPercentageBonus ());	
 		assertEquals (36, productionValues.getProductionType ().get (2).getMapFeatureProduction ().get (0).getDoubleModifiedProductionAmountAllFeatures ());
 		
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 6, null, db);
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 8, null, db);
-		verify (cityProductionUtils, times (1)).addProductionAmountToBreakdown (productionValues.getProductionType ().get (2), 36, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (0), 6, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (1), 8, null, db);
+		verify (cityProductionUtils).addProductionAmountToBreakdown (productionValues.getProductionType ().get (2), 36, null, db);
+		verifyNoMoreInteractions (cityProductionUtils);
 	}
 	
 	/**

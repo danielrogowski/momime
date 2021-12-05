@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -1199,8 +1199,9 @@ public final class TestExpandUnitDetailsUtilsImpl
 		utils.addBonusesFromWeaponGrade (mu, weaponGrade, modifiedSkillValues, unitStackSkills, null, null, "MB01");
 		
 		// Check results
-		verify (unitDetailsUtils, times (1)).addSkillBonus (mu, null, bonus1, UnitSkillComponent.WEAPON_GRADE, modifiedSkillValues, unitStackSkills, null, null, "MB01");
-		verify (unitDetailsUtils, times (1)).addSkillBonus (mu, null, bonus2, UnitSkillComponent.WEAPON_GRADE, modifiedSkillValues, unitStackSkills, null, null, "MB01");
+		verify (unitDetailsUtils).addSkillBonus (mu, null, bonus1, UnitSkillComponent.WEAPON_GRADE, modifiedSkillValues, unitStackSkills, null, null, "MB01");
+		verify (unitDetailsUtils).addSkillBonus (mu, null, bonus2, UnitSkillComponent.WEAPON_GRADE, modifiedSkillValues, unitStackSkills, null, null, "MB01");
+		verifyNoMoreInteractions (unitDetailsUtils);
 	}
 	
 	/**
@@ -1434,14 +1435,12 @@ public final class TestExpandUnitDetailsUtilsImpl
 		utils.addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, null, null, "MB01", db);
 		
 		// Check results
-		verify (unitDetailsUtils, times (1)).addSkillBonus (mu, "US001", addsToSkill1, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
-		verify (unitDetailsUtils, times (0)).addSkillBonus (mu, "US002", addsToSkill2, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
-		verify (unitDetailsUtils, times (1)).addSkillBonus (mu, "US003", addsToSkill3, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
-		verify (unitDetailsUtils, times (0)).addSkillBonus (mu, "US004", addsToSkill4, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
-		verify (unitDetailsUtils, times (1)).addSkillBonus (mu, "US005", addsToSkill5, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
-		verify (unitDetailsUtils, times (0)).addSkillBonus (mu, "US006", addsToSkill6, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
-		verify (unitDetailsUtils, times (1)).addSkillBonus (mu, "US007", addsToSkill7, UnitSkillComponent.COMBAT_AREA_EFFECTS,
+		verify (unitDetailsUtils).addSkillBonus (mu, "US001", addsToSkill1, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
+		verify (unitDetailsUtils).addSkillBonus (mu, "US003", addsToSkill3, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
+		verify (unitDetailsUtils).addSkillBonus (mu, "US005", addsToSkill5, null, modifiedSkillValues, unitStackSkills, null, null, "MB01");
+		verify (unitDetailsUtils).addSkillBonus (mu, "US007", addsToSkill7, UnitSkillComponent.COMBAT_AREA_EFFECTS,
 			modifiedSkillValues, unitStackSkills, null, null, "MB01");
+		verifyNoMoreInteractions (unitDetailsUtils);
 	}
 	
 	/**
@@ -1620,12 +1619,10 @@ public final class TestExpandUnitDetailsUtilsImpl
 		utils.addPenaltiesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, null, null, "MB01", db);
 		
 		// Check results
-		verify (unitDetailsUtils, times (1)).addSkillPenalty (mu, addsToSkill1, null, modifiedSkillValues, null, null, "MB01");
-		verify (unitDetailsUtils, times (0)).addSkillPenalty (mu, addsToSkill2, null, modifiedSkillValues, null, null, "MB01");
-		verify (unitDetailsUtils, times (1)).addSkillPenalty (mu, addsToSkill3, null, modifiedSkillValues, null, null, "MB01");
-		verify (unitDetailsUtils, times (0)).addSkillPenalty (mu, addsToSkill4, null, modifiedSkillValues, null, null, "MB01");
-		verify (unitDetailsUtils, times (1)).addSkillPenalty (mu, addsToSkill5, null, modifiedSkillValues, null, null, "MB01");
-		verify (unitDetailsUtils, times (0)).addSkillPenalty (mu, addsToSkill6, null, modifiedSkillValues, null, null, "MB01");
+		verify (unitDetailsUtils).addSkillPenalty (mu, addsToSkill1, null, modifiedSkillValues, null, null, "MB01");
+		verify (unitDetailsUtils).addSkillPenalty (mu, addsToSkill3, null, modifiedSkillValues, null, null, "MB01");
+		verify (unitDetailsUtils).addSkillPenalty (mu, addsToSkill5, null, modifiedSkillValues, null, null, "MB01");
+		verifyNoMoreInteractions (unitDetailsUtils);
 	}
 	
 	/**

@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -618,7 +618,9 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
 		// Check results
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), "RE02", 9);
+		verify (utils).addToAmountStored (priv.getResourceValue (), "RE02", 9);
+		
+		verifyNoMoreInteractions (utils);
 	}
 	
 	/**
@@ -658,7 +660,9 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
 		// Check results
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), "RE02", 4);
+		verify (utils).addToAmountStored (priv.getResourceValue (), "RE02", 4);
+		
+		verifyNoMoreInteractions (utils);
 	}
 	
 	/**
@@ -698,7 +702,9 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
 		// Check results
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), "RE02", 5);
+		verify (utils).addToAmountStored (priv.getResourceValue (), "RE02", 5);
+		
+		verifyNoMoreInteractions (utils);
 	}
 	
 	/**
@@ -738,7 +744,9 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.accumulateGlobalProductionValues (player, spellSettings, db);
 
 		// Check results
-		verify (utils, times (1)).addToAmountStored (priv.getResourceValue (), "RE02", 4);
+		verify (utils).addToAmountStored (priv.getResourceValue (), "RE02", 4);
+
+		verifyNoMoreInteractions (utils);
 	}
 	
 	/**
@@ -864,8 +872,6 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		
 		assertEquals (0, msgs.getMessages ().size ());
 		
-		verify (serverSpellCalculations, times (0)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
-		
 		// Spend 40 research - 60 left
 		priv.setSpellIDBeingResearched ("SP002");
 
@@ -892,8 +898,6 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 			assertEquals (60, msg1.getRemainingResearchCost ());
 		}
 
-		verify (serverSpellCalculations, times (0)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
-
 		// Spend 40 research - 20 left
 		msgs.getMessages ().clear ();
 		calc.progressResearch (player, players, sd, db);
@@ -918,8 +922,6 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 			assertEquals ("SP002", msg2.getSpellID ());
 			assertEquals (20, msg2.getRemainingResearchCost ());
 		}
-		
-		verify (serverSpellCalculations, times (0)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
 		
 		// Finish research
 		msgs.getMessages ().clear ();
@@ -954,7 +956,9 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 			assertEquals (SpellResearchStatusID.RESEARCHABLE, msg3.getSpellResearchStatus ().get (2).getStatus ());		// same
 		}
 
-		verify (serverSpellCalculations, times (1)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);		// <---
+		verify (serverSpellCalculations).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);		// <---
+		
+		verifyNoMoreInteractions (serverSpellCalculations);
 	}
 	
 	/**

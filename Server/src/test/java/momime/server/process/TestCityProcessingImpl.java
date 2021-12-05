@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -419,6 +420,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersArcanusLocation, Arrays.asList ("BL02"), null, null, sd, db);
 		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersMyrrorLocation, Arrays.asList ("BL02"), null, null, sd, db);
 		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersMyrrorLocation, Arrays.asList ("BL03"), null, null, sd, db);
+		
+		verifyNoMoreInteractions (serverCityCalc);
+		verifyNoMoreInteractions (midTurn);
 	}
 	
 	/**
@@ -692,6 +696,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Gets called once per city
 		verify (midTurn, times (3)).updatePlayerMemoryOfCity (eq (trueTerrain), eq (players), any (MapCoordinates3DEx.class), eq (fogOfWarSettings));
+
+		verifyNoMoreInteractions (serverCityCalc);
+		verifyNoMoreInteractions (midTurn);
 	}
 	
 	/**
@@ -790,6 +797,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 			trueMap.getMaintainedSpell (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
+		
+		verifyNoMoreInteractions (serverCityCalculations);
+		verifyNoMoreInteractions (resourceValueUtils);
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**
@@ -888,6 +899,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 			trueMap.getMaintainedSpell (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
+		
+		verifyNoMoreInteractions (serverCityCalculations);
+		verifyNoMoreInteractions (resourceValueUtils);
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**
@@ -986,6 +1001,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 			trueMap.getMaintainedSpell (), cityLocation, sd, db);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
+		
+		verifyNoMoreInteractions (serverCityCalculations);
+		verifyNoMoreInteractions (resourceValueUtils);
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**
@@ -1133,7 +1152,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		breakdown2.setFinalTotal (5);
 		
 		// Someone else's city
-		final MapCoordinates3DEx cityLocation3 = new MapCoordinates3DEx (25, 15, 0);
+		// final MapCoordinates3DEx cityLocation3 = new MapCoordinates3DEx (25, 15, 0);
 		
 		final OverlandMapCityData cityData3 = new OverlandMapCityData ();
 		cityData3.setCityOwnerID (4);
@@ -1190,7 +1209,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		verify (midTurn, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation2, sd.getFogOfWarSetting ());
 
 		assertEquals (0, cityData3.getNumberOfRebels ());
-		verify (serverCityCalculations, times (0)).ensureNotTooManyOptionalFarmers (cityData3);
-		verify (midTurn, times (0)).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation3, sd.getFogOfWarSetting ());
+		
+		verifyNoMoreInteractions (serverCityCalculations);
+		verifyNoMoreInteractions (midTurn);
 	}
 }

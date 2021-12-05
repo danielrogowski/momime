@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -354,11 +354,16 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		assertNull (attackerMsg.getOtherUnitID ());
 		assertNull (attackerMsg.getOtherPlayerID ());
 
-		verify (wu, times (1)).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
-		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		verify (wu).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu).process (mom);
+		
+		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
-		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (fogOfWarMidTurnChanges);
 	}
 	
 	/**
@@ -449,11 +454,16 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
 
-		verify (wu, times (1)).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
-		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		verify (wu).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu).process (mom);
+		
+		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
-		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (fogOfWarMidTurnChanges);
 	}
 
 	/**
@@ -593,11 +603,16 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		assertEquals ("GS", defenderMsg.getOtherUnitID ());
 		assertEquals (2, defenderMsg.getOtherPlayerID ().intValue ());
 		
-		verify (wu, times (1)).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
-		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		verify (wu).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu).process (mom);
+		
+		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
-		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		verify (fogOfWarMidTurnChanges).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (fogOfWarMidTurnChanges);
 	}
 	
 	/**
@@ -715,11 +730,11 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
 		assertEquals (0, defenderTrans.getNewTurnMessage ().size ());
 		
-		verify (wu, times (1)).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
-		verify (fogOfWarMidTurnChanges, times (0)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
-
-		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
-		verify (fogOfWarMidTurnChanges, times (0)).updatePlayerMemoryOfTerrain (trueTerrain, players, adjacentLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
+		verify (wu).killUnit (12, KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu).process (mom);
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (fogOfWarMidTurnChanges);
 	}
 	
 	/**

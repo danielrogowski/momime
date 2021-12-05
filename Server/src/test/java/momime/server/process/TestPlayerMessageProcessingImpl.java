@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -398,8 +398,10 @@ public final class TestPlayerMessageProcessingImpl
 		proc.continueMovement (0, mom);
 		
 		// Check results
-		verify (midTurn, times (1)).moveUnitStack (unitStack1, player1, false, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
-		verify (midTurn, times (1)).moveUnitStack (unitStack2, player2, false, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
+		verify (midTurn).moveUnitStack (unitStack1, player1, false, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
+		verify (midTurn).moveUnitStack (unitStack2, player2, false, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**
@@ -501,7 +503,8 @@ public final class TestPlayerMessageProcessingImpl
 		proc.continueMovement (2, mom);
 		
 		// Check results
-		verify (midTurn, times (0)).moveUnitStack (unitStack1, player1, false, (MapCoordinates3DEx) move1.getMoveFrom (), (MapCoordinates3DEx) move1.getMoveTo (), false, mom);
-		verify (midTurn, times (1)).moveUnitStack (unitStack2, player2, false, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
+		verify (midTurn).moveUnitStack (unitStack2, player2, false, (MapCoordinates3DEx) move2.getMoveFrom (), (MapCoordinates3DEx) move2.getMoveTo (), false, mom);
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 }

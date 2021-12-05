@@ -3,8 +3,8 @@ package momime.server.worldupdates;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -210,12 +210,12 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.process (mom);
 		
 		// Check was removed on server's true map details
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
 		assertEquals (UnitStatusID.ALIVE, tu.getStatus ());
 		
 		// Check player who owns the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn1.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
@@ -224,8 +224,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg1.getNewStatus ());
 
 		// Check another human player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn2.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
@@ -234,18 +234,14 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg2.getNewStatus ());
 		
 		// Check an AI player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
 		
 		// Check a human player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
-		
 		assertEquals (0, conn4.getMessages ().size ());
 		
-		// Check an AI player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+		verifyNoMoreInteractions (unitUtils);
+		verifyNoMoreInteractions (pendingMovementUtils);
 	}
 	
 	/**
@@ -420,13 +416,11 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.process (mom);
 		
 		// Check was set to DEAD on server's true map details
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
 		assertEquals (UnitStatusID.DEAD, tu.getStatus ());
 		
 		// Check player who owns the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
 		assertEquals (UnitStatusID.DEAD, mu1.getStatus ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn1.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
@@ -435,8 +429,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertEquals (UnitStatusID.DEAD, msg1.getNewStatus ());
 
 		// Check another human player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn2.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
@@ -445,18 +439,14 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg2.getNewStatus ());
 		
 		// Check an AI player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
 		
 		// Check a human player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
-		
 		assertEquals (0, conn4.getMessages ().size ());
 		
-		// Check an AI player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+		verifyNoMoreInteractions (unitUtils);
+		verifyNoMoreInteractions (pendingMovementUtils);
 	}
 	
 	/**
@@ -623,12 +613,12 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.process (mom);
 		
 		// Check was removed on server's true map details
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
 		assertEquals (UnitStatusID.ALIVE, tu.getStatus ());
 		
 		// Check player who owns the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn1.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
@@ -637,8 +627,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg1.getNewStatus ());
 
 		// Check another human player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn2.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
@@ -647,18 +637,14 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg2.getNewStatus ());
 		
 		// Check an AI player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
 		
 		// Check a human player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
-		
 		assertEquals (0, conn4.getMessages ().size ());
 		
-		// Check an AI player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+		verifyNoMoreInteractions (unitUtils);
+		verifyNoMoreInteractions (pendingMovementUtils);
 	}
 	
 	/**
@@ -825,12 +811,11 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.process (mom);
 
 		// Check was set back to GENERATED on server's true map details
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
 		assertEquals (UnitStatusID.GENERATED, tu.getStatus ());
 		
 		// Check player who owns the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn1.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
@@ -839,8 +824,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg1.getNewStatus ());
 
 		// Check another human player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn2.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
@@ -849,18 +834,14 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg2.getNewStatus ());
 		
 		// Check an AI player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
 		
 		// Check a human player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
-		
 		assertEquals (0, conn4.getMessages ().size ());
 		
-		// Check an AI player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+		verifyNoMoreInteractions (unitUtils);
+		verifyNoMoreInteractions (pendingMovementUtils);
 	}
 
 	/**
@@ -1027,12 +1008,12 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.process (mom);
 		
 		// Check was removed on server's true map details
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
 		assertEquals (UnitStatusID.ALIVE, tu.getStatus ());
 		
 		// Check player who owns the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn1.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
@@ -1041,8 +1022,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertEquals (UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION, msg1.getNewStatus ());
 
 		// Check another human player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn2.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
@@ -1051,18 +1032,14 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg2.getNewStatus ());
 		
 		// Check an AI player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
 		
 		// Check a human player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
-		
 		assertEquals (0, conn4.getMessages ().size ());
 		
-		// Check an AI player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+		verifyNoMoreInteractions (unitUtils);
+		verifyNoMoreInteractions (pendingMovementUtils);
 	}
 	
 	/**
@@ -1229,12 +1206,11 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.process (mom);
 		
 		// Check was removed on server's true map details
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
 		assertEquals (UnitStatusID.GENERATED, tu.getStatus ());
 		
 		// Check player who owns the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn1.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
@@ -1243,8 +1219,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertEquals (UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION, msg1.getNewStatus ());
 
 		// Check another human player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn2.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
@@ -1253,18 +1229,14 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg2.getNewStatus ());
 		
 		// Check an AI player who can see the unit
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
 		
 		// Check a human player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
-		
 		assertEquals (0, conn4.getMessages ().size ());
 		
-		// Check an AI player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+		verifyNoMoreInteractions (unitUtils);
+		verifyNoMoreInteractions (pendingMovementUtils);
 	}
 
 	/**
@@ -1474,13 +1446,11 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.process (mom);
 		
 		// Check was set to DEAD on server's true map details rather than completely removed
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
 		assertEquals (UnitStatusID.DEAD, tu.getStatus ());
 		
 		// Check player who owns the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
 		assertEquals (UnitStatusID.DEAD, mu1.getStatus ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn1.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
@@ -1489,9 +1459,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertEquals (UnitStatusID.DEAD, msg1.getNewStatus ());
 
 		// Check the other human player who they are in combat with
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
 		assertEquals (UnitStatusID.DEAD, mu2.getStatus ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn2.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
@@ -1500,18 +1469,11 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertEquals (UnitStatusID.DEAD, msg2.getNewStatus ());
 		
 		// Check a human player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
-		
 		assertEquals (0, conn3.getMessages ().size ());
 		
-		// Check an AI player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
-
 		// Check a human player who is a 3rd party observer who can see the unit from outside of the combat
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn5.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn5.getMessages ().get (0).getClass ().getName ());
@@ -1520,8 +1482,11 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg5.getNewStatus ());
 
 		// Check an AI player who is a 3rd party observer who can see the unit from outside of the combat
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow6.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv6.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow6.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv6.getPendingMovement (), tu.getUnitURN ());
+		
+		verifyNoMoreInteractions (unitUtils);
+		verifyNoMoreInteractions (pendingMovementUtils);
 	}
 	
 	/**
@@ -1723,13 +1688,11 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.process (mom);
 		
 		// Check was set to DEAD on server's true map details rather than completely removed
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
 		assertEquals (UnitStatusID.DEAD, tu.getStatus ());
 		
 		// Check player who owns the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
 		assertEquals (UnitStatusID.DEAD, mu1.getStatus ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn1.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
@@ -1738,8 +1701,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertEquals (UnitStatusID.DEAD, msg1.getNewStatus ());
 
 		// Check the other human player who they are in combat with
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn2.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
@@ -1748,18 +1711,11 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg2.getNewStatus ());
 		
 		// Check a human player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
-		
 		assertEquals (0, conn3.getMessages ().size ());
 		
-		// Check an AI player who can't see the unit
-		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
-		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
-
 		// Check a human player who is a 3rd party observer who can see the unit from outside of the combat
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
 		
 		assertEquals (1, conn5.getMessages ().size ());
 		assertEquals (KillUnitMessage.class.getName (), conn5.getMessages ().get (0).getClass ().getName ());
@@ -1768,7 +1724,10 @@ public final class TestKillUnitUpdate extends ServerTestData
 		assertNull (msg5.getNewStatus ());
 
 		// Check an AI player who is a 3rd party observer who can see the unit from outside of the combat
-		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow6.getUnit ());
-		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv6.getPendingMovement (), tu.getUnitURN ());
+		verify (unitUtils).removeUnitURN (tu.getUnitURN (), fow6.getUnit ());
+		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv6.getPendingMovement (), tu.getUnitURN ());
+		
+		verifyNoMoreInteractions (unitUtils);
+		verifyNoMoreInteractions (pendingMovementUtils);
 	}
 }

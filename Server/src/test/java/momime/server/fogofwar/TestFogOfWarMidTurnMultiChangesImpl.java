@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -152,13 +152,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.switchOffSpellsCastInCombat (new MapCoordinates3DEx (20, 10, 1), mom);
 		
 		// Check results
-		verify (wu, times (0)).switchOffSpell (1);
-		verify (wu, times (0)).switchOffSpell (2);
-		verify (wu, times (1)).switchOffSpell (3);
+		verify (wu).switchOffSpell (3);
+		verify (wu).switchOffSpell (6);
+		verify (wu).process (mom);
 		
-		verify (wu, times (0)).switchOffSpell (4);
-		verify (wu, times (0)).switchOffSpell (5);
-		verify (wu, times (1)).switchOffSpell (6);
+		verifyNoMoreInteractions (wu);
 	}
 	
 	/**
@@ -206,9 +204,10 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.switchOffSpellsInLocationOnServerAndClients (new MapCoordinates3DEx (20, 10, 1), 3, true, mom);
 
 		// Check results
-		verify (wu, times (0)).switchOffSpell (1);
-		verify (wu, times (0)).switchOffSpell (2);
-		verify (wu, times (1)).switchOffSpell (3);
+		verify (wu).switchOffSpell (3);
+		verify (wu).process (mom);
+		
+		verifyNoMoreInteractions (wu);
 	}
 	
 	/**
@@ -256,9 +255,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.switchOffSpellsInLocationOnServerAndClients (new MapCoordinates3DEx (20, 10, 1), 0, true, mom);
 
 		// Check results
-		verify (wu, times (1)).switchOffSpell (1);		// <--
-		verify (wu, times (0)).switchOffSpell (2);
-		verify (wu, times (1)).switchOffSpell (3);
+		verify (wu).switchOffSpell (1);		// <--
+		verify (wu).switchOffSpell (3);
+		verify (wu).process (mom);
+		
+		verifyNoMoreInteractions (wu);
 	}
 	
 	/**
@@ -300,7 +301,9 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), sd, db);
 		
 		// Check results
-		verify (single, times (1)).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (2), false, null, null, null, sd, db);
+		verify (single).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (2), false, null, null, null, sd, db);
+		
+		verifyNoMoreInteractions (single);
 	}
 	
 	/**
@@ -456,25 +459,18 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.healUnitsAndGainExperience (0, mom);
 		
 		// Check results
-		verify (unitServerUtils, times (1)).healDamage (unit1.getUnitDamage (), 2, false);		// 5% of 24 is 1.2, then round up
-		verify (direct, times (1)).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit1), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (unitServerUtils).healDamage (unit1.getUnitDamage (), 2, false);		// 5% of 24 is 1.2, then round up
+		verify (direct).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit1), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
-		verify (unitServerUtils, times (1)).healDamage (unit2.getUnitDamage (), 1, false);		// 5% of 16 is 0.8, then round up
-		verify (direct, times (0)).setDirectSkillValue (unit2, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit2), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (unitServerUtils).healDamage (unit2.getUnitDamage (), 1, false);		// 5% of 16 is 0.8, then round up
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit2), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
-		verify (unitServerUtils, times (0)).healDamage (unit3.getUnitDamage (), 1, false);
-		verify (direct, times (1)).setDirectSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit3), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
-
-		verify (unitServerUtils, times (0)).healDamage (unit4.getUnitDamage (), 1, false);
-		verify (direct, times (0)).setDirectSkillValue (unit4, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit4), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
-		
-		verify (unitServerUtils, times (0)).healDamage (unit5.getUnitDamage (), 1, false);
-		verify (direct, times (0)).setDirectSkillValue (unit5, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit5), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (direct).setDirectSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit3), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+	
+		verifyNoMoreInteractions (direct);
+		verifyNoMoreInteractions (midTurn);
 	}
 	
 	/**
@@ -587,23 +583,16 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.grantExperienceToUnitsInCombat (new MapCoordinates3DEx (20, 10, 1), UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
 		
 		// Check results
-		verify (direct, times (1)).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit1), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (direct).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (direct).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 13);
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit1), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
-		verify (direct, times (0)).setDirectSkillValue (unit2, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit2), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
-
-		verify (direct, times (0)).setDirectSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit3), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
-
-		verify (direct, times (0)).setDirectSkillValue (unit4, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit4), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
-
-		verify (direct, times (0)).setDirectSkillValue (unit5, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit5), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
-
-		verify (direct, times (1)).setDirectSkillValue (unit6, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit6), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (direct).setDirectSkillValue (unit6, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (direct).setDirectSkillValue (unit6, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 13);
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit6), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		
+		verifyNoMoreInteractions (direct);
+		verifyNoMoreInteractions (midTurn);
 	}
 	
 	/**
@@ -787,9 +776,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, gsk, sd, db);
 		
 		// Check player 1
-		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player1);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player1);
-
 		for (int n = 1; n <= 3; n++)
 			assertEquals (moveTo, unitUtils.findUnitURN (n, fow1.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());
 
@@ -803,8 +789,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			assertEquals (n, msg1.getUnitURN ().get (n-1).intValue ());
 
 		// Check player 2
-		verify (single, times (1)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player2);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player2);
+		verify (single).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player2);
 
 		assertEquals (1, conn2.getMessages ().size ());
 		final MoveUnitStackOverlandMessage msg2 = (MoveUnitStackOverlandMessage) conn2.getMessages ().get (0);
@@ -816,16 +801,12 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			assertEquals (n, msg2.getUnitURN ().get (n-1).intValue ());
 
 		// Check player 3
-		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player3);
-		verify (single, times (1)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player3);
+		verify (single).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player3);
 
 		for (int n = 1; n <= 3; n++)
 			assertEquals (moveTo, unitUtils.findUnitURN (n, fow3.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());
 
 		// Check player 4
-		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player4);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player4);
-
 		for (int n = 1; n <= 3; n++)		// Player still knows about the units, but at their old location, we didn't see them move
 			assertEquals (moveFrom, unitUtils.findUnitURN (n, fow4.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());
 
@@ -833,6 +814,8 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		
 		// The gems are still there
 		assertEquals ("MF01", moveToCell.getMapFeatureID ());
+		
+		verifyNoMoreInteractions (single);
 	}
 
 	/**
@@ -949,9 +932,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, gsk, sd, db);
 		
 		// Check player 1
-		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player1);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player1);
-
 		for (int n = 1; n <= 3; n++)
 			assertEquals (moveTo, unitUtils.findUnitURN (n, fow1.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());
 
@@ -1096,9 +1076,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, gsk, sd, db);
 		
 		// Check player 1
-		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player1);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player1);
-
 		for (int n = 1; n <= 3; n++)
 			assertEquals (moveTo, unitUtils.findUnitURN (n, fow1.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());
 

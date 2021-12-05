@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -203,14 +203,16 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castOverlandNow (player3, spell, null, null, mom);
 		
 		// Mocked method handles adding the spell to the true map, player's memories and sending the network msgs, so don't need to worry about any of that
-		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP001", null, null, false, null, null, null, false, players, db, sd);
+		verify (midTurn).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP001", null, null, false, null, null, null, false, players, db, sd);
 		
 		// CAE should get added also
-		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", pd3.getPlayerID (), 22, null, players, sd);
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", pd3.getPlayerID (), 22, null, players, sd);
 		
 		// Human players won't get any NTMs about it
 		assertEquals (0, trans1.getNewTurnMessage ().size ());
 		assertEquals (0, trans3.getNewTurnMessage ().size ());
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**
@@ -221,12 +223,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	@Test
 	public final void testCastOverlandNow_OverlandEnchantment_AlreadyExists () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-
 		// Maintained spell list
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
@@ -299,15 +295,11 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Run test
 		proc.castOverlandNow (player3, spell, null, null, mom);
 		
-		// So this shouldn't happen
-		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, null, false, players, db, sd);
-		
-		// CAE shouldn't be added either
-		verify (midTurn, times (0)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", null, pd3.getPlayerID (), 22, null, players, sd);
-		
 		// Human players won't get any NTMs about it
 		assertEquals (0, trans1.getNewTurnMessage ().size ());
 		assertEquals (0, trans3.getNewTurnMessage ().size ());
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**
@@ -383,6 +375,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Check that we recorded targetless spell on server.
 		// NB. players (arg just before 'db') intentionally null so that spell only added on server.
 		verify (midTurn).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID ().intValue (), "SP001", null, null, false, null, null, null, false, null, db, sd);
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 	
 	/**
@@ -531,17 +525,21 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, false, mom);
 		
 		// Prove right effect was added
-		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", attackingPd.getPlayerID (), 22, combatLocation, players, sd);
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", attackingPd.getPlayerID (), 22, combatLocation, players, sd);
 		
 		// We were charged MP for it
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
+		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		
 		// We were charged skill for it
 		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
-		verify (serverResourceCalc, times (1)).sendGlobalProductionValues (attackingPlayer, 35, true);
+		verify (serverResourceCalc).sendGlobalProductionValues (attackingPlayer, 35, true);
 		
 		// Can't cast another
 		assertTrue (gc.isSpellCastThisCombatTurn ());
+		
+		verifyNoMoreInteractions (midTurn);
+		verifyNoMoreInteractions (resourceValueUtils);
+		verifyNoMoreInteractions (serverResourceCalc);
 	}
 	
 	/**
@@ -664,18 +662,22 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, false, mom);
 		
 		// Prove right effect was added
-		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, attackingPd.getPlayerID (), "SP001", targetUnit.getUnitURN (),
+		verify (midTurn).addMaintainedSpellOnServerAndClients (gsk, attackingPd.getPlayerID (), "SP001", targetUnit.getUnitURN (),
 			"CSE004", true, null, null, null, false, players, db, sd);
 		
 		// We were charged MP for it
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
+		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		
 		// We were charged skill for it
 		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
-		verify (serverResourceCalc, times (1)).sendGlobalProductionValues (attackingPlayer, 35, true);
+		verify (serverResourceCalc).sendGlobalProductionValues (attackingPlayer, 35, true);
 		
 		// Can't cast another
 		assertTrue (gc.isSpellCastThisCombatTurn ());
+		
+		verifyNoMoreInteractions (midTurn);
+		verifyNoMoreInteractions (resourceValueUtils);
+		verifyNoMoreInteractions (serverResourceCalc);
 	}
 	
 	/**
@@ -812,15 +814,15 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, false, mom);
 		
 		// Prove unit was summoned
-		verify (combatProcessing, times (1)).setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, summonedUnit, combatLocation, combatLocation,
+		verify (combatProcessing).setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, summonedUnit, combatLocation, combatLocation,
 			adjustedTargetLocation, 8, UnitCombatSideID.ATTACKER, "SP001", db);
 		
 		// We were charged MP for it
-		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
+		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		
 		// We were charged skill for it
 		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
-		verify (serverResourceCalc, times (1)).sendGlobalProductionValues (attackingPlayer, 35, true);
+		verify (serverResourceCalc).sendGlobalProductionValues (attackingPlayer, 35, true);
 		
 		// Can't cast another
 		assertTrue (gc.isSpellCastThisCombatTurn ());
@@ -828,5 +830,9 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Check values on unit
 		assertEquals (98, summonedUnit.getDoubleCombatMovesLeft ().intValue ());
 		assertTrue (summonedUnit.isWasSummonedInCombat ());
+
+		verifyNoMoreInteractions (combatProcessing);
+		verifyNoMoreInteractions (resourceValueUtils);
+		verifyNoMoreInteractions (serverResourceCalc);
 	}
 }

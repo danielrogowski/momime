@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -287,6 +288,7 @@ public final class TestUnitCalculationsImpl
 		// Check results
 		verify (xu).setAmmoRemaining (8);
 		verify (xu).setManaRemaining (40);
+		verifyNoMoreInteractions (xu);
 
 		assertEquals (2, unit.getFixedSpellsRemaining ().size ());
 		assertEquals (4, unit.getFixedSpellsRemaining ().get (0).intValue ());

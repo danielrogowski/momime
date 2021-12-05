@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -615,6 +616,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Check nothing was queued
 		assertEquals (0, priv.getQueuedSpell ().size ());
 		assertEquals (0, msgs3.getMessages ().size ());
+		
+		verifyNoMoreInteractions (spellProcessing);
+		verifyNoMoreInteractions (msgProc);
+		verifyNoMoreInteractions (resourceValueUtils);
+		verifyNoMoreInteractions (serverResourceCalculations);
 	}
 
 	/**
@@ -1402,6 +1408,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, null, null, null, spell, 20, 30, null, combatLocation,
 			defendingPlayer, attackingPlayer, null, null, false, mom);
 		assertEquals (0, attackingMsgs.getMessages ().size ());
+		
+		verifyNoMoreInteractions (spellProcessing);
 	}
 
 	/**
@@ -1809,6 +1817,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, null, null, null, spell, 20, 30, null, combatLocation,
 			defendingPlayer, attackingPlayer, targetUnit, null, false, mom);
 		assertEquals (0, attackingMsgs.getMessages ().size ());
+
+		verifyNoMoreInteractions (spellProcessing);
 	}
 
 	/**
@@ -2383,6 +2393,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		verify (spellProcessing, times (1)).castCombatNow (attackingPlayer, null, null, null, spell, 20, 30, null, combatLocation,
 			defendingPlayer, attackingPlayer, null, combatTargetLocation, false, mom);
 		assertEquals (0, attackingMsgs.getMessages ().size ());
+		
+		verifyNoMoreInteractions (spellProcessing);
 	}
 
 	/**
@@ -2506,6 +2518,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		assertEquals (UpdateManaSpentOnCastingCurrentSpellMessage.class.getName (), msgs.getMessages ().get (0).getClass ().getName ());
 		final UpdateManaSpentOnCastingCurrentSpellMessage msg = (UpdateManaSpentOnCastingCurrentSpellMessage) msgs.getMessages ().get (0);
 		assertEquals (15+12, msg.getManaSpentOnCastingCurrentSpell ());
+		
+		verifyNoMoreInteractions (resourceValueUtils);
 	}
 
 	/**
@@ -2597,6 +2611,9 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		assertEquals (UpdateManaSpentOnCastingCurrentSpellMessage.class.getName (), msgs.getMessages ().get (1).getClass ().getName ());
 		final UpdateManaSpentOnCastingCurrentSpellMessage msg2 = (UpdateManaSpentOnCastingCurrentSpellMessage) msgs.getMessages ().get (1);
 		assertEquals (0, msg2.getManaSpentOnCastingCurrentSpell ());
+		
+		verifyNoMoreInteractions (resourceValueUtils);
+		verifyNoMoreInteractions (spellProcessing);
 	}
 	
 	/**
@@ -2702,5 +2719,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		assertEquals (UpdateManaSpentOnCastingCurrentSpellMessage.class.getName (), msgs.getMessages ().get (6).getClass ().getName ());
 		final UpdateManaSpentOnCastingCurrentSpellMessage msg2 = (UpdateManaSpentOnCastingCurrentSpellMessage) msgs.getMessages ().get (6);
 		assertEquals (1, msg2.getManaSpentOnCastingCurrentSpell ());
+		
+		verifyNoMoreInteractions (resourceValueUtils);
+		verifyNoMoreInteractions (spellProcessing);
 	}
 }

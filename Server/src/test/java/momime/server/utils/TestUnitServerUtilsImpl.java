@@ -10,8 +10,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -218,9 +218,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (direct, times (0)).setDirectSkillValue (unit, "HS01", 1);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS02", 1);
-		verify (direct, times (0)).setDirectSkillValue (unit, "HS03", 1);
+		verify (direct).setDirectSkillValue (unit, "HS02", 1);
 	}
 
 	/**
@@ -279,9 +277,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (direct, times (0)).setDirectSkillValue (unit, "HS01", 1);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS02", 1);
-		verify (direct, times (0)).setDirectSkillValue (unit, "HS03", 1);
+		verify (direct).setDirectSkillValue (unit, "HS02", 1);
 	}
 
 	/**
@@ -395,9 +391,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (direct, times (0)).setDirectSkillValue (unit, "HS01", 1);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS02", 1);
-		verify (direct, times (0)).setDirectSkillValue (unit, "HS03", 1);
+		verify (direct).setDirectSkillValue (unit, "HS02", 1);
 	}
 
 	/**
@@ -454,9 +448,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (direct, times (0)).setDirectSkillValue (unit, "HS01", 1);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS02", 1);
-		verify (direct, times (0)).setDirectSkillValue (unit, "HS03", 1);
+		verify (direct).setDirectSkillValue (unit, "HS02", 1);
 	}
 
 	/**
@@ -518,12 +510,12 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (direct, times (0)).setDirectSkillValue (unit, "HS04", 1);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 1);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 2);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 3);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 4);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 5);
+		verify (direct).setDirectSkillValue (unit, "HS05", 1);
+		verify (direct).setDirectSkillValue (unit, "HS05", 2);
+		verify (direct).setDirectSkillValue (unit, "HS05", 3);
+		verify (direct).setDirectSkillValue (unit, "HS05", 4);
+		verify (direct).setDirectSkillValue (unit, "HS05", 5);
+		verifyNoMoreInteractions (direct);
 	}
 
 	/**
@@ -589,11 +581,12 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 1);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 2);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 3);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 4);
-		verify (direct, times (1)).setDirectSkillValue (unit, "HS04", 1);		// Last point goes into HS04 because HS05 is maxed out
+		verify (direct).setDirectSkillValue (unit, "HS05", 1);
+		verify (direct).setDirectSkillValue (unit, "HS05", 2);
+		verify (direct).setDirectSkillValue (unit, "HS05", 3);
+		verify (direct).setDirectSkillValue (unit, "HS05", 4);
+		verify (direct).setDirectSkillValue (unit, "HS04", 1);		// Last point goes into HS04 because HS05 is maxed out
+		verifyNoMoreInteractions (direct);
 	}
 
 	/**
@@ -657,6 +650,9 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		
 		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv.getPendingMovement (), 5);
 		verify (midTurn).updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings, null);
+
+		verifyNoMoreInteractions (pendingMovementUtils);
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**

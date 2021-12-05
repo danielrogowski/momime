@@ -6,8 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -184,33 +184,29 @@ public final class TestCityProductionCalculationsImpl
 		assertSame (gold, productions.getProductionType ().get (2));
 		assertSame (food, productions.getProductionType ().get (3));
 		
-		verify (cityCalculations, times (1)).addProductionFromPopulation (productions, race,
+		verify (cityCalculations).addProductionFromPopulation (productions, race,
 			CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, 5, new MapCoordinates3DEx (20, 10, 1), buildings, db);
-		verify (cityCalculations, times (1)).addProductionFromPopulation (productions, race,
+		verify (cityCalculations).addProductionFromPopulation (productions, race,
 			CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, 7, new MapCoordinates3DEx (20, 10, 1), buildings, db);
-		verify (cityCalculations, times (1)).addProductionFromPopulation (productions, race,
+		verify (cityCalculations).addProductionFromPopulation (productions, race,
 			CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, 3, new MapCoordinates3DEx (20, 10, 1), buildings, db);
 		
-		verify (cityCalculations, times (1)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (0), null, pub.getPick (), db);
-		verify (cityCalculations, times (0)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (1), null, pub.getPick (), db);		// This city does not have it
-		verify (cityCalculations, times (1)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (2), null, pub.getPick (), db);
-		verify (cityCalculations, times (0)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (3), null, pub.getPick (), db);		// Its sold
-		verify (cityCalculations, times (0)).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (4), null, pub.getPick (), db);		// Fortress has special rules
+		verify (cityCalculations).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (0), null, pub.getPick (), db);
+		verify (cityCalculations).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (2), null, pub.getPick (), db);
 		
-		verify (cityCalculations, times (1)).addProductionFromFortressPickType (productions, pickType, 5, db);
-		verify (cityCalculations, times (1)).addProductionFromFortressPlane (productions, plane, db);
+		verify (cityCalculations).addProductionFromFortressPickType (productions, pickType, 5, db);
+		verify (cityCalculations).addProductionFromFortressPlane (productions, plane, db);
 		
-		verify (cityCalculations, times (0)).addProductionFromSpell (productions, spells.get (0), 4, db);		// Wrong location
-		verify (cityCalculations, times (1)).addProductionFromSpell (productions, spells.get (1), 4, db);
-		verify (cityCalculations, times (0)).addProductionFromSpell (productions, spells.get (2), 4, db);		// No location (spell that's not targeted on a city)
+		verify (cityCalculations).addProductionFromSpell (productions, spells.get (1), 4, db);
 		
-		verify (cityCalculations, times (1)).addProductionFromMapFeatures (productions, map, new MapCoordinates3DEx (20, 10, 1), mapSize, db, 2, 0);
+		verify (cityCalculations).addProductionFromMapFeatures (productions, map, new MapCoordinates3DEx (20, 10, 1), mapSize, db, 2, 0);
 		
-		verify (cityCalculations, times (1)).halveAddPercentageBonusAndCapProduction (cityOwner, rations, 0, difficultyLevel, db);
-		verify (cityCalculations, times (1)).halveAddPercentageBonusAndCapProduction (cityOwner, production, 0, difficultyLevel, db);
-		verify (cityCalculations, times (1)).halveAddPercentageBonusAndCapProduction (cityOwner, gold, 0, difficultyLevel, db);
-		verify (cityCalculations, times (1)).halveAddPercentageBonusAndCapProduction (cityOwner, food, 0, difficultyLevel, db);
+		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwner, rations, 0, difficultyLevel, db);
+		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwner, production, 0, difficultyLevel, db);
+		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwner, gold, 0, difficultyLevel, db);
+		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwner, food, 0, difficultyLevel, db);
 		
-		verify (cityCalculations, times (1)).calculateGoldTradeBonus (gold, map, new MapCoordinates3DEx (20, 10, 1), null, mapSize, db);
+		verify (cityCalculations).calculateGoldTradeBonus (gold, map, new MapCoordinates3DEx (20, 10, 1), null, mapSize, db);
+		verifyNoMoreInteractions (cityCalculations);
 	}	
 }

@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -373,7 +373,9 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		assertEquals (new MapCoordinates3DEx (22, 12, 1), move2.getMoveTo ());
 		
 		// Check the units actually moved
-		verify (midTurn, times (1)).moveUnitStack (move2Stack, player2, true, new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (21, 11, 1), false, mom);
+		verify (midTurn).moveUnitStack (move2Stack, player2, true, new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (21, 11, 1), false, mom);
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**
@@ -515,7 +517,9 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		assertSame (move3, priv2.getPendingMovement ().get (0));
 		
 		// Check the units actually moved
-		verify (midTurn, times (1)).moveUnitStack (move2Stack, player2, true, new MapCoordinates3DEx (21, 11, 1), new MapCoordinates3DEx (22, 12, 1), false, mom);
+		verify (midTurn).moveUnitStack (move2Stack, player2, true, new MapCoordinates3DEx (21, 11, 1), new MapCoordinates3DEx (22, 12, 1), false, mom);
+
+		verifyNoMoreInteractions (midTurn);
 	}
 
 	/**
@@ -850,8 +854,10 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 		attackingUnitURNs.add (move2Unit.getUnitURN ());
 		
-		verify (combatStartAndEnd, times (1)).startCombat (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (20, 11, 1),
+		verify (combatStartAndEnd).startCombat (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (20, 11, 1),
 			attackingUnitURNs, null, move2, null, mom);
+
+		verifyNoMoreInteractions (combatStartAndEnd);
 	}
 
 	/**
@@ -1004,8 +1010,10 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		final List<Integer> defendingUnitURNs = new ArrayList<Integer> ();
 		defendingUnitURNs.add (move1Unit.getUnitURN ());
 		
-		verify (combatStartAndEnd, times (1)).startCombat (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (20, 11, 1),
+		verify (combatStartAndEnd).startCombat (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (20, 11, 1),
 			attackingUnitURNs, defendingUnitURNs, move2, move1, mom);
+
+		verifyNoMoreInteractions (combatStartAndEnd);		
 	}
 	
 	/**
@@ -1214,15 +1222,15 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		proc.processSpecialOrders (mom);
 		
 		// Check units were dismissed
-		verify (wu, times (1)).killUnit (1, KillUnitActionID.DISMISS);
-		verify (wu, times (1)).killUnit (2, KillUnitActionID.DISMISS);
+		verify (wu).killUnit (1, KillUnitActionID.DISMISS);
+		verify (wu).killUnit (2, KillUnitActionID.DISMISS);
+		verify (wu).process (mom);
 		
 		// Check buildings were sold
-		verify (cityProc, times (1)).sellBuilding (trueMap, players, cityLocation, trueBuilding.getBuildingURN (), false, true, sd, db);
+		verify (cityProc).sellBuilding (trueMap, players, cityLocation, trueBuilding.getBuildingURN (), false, true, sd, db);
 		
 		// Check only 1 settler was allowed to build
-		verify (cityServerUtils, times (0)).buildCityFromSettler (player1, settler1, mom);
-		verify (cityServerUtils, times (1)).buildCityFromSettler (player2, settler2, mom);
+		verify (cityServerUtils).buildCityFromSettler (player2, settler2, mom);
 		
 		assertEquals (0, conn2.getMessages ().size ());
 		assertEquals (1, conn1.getMessages ().size ());
@@ -1232,6 +1240,11 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		
 		// Both spirits tried to meld (the melding method is mocked, so we don't even know whether they succeeded)
 		for (final ExpandedUnitDetails xuSpirit : xuSpirits)
-			verify (overlandMapServerUtils, times (1)).attemptToMeldWithNode (xuSpirit, mom);
+			verify (overlandMapServerUtils).attemptToMeldWithNode (xuSpirit, mom);
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (cityProc);
+		verifyNoMoreInteractions (cityServerUtils);
+		verifyNoMoreInteractions (overlandMapServerUtils);
 	}
 }

@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -220,16 +220,17 @@ public final class TestExpandUnitDetailsImpl
 		assertEquals (2, xu.getModifiedUpkeepValue ("RE02"));
 		
 		// Check every expected method was invoked
-		verify (expandUnitDetailsUtils, times (1)).addValuelessSkillsFromHeroItems (unit.getHeroItemSlot (), "US001", basicSkillValues, db);
-		verify (expandUnitDetailsUtils, times (1)).addSkillsGrantedFromOtherSkills (basicSkillValues, db);
-		verify (expandUnitDetailsUtils, times (1)).adjustMovementSpeedForWindMastery (basicSkillValues, modifiedSkillValues, 2, mem.getMaintainedSpell ());
-		verify (expandUnitDetailsUtils, times (1)).addBonusesFromWeaponGrade (mu, weaponGrade, modifiedSkillValues, unitStackSkills,
+		verify (expandUnitDetailsUtils).addValuelessSkillsFromHeroItems (unit.getHeroItemSlot (), "US001", basicSkillValues, db);
+		verify (expandUnitDetailsUtils).addSkillsGrantedFromOtherSkills (basicSkillValues, db);
+		verify (expandUnitDetailsUtils).adjustMovementSpeedForWindMastery (basicSkillValues, modifiedSkillValues, 2, mem.getMaintainedSpell ());
+		verify (expandUnitDetailsUtils).addBonusesFromWeaponGrade (mu, weaponGrade, modifiedSkillValues, unitStackSkills,
 			"US001", "MB01", "MB02");
-		verify (expandUnitDetailsUtils, times (1)).addBonusesFromExperienceLevel (modifiedExpLvl, modifiedSkillValues);
-		verify (expandUnitDetailsUtils, times (1)).removeNegatedSkillsAddedFromCombatAreaEffects
+		verify (expandUnitDetailsUtils).addBonusesFromExperienceLevel (modifiedExpLvl, modifiedSkillValues);
+		verify (expandUnitDetailsUtils).removeNegatedSkillsAddedFromCombatAreaEffects
 			(skillsGrantedFromCombatAreaEffects, modifiedSkillValues, enemyUnits, db);
-		verify (expandUnitDetailsUtils, times (1)).addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db);
-		verify (expandUnitDetailsUtils, times (1)).addBonusesFromHeroItems (unit.getHeroItemSlot (), modifiedSkillValues, db);
-		verify (expandUnitDetailsUtils, times (1)).addPenaltiesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db);
+		verify (expandUnitDetailsUtils).addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db);
+		verify (expandUnitDetailsUtils).addBonusesFromHeroItems (unit.getHeroItemSlot (), modifiedSkillValues, db);
+		verify (expandUnitDetailsUtils).addPenaltiesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db);
+		verifyNoMoreInteractions (expandUnitDetailsUtils);
 	}		
 }

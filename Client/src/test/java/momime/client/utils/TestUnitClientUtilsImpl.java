@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.awt.Dimension;
@@ -643,6 +644,8 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		// Check results
 		verify (soundPlayer).playAudioFile ("DefaultActionSound.mp3");
+		
+		verifyNoMoreInteractions (soundPlayer);
 	}
 
 	/**
@@ -686,6 +689,8 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		// Check results
 		verify (soundPlayer).playAudioFile ("OverrideActionSound.mp3");
+		
+		verifyNoMoreInteractions (soundPlayer);
 	}
 	
 	/**

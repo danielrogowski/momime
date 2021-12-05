@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -532,6 +533,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertEquals (20, unit3.getCombatPosition ().getY ());
 		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit3.getCombatSide ());
+		
+		verifyNoMoreInteractions (xu1);
+		verifyNoMoreInteractions (xu2);
+		verifyNoMoreInteractions (xu3);
 	}
 	
 	/**
@@ -630,6 +635,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
 		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
+		
+		verifyNoMoreInteractions (unitCalc);
 	}
 
 	/**
@@ -746,6 +753,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());
 		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
+		verify (unitCalc, times (1)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
+		
+		verifyNoMoreInteractions (ai);
+		verifyNoMoreInteractions (unitCalc);
 	}
 
 	/**
@@ -866,6 +877,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertNull (gc.isSpellCastThisCombatTurn ());
 		verify (unitCalc, times (1)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
+		
+		verifyNoMoreInteractions (ai);
+		verifyNoMoreInteractions (unitCalc);
 	}
 	
 	/**
@@ -971,6 +985,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertNull (gc.isSpellCastThisCombatTurn ());
 		verify (unitCalc, times (2)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 		verify (unitCalc, times (2)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
+		
+		verifyNoMoreInteractions (ai);
+		verifyNoMoreInteractions (unitCalc);
 	}
 	
 	/**
@@ -1144,14 +1161,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (defenderAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (defenderDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu).process (mom);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1173,11 +1186,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Same units must also get removed from players' memory on the server
 		verify (unitUtils, times (1)).removeUnitURN (3, attackingPriv.getFogOfWarMemory ().getUnit ());
-		verify (unitUtils, times (0)).removeUnitURN (7, attackingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (8, attackingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (3, defendingPriv.getFogOfWarMemory ().getUnit ());
-		verify (unitUtils, times (0)).removeUnitURN (7, defendingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (8, defendingPriv.getFogOfWarMemory ().getUnit ());
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (unitUtils);
 	}
 
 	/**
@@ -1349,14 +1363,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (defenderAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (defenderDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu).process (mom);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1372,11 +1382,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		// Same units must also get removed from players' memory on the server
 		verify (unitUtils, times (1)).removeUnitURN (3, attackingPriv.getFogOfWarMemory ().getUnit ());
-		verify (unitUtils, times (0)).removeUnitURN (7, attackingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (8, attackingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (3, defendingPriv.getFogOfWarMemory ().getUnit ());
-		verify (unitUtils, times (0)).removeUnitURN (7, defendingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (8, defendingPriv.getFogOfWarMemory ().getUnit ());
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (unitUtils);
 	}
 
 	/**
@@ -1548,14 +1559,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (defenderAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (defenderDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu).process (mom);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1574,8 +1581,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		verify (unitUtils, times (1)).removeUnitURN (3, attackingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (8, attackingPriv.getFogOfWarMemory ().getUnit ());
 		verify (unitUtils, times (1)).removeUnitURN (3, defendingPriv.getFogOfWarMemory ().getUnit ());
-		verify (unitUtils, times (0)).removeUnitURN (7, defendingPriv.getFogOfWarMemory ().getUnit ());		// Its the monster player's own unit, so don't remove it from their server memory
 		verify (unitUtils, times (1)).removeUnitURN (8, defendingPriv.getFogOfWarMemory ().getUnit ());
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (unitUtils);
 	}
 	
 	/**
@@ -1715,12 +1724,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu).process (mom);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1734,6 +1740,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		// Same units must also get removed from players' memory on the server
 		verify (unitUtils, times (1)).removeUnitURN (3, attackingPriv.getFogOfWarMemory ().getUnit ());
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (unitUtils);
 	}
 	
 	/**
@@ -1875,12 +1884,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, mom);
 
 		// Verify regular kill routine called on the right units
-		verify (wu, times (0)).killUnit (attackerAliveLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerAliveHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerDeadLongbowmen.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadHero.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 		verify (wu, times (1)).killUnit (attackerAlivePhantomWarriors.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
-		verify (wu, times (0)).killUnit (attackerDeadLongbowmenInADifferentCombat.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+		verify (wu).process (mom);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1894,6 +1900,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		// Same units must also get removed from players' memory on the server
 		verify (unitUtils, times (1)).removeUnitURN (3, attackingPriv.getFogOfWarMemory ().getUnit ());
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (unitUtils);
 	}
 	
 	/**
@@ -3755,6 +3764,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, null, 4,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom);
+		
+		verifyNoMoreInteractions (damageProcessor);
 	}
 
 	/**
@@ -3941,5 +3952,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, null, 3,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom);
+		
+		verifyNoMoreInteractions (damageProcessor);
 	}
 }

@@ -2,8 +2,8 @@ package momime.server.process;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -124,9 +124,8 @@ public final class TestSpellCastingImpl
 		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);
 
 		// Prove that unit got added
-		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
+		verify (midTurn).addUnitOnServerAndClients (gsk, "UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
 			player3, UnitStatusID.ALIVE, players, sd, db);
-		verify (midTurn, times (0)).updateUnitStatusToAliveOnServerAndClients (unit, new MapCoordinates3DEx (15, 25, 0), player3, players, trueMap, sd, db);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
@@ -136,6 +135,8 @@ public final class TestSpellCastingImpl
 		assertEquals ("UN001", ntm.getUnitID ());
 		assertEquals (new MapCoordinates3DEx (15, 25, 0), ntm.getCityLocation ());
 		assertEquals (UnitAddBumpTypeID.CITY, ntm.getUnitAddBumpType ());
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 	
 	/**
@@ -239,9 +240,7 @@ public final class TestSpellCastingImpl
 		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);
 
 		// Prove that unit got updated, not added
-		verify (midTurn, times (0)).addUnitOnServerAndClients (gsk, "UN008", new MapCoordinates3DEx (15, 25, 0), null, null, null,
-			player3, UnitStatusID.ALIVE, players, sd, db);
-		verify (midTurn, times (1)).updateUnitStatusToAliveOnServerAndClients (theHero, new MapCoordinates3DEx (15, 25, 0), player3, players, trueMap, sd, db);
+		verify (midTurn).updateUnitStatusToAliveOnServerAndClients (theHero, new MapCoordinates3DEx (15, 25, 0), player3, players, trueMap, sd, db);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
@@ -251,5 +250,7 @@ public final class TestSpellCastingImpl
 		assertEquals ("UN008", ntm.getUnitID ());
 		assertEquals (new MapCoordinates3DEx (15, 25, 0), ntm.getCityLocation ());
 		assertEquals (UnitAddBumpTypeID.CITY, ntm.getUnitAddBumpType ());
+		
+		verifyNoMoreInteractions (midTurn);
 	}
 }

@@ -2,6 +2,7 @@ package momime.server.worldupdates;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -146,5 +147,6 @@ public final class TestRecheckTransportCapacityUpdate extends ServerTestData
 		
 		// Check 1 unit of spearmen was killed
 		verify (wu).killUnit (killedUnit.getUnitURN (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE);
+		verifyNoMoreInteractions (wu);
 	}
 }

@@ -17,7 +17,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
@@ -29,6 +28,8 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
+import momime.common.movement.CombatMovementType;
+import momime.common.movement.UnitMovement;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -45,11 +46,11 @@ import momime.server.process.CombatStartAndEndImpl;
 public final class CombatAIImpl implements CombatAI
 {
 	/** All types of attack the AI is interested in making in combat */
-	private final static List<CombatMoveType> ALL_ATTACKS = Arrays.asList (CombatMoveType.MELEE_UNIT, CombatMoveType.MELEE_UNIT_AND_WALL,
-		CombatMoveType.RANGED_UNIT, CombatMoveType.RANGED_UNIT_AND_WALL);
+	private final static List<CombatMovementType> ALL_ATTACKS = Arrays.asList (CombatMovementType.MELEE_UNIT, CombatMovementType.MELEE_UNIT_AND_WALL,
+		CombatMovementType.RANGED_UNIT, CombatMovementType.RANGED_UNIT_AND_WALL);
 	
 	/** Only ranged attacks */
-	private final static List<CombatMoveType> RANGED_ATTACKS = Arrays.asList (CombatMoveType.RANGED_UNIT, CombatMoveType.RANGED_UNIT_AND_WALL);
+	private final static List<CombatMovementType> RANGED_ATTACKS = Arrays.asList (CombatMovementType.RANGED_UNIT, CombatMovementType.RANGED_UNIT_AND_WALL);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -68,6 +69,9 @@ public final class CombatAIImpl implements CombatAI
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Methods dealing with unit movement */
+	private UnitMovement unitMovement;
 	
 	/**
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
@@ -181,7 +185,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	final MemoryUnit selectBestTarget (final ExpandedUnitDetails attacker, final MapCoordinates3DEx combatLocation,
-		final int [] [] movementDirections, final int [] [] doubleMovementDistances, final CombatMoveType [] [] movementTypes,
+		final int [] [] movementDirections, final int [] [] doubleMovementDistances, final CombatMovementType [] [] movementTypes,
 		final List<MemoryUnit> units, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CoordinateSystem combatMapCoordinateSystem,
 		final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
@@ -257,9 +261,9 @@ public final class CombatAIImpl implements CombatAI
 		
 		final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMovementType [] [] movementTypes = new CombatMovementType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		
-		getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections,
+		getUnitMovement ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections,
 			movementTypes, tu, mom.getGeneralServerKnowledge ().getTrueMap (),
 			combatMap, combatMapSize, mom.getPlayers (), mom.getServerDB ());
 		
@@ -297,7 +301,7 @@ public final class CombatAIImpl implements CombatAI
 			else
 				// Walk towards it - To find our destination, we need to start from the unit we're trying to attack
 				// and work backwards until we find a space that we can reach this turn
-				while ((ok) && (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.CANNOT_MOVE))
+				while ((ok) && (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMovementType.CANNOT_MOVE))
 				{
 					final int d = movementDirections [moveTo.getY ()] [moveTo.getX ()];
 					if (d < 1)
@@ -511,5 +515,21 @@ public final class CombatAIImpl implements CombatAI
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods dealing with unit movement
+	 */
+	public final UnitMovement getUnitMovement ()
+	{
+		return unitMovement;
+	}
+
+	/**
+	 * @param u Methods dealing with unit movement
+	 */
+	public final void setUnitMovement (final UnitMovement u)
+	{
+		unitMovement = u;
 	}
 }

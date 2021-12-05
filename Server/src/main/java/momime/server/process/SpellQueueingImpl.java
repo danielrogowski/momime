@@ -17,7 +17,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.calculations.SpellCalculations;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
@@ -40,6 +39,7 @@ import momime.common.messages.servertoclient.PlayAnimationMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
@@ -86,9 +86,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
-	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
 
@@ -124,6 +121,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 	
 	/** Sample unit method */
 	private SampleUnitUtils sampleUnitUtils;
+	
+	/** Movement utils */
+	private MovementUtils movementUtils;
 	
 	/**
 	 * Client wants to cast a spell, either overland or in combat
@@ -476,7 +476,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 						summonedUnit = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), player.getPlayerDescription ().getPlayerID (), null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
-					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+					if (getMovementUtils ().calculateDoubleMovementToEnterCombatTile
 						(summonedUnit, gc.getCombatMap ().getRow ().get (combatTargetLocation.getY ()).getCell ().get (combatTargetLocation.getX ()), mom.getServerDB ()) < 0)
 					
 						msg = "The terrain at your chosen location is impassable so you cannot summon a unit there.";
@@ -785,22 +785,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 	{
 		unitUtils = utils;
 	}
-
-	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
-	}
 	
 	/**
 	 * @return Methods for dealing with player msgs
@@ -992,5 +976,21 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
 		sampleUnitUtils = s;
+	}
+
+	/**
+	 * @return Movement utils
+	 */
+	public final MovementUtils getMovementUtils ()
+	{
+		return movementUtils;
+	}
+
+	/**
+	 * @param u Movement utils
+	 */
+	public final void setMovementUtils (final MovementUtils u)
+	{
+		movementUtils = u;
 	}
 }

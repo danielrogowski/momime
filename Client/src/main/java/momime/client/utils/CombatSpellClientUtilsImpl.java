@@ -13,13 +13,13 @@ import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.common.MomException;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
@@ -64,8 +64,8 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	/** Sample unit method */
 	private SampleUnitUtils sampleUnitUtils;
 	
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
+	/** Movement utils */
+	private MovementUtils movementUtils;
 	
 	/**
 	 * Handles doing final validation and building up the request message to cast a combat spell when the player clicks a tile in the combat map.
@@ -129,7 +129,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 					
 					final MomCombatTile tile = combatTerrain.getRow ().get (combatCoords.getY ()).getCell ().get (combatCoords.getX ());
 					
-					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (summonUnit, tile, getClient ().getClientDB ()) >= 0)
+					if (getMovementUtils ().calculateDoubleMovementToEnterCombatTile (summonUnit, tile, getClient ().getClientDB ()) >= 0)
 					{
 						isValidTarget = true;
 						msg.setCombatTargetLocation (combatCoords);
@@ -425,18 +425,18 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	}
 
 	/**
-	 * @return Unit calculations
+	 * @return Movement utils
 	 */
-	public final UnitCalculations getUnitCalculations ()
+	public final MovementUtils getMovementUtils ()
 	{
-		return unitCalculations;
+		return movementUtils;
 	}
 
 	/**
-	 * @param calc Unit calculations
+	 * @param u Movement utils
 	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
+	public final void setMovementUtils (final MovementUtils u)
 	{
-		unitCalculations = calc;
+		movementUtils = u;
 	}
 }

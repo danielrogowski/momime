@@ -291,10 +291,8 @@
 	
 	<bean id="unitCalculations" class="momime.common.calculations.UnitCalculationsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
-		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
@@ -396,6 +394,8 @@
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="movementUtils" ref="movementUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
 	</bean>
 
 	<bean id="kindOfSpellUtils" class="momime.common.utils.KindOfSpellUtilsImpl" />
@@ -414,6 +414,7 @@
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="unitMovement" ref="unitMovement" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
 	</bean>
 	
 </beans>

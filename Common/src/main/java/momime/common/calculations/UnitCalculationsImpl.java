@@ -11,17 +11,14 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.CombatAction;
-import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileBorderBlocksMovementID;
-import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MovementRateRule;
@@ -42,10 +39,8 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.movement.UnitStack;
-import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 
@@ -54,20 +49,11 @@ import momime.common.utils.UnitUtils;
  */
 public final class UnitCalculationsImpl implements UnitCalculations
 {
-	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
-	private final static int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
-
-	/** Marks locations in the doubleMovementDistances array that we've proved that we cannot move to */
-	private final static int MOVEMENT_DISTANCE_CANNOT_MOVE_HERE = -2;
-	
 	/** List of confusion effects where the player does not get any allocated movement */
 	private final static List<ConfusionEffect> CONFUSION_NOT_PLAYER_CONTROLLED = Arrays.asList (ConfusionEffect.DO_NOTHING, ConfusionEffect.MOVE_RANDOMLY);
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
-	
-	/** Combat map utils */
-	private CombatMapUtils combatMapUtils;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -75,9 +61,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
-	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 	
@@ -189,73 +172,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			bestWeaponGrade = weaponGradeFromPicks;
 
 		return bestWeaponGrade;
-	}
-
-	/**
-	 * Flying units obviously ignore this although they still can't enter impassable terrain
-	 * @param xu The unit that is moving; if passed in as null then can't do this check on specific movement skills
-	 * @param tile Combat tile being entered
-	 * @param db Lookup lists built over the XML database
-	 * @return 2x movement points required to enter this tile; negative value indicates impassable; will never return zero
-	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
-	 */
-	@Override
-	public final int calculateDoubleMovementToEnterCombatTile (final ExpandedUnitDetails xu, final MomCombatTile tile, final CommonDatabase db)
-		throws RecordNotFoundException
-	{
-		int result = -1;		// Impassable
-		
-		if (!tile.isOffMapEdge ())
-		{
-			// Any types of wall here that block movement?  (not using iterator because there's going to be so few of these).
-			// NB. You still cannot walk across corners of city walls even when they've been wrecked.
-			boolean impassableFound = false;
-			for (final String borderID : tile.getBorderID ())
-				if (db.findCombatTileBorder (borderID, "calculateDoubleMovementToEnterCombatTile").getBlocksMovement () == CombatTileBorderBlocksMovementID.WHOLE_TILE_IMPASSABLE)
-					impassableFound = true;
-			
-			// Check each layer for the first which specifies movement
-			// This works in the opposite order than the Delphi code, here we check the lowest layer (terrain) first and overwrite the value with higher layers
-			// The delphi code started with the highest layer and worked down, but skipping as soon as it got a non-zero value
-			for (final CombatMapLayerID layer : CombatMapLayerID.values ())
-				
-				// If we found anything that's impassable on any layer, just stop - nothing on a higher layer can make it passable
-				if (!impassableFound)
-				{
-					// Mud overrides anything else in the terrain layer, but movement rate can still be reduced by roads or set to impassable by buildings
-					if ((layer == CombatMapLayerID.TERRAIN) && (tile.isMud ()))
-						result = 1000;
-					else
-					{
-						final String combatTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (tile, layer);
-						if (combatTileTypeID != null)		// layers are often not all populated
-						{
-							// If the tile requires specific kinds of movement, see if we have them
-							final CombatTileType combatTileType = db.findCombatTileType (combatTileTypeID, "calculateDoubleMovementToEnterCombatTile");
-							if ((xu != null) && (combatTileType.getCombatTileTypeRequiresSkill ().size () > 0) &&
-								(combatTileType.getCombatTileTypeRequiresSkill ().stream ().noneMatch (s -> xu.hasModifiedSkill (s))))
-								
-								impassableFound = true;
-							else
-							{
-								final Integer movement = combatTileType.getDoubleMovement ();
-								if (movement != null)		// many tiles have no effect at all on movement, e.g. houses
-								{
-									if (movement < 0)
-										impassableFound = true;
-									else
-										result = movement;
-								}
-							}
-						}
-					}
-				}
-			
-			if (impassableFound)
-				result = -1;
-		}
-		
-		return result;
 	}
 
 	/**
@@ -655,7 +571,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @return Whether we can cross the specified tile border
 	 * @throws RecordNotFoundException If the tile has a combat tile border ID that doesn't exist
 	 */
-	final boolean okToCrossCombatTileBorder (final MapAreaOfCombatTiles combatMap, final CoordinateSystemType combatMapCoordinateSystemType,
+	@Override
+	public final boolean okToCrossCombatTileBorder (final MapAreaOfCombatTiles combatMap, final CoordinateSystemType combatMapCoordinateSystemType,
 		final int x, final int y, final int d, final CommonDatabase db) throws RecordNotFoundException
 	{
 		boolean ok;
@@ -693,324 +610,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		}
 		
 		return ok;
-	}
-	
-	/**
-	 * Adds all directions from the given location to the list of cells left to check for combat movement
-	 * 
-	 * @param moveFrom Combat tile we're moving from
-	 * @param unitBeingMoved The unit moving in combat
-	 * @param ignoresCombatTerrain True if the unit has a skill with the "ignoreCombatTerrain" flag
-	 * @param cellsLeftToCheck List of combat tiles we still need to check movement from
-	 * @param doubleMovementDistances Double the number of movement points it takes to move here, 0=free (enchanted road), negative=cannot reach
-	 * @param movementDirections Trace of unit directions taken to reach here
-	 * @param movementTypes Type of move (or lack of) for every location on the combat map (these correspond exactly to the X, move, attack, icons displayed in the client)
-	 * @param ourUnits Array marking location of all of our units in the combat
-	 * @param enemyUnits Array marking location of all enemy units in the combat; each element in the array is their combatActionID so we know which ones are flying
-	 * @param borderTargetIDs List of tile borders that we can attack besides being able to target units; null if there are none
-	 * @param combatMap The details of the combat terrain
-	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
-	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
-	 */
-	final void processCell (final MapCoordinates2DEx moveFrom, final ExpandedUnitDetails unitBeingMoved, final boolean ignoresCombatTerrain,
-		final List<MapCoordinates2DEx> cellsLeftToCheck, final int [] [] doubleMovementDistances, final int [] [] movementDirections,
-		final CombatMoveType [] [] movementTypes, final boolean [] [] ourUnits, final String [] [] enemyUnits, final List<String> borderTargetIDs,
-		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
-		throws RecordNotFoundException, MomException
-	{
-		final int distance = doubleMovementDistances [moveFrom.getY ()] [moveFrom.getX ()];
-		final int doubleMovementRemainingToHere = unitBeingMoved.getDoubleCombatMovesLeft () - distance;
-		
-		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (combatMapCoordinateSystem.getCoordinateSystemType ()); d++)
-		{
-			final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (moveFrom);
-			if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, moveTo, d))
-				if (doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] >= MOVEMENT_DISTANCE_NOT_YET_CHECKED)
-				{
-					// This is a valid location on the map that we've either not visited before or that we've already found another path to
-					// (in which case we still need to check it - we might have found a quicker path now)
-					
-					// Check if our type of unit can move here
-					final MomCombatTile moveToTile = combatMap.getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
-					final int doubleMovementToEnterThisTile = calculateDoubleMovementToEnterCombatTile (unitBeingMoved, moveToTile, db);
-					
-					// Can we attack the tile itself?
-					boolean canAttackTile = false;
-					if ((!moveToTile.isWrecked ()) && (moveToTile.getBorderDirections () != null) && (moveToTile.getBorderDirections ().length () > 0) && (borderTargetIDs != null))
-						for (final String borderID : moveToTile.getBorderID ())
-							if (borderTargetIDs.contains (borderID))
-								canAttackTile = true;
-					
-					// Our own units prevent us moving here - enemy units don't because by 'moving there' we'll attack them
-					if (((doubleMovementToEnterThisTile < 0) && (!canAttackTile)) || (ourUnits [moveTo.getY ()] [moveTo.getX ()]))
-					{
-						// Can't move here
-						doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_CANNOT_MOVE_HERE;
-					}
-
-					// Can we cross the border between the two tiles?
-					// i.e. check there's not a stone wall in the exit from the first cell or in the entrance to the second cell
-					else
-					{
-						final boolean canCrossBorder = ignoresCombatTerrain ||
-							((okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), moveFrom.getX (), moveFrom.getY (), d, db)) &&
-							(okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), moveTo.getX (), moveTo.getY (),
-								getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), d+4), db)));
-						
-						if (canCrossBorder || canAttackTile)
-						{
-							// How much movement (total) will it cost us to get here
-							
-							// If we ignore terrain, then we only call calculateDoubleMovementToEnterCombatTile to check if the
-							// tile is impassable or not - but if its not, then override whatever value we got back
-							final int newDistance = distance + ((ignoresCombatTerrain || (doubleMovementToEnterThisTile < 0)) ? 2 : doubleMovementToEnterThisTile);
-							
-							// Is this better than the current value for this cell?
-							if ((doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] < 0) || (newDistance < doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()]))
-							{
-								// Record the new distance
-								doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = newDistance;
-								movementDirections [moveTo.getY ()] [moveTo.getX ()] = d;
-								final String enemyCombatActionID = canCrossBorder ? enemyUnits [moveTo.getY ()] [moveTo.getX ()] : null;
-								
-								if (doubleMovementRemainingToHere > 0)
-								{
-									// Is there an enemy in this square to attack?
-									final CombatMoveType combatMoveType;
-									if ((enemyCombatActionID != null) || (canAttackTile))
-									{
-										// Can we attack the unit here?
-										if (canMakeMeleeAttack (enemyCombatActionID, unitBeingMoved, db))
-										{
-											if (enemyCombatActionID != null)
-												combatMoveType = canAttackTile ? CombatMoveType.MELEE_UNIT_AND_WALL : CombatMoveType.MELEE_UNIT;
-											else
-												combatMoveType = CombatMoveType.MELEE_WALL;
-										}
-										else
-										{
-											combatMoveType = CombatMoveType.CANNOT_MOVE;
-											doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_CANNOT_MOVE_HERE;
-											movementDirections [moveTo.getY ()] [moveTo.getX ()] = 0;
-										}
-									}
-									else
-										combatMoveType = CombatMoveType.MOVE;
-
-									movementTypes [moveTo.getY ()] [moveTo.getX ()] = combatMoveType;
-								}
-								
-								// If there is an enemy here, don't check further squares
-								if ((canCrossBorder) && (enemyCombatActionID == null) && (doubleMovementToEnterThisTile > 0))
-								{
-									// Log that we need to check every location branching off from here.
-									// For the AI combat routine, we have to recurse right to the edge of the map - we can't just stop when we
-									// run out of movement - otherwise the AI routines can't figure out how to walk across the board to a unit that is currently out of range.
-									cellsLeftToCheck.add (moveTo);
-								}
-							}
-						}
-					}
-				}
-		}
-	}
-	
-	/**
-	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location in the combat map whether we can move there or not.
-	 * 
-	 * MoM is a little weird with how movement works - providing you have even 1/2 move left, you can move anywhere, even somewhere
-	 * which takes 3 movement to get to - this can happen in combat as well, especially combats in cities when units can walk on the roads.
-	 * 
-	 * Therefore knowing distances to each location is not enough - we need a separate boolean array
-	 * to mark whether we can or cannot reach each location - this is set in MovementTypes.
-	 * 
-	 * @param doubleMovementDistances Double the number of movement points it takes to move here, 0=free (enchanted road), negative=cannot reach
-	 * @param movementDirections Trace of unit directions taken to reach here
-	 * @param movementTypes Type of move (or lack of) for every location on the combat map (these correspond exactly to the X, move, attack, icons displayed in the client)
-	 * @param unitBeingMoved The unit moving in combat
-	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
-	 * @param combatMap The details of the combat terrain
-	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @param players Players list
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 */
-	@Override
-	public final void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
-		final CombatMoveType [] [] movementTypes, final ExpandedUnitDetails unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
-		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
-		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException
-	{
-		// Create other areas
-		final boolean [] [] ourUnits = new boolean [combatMapCoordinateSystem.getHeight ()] [combatMapCoordinateSystem.getWidth ()];
-		final String [] [] enemyUnits = new String [combatMapCoordinateSystem.getHeight ()] [combatMapCoordinateSystem.getWidth ()];
-		
-		// Initialize areas
-		for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
-			for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
-			{
-				doubleMovementDistances [y] [x] = MOVEMENT_DISTANCE_NOT_YET_CHECKED;
-				movementTypes [y] [x] = CombatMoveType.CANNOT_MOVE;
-				movementDirections [y] [x] = 0;
-				ourUnits [y] [x] = false;
-				enemyUnits [y] [x] = null;
-			}
-		
-		// We know combatLocation from the unit being moved
-		final MapCoordinates3DEx combatLocation = unitBeingMoved.getCombatLocation ();
-		
-		// Work this out once only
-		final boolean ignoresCombatTerrain = unitBeingMoved.unitIgnoresCombatTerrain (db);
-		
-		// Mark locations of units on both sides (including the unit being moved)
-		// Also make list of units the moving unit can personally see (if its invisible, we must have true sight to counter it, simply knowing where it is isn't enough)
-		final List<ExpandedUnitDetails> directlyVisibleEnemyUnits = new ArrayList<ExpandedUnitDetails> (); 
-		
-		final List<ExpandedUnitDetails> unitsBeingMoved = new ArrayList<ExpandedUnitDetails> ();
-		unitsBeingMoved.add (unitBeingMoved);
-		
-		// Vortexes can move anywhere, even directly onto other units
-		if (!db.getUnitsThatMoveThroughOtherUnits ().contains (unitBeingMoved.getUnitID ()))
-			for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
-				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
-					(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
-				{
-					// Note on owning vs controlling player ID - unitBeingMoved.getControllingPlayerID () is the player whose turn it is, who is controlling the unit, so this is fine.
-					// But they don't want to attack their own units who might just be temporarily confused, equally if an enemy unit is confused and currently under our
-					// control, we still want to kill it - ideally we confusee units and make them kill each other!  So this is why it is not xu.getControllingPlayerID ()
-					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, unitsBeingMoved, null, null, players, fogOfWarMemory, db);
-					if ((thisUnit == unitBeingMoved.getMemoryUnit ()) || (xu.getOwningPlayerID () == unitBeingMoved.getControllingPlayerID ()))
-						ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
-					
-					else if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getControllingPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
-					{
-						enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
-						
-						boolean visible = true;
-						for (final String invisibilitySkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY)
-							if (xu.hasModifiedSkill (invisibilitySkillID))
-								visible = false;
-	
-						if (visible)
-							directlyVisibleEnemyUnits.add (xu);
-					}
-				}
-		
-		// If we can attack walls, then get the list of border targets from Disrupt Wall spell
-		// Can only attack walls from the outside in, otherwise defenders inside the city would be able to attack their own walls
-		final List<String> borderTargetIDs = ((unitBeingMoved.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WALL_CRUSHER)) &&
-			(!getCombatMapUtils ().isWithinCityWalls (combatLocation, unitBeingMoved.getCombatPosition (), combatMap, fogOfWarMemory.getBuilding (), db))) ?
-					
-			db.findSpell (CommonDatabaseConstants.SPELL_ID_DISRUPT_WALL, "calculateCombatMovementDistances").getSpellValidBorderTarget () : null;
-		
-		// We can move to where we start from for free
-		doubleMovementDistances [unitBeingMoved.getCombatPosition ().getY ()] [unitBeingMoved.getCombatPosition ().getX ()] = 0;
-		movementTypes [unitBeingMoved.getCombatPosition ().getY ()] [unitBeingMoved.getCombatPosition ().getX ()] = CombatMoveType.MOVE;
-		
-		// Rather than iterating out distances from the centre, process rings around each location before proceeding to the next location.
-		// This is to prevent the situation in the original MoM where you are on Enchanced Road,
-		// hit 'Up' and the game decides to move you up-left and then right to get there.
-		final List<MapCoordinates2DEx> cellsLeftToCheck = new ArrayList<MapCoordinates2DEx> ();
-		processCell (unitBeingMoved.getCombatPosition (), unitBeingMoved, ignoresCombatTerrain, cellsLeftToCheck,
-			doubleMovementDistances, movementDirections, movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, combatMapCoordinateSystem, db);
-		
-		// Keep going until there's nowhere left to check
-		while (cellsLeftToCheck.size () > 0)
-		{
-			processCell (cellsLeftToCheck.get (0), unitBeingMoved, ignoresCombatTerrain, cellsLeftToCheck,
-				doubleMovementDistances, movementDirections, movementTypes, ourUnits, enemyUnits, borderTargetIDs, combatMap, combatMapCoordinateSystem, db);
-			cellsLeftToCheck.remove (0);
-		}
-		
-		// Now check if we can fire missile attacks at any enemies
-		if (canMakeRangedAttack (unitBeingMoved))
-		{
-			// Are we able to range attack units inside wall of darkness?  We either have to have true sight, or be inside wall of darkness ourselves.
-			// Note we'll get false here if there simply is no Wall of Darkness in this combat, but then will get false when we check target units too.
-			boolean attackTargetsInsideWallOfDarkness = getCombatMapUtils ().isWithinWallOfDarkness (combatLocation,
-				unitBeingMoved.getCombatPosition (), combatMap, fogOfWarMemory.getMaintainedSpell (), db);
-			
-			for (final String trueSightSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_TRUE_SIGHT)
-				if (unitBeingMoved.hasModifiedSkill (trueSightSkillID))
-					attackTargetsInsideWallOfDarkness = true;
-			
-			// Now each visible unit is targetable
-			for (final ExpandedUnitDetails xu : directlyVisibleEnemyUnits)
-				if ((attackTargetsInsideWallOfDarkness) || (!getCombatMapUtils ().isWithinWallOfDarkness (combatLocation,
-					xu.getCombatPosition (), combatMap, fogOfWarMemory.getMaintainedSpell (), db)))
-				{
-					final int x = xu.getCombatPosition ().getX ();
-					final int y = xu.getCombatPosition ().getY ();
-					
-					// If the unit is invisible, we have to have True Sight / Illusions Immunity to be able to make a ranged attack against it.
-					// Simply being able to see it, or even standing right next to it, isn't enough (expandUnitDetails above dealt with this).
-					
-					// Firing a missle weapon always uses up all of our movement so mark this for the sake of it - although MovementDistances
-					// isn't actually used to reduce the movement a unit has left in this fashion
-					movementTypes [y] [x] = CombatMoveType.RANGED_UNIT;
-					doubleMovementDistances [y] [x] = 999;
-				}
-			
-			// Can also ranged attack wall segments.
-			// The wall of darkness is on the outside of the stone walls, so they're protected by it and we can only range attack the stone walls
-			// if we have true sight, are inside the city hitting the stone walls from the other side, or there is no wall of darkness in effect.
-			if ((borderTargetIDs != null) && ((attackTargetsInsideWallOfDarkness) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-				(fogOfWarMemory.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_WALL_OF_DARKNESS, null, null, combatLocation, null) == null)))
-				
-				for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
-					for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
-					{
-						final MomCombatTile moveToTile = combatMap.getRow ().get (y).getCell ().get (x);
-						
-						boolean canAttackTile = false;
-						if ((!moveToTile.isWrecked ()) && (moveToTile.getBorderDirections () != null) && (moveToTile.getBorderDirections ().length () > 0))
-							for (final String borderID : moveToTile.getBorderID ())
-								if (borderTargetIDs.contains (borderID))
-									canAttackTile = true;
-						
-						if (canAttackTile)
-						{
-							if (movementTypes [y] [x] == CombatMoveType.RANGED_UNIT)
-								movementTypes [y] [x] = CombatMoveType.RANGED_UNIT_AND_WALL;
-							else
-								movementTypes [y] [x] = CombatMoveType.RANGED_WALL;
-							
-							doubleMovementDistances [y] [x] = 999;
-						}
-					}
-		}
-		
-		// If unit has teleporting, it can move anywhere as long as the tile is passable
-		// This does mean we could end up trying to teleport onto an invisible enemy unit
-		if ((unitBeingMoved.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_TELEPORT)) ||
-			(unitBeingMoved.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MERGING)))
-			
-			for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
-				for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
-				{
-					if ((movementTypes [y] [x] == CombatMoveType.CANNOT_MOVE) ||
-						((movementTypes [y] [x] == CombatMoveType.MOVE) && (doubleMovementDistances [y] [x] > 2)))
-					{
-						final MomCombatTile moveToTile = combatMap.getRow ().get (y).getCell ().get (x);
-						final int doubleMovementToEnterThisTile = calculateDoubleMovementToEnterCombatTile (unitBeingMoved, moveToTile, db);
-						
-						// Our own units prevent us moving here - so do enemy units, we cannot move onto them, only next to them
-						if ((doubleMovementToEnterThisTile < 0) || (ourUnits [y] [x]) || (enemyUnits [y] [x] != null))
-						{
-							// Can't move here
-						}
-						else
-						{
-							movementTypes [y] [x] = CombatMoveType.TELEPORT;
-							doubleMovementDistances [y] [x] = 2;
-						}
-					}
-				}
 	}
 	
 	/**
@@ -1092,22 +691,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	}
 
 	/**
-	 * @return Combat map utils
-	 */
-	public final CombatMapUtils getCombatMapUtils ()
-	{
-		return combatMapUtils;
-	}
-
-	/**
-	 * @param utils Combat map utils
-	 */
-	public final void setCombatMapUtils (final CombatMapUtils utils)
-	{
-		combatMapUtils = utils;
-	}
-
-	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()
@@ -1137,22 +720,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
-	}
-
-	/**
-	 * @return MemoryMaintainedSpell utils
-	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
-	{
-		return memoryMaintainedSpellUtils;
-	}
-
-	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
-	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
-	{
-		memoryMaintainedSpellUtils = spellUtils;
 	}
 
 	/**

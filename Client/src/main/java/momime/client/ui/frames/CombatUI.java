@@ -59,7 +59,6 @@ import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
-import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AnimationEx;
@@ -91,6 +90,8 @@ import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.CombatAutoControlMessage;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
+import momime.common.movement.CombatMovementType;
+import momime.common.movement.UnitMovement;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
@@ -221,6 +222,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Combat spell casting utils */
 	private CombatSpellClientUtils combatSpellClientUtils;
+	
+	/** Methods dealing with unit movement */
+	private UnitMovement unitMovement;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -376,7 +380,7 @@ public final class CombatUI extends MomClientFrameUI
 	private MapCoordinates2DEx moveToLocation;
 	
 	/** Details of what action (if any) will take place if we click on each tile; this can be null when it isn't our turn */
-	private CombatMoveType [] [] movementTypes;
+	private CombatMovementType [] [] movementTypes;
 	
 	/** Currently selected unit */
 	private MemoryUnit selectedUnitInCombat;
@@ -505,7 +509,7 @@ public final class CombatUI extends MomClientFrameUI
 						if (getSpellBeingTargeted () == null)
 						{
 							// Trying to move here
-							final CombatMoveType moveType = (movementTypes == null) ? CombatMoveType.CANNOT_MOVE :
+							final CombatMovementType moveType = (movementTypes == null) ? CombatMovementType.CANNOT_MOVE :
 								movementTypes [moveToLocation.getY ()] [moveToLocation.getX ()];
 							moveTypeFilename = moveType.getImageFilename ();
 						}
@@ -1006,8 +1010,8 @@ public final class CombatUI extends MomClientFrameUI
 						// Left clicking to move to, or shoot at, this location (the server figures out which)
 						if ((movementTypes != null) && (getSelectedUnitInCombat () != null))
 						{
-							final CombatMoveType moveType = movementTypes [combatCoords.getY ()] [combatCoords.getX ()];
-							if ((moveType != null) && (moveType != CombatMoveType.CANNOT_MOVE))
+							final CombatMovementType moveType = movementTypes [combatCoords.getY ()] [combatCoords.getX ()];
+							if ((moveType != null) && (moveType != CombatMovementType.CANNOT_MOVE))
 							{
 								final RequestMoveCombatUnitMessage msg = new RequestMoveCombatUnitMessage ();
 								msg.setUnitURN (getSelectedUnitInCombat ().getUnitURN ());
@@ -1597,9 +1601,9 @@ public final class CombatUI extends MomClientFrameUI
 			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 
 			// The only array we actually need to keep is the movementTypes, to show the correct icons as the mouse moves over different tiles
-			movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+			movementTypes = new CombatMovementType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 			
-			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
+			getUnitMovement ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatTerrain (),
 				combatMapSize, getClient ().getPlayers (), getClient ().getClientDB ());
 			
@@ -2418,5 +2422,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setCombatSpellClientUtils (final CombatSpellClientUtils c)
 	{
 		combatSpellClientUtils = c;
+	}
+
+	/**
+	 * @return Methods dealing with unit movement
+	 */
+	public final UnitMovement getUnitMovement ()
+	{
+		return unitMovement;
+	}
+
+	/**
+	 * @param u Methods dealing with unit movement
+	 */
+	public final void setUnitMovement (final UnitMovement u)
+	{
+		unitMovement = u;
 	}
 }

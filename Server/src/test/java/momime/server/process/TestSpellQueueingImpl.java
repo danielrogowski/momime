@@ -22,7 +22,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.calculations.SpellCalculations;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
@@ -45,6 +44,7 @@ import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
@@ -2205,8 +2205,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (sampleUnitUtils.createSampleUnit ("UN001", attackingPd.getPlayerID (), null, players, trueMap, db)).thenReturn (xu);
 		
 		// Combat terrain cell
-		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (-1);
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		when (movementUtils.calculateDoubleMovementToEnterCombatTile (xu, gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (-1);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -2216,7 +2216,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
-		proc.setUnitCalculations (unitCalc);
+		proc.setMovementUtils (movementUtils);
 		proc.setCombatMapServerUtils (combatMapServerUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setSampleUnitUtils (sampleUnitUtils);
@@ -2357,8 +2357,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (sampleUnitUtils.createSampleUnit ("UN001", attackingPd.getPlayerID (), null, players, trueMap, db)).thenReturn (xu);
 		
 		// Combat terrain cell
-		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (1);
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		when (movementUtils.calculateDoubleMovementToEnterCombatTile (xu, gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (1);
 		
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);
@@ -2370,7 +2370,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setUnitUtils (unitUtils);
-		proc.setUnitCalculations (unitCalc);
+		proc.setMovementUtils (movementUtils);
 		proc.setSpellProcessing (spellProcessing);
 		proc.setCombatMapServerUtils (combatMapServerUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);

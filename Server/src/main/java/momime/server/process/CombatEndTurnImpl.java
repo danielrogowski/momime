@@ -17,8 +17,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
-import momime.common.calculations.CombatMoveType;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
@@ -36,6 +34,8 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationConfusionData;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
+import momime.common.movement.CombatMovementType;
+import momime.common.movement.UnitMovement;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -57,7 +57,7 @@ import momime.server.utils.UnitServerUtils;
 public final class CombatEndTurnImpl implements CombatEndTurn
 {
 	/** Move types which represent moving (rather than being blocked, or initiating some kind of attack) */
-	private final static List<CombatMoveType> MOVE_TYPES = Arrays.asList (CombatMoveType.MOVE, CombatMoveType.TELEPORT);
+	private final static List<CombatMovementType> MOVE_TYPES = Arrays.asList (CombatMovementType.MOVE, CombatMovementType.TELEPORT);
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
@@ -77,9 +77,6 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
-	
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
 	
@@ -97,6 +94,9 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	
 	/** Damage processor */
 	private DamageProcessor damageProcessor;
+	
+	/** Methods dealing with unit movement */
+	private UnitMovement unitMovement;
 	
 	/**
 	 * Makes any rolls necessary at the start of either player's combat turn, i.e. immediately before the defender gets a turn.
@@ -166,10 +166,10 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 								while (keepGoing)
 								{
 									final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-									final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+									final CombatMovementType [] [] movementTypes = new CombatMovementType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 									final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 									
-									getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
+									getUnitMovement ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
 										mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
 									
 									// Check the intended cell
@@ -178,7 +178,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 										keepGoing = false;	// Ran off edge of map
 									else
 									{
-										final CombatMoveType moveType = movementTypes [coords.getY ()] [coords.getX ()];
+										final CombatMovementType moveType = movementTypes [coords.getY ()] [coords.getX ()];
 										if (!MOVE_TYPES.contains (moveType))
 											keepGoing = false;	// Hit something impassable, or would attack an enemy unit
 										else
@@ -254,17 +254,17 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	
 					// Nothing is impassable, but might bang into the edge of the map
 					final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-					final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+					final CombatMovementType [] [] movementTypes = new CombatMovementType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 					final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 					
-					getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
+					getUnitMovement ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
 						mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
 					
 					// Check the intended cell
 					final MapCoordinates2DEx coords = new MapCoordinates2DEx (xu.getCombatPosition ());
 					if (getCoordinateSystemUtils ().move2DCoordinates (combatMapSize, coords, d))
 					{
-						final CombatMoveType moveType = movementTypes [coords.getY ()] [coords.getX ()];
+						final CombatMovementType moveType = movementTypes [coords.getY ()] [coords.getX ()];
 						if (MOVE_TYPES.contains (moveType))
 							combatEnded = getCombatProcessing ().okToMoveUnitInCombat (xu, coords, MoveUnitInCombatReason.MAGIC_VORTEX,
 								movementDirections, movementTypes, mom);
@@ -605,22 +605,6 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	}
 
 	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
-	}
-
-	/**
 	 * @return Combat processing
 	 */
 	public final CombatProcessing getCombatProcessing ()
@@ -714,5 +698,21 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	public final void setDamageProcessor (final DamageProcessor proc)
 	{
 		damageProcessor = proc;
+	}
+
+	/**
+	 * @return Methods dealing with unit movement
+	 */
+	public final UnitMovement getUnitMovement ()
+	{
+		return unitMovement;
+	}
+
+	/**
+	 * @param u Methods dealing with unit movement
+	 */
+	public final void setUnitMovement (final UnitMovement u)
+	{
+		unitMovement = u;
 	}
 }

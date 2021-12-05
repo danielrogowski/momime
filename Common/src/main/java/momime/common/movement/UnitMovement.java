@@ -13,6 +13,8 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Methods dealing with unit movement
@@ -63,4 +65,32 @@ public interface UnitMovement
 		final UnitStack unitStack, final int doubleMovementRemaining,
 		final List<? extends PlayerPublicDetails> players, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
+	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location in the combat map whether we can move there or not.
+	 * 
+	 * MoM is a little weird with how movement works - providing you have even 1/2 move left, you can move anywhere, even somewhere
+	 * which takes 3 movement to get to - this can happen in combat as well, especially combats in cities when units can walk on the roads.
+	 * 
+	 * Therefore knowing distances to each location is not enough - we need a separate boolean array
+	 * to mark whether we can or cannot reach each location - this is set in MovementTypes.
+	 * 
+	 * @param doubleMovementDistances Double the number of movement points it takes to move here, 0=free (enchanted road), negative=cannot reach
+	 * @param movementDirections Trace of unit directions taken to reach here
+	 * @param movementTypes Type of move (or lack of) for every location on the combat map (these correspond exactly to the X, move, attack, icons displayed in the client)
+	 * @param unitBeingMoved The unit moving in combat
+	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
+	 * @param combatMap The details of the combat terrain
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 */
+	public void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
+		final CombatMovementType [] [] movementTypes, final ExpandedUnitDetails unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
+		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 }

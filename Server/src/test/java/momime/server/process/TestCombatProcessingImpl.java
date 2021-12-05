@@ -28,7 +28,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
-import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -52,6 +51,8 @@ import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
+import momime.common.movement.CombatMovementType;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
@@ -101,11 +102,11 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			combatMap.getRow ().get (coords [1]).getCell ().set (coords [0], impassable);
 		
 		// Set up test object
-		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterCombatTile (null, impassable, db)).thenReturn (-1);
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		when (movementUtils.calculateDoubleMovementToEnterCombatTile (null, impassable, db)).thenReturn (-1);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
-		proc.setUnitCalculations (calc);
+		proc.setMovementUtils (movementUtils);
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
@@ -442,6 +443,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			when (unitUtils.findUnitURN (n, defendingPriv.getFogOfWarMemory ().getUnit (), "placeCombatUnits-D")).thenReturn (defUnit);
 		}
 		
+		// All cells are passable
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		
 		// Set up object to test
 		final UnitCalculations calc = mock (UnitCalculations.class);
 		
@@ -449,6 +453,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitCalculations (calc);
 		proc.setUnitUtils (unitUtils);
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		proc.setMovementUtils (movementUtils);
 		
 		// Run method
 		proc.placeCombatUnits (combatLocation, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X,
@@ -3530,18 +3535,18 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Movement areas
 		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMovementType [] [] movementTypes = new CombatMovementType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 
 		// From 1,7 we move down-right to 2,8 and then right to 3,8 
 		movementDirections [8] [2] = 4;
 		movementDirections [8] [3] = 3;
 		
-		movementTypes [8] [3] = CombatMoveType.MOVE;
+		movementTypes [8] [3] = CombatMovementType.MOVE;
 		
 		// Movement points to enter each tile
-		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		when (movementUtils.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
+		when (movementUtils.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
 		
 		// Non-flying unit
 		when (xu.unitIgnoresCombatTerrain (db)).thenReturn (false);
@@ -3552,7 +3557,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		proc.setCombatMapUtils (combatMapUtils);
-		proc.setUnitCalculations (unitCalc);
+		proc.setMovementUtils (movementUtils);
 		proc.setUnitUtils (unitUtils);
 		proc.setCombatHandling (combatHandling);
 		
@@ -3705,13 +3710,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Movement areas
 		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMovementType [] [] movementTypes = new CombatMovementType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 
 		// From 1,7 we move down-right to 2,8 and then right to 3,8 
 		movementDirections [8] [2] = 4;
 		movementDirections [8] [3] = 3;
 		
-		movementTypes [8] [3] = CombatMoveType.RANGED_UNIT;		// <---
+		movementTypes [8] [3] = CombatMovementType.RANGED_UNIT;		// <---
 		
 		// Movement points to enter each tile
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -3877,17 +3882,17 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Movement areas
 		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMovementType [] [] movementTypes = new CombatMovementType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 
 		// From 1,7 we move down-right to 2,8 and then right to 3,8 
 		movementDirections [8] [2] = 4;
 		movementDirections [8] [3] = 3;
 		
-		movementTypes [8] [3] = CombatMoveType.MELEE_UNIT;
+		movementTypes [8] [3] = CombatMovementType.MELEE_UNIT;
 		
 		// Movement points to enter each tile
-		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		when (movementUtils.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
 
 		// The unit we're attacking
 		final MemoryUnit defender = new MemoryUnit ();
@@ -3901,7 +3906,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		proc.setCombatMapUtils (combatMapUtils);
-		proc.setUnitCalculations (unitCalc);
+		proc.setMovementUtils (movementUtils);
 		proc.setUnitUtils (unitUtils);
 		proc.setDamageProcessor (damageProcessor);
 		proc.setCombatHandling (combatHandling);

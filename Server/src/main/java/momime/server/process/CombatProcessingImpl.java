@@ -23,7 +23,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
-import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -47,6 +46,8 @@ import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
+import momime.common.movement.CombatMovementType;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
@@ -80,16 +81,16 @@ public final class CombatProcessingImpl implements CombatProcessing
 	private final static int COMBAT_SETUP_UNITS_PER_ROW = 4;
 	
 	/** All move types that include attacking the tile itself */
-	private final static List<CombatMoveType> ATTACK_WALLS = Arrays.asList (CombatMoveType.MELEE_WALL, CombatMoveType.MELEE_UNIT_AND_WALL,
-		CombatMoveType.RANGED_WALL, CombatMoveType.RANGED_UNIT_AND_WALL);
+	private final static List<CombatMovementType> ATTACK_WALLS = Arrays.asList (CombatMovementType.MELEE_WALL, CombatMovementType.MELEE_UNIT_AND_WALL,
+		CombatMovementType.RANGED_WALL, CombatMovementType.RANGED_UNIT_AND_WALL);
 
 	/** All move types that include attacking the unit */
-	private final static List<CombatMoveType> ATTACK_UNIT = Arrays.asList (CombatMoveType.MELEE_UNIT, CombatMoveType.MELEE_UNIT_AND_WALL,
-		CombatMoveType.RANGED_UNIT, CombatMoveType.RANGED_UNIT_AND_WALL);
+	private final static List<CombatMovementType> ATTACK_UNIT = Arrays.asList (CombatMovementType.MELEE_UNIT, CombatMovementType.MELEE_UNIT_AND_WALL,
+		CombatMovementType.RANGED_UNIT, CombatMovementType.RANGED_UNIT_AND_WALL);
 
 	/** All types of ranged attacks */
-	private final static List<CombatMoveType> RANGED_ATTACKS = Arrays.asList
-		(CombatMoveType.RANGED_WALL, CombatMoveType.RANGED_UNIT_AND_WALL, CombatMoveType.RANGED_UNIT);
+	private final static List<CombatMovementType> RANGED_ATTACKS = Arrays.asList
+		(CombatMovementType.RANGED_WALL, CombatMovementType.RANGED_UNIT_AND_WALL, CombatMovementType.RANGED_UNIT);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -148,6 +149,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
+	/** Movement utils */
+	private MovementUtils movementUtils;
+	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
 	 * city wall corners and the main feature (node, temple, tower of wizardry, etc. on the defender side).
@@ -193,7 +197,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// ..then position units in an up-right fashion to fill the row
 			for (int n = 0; n < COMBAT_SETUP_UNITS_PER_ROW; n++)
 			{
-				if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (null, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0)
+				if (getMovementUtils ().calculateDoubleMovementToEnterCombatTile (null, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0)
 					maxUnitsInThisRow++;
 				
 				getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 2);
@@ -433,7 +437,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			for (int n = 0; n < unitsOnThisRow; n++)
 			{
 				// Make sure the cell is passable
-				while (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (null, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) < 0)
+				while (getMovementUtils ().calculateDoubleMovementToEnterCombatTile (null, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) < 0)
 					getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 2);
 				
 				// Place unit
@@ -1221,7 +1225,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	@Override
 	public final boolean okToMoveUnitInCombat (final ExpandedUnitDetails tu, final MapCoordinates2DEx moveTo, final MoveUnitInCombatReason reason,
-		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes, final MomSessionVariables mom)
+		final int [] [] movementDirections, final CombatMovementType [] [] movementTypes, final MomSessionVariables mom)
 		throws MomException, PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		// Find who the two players are
@@ -1247,7 +1251,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			tu.setDoubleCombatMovesLeft (0);
 		
 		// Teleporting always just costs 2 movement
-		else if (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.TELEPORT)
+		else if (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMovementType.TELEPORT)
 		{
 			// Bump to different cell if there's an invisible unit here
 			final MapCoordinates2DEx actualMoveTo = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
@@ -1308,7 +1312,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// We might not actually walk the last square if there is an enemy there - we might attack it instead, in which case we don't move.
 			// However we still use up movement, as above.
-			if ((movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE) && (directions.size () > 0))
+			if ((movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMovementType.MOVE) && (directions.size () > 0))
 				directions.remove (directions.size () - 1);
 
 			// Work this out once only
@@ -1349,7 +1353,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					
 					// How much movement did it take us to walk into this cell?
 					// Units that ignore combat terrain always spend a fixed amount per move, so don't even bother calling the method
-					reduceMovementRemaining (tu.getMemoryUnit (), ignoresCombatTerrain ? 2 : getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+					reduceMovementRemaining (tu.getMemoryUnit (), ignoresCombatTerrain ? 2 : getMovementUtils ().calculateDoubleMovementToEnterCombatTile
 						(tu, combatCell.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
 					msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
 					combatCell.getLastCombatMoveDirection ().put (tu.getUnitURN (), d);
@@ -1369,7 +1373,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if (!combatEnded)
 			{
 				// If the unit it making an attack, that takes half its total movement
-				if ((!blocked) && (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE))
+				if ((!blocked) && (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMovementType.MOVE))
 					reduceMovementRemaining (tu.getMemoryUnit (), tu.getMovementSpeed ());
 				
 				// Actually put the units in that location on the server
@@ -1392,10 +1396,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// Anything special to do?
 		if ((!blocked) && (!combatEnded))
 		{
-			final CombatMoveType combatMoveType = movementTypes [moveTo.getY ()] [moveTo.getX ()];
+			final CombatMovementType movementType = movementTypes [moveTo.getY ()] [moveTo.getX ()];
 			final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();
 			
-			if (ATTACK_UNIT.contains (combatMoveType))
+			if (ATTACK_UNIT.contains (movementType))
 			{
 				final MemoryUnit defender = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 					combatLocation, moveTo, mom.getServerDB (), false);
@@ -1403,8 +1407,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 					defenders.add (new ResolveAttackTarget (defender));
 			}
 			
-			final boolean attackWalls = ATTACK_WALLS.contains (combatMoveType);
-			switch (combatMoveType)
+			final boolean attackWalls = ATTACK_WALLS.contains (movementType);
+			switch (movementType)
 			{
 				case MELEE_UNIT:
 				case MELEE_WALL:
@@ -1778,5 +1782,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Movement utils
+	 */
+	public final MovementUtils getMovementUtils ()
+	{
+		return movementUtils;
+	}
+
+	/**
+	 * @param u Movement utils
+	 */
+	public final void setMovementUtils (final MovementUtils u)
+	{
+		movementUtils = u;
 	}
 }

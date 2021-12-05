@@ -27,10 +27,8 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.Building;
-import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileBorderBlocksMovementID;
-import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
@@ -50,14 +48,12 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomCombatTile;
-import momime.common.messages.MomCombatTileLayer;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.movement.UnitStack;
-import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
@@ -239,100 +235,6 @@ public final class TestUnitCalculationsImpl
 		// Move it to the right place
 		alchemistsGuild.getCityLocation ().setZ (0);
 		assertEquals (3, calc.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort (buildings, map, cityLocation, picks, sys, db));
-	}
-	
-	/**
-	 * Tests the calculateDoubleMovementToEnterCombatTile method
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testCalculateDoubleMovementToEnterCombatTile () throws Exception
-	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final CombatTileType tileDef = new CombatTileType ();			// Normal movement
-		tileDef.setDoubleMovement (2);
-		when (db.findCombatTileType ("CTL01", "calculateDoubleMovementToEnterCombatTile")).thenReturn (tileDef);
-
-		final CombatTileType buildingDef = new CombatTileType ();		// Blocks movement
-		buildingDef.setDoubleMovement (-1);
-		when (db.findCombatTileType ("CBL03", "calculateDoubleMovementToEnterCombatTile")).thenReturn (buildingDef);
-
-		final CombatTileType rockDef = new CombatTileType ();			// No effect on movement
-		when (db.findCombatTileType ("CBL01", "calculateDoubleMovementToEnterCombatTile")).thenReturn (rockDef);
-
-		final CombatTileType roadDef = new CombatTileType ();			// Cheap movement
-		roadDef.setDoubleMovement (1);
-		when (db.findCombatTileType ("CRL03", "calculateDoubleMovementToEnterCombatTile")).thenReturn (roadDef);
-		
-		final CombatTileBorder edgeBlockingBorder = new CombatTileBorder ();
-		edgeBlockingBorder.setBlocksMovement (CombatTileBorderBlocksMovementID.CANNOT_CROSS_SPECIFIED_BORDERS);
-		when (db.findCombatTileBorder ("CTB01", "calculateDoubleMovementToEnterCombatTile")).thenReturn (edgeBlockingBorder);
-		
-		final CombatTileBorder impassableBorder = new CombatTileBorder ();
-		impassableBorder.setBlocksMovement (CombatTileBorderBlocksMovementID.WHOLE_TILE_IMPASSABLE);
-		when (db.findCombatTileBorder ("CTB02", "calculateDoubleMovementToEnterCombatTile")).thenReturn (impassableBorder);
-		
-		final CombatTileBorder passableBorder = new CombatTileBorder ();
-		passableBorder.setBlocksMovement (CombatTileBorderBlocksMovementID.NO);
-		when (db.findCombatTileBorder ("CTB03", "calculateDoubleMovementToEnterCombatTile")).thenReturn (passableBorder);
-		
-		// Unit that is on the tile
-		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		
-		// Set up object to test
-		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setCombatMapUtils (new CombatMapUtilsImpl ());		// Only search routine, easier to use the real one than mock it
-		
-		// Simplest test of a single grass layer
-		final MomCombatTileLayer grass = new MomCombatTileLayer ();
-		grass.setLayer (CombatMapLayerID.TERRAIN);
-		grass.setCombatTileTypeID ("CTL01");
-		
-		final MomCombatTile tile = new MomCombatTile ();
-		tile.getTileLayer ().add (grass);
-		
-		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
-		
-		// If its off the map edge, its automatically impassable
-		tile.setOffMapEdge (true);
-		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
-		tile.setOffMapEdge (false);
-		
-		// Borders with no blocking have no effect
-		tile.getBorderID ().add ("CTB03");
-		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
-		
-		// Borders with total blocking make tile impassable
-		tile.getBorderID ().set (0, "CTB02");
-		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
-
-		// Borders with edge blocking have no effect
-		tile.getBorderID ().set (0, "CTB01");
-		assertEquals (2, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
-		
-		// Building makes it impassable
-		final MomCombatTileLayer building = new MomCombatTileLayer ();
-		building.setLayer (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
-		building.setCombatTileTypeID ("CBL03");
-		tile.getTileLayer ().add (building);
-		
-		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
-		
-		// Road doesn't prevent it from being impassable
-		// Note have intentionally added the layers in the wrong order here - natural order is terrain-road-building
-		// but we have terrain-building-road, to prove the routine forces the correct layer priority
-		final MomCombatTileLayer road = new MomCombatTileLayer ();
-		road.setLayer (CombatMapLayerID.ROAD);
-		road.setCombatTileTypeID ("CRL03");
-		tile.getTileLayer ().add (road);
-		
-		assertEquals (-1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
-		
-		// Change the building to a rock, which doesn't block movement, now the road works
-		tile.getTileLayer ().get (1).setCombatTileTypeID ("CBL01");
-		assertEquals (1, calc.calculateDoubleMovementToEnterCombatTile (xu, tile, db));
 	}
 	
 	/**

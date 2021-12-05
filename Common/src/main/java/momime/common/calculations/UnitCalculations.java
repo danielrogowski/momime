@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemType;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -17,7 +18,6 @@ import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomCombatTile;
 import momime.common.messages.PlayerPick;
 import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandedUnitDetails;
@@ -59,17 +59,6 @@ public interface UnitCalculations
 		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
 		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db) throws RecordNotFoundException;
 
-	/**
-	 * Flying units obviously ignore this although they still can't enter impassable terrain
-	 * @param xu The unit that is moving; if passed in as null then can't do this check on specific movement skills
-	 * @param tile Combat tile being entered
-	 * @param db Lookup lists built over the XML database
-	 * @return 2x movement points required to enter this tile; negative value indicates impassable; will never return zero
-	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
-	 */
-	public int calculateDoubleMovementToEnterCombatTile (final ExpandedUnitDetails xu, final MomCombatTile tile, final CommonDatabase db)
-		throws RecordNotFoundException;
-	
 	/**
 	 * Initializes any values on the unit at the start of a combat
 	 * NB. Available units can never expend ranged attack ammo or use mana, but storing these values keeps avoids the need for the
@@ -180,35 +169,20 @@ public interface UnitCalculations
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory fogOfWarMemory, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
-	
 	/**
-	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location in the combat map whether we can move there or not.
 	 * 
-	 * MoM is a little weird with how movement works - providing you have even 1/2 move left, you can move anywhere, even somewhere
-	 * which takes 3 movement to get to - this can happen in combat as well, especially combats in cities when units can walk on the roads.
-	 * 
-	 * Therefore knowing distances to each location is not enough - we need a separate boolean array
-	 * to mark whether we can or cannot reach each location - this is set in MovementTypes.
-	 * 
-	 * @param doubleMovementDistances Double the number of movement points it takes to move here, 0=free (enchanted road), negative=cannot reach
-	 * @param movementDirections Trace of unit directions taken to reach here
-	 * @param movementTypes Type of move (or lack of) for every location on the combat map (these correspond exactly to the X, move, attack, icons displayed in the client)
-	 * @param unitBeingMoved The unit moving in combat
-	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
-	 * @param combatMap The details of the combat terrain
-	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @param players Players list
+	 * @param combatMap Combat map units are moving around
+	 * @param combatMapCoordinateSystemType Coordinate system type used by combat maps
+	 * @param x X coordinate of combat tile we're moving from
+	 * @param y Y coordinate of combat tile we're moving from
+	 * @param d Direction we're trying to move
 	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @return Whether we can cross the specified tile border
+	 * @throws RecordNotFoundException If the tile has a combat tile border ID that doesn't exist
 	 */
-	public void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
-		final CombatMoveType [] [] movementTypes, final ExpandedUnitDetails unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
-		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
-		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException;
-
+	public boolean okToCrossCombatTileBorder (final MapAreaOfCombatTiles combatMap, final CoordinateSystemType combatMapCoordinateSystemType,
+		final int x, final int y, final int d, final CommonDatabase db) throws RecordNotFoundException;
+	
 	/**
 	 * Chooses the preferred method of movement for this unit, i.e. the one with the lowest preference number (no. 1 is chosen first, then no. 2, etc.)
 	 * 

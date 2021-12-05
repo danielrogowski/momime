@@ -14,9 +14,11 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.utils.ExpandedUnitDetails;
 
 /**
@@ -136,4 +138,40 @@ public interface MovementUtils
 		final int [] [] [] cellTransportCapacity, final Map<String, Integer> doubleMovementRates,
 		final OverlandMovementCell [] [] [] moves, final List<MapCoordinates3DEx> cellsLeftToCheck,
 		final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db);
+
+	/**
+	 * Flying units obviously ignore this although they still can't enter impassable terrain
+	 * @param xu The unit that is moving; if passed in as null then can't do this check on specific movement skills
+	 * @param tile Combat tile being entered
+	 * @param db Lookup lists built over the XML database
+	 * @return 2x movement points required to enter this tile; negative value indicates impassable; will never return zero
+	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 */
+	public int calculateDoubleMovementToEnterCombatTile (final ExpandedUnitDetails xu, final MomCombatTile tile, final CommonDatabase db)
+		throws RecordNotFoundException;
+	
+	/**
+	 * Adds all directions from the given location to the list of cells left to check for combat movement
+	 * 
+	 * @param moveFrom Combat tile we're moving from
+	 * @param unitBeingMoved The unit moving in combat
+	 * @param ignoresCombatTerrain True if the unit has a skill with the "ignoreCombatTerrain" flag
+	 * @param cellsLeftToCheck List of combat tiles we still need to check movement from
+	 * @param doubleMovementDistances Double the number of movement points it takes to move here, 0=free (enchanted road), negative=cannot reach
+	 * @param movementDirections Trace of unit directions taken to reach here
+	 * @param movementTypes Type of move (or lack of) for every location on the combat map (these correspond exactly to the X, move, attack, icons displayed in the client)
+	 * @param ourUnits Array marking location of all of our units in the combat
+	 * @param enemyUnits Array marking location of all enemy units in the combat; each element in the array is their combatActionID so we know which ones are flying
+	 * @param borderTargetIDs List of tile borders that we can attack besides being able to target units; null if there are none
+	 * @param combatMap The details of the combat terrain
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void processCombatMovementCell (final MapCoordinates2DEx moveFrom, final ExpandedUnitDetails unitBeingMoved, final boolean ignoresCombatTerrain,
+		final List<MapCoordinates2DEx> cellsLeftToCheck, final int [] [] doubleMovementDistances, final int [] [] movementDirections,
+		final CombatMovementType [] [] movementTypes, final boolean [] [] ourUnits, final String [] [] enemyUnits, final List<String> borderTargetIDs,
+		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
+		throws RecordNotFoundException, MomException;
 }

@@ -19,16 +19,22 @@ import com.ndg.utils.Holder;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CombatMapLayerID;
+import momime.common.database.CombatTileBorderBlocksMovementID;
+import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
@@ -40,6 +46,12 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
  */
 public final class MovementUtilsImpl implements MovementUtils
 {
+	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
+	private final static int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
+
+	/** Marks locations in the doubleMovementDistances array that we've proved that we cannot move to */
+	private final static int MOVEMENT_DISTANCE_CANNOT_MOVE_HERE = -2;
+	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 	
@@ -57,6 +69,9 @@ public final class MovementUtilsImpl implements MovementUtils
 
 	/** Methods dealing with unit movement */
 	private UnitMovement unitMovement;
+	
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
 	
 	/**
 	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
@@ -420,7 +435,197 @@ public final class MovementUtilsImpl implements MovementUtils
 		}
 	}
 		
+	/**
+	 * Flying units obviously ignore this although they still can't enter impassable terrain
+	 * @param xu The unit that is moving; if passed in as null then can't do this check on specific movement skills
+	 * @param tile Combat tile being entered
+	 * @param db Lookup lists built over the XML database
+	 * @return 2x movement points required to enter this tile; negative value indicates impassable; will never return zero
+	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 */
+	@Override
+	public final int calculateDoubleMovementToEnterCombatTile (final ExpandedUnitDetails xu, final MomCombatTile tile, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		int result = -1;		// Impassable
+		
+		if (!tile.isOffMapEdge ())
+		{
+			// Any types of wall here that block movement?  (not using iterator because there's going to be so few of these).
+			// NB. You still cannot walk across corners of city walls even when they've been wrecked.
+			boolean impassableFound = false;
+			for (final String borderID : tile.getBorderID ())
+				if (db.findCombatTileBorder (borderID, "calculateDoubleMovementToEnterCombatTile").getBlocksMovement () == CombatTileBorderBlocksMovementID.WHOLE_TILE_IMPASSABLE)
+					impassableFound = true;
+			
+			// Check each layer for the first which specifies movement
+			// This works in the opposite order than the Delphi code, here we check the lowest layer (terrain) first and overwrite the value with higher layers
+			// The delphi code started with the highest layer and worked down, but skipping as soon as it got a non-zero value
+			for (final CombatMapLayerID layer : CombatMapLayerID.values ())
+				
+				// If we found anything that's impassable on any layer, just stop - nothing on a higher layer can make it passable
+				if (!impassableFound)
+				{
+					// Mud overrides anything else in the terrain layer, but movement rate can still be reduced by roads or set to impassable by buildings
+					if ((layer == CombatMapLayerID.TERRAIN) && (tile.isMud ()))
+						result = 1000;
+					else
+					{
+						final String combatTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (tile, layer);
+						if (combatTileTypeID != null)		// layers are often not all populated
+						{
+							// If the tile requires specific kinds of movement, see if we have them
+							final CombatTileType combatTileType = db.findCombatTileType (combatTileTypeID, "calculateDoubleMovementToEnterCombatTile");
+							if ((xu != null) && (combatTileType.getCombatTileTypeRequiresSkill ().size () > 0) &&
+								(combatTileType.getCombatTileTypeRequiresSkill ().stream ().noneMatch (s -> xu.hasModifiedSkill (s))))
+								
+								impassableFound = true;
+							else
+							{
+								final Integer movement = combatTileType.getDoubleMovement ();
+								if (movement != null)		// many tiles have no effect at all on movement, e.g. houses
+								{
+									if (movement < 0)
+										impassableFound = true;
+									else
+										result = movement;
+								}
+							}
+						}
+					}
+				}
+			
+			if (impassableFound)
+				result = -1;
+		}
+		
+		return result;
+	}
 	
+	/**
+	 * Adds all directions from the given location to the list of cells left to check for combat movement
+	 * 
+	 * @param moveFrom Combat tile we're moving from
+	 * @param unitBeingMoved The unit moving in combat
+	 * @param ignoresCombatTerrain True if the unit has a skill with the "ignoreCombatTerrain" flag
+	 * @param cellsLeftToCheck List of combat tiles we still need to check movement from
+	 * @param doubleMovementDistances Double the number of movement points it takes to move here, 0=free (enchanted road), negative=cannot reach
+	 * @param movementDirections Trace of unit directions taken to reach here
+	 * @param movementTypes Type of move (or lack of) for every location on the combat map (these correspond exactly to the X, move, attack, icons displayed in the client)
+	 * @param ourUnits Array marking location of all of our units in the combat
+	 * @param enemyUnits Array marking location of all enemy units in the combat; each element in the array is their combatActionID so we know which ones are flying
+	 * @param borderTargetIDs List of tile borders that we can attack besides being able to target units; null if there are none
+	 * @param combatMap The details of the combat terrain
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final void processCombatMovementCell (final MapCoordinates2DEx moveFrom, final ExpandedUnitDetails unitBeingMoved, final boolean ignoresCombatTerrain,
+		final List<MapCoordinates2DEx> cellsLeftToCheck, final int [] [] doubleMovementDistances, final int [] [] movementDirections,
+		final CombatMovementType [] [] movementTypes, final boolean [] [] ourUnits, final String [] [] enemyUnits, final List<String> borderTargetIDs,
+		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
+		throws RecordNotFoundException, MomException
+	{
+		final int distance = doubleMovementDistances [moveFrom.getY ()] [moveFrom.getX ()];
+		final int doubleMovementRemainingToHere = unitBeingMoved.getDoubleCombatMovesLeft () - distance;
+		
+		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (combatMapCoordinateSystem.getCoordinateSystemType ()); d++)
+		{
+			final MapCoordinates2DEx moveTo = new MapCoordinates2DEx (moveFrom);
+			if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, moveTo, d))
+				if (doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] >= MOVEMENT_DISTANCE_NOT_YET_CHECKED)
+				{
+					// This is a valid location on the map that we've either not visited before or that we've already found another path to
+					// (in which case we still need to check it - we might have found a quicker path now)
+					
+					// Check if our type of unit can move here
+					final MomCombatTile moveToTile = combatMap.getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
+					final int doubleMovementToEnterThisTile = calculateDoubleMovementToEnterCombatTile (unitBeingMoved, moveToTile, db);
+					
+					// Can we attack the tile itself?
+					boolean canAttackTile = false;
+					if ((!moveToTile.isWrecked ()) && (moveToTile.getBorderDirections () != null) && (moveToTile.getBorderDirections ().length () > 0) && (borderTargetIDs != null))
+						for (final String borderID : moveToTile.getBorderID ())
+							if (borderTargetIDs.contains (borderID))
+								canAttackTile = true;
+					
+					// Our own units prevent us moving here - enemy units don't because by 'moving there' we'll attack them
+					if (((doubleMovementToEnterThisTile < 0) && (!canAttackTile)) || (ourUnits [moveTo.getY ()] [moveTo.getX ()]))
+					{
+						// Can't move here
+						doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_CANNOT_MOVE_HERE;
+					}
+
+					// Can we cross the border between the two tiles?
+					// i.e. check there's not a stone wall in the exit from the first cell or in the entrance to the second cell
+					else
+					{
+						final boolean canCrossBorder = ignoresCombatTerrain ||
+							((getUnitCalculations ().okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (),
+								moveFrom.getX (), moveFrom.getY (), d, db)) &&
+							(getUnitCalculations ().okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (),
+								moveTo.getX (), moveTo.getY (), getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), d+4), db)));
+						
+						if (canCrossBorder || canAttackTile)
+						{
+							// How much movement (total) will it cost us to get here
+							
+							// If we ignore terrain, then we only call calculateDoubleMovementToEnterCombatTile to check if the
+							// tile is impassable or not - but if its not, then override whatever value we got back
+							final int newDistance = distance + ((ignoresCombatTerrain || (doubleMovementToEnterThisTile < 0)) ? 2 : doubleMovementToEnterThisTile);
+							
+							// Is this better than the current value for this cell?
+							if ((doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] < 0) || (newDistance < doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()]))
+							{
+								// Record the new distance
+								doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = newDistance;
+								movementDirections [moveTo.getY ()] [moveTo.getX ()] = d;
+								final String enemyCombatActionID = canCrossBorder ? enemyUnits [moveTo.getY ()] [moveTo.getX ()] : null;
+								
+								if (doubleMovementRemainingToHere > 0)
+								{
+									// Is there an enemy in this square to attack?
+									final CombatMovementType movementType;
+									if ((enemyCombatActionID != null) || (canAttackTile))
+									{
+										// Can we attack the unit here?
+										if (getUnitCalculations ().canMakeMeleeAttack (enemyCombatActionID, unitBeingMoved, db))
+										{
+											if (enemyCombatActionID != null)
+												movementType = canAttackTile ? CombatMovementType.MELEE_UNIT_AND_WALL : CombatMovementType.MELEE_UNIT;
+											else
+												movementType = CombatMovementType.MELEE_WALL;
+										}
+										else
+										{
+											movementType = CombatMovementType.CANNOT_MOVE;
+											doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_CANNOT_MOVE_HERE;
+											movementDirections [moveTo.getY ()] [moveTo.getX ()] = 0;
+										}
+									}
+									else
+										movementType = CombatMovementType.MOVE;
+
+									movementTypes [moveTo.getY ()] [moveTo.getX ()] = movementType;
+								}
+								
+								// If there is an enemy here, don't check further squares
+								if ((canCrossBorder) && (enemyCombatActionID == null) && (doubleMovementToEnterThisTile > 0))
+								{
+									// Log that we need to check every location branching off from here.
+									// For the AI combat routine, we have to recurse right to the edge of the map - we can't just stop when we
+									// run out of movement - otherwise the AI routines can't figure out how to walk across the board to a unit that is currently out of range.
+									cellsLeftToCheck.add (moveTo);
+								}
+							}
+						}
+					}
+				}
+		}
+	}
+		
 	/**
 	 * @return expandUnitDetails method
 	 */
@@ -515,5 +720,21 @@ public final class MovementUtilsImpl implements MovementUtils
 	public final void setUnitMovement (final UnitMovement u)
 	{
 		unitMovement = u;
+	}
+
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+
+	/**
+	 * @param util Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils util)
+	{
+		combatMapUtils = util;
 	}
 }

@@ -67,6 +67,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.movement.UnitMovement;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
@@ -337,6 +338,8 @@ public final class TestCombatUI extends ClientTestData
 		bottomLayout.buildMaps ();
 		
 		// Set up form
+		final UnitMovement unitMovement = mock (UnitMovement.class);
+		
 		final CombatUI combat = new CombatUI ();
 		combat.setUtils (utils);
 		combat.setLanguageHolder (langHolder);
@@ -353,6 +356,7 @@ public final class TestCombatUI extends ClientTestData
 		combat.setCombatLocation (new MapCoordinates3DEx (20, 10, 0));
 		combat.setMusicPlayer (mock (AudioPlayer.class));
 		combat.setCombatMapProcessing (mock (CombatMapProcessing.class));
+		combat.setUnitMovement (unitMovement);
 		combat.setUnitCalculations (unitCalc);
 		combat.setExpandUnitDetails (expand);
 		combat.setTextUtils (new TextUtilsImpl ());

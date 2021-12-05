@@ -23,7 +23,6 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
@@ -44,6 +43,7 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
@@ -573,7 +573,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		targetUnit.setCombatPosition (new MapCoordinates2DEx (3, 4));
 		
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		
 		// Spell to cast
 		final Spell spell = new Spell ();
@@ -641,6 +640,9 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
 			null, null, mom)).thenReturn (true);
 		
+		// All cells are passable
+		final MovementUtils movementUtils = mock (MovementUtils.class);
+		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -656,7 +658,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellDispelling (spellDispelling);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setExpandUnitDetails (expand);
-		proc.setUnitCalculations (unitCalculations);
+		proc.setMovementUtils (movementUtils);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, false, mom);

@@ -29,7 +29,6 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.SkillCalculations;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CitySpellEffect;
 import momime.common.database.CitySpellEffectTileType;
@@ -77,6 +76,7 @@ import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
@@ -141,9 +141,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
 
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
-	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 
@@ -233,6 +230,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
+	
+	/** Movement utils */
+	private MovementUtils movementUtils;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -586,7 +586,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
-					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (xu, tile, mom.getServerDB ()) < 0)
+					if (getMovementUtils ().calculateDoubleMovementToEnterCombatTile (xu, tile, mom.getServerDB ()) < 0)
 					{
 						// Killing units but recording they took 0 damage will result in them coming back as undead
 						getUnitServerUtils ().addDamage (targetUnit.getUnitDamage (), StoredDamageTypeID.HEALABLE, xu.calculateHitPointsRemaining ());
@@ -2231,22 +2231,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	}
 	
 	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
-	}
-	
-	/**
 	 * @return Methods for updating true map + players' memory
 	 */
 	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
@@ -2724,5 +2708,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setCombatMapUtils (final CombatMapUtils util)
 	{
 		combatMapUtils = util;
+	}
+
+	/**
+	 * @return Movement utils
+	 */
+	public final MovementUtils getMovementUtils ()
+	{
+		return movementUtils;
+	}
+
+	/**
+	 * @param u Movement utils
+	 */
+	public final void setMovementUtils (final MovementUtils u)
+	{
+		movementUtils = u;
 	}
 }

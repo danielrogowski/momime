@@ -12,7 +12,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.calculations.CombatMoveType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
@@ -23,6 +22,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.messages.servertoclient.StartCombatMessage;
+import momime.common.movement.CombatMovementType;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
 
@@ -249,7 +249,7 @@ public interface CombatProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public boolean okToMoveUnitInCombat (final ExpandedUnitDetails tu, final MapCoordinates2DEx moveTo, final MoveUnitInCombatReason reason,
-		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes, final MomSessionVariables mom)
+		final int [] [] movementDirections, final CombatMovementType [] [] movementTypes, final MomSessionVariables mom)
 		throws MomException, PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException;
 
 	/**

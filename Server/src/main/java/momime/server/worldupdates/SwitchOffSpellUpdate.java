@@ -8,7 +8,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.CitySpellEffect;
 import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
@@ -25,6 +24,7 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
@@ -64,8 +64,8 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 	
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
+	/** Movement utils */
+	private MovementUtils movementUtils;
 	
 	/** The spell to switch off */
 	private int spellURN;
@@ -247,7 +247,7 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 						xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
-					if (getUnitCalculations ().calculateDoubleMovementToEnterCombatTile (xu, tile, mom.getServerDB ()) < 0)
+					if (getMovementUtils ().calculateDoubleMovementToEnterCombatTile (xu, tile, mom.getServerDB ()) < 0)
 						killed = true;
 				}
 				
@@ -424,19 +424,19 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	}
 
 	/**
-	 * @return Unit calculations
+	 * @return Movement utils
 	 */
-	public final UnitCalculations getUnitCalculations ()
+	public final MovementUtils getMovementUtils ()
 	{
-		return unitCalculations;
+		return movementUtils;
 	}
 
 	/**
-	 * @param calc Unit calculations
+	 * @param u Movement utils
 	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
+	public final void setMovementUtils (final MovementUtils u)
 	{
-		unitCalculations = calc;
+		movementUtils = u;
 	}
 	
 	/**

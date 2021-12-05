@@ -1050,7 +1050,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="movementUtils" ref="movementUtils" />
 	</bean>
 	
 	<!-- Language variable replacers -->
@@ -1481,6 +1481,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="castCombatSpellFromUI" ref="castCombatSpellFromUI" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="combatSpellClientUtils" ref="combatSpellClientUtils" />
+		<property name="unitMovement" ref="unitMovement" />
 	</bean>
 
 	<bean id="castCombatSpellFromUI" class="momime.client.ui.dialogs.CastCombatSpellFromUI">

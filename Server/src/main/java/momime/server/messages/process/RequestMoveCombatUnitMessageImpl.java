@@ -13,8 +13,6 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.calculations.CombatMoveType;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.MemoryUnit;
@@ -22,6 +20,8 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.movement.CombatMovementType;
+import momime.common.movement.UnitMovement;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
@@ -45,14 +45,14 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
-
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Methods dealing with unit movement */
+	private UnitMovement unitMovement;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -89,7 +89,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
 		
 		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final CombatMovementType [] [] movementTypes = new CombatMovementType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		
 		ExpandedUnitDetails xu = null;
 		if (error == null)
@@ -110,11 +110,11 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 				{
 					final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 					
-					getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
+					getUnitMovement ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
 						xu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
 					
 					// Can we reach where we're trying to go?
-					if (movementTypes [getMoveTo ().getY ()] [getMoveTo ().getX ()] == CombatMoveType.CANNOT_MOVE)
+					if (movementTypes [getMoveTo ().getY ()] [getMoveTo ().getX ()] == CombatMovementType.CANNOT_MOVE)
 						error = "The unit you are trying to move cannot reach this location";
 				}
 			}
@@ -154,22 +154,6 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	}
 
 	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
-	}
-
-	/**
 	 * @return Combat processing
 	 */
 	public final CombatProcessing getCombatProcessing ()
@@ -199,5 +183,21 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods dealing with unit movement
+	 */
+	public final UnitMovement getUnitMovement ()
+	{
+		return unitMovement;
+	}
+
+	/**
+	 * @param u Methods dealing with unit movement
+	 */
+	public final void setUnitMovement (final UnitMovement u)
+	{
+		unitMovement = u;
 	}
 }

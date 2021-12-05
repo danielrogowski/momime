@@ -214,7 +214,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="requestMoveCombatUnitMessage" class="momime.server.messages.process.RequestMoveCombatUnitMessageImpl" scope="prototype">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="unitMovement" ref="unitMovement" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
@@ -398,6 +398,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
+		<property name="movementUtils" ref="movementUtils" />
 	</bean>
 
 	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtilsImpl">
@@ -601,7 +602,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="combatProcessing" ref="combatProcessing" />
@@ -632,6 +632,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="skillCalculations" ref="skillCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="movementUtils" ref="movementUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -640,7 +641,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
@@ -653,6 +653,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
+		<property name="movementUtils" ref="movementUtils" />
 	</bean>
 
 	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">
@@ -736,6 +737,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatHandling" ref="combatHandling" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="movementUtils" ref="movementUtils" />
 	</bean>
 
 	<bean id="combatHandling" class="momime.server.process.CombatHandlingImpl">
@@ -756,13 +758,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="damageCalculator" ref="damageCalculator" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="damageProcessor" ref="damageProcessor" />
+		<property name="unitMovement" ref="unitMovement" />
 	</bean>
 	
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">
@@ -864,6 +866,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="spellAI" ref="spellAI" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="unitMovement" ref="unitMovement" />
 	</bean>
 
 	<bean id="unitAI" class="momime.server.ai.UnitAIImpl">
@@ -1083,7 +1086,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnVisibility" ref="fogOfWarMidTurnVisibility" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
-		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="movementUtils" ref="movementUtils" />
 	</bean>
 	
 	<bean id="recheckTransportCapacityUpdate" class="momime.server.worldupdates.RecheckTransportCapacityUpdate" scope="prototype">

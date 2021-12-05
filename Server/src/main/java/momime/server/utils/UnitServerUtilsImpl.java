@@ -52,6 +52,7 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
+import momime.common.movement.MovementUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
@@ -124,6 +125,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	
 	/** Sample unit method */
 	private SampleUnitUtils sampleUnitUtils;
+	
+	/** Movement utils */
+	private MovementUtils movementUtils;
 	
 	/**
 	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
@@ -974,7 +978,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final MapCoordinates2DEx coords = new MapCoordinates2DEx (startPosition);
 		
 		// Check centre cell first
-		if ((getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+		if ((getMovementUtils ().calculateDoubleMovementToEnterCombatTile
 				(xu, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
 			(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem, true) == null))
 			
@@ -1000,7 +1004,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 						cellsChecked++;
 						
 						// Is this cell unoccupied + passable terrain?
-						if ((getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+						if ((getMovementUtils ().calculateDoubleMovementToEnterCombatTile
 								(xu, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
 							(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem, true) == null))
 							
@@ -1043,7 +1047,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		
 		// Check centre cell first
 		if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords, db, true) == null) &&
-			(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+			(getMovementUtils ().calculateDoubleMovementToEnterCombatTile
 				(xu, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
 				
 			found = coords;
@@ -1069,7 +1073,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 						
 						// Is this cell unoccupied + passable terrain?
 						if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords, db, true) == null) &&
-							(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+							(getMovementUtils ().calculateDoubleMovementToEnterCombatTile
 								(xu, combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
 							
 							found = coords;
@@ -1357,5 +1361,21 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
 		sampleUnitUtils = s;
+	}
+
+	/**
+	 * @return Movement utils
+	 */
+	public final MovementUtils getMovementUtils ()
+	{
+		return movementUtils;
+	}
+
+	/**
+	 * @param u Movement utils
+	 */
+	public final void setMovementUtils (final MovementUtils u)
+	{
+		movementUtils = u;
 	}
 }

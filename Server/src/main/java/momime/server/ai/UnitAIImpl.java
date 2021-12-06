@@ -36,7 +36,6 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileType;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
@@ -868,13 +867,12 @@ public final class UnitAIImpl implements UnitAI
 			(u -> u.getOwningPlayerID () == playerID).map (u -> (MapCoordinates3DEx) u.getUnitLocation ()).distinct ().collect (Collectors.toList ());
 				
 		// Find all nodes we don't own on this plane, as long as we have a unit there
-		final MapAreaOfMemoryGridCells terrainPlane = fogOfWarMemory.getMap ().getPlane ().get (0);
 		for (int z = 0; z < sys.getDepth (); z++)
 			if ((plane == null) || (plane == z))
 				for (int y = 0; y < sys.getHeight (); y++)
 					for (int x = 0; x < sys.getWidth (); x++)
 					{
-						final MemoryGridCell mc = terrainPlane.getRow ().get (y).getCell ().get (x);
+						final MemoryGridCell mc = fogOfWarMemory.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
 						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
 						
 						if ((mc != null) && (mc.getTerrainData () != null) && (mc.getTerrainData ().getTileTypeID () != null) && (unitLocations.contains (coords)))

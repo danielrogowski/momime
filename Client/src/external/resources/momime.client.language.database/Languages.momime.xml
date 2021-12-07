@@ -2873,6 +2873,18 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 			<weakMyrrorLairTreasure language="pl">
 				<text>Na Myrrorze: Skarby</text>
 			</weakMyrrorLairTreasure>
+			<eventMinimumTurnNumber language="en">
+				<text>Random events can start after turn</text>
+			</eventMinimumTurnNumber>
+			<minimumTurnsBetweenEvents language="en">
+				<text>Minimum turns between random events</text>
+			</minimumTurnsBetweenEvents>
+			<eventChancePrefix language="en">
+				<text>Chance of random event increases by</text>
+			</eventChancePrefix>
+			<eventChanceSuffix language="en">
+				<text>/ 30,720 each turn</text>
+			</eventChanceSuffix>
 		</customDifficultyTab2>
 		<customDifficultyTab3>
 			<title language="en">

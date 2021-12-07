@@ -548,6 +548,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="randomEvents" ref="randomEvents" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">
@@ -799,6 +800,29 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
+	<bean id="randomCityEvents" class="momime.server.events.RandomCityEventsImpl">
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+	
+	<bean id="randomWizardEvents" class="momime.server.events.RandomWizardEventsImpl">
+		<property name="randomCityEvents" ref="randomCityEvents" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
+	<bean id="randomEventTargeting" class="momime.server.events.RandomEventTargetingImpl">
+		<property name="randomWizardEvents" ref="randomWizardEvents" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>	
+	
+	<bean id="randomEvents" class="momime.server.events.RandomEventsImpl">
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="randomEventTargeting" ref="randomEventTargeting" />
+	</bean>
+	
 	<!-- AI -->
 	
 	<bean id="spellAI" class="momime.server.ai.SpellAIImpl">
@@ -1008,7 +1032,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="movementUtils" ref="movementUtils" />
 	</bean>
-	
+
 	<!-- Beans created each time a new session is started
 	
 			Note have to be careful here that each bean is only referenced once - if, for example, we declare

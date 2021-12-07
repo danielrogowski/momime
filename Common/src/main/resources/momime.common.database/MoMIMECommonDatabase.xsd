@@ -680,7 +680,16 @@
 						<xsd:field xpath="smoothingSystemID" />
 					</xsd:keyref>
 				</xsd:element>			
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="event" type="momimecommon:event" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="event" type="momimecommon:event">
+					<xsd:key name="eventTileTypePK">
+						<xsd:selector xpath="eventTileType" />
+						<xsd:field xpath="." />
+					</xsd:key>
+					<xsd:key name="eventMapFeaturePK">
+						<xsd:selector xpath="eventMapFeature" />
+						<xsd:field xpath="." />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimecommon:animation" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimecommon:playList" />
 			</xsd:sequence>
@@ -1486,6 +1495,16 @@
 			<xsd:field xpath="unitSkillID" />
 		</xsd:keyref>
 		
+		<!-- Random events, new for 0.9.9.9 -->
+		<xsd:keyref refer="momimecommon:tileTypePK" name="eventTileTypeFKtileType">
+			<xsd:selector xpath="event/eventTileType" />
+			<xsd:field xpath="." />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:mapFeaturePK" name="eventMapFeatureFKmapFeature">
+			<xsd:selector xpath="event/eventMapFeature" />
+			<xsd:field xpath="." />
+		</xsd:keyref>
+		
 		<!-- Moved from graphics XSD -->
 		<xsd:keyref refer="momimecommon:citySizePK" name="cityImageFKcitySize">
 			<xsd:selector xpath="cityImage" />
@@ -1719,6 +1738,7 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiSpellResearchMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI spell research multipler" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiUpkeepMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI upkeep multipler" nxe:gridwidth="140" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="eventMinimumTurnNumber" type="momimecommon:turnNumber" nxe:label="Minimum turn for events" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="minimumTurnsBetweenEvents" type="momimecommon:turnNumber" nxe:label="Minimum turns between events" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="eventChance" type="momimecommon:eventChance" nxe:label="Event chance" nxe:gridwidth="120" />
 	
 			<!-- New MoM IME settings -->
@@ -4407,6 +4427,20 @@ Ordering of this list is very significant.
 		        <xsd:annotation>
         			<xsd:documentation>This means "targets a city owned by the target wizard", so for "diplomatic marriage" it is false as that targets a raider city.</xsd:documentation>
         		</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventTileTypeID" type="momimecommon:tileTypeID" nxe:label="Tile Type">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventMapFeatureID" type="momimecommon:mapFeatureID" nxe:label="Map Feature">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>mapFeatureDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="eventID" type="momimecommon:eventID" use="required" nxe:label="Event ID" nxe:gridwidth="150" />

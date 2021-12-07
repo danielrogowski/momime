@@ -3558,6 +3558,22 @@
 					<xsd:selector xpath="weakMyrrorLairTreasure" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
+				<xsd:key name="customDifficultyTab2EventMinimumTurnNumberPK">
+					<xsd:selector xpath="eventMinimumTurnNumber" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2MinimumTurnsBetweenEventsPK">
+					<xsd:selector xpath="minimumTurnsBetweenEvents" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2EventChancePrefixPK">
+					<xsd:selector xpath="eventChancePrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2EventChanceSuffixPK">
+					<xsd:selector xpath="eventChanceSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
    			</xsd:element>
    			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab3" type="momimelangs:customDifficultyTab3">
 				<xsd:key name="customDifficultyTab3TitlePK">
@@ -3843,6 +3859,10 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakArcanusLairTreasure" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakMyrrorLairMonsters" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakMyrrorLairTreasure" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eventMinimumTurnNumber" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="minimumTurnsBetweenEvents" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eventChancePrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eventChanceSuffix" />
 		</xsd:sequence>
     </xsd:complexType>
 	

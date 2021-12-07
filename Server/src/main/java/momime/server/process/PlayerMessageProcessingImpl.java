@@ -90,6 +90,7 @@ import momime.server.ai.CityAI;
 import momime.server.ai.MomAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
+import momime.server.events.RandomEvents;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
@@ -185,6 +186,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Rolls random events */
+	private RandomEvents randomEvents;
 	
 	/** Number of save points to keep for each session */
 	private int savePointKeepCount;
@@ -872,8 +876,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 			
 			if (playerIndex == 0)
+			{
+				// Things that only happen before the first player's turn
 				getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 					mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+				
+				getRandomEvents ().rollRandomEvent (mom);
+			}
 		}
 
 		// Start phase for the new player
@@ -933,8 +942,12 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		final int useOnlyOnePlayerID = (timeStop != null) ? timeStop.getCastingPlayerID () : 0;
 		
 		if (timeStop == null)
+		{
 			getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+			
+			getRandomEvents ().rollRandomEvent (mom);
+		}
 		
 		// Process everybody's start phases together
 		startPhase (mom, useOnlyOnePlayerID);
@@ -1817,5 +1830,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Rolls random events
+	 */
+	public final RandomEvents getRandomEvents ()
+	{
+		return randomEvents;
+	}
+
+	/**
+	 * @param e Rolls random events
+	 */
+	public final void setRandomEvents (final RandomEvents e)
+	{
+		randomEvents = e;
 	}
 }

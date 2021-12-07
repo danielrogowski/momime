@@ -863,6 +863,27 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Maximum value of treasure in weak lairs on Myrror */
 	private JTextField myrrorWeakLairTreasureMax;
+
+	/** Turn number before random events will occur */
+	private JLabel eventMinimumTurnNumberLabel;
+
+	/** Turn number before random events will occur */
+	private JTextField eventMinimumTurnNumber;
+	
+	/** Minimum turns between random events */
+	private JLabel minimumTurnsBetweenEventsLabel;
+
+	/** Minimum turns between random events */
+	private JTextField minimumTurnsBetweenEvents;
+	
+	/** Increase in chance of a random event each turn */
+	private JLabel eventChancePrefix;
+
+	/** Increase in chance of a random event each turn */
+	private JTextField eventChance;
+
+	/** Increase in chance of a random event each turn */
+	private JLabel eventChanceSuffix;
 	
 	// CUSTOM DIFFICULTY PANEL (3 of 3 - nodes/difficulty)
 	
@@ -2104,6 +2125,27 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		myrrorWeakLairTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		difficulty2Panel.add (myrrorWeakLairTreasureMax, "frmNewGameCustomDifficulty2WeakMyrrorLairTreasureMax");
+
+		eventMinimumTurnNumberLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (eventMinimumTurnNumberLabel, "frmNewGameCustomDifficulty2EventMinimumTurnNumber");
+
+		eventMinimumTurnNumber = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (eventMinimumTurnNumber, "frmNewGameCustomDifficulty2EventMinimumTurnNumberEdit");
+
+		minimumTurnsBetweenEventsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (minimumTurnsBetweenEventsLabel, "frmNewGameCustomDifficulty2MinimumTurnsBetweenEvents");
+
+		minimumTurnsBetweenEvents = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (minimumTurnsBetweenEvents, "frmNewGameCustomDifficulty2MinimumTurnsBetweenEventsEdit");
+
+		eventChancePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (eventChancePrefix, "frmNewGameCustomDifficulty2EventChancePrefix");
+
+		eventChance = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty2Panel.add (eventChance, "frmNewGameCustomDifficulty2EventChanceEdit");
+
+		eventChanceSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (eventChanceSuffix, "frmNewGameCustomDifficulty2EventChanceSuffix");
 		
 		cards.add (difficulty2Panel, DIFFICULTY_2_PANEL);
 		
@@ -3478,18 +3520,22 @@ public final class NewGameUI extends MomClientFrameUI
 			// CUSTOM DIFFICULTY PANEL (2 of 3)
 			if (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 () != null)
 			{
-				towersMonsters.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTowerMonsters ()));
-				towersTreasure.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTowerTreasure ()));
-				normalLairsLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalLairs ()));
-				arcanusNormalLairMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalArcanusLairMonsters ()));
-				arcanusNormalLairTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalArcanusLairTreasure ()));
-				myrrorNormalLairMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalMyrrorLairMonsters ()));
-				myrrorNormalLairTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalMyrrorLairTreasure ()));
-				weakLairsLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakLairs ()));
-				arcanusWeakLairMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakArcanusLairMonsters ()));
-				arcanusWeakLairTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakArcanusLairTreasure ()));
-				myrrorWeakLairMonsters.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairMonsters ()));
-				myrrorWeakLairTreasure.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairTreasure ()));
+				towersMonsters.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTowerMonsters ()));
+				towersTreasure.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTowerTreasure ()));
+				normalLairsLabel.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalLairs ()));
+				arcanusNormalLairMonsters.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalArcanusLairMonsters ()));
+				arcanusNormalLairTreasure.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalArcanusLairTreasure ()));
+				myrrorNormalLairMonsters.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalMyrrorLairMonsters ()));
+				myrrorNormalLairTreasure.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getNormalMyrrorLairTreasure ()));
+				weakLairsLabel.setText								(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakLairs ()));
+				arcanusWeakLairMonsters.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakArcanusLairMonsters ()));
+				arcanusWeakLairTreasure.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakArcanusLairTreasure ()));
+				myrrorWeakLairMonsters.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairMonsters ()));
+				myrrorWeakLairTreasure.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairTreasure ()));
+				eventMinimumTurnNumberLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getEventMinimumTurnNumber ()));
+				minimumTurnsBetweenEventsLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getMinimumTurnsBetweenEvents ()));
+				eventChancePrefix.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getEventChancePrefix ()));
+				eventChanceSuffix.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getEventChanceSuffix ()));
 			}
 			
 			// CUSTOM DIFFICULTY PANEL (3 of 3)
@@ -4120,6 +4166,9 @@ public final class NewGameUI extends MomClientFrameUI
 		towersMonstersMax.setText								(Integer.valueOf (difficultyLevel.getTowerMonstersMaximum ()).toString ());
 		towersTreasureMin.setText									(Integer.valueOf (difficultyLevel.getTowerTreasureMinimum ()).toString ());
 		towersTreasureMax.setText								(Integer.valueOf (difficultyLevel.getTowerTreasureMaximum ()).toString ());
+		eventMinimumTurnNumber.setText						(Integer.valueOf (difficultyLevel.getEventMinimumTurnNumber ()).toString ());
+		minimumTurnsBetweenEvents.setText					(Integer.valueOf (difficultyLevel.getMinimumTurnsBetweenEvents ()).toString ());
+		eventChance.setText											(Integer.valueOf (difficultyLevel.getEventChance ()).toString ());
 		
 		for (final DifficultyLevelPlane plane : difficultyLevel.getDifficultyLevelPlane ())
 			if (plane.getPlaneNumber () == 0)
@@ -4379,6 +4428,9 @@ public final class NewGameUI extends MomClientFrameUI
 	    difficultyLevel.setRaiderCityGrowthCap								(Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
 	    difficultyLevel.setWizardCityStartSize								(Integer.parseInt (wizardCityStartSize.getText ()));
 	    difficultyLevel.setCityMaxSize											(Integer.parseInt (maxCitySize.getText ()));
+	    difficultyLevel.setEventMinimumTurnNumber						(Integer.parseInt (eventMinimumTurnNumber.getText ()));
+	    difficultyLevel.setMinimumTurnsBetweenEvents					(Integer.parseInt (minimumTurnsBetweenEvents.getText ()));
+	    difficultyLevel.setEventChance											(Integer.parseInt (eventChance.getText ()));
 	    difficultyLevel.getDifficultyLevelPlane ().add (arcanusDifficultyLevel);
 	    difficultyLevel.getDifficultyLevelPlane ().add (myrrorDifficultyLevel);
 	    

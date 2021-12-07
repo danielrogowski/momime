@@ -32,6 +32,7 @@
 					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeCombatAreaEffectURN" type="momimemsgs:combatAreaEffectURN" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeHeroItemURN" type="momimemsgs:heroItemURN" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="nextFreeOfferURN" type="momimemsgs:offerURN" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="lastEventTurnNumber" type="momimecommon:turnNumber" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="usedCityName" type="xsd:normalizedString" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="availableHeroItem" type="momimemsgs:numberedHeroItem">
 					    <xsd:annotation>

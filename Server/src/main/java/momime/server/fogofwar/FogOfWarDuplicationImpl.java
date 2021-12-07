@@ -156,7 +156,6 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			// Destination value for construction progress depends on the input param
 			final Integer newProductionSoFar = includeProductionSoFar ? source.getCityData ().getProductionSoFar () : null;
 			
-
 			// Now can figure out if any updates are necessary
 			updateRequired = (destinationData == null) ||
 				(sourceData.getCityPopulation () != destinationData.getCityPopulation ()) ||
@@ -167,6 +166,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				(!CompareUtils.safeStringCompare (sourceData.getCityRaceID (), destinationData.getCityRaceID ())) ||
 				(!CompareUtils.safeStringCompare (sourceData.getCitySizeID (), destinationData.getCitySizeID ())) ||
 				(!CompareUtils.safeStringCompare (sourceData.getCityName (), destinationData.getCityName ())) ||
+				(!CompareUtils.safeStringCompare (sourceData.getPopulationEventID (), destinationData.getPopulationEventID ())) ||
 				(!CompareUtils.safeStringCompare (newCurrentlyConstructingBuilding, destinationData.getCurrentlyConstructingBuildingID ())) ||
 				(!CompareUtils.safeStringCompare (newCurrentlyConstructingUnit, destinationData.getCurrentlyConstructingUnitID ())) ||
 				(!CompareUtils.safeIntegerCompare (newProductionSoFar, destinationData.getProductionSoFar ()));
@@ -187,6 +187,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 				destinationData.setCityRaceID (sourceData.getCityRaceID ());
 				destinationData.setCitySizeID (sourceData.getCitySizeID ());
 				destinationData.setCityName (sourceData.getCityName ());
+				destinationData.setPopulationEventID (sourceData.getPopulationEventID ());
 				destinationData.setCurrentlyConstructingBuildingID (newCurrentlyConstructingBuilding);
 				destinationData.setCurrentlyConstructingUnitID (newCurrentlyConstructingUnit);
 				destinationData.setProductionSoFar (newProductionSoFar);
@@ -211,7 +212,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			 (destinationData.getNumberOfRebels () > 0) || (destinationData.getCityOwnerID () != 0) || (destinationData.getCityRaceID () != null) ||
 			 (destinationData.getCitySizeID () != null) || (destinationData.getCityName () != null) ||
 			 (destinationData.getCurrentlyConstructingBuildingID () != null) || (destinationData.getCurrentlyConstructingUnitID () != null) ||
-			 (destinationData.getProductionSoFar () != null));
+			 (destinationData.getProductionSoFar () != null) || (destinationData.getPopulationEventID () != null));
 
 		destination.setCityData (null);
 

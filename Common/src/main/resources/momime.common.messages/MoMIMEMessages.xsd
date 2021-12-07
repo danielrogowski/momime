@@ -563,6 +563,11 @@ so must include the full details of the item here.</xsd:documentation>
     						<xsd:documentation>Optional because it will be null in one-player-at-a-time games.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="conjunctionEventID" type="momimecommon:eventID">
+					    <xsd:annotation>
+		    				<xsd:documentation>Whether Good/Bad moon or red/green/blue conjunction or Mana Short are currently in effect.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 		        </xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -640,6 +645,11 @@ When corruption is cast this gets set to 5.  Each turn a unit spends purifying t
 			<xsd:element minOccurs="0" maxOccurs="1" name="productionSoFar" type="momimecommon:productionCost">
 			    <xsd:annotation>
     				<xsd:documentation>Null for Trade Goods and Housing, or if this is a player's memory and the city isn't ours.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="populationEventID" type="momimecommon:eventID">
+			    <xsd:annotation>
+    				<xsd:documentation>Whether Population Boom or Plague events are currently in effect on this city.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
         </xsd:sequence>

@@ -558,6 +558,32 @@ public final class CommonDatabaseConstants
 	/** Trees/rocks on the combat map */
 	public final static String COMBAT_TILE_TERRAIN_FEATURE = "CBL01";
 	
+	// random events
+
+	/** Gain a hero item */
+	public final static String EVENT_ID_GIFT = "EV02";
+
+	/** Lose gold */
+	public final static String EVENT_ID_PIRACY = "EV06";
+	
+	/** Gain a city */
+	public final static String EVENT_ID_DIPLOMATIC_MARRIAGE = "EV04";
+
+	/** Lose a city */
+	public final static String EVENT_ID_REBELLION = "EV08";
+
+	/** Gain a mineral */
+	public final static String EVENT_ID_NEW_MINERALS = "EV11";
+	
+	/** Lose a mineral */
+	public final static String EVENT_ID_DEPLETION = "EV10";
+
+	/** Gain population */
+	public final static String EVENT_ID_POPULATION_BOOM = "EV12";
+
+	/** Lose population */
+	public final static String EVENT_ID_PLAGUE = "EV07";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

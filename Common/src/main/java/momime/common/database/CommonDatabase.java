@@ -533,6 +533,11 @@ public interface CommonDatabase
 	public PlayList findPlayList (final String playListID, final String caller) throws RecordNotFoundException;
 	
 	/**
+	 * @return Complete list of random events
+	 */
+	public List<Event> getEvent ();
+	
+	/**
 	 * @return Cost to construct the most expensive unit or building in the database
 	 */
 	public int getMostExpensiveConstructionCost ();

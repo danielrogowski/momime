@@ -1061,6 +1061,10 @@ public final class TestNewGameUI extends ClientTestData
 		customDifficultyTab2Lang.getWeakArcanusLairTreasure ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Treasure"));
 		customDifficultyTab2Lang.getWeakMyrrorLairMonsters ().add (createLanguageText (Language.ENGLISH, "On Myrror: Monsters"));
 		customDifficultyTab2Lang.getWeakMyrrorLairTreasure ().add (createLanguageText (Language.ENGLISH, "On Myrror: Treasure"));
+		customDifficultyTab2Lang.getEventMinimumTurnNumber ().add (createLanguageText (Language.ENGLISH, "Random events can start after turn"));
+		customDifficultyTab2Lang.getMinimumTurnsBetweenEvents ().add (createLanguageText (Language.ENGLISH, "Minimum turns between random events"));
+		customDifficultyTab2Lang.getEventChancePrefix ().add (createLanguageText (Language.ENGLISH, "Chance of random event increases by"));
+		customDifficultyTab2Lang.getEventChanceSuffix ().add (createLanguageText (Language.ENGLISH, "/ 30,720 each turn"));
 
 		final NewGameScreen newGameScreenLang = new NewGameScreen ();
 		newGameScreenLang.setCustomDifficultyTab2 (customDifficultyTab2Lang);

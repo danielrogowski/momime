@@ -531,7 +531,7 @@ so must include the full details of the item here.</xsd:documentation>
 		<xsd:complexContent>
 			<xsd:extension base="mps:transientPlayerPublicKnowledge">
 		        <xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="movementAllocatedForTurnNumber" type="momimemsgs:turnNumber" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="movementAllocatedForTurnNumber" type="momimecommon:turnNumber" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="currentlyPlayingCombat" type="xsd:boolean" />
 					
 					<xsd:element minOccurs="0" maxOccurs="1" name="flagColour" type="momimecommon:colour">
@@ -552,7 +552,7 @@ so must include the full details of the item here.</xsd:documentation>
 			<xsd:extension base="mps:generalPublicKnowledge">
 		        <xsd:sequence>
 					<xsd:element ref="momimecommon:momDatabase" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="turnNumber" type="momimemsgs:turnNumber" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="turnNumber" type="momimecommon:turnNumber" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="currentPlayerID" type="mps:playerID">
 					    <xsd:annotation>
     						<xsd:documentation>Optional because it will be null in simultaneous turns games.</xsd:documentation>
@@ -1361,10 +1361,6 @@ So need a separate data item for this.</xsd:documentation>
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 
-	<xsd:simpleType name="turnNumber">
-		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-	
 	<xsd:simpleType name="listIndex">
 		<xsd:annotation>
 			<xsd:documentation>An index into an unbounded list.</xsd:documentation>

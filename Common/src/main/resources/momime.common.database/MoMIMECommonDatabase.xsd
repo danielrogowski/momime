@@ -680,6 +680,7 @@
 						<xsd:field xpath="smoothingSystemID" />
 					</xsd:keyref>
 				</xsd:element>			
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="event" type="momimecommon:event" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimecommon:animation" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimecommon:playList" />
 			</xsd:sequence>
@@ -854,6 +855,12 @@
 			<xsd:field xpath="@aiUnitCategoryID" />
 		</xsd:key>
 
+		<!-- Random events, new for 0.9.9.9 -->
+		<xsd:key name="eventPK">
+			<xsd:selector xpath="event" />
+			<xsd:field xpath="@eventID" />
+		</xsd:key>
+		
 		<!-- Merging graphics XSD -->		
 		<xsd:key name="animationPK">
 			<xsd:selector xpath="animation" />
@@ -1711,6 +1718,8 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiRaidersProductionRateMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI raiders production rate multipler" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiSpellResearchMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI spell research multipler" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiUpkeepMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI upkeep multipler" nxe:gridwidth="140" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eventMinimumTurnNumber" type="momimecommon:turnNumber" nxe:label="Minimum turn for events" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eventChance" type="momimecommon:eventChance" nxe:label="Event chance" nxe:gridwidth="120" />
 	
 			<!-- New MoM IME settings -->
 			<xsd:element minOccurs="1" maxOccurs="1" name="eachWizardOnlyOnce" type="xsd:boolean" nxe:label="Each wizard only once?" nxe:gridwidth="150" />
@@ -4379,6 +4388,29 @@ Ordering of this list is very significant.
 		</xsd:sequence>
 		<xsd:attribute name="bitmask" type="momimecommon:bitmask" use="required" nxe:label="Bitmask" nxe:gridwidth="80" />
 	</xsd:complexType>
+
+		<xsd:complexType name="event" nxe:singular="Random Event" nxe:plural="Random Events">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventName" type="momimecommon:languageText" nxe:label="Name" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventDescriptionPlayer" type="momimecommon:languageText" nxe:label="Player text" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventDescriptionEnemy" type="momimecommon:languageText" nxe:label="Enemy text" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventDescriptionStart" type="momimecommon:languageText" nxe:label="Start text" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventDescriptionEnd" type="momimecommon:languageText" nxe:label="End text" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eventImageFile" type="momimecommon:imageFilename" nxe:label="Event image file" nxe:gridwidth="300" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eventMusicFile" type="momimecommon:imageFilename" nxe:label="Event music file" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="eventWizardTarget" type="momimecommon:eventWizardTarget" nxe:label="Target wizard" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="overrideMinimumTurnNumber" type="momimecommon:turnNumber" nxe:label="Minimum turn" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="minimumDuration" type="momimecommon:turnNumber" nxe:label="Minimum duration" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="initialEndingChance" type="momimecommon:percentage" nxe:label="% chance of ending after minimum duration" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="increaseEndingChance" type="momimecommon:percentage" nxe:label="Increase to % chance of ending each turn" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="targetCity" type="xsd:boolean" nxe:label="Targets a city?" nxe:gridwidth="120">
+		        <xsd:annotation>
+        			<xsd:documentation>This means "targets a city owned by the target wizard", so for "diplomatic marriage" it is false as that targets a raider city.</xsd:documentation>
+        		</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="eventID" type="momimecommon:eventID" use="required" nxe:label="Event ID" nxe:gridwidth="150" />
+	</xsd:complexType>	
 	
 	<xsd:complexType name="animation" nxe:singular="Animation" nxe:plural="Animations">
 		<xsd:sequence>
@@ -5565,6 +5597,22 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 		</xsd:restriction>
 	</xsd:simpleType>
 
+	<xsd:simpleType name="eventWizardTarget">
+        <xsd:annotation>
+        	<xsd:documentation>Good events tend to target wizards who are behind; bad events tend to target wizards who are winning.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Target strong wizard</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="STRONG" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="W"><xsd:annotation>
+				<xsd:documentation>Target weak wizard</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="WEAK" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 <!-- Moved from server XSD -->
 
 	<xsd:simpleType name="fame">
@@ -5647,6 +5695,10 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 				<xsd:appinfo><jaxb:typesafeEnumMember name="POLISH" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="eventID">
+		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 
 <!-- Merging graphics XSD -->
@@ -5768,6 +5820,17 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
         <xsd:annotation>
         	<xsd:documentation>Healing rates are defined in 1/60ths..</xsd:documentation>
         </xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="eventChance">
+        <xsd:annotation>
+        	<xsd:documentation>Event chances are defined in 1/30720ths..</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="turnNumber">
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	

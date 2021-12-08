@@ -5,6 +5,7 @@ import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
+import momime.client.ui.dialogs.RandomEventUI;
 import momime.client.ui.dialogs.SpellOfMasteryEndUI;
 import momime.client.ui.dialogs.SpellOfMasteryStartUI;
 import momime.client.ui.dialogs.TreasureUI;
@@ -111,4 +112,10 @@ public interface PrototypeFrameCreator
 	 * @return New hero item offer UI
 	 */
 	public HeroItemOfferUI createHeroItemOffer ();
+
+
+	/**
+	 * @return New random event UI
+	 */
+	public RandomEventUI createRandomEvent ();
 }

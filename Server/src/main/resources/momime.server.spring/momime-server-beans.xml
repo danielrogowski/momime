@@ -804,23 +804,27 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="randomEvents" ref="randomEvents" />
 	</bean>
 	
 	<bean id="randomWizardEvents" class="momime.server.events.RandomWizardEventsImpl">
 		<property name="randomCityEvents" ref="randomCityEvents" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="randomEvents" ref="randomEvents" />
 	</bean>
 
 	<bean id="randomEventTargeting" class="momime.server.events.RandomEventTargetingImpl">
 		<property name="randomWizardEvents" ref="randomWizardEvents" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="randomEvents" ref="randomEvents" />
 	</bean>	
 	
 	<bean id="randomEvents" class="momime.server.events.RandomEventsImpl">
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="randomEventTargeting" ref="randomEventTargeting" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 	
 	<!-- AI -->

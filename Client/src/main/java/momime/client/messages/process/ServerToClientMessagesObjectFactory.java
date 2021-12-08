@@ -45,6 +45,7 @@ import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.PlaneShiftUnitStackMessage;
 import momime.common.messages.servertoclient.PlayAnimationMessage;
+import momime.common.messages.servertoclient.RandomEventMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.RemoveUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
@@ -693,6 +694,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final OverlandCastingInfoMessage createOverlandCastingInfoMessage ()
 	{
 		return getFactory ().createOverlandCastingInfoMessage ();
+	}
+	
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final RandomEventMessage createRandomEventMessage ()
+	{
+		return getFactory ().createRandomEventMessage ();
 	}
 	
 	/**

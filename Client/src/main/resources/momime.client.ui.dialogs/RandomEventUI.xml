@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>608</formWidth>
+	<formHeight>136</formHeight>
+	<component name="frmRandomEventImage">
+		<left>510</left>
+		<top>16</top>
+		<width>82</width>
+		<height>104</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmRandomEventButton">
+		<left>240</left>
+		<top>100</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmRandomEventText">
+		<left>18</left>
+		<top>18</top>
+		<width>478</width>
+		<height>80</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

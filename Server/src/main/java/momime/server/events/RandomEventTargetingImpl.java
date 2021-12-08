@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,6 +42,9 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
+	
+	/** Rolls random events */
+	private RandomEvents randomEvents;
 	
 	/**
 	 * @param event Event we want to find a target for
@@ -89,10 +95,12 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find an expected data item
 	 * @throws MomException If there is another kind of error
+	 * @throws JAXBException If there is a problem sending the message
+	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	@Override
 	public final void triggerEvent (final Event event, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException
+		throws RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Is it an event that targets a wizard?  If so then now need to pick the wizard to target
 		if (event.getEventWizardTarget () != null)
@@ -133,14 +141,19 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 			getRandomWizardEvents ().triggerWizardEvent (event, targetWizard, mom);
 		}
 		
-		// Disjunction
-		else if (event.getMinimumDuration () == null)
-		{
-		}
-		
-		// Everything else are Conjunction events - good/bad moon and red/green/blue nodes, and also mana short
 		else
 		{
+			getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, false, mom.getPlayers ());
+			
+			// Disjunction
+			if (event.getMinimumDuration () == null)
+			{
+			}
+			
+			// Everything else are Conjunction events - good/bad moon and red/green/blue nodes, and also mana short
+			else
+			{
+			}
 		}
 	}
 	
@@ -190,5 +203,21 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Rolls random events
+	 */
+	public final RandomEvents getRandomEvents ()
+	{
+		return randomEvents;
+	}
+
+	/**
+	 * @param e Rolls random events
+	 */
+	public final void setRandomEvents (final RandomEvents e)
+	{
+		randomEvents = e;
 	}
 }

@@ -538,6 +538,14 @@ public interface CommonDatabase
 	public List<Event> getEvent ();
 	
 	/**
+	 * @param eventID Random event ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Random event object
+	 * @throws RecordNotFoundException If the eventID doesn't exist
+	 */
+	public Event findEvent (final String eventID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @return Cost to construct the most expensive unit or building in the database
 	 */
 	public int getMostExpensiveConstructionCost ();

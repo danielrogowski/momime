@@ -1,5 +1,12 @@
 package momime.server.events;
 
+import java.util.List;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.server.MomSessionVariables;
@@ -14,7 +21,26 @@ public interface RandomEvents
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find an expected data item
 	 * @throws MomException If there is another kind of error
+	 * @throws JAXBException If there is a problem sending the message
+	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	public void rollRandomEvent (final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException;
+		throws RecordNotFoundException, MomException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param eventID Which kind of event it is
+	 * @param targetPlayerID If its an event that targets a wizard, then who was targeted
+	 * @param citySizeID If its an event that targets a city, then the size of the city (since all players receiving the message may not be able to see the city)
+	 * @param cityName If its an event that targets a city, then the name of the city (since all players receiving the message may not be able to see the city)
+	 * @param mapFeatureID If its an event that targets a city mineral deposit, then which kind of mineral it is
+	 * @param heroItemName If its an event that grants a hero item, then the name of the item
+	 * @param goldAmount If its an event that takes or gives gold, then how much gold
+	 * @param ending Whether we're broadcasting the start or end of the event
+	 * @param players List of players in the session
+	 * @throws JAXBException If there is a problem sending the message
+	 * @throws XMLStreamException If there is a problem sending the message
+	 */
+	public void sendRandomEventMessage (final String eventID, final Integer targetPlayerID, final String citySizeID, final String cityName,
+		final String mapFeatureID, final String heroItemName, final Integer goldAmount, final boolean ending, final List<PlayerServerDetails> players)
+		throws JAXBException, XMLStreamException;
 }

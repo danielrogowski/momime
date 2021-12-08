@@ -153,6 +153,7 @@
     			<value>momime.common.messages.servertoclient.OfferAcceptedMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateTurnPhaseMessage</value>
     			<value>momime.common.messages.servertoclient.OverlandCastingInfoMessage</value>
+    			<value>momime.common.messages.servertoclient.RandomEventMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.UpdateTerrainMessage</value>

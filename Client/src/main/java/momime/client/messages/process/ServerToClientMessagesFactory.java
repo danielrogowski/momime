@@ -350,4 +350,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public OverlandCastingInfoMessageImpl createOverlandCastingInfoMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
+	public RandomEventMessageImpl createRandomEventMessage ();
 }

@@ -1,5 +1,8 @@
 package momime.server.events;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.MomException;
@@ -31,7 +34,9 @@ public interface RandomWizardEvents
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find an expected data item
 	 * @throws MomException If there is another kind of error
+	 * @throws JAXBException If there is a problem sending the message
+	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	public void triggerWizardEvent (final Event event, final PlayerServerDetails targetWizard, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException;
+		throws RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 }

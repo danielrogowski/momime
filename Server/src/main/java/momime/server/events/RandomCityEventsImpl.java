@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -44,6 +47,9 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
+	
+	/** Rolls random events */
+	private RandomEvents randomEvents;
 	
 	/**
 	 * Can only call this on events that are targeted at cities
@@ -145,11 +151,16 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find an expected data item
 	 * @throws MomException If there is another kind of error
+	 * @throws JAXBException If there is a problem sending the message
+	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	@Override
 	public final void triggerCityEvent (final Event event, final PlayerServerDetails targetWizard, final MapCoordinates3DEx cityLocation, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException
+		throws RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
+		final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		
 		// Do we need to pick an existing mineral in the area?  Depletion
 		if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_DEPLETION))
 		{
@@ -172,6 +183,11 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 			final MapCoordinates3DEx mineralLocation = mineralLocations.get (getRandomUtils ().nextInt (mineralLocations.size ()));
 			log.debug ("Depletion event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + ", city " + cityLocation +
 				" will lose mineral at " + mineralLocation);
+			
+			final OverlandMapTerrainData mineralTerrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(mineralLocation.getZ ()).getRow ().get (mineralLocation.getY ()).getCell ().get (mineralLocation.getX ()).getTerrainData ();
+			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
+				cityData.getCitySizeID (), cityData.getCityName (), mineralTerrainData.getMapFeatureID (), null, null, false, mom.getPlayers ());
 		}
 		
 		// Do we need to pick a hill or mountain in the area without a mineral, as well as a new mineral to add?  New Minerals
@@ -198,11 +214,15 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 			
 			log.debug ("New Minerals event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + ", city " + cityLocation +
 				" will gain mineral " + mapFeatureID + " at " + mineralLocation);
+			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
+				cityData.getCitySizeID (), cityData.getCityName (), mapFeatureID, null, null, false, mom.getPlayers ());
 		}
 		
 		// Other city events have no additional random elements to roll
 		else
 		{
+			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
+				cityData.getCitySizeID (), cityData.getCityName (), null, null, null, false, mom.getPlayers ());
 		}
 	}
 	
@@ -252,5 +272,21 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Rolls random events
+	 */
+	public final RandomEvents getRandomEvents ()
+	{
+		return randomEvents;
+	}
+
+	/**
+	 * @param e Rolls random events
+	 */
+	public final void setRandomEvents (final RandomEvents e)
+	{
+		randomEvents = e;
 	}
 }

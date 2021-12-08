@@ -3,6 +3,9 @@ package momime.server.events;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,6 +42,9 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
+	
+	/** Rolls random events */
+	private RandomEvents randomEvents;
 	
 	/**
 	 * Can only call this on events that are targeted at wizards
@@ -140,10 +146,12 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find an expected data item
 	 * @throws MomException If there is another kind of error
+	 * @throws JAXBException If there is a problem sending the message
+	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	@Override
 	public final void triggerWizardEvent (final Event event, final PlayerServerDetails targetWizard, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException
+		throws RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Do we need to pick a target city owned by the wizard?  Great Meteor, Earthquake, Plague, Rebellion, Depletion, New Minerals, Population Boom
 		if ((event.isTargetCity () != null) && (event.isTargetCity ()))
@@ -211,6 +219,9 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 			final NumberedHeroItem item = mom.getGeneralServerKnowledge ().getAvailableHeroItem ().get
 				(getRandomUtils ().nextInt (mom.getGeneralServerKnowledge ().getAvailableHeroItem ().size ()));
 			log.debug ("Gift event giving wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " hero item " + item.getHeroItemName ());
+			
+			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
+				null, null, null, item.getHeroItemName (), null, false, mom.getPlayers ());
 		}
 
 		// Do we have to pick how much gold we'll lose?  Piracy
@@ -224,6 +235,9 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				goldLost++;
 			
 			log.debug ("Piracy event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " losing " + goldLost + " gold");
+			
+			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
+				null, null, null, null, goldLost, false, mom.getPlayers ());
 		}
 
 		// Do we have to pick how much gold we'll gain?  Donation
@@ -247,6 +261,9 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 			final int goldGained = (maxGold * percent) / 100;
 
 			log.debug ("Donation event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " gaining " + goldGained + " gold");
+			
+			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
+				null, null, null, null, goldGained, false, mom.getPlayers ());
 		}
 	}
 	
@@ -296,5 +313,21 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Rolls random events
+	 */
+	public final RandomEvents getRandomEvents ()
+	{
+		return randomEvents;
+	}
+
+	/**
+	 * @param e Rolls random events
+	 */
+	public final void setRandomEvents (final RandomEvents e)
+	{
+		randomEvents = e;
 	}
 }

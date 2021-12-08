@@ -128,6 +128,9 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	/** Map of tileSet IDs to tileSet objects */
 	private Map<String, TileSetEx> tileSetsMap;
 	
+	/** Map of eventIDs to event objects */
+	private Map<String, Event> eventsMap;
+	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationEx> animationsMap;
 	
@@ -203,6 +206,7 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		heroItemBonusesMap = getHeroItemBonus ().stream ().collect (Collectors.toMap (h -> h.getHeroItemBonusID (), h -> h));
 		damageTypesMap = getDamageType ().stream ().collect (Collectors.toMap (d -> d.getDamageTypeID (), d -> d));
 		tileSetsMap = getTileSets ().stream ().collect (Collectors.toMap (s -> s.getTileSetID (), s -> s));
+		eventsMap = getEvent ().stream ().collect (Collectors.toMap (e -> e.getEventID (), e -> e));
 		animationsMap = getAnimations ().stream ().collect (Collectors.toMap (a -> a.getAnimationID (), a -> a));
 		playListsMap = getPlayList ().stream ().collect (Collectors.toMap (p -> p.getPlayListID (), p -> p));
 		
@@ -1125,6 +1129,22 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		final TileSetEx found = tileSetsMap.get (tileSetID);
 		if (found == null)
 			throw new RecordNotFoundException (TileSet.class, tileSetID, caller);
+
+		return found;
+	}
+
+	/**
+	 * @param eventID Random event ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Random event object
+	 * @throws RecordNotFoundException If the eventID doesn't exist
+	 */
+	@Override
+	public final Event findEvent (final String eventID, final String caller) throws RecordNotFoundException
+	{
+		final Event found = eventsMap.get (eventID);
+		if (found == null)
+			throw new RecordNotFoundException (Event.class, eventID, caller);
 
 		return found;
 	}

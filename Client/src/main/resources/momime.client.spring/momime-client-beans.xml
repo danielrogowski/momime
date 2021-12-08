@@ -609,6 +609,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 
+	<bean id="randomEventMessage" class="momime.client.messages.process.RandomEventMessageImpl" scope="prototype">
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
+
 	<!-- Create extended versions of NTMs which include drawing implementations -->
 
 	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">
@@ -2137,6 +2141,23 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="client" ref="client" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+	</bean>
+
+	<bean id="randomEventLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/RandomEventUI.xml" />
+	</bean>
+	
+	<bean id="randomEventUI" class="momime.client.ui.dialogs.RandomEventUI" scope="prototype">
+		<property name="randomEventLayout" ref="randomEventLayout" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="client" ref="client" />
+		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 
 	<bean id="wizardBanishedLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

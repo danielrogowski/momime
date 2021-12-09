@@ -7,8 +7,10 @@ import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
+import momime.client.MomClient;
 import momime.client.ui.dialogs.RandomEventUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.RandomEventMessage;
 
 /**
@@ -16,6 +18,12 @@ import momime.common.messages.servertoclient.RandomEventMessage;
  */
 public final class RandomEventMessageImpl extends RandomEventMessage implements BaseServerToClientMessage
 {
+	/** Multiplayer client */
+	private MomClient client;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
@@ -27,9 +35,47 @@ public final class RandomEventMessageImpl extends RandomEventMessage implements 
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
+		if (isConjunction ())
+		{
+			getClient ().getGeneralPublicKnowledge ().setConjunctionEventID (isEnding () ? null : getEventID ());
+			getOverlandMapRightHandPanel ().updateConjunction ();
+		}
+		
 		final RandomEventUI randomEventUI = getPrototypeFrameCreator ().createRandomEvent ();
 		randomEventUI.setRandomEventMessage (this);
 		randomEventUI.setVisible (true);
+	}
+	
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+	
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 	
 	/**

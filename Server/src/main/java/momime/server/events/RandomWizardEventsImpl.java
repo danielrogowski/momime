@@ -221,7 +221,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 			log.debug ("Gift event giving wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " hero item " + item.getHeroItemName ());
 			
 			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-				null, null, null, item.getHeroItemName (), null, false, mom.getPlayers ());
+				null, null, null, item.getHeroItemName (), null, false, false, mom.getPlayers ());
 		}
 
 		// Do we have to pick how much gold we'll lose?  Piracy
@@ -237,7 +237,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 			log.debug ("Piracy event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " losing " + goldLost + " gold");
 			
 			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-				null, null, null, null, goldLost, false, mom.getPlayers ());
+				null, null, null, null, goldLost, false, false, mom.getPlayers ());
 		}
 
 		// Do we have to pick how much gold we'll gain?  Donation
@@ -263,7 +263,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 			log.debug ("Donation event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " gaining " + goldGained + " gold");
 			
 			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-				null, null, null, null, goldGained, false, mom.getPlayers ());
+				null, null, null, null, goldGained, false, false, mom.getPlayers ());
 		}
 	}
 	

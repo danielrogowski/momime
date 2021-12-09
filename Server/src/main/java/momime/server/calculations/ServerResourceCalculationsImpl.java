@@ -3,6 +3,7 @@ package momime.server.calculations;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -22,7 +23,8 @@ import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
-import momime.common.database.Plane;
+import momime.common.database.Event;
+import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
@@ -117,55 +119,63 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * Java version operates only on one player because each player now has their own resource list; the loop is in the outer calling method recalculateGlobalProductionValues
 	 * 
 	 * @param player Player to recalculate production for
-	 * @param players List of all players in the session
-	 * @param trueMap Server true knowledge of everything on the map
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
 	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final MomSessionDescription sd, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
+	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// If wizard is banished then they do not get several production types
 		final List<String> zeroedProductionTypes = new ArrayList<String> ();
+		final Event conjunctionEvent = (mom.getGeneralPublicKnowledge ().getConjunctionEventID () == null) ? null :
+			mom.getServerDB ().findEvent (mom.getGeneralPublicKnowledge ().getConjunctionEventID (), "recalculateAmountsPerTurn");
+		
 		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.ACTIVE))
-			for (final ProductionTypeEx productionType : db.getProductionTypes ())
+		{
+			for (final ProductionTypeEx productionType : mom.getServerDB ().getProductionTypes ())
 				if ((productionType.isZeroWhenBanished () != null) && (productionType.isZeroWhenBanished ()))
 					zeroedProductionTypes.add (productionType.getProductionTypeID ());
+		}
 		
+		// If there is a mana short then magic power is zeroed, but research from libraries and so on still work
+		else if ((conjunctionEvent != null) && (conjunctionEvent.getEventMagicRealm () == null))
+			zeroedProductionTypes.add (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+					
 		// Start from zero
 		getResourceValueUtils ().zeroAmountsPerTurn (priv.getResourceValue ());
 
 		// If the wizard has Time Stop cast, then their own economy comes to a halt, generating no per turn values aside the upkeep of Time Stop itself
 		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell
-			(trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.SPELL_ID_TIME_STOP, null, null, null, null);
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
+				CommonDatabaseConstants.SPELL_ID_TIME_STOP, null, null, null, null);
 		if (timeStop != null)
 		{
-			final Spell spellDetails = db.findSpell (timeStop.getSpellID (), "recalculateAmountsPerTurn");
+			final Spell spellDetails = mom.getServerDB ().findSpell (timeStop.getSpellID (), "recalculateAmountsPerTurn");
 			for (final ProductionTypeAndUndoubledValue upkeep : spellDetails.getSpellUpkeep ())
 				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -upkeep.getUndoubledProductionValue ());
 		}
 		else
 		{
 			// Subtract the amount of gold, food and mana that units are eating up in upkeep from the amount of resources that we'll make this turn
-			for (final MemoryUnit thisUnit : trueMap.getUnit ())
+			for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 				if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
 				{
-					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					for (final String upkeepProductionTypeID : xu.listModifiedUpkeepProductionTypeIDs ())
 						getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeepProductionTypeID, -xu.getModifiedUpkeepValue (upkeepProductionTypeID));
 				}
 	
 			// Subtract the mana maintenance of all spells from the economy
-			for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
+			for (final MemoryMaintainedSpell thisSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 				if (thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ())
 				{
-					final Spell spellDetails = db.findSpell (thisSpell.getSpellID (), "recalculateAmountsPerTurn");
+					final Spell spellDetails = mom.getServerDB ().findSpell (thisSpell.getSpellID (), "recalculateAmountsPerTurn");
 	
 					// Note we deal with Channeler retort halving spell maintenance below, so there is no
 					// getModifiedUpkeepValue method for spells, we can just use the values right out of the database
@@ -175,10 +185,10 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		}
 		
 		// AI players get cheaper upkeep
-		if ((!player.getPlayerDescription ().isHuman ()) && (sd.getDifficultyLevel ().getAiUpkeepMultiplier () != 100))
+		if ((!player.getPlayerDescription ().isHuman ()) && (mom.getSessionDescription ().getDifficultyLevel ().getAiUpkeepMultiplier () != 100))
 			for (final MomResourceValue resourceValue : priv.getResourceValue ())
 				if (resourceValue.getAmountPerTurn () < 0)
-					resourceValue.setAmountPerTurn ((resourceValue.getAmountPerTurn () * sd.getDifficultyLevel ().getAiUpkeepMultiplier ()) / 100);
+					resourceValue.setAmountPerTurn ((resourceValue.getAmountPerTurn () * mom.getSessionDescription ().getDifficultyLevel ().getAiUpkeepMultiplier ()) / 100);
 	
 		// At this point, the only Mana recorded is consumption - so we can halve consumption if the wizard has Channeler
 		// Round up, so 1 still = 1
@@ -194,7 +204,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 				final int goldConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				if (goldConsumption < 0)
 				{
-					int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player, players, trueMap, db);
+					int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					if (fame > 0)
 					{
 						// Can't actually generate gold from fame, so limit it to only what will cancel out our consumption
@@ -210,18 +221,22 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			// In practice this is mostly irrelevant since *nothing* actually generates mana directly - it only generates magic power that can be converted into mana
 	
 			// Calculates production and consumption from all cities on the map
-			for (final Plane plane : db.getPlane ())
-				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
-						final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
+						final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+							(z).getRow ().get (y).getCell ().get (x).getCityData ();
 						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 						{
 							// Calculate all productions from this city
-							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
+							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 	
-							for (final CityProductionBreakdown cityProduction : getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
-								trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, true, false, db).getProductionType ())
+							for (final CityProductionBreakdown cityProduction : getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (),
+								mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (),
+								true, false, mom.getServerDB ()).getProductionType ())
 							{
 								int cityProductionValue = 0;
 								
@@ -247,38 +262,47 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			if (!zeroedProductionTypes.contains (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER))
 			{
 				// Find all the nodes we own where we have the corresponding mastery, e.g. find chaos nodes we own if we have chaos mastery
-				final List<String> doubledNodeMagicRealmIDs = db.getPick ().stream ().filter
+				final List<String> doubledNodeMagicRealmIDs = mom.getServerDB ().getPick ().stream ().filter
 					(p -> (p.getNodeAndDispelBonus () != null) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), p.getPickID ()) > 0)).map
 					(p -> p.getNodeAndDispelBonus ()).collect (Collectors.toList ());
 				
-				final List<String> doubledNodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> doubledNodeMagicRealmIDs.contains (t.getMagicRealmID ())).map
-					(t -> t.getTileTypeID ()).collect (Collectors.toList ());
+				final List<String> doubledNodeTileTypeIDs = mom.getServerDB ().getTileTypes ().stream ().filter
+					(t -> doubledNodeMagicRealmIDs.contains (t.getMagicRealmID ())).map (t -> t.getTileTypeID ()).collect (Collectors.toList ());
 				
-				final List<MapCoordinates3DEx> doubledNodeLocations = new ArrayList<MapCoordinates3DEx> ();
-				if (doubledNodeTileTypeIDs.size () > 0)
-					for (final Plane plane : db.getPlane ())
-						for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-							for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-							{
-								final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-								if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (doubledNodeTileTypeIDs.contains (terrainData.getTileTypeID ())) &&
-									(player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
-									
-									doubledNodeLocations.add (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()));
-							}
+				// Build up a map saying how much magic power (doubled) we get from each type of node.
+				// So 2 normally, 4 if we have the corresponding mastery.
+				final Map<String, Integer> nodeTileTypeIDs = mom.getServerDB ().getTileTypes ().stream ().filter (t -> t.getMagicRealmID () != null).collect
+					(Collectors.toMap (t -> t.getTileTypeID (), t -> doubledNodeTileTypeIDs.contains (t.getTileTypeID ()) ? 4 : 2));
 				
-				// Counts up how many node aura squares and volcanoes this player has
-				int nodeAuraSquares = 0;
+				// Double/halve it if there is a conjunction
+				if ((conjunctionEvent != null) && (conjunctionEvent.getEventMagicRealm () != null))
+				{
+					final Pick magicRealm = mom.getServerDB ().findPick (conjunctionEvent.getEventMagicRealm (), "recalculateAmountsPerTurn");
+					if (magicRealm.getPickExclusiveFrom ().isEmpty ())	// ignore good/bad moon
+						mom.getServerDB ().getTileTypes ().stream ().filter (t -> t.getMagicRealmID () != null).forEach (t ->
+						{
+							int multiplier = nodeTileTypeIDs.get (t.getTileTypeID ());
+							
+							if (t.getMagicRealmID ().equals (conjunctionEvent.getEventMagicRealm ()))
+								multiplier = multiplier * 2;
+							else
+								multiplier = multiplier / 2;
+							
+							nodeTileTypeIDs.put (t.getTileTypeID (), multiplier);
+						});
+				}
+				
+				// Counts up how many node aura squares and volcanoes this player has; node aura squares are doubled as per map above
+				int doubledNodeAuraSquares = 0;
 				int volcanoSquares = 0;
 				int warpedNodes = 0;
 				
-				final List<String> nodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> t.getMagicRealmID () != null).map (t -> t.getTileTypeID ()).collect (Collectors.toList ());
-				
-				for (final Plane plane : db.getPlane ())
-					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-						for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 						{
-							final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
+							final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+								(z).getRow ().get (y).getCell ().get (x);
 							final OverlandMapTerrainData terrainData = tc.getTerrainData ();
 							if (terrainData != null)
 							{
@@ -287,15 +311,15 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 									// Non-warped Node auras
 									if ((terrainData.isWarped () == null) || (!terrainData.isWarped ()))
 									{
-										nodeAuraSquares++;
+										// Locate the actual node, if we're just on a tile covered by the aura
+										final OverlandMapTerrainData nodeTerrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+											(tc.getAuraFromNode ().getZ ()).getRow ().get (tc.getAuraFromNode ().getY ()).getCell ().get (tc.getAuraFromNode ().getX ()).getTerrainData ();
 										
-										// Count it twice if we have the mastery to get double magic power from this node
-										if (doubledNodeLocations.contains (tc.getAuraFromNode ()))
-											nodeAuraSquares++;
+										doubledNodeAuraSquares = doubledNodeAuraSquares + nodeTileTypeIDs.get (nodeTerrainData.getTileTypeID ());
 									}
 									
 									// Warped nodes, but make sure its the actual node tile and not just an aura
-									else if (nodeTileTypeIDs.contains (terrainData.getTileTypeID ()))
+									else if (nodeTileTypeIDs.containsKey (terrainData.getTileTypeID ()))
 										warpedNodes++;
 								}
 	
@@ -304,14 +328,15 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 							}
 						}
 				
-				if (nodeAuraSquares > 0)
+				if (doubledNodeAuraSquares > 0)
 				{
 					// Node mastery gives 2x magic power
 					if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_NODE_MASTERY) > 0)
-						nodeAuraSquares = nodeAuraSquares * 2;
+						doubledNodeAuraSquares = doubledNodeAuraSquares * 2;
 			
 					// How much magic power does each square generate?
-					final int nodeAuraMagicPower = (nodeAuraSquares * sd.getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 2;
+					// Both number of aura tiles we counted up and the strength from the session description are doubled, so need to divide the overall result by 4
+					final int nodeAuraMagicPower = (doubledNodeAuraSquares * mom.getSessionDescription ().getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 4;
 					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, nodeAuraMagicPower);
 				}
 				
@@ -730,7 +755,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 					log.debug ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () + " (" + player.getPlayerDescription ().getPlayerName () + ")");
 
 					// Calculate base amounts
-					recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+					recalculateAmountsPerTurn (player, mom);
 
 					// If during the start phase, use these per turn production amounts as the amounts to add to the stored totals
 					if (duringStartPhase)
@@ -740,11 +765,11 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 						// may happen when we sell buildings, e.g. if we sell a Bank we don't only save its maintenance cost, the population then produces less gold
 						// So the only safe way to do this is to recalculate ALL the productions, from scratch, every time we sell something!
 						while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO, false, mom))
-							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+							recalculateAmountsPerTurn (player, mom);
 
 						// Now do the same for stored production
 						while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO, true, mom))
-							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+							recalculateAmountsPerTurn (player, mom);
 
 						// Per turn production amounts are now fine, so do the accumulation and effect calculations
 						accumulateGlobalProductionValues (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
@@ -759,8 +784,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 						// as long as it wasn't Spell of Mastery and the session is closed out already
 						if (getSpellQueueing ().progressOverlandCasting (player, mom))
 							if (mom.getPlayers ().size () > 0)
-								recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-									mom.getSessionDescription (), mom.getServerDB ());
+								recalculateAmountsPerTurn (player, mom);
 					}
 					else if (player.getPlayerDescription ().isHuman ())
 

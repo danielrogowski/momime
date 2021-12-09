@@ -148,7 +148,7 @@ public final class SpellTriggersImpl implements SpellTriggers
 						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 				else
 					getSpellCasting ().changeTileType (singleTileSpell, targetLocation, spell.getCastingPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
-						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
 			}
 		}
 		

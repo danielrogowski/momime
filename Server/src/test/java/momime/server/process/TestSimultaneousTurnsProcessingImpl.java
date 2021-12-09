@@ -41,6 +41,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -1092,10 +1093,12 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd2.getPlayerID (), "processSpecialOrders-s")).thenReturn (player2);
 		
 		// Session variables
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		final WorldUpdates wu = mock (WorldUpdates.class);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getPlayers ()).thenReturn (players);
@@ -1227,7 +1230,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		verify (wu).process (mom);
 		
 		// Check buildings were sold
-		verify (cityProc).sellBuilding (trueMap, players, cityLocation, trueBuilding.getBuildingURN (), false, true, sd, db);
+		verify (cityProc).sellBuilding (trueMap, players, cityLocation, trueBuilding.getBuildingURN (), false, true, sd, db, null);
 		
 		// Check only 1 settler was allowed to build
 		verify (cityServerUtils).buildCityFromSettler (player2, settler2, mom);

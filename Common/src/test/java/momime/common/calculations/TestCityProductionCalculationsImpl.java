@@ -175,7 +175,7 @@ public final class TestCityProductionCalculationsImpl
 		
 		// Call method
 		final CityProductionBreakdownsEx productions = calc.calculateAllCityProductions
-			(players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", sd, true, false, db);
+			(players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", sd, null, true, false, db);
 		
 		// Check results
 		assertEquals (4, productions.getProductionType ().size ());

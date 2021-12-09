@@ -56,6 +56,7 @@ public interface CityAI
 	 * @param player Player who we want to reset the number of optional farmers for
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws RecordNotFoundException If we encounter a unitID that doesn't exist
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
@@ -63,7 +64,7 @@ public interface CityAI
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd)
+		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd, final String conjunctionEventID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**

@@ -75,7 +75,8 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null, sd, false, true, db)).thenReturn (productions);
+		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
@@ -139,7 +140,8 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null, sd, false, true, db)).thenReturn (productions);
+		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
@@ -188,7 +190,8 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null, sd, false, true, db)).thenReturn (productions);
+		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
@@ -237,7 +240,8 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null, sd, false, true, db)).thenReturn (productions);
+		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
@@ -286,7 +290,8 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null, sd, false, true, db)).thenReturn (productions);
+		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Avoid nearby city
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);

@@ -432,6 +432,19 @@ the spell itself actually generates a resource for the city.</xsd:documentation>
 		</xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:complexType name="cityProductionBreakdownEvent">
+		<xsd:annotation>
+			<xsd:documentation>Used for good/bad moon event, to show the gain or loss in magic power.
+Even when its a loss, it gets put as a negative power as doubledProductionValue because it isn't really a consumption, its just lowering the amount generated
+and should appear as part of the list of productions.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="productionAmountBucketID" type="momimecommon:productionAmountBucketID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eventID" type="momimecommon:eventID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleProductionAmount" type="momimecommon:doubledProductionValue" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 	<xsd:complexType name="cityProductionBreakdown">
 		<xsd:annotation>
 			<xsd:documentation>Stores all the production, production % bonus and/or consumption values along with totals for a single production type.</xsd:documentation>
@@ -445,6 +458,7 @@ the spell itself actually generates a resource for the city.</xsd:documentation>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="planeProduction" type="momimeinternal:cityProductionBreakdownPlane" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingBreakdown" type="momimeinternal:cityProductionBreakdownBuilding" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellBreakdown" type="momimeinternal:cityProductionBreakdownSpell" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventBreakdown" type="momimeinternal:cityProductionBreakdownEvent" />
 			
 			<xsd:element minOccurs="1" maxOccurs="1" name="applicablePopulation" type="momimecommon:cityPopulationDiv1000">
 				<xsd:annotation>

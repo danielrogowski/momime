@@ -27,8 +27,10 @@ import momime.common.database.CitySpellEffectProductionModifier;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
+import momime.common.database.Event;
 import momime.common.database.MapFeature;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.ProductionAmountBucketID;
@@ -48,6 +50,7 @@ import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityProductionBreakdownBuilding;
+import momime.common.internal.CityProductionBreakdownEvent;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
 import momime.common.internal.CityProductionBreakdownPlane;
@@ -1134,6 +1137,66 @@ public final class CityCalculationsImpl implements CityCalculations
 	}
 	
 	/**
+	 * Adds the production/consumption from good/bad moons
+	 * 
+	 * @param productionValues Production values running totals to add the production to
+	 * @param event Good/bad moon random event
+	 * @param doubleTotalFromReligiousBuildings Double magic power value generated from religious buildings, including bonuses from Divine/Infernal Power
+	 * @param picks The list of spell picks belonging to the player who owns the city that this building is in
+	 * @param db Lookup lists built over the XML database
+	 * @return Updated doubleTotalFromReligiousBuildings value
+	 * @throws RecordNotFoundException If the definition for the spell can't be found in the db
+	 * @throws MomException If there is a problem totalling up the production values
+	 */
+	@Override
+	public final int addProductionOrConsumptionFromEvent (final CityProductionBreakdownsEx productionValues, final Event event,
+		final int doubleTotalFromReligiousBuildings, final List<PlayerPick> picks, final CommonDatabase db)
+		throws RecordNotFoundException, MomException
+	{
+		// We know we're generating some magic power from religious buildings, or this method wouldn't have been called
+		final CityProductionBreakdown breakdown = productionValues.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+		final int newDoubleTotalFromReligiousBuildings;
+		
+		// Does the event double us, halve us, or (if we've got no life OR death books) do nothing at all?
+		if (getPlayerPickUtils ().getQuantityOfPick (picks, event.getEventMagicRealm ()) > 0)
+		{
+			// Double
+			final CityProductionBreakdownEvent eventBreakdown = new CityProductionBreakdownEvent ();
+			eventBreakdown.setEventID (event.getEventID ());
+			eventBreakdown.setDoubleProductionAmount (doubleTotalFromReligiousBuildings);
+			
+			breakdown.getEventBreakdown ().add (eventBreakdown);
+			eventBreakdown.setProductionAmountBucketID (getCityProductionUtils ().addProductionAmountToBreakdown
+				(breakdown, doubleTotalFromReligiousBuildings, null, db));
+			
+			newDoubleTotalFromReligiousBuildings = doubleTotalFromReligiousBuildings * 2;
+		}
+		else
+		{
+			final Pick magicRealm = db.findPick (event.getEventMagicRealm (), "addProductionOrConsumptionFromEvent");
+			if ((magicRealm.getPickExclusiveFrom ().size () == 1) && (getPlayerPickUtils ().getQuantityOfPick (picks, magicRealm.getPickExclusiveFrom ().get (0)) > 0))
+			{
+				// Halve
+				final int amountLost = doubleTotalFromReligiousBuildings / 2;
+
+				final CityProductionBreakdownEvent eventBreakdown = new CityProductionBreakdownEvent ();
+				eventBreakdown.setEventID (event.getEventID ());
+				eventBreakdown.setDoubleProductionAmount (-amountLost);
+				
+				breakdown.getEventBreakdown ().add (eventBreakdown);
+				eventBreakdown.setProductionAmountBucketID (getCityProductionUtils ().addProductionAmountToBreakdown
+					(breakdown, -amountLost, null, db));
+				
+				newDoubleTotalFromReligiousBuildings = doubleTotalFromReligiousBuildings - amountLost;
+			}
+			else
+				newDoubleTotalFromReligiousBuildings = doubleTotalFromReligiousBuildings;
+		}
+		
+		return newDoubleTotalFromReligiousBuildings;
+	}
+	
+	/**
 	 * Adds on production generated from a particular map feature
 	 * 
 	 * @param productionValues Production values running totals to add the production to
@@ -1373,6 +1436,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
 	 * @param db Lookup lists built over the XML database
 	 * @param productionTypeID The type of production we want the value for
@@ -1384,7 +1448,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	@Override
 	public final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd,
+		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
@@ -1392,7 +1456,8 @@ public final class CityCalculationsImpl implements CityCalculations
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
 		// So just do this the long way and then throw away all the other results
 		final CityProductionBreakdownsEx productionValues = getCityProductionCalculations ().calculateAllCityProductions
-			(players, map, buildings, spells, cityLocation, taxRateID, sd, includeProductionAndConsumptionFromPopulation, false, db);		// calculatePotential fixed at false
+			(players, map, buildings, spells, cityLocation, taxRateID, sd, conjunctionEventID,
+				includeProductionAndConsumptionFromPopulation, false, db);		// calculatePotential fixed at false
 
 		final CityProductionBreakdown singleProductionValue = productionValues.findProductionType (productionTypeID);
 		final int netGain;

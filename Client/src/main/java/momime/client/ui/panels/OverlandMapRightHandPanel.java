@@ -61,8 +61,10 @@ import momime.common.calculations.CityCalculations;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
+import momime.common.database.Event;
 import momime.common.database.LanguageText;
 import momime.common.database.MapFeature;
+import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
@@ -109,6 +111,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** XML layout for the surveyor subpanel */
 	private XmlLayoutContainerEx surveyorLayout;
+
+	/** XML layout for the economy subpanel */
+	private XmlLayoutContainerEx economyLayout;
 	
 	/** Minimap generator */
 	private MiniMapBitmapGenerator miniMapBitmapGenerator;
@@ -202,6 +207,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 	/** Magic power amount per turn */
 	private JLabel magicPowerAmountPerTurn;
+
+	/** Label showing any active conjunction */
+	private JLabel conjunctionLabel;
 	
 	/** Player line 1, either says 'Current player:' or 'Waiting for' */
 	private JLabel playerLine1;
@@ -515,19 +523,22 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		final JPanel economyPanel = getUtils ().createPanelWithBackgroundImage (economyBackground);
 		topCards.add (economyPanel, OverlandMapRightHandPanelTop.ECONOMY.name ());
 		
-		economyPanel.setLayout (new GridBagLayout ());
+		economyPanel.setLayout (new XmlLayoutManager (getEconomyLayout ()));
 		
 		goldAmountPerTurn = getUtils ().createBorderedLabel (Color.BLACK, MomUIConstants.GOLD, getSmallFont ());
-		economyPanel.add (goldAmountPerTurn, getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (58, 0, 63, 0), GridBagConstraintsNoFill.CENTRE));
+		economyPanel.add (goldAmountPerTurn, "frmEconomyGoldAmountPerTurn");
 		
 		rationsAmountPerTurn = getUtils ().createBorderedLabel (Color.BLACK, MomUIConstants.GOLD, getSmallFont ());
-		economyPanel.add (rationsAmountPerTurn, getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, 0, 7, 0), GridBagConstraintsNoFill.CENTRE));
+		economyPanel.add (rationsAmountPerTurn, "frmEconomyRationsAmountPerTurn");
 		
 		magicPowerAmountPerTurn = getUtils ().createBorderedLabel (Color.BLACK, MomUIConstants.SILVER, getSmallFont ());
-		economyPanel.add (magicPowerAmountPerTurn, getUtils ().createConstraintsNoFill (0, 2, 1, 1, new Insets (0, 0, 42, 0), GridBagConstraintsNoFill.CENTRE));
+		economyPanel.add (magicPowerAmountPerTurn, "frmEconomyMagicPowerAmountPerTurn");
+		
+		conjunctionLabel = getUtils ().createBorderedLabel (Color.BLACK, Color.BLACK, getSmallFont ()); 
+		economyPanel.add (conjunctionLabel, "frmEconomyManaConjunction");
 		
 		manaAmountPerTurn = getUtils ().createBorderedLabel (Color.BLACK, MomUIConstants.GOLD, getSmallFont ());
-		economyPanel.add (manaAmountPerTurn, getUtils ().createConstraintsNoFill (0, 3, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		economyPanel.add (manaAmountPerTurn, "frmEconomyManaAmountPerTurn");
 		
 		// Top card - surveyor
 		final JPanel surveyorPanel = getUtils ().createPanelWithBackgroundImage (surveyorBackground);		
@@ -891,6 +902,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			updateGlobalEconomyValues ();
 			surveyorLocationOrLanguageChanged ();
 			turnSystemOrCurrentPlayerChanged ();
+			updateConjunction ();
 		}
 		catch (final Exception e)
 		{
@@ -977,6 +989,30 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		updateAmountPerTurn (magicPowerAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER,
 			getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getProductionPerTurnMagicPower (), MomUIConstants.SILVER);
+	}
+	
+	/**
+	 * Updates the text showing what conjunction is currently in effect, if any
+	 * @throws RecordNotFoundException If we can't find the definition of the current conjunction event
+	 */
+	public final void updateConjunction () throws RecordNotFoundException
+	{
+		if (getClient ().getGeneralPublicKnowledge ().getConjunctionEventID () == null)
+			conjunctionLabel.setVisible (false);
+		else
+		{
+			final Event eventDef = getClient ().getClientDB ().findEvent (getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), "updateConjunction");
+			conjunctionLabel.setText (getLanguageHolder ().findDescription (eventDef.getEventName ()));
+			conjunctionLabel.setVisible (true);
+			
+			if (eventDef.getEventMagicRealm () == null)
+				conjunctionLabel.setForeground (Color.GREEN);
+			else
+			{
+				final Pick magicRealm = getClient ().getClientDB ().findPick (eventDef.getEventMagicRealm (), "updateConjunction");
+				conjunctionLabel.setForeground (new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16)));
+			}
+		}
 	}
 
 	/**
@@ -1831,6 +1867,22 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		surveyorLayout = layout;
 	}
 
+	/**
+	 * @return XML layout for the economy subpanel
+	 */
+	public final XmlLayoutContainerEx getEconomyLayout ()
+	{
+		return economyLayout;
+	}
+
+	/**
+	 * @param layout XML layout for the economy subpanel
+	 */
+	public final void setEconomyLayout (final XmlLayoutContainerEx layout)
+	{
+		economyLayout = layout;
+	}
+	
 	/**
 	 * @return Minimap generator
 	 */

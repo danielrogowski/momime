@@ -4,6 +4,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityProductionBreakdownBuilding;
+import momime.common.internal.CityProductionBreakdownEvent;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
 import momime.common.internal.CityProductionBreakdownPlane;
@@ -27,6 +28,9 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	
 	/** Building specific breakdown */
 	private CityProductionBreakdownBuilding currentBuilding;
+
+	/** Event specific breakdown */
+	private CityProductionBreakdownEvent currentEvent;
 	
 	/** Spell specific breakdown */
 	private CityProductionBreakdownSpell currentSpell;
@@ -307,6 +311,15 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 			case "NEGATED_BY_SPELL_NAME":
 				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getCurrentBuilding ().getNegatedBySpellID (), "determineVariableValue").getSpellName ());
 				break;
+
+			// Dependant on current event
+			case "EVENT_NAME":
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findEvent (getCurrentEvent ().getEventID (), "determineVariableValue").getEventName ());
+				break;
+				
+			case "EVENT_PRODUCTION":
+				text = getTextUtils ().halfIntToStr (getCurrentEvent ().getDoubleProductionAmount ());
+				break;
 				
 			// Dependant on current spell
 			case "SPELL_NAME":
@@ -428,6 +441,23 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 		currentBuilding = building;
 	}
 
+	/**
+	 * @return Event specific breakdown
+	 */
+	public final CityProductionBreakdownEvent getCurrentEvent ()
+	{
+		return currentEvent;
+	}
+
+	/**
+	 * @param e Event specific breakdown
+	 */
+	@Override
+	public final void setCurrentEvent (final CityProductionBreakdownEvent e)
+	{
+		currentEvent = e;
+	}
+	
 	/**
 	 * @return Spell specific breakdown
 	 */

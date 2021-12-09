@@ -1288,7 +1288,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			else if (kind == KindOfSpell.CHANGE_TILE_TYPE)
 				getSpellCasting ().changeTileType (spell, targetLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (),
+					mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
 			
 			else if (kind == KindOfSpell.CHANGE_MAP_FEATURE)
 			{
@@ -1502,7 +1503,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							targetLocation, mom.getSessionDescription (), mom.getServerDB ());
+							targetLocation, mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
 							
 						cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
 							(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
@@ -1626,7 +1627,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							targetLocation, mom.getSessionDescription (), mom.getServerDB ());
+							targetLocation, mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
 							
 						// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
 						cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
@@ -2003,7 +2004,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							(MapCoordinates3DEx) spell.getCityLocation (), mom.getSessionDescription (), mom.getServerDB ());
+							(MapCoordinates3DEx) spell.getCityLocation (), mom.getSessionDescription (), mom.getServerDB (),
+							mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
 							
 						// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
 						cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels

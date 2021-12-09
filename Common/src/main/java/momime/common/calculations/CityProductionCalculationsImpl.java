@@ -13,6 +13,8 @@ import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Event;
+import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
@@ -61,6 +63,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	 * @param cityLocation Location of the city to calculate for; NB. It must be possible to call this on a map location which is not yet a city, so the AI can consider potential sites
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
 	 * 	(This is needed when calculating minimumFarmers, i.e. how many rations does the city produce from buildings and map features only, without considering farmers)
 	 * @param calculatePotential Normally false; if true, will consider city size and gold trade bonus to be as they will be after the city is built up
@@ -74,8 +77,8 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	@Override
 	public final CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final boolean calculatePotential, final CommonDatabase db)
+		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
+		final boolean includeProductionAndConsumptionFromPopulation, final boolean calculatePotential, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
@@ -156,6 +159,19 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 					doubleTotalFromReligiousBuildings = doubleTotalFromReligiousBuildings + getCityCalculations ().addProductionAndConsumptionFromBuilding
 						(productionValues, thisBuilding, religiousBuildingsNegatedBySpellID, cityOwnerPicks, db);
 			}
+		
+		// Religious building amount modified by good/bad moon
+		if ((doubleTotalFromReligiousBuildings > 0) && (conjunctionEventID != null))
+		{
+			final Event conjunctionEvent = db.findEvent (conjunctionEventID, "calculateAllCityProductions");
+			if (conjunctionEvent.getEventMagicRealm () != null)
+			{
+				final Pick magicRealm = db.findPick (conjunctionEvent.getEventMagicRealm (), "calculateAllCityProductions");
+				if (!magicRealm.getPickExclusiveFrom ().isEmpty ())		// Ignore node conjunctions
+					doubleTotalFromReligiousBuildings = getCityCalculations ().addProductionOrConsumptionFromEvent
+						(productionValues, conjunctionEvent, doubleTotalFromReligiousBuildings, cityOwnerPicks, db);
+			}
+		}
 		
 		// Bonuses from spells like Dark Rituals or Prosperity
 		if (spells != null)

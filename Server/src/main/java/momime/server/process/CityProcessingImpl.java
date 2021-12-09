@@ -271,7 +271,7 @@ public final class CityProcessingImpl implements CityProcessing
 				
 				// Do initial calculations on the city
 				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (),
-					gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, sd, db);
+					gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, sd, db, null);
 
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 
@@ -421,6 +421,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param gsk Server knowledge structure
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -430,7 +431,7 @@ public final class CityProcessingImpl implements CityProcessing
 	@Override
 	public final void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		for (final Plane plane : db.getPlane ())
@@ -449,7 +450,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 						final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions
 							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (),
-								cityLocation, priv.getTaxRateID (), sd, true, false, db);
+								cityLocation, priv.getTaxRateID (), sd, conjunctionEventID, true, false, db);
 
 						// Use calculated values to determine construction rate
 						if ((cityData.getCurrentlyConstructingBuildingID () != null) || (cityData.getCurrentlyConstructingUnitID () != null))
@@ -587,8 +588,8 @@ public final class CityProcessingImpl implements CityProcessing
 							}
 
 							// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change
-							getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers
-								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, sd, db);
+							getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (),
+								gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, sd, db, conjunctionEventID);
 
 							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
 								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (),
@@ -621,6 +622,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param voluntarySale True if building is being sold by the player's choice; false if they are being forced to sell it e.g. due to lack of production
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -631,7 +633,7 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void sellBuilding (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final Integer buildingURN,
 		final boolean pendingSale, final boolean voluntarySale,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		// Building details
@@ -686,7 +688,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 			// The sold building might have been producing rations or stemming unrest so had better recalculate everything
 			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (),
-				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db);
+				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db, conjunctionEventID);
 
 			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (),
 				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
@@ -711,6 +713,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param buildingDestructionSpellLocation The location the spell was targeted - need this because it might have destroyed 0 buildings; null if not from a spell
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -721,7 +724,7 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void destroyBuildings (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
 		final String buildingsDestroyedBySpellID, final int buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		// Keep a list of all cities with destroyed buildings, so we only recalculate each city once
@@ -796,7 +799,7 @@ public final class CityProcessingImpl implements CityProcessing
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
 			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (),
-				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db);
+				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db, conjunctionEventID);
 	
 			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (),
 				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());

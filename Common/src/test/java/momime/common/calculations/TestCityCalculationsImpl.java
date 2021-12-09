@@ -4717,14 +4717,16 @@ public final class TestCityCalculationsImpl
 		}
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01", sd, true, false, db)).thenReturn (productionValues);
+		when (prod.calculateAllCityProductions (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01",
+			sd, null, true, false, db)).thenReturn (productionValues);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCityProductionCalculations (prod);
 		
 		// Check results
-		assertEquals (20 - 4 + 3, calc.calculateSingleCityProduction (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01", sd, true, db, "RE02"));
+		assertEquals (20 - 4 + 3, calc.calculateSingleCityProduction (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01",
+			sd, null, true, db, "RE02"));
 	}
 
 	/**
@@ -4766,14 +4768,16 @@ public final class TestCityCalculationsImpl
 		}
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01", sd, true, false, db)).thenReturn (productionValues);
+		when (prod.calculateAllCityProductions (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01",
+			sd, null, true, false, db)).thenReturn (productionValues);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCityProductionCalculations (prod);
 		
 		// Check results
-		assertEquals (0, calc.calculateSingleCityProduction (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01", sd, true, db, "RE04"));
+		assertEquals (0, calc.calculateSingleCityProduction (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01",
+			sd, null, true, db, "RE04"));
 	}
 
 	/**

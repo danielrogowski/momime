@@ -147,7 +147,7 @@ public final class RandomEventUI extends MomClientDialogUI
 			
 			// Which text do we need?
 			final List<LanguageText> languageText;
-			if ((getRandomEventMessage ().isEnding () != null) && (getRandomEventMessage ().isEnding ()))
+			if (getRandomEventMessage ().isEnding ())
 				languageText = eventDef.getEventDescriptionEnd ();
 			else if (getRandomEventMessage ().getTargetPlayerID () == null)
 				languageText = eventDef.getEventDescriptionStart ();

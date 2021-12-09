@@ -3,6 +3,7 @@ package momime.client.ui.frames;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -197,7 +198,7 @@ public final class TestCitiesListUI extends ClientTestData
 		final CityProductionBreakdownsEx cityProductions = new CityProductionBreakdownsEx ();
 		when (prod.calculateAllCityProductions
 			(eq (players), eq (terrain), eq (fow.getBuilding ()), eq (fow.getMaintainedSpell ()),
-				any (MapCoordinates3DEx.class), eq ("TR01"), eq (sd), eq (true), eq (false), eq (db))).thenReturn (cityProductions);
+				any (MapCoordinates3DEx.class), eq ("TR01"), eq (sd), isNull (), eq (true), eq (false), eq (db))).thenReturn (cityProductions);
 		
 		// Client
 		final MomClient client = mock (MomClient.class);

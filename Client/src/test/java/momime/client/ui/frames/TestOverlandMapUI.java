@@ -214,6 +214,9 @@ public final class TestOverlandMapUI extends ClientTestData
 
 		final XmlLayoutContainerEx surveyorLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml"));
 		surveyorLayout.buildMaps ();
+
+		final XmlLayoutContainerEx economyLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Economy.xml"));
+		economyLayout.buildMaps ();
 		
 		// Set up right hand panel
 		final OverlandMapRightHandPanel rhp = new OverlandMapRightHandPanel ();
@@ -231,6 +234,7 @@ public final class TestOverlandMapUI extends ClientTestData
 		rhp.setLargeFont (CreateFontsForTests.getLargeFont ());
 		rhp.setOverlandMapRightHandPanelLayout (rhpLayout);
 		rhp.setSurveyorLayout (surveyorLayout);
+		rhp.setEconomyLayout (economyLayout);
 		rhp.setWizardClientUtils (wizardClientUtils);
 
 		// Give it some dummy images for the terrain

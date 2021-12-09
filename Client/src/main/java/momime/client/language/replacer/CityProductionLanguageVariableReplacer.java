@@ -2,6 +2,7 @@ package momime.client.language.replacer;
 
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityProductionBreakdownBuilding;
+import momime.common.internal.CityProductionBreakdownEvent;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
 import momime.common.internal.CityProductionBreakdownPlane;
@@ -34,6 +35,11 @@ public interface CityProductionLanguageVariableReplacer extends BreakdownLanguag
 	 */
 	public void setCurrentBuilding (final CityProductionBreakdownBuilding building);
 
+	/**
+	 * @param event Event specific breakdown
+	 */
+	public void setCurrentEvent (final CityProductionBreakdownEvent event);
+	
 	/**
 	 * @param spell Spell specific breakdown
 	 */

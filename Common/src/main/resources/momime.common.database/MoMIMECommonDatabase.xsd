@@ -681,12 +681,32 @@
 					</xsd:keyref>
 				</xsd:element>			
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="event" type="momimecommon:event">
-					<xsd:key name="eventTileTypePK">
-						<xsd:selector xpath="eventTileType" />
+					<xsd:key name="eventNamePK">
+						<xsd:selector xpath="eventName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="eventDescriptionPlayerPK">
+						<xsd:selector xpath="eventDescriptionPlayer" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="eventDescriptionEnemyPK">
+						<xsd:selector xpath="eventDescriptionEnemy" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="eventDescriptionStartPK">
+						<xsd:selector xpath="eventDescriptionStart" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="eventDescriptionEndPK">
+						<xsd:selector xpath="eventDescriptionEnd" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="eventTileTypeIDPK">
+						<xsd:selector xpath="eventTileTypeID" />
 						<xsd:field xpath="." />
 					</xsd:key>
-					<xsd:key name="eventMapFeaturePK">
-						<xsd:selector xpath="eventMapFeature" />
+					<xsd:key name="eventMapFeatureIDPK">
+						<xsd:selector xpath="eventMapFeatureID" />
 						<xsd:field xpath="." />
 					</xsd:key>
 				</xsd:element>
@@ -1496,6 +1516,10 @@
 		</xsd:keyref>
 		
 		<!-- Random events, new for 0.9.9.9 -->
+		<xsd:keyref refer="momimecommon:pickPK" name="eventFKpick">
+			<xsd:selector xpath="event" />
+			<xsd:field xpath="eventMagicRealm" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:tileTypePK" name="eventTileTypeFKtileType">
 			<xsd:selector xpath="event/eventTileType" />
 			<xsd:field xpath="." />
@@ -4427,6 +4451,14 @@ Ordering of this list is very significant.
 		        <xsd:annotation>
         			<xsd:documentation>This means "targets a city owned by the target wizard", so for "diplomatic marriage" it is false as that targets a raider city.</xsd:documentation>
         		</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="eventMagicRealm" type="momimecommon:pickID" nxe:label="Magic realm" nxe:showmaincolumn="false">
+		        <xsd:annotation>
+		        	<xsd:documentation>For good/bad moons and red/blue/green conjunctions.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+					</xsd:appinfo>
+		        </xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventTileTypeID" type="momimecommon:tileTypeID" nxe:label="Tile Type">
 				<xsd:annotation>

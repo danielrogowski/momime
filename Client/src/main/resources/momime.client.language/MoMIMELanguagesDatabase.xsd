@@ -805,6 +805,10 @@
 						<xsd:selector xpath="productionFromBuildingNegated" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="cityProductionProductionFromEventPK">
+						<xsd:selector xpath="productionFromEvent" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="cityProductionProductionFromSpellPK">
 						<xsd:selector xpath="productionFromSpell" />
 						<xsd:field xpath="@language" />
@@ -3063,6 +3067,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromBuildingWithoutReligiousRetortBonus" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromBuildingWithReligiousRetortBonus" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromBuildingNegated" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromEvent" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromFortressPicks" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromFortressPlane" />

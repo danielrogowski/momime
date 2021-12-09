@@ -70,6 +70,7 @@ public interface CityProcessing
 	 * @param gsk Server knowledge structure
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -78,7 +79,7 @@ public interface CityProcessing
 	 */
 	public void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
@@ -99,6 +100,7 @@ public interface CityProcessing
 	 * @param voluntarySale True if building is being sold by the player's choice; false if they are being forced to sell it e.g. due to lack of production
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -108,7 +110,7 @@ public interface CityProcessing
 	public void sellBuilding (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final Integer buildingURN,
 		final boolean pendingSale, final boolean voluntarySale,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
@@ -124,6 +126,7 @@ public interface CityProcessing
 	 * @param buildingDestructionSpellLocation The location the spell was targeted - need this because it might have destroyed 0 buildings; null if not from a spell
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -133,7 +136,7 @@ public interface CityProcessing
 	public void destroyBuildings (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
 		final String buildingsDestroyedBySpellID, final int buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**

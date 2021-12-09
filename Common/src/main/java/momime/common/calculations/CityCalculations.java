@@ -12,6 +12,7 @@ import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.DifficultyLevel;
+import momime.common.database.Event;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
@@ -238,6 +239,22 @@ public interface CityCalculations
 	public void addProductionFromSpell (final CityProductionBreakdownsEx productionValues, final MemoryMaintainedSpell spell,
 		final int doubleTotalFromReligiousBuildings, final CommonDatabase db)
 		throws RecordNotFoundException, MomException;
+
+	/**
+	 * Adds the production/consumption from good/bad moons
+	 * 
+	 * @param productionValues Production values running totals to add the production to
+	 * @param event Good/bad moon random event
+	 * @param doubleTotalFromReligiousBuildings Double magic power value generated from religious buildings, including bonuses from Divine/Infernal Power
+	 * @param picks The list of spell picks belonging to the player who owns the city that this building is in
+	 * @param db Lookup lists built over the XML database
+	 * @return Updated doubleTotalFromReligiousBuildings value
+	 * @throws RecordNotFoundException If the definition for the spell can't be found in the db
+	 * @throws MomException If there is a problem totalling up the production values
+	 */
+	public int addProductionOrConsumptionFromEvent (final CityProductionBreakdownsEx productionValues, final Event event,
+		final int doubleTotalFromReligiousBuildings, final List<PlayerPick> picks, final CommonDatabase db)
+		throws RecordNotFoundException, MomException;
 	
 	/**
 	 * Adds on production generated from a particular map feature
@@ -281,6 +298,7 @@ public interface CityCalculations
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
 	 * @param db Lookup lists built over the XML database
 	 * @param productionTypeID The type of production we want the value for
@@ -291,7 +309,7 @@ public interface CityCalculations
 	 */
 	public int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd,
+		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 

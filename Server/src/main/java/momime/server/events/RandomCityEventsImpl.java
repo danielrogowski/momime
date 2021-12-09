@@ -187,7 +187,7 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 			final OverlandMapTerrainData mineralTerrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(mineralLocation.getZ ()).getRow ().get (mineralLocation.getY ()).getCell ().get (mineralLocation.getX ()).getTerrainData ();
 			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-				cityData.getCitySizeID (), cityData.getCityName (), mineralTerrainData.getMapFeatureID (), null, null, false, mom.getPlayers ());
+				cityData.getCitySizeID (), cityData.getCityName (), mineralTerrainData.getMapFeatureID (), null, null, false, false, mom.getPlayers ());
 		}
 		
 		// Do we need to pick a hill or mountain in the area without a mineral, as well as a new mineral to add?  New Minerals
@@ -215,14 +215,14 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 			log.debug ("New Minerals event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + ", city " + cityLocation +
 				" will gain mineral " + mapFeatureID + " at " + mineralLocation);
 			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-				cityData.getCitySizeID (), cityData.getCityName (), mapFeatureID, null, null, false, mom.getPlayers ());
+				cityData.getCitySizeID (), cityData.getCityName (), mapFeatureID, null, null, false, false, mom.getPlayers ());
 		}
 		
 		// Other city events have no additional random elements to roll
 		else
 		{
 			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-				cityData.getCitySizeID (), cityData.getCityName (), null, null, null, false, mom.getPlayers ());
+				cityData.getCitySizeID (), cityData.getCityName (), null, null, null, false, false, mom.getPlayers ());
 		}
 	}
 	

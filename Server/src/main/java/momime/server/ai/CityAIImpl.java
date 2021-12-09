@@ -166,6 +166,7 @@ public final class CityAIImpl implements CityAI
 	 * @param player Player who we want to reset the number of optional farmers for
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws RecordNotFoundException If we encounter a unitID that doesn't exist
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
@@ -174,7 +175,7 @@ public final class CityAIImpl implements CityAI
 	 */
 	@Override
 	public final void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd)
+		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd, final String conjunctionEventID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -206,7 +207,7 @@ public final class CityAIImpl implements CityAI
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 
 						final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
-							trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, true, false, db);
+							trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, conjunctionEventID, true, false, db);
 						final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 						
 						final AICityRationDetails cityDetails = new AICityRationDetails ();
@@ -246,7 +247,7 @@ public final class CityAIImpl implements CityAI
 				cityData.setOptionalFarmers (cityData.getOptionalFarmers () + 1);
 
 				final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
-					trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityDetails.getCityLocation (), priv.getTaxRateID (), sd, true, false, db);
+					trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityDetails.getCityLocation (), priv.getTaxRateID (), sd, conjunctionEventID, true, false, db);
 				final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 
 				final boolean nowOverfarming = (rations != null) && (rations.getProductionAmountAfterOverfarmingPenalty () != null);
@@ -646,7 +647,8 @@ public final class CityAIImpl implements CityAI
 									final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 									final int thisProductionPerTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), priv.getFogOfWarMemory ().getMap (),
 										priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMaintainedSpell (),
-										cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), true, mom.getServerDB (),
+										cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
+										mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
 										CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 									
 									if ((lowestProductionPerTurn == null) || (thisProductionPerTurn < lowestProductionPerTurn))

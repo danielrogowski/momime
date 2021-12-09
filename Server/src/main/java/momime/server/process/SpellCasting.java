@@ -125,6 +125,7 @@ public interface SpellCasting
 	 * @param players List of players in the session
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -132,6 +133,6 @@ public interface SpellCasting
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void changeTileType (final Spell spell, final MapCoordinates3DEx targetLocation, final int castingPlayerID, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

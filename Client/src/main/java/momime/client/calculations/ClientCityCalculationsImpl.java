@@ -33,6 +33,7 @@ import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityProductionBreakdownBuilding;
+import momime.common.internal.CityProductionBreakdownEvent;
 import momime.common.internal.CityProductionBreakdownMapFeature;
 import momime.common.internal.CityProductionBreakdownPickType;
 import momime.common.internal.CityProductionBreakdownPlane;
@@ -365,6 +366,16 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			// Consumption from buildings, mainly gold maintenance
 			if (buildingProduction.getConsumptionAmount () > 0)
 				consumptionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getBuildingConsumption ())));
+		}
+
+		// Production from events
+		for (final CityProductionBreakdownEvent eventProduction : calc.getEventBreakdown ())
+		{
+			getProductionReplacer ().setCurrentEvent (eventProduction);
+			
+			if (eventProduction.getDoubleProductionAmount () != 0)
+				buckets.get (eventProduction.getProductionAmountBucketID ()).add (getProductionReplacer ().replaceVariables
+					(getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromEvent ())));
 		}
 		
 		// Production from spells

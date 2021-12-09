@@ -610,6 +610,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="randomEventMessage" class="momime.client.messages.process.RandomEventMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
@@ -1306,9 +1308,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml" />
 	</bean>
 	
+	<bean id="economyLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.panels/OverlandMapRightHandPanel-Economy.xml" />
+	</bean>
+	
 	<bean id="overlandMapRightHandPanel" class="momime.client.ui.panels.OverlandMapRightHandPanel">
 		<property name="overlandMapRightHandPanelLayout" ref="overlandMapRightHandPanelLayout" />
 		<property name="surveyorLayout" ref="surveyorLayout" />
+		<property name="economyLayout" ref="economyLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />

@@ -3,6 +3,8 @@ package momime.server.events;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.Event;
 import momime.common.database.RecordNotFoundException;
@@ -26,10 +28,23 @@ public interface RandomEventTargeting
 	 * @param event Event to trigger
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find an expected data item
+	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
 	 * @throws MomException If there is another kind of error
 	 * @throws JAXBException If there is a problem sending the message
 	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	public void triggerEvent (final Event event, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param event Event to switch off
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we can't find an expected data item
+	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
+	 * @throws MomException If there is another kind of error
+	 * @throws JAXBException If there is a problem sending the message
+	 * @throws XMLStreamException If there is a problem sending the message
+	 */
+	public void cancelEvent (final Event event, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

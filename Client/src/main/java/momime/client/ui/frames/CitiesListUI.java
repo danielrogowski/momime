@@ -396,7 +396,8 @@ public final class CitiesListUI extends MomClientFrameUI
 								(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), cityLocation,
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ());
+								getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+								getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, getClient ().getClientDB ());
 							
 							final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 							final CityProductionBreakdown gold = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);

@@ -246,7 +246,7 @@ public final class TestCityViewUI extends ClientTestData
 		productions.getProductionType ().add (goldProd);
 		
 		when (prod.calculateAllCityProductions (client.getPlayers (), terrain, fow.getBuilding (), fow.getMaintainedSpell (),
-			new MapCoordinates3DEx (20, 10, 0), "TR01", sd, true, false, db)).thenReturn (productions);
+			new MapCoordinates3DEx (20, 10, 0), "TR01", sd, null, true, false, db)).thenReturn (productions);
 
 		// City calculations
 		final CityCalculations calc = mock (CityCalculations.class);

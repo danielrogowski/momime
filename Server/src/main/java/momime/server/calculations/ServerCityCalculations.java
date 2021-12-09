@@ -42,13 +42,14 @@ public interface ServerCityCalculations
 	 * @param cityLocation Location of the city to update
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws RecordNotFoundException If we can't find the player who owns the city
 	 * @throws MomException If any of a number of expected items aren't found in the database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 */
 	public void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final MomSessionDescription sd, final CommonDatabase db)
+		final MapCoordinates3DEx cityLocation, final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**

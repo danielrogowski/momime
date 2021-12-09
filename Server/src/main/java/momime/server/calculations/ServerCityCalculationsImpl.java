@@ -69,6 +69,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	 * @param cityLocation Location of the city to update
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @throws RecordNotFoundException If we can't find the player who owns the city
 	 * @throws MomException If any of a number of expected items aren't found in the database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
@@ -76,7 +77,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	@Override
 	public final void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final MomSessionDescription sd, final CommonDatabase db)
+		final MapCoordinates3DEx cityLocation, final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
@@ -105,7 +106,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
 		final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions
-			(players, map, buildings, spells, cityLocation, priv.getTaxRateID (), sd, false, false, db);
+			(players, map, buildings, spells, cityLocation, priv.getTaxRateID (), sd, conjunctionEventID, false, false, db);
 		
 		// This is what the wiki calls "Base Food Level"
 		final CityProductionBreakdown food = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);

@@ -412,7 +412,8 @@ public final class CityViewUI extends MomClientFrameUI
 				(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+				getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, getClient ().getClientDB ()).findProductionType
 					(CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 			
 			final String productionTypeDescription = getLanguageHolder ().findDescription
@@ -433,7 +434,8 @@ public final class CityViewUI extends MomClientFrameUI
 				(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, getClient ().getClientDB (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+				getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, getClient ().getClientDB (),
 				CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		
 			final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
@@ -1087,7 +1089,8 @@ public final class CityViewUI extends MomClientFrameUI
 			(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).getProductionType ())
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+			getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, getClient ().getClientDB ()).getProductionType ())
 		{
 			final BufferedImage buttonImage = getResourceValueClientUtils ().generateProductionImage (thisProduction.getProductionTypeID (),
 				thisProduction.getCappedProductionAmount () + thisProduction.getConvertToProductionAmount (), thisProduction.getConsumptionAmount ());
@@ -1101,7 +1104,8 @@ public final class CityViewUI extends MomClientFrameUI
 						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ()).findProductionType
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+						getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, getClient ().getClientDB ()).findProductionType
 							(thisProduction.getProductionTypeID ());
 						
 					final String productionTypeDescription = getLanguageHolder ().findDescription
@@ -1205,7 +1209,8 @@ public final class CityViewUI extends MomClientFrameUI
 					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (), true, false, getClient ().getClientDB ());
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+					getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, getClient ().getClientDB ());
 			
 				final CityProductionBreakdown maxCitySizeProd = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 				final int maxCitySize = (maxCitySizeProd == null) ? 0 : maxCitySizeProd.getCappedProductionAmount ();

@@ -592,7 +592,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 				// Default each player's farmers to just enough to feed their initial units
 				getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), thisPlayer,
-					mom.getServerDB (), mom.getSessionDescription ());
+					mom.getServerDB (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
 			}
 
 			// Calculate and send initial production values - This is especially important in one-at-a-time games with more
@@ -717,7 +717,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// Also at this point the session may already have ended, if somebody cast Spell of Mastery
 			if ((mom.getPlayers ().size () > 0) && (timeStop == null))
 				getCityProcessing ().growCitiesAndProgressConstructionProjects (useOnlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
-					mom.getSessionDescription (), mom.getServerDB ());
+					mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
 		}
 		
 		if (mom.getPlayers ().size () > 0)
@@ -881,6 +881,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 					mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 				
+				getRandomEvents ().rollToEndRandomEvents (mom);
 				getRandomEvents ().rollRandomEvent (mom);
 			}
 		}
@@ -946,6 +947,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			getOverlandMapServerUtils ().degradeVolcanoesIntoMountains (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 			
+			getRandomEvents ().rollToEndRandomEvents (mom);
 			getRandomEvents ().rollRandomEvent (mom);
 		}
 		

@@ -37,18 +37,19 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.NodeStrength;
 import momime.common.database.OverlandMapSize;
-import momime.common.database.Plane;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RoundingDirectionID;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.database.TileTypeEx;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomResourceValue;
@@ -71,7 +72,10 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.ResourceValueUtilsImpl;
 import momime.common.utils.SpellUtils;
 import momime.server.DummyServerToClientConnection;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
+import momime.server.knowledge.ServerGridCellEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerFactory;
@@ -95,15 +99,10 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
-		myrror.setPlaneNumber (1);
-		
-		final List<Plane> planes = new ArrayList<Plane> ();
-		planes.add (arcanus);
-		planes.add (myrror);
-
-		when (db.getPlane ()).thenReturn (planes);
+		final TileTypeEx sorceryNode = new TileTypeEx ();
+		sorceryNode.setTileTypeID ("TT12");
+		sorceryNode.setMagicRealmID ("MB05");
+		when (db.getTileTypes ()).thenReturn (Arrays.asList (sorceryNode));
 		
 		final ProductionTypeAndUndoubledValue crusadeUpkeep = new ProductionTypeAndUndoubledValue ();
 		crusadeUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
@@ -144,6 +143,19 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
+		// Session variables
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getPlayers ()).thenReturn (players);
+		
 		// Set up test object
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -177,7 +189,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		shadowDemonsUpkeeps.add (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		when (xuShadowDemons.listModifiedUpkeepProductionTypeIDs ()).thenReturn (shadowDemonsUpkeeps);
 		
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
+		calc.recalculateAmountsPerTurn (player, mom);
 		assertEquals (1, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-7, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -189,7 +201,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		crusade.setCastingPlayerID (2);
 		trueMap.getMaintainedSpell ().add (crusade);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
+		calc.recalculateAmountsPerTurn (player, mom);
 		assertEquals (1, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-17, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -198,7 +210,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Wizard has Channeler, halfing spell maintenance (half of 17 is 8.5, proves that maintenance is rounded up)
 		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
+		calc.recalculateAmountsPerTurn (player, mom);
 		assertEquals (1, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -221,7 +233,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		warlocksUpkeeps.add (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		when (xuWarlocks.listModifiedUpkeepProductionTypeIDs ()).thenReturn (warlocksUpkeeps);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
+		calc.recalculateAmountsPerTurn (player, mom);
 		assertEquals (3, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -237,7 +249,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		priv.getResourceValue ().get (1).setAmountPerTurn (10);
 		priv.getResourceValue ().get (1).setAmountStored (10);
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
+		calc.recalculateAmountsPerTurn (player, mom);
 		assertEquals (3, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -285,10 +297,10 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		cityBreakdown.getProductionType ().add (cityMaxSize);
 		
 		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			new MapCoordinates3DEx (2, 2, 0), "TR04", sd, true, false, db)).thenReturn (cityBreakdown);
+			new MapCoordinates3DEx (2, 2, 0), "TR04", sd, null, true, false, db)).thenReturn (cityBreakdown);
 
 		// Population will eat 5 rations, but produce 2x2 = 4 rations, and generate 3 x 1.5 = 4.5 gold from taxes and 2x.5 + 1x2 production
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
+		calc.recalculateAmountsPerTurn (player, mom);
 		assertEquals (5, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());
@@ -311,10 +323,16 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		{
 			final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 			terrainData.setNodeOwnerID (2);
-			trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x).setTerrainData (terrainData);
+			
+			if (x == 12)
+				terrainData.setTileTypeID ("TT12");
+			
+			final ServerGridCellEx nodeAuraCell = (ServerGridCellEx) trueTerrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x);
+			nodeAuraCell.setAuraFromNode (new MapCoordinates3DEx (12, 10, 0));
+			nodeAuraCell.setTerrainData (terrainData);
 		}
 
-		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);
+		calc.recalculateAmountsPerTurn (player, mom);
 		assertEquals (6, priv.getResourceValue ().size ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, priv.getResourceValue ().get (0).getProductionTypeID ());
 		assertEquals (-9, priv.getResourceValue ().get (0).getAmountPerTurn ());

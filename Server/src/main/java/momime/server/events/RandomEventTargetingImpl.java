@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 import com.ndg.random.WeightedChoicesImpl;
 
@@ -94,13 +95,14 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 	 * @param event Event to trigger
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find an expected data item
+	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
 	 * @throws MomException If there is another kind of error
 	 * @throws JAXBException If there is a problem sending the message
 	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	@Override
 	public final void triggerEvent (final Event event, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException, JAXBException, XMLStreamException
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Is it an event that targets a wizard?  If so then now need to pick the wizard to target
 		if (event.getEventWizardTarget () != null)
@@ -143,18 +145,50 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 		
 		else
 		{
-			getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, false, mom.getPlayers ());
-			
 			// Disjunction
 			if (event.getMinimumDuration () == null)
 			{
+				getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, false, false, mom.getPlayers ());
+				
+				for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+				{
+					final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "triggerEvent");
+					if (spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+						mom.getWorldUpdates ().switchOffSpell (spell.getSpellURN ());
+				}
+				
+				mom.getWorldUpdates ().process (mom);
 			}
 			
 			// Everything else are Conjunction events - good/bad moon and red/green/blue nodes, and also mana short
 			else
 			{
+				getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, true, false, mom.getPlayers ());
+				
+				mom.getGeneralPublicKnowledge ().setConjunctionEventID (event.getEventID ());
+				mom.getGeneralServerKnowledge ().setConjunctionStartedTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber ());
 			}
 		}
+	}
+	
+	/**
+	 * @param event Event to switch off
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we can't find an expected data item
+	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
+	 * @throws MomException If there is another kind of error
+	 * @throws JAXBException If there is a problem sending the message
+	 * @throws XMLStreamException If there is a problem sending the message
+	 */
+	@Override
+	public void cancelEvent (final Event event, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		// So far this is only used for conjunctions
+		getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, true, true, mom.getPlayers ());
+		
+		mom.getGeneralPublicKnowledge ().setConjunctionEventID (null);
+		mom.getGeneralServerKnowledge ().setConjunctionStartedTurnNumber (null);
 	}
 	
 	/**

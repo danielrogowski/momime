@@ -1495,6 +1495,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<productionFromBuildingNegated language="en">
 			<text>BUILDING_NAME producing BUILDING_MODIFIED_PRODUCTION PRODUCTION_TYPE is negated by NEGATED_BY_SPELL_NAME</text>
 		</productionFromBuildingNegated>
+		<productionFromEvent language="en">
+			<text>EVENT_NAME produces EVENT_PRODUCTION PRODUCTION_TYPE</text>
+		</productionFromEvent>
 		<productionFromSpell language="en">
 			<text>SPELL_NAME produces SPELL_PRODUCTION PRODUCTION_TYPE</text>
 		</productionFromSpell>

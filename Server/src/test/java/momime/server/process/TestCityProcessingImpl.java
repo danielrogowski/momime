@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -399,7 +400,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Check calcs were done
 		verify (serverCityCalc, times (4)).calculateCitySizeIDAndMinimumFarmers (eq (players), eq (trueTerrain), eq (trueMap.getBuilding ()),
-			eq (trueMap.getMaintainedSpell ()), any (MapCoordinates3DEx.class), eq (sd), eq (db));
+			eq (trueMap.getMaintainedSpell ()), any (MapCoordinates3DEx.class), eq (sd), eq (db), isNull ());
 		
 		verify (serverCityCalc, times (4)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
@@ -573,7 +574,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		humanCityProductions.getProductionType ().add (humanCityMaxSizeContainer);
 		humanCityProductions.getProductionType ().add (humanProduction);
 		when (cityProd.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			humanLocation, "TR01", sd, true, false, db)).thenReturn (humanCityProductions);
+			humanLocation, "TR01", sd, null, true, false, db)).thenReturn (humanCityProductions);
 
 		final CityProductionBreakdown aiCityMaxSizeContainer = new CityProductionBreakdown ();
 		aiCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -585,7 +586,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		aiCityProductions.getProductionType ().add (aiCityMaxSizeContainer);
 		aiCityProductions.getProductionType ().add (aiProduction);
 		when (cityProd.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			aiLocation, "TR02", sd, true, false, db)).thenReturn (aiCityProductions);
+			aiLocation, "TR02", sd, null, true, false, db)).thenReturn (aiCityProductions);
 		
 		final CityProductionBreakdown raidersCityMaxSizeContainer = new CityProductionBreakdown ();
 		raidersCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -597,7 +598,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		raidersCityProductions.getProductionType ().add (raidersCityMaxSizeContainer);
 		raidersCityProductions.getProductionType ().add (raidersProduction);
 		when (cityProd.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			raidersLocation, "TR03", sd, true, false, db)).thenReturn (raidersCityProductions);
+			raidersLocation, "TR03", sd, null, true, false, db)).thenReturn (raidersCityProductions);
 		
 		// City growth rate
 		final CityCalculations cityCalc = mock (CityCalculations.class);
@@ -653,7 +654,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		
 		// Run method
-		proc.growCitiesAndProgressConstructionProjects (0, players, gsk, sd, db);
+		proc.growCitiesAndProgressConstructionProjects (0, players, gsk, sd, db, null);
 		
 		// Check human city
 		assertEquals (4400+650, humanCity.getCityPopulation ());
@@ -690,7 +691,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Check calcs were done
 		verify (serverCityCalc, times (3)).calculateCitySizeIDAndMinimumFarmers (eq (players), eq (trueTerrain), eq (trueMap.getBuilding ()),
-			eq (trueMap.getMaintainedSpell ()), any (MapCoordinates3DEx.class), eq (sd), eq (db));
+			eq (trueMap.getMaintainedSpell ()), any (MapCoordinates3DEx.class), eq (sd), eq (db), isNull ());
 		
 		verify (serverCityCalc, times (3)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
@@ -784,7 +785,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 			cityLocation, "TR", db)).thenReturn (unrest);
 		
 		cityData.setCurrentlyConstructingBuildingID (BARRACKS);
-		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, true, sd, db);
+		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, true, sd, db, null);
 		
 		// Check results
 		assertEquals (BARRACKS, cityData.getCurrentlyConstructingBuildingID ());	// i.e. it didn't change
@@ -794,7 +795,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, null, null, null, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
-			trueMap.getMaintainedSpell (), cityLocation, sd, db);
+			trueMap.getMaintainedSpell (), cityLocation, sd, db, null);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
 		
@@ -886,7 +887,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 			cityLocation, "TR", db)).thenReturn (unrest);
 		
 		cityData.setCurrentlyConstructingBuildingID (BARRACKS);
-		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, false, sd, db);
+		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, false, sd, db, null);
 		
 		// Check results
 		assertEquals (BARRACKS, cityData.getCurrentlyConstructingBuildingID ());	// i.e. it didn't change
@@ -896,7 +897,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), false, null, null, null, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
-			trueMap.getMaintainedSpell (), cityLocation, sd, db);
+			trueMap.getMaintainedSpell (), cityLocation, sd, db, null);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
 		
@@ -988,7 +989,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 			cityLocation, "TR", db)).thenReturn (unrest);
 		
 		cityData.setCurrentlyConstructingBuildingID (FARMERS_MARKET);
-		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, true, sd, db);
+		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, true, sd, db, null);
 		
 		// Check results
 		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, cityData.getCurrentlyConstructingBuildingID ());	// Can't build Farmers' Market anymore
@@ -998,7 +999,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, null, null, null, sd, db);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
 		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
-			trueMap.getMaintainedSpell (), cityLocation, sd, db);
+			trueMap.getMaintainedSpell (), cityLocation, sd, db, null);
 		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
 		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
 		
@@ -1070,7 +1071,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		// Run test
-		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), true, true, sd, db);
+		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), true, true, sd, db, null);
 		
 		// Check results
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());

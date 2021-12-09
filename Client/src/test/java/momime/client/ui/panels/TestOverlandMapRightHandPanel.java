@@ -42,6 +42,7 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Event;
 import momime.common.database.Language;
 import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
@@ -272,6 +273,13 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		
 		when (cityCalc.markWithinExistingCityRadius (map, null, 1, overlandMapSize)).thenReturn (invalidCityLocations);
 		
+		// Conjunction
+		gpk.setConjunctionEventID ("EV01");
+		
+		final Event eventDef = new Event ();
+		eventDef.getEventName ().add (createLanguageText (Language.ENGLISH, "Conjunction of Nature"));
+		when (db.findEvent ("EV01", "updateConjunction")).thenReturn (eventDef);
+		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
 		when (uiComponentFactory.createSelectUnitButton ()).thenAnswer ((i) ->
@@ -287,6 +295,9 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 
 		final XmlLayoutContainerEx surveyorLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml"));
 		surveyorLayout.buildMaps ();
+		
+		final XmlLayoutContainerEx economyLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Economy.xml"));
+		economyLayout.buildMaps ();
 		
 		// Set up panel
 		final OverlandMapRightHandPanel panel = new OverlandMapRightHandPanel ();
@@ -305,6 +316,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		panel.setLargeFont (CreateFontsForTests.getLargeFont ());
 		panel.setOverlandMapRightHandPanelLayout (rhpLayout);
 		panel.setSurveyorLayout (surveyorLayout);
+		panel.setEconomyLayout (economyLayout);
 		panel.setWizardClientUtils (wizardClientUtils);
 		
 		// Set up a dummy frame to display the panel

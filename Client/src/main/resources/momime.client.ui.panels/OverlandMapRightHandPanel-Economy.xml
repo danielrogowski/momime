@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>152</formWidth>
+	<formHeight>233</formHeight>
+	<component name="frmEconomyGoldAmountPerTurn">
+		<left>76</left>
+		<top>59</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmEconomyRationsAmountPerTurn">
+		<left>76</left>
+		<top>137</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmEconomyMagicPowerAmountPerTurn">
+		<left>76</left>
+		<top>159</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmEconomyManaConjunction">
+		<left>76</left>
+		<top>203</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmEconomyManaAmountPerTurn">
+		<left>76</left>
+		<top>216</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

@@ -27,6 +27,7 @@ public interface CityProductionCalculations
 	 * @param cityLocation Location of the city to calculate for; NB. It must be possible to call this on a map location which is not yet a city, so the AI can consider potential sites
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
+	 * @param conjunctionEventID Currently active conjunction, if there is one
 	 * @param includeProductionAndConsumptionFromPopulation Normally true; if false, production and consumption from civilian population will be excluded
 	 * 	(This is needed when calculating minimumFarmers, i.e. how many rations does the city produce from buildings and map features only, without considering farmers)
 	 * @param calculatePotential Normally false; if true, will consider city size and gold trade bonus to be as they will be after the city is built up
@@ -39,7 +40,7 @@ public interface CityProductionCalculations
 	 */
 	public CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final boolean includeProductionAndConsumptionFromPopulation,
-		final boolean calculatePotential, final CommonDatabase db)
+		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
+		final boolean includeProductionAndConsumptionFromPopulation, final boolean calculatePotential, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 }

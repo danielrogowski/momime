@@ -65,7 +65,8 @@ public final class AICityCalculationsImpl implements AICityCalculations
 	{
 		Integer thisCityQuality;
 		
-		final CityProductionBreakdownsEx productions = getCityProductionCalculations ().calculateAllCityProductions (null, knownMap, null, null, cityLocation, null, sd, false, true, db);
+		final CityProductionBreakdownsEx productions = getCityProductionCalculations ().calculateAllCityProductions
+			(null, knownMap, null, null, cityLocation, null, sd, null, false, true, db);
 		final CityProductionBreakdown foodProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		final int maxCitySize = (foodProduction != null) ? foodProduction.getCappedProductionAmount () : 0;
 		

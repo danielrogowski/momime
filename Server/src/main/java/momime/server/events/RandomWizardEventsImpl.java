@@ -21,9 +21,11 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerResourceCalculations;
 
 /**
  * Deals with random events which pick a wizard target:
@@ -45,6 +47,9 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	
 	/** Rolls random events */
 	private RandomEvents randomEvents;
+	
+	/** Resource calculations */
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * Can only call this on events that are targeted at wizards
@@ -213,57 +218,77 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 			getRandomCityEvents ().triggerCityEvent (event, targetWizard, targetCity, mom);
 		}
 		
-		// Do we need to pick a target hero item?  The Gift
-		else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_GIFT))
-		{
-			final NumberedHeroItem item = mom.getGeneralServerKnowledge ().getAvailableHeroItem ().get
-				(getRandomUtils ().nextInt (mom.getGeneralServerKnowledge ().getAvailableHeroItem ().size ()));
-			log.debug ("Gift event giving wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " hero item " + item.getHeroItemName ());
-			
-			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-				null, null, null, item.getHeroItemName (), null, false, false, mom.getPlayers ());
-		}
-
-		// Do we have to pick how much gold we'll lose?  Piracy
-		else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_PIRACY))
-		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) targetWizard.getPersistentPlayerPrivateKnowledge ();
-			final int gold = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-			final int percent = 10 + getRandomUtils ().nextInt (16);
-			int goldLost = (gold * percent) / 100;
-			if (goldLost == 0)
-				goldLost++;
-			
-			log.debug ("Piracy event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " losing " + goldLost + " gold");
-			
-			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-				null, null, null, null, goldLost, false, false, mom.getPlayers ());
-		}
-
-		// Do we have to pick how much gold we'll gain?  Donation
 		else
 		{
-			// What's the maximum amount of gold that anyone has?
-			int maxGold = 1000;
-			for (final PlayerServerDetails player : mom.getPlayers ())
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) targetWizard.getPersistentPlayerPrivateKnowledge ();
+			
+			// Do we need to pick a target hero item?  The Gift
+			if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_GIFT))
 			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+				final NumberedHeroItem item = mom.getGeneralServerKnowledge ().getAvailableHeroItem ().get
+					(getRandomUtils ().nextInt (mom.getGeneralServerKnowledge ().getAvailableHeroItem ().size ()));
+				log.debug ("Gift event giving wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " hero item " + item.getHeroItemName ());
+				
+				getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
+					null, null, null, item.getHeroItemName (), null, false, false, mom.getPlayers ());
+				
+				mom.getGeneralServerKnowledge ().getAvailableHeroItem ().remove (item);
+				priv.getUnassignedHeroItem ().add (item);
+
+				if (targetWizard.getPlayerDescription ().isHuman ())
 				{
-					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-					final int gold = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-					if (gold > maxGold)
-						maxGold = gold;
+					final AddUnassignedHeroItemMessage msg = new AddUnassignedHeroItemMessage ();
+					msg.setHeroItem (item);
+					targetWizard.getConnection ().sendMessageToClient (msg);
 				}
 			}
-			
-			final int percent = 10 + getRandomUtils ().nextInt (16);
-			final int goldGained = (maxGold * percent) / 100;
-
-			log.debug ("Donation event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " gaining " + goldGained + " gold");
-			
-			getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-				null, null, null, null, goldGained, false, false, mom.getPlayers ());
+	
+			// Do we have to pick how much gold we'll lose?  Piracy
+			else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_PIRACY))
+			{
+				final int gold = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+				final int percent = 10 + getRandomUtils ().nextInt (16);
+				int goldLost = (gold * percent) / 100;
+				if (goldLost == 0)
+					goldLost++;
+				
+				log.debug ("Piracy event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " losing " + goldLost + " gold");
+				
+				getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
+					null, null, null, null, goldLost, false, false, mom.getPlayers ());
+				
+				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldLost);
+				getServerResourceCalculations ().sendGlobalProductionValues (targetWizard, null, false);
+			}
+	
+			// Do we have to pick how much gold we'll gain?  Donation
+			else
+			{
+				// What's the maximum amount of gold that anyone has?
+				int maxGold = 1000;
+				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
+				{
+					final MomPersistentPlayerPublicKnowledge thisPub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
+					if ((PlayerKnowledgeUtils.isWizard (thisPub.getWizardID ())) && (thisPub.getWizardState () == WizardState.ACTIVE))
+					{
+						final MomPersistentPlayerPrivateKnowledge thisPriv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+						final int gold = getResourceValueUtils ().findAmountStoredForProductionType (thisPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+						if (gold > maxGold)
+							maxGold = gold;
+					}
+				}
+				
+				final int percent = 10 + getRandomUtils ().nextInt (16);
+				final int goldGained = (maxGold * percent) / 100;
+	
+				log.debug ("Donation event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " gaining " + goldGained + " gold");
+				
+				getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
+					null, null, null, null, goldGained, false, false, mom.getPlayers ());
+				
+				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldGained);
+				getServerResourceCalculations ().sendGlobalProductionValues (targetWizard, null, false);
+			}
 		}
 	}
 	
@@ -329,5 +354,21 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	public final void setRandomEvents (final RandomEvents e)
 	{
 		randomEvents = e;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final ServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

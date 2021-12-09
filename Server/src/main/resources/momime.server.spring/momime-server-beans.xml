@@ -812,6 +812,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="randomEvents" ref="randomEvents" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 	</bean>
 
 	<bean id="randomEventTargeting" class="momime.server.events.RandomEventTargetingImpl">

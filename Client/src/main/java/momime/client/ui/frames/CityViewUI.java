@@ -268,10 +268,10 @@ public final class CityViewUI extends MomClientFrameUI
 	private List<SelectUnitButton> selectUnitButtons = new ArrayList<SelectUnitButton> ();
 	
 	/** Items in the Enchantments box */
-	private DefaultListModel<MemoryMaintainedSpell> spellsItems;
+	private DefaultListModel<Object> spellsItems;
 	
 	/** Enchantments list box */
-	private JList<MemoryMaintainedSpell> spellsList;
+	private JList<Object> spellsList;
 	
 	/** Bitmaps for each animation frame of the mini map */
 	private BufferedImage [] miniMapBitmaps;
@@ -589,8 +589,8 @@ public final class CityViewUI extends MomClientFrameUI
 		// Set up the mini panel to hold all the enchantments
 		getMemoryMaintainedSpellListCellRenderer ().setFont (getSmallFont ());
 		
-		spellsItems = new DefaultListModel<MemoryMaintainedSpell> ();
-		spellsList = new JList<MemoryMaintainedSpell> ();
+		spellsItems = new DefaultListModel<Object> ();
+		spellsList = new JList<Object> ();
 		spellsList.setOpaque (false);
 		spellsList.setModel (spellsItems);
 		spellsList.setCellRenderer (getMemoryMaintainedSpellListCellRenderer ());
@@ -605,34 +605,38 @@ public final class CityViewUI extends MomClientFrameUI
 		{
 			if (spellsList.getSelectedIndex () >= 0)
 			{
-				final MemoryMaintainedSpell spell = spellsItems.get (spellsList.getSelectedIndex ());
-				try
+				final Object obj = spellsItems.get (spellsList.getSelectedIndex ());
+				if (obj instanceof MemoryMaintainedSpell)
 				{
-					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setLanguageTitle (getLanguages ().getSpellCasting ().getSwitchOffSpellTitle ());
-
-					if (!getClient ().isPlayerTurn ())
-						msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellNotYourTurn ());
-					else if (getCombatUI ().isVisible ())
-						msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellInCombat ());
-					else
+					final MemoryMaintainedSpell spell = (MemoryMaintainedSpell) obj;
+					try
 					{
-						final String effectName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "CityViewUI").getCitySpellEffectName ());
-						
-						if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
-							msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpellNotOurs ()).replaceAll ("SPELL_NAME", effectName));
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setLanguageTitle (getLanguages ().getSpellCasting ().getSwitchOffSpellTitle ());
+	
+						if (!getClient ().isPlayerTurn ())
+							msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellNotYourTurn ());
+						else if (getCombatUI ().isVisible ())
+							msg.setLanguageText (getLanguages ().getSpellCasting ().getSwitchOffSpellInCombat ());
 						else
 						{
-							msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll ("SPELL_NAME", effectName));
-							msg.setSwitchOffSpell (spell);
+							final String effectName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "CityViewUI").getCitySpellEffectName ());
+							
+							if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
+								msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpellNotOurs ()).replaceAll ("SPELL_NAME", effectName));
+							else
+							{
+								msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll ("SPELL_NAME", effectName));
+								msg.setSwitchOffSpell (spell);
+							}
 						}
+	
+						msg.setVisible (true);
 					}
-
-					msg.setVisible (true);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 				}
 			}
 		});
@@ -648,15 +652,19 @@ public final class CityViewUI extends MomClientFrameUI
 					final int row = spellsList.locationToIndex (ev.getPoint ());
 					if ((row >= 0) && (row < spellsItems.size ()))
 					{
-						final MemoryMaintainedSpell spell = spellsItems.get (row);
-						try
+						final Object obj = spellsItems.get (row);
+						if (obj instanceof MemoryMaintainedSpell)
 						{
-							getHelpUI ().showCitySpellEffectID (spell.getCitySpellEffectID (), spell.getSpellID (),
-								getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID (), "citySpellEffectHelp"));
-						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
+							final MemoryMaintainedSpell spell = (MemoryMaintainedSpell) obj;
+							try
+							{
+								getHelpUI ().showCitySpellEffectID (spell.getCitySpellEffectID (), spell.getSpellID (),
+									getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID (), "citySpellEffectHelp"));
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
 						}
 					}
 				}
@@ -961,13 +969,21 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/**
 	 * Update the list of enchantments and curses cast on this city whenever they change
+	 * @throws RecordNotFoundException If there is an event in progress that we can't find
 	 */
-	public final void spellsChanged ()
+	public final void spellsChanged () throws RecordNotFoundException
 	{
 		spellsItems.clear ();
+		
 		for (final MemoryMaintainedSpell spell : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ())
 			if (getCityLocation ().equals (spell.getCityLocation ()))
 				spellsItems.addElement (spell);
+
+		final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
+		final OverlandMapCityData cityData = mc.getCityData ();
+		if (cityData.getPopulationEventID () != null)
+			spellsItems.addElement (getClient ().getClientDB ().findEvent (cityData.getPopulationEventID (), "spellsChanged"));
 	}
 
 	/**

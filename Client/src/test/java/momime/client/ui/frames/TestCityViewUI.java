@@ -57,6 +57,7 @@ import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -265,6 +266,10 @@ public final class TestCityViewUI extends ClientTestData
 		final List<CityViewElement> elements = new ArrayList<CityViewElement> ();
 		elements.add (landscape);
 		when (db.getCityViewElement ()).thenReturn (elements);
+		
+		// Event
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 
 		// Set up animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();

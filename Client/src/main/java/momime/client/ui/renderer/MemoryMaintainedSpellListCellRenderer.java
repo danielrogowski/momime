@@ -17,13 +17,15 @@ import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Event;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
 /**
  * Renderer for writing city spell effect names onto the city screen, and colouring city spell effect names according to the wizard who cast them
  */
-public final class MemoryMaintainedSpellListCellRenderer extends JLabel implements ListCellRenderer<MemoryMaintainedSpell>
+public final class MemoryMaintainedSpellListCellRenderer extends JLabel implements ListCellRenderer<Object>
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (MemoryMaintainedSpellListCellRenderer.class);
@@ -42,21 +44,40 @@ public final class MemoryMaintainedSpellListCellRenderer extends JLabel implemen
 	 */
 	@SuppressWarnings ("unused")
 	@Override
-	public final Component getListCellRendererComponent (final JList<? extends MemoryMaintainedSpell> list, final MemoryMaintainedSpell spell,
+	public final Component getListCellRendererComponent (final JList<? extends Object> list, final Object obj,
 		final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		try
 		{
-			// Get city spell effect name
-			final String effectName = getLanguageHolder ().findDescription
-				(getClient ().getClientDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "MemoryMaintainedSpellListCellRenderer").getCitySpellEffectName ());
-			setText (effectName);
-			
-			// Get wizard colour
-			final PlayerPublicDetails pub = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID ());
-			final MomTransientPlayerPublicKnowledge trans = (pub == null) ? null : (MomTransientPlayerPublicKnowledge) pub.getTransientPlayerPublicKnowledge ();
-			final String flagColour = (trans == null) ? null : trans.getFlagColour ();
-			setForeground ((flagColour == null) ? MomUIConstants.SILVER : new Color (Integer.parseInt (flagColour, 16)));
+			if (obj instanceof MemoryMaintainedSpell)
+			{
+				final MemoryMaintainedSpell spell = (MemoryMaintainedSpell) obj;
+				
+				// Get city spell effect name
+				final String effectName = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "MemoryMaintainedSpellListCellRenderer").getCitySpellEffectName ());
+				setText (effectName);
+				
+				// Get wizard colour
+				final PlayerPublicDetails pub = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID ());
+				final MomTransientPlayerPublicKnowledge trans = (pub == null) ? null : (MomTransientPlayerPublicKnowledge) pub.getTransientPlayerPublicKnowledge ();
+				final String flagColour = (trans == null) ? null : trans.getFlagColour ();
+				setForeground ((flagColour == null) ? MomUIConstants.SILVER : new Color (Integer.parseInt (flagColour, 16)));
+			}
+			else if (obj instanceof Event)
+			{
+				final Event event = (Event) obj;
+				
+				// Get event name
+				final String eventName = getLanguageHolder ().findDescription (event.getEventName ());
+				setText (eventName);
+				
+				// Get event colour
+				if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_POPULATION_BOOM))
+					setForeground (Color.WHITE);
+				else
+					setForeground (Color.BLACK);
+			}
 		}
 		catch (final Exception e)
 		{

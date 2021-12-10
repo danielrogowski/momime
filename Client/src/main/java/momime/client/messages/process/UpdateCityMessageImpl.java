@@ -78,6 +78,7 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 				cityView.cityDataChanged ();
 				cityView.productionSoFarChanged ();
 				cityView.recheckRushBuyEnabled ();
+				cityView.spellsChanged ();
 			}
 			else
 			{

@@ -86,9 +86,9 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 
 			final Spell spellDef = getClient ().getClientDB ().findSpell (getBuildingsDestroyedBySpellID (), "DestroyBuildingMessageImpl");
 			
-			if ((((getBuildingDestructionSpellCastByPlayerID () != null) && (getBuildingDestructionSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
-				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ()))) &&
-				(spellDef.getSpellHasCityEffect ().size () == 0) && (spellDef.getCombatCastAnimation () == null))
+			if ((getBuildingDestructionSpellCastByPlayerID () != null) && (cityData != null) &&
+				(spellDef.getSpellHasCityEffect ().size () == 0) && (spellDef.getCombatCastAnimation () == null) &&
+				((getBuildingDestructionSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ())) || (cityData.getCityOwnerID () == getClient ().getOurPlayerID ())))
 			{
 				animated = true;
 				

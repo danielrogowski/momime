@@ -630,7 +630,12 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 			<xsd:extension base="momimestoc:damageCalculationData">
 				<xsd:sequence>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackerPlayerID" type="mps:playerID">
+					    <xsd:annotation>
+    						<xsd:documentation>Attacker can be null if attack is from an event like Great Meteor, in which case will get an eventID instead.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="eventID" type="momimecommon:eventID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="defenderUnitURN" type="momimemsgs:unitURN">
 					    <xsd:annotation>
     						<xsd:documentation>Defender will be left null if the attack is hitting multiple defenders, e.g. Flame Strike.</xsd:documentation>
@@ -658,7 +663,12 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 			<xsd:extension base="momimestoc:damageCalculationData">
 				<xsd:sequence>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackerUnitURN" type="momimemsgs:unitURN" />
-					<xsd:element minOccurs="1" maxOccurs="1" name="attackerPlayerID" type="mps:playerID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="attackerPlayerID" type="mps:playerID">
+					    <xsd:annotation>
+    						<xsd:documentation>Attacker can be null if attack is from an event like Great Meteor, in which case will get an eventID instead.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="eventID" type="momimecommon:eventID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeID" type="momimecommon:damageTypeID" />

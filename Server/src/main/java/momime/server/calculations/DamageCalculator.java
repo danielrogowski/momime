@@ -52,6 +52,7 @@ public interface DamageCalculator
 	 * @param existingCurse True if this isn't a new "attack", but is the defender trying to shake off an existing curse (Stasis)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param eventID The event that caused an attack, if it wasn't initiated by a player
 	 * @param attackSkillID The skill being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
 	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
 	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
@@ -59,7 +60,8 @@ public interface DamageCalculator
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public void sendDamageHeader (final MemoryUnit attacker, final List<MemoryUnit> defenders, final boolean existingCurse,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String attackSkillID, final Spell spell, final PlayerServerDetails castingPlayer)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String eventID,
+		final String attackSkillID, final Spell spell, final PlayerServerDetails castingPlayer)
 		throws JAXBException, XMLStreamException;
 	
 	/**
@@ -95,6 +97,7 @@ public interface DamageCalculator
 	 * @param castingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param eventID The event that caused an attack, if it wasn't initiated by a player
 	 * @param db Lookup lists built over the XML database
 	 * @param castType Whether spell is being cast in combat or overland
 	 * @param skipDamageHeader Whether to skip sending the damage header, if this is part of a bigger spell (used for Call Chaos)
@@ -105,7 +108,8 @@ public interface DamageCalculator
 	 * @throws MomException If there is a problem with the game logic
 	 */
 	public AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final ExpandedUnitDetails castingUnit,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db, final SpellCastType castType, final boolean skipDamageHeader)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String eventID,
+		final CommonDatabase db, final SpellCastType castType, final boolean skipDamageHeader)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException;
 	
 	/**

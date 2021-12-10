@@ -816,6 +816,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="spellMultiCasting" ref="spellMultiCasting" />
+		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 	</bean>
 	
 	<bean id="randomWizardEvents" class="momime.server.events.RandomWizardEventsImpl">

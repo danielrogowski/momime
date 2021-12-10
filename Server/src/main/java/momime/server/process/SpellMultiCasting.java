@@ -23,6 +23,7 @@ public interface SpellMultiCasting
 	 * 
 	 * @param spell Spell being cast
 	 * @param castingPlayer Player who is casting it; can be null for city damage from events like Earthquake and Great Meteor
+	 * @param eventID The event that caused an attack, if it wasn't initiated by a player
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
 	 * @param targetLocation The city being hit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -33,7 +34,7 @@ public interface SpellMultiCasting
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public AttackCitySpellResult castCityAttackSpell (final Spell spell, final PlayerServerDetails castingPlayer,
+	public AttackCitySpellResult castCityAttackSpell (final Spell spell, final PlayerServerDetails castingPlayer, final String eventID,
 		final Integer variableDamage, final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

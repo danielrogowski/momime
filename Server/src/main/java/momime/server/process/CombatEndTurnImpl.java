@@ -343,7 +343,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	
 								if (targetUnits.size () > 0)
 									combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits,
-										attackingPlayer, defendingPlayer, null, null, null, null, damagingCAE, null, castingPlayer, combatLocation, false, mom).isCombatEnded ();
+										attackingPlayer, defendingPlayer, null, null, null, null, null, damagingCAE, null, castingPlayer, combatLocation, false, mom).isCombatEnded ();
 							}
 						}
 					}
@@ -379,9 +379,9 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				// Only bother to send the damage calculation header if there's at least one unit that has to make a roll
 				if (unitsToRoll.size () > 0)
 				{
-					getDamageCalculator ().sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, terrorSpell, castingPlayer);
+					getDamageCalculator ().sendDamageHeader (null, defenders, false, attackingPlayer, defendingPlayer, null, null, terrorSpell, castingPlayer);
 					final AttackDamage attackDamage = getDamageCalculator ().attackFromSpell
-						(terrorSpell, null, castingPlayer, null, attackingPlayer, defendingPlayer, mom.getServerDB (), SpellCastType.COMBAT, false);
+						(terrorSpell, null, castingPlayer, null, attackingPlayer, defendingPlayer, null, mom.getServerDB (), SpellCastType.COMBAT, false);
 					
 					for (final ExpandedUnitDetails xu : unitsToRoll)
 						if (getDamageCalculator ().calculateResistanceRoll (xu, attackingPlayer, defendingPlayer, attackDamage, false))

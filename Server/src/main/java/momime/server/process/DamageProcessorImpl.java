@@ -82,6 +82,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param defenders Unit(s) being hit; some attacks can hit multiple units such as Flame Strike
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param eventID The event that caused an attack, if it wasn't initiated by a player
 	 * @param wreckTileChance Whether to roll an attack against the tile in addition to the defenders; null = no, any other value is the chance so 4 = 1/4 chance
 	 * @param wreckTilePosition The position within the combat map of the tile that will be attacked
 	 * @param attackerDirection The direction the attacker needs to turn to in order to be facing the defender; or null if the attack isn't coming from a unit
@@ -101,14 +102,15 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 */
 	@Override
 	public final ResolveAttackResult resolveAttack (final MemoryUnit attacker, final List<ResolveAttackTarget> defenders,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer wreckTileChance, final MapCoordinates2DEx wreckTilePosition,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String eventID,
+		final Integer wreckTileChance, final MapCoordinates2DEx wreckTilePosition,
 		final Integer attackerDirection, final String attackSkillID,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final boolean skipAnimation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		final List<MemoryUnit> defenderUnits = defenders.stream ().map (d -> d.getDefender ()).collect (Collectors.toList ());
-		getDamageCalculator ().sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer, attackSkillID, spell, castingPlayer);
+		getDamageCalculator ().sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer, eventID, attackSkillID, spell, castingPlayer);
 		
 		// Make the units face each other
 		if (attackerDirection != null)
@@ -192,7 +194,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 							useVariableDamage = variableDamage;
 						
 						spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
-							(thisSpell, useVariableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
+							(thisSpell, useVariableDamage, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, eventID, mom.getServerDB (),
 								(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT, false)));
 					}
 					
@@ -245,8 +247,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 							steps.add (spellInnerSteps);
 							
 							spellInnerSteps.add (new AttackResolutionStepContainer (getDamageCalculator ().attackFromSpell
-								(spellThisPass, spellThisPass.getCombatBaseDamage () - stepNumber, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer, mom.getServerDB (),
-									(combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT, false)));
+								(spellThisPass, spellThisPass.getCombatBaseDamage () - stepNumber, castingPlayer, xuAttackerPreliminary, attackingPlayer, defendingPlayer,
+									eventID, mom.getServerDB (), (combatLocation == null) ? SpellCastType.OVERLAND : SpellCastType.COMBAT, false)));
 						}
 					}
 					
@@ -449,7 +451,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		defenders.add (defender);
 		
 		if (!skipDamageHeader)
-			getDamageCalculator ().sendDamageHeader (attacker, defenders, existingCurse, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+			getDamageCalculator ().sendDamageHeader (attacker, defenders, existingCurse, attackingPlayer, defendingPlayer, null, null, spell, castingPlayer);
 	
 		// Spell might be being cast by a unit, or a hero casting a spell imbued in an item
 		final ExpandedUnitDetails xuUnitMakingAttack = (attacker == null) ? null : 
@@ -458,7 +460,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		
 		// Work out base saving throw plus any modifiers from hero items with -spell save
 		final AttackDamage potentialDamage = getDamageCalculator ().attackFromSpell
-			(spell, variableDamage, castingPlayer, xuUnitMakingAttack, attackingPlayer, defendingPlayer, mom.getServerDB (), castType, skipDamageHeader);
+			(spell, variableDamage, castingPlayer, xuUnitMakingAttack, attackingPlayer, defendingPlayer, null, mom.getServerDB (), castType, skipDamageHeader);
 		
 		// Make the actual roll
 		// Now we know all the details about the type of attack, we can properly generate stats of the

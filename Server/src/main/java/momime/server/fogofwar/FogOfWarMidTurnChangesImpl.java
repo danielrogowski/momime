@@ -785,9 +785,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 			// Send completed message
 			// Usually don't bother sending an empty list, but if this is a from a spell that failed to actually destroy any buildings, then still have to
-			if ((msg != null) && ((msg.getBuildingURN ().size () > 0) ||
-				((buildingDestructionSpellCastByPlayerID != null) && (buildingDestructionSpellCastByPlayerID.equals (player.getPlayerDescription ().getPlayerID ()))) ||
-				((targetedCityOwnerID != null) && (targetedCityOwnerID.equals (player.getPlayerDescription ().getPlayerID ())))))
+			if ((msg != null) && ((msg.getBuildingURN ().size () > 0) || ((buildingDestructionSpellCastByPlayerID != null) &&
+				((buildingDestructionSpellCastByPlayerID.equals (player.getPlayerDescription ().getPlayerID ()))) ||
+					((targetedCityOwnerID != null) && (targetedCityOwnerID.equals (player.getPlayerDescription ().getPlayerID ()))))))
 			{
 				msg.setUpdateBuildingSoldThisTurn (updateBuildingSoldThisTurn);
 				msg.setBuildingsDestroyedBySpellID (buildingsDestroyedBySpellID);

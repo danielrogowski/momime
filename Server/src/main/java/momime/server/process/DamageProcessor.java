@@ -33,6 +33,7 @@ public interface DamageProcessor
 	 * @param defenders Unit(s) being hit; some attacks can hit multiple units such as Flame Strike
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param eventID The event that caused an attack, if it wasn't initiated by a player
 	 * @param wreckTileChance Whether to roll an attack against the tile in addition to the defenders; null = no, any other value is the chance so 4 = 1/4 chance
 	 * @param wreckTilePosition The position within the combat map of the tile that will be attacked
 	 * @param attackerDirection The direction the attacker needs to turn to in order to be facing the defender; or null if the attack isn't coming from a unit
@@ -51,7 +52,8 @@ public interface DamageProcessor
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public ResolveAttackResult resolveAttack (final MemoryUnit attacker, final List<ResolveAttackTarget> defenders,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer wreckTileChance, final MapCoordinates2DEx wreckTilePosition,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String eventID,
+		final Integer wreckTileChance, final MapCoordinates2DEx wreckTilePosition,
 		final Integer attackerDirection, final String attackSkillID,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final boolean skipAnimation, final MomSessionVariables mom)

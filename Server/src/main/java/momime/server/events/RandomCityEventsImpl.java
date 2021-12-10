@@ -36,6 +36,7 @@ import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CityProcessing;
@@ -74,6 +75,9 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	
 	/** Casting spells that have more than one effect */
 	private SpellMultiCasting spellMultiCasting;
+	
+	/** Main FOW update routine */
+	private FogOfWarProcessing fogOfWarProcessing;
 	
 	/**
 	 * Can only call this on events that are targeted at cities
@@ -199,7 +203,7 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 					final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 					if (event.getEventMapFeatureID ().contains (terrainData.getMapFeatureID ()))
-						mineralLocations.add (coords);
+						mineralLocations.add (new MapCoordinates3DEx (coords));
 				}
 					
 			if (mineralLocations.isEmpty ())
@@ -232,7 +236,7 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 					final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 					if ((event.getEventTileTypeID ().contains (terrainData.getTileTypeID ())) && (terrainData.getMapFeatureID () == null))
-						mineralLocations.add (coords);
+						mineralLocations.add (new MapCoordinates3DEx (coords));
 				}
 					
 			if (mineralLocations.isEmpty ())
@@ -335,6 +339,12 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 				}
 				
 				mom.getWorldUpdates ().process (mom);
+
+				// Update what both players can see, otherwise the new city owner can't see the city they now own
+				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
+					oldCityOwner, mom.getPlayers (), "event-DM-REB-Old", mom.getSessionDescription (), mom.getServerDB ());
+				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
+					newCityOwner, mom.getPlayers (), "event-DM-REB-New", mom.getSessionDescription (), mom.getServerDB ());
 			}
 				
 			// Great Meteor, Earthquake 
@@ -342,7 +352,7 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 			{
 				final Spell spellDef = mom.getServerDB ().findSpell (event.getEventSpellID (), "triggerCityEvent");
 
-				final AttackCitySpellResult attackCitySpellResult = getSpellMultiCasting ().castCityAttackSpell (spellDef, null, null, cityLocation, mom);			
+				final AttackCitySpellResult attackCitySpellResult = getSpellMultiCasting ().castCityAttackSpell (spellDef, null, event.getEventID (), null, cityLocation, mom);			
 				
 				getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
 					cityData.getCitySizeID (), cityData.getCityName (), null, null, null, false, false, mom.getPlayers (), attackCitySpellResult);
@@ -504,5 +514,21 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	public final void setSpellMultiCasting (final SpellMultiCasting c)
 	{
 		spellMultiCasting = c;
+	}
+
+	/**
+	 * @return Main FOW update routine
+	 */
+	public final FogOfWarProcessing getFogOfWarProcessing ()
+	{
+		return fogOfWarProcessing;
+	}
+
+	/**
+	 * @param obj Main FOW update routine
+	 */
+	public final void setFogOfWarProcessing (final FogOfWarProcessing obj)
+	{
+		fogOfWarProcessing = obj;
 	}
 }

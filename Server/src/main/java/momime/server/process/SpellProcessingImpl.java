@@ -439,7 +439,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// Roll all units at once
 					if (unitLocations.size () > 0)
-						getSpellCasting ().castOverlandAttackSpell (player, spell, variableDamage, unitLocations, mom);
+						getSpellCasting ().castOverlandAttackSpell (player, null, spell, variableDamage, unitLocations, mom);
 				}
 			}
 	
@@ -849,7 +849,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (targetUnits.size () > 0)
 					combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
 						targetUnits, attackingPlayer, defendingPlayer,
-						null, null, null, null, spell, variableDamage, castingPlayer, combatLocation, skipAnimation, mom).isCombatEnded ();
+						null, null, null, null, null, spell, variableDamage, castingPlayer, combatLocation, skipAnimation, mom).isCombatEnded ();
 			}
 			
 			// Attack, healing or dispelling spells
@@ -909,7 +909,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final List<ResolveAttackTarget> targetUnitWrappers = targetUnits.stream ().map (t -> new ResolveAttackTarget (t)).collect (Collectors.toList ());
 						
 						combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
-							targetUnitWrappers, attackingPlayer, defendingPlayer,
+							targetUnitWrappers, attackingPlayer, defendingPlayer, null,
 							wreckTileChance, wreckTilePosition, null, null, spell, variableDamage, castingPlayer, combatLocation, skipAnimation, mom).isCombatEnded ();
 					}
 					else if (kind == KindOfSpell.HEALING)
@@ -1441,7 +1441,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			else if (kind == KindOfSpell.ATTACK_UNITS)
-				getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), mom);
+				getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), mom);
 			
 			else if (kind == KindOfSpell.WARP_NODE)
 			{
@@ -1477,7 +1477,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 			}
 			
-			getSpellMultiCasting ().castCityAttackSpell (spell, castingPlayer, maintainedSpell.getVariableDamage (), targetLocation, mom);
+			getSpellMultiCasting ().castCityAttackSpell (spell, castingPlayer, null, maintainedSpell.getVariableDamage (), targetLocation, mom);
 		}
 
 		else if (spell.getBuildingID () == null)
@@ -1877,10 +1877,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 							if (attackDamage == null)
 							{
 								getDamageCalculator ().sendDamageHeader (null, unitsInCity, false,
-									castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), null, spellDef, castingPlayer);
+									castingPlayer, (PlayerServerDetails) xu.getOwningPlayer (), null, null, spellDef, castingPlayer);
 								
 								attackDamage = getDamageCalculator ().attackFromSpell (spellDef, null, castingPlayer, null, castingPlayer,
-									(PlayerServerDetails) xu.getOwningPlayer (), mom.getServerDB (), SpellCastType.OVERLAND, false);
+									(PlayerServerDetails) xu.getOwningPlayer (), null, mom.getServerDB (), SpellCastType.OVERLAND, false);
 							}
 							
 							// Its not enough to call armour piercing damage directly - must call this wrapper method so that it applies the damage to the unit as well

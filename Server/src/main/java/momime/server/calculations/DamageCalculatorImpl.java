@@ -82,15 +82,16 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final void sendDamageCalculationMessage (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final DamageCalculationData msg)
 		throws JAXBException, XMLStreamException
 	{
-		if ((attackingPlayer.getPlayerDescription ().isHuman ()) || (defendingPlayer.getPlayerDescription ().isHuman ()))
+		if (((attackingPlayer != null) && (attackingPlayer.getPlayerDescription ().isHuman ())) ||
+			((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ())))
 		{
 			final DamageCalculationMessage wrapper = new DamageCalculationMessage ();
 			wrapper.setBreakdown (msg);
 			
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
+			if ((attackingPlayer != null) && (attackingPlayer.getPlayerDescription ().isHuman ()))
 				attackingPlayer.getConnection ().sendMessageToClient (wrapper);
 			
-			if ((defendingPlayer != attackingPlayer) &&(defendingPlayer.getPlayerDescription ().isHuman ()))
+			if ((defendingPlayer != attackingPlayer) && (defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ()))
 				defendingPlayer.getConnection ().sendMessageToClient (wrapper);
 		}
 	}
@@ -103,6 +104,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param existingCurse True if this isn't a new "attack", but is the defender trying to shake off an existing curse (Stasis)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param eventID The event that caused an attack, if it wasn't initiated by a player
 	 * @param attackSkillID The skill being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
 	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
 	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
@@ -111,11 +113,13 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final void sendDamageHeader (final MemoryUnit attacker, final List<MemoryUnit> defenders, final boolean existingCurse,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String attackSkillID, final Spell spell, final PlayerServerDetails castingPlayer)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String eventID,
+		final String attackSkillID, final Spell spell, final PlayerServerDetails castingPlayer)
 		throws JAXBException, XMLStreamException
 	{
 		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
 		damageCalculationMsg.setAttackSkillID (attackSkillID);
+		damageCalculationMsg.setEventID (eventID);
 
 		// Unit curses don't have the single/all units flag, they always have a single target
 		if ((defenders.size () > 0) && ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT) ||
@@ -131,7 +135,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			damageCalculationMsg.setAttackerUnitURN (attacker.getUnitURN ());
 			damageCalculationMsg.setAttackerPlayerID (attacker.getOwningPlayerID ());
 		}
-		else
+		else if (castingPlayer != null)
 			damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 		
 		if (existingCurse)
@@ -326,6 +330,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param castingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param eventID The event that caused an attack, if it wasn't initiated by a player
 	 * @param db Lookup lists built over the XML database
 	 * @param castType Whether spell is being cast in combat or overland
 	 * @param skipDamageHeader Whether to skip sending the damage header, if this is part of a bigger spell (used for Call Chaos)
@@ -337,7 +342,8 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 */
 	@Override
 	public final AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final ExpandedUnitDetails castingUnit,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db, final SpellCastType castType, final boolean skipDamageHeader)
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final String eventID,
+		final CommonDatabase db, final SpellCastType castType, final boolean skipDamageHeader)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
 		// Work out damage done - note this isn't applicable to all types of attack, e.g. Warp Wood has no attack value, so we might get null here
@@ -363,7 +369,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		if (!skipDamageHeader)
 		{
 			final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
-			damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+			if (castingPlayer != null)
+				damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+			
+			damageCalculationMsg.setEventID (eventID);
 			damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
 			damageCalculationMsg.setPotentialHits (damage);
 			damageCalculationMsg.setDamageTypeID (spell.getAttackSpellDamageTypeID ());

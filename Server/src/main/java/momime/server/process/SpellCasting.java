@@ -67,6 +67,7 @@ public interface SpellCasting
 	 * If multiple targetLocations are specified then the units may not all belong to the same player.
 	 * 
 	 * @param castingPlayer Player who cast the attack spelll; can be null if not being cast by a player
+	 * @param eventID The event that caused an attack, if it wasn't initiated by a player
 	 * @param spell Which attack spell they cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
 	 * @param targetLocations Location(s) where the spell is aimed
@@ -78,7 +79,7 @@ public interface SpellCasting
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public int castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
+	public int castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final String eventID, final Spell spell, final Integer variableDamage,
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 

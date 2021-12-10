@@ -12,6 +12,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.Event;
 import momime.common.database.LanguageText;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
@@ -33,6 +34,9 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 	
 	/** Player who owns unit being attacked */
 	private PlayerPublicDetails defenderPlayer;
+	
+	/** Event that caused the attack */
+	private Event event;
 
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
@@ -70,7 +74,7 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 		    setAttackingPlayer (getMultiplayerSessionUtils ().findPlayerWithID
 		    	(getClient ().getPlayers (), getAttackerUnit ().getOwningPlayerID (), "DamageCalculationHeaderDataEx-aup"));
 		}
-		else
+		else if (getAttackerPlayerID () != null)
 		    setAttackingPlayer (getMultiplayerSessionUtils ().findPlayerWithID
 		    	(getClient ().getPlayers (), getAttackerPlayerID (), "DamageCalculationHeaderDataEx-ap"));
 
@@ -83,6 +87,10 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 		    setDefenderPlayer (getMultiplayerSessionUtils ().findPlayerWithID
 		    	(getClient ().getPlayers (), getDefenderUnit ().getOwningPlayerID (), "DamageCalculationHeaderDataEx-dup"));
 		}
+		
+		// Was the attack caused by an event?
+		if (getEventID () != null)
+			setEvent (getClient ().getClientDB ().findEvent (getEventID (), "DamageCalculationHeaderDataEx"));
 	}
 	
 	/**
@@ -117,8 +125,12 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 			languageText = getLanguages ().getCombatDamage ().getHeaderWithDefenderOnly (); 
 		
 		String text = getLanguageHolder ().findDescription (languageText).replaceAll
-			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll
 			("ATTACK_TYPE", attackType);
+		
+		if (getAttackingPlayer () != null)
+			text = text.replaceAll ("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ()));
+		else if (getEvent () != null)
+			text = text.replaceAll ("ATTACKER_NAME", getLanguageHolder ().findDescription (getEvent ().getEventName ()));
 
 		if (getAttackerUnit () != null)
 			text = text.replaceAll ("ATTACKER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getAttackerUnit (), UnitNameType.RACE_UNIT_NAME));
@@ -196,6 +208,22 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 		defenderPlayer = player;
 	}
 
+	/**
+	 * @return Event that caused the attack
+	 */
+	public final Event getEvent ()
+	{
+		return event;
+	}
+
+	/**
+	 * @param e Event that caused the attack
+	 */
+	public final void setEvent (final Event e)
+	{
+		event = e;
+	}
+	
 	/**
 	 * @return Language database holder
 	 */

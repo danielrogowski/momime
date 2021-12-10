@@ -239,6 +239,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 * If multiple targetLocations are specified then the units may not all belong to the same player.
 	 * 
 	 * @param castingPlayer Player who cast the attack spell; can be null if not being cast by a player
+	 * @param eventID The event that caused an attack, if it wasn't initiated by a player
 	 * @param spell Which attack spell they cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
 	 * @param targetLocations Location(s) where the spell is aimed
@@ -251,11 +252,12 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final int castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
+	public final int castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final String eventID, final Spell spell, final Integer variableDamage,
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = (castingPlayer == null) ? null :
+			(MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
 		// Break up all the target units into separate lists for each player
 		final Map<Integer, List<ResolveAttackTarget>> targetUnitsForEachPlayer = new HashMap<Integer, List<ResolveAttackTarget>> ();
@@ -269,7 +271,7 @@ public final class SpellCastingImpl implements SpellCasting
 				if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, SpellBookSectionID.ATTACK_SPELLS, null, null,
 					(castingPlayer == null) ? 0 : castingPlayer.getPlayerDescription ().getPlayerID (),
 						null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
-						priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+						(priv == null) ? null : priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 				{
 					// Does a list exist for this player yet?
 					List<ResolveAttackTarget> targetUnits = targetUnitsForEachPlayer.get (thisTarget.getOwningPlayerID ());
@@ -288,7 +290,7 @@ public final class SpellCastingImpl implements SpellCasting
 		{
 			final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "castOverlandAttackSpell");
 			
-			final ResolveAttackResult result = getDamageProcessor ().resolveAttack (null, entry.getValue (), castingPlayer, defendingPlayer,
+			final ResolveAttackResult result = getDamageProcessor ().resolveAttack (null, entry.getValue (), castingPlayer, defendingPlayer, eventID,
 				null, null, null, null, spell, variableDamage, castingPlayer, null, false, mom);
 			
 			unitsKilled = unitsKilled + result.getAttackingPlayerUnitsKilled () + result.getDefendingPlayerUnitsKilled ();

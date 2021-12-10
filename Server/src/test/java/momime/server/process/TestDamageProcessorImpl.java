@@ -213,7 +213,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenderUnits = new ArrayList<MemoryUnit> ();
 		defenderUnits.add (defender);
 		
-		final ResolveAttackResult result = proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
+		final ResolveAttackResult result = proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, null, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom);
 		
 		// Check results
@@ -232,7 +232,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer,
+		verify (calc).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer, null,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null);
 		
 		// Check units facing each other
@@ -399,7 +399,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenderUnits = new ArrayList<MemoryUnit> ();
 		defenderUnits.add (defender);
 		
-		final ResolveAttackResult result = proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
+		final ResolveAttackResult result = proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, null, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom);
 		
 		// Check results
@@ -418,7 +418,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer,
+		verify (calc).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer, null,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null);
 		
 		// Check units facing each other
@@ -526,7 +526,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final DamageCalculator calc = mock (DamageCalculator.class);
 		final DamageType damageType = new DamageType (); 
 		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
-		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db, SpellCastType.COMBAT, false)).thenReturn (spellDamage);
+		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, null, db, SpellCastType.COMBAT, false)).thenReturn (spellDamage);
 
 		// Damage taken
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1);
@@ -548,7 +548,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenderUnits = new ArrayList<MemoryUnit> ();
 		defenderUnits.add (defender);
 		
-		final ResolveAttackResult result = proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
+		final ResolveAttackResult result = proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null, null,
 			null, spell, null, castingPlayer, combatLocation, false, mom);
 		
 		// Check results
@@ -567,7 +567,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			null, "SP001", specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		verify (calc).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, null, spell, castingPlayer);
 		
 		verifyNoMoreInteractions (attackResolutionProc);
 		verifyNoMoreInteractions (calc);
@@ -682,7 +682,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final DamageCalculator calc = mock (DamageCalculator.class);
 		final DamageType damageType = new DamageType ();
 		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
-		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db, SpellCastType.COMBAT, false)).thenReturn (spellDamage);
+		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, null, db, SpellCastType.COMBAT, false)).thenReturn (spellDamage);
 
 		// Damage taken
 		when (xuDefender1.calculateAliveFigureCount ()).thenReturn (1);
@@ -710,7 +710,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defenderUnits.add (defender2);
 		defenderUnits.add (defender3);
 		
-		final ResolveAttackResult result = proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
+		final ResolveAttackResult result = proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null, null,
 			null, spell, null, castingPlayer, combatLocation, false, mom);
 		
 		// Check results
@@ -735,7 +735,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			null, "SP001", specialDamageResolutionsApplied, null, null, false, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
-		verify (calc).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, spell, castingPlayer);
+		verify (calc).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, null, spell, castingPlayer);
 		
 		verifyNoMoreInteractions (attackResolutionProc);
 		verifyNoMoreInteractions (calc);

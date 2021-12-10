@@ -3737,9 +3737,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Result of the attack
 		final DamageProcessor damageProcessor = mock (DamageProcessor.class);
-		when (damageProcessor.resolveAttack (tu, Arrays.asList (new ResolveAttackTarget (defender)), attackingPlayer, defendingPlayer, null, null, 4,
+		when (damageProcessor.resolveAttack (tu, Arrays.asList (new ResolveAttackTarget (defender)), attackingPlayer, defendingPlayer, null, null, null, 4,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom)).thenReturn
-			(new ResolveAttackResult (false, 0, 0));
+				(new ResolveAttackResult (false, 0, 0));
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -3909,8 +3909,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Result of the attack
 		final DamageProcessor damageProcessor = mock (DamageProcessor.class);
 		when (damageProcessor.resolveAttack (tu, Arrays.asList (new ResolveAttackTarget (defender)), attackingPlayer, defendingPlayer,
-			null, null, 3, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom)).thenReturn
-			(new ResolveAttackResult (false, 0, 0));
+			null, null, null, 3, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom)).thenReturn
+				(new ResolveAttackResult (false, 0, 0));
 		
 		// Set up object to test
 		final CombatHandling combatHandling = mock (CombatHandling.class);

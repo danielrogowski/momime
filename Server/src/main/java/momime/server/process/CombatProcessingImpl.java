@@ -1417,7 +1417,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 						attackingPlayer, defendingPlayer, tu.getCombatPosition (), moveTo, mom);
 					
 					if (!combatEnded)
-						combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
+						combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer, null,
 							attackWalls ? 2 : null, attackWalls ? moveTo : null,
 							movementDirections [moveTo.getY ()] [moveTo.getX ()],
 							CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom).isCombatEnded ();
@@ -1426,7 +1426,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				case RANGED_UNIT:
 				case RANGED_WALL:
 				case RANGED_UNIT_AND_WALL:
-					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
+					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer, null,
 						attackWalls ? 4 : null, attackWalls ? moveTo : null,
 						getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), tu.getCombatPosition (), moveTo),
 						CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom).isCombatEnded ();

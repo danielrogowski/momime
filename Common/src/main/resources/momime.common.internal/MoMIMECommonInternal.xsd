@@ -76,6 +76,12 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 							<xsd:documentation>Total growth rate + Percentage modifiers</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="populationBoom" type="xsd:boolean" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRateIncludingPopulationBoom" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>totalGrowthRateIncludingPercentageModifiers doubled if population boom is in effect</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevelMultiplier" type="momimecommon:uncappedPercentage">
 						<xsd:annotation>
 							<xsd:documentation>Percentage that final total is modified by to give AI players a bonus</xsd:documentation>

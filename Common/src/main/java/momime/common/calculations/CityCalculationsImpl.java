@@ -541,16 +541,23 @@ public final class CityCalculationsImpl implements CityCalculations
 			else
 				growing.setTotalGrowthRateIncludingPercentageModifiers (growing.getTotalGrowthRateAfterStreamOfLife ());
 			
+			// Population boom in effect?
+			growing.setPopulationBoom (CommonDatabaseConstants.EVENT_ID_POPULATION_BOOM.equals (cityData.getPopulationEventID ()));
+			if (growing.isPopulationBoom ())
+				growing.setTotalGrowthRateIncludingPopulationBoom (growing.getTotalGrowthRateIncludingPercentageModifiers () * 2);
+			else
+				growing.setTotalGrowthRateIncludingPopulationBoom (growing.getTotalGrowthRateIncludingPercentageModifiers ());
+			
 			// AI players get a special bonus
 			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");
 			final MomPersistentPlayerPublicKnowledge cityOwnerPub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
-			if ((cityOwner.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingPercentageModifiers () <= 0))
+			if ((cityOwner.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingPopulationBoom () <= 0))
 				growing.setDifficultyLevelMultiplier (100);
 			else
 				growing.setDifficultyLevelMultiplier (PlayerKnowledgeUtils.isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier () :
 					difficultyLevel.getAiRaidersPopulationGrowthRateMultiplier ());
 
-			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingPercentageModifiers () * growing.getDifficultyLevelMultiplier ()) / 100);
+			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingPopulationBoom () * growing.getDifficultyLevelMultiplier ()) / 100);
 			growing.setInitialTotal (growing.getTotalGrowthRateAdjustedForDifficultyLevel ());
 			breakdown = growing;
 		}

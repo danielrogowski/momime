@@ -132,6 +132,16 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 					text = null;
 				break;
 				
+			case "POPULATION_BOOM":
+				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
+				{
+					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
+					text = getTextUtils ().intToStrPlusMinus (growing.getTotalGrowthRateIncludingPopulationBoom ());
+				}
+				else
+					text = null;
+				break;
+				
 			// AI players
 			case "AI_POPULATION_GROWTH_RATE_MULTIPLIER":
 				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)

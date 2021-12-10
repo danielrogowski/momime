@@ -1373,8 +1373,11 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<percentageModifiers language="en">
 			<text>PERCENTAGE_MODIFIERS_PERCENTAGE% * STREAM_OF_LIFE_GROWTH_RATE = PERCENTAGE_MODIFIERS, for overall total of TOTAL_GROWTH_RATE_INCLUDING_PERCENTAGE_MODIFIERS people per turn</text>
 		</percentageModifiers>
+		<populationBoom language="en">
+			<text>Doubled by population boom to POPULATION_BOOM people per turn</text>
+		</populationBoom>
 		<difficultyLevelMultiplier language="en">
-			<text>AI player gets difficulty level multiplier TOTAL_GROWTH_RATE_INCLUDING_HOUSING * AI_POPULATION_GROWTH_RATE_MULTIPLIER% = TOTAL_GROWTH_RATE_ADJUSTED_FOR_DIFFICULTY_LEVEL</text>
+			<text>AI player gets difficulty level multiplier POPULATION_BOOM * AI_POPULATION_GROWTH_RATE_MULTIPLIER% = TOTAL_GROWTH_RATE_ADJUSTED_FOR_DIFFICULTY_LEVEL</text>
 		</difficultyLevelMultiplier>
 		<cityGrowthRateCapped language="en">
 			<text>But this would go over maximum or under minimum population, so adjusted to CAPPED_GROWTH_RATE people per turn</text>

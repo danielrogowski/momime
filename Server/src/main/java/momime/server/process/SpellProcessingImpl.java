@@ -1939,38 +1939,55 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void citySpellEffectsAttackingPopulation (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
-			if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_PESTILENCE)) && (spell.getCityLocation () != null) &&
-				((onlyOnePlayerID == 0) || (onlyOnePlayerID == spell.getCastingPlayerID ())))
+		// Get a list of all cities with Pestilence cast on them, even if its the not the right player's turn to trigger it now
+		final List<MapCoordinates3DEx> pestilenceAll = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+			(s -> (s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_PESTILENCE)) && (s.getCityLocation () != null)).map
+			(s -> (MapCoordinates3DEx) s.getCityLocation ()).collect (Collectors.toList ());
+
+		// Get a list of all cities with Pestilence cast on them that will be triggered now
+		final List<MapCoordinates3DEx> triggerNow;
+		if (onlyOnePlayerID == 0)
+		{
+			triggerNow = new ArrayList<MapCoordinates3DEx> ();
+			triggerNow.addAll (pestilenceAll);
+		}
+		else
+			triggerNow = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+				(s -> (s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_PESTILENCE)) && (s.getCityLocation () != null) &&
+					(onlyOnePlayerID == s.getCastingPlayerID ())).map
+				(s -> (MapCoordinates3DEx) s.getCityLocation ()).collect (Collectors.toList ());
+		
+		// Add to that list any cities with the plague event, this triggers on the turn of the city owner.
+		// But don't trigger it if the city is also suffering from pestilence, which would trigger on the spell owner's turn.
+		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+				{
+					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(z).getRow ().get (y).getCell ().get (x).getCityData ();
+					if ((cityData != null) && (CommonDatabaseConstants.EVENT_ID_PLAGUE.equals (cityData.getPopulationEventID ())) &&
+						(!pestilenceAll.contains (new MapCoordinates3DEx (x, y, z))) &&
+							((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())))
+						
+						triggerNow.add (new MapCoordinates3DEx (x, y, z));
+				}
+		
+		if (!triggerNow.isEmpty ())
+		{
+			for (final MapCoordinates3DEx cityLocation : triggerNow)
 			{
 				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(spell.getCityLocation ().getZ ()).getRow ().get (spell.getCityLocation ().getY ()).getCell ().get (spell.getCityLocation ().getX ()).getCityData ();
+					(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 				if ((cityData != null) && (cityData.getCityPopulation () >= 2000))
 					if (cityData.getCityPopulation () / 1000 > getRandomUtils ().nextInt (10) + 1)
 					{
 						cityData.setCityPopulation (cityData.getCityPopulation () - 1000);
-						
-						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "citySpellEffectsAttackingPopulation");
-						final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
-						
-						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							(MapCoordinates3DEx) spell.getCityLocation (), mom.getSessionDescription (), mom.getServerDB (),
-							mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
-							
-						// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
-						cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
-							(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							(MapCoordinates3DEx) spell.getCityLocation (), cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
-						
-						getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
-						
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getPlayers (), (MapCoordinates3DEx) spell.getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
+						mom.getWorldUpdates ().recalculateCity (cityLocation);
 					}
 			}
+			
+			mom.getWorldUpdates ().process (mom);
+		}
 	}
 	
 	/**

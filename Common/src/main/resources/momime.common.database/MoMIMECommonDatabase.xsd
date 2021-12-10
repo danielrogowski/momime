@@ -1520,6 +1520,10 @@
 			<xsd:selector xpath="event" />
 			<xsd:field xpath="eventMagicRealm" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:spellPK" name="eventFKspell">
+			<xsd:selector xpath="event" />
+			<xsd:field xpath="eventSpellID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:tileTypePK" name="eventTileTypeFKtileType">
 			<xsd:selector xpath="event/eventTileType" />
 			<xsd:field xpath="." />
@@ -4457,6 +4461,13 @@ Ordering of this list is very significant.
 		        	<xsd:documentation>For good/bad moons and red/blue/green conjunctions.</xsd:documentation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+					</xsd:appinfo>
+		        </xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="eventSpellID" type="momimecommon:spellID" nxe:label="Event is like spell" nxe:showmaincolumn="false">
+		        <xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>spellName</nxe:showreferencedfield>
 					</xsd:appinfo>
 		        </xsd:annotation>
 			</xsd:element>

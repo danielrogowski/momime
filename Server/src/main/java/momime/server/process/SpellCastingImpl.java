@@ -238,11 +238,12 @@ public final class SpellCastingImpl implements SpellCasting
 	 * Processes casting an attack spell overland that hits all units in a stack (that are valid targets), or all units in multiple stacks.
 	 * If multiple targetLocations are specified then the units may not all belong to the same player.
 	 * 
-	 * @param castingPlayer Player who cast the attack spell
+	 * @param castingPlayer Player who cast the attack spell; can be null if not being cast by a player
 	 * @param spell Which attack spell they cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
 	 * @param targetLocations Location(s) where the spell is aimed
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Number of units that were killed
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -250,7 +251,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
+	public final int castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -266,8 +267,9 @@ public final class SpellCastingImpl implements SpellCasting
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, SpellBookSectionID.ATTACK_SPELLS, null, null,
-					castingPlayer.getPlayerDescription ().getPlayerID (), null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
-					priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+					(castingPlayer == null) ? 0 : castingPlayer.getPlayerDescription ().getPlayerID (),
+						null, null, thisTarget, false, mom.getGeneralServerKnowledge ().getTrueMap (),
+						priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 				{
 					// Does a list exist for this player yet?
 					List<ResolveAttackTarget> targetUnits = targetUnitsForEachPlayer.get (thisTarget.getOwningPlayerID ());
@@ -281,23 +283,29 @@ public final class SpellCastingImpl implements SpellCasting
 				}
 			}
 		
+		int unitsKilled = 0;
 		for (final Entry<Integer, List<ResolveAttackTarget>> entry : targetUnitsForEachPlayer.entrySet ())
 		{
 			final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "castOverlandAttackSpell");
 			
-			getDamageProcessor ().resolveAttack (null, entry.getValue (), castingPlayer, defendingPlayer,
+			final ResolveAttackResult result = getDamageProcessor ().resolveAttack (null, entry.getValue (), castingPlayer, defendingPlayer,
 				null, null, null, null, spell, variableDamage, castingPlayer, null, false, mom);
+			
+			unitsKilled = unitsKilled + result.getAttackingPlayerUnitsKilled () + result.getDefendingPlayerUnitsKilled ();
 		}
+		
+		return unitsKilled;
 	}
 	
 	/**
 	 * Rolls when a spell has a certain % chance of destroying each building in a city.  Used for Earthquake and Chaos Rift.
 	 * 
 	 * @param spellID The spell that is destroying the buildings
-	 * @param castingPlayerID Who cast the spell
+	 * @param castingPlayerID Who cast the spell; null if not from a spell 
 	 * @param percentageChance The % chance of each building being destroyed
 	 * @param targetLocations The city(s) being targeted
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Number of buildings that were destroyed
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -305,7 +313,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void rollChanceOfEachBuildingBeingDestroyed (final String spellID, final int castingPlayerID, final int percentageChance,
+	public final int rollChanceOfEachBuildingBeingDestroyed (final String spellID, final Integer castingPlayerID, final int percentageChance,
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -323,6 +331,8 @@ public final class SpellCastingImpl implements SpellCasting
 			mom.getPlayers (), destroyedBuildings, spellID, castingPlayerID,
 			(targetLocations.size () == 1) ? targetLocations.get (0) : null,
 			mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+		
+		return destroyedBuildings.size ();
 	}
 	
 	/**

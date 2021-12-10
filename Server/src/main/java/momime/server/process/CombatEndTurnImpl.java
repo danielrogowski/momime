@@ -343,7 +343,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	
 								if (targetUnits.size () > 0)
 									combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits,
-										attackingPlayer, defendingPlayer, null, null, null, null, damagingCAE, null, castingPlayer, combatLocation, false, mom);
+										attackingPlayer, defendingPlayer, null, null, null, null, damagingCAE, null, castingPlayer, combatLocation, false, mom).isCombatEnded ();
 							}
 						}
 					}

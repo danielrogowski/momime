@@ -10,6 +10,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.servertoclient.AttackCitySpellResult;
 import momime.server.MomSessionVariables;
 
 /**
@@ -52,11 +53,12 @@ public interface RandomEvents
 	 * @param conjunction Tells the client to update their conjunctionEventID
 	 * @param ending Whether we're broadcasting the start or end of the event
 	 * @param players List of players in the session
+	 * @param attackCitySpellResult Counts of how many units, buildings and population were killed by Earthquake or Great Meteor 
 	 * @throws JAXBException If there is a problem sending the message
 	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	public void sendRandomEventMessage (final String eventID, final Integer targetPlayerID, final String citySizeID, final String cityName,
 		final String mapFeatureID, final String heroItemName, final Integer goldAmount, final boolean conjunction, final boolean ending,
-		final List<PlayerServerDetails> players)
+		final List<PlayerServerDetails> players, final AttackCitySpellResult attackCitySpellResult)
 		throws JAXBException, XMLStreamException;
 }

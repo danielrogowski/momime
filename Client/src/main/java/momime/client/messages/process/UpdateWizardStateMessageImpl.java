@@ -60,61 +60,62 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 		final PlayerPublicDetails banishedWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) banishedWizard.getPersistentPlayerPublicKnowledge ();
 		pub.setWizardState (getWizardState ());
-		
-		// Show cracked gem on wizards screen
-		getWizardsUI ().updateWizards (false);
 
-		if (getWizardState () == WizardState.ACTIVE)
-		{
-			// Animation of Wizard's Fortress reappearing at a new city.
-			// Note this is pretty unique in that we're getting to see info (name, size, all the buildings there) about a city that we very possibly have no idea where it is
-			// and do not have up to date info about it in our FOW.  So the server already built all the render data for us and sent it with the message.
-			final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
-			miniCityView.setRenderCityData (getRenderCityData ());						
-			miniCityView.setUpdateWizardStateMessage (this);
-			miniCityView.setVisible (true);
-		}
-		
 		// Don't show anything when raiders have been defeated
-		else if (!PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+		if (!PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
 			getClient ().finishCustomDurationMessage (this);
-		
 		else
 		{
-			// Animation of wizard getting zapped
-			final boolean isDefeated = (getWizardState () == WizardState.DEFEATED);
-			final PlayerPublicDetails banishingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
-			final MomPersistentPlayerPublicKnowledge banishingPub = (MomPersistentPlayerPublicKnowledge) banishingWizard.getPersistentPlayerPublicKnowledge ();
-			
-			// Show animation
-			if (pub.getStandardPhotoID () != null)
+			// Show cracked gem on wizards screen
+			getWizardsUI ().updateWizards (false);
+	
+			if (getWizardState () == WizardState.ACTIVE)
 			{
-				final WizardBanishedUI wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
-				wizardBanishedUI.setBanishedWizard (banishedWizard);
-				wizardBanishedUI.setBanishingWizard (banishingWizard);
-				wizardBanishedUI.setDefeated (isDefeated);
-				wizardBanishedUI.setUpdateWizardStateMessage (this);
-				wizardBanishedUI.setVisible (true);
+				// Animation of Wizard's Fortress reappearing at a new city.
+				// Note this is pretty unique in that we're getting to see info (name, size, all the buildings there) about a city that we very possibly have no idea where it is
+				// and do not have up to date info about it in our FOW.  So the server already built all the render data for us and sent it with the message.
+				final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
+				miniCityView.setRenderCityData (getRenderCityData ());						
+				miniCityView.setUpdateWizardStateMessage (this);
+				miniCityView.setVisible (true);
 			}
 			else
 			{
-				// Custom portrait, so cannot show animation, just a message box
-				final List<LanguageText> languageText;
-				if (PlayerKnowledgeUtils.isWizard (banishingPub.getWizardID ()))
-					languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
+				// Animation of wizard getting zapped
+				final boolean isDefeated = (getWizardState () == WizardState.DEFEATED);
+				final PlayerPublicDetails banishingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
+				final MomPersistentPlayerPublicKnowledge banishingPub = (MomPersistentPlayerPublicKnowledge) banishingWizard.getPersistentPlayerPublicKnowledge ();
+				
+				// Show animation
+				if (pub.getStandardPhotoID () != null)
+				{
+					final WizardBanishedUI wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
+					wizardBanishedUI.setBanishedWizard (banishedWizard);
+					wizardBanishedUI.setBanishingWizard (banishingWizard);
+					wizardBanishedUI.setDefeated (isDefeated);
+					wizardBanishedUI.setUpdateWizardStateMessage (this);
+					wizardBanishedUI.setVisible (true);
+				}
 				else
-					languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
-				
-				final String title = getLanguageHolder ().findDescription (languageText).replaceAll
-					("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
-					("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
-				
-				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setTitle (title);
-				msg.setText (title);
-				msg.setVisible (true);
-				
-				getClient ().finishCustomDurationMessage (this);
+				{
+					// Custom portrait, so cannot show animation, just a message box
+					final List<LanguageText> languageText;
+					if (PlayerKnowledgeUtils.isWizard (banishingPub.getWizardID ()))
+						languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
+					else
+						languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
+					
+					final String title = getLanguageHolder ().findDescription (languageText).replaceAll
+						("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
+						("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
+					
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitle (title);
+					msg.setText (title);
+					msg.setVisible (true);
+					
+					getClient ().finishCustomDurationMessage (this);
+				}
 			}
 		}
 	}

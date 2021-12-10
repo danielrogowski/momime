@@ -43,14 +43,14 @@ public interface DamageProcessor
 	 * @param combatLocation Where the combat is taking place; null if its damage from an overland spell
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether the attack resulted in the combat ending
+	 * @return Whether the attack resulted in the combat ending and how many units on each side were killed
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public boolean resolveAttack (final MemoryUnit attacker, final List<ResolveAttackTarget> defenders,
+	public ResolveAttackResult resolveAttack (final MemoryUnit attacker, final List<ResolveAttackTarget> defenders,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer wreckTileChance, final MapCoordinates2DEx wreckTilePosition,
 		final Integer attackerDirection, final String attackSkillID,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 

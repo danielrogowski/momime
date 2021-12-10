@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -17,8 +18,11 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.database.Event;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.servertoclient.AttackCitySpellResult;
 import momime.common.messages.servertoclient.RandomEventMessage;
 import momime.server.MomSessionVariables;
+import momime.server.knowledge.ServerGridCellEx;
 
 /**
  * Rolls random events
@@ -39,6 +43,9 @@ public final class RandomEventsImpl implements RandomEvents
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** Random city events */
+	private RandomCityEvents randomCityEvents;
 	
 	/**
 	 * Rolls to see if server should trigger a random event this turn 
@@ -120,6 +127,36 @@ public final class RandomEventsImpl implements RandomEvents
 					getRandomEventTargeting ().cancelEvent (eventDef, mom);
 			}
 		}
+		
+		// Also check population events on cities
+		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+				{
+					final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(z).getRow ().get (y).getCell ().get (x);
+					final OverlandMapCityData cityData = gc.getCityData ();
+					
+					if ((cityData != null) && (cityData.getPopulationEventID () != null))
+					{
+						final Event eventDef = mom.getServerDB ().findEvent (cityData.getPopulationEventID (), "rollToEndRandomEvents");
+						final int turnsPastMinimum = mom.getGeneralPublicKnowledge ().getTurnNumber () - gc.getPopulationEventStartedTurnNumber () - eventDef.getMinimumDuration ();
+						if (turnsPastMinimum > 0)
+						{
+							int chance = eventDef.getInitialEndingChance ();
+							if ((eventDef.getIncreaseEndingChance () != null) && (turnsPastMinimum > 1))
+								chance = chance + (eventDef.getIncreaseEndingChance () * (turnsPastMinimum-1));
+							
+							final boolean ending = (getRandomUtils ().nextInt (100) < chance);
+							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+							log.debug ("Event " + cityData.getPopulationEventID () + " " + eventDef.getEventName ().get (0).getText () +
+								" on city at " + cityLocation + " has " + chance + "% chance of ending this turn.  Ending = " + ending);
+							
+							if (ending)
+								getRandomCityEvents ().cancelCityEvent (eventDef, cityLocation, mom);
+						}
+					}
+				}
 	}
 	
 	/**
@@ -133,13 +170,14 @@ public final class RandomEventsImpl implements RandomEvents
 	 * @param conjunction Tells the client to update their conjunctionEventID
 	 * @param ending Whether we're broadcasting the start or end of the event
 	 * @param players List of players in the session
+	 * @param attackCitySpellResult Counts of how many units, buildings and population were killed by Earthquake or Great Meteor 
 	 * @throws JAXBException If there is a problem sending the message
 	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	@Override
 	public final void sendRandomEventMessage (final String eventID, final Integer targetPlayerID, final String citySizeID, final String cityName,
 		final String mapFeatureID, final String heroItemName, final Integer goldAmount, final boolean conjunction, final boolean ending,
-		final List<PlayerServerDetails> players)
+		final List<PlayerServerDetails> players, final AttackCitySpellResult attackCitySpellResult)
 		throws JAXBException, XMLStreamException
 	{
 		final RandomEventMessage msg = new RandomEventMessage ();
@@ -152,6 +190,7 @@ public final class RandomEventsImpl implements RandomEvents
 		msg.setGoldAmount (goldAmount);
 		msg.setConjunction (conjunction);
 		msg.setEnding (ending);
+		msg.setAttackCitySpellResult (attackCitySpellResult);
 		
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 	}
@@ -202,5 +241,21 @@ public final class RandomEventsImpl implements RandomEvents
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Random city events
+	 */
+	public final RandomCityEvents getRandomCityEvents ()
+	{
+		return randomCityEvents;
+	}
+
+	/**
+	 * @param e Random city events
+	 */
+	public final void setRandomCityEvents (final RandomCityEvents e)
+	{
+		randomCityEvents = e;
 	}
 }

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -3734,9 +3735,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MemoryUnit defender = new MemoryUnit ();
 		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, moveTo, db, false)).thenReturn (defender);
 		
-		// Set up object to test
-		final DamageProcessor damageProcessor = mock (DamageProcessor.class); 
+		// Result of the attack
+		final DamageProcessor damageProcessor = mock (DamageProcessor.class);
+		when (damageProcessor.resolveAttack (tu, Arrays.asList (new ResolveAttackTarget (defender)), attackingPlayer, defendingPlayer, null, null, 4,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom)).thenReturn
+			(new ResolveAttackResult (false, 0, 0));
 		
+		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		proc.setCombatMapUtils (combatMapUtils);
@@ -3757,15 +3762,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Check its movement got zeroed
 		assertEquals (0, tu.getDoubleCombatMovesLeft ().intValue ());
-		
-		// Check the attack happened
-		final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();
-		defenders.add (new ResolveAttackTarget (defender));
-		
-		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, null, 4,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom);
-		
-		verifyNoMoreInteractions (damageProcessor);
 	}
 
 	/**
@@ -3910,8 +3906,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, new MapCoordinates2DEx (3, 8), db, false)).thenReturn (defender);
 		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, new MapCoordinates2DEx (2, 8), db, false)).thenReturn (null);
 		
-		// Set up object to test
+		// Result of the attack
 		final DamageProcessor damageProcessor = mock (DamageProcessor.class);
+		when (damageProcessor.resolveAttack (tu, Arrays.asList (new ResolveAttackTarget (defender)), attackingPlayer, defendingPlayer,
+			null, null, 3, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom)).thenReturn
+			(new ResolveAttackResult (false, 0, 0));
+		
+		// Set up object to test
 		final CombatHandling combatHandling = mock (CombatHandling.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -3945,14 +3946,5 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Check its movement got reduced
 		assertEquals (1, tu.getDoubleCombatMovesLeft ().intValue ());
-
-		// Check the attack happened
-		final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();
-		defenders.add (new ResolveAttackTarget (defender));
-
-		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, null, 3,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom);
-		
-		verifyNoMoreInteractions (damageProcessor);
 	}
 }

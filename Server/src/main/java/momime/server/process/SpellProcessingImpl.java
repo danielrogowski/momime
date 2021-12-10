@@ -234,6 +234,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Movement utils */
 	private MovementUtils movementUtils;
 	
+	/** Casting spells that have more than one effect */
+	private SpellMultiCasting spellMultiCasting;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -846,7 +849,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (targetUnits.size () > 0)
 					combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
 						targetUnits, attackingPlayer, defendingPlayer,
-						null, null, null, null, spell, variableDamage, castingPlayer, combatLocation, skipAnimation, mom);
+						null, null, null, null, spell, variableDamage, castingPlayer, combatLocation, skipAnimation, mom).isCombatEnded ();
 			}
 			
 			// Attack, healing or dispelling spells
@@ -907,7 +910,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
 							targetUnitWrappers, attackingPlayer, defendingPlayer,
-							wreckTileChance, wreckTilePosition, null, null, spell, variableDamage, castingPlayer, combatLocation, skipAnimation, mom);
+							wreckTileChance, wreckTilePosition, null, null, spell, variableDamage, castingPlayer, combatLocation, skipAnimation, mom).isCombatEnded ();
 					}
 					else if (kind == KindOfSpell.HEALING)
 					{
@@ -1474,59 +1477,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 			}
 			
-			// The unit deaths we just send.  The buildings being destroyed control the animation popup on the client.
-			getSpellCasting ().castOverlandAttackSpell (castingPlayer, spell, maintainedSpell.getVariableDamage (), Arrays.asList (targetLocation), mom);
-			
-			// Now do the buildings
-			getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
-				spell.getDestroyBuildingChance (), Arrays.asList (targetLocation), mom);
-			
-			if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_CALL_THE_VOID))
-			{
-				// Population
-				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
-				if (cityData != null)
-				{
-					final int populationRolls = (cityData.getCityPopulation () / 1000) - 1;
-					int populationDeaths = 0;
-					for (int n = 0; n < populationRolls; n++)
-						if (getRandomUtils ().nextBoolean ())
-							populationDeaths++;
-					
-					if (populationDeaths > 0)
-					{
-						cityData.setCityPopulation (cityData.getCityPopulation () - (populationDeaths * 1000));
-						
-						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetOverlandSpell (V)");
-						final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
-						
-						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							targetLocation, mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
-							
-						cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
-							(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							targetLocation, cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
-						
-						getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
-						
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ());
-					}
-				}
-				
-				// Surrounding tiles
-				final MapCoordinates3DEx coords = new MapCoordinates3DEx (targetLocation);
-				for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-					if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
-						getRandomUtils ().nextBoolean ())
-						
-						getSpellCasting ().corruptTile (coords, mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-			}
+			getSpellMultiCasting ().castCityAttackSpell (spell, castingPlayer, maintainedSpell.getVariableDamage (), targetLocation, mom);
 		}
 
 		else if (spell.getBuildingID () == null)
@@ -2726,5 +2677,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setMovementUtils (final MovementUtils u)
 	{
 		movementUtils = u;
+	}
+
+	/**
+	 * @return Casting spells that have more than one effect
+	 */
+	public final SpellMultiCasting getSpellMultiCasting ()
+	{
+		return spellMultiCasting;
+	}
+
+	/**
+	 * @param c Casting spells that have more than one effect
+	 */
+	public final void setSpellMultiCasting (final SpellMultiCasting c)
+	{
+		spellMultiCasting = c;
 	}
 }

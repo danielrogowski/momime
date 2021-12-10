@@ -135,7 +135,7 @@ public interface CityProcessing
 	 */
 	public void destroyBuildings (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
-		final String buildingsDestroyedBySpellID, final int buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
+		final String buildingsDestroyedBySpellID, final Integer buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
 		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	

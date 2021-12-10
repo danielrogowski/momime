@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
@@ -150,13 +151,14 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	 * @param targetWizard Wizard the event is being triggered for
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find an expected data item
+	 * @throws PlayerNotFoundException If we can't find one of the players
 	 * @throws MomException If there is another kind of error
 	 * @throws JAXBException If there is a problem sending the message
 	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	@Override
 	public final void triggerWizardEvent (final Event event, final PlayerServerDetails targetWizard, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException, JAXBException, XMLStreamException
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Do we need to pick a target city owned by the wizard?  Great Meteor, Earthquake, Plague, Rebellion, Depletion, New Minerals, Population Boom
 		if ((event.isTargetCity () != null) && (event.isTargetCity ()))
@@ -230,7 +232,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				log.debug ("Gift event giving wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " hero item " + item.getHeroItemName ());
 				
 				getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-					null, null, null, item.getHeroItemName (), null, false, false, mom.getPlayers ());
+					null, null, null, item.getHeroItemName (), null, false, false, mom.getPlayers (), null);
 				
 				mom.getGeneralServerKnowledge ().getAvailableHeroItem ().remove (item);
 				priv.getUnassignedHeroItem ().add (item);
@@ -255,7 +257,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				log.debug ("Piracy event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " losing " + goldLost + " gold");
 				
 				getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-					null, null, null, null, goldLost, false, false, mom.getPlayers ());
+					null, null, null, null, goldLost, false, false, mom.getPlayers (), null);
 				
 				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldLost);
 				getServerResourceCalculations ().sendGlobalProductionValues (targetWizard, null, false);
@@ -284,7 +286,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				log.debug ("Donation event, wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " gaining " + goldGained + " gold");
 				
 				getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
-					null, null, null, null, goldGained, false, false, mom.getPlayers ());
+					null, null, null, null, goldGained, false, false, mom.getPlayers (), null);
 				
 				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldGained);
 				getServerResourceCalculations ().sendGlobalProductionValues (targetWizard, null, false);

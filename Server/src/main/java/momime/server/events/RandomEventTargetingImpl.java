@@ -148,7 +148,7 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 			// Disjunction
 			if (event.getMinimumDuration () == null)
 			{
-				getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, false, false, mom.getPlayers ());
+				getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, false, false, mom.getPlayers (), null);
 				
 				for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 				{
@@ -163,7 +163,7 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 			// Everything else are Conjunction events - good/bad moon and red/green/blue nodes, and also mana short
 			else
 			{
-				getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, true, false, mom.getPlayers ());
+				getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, true, false, mom.getPlayers (), null);
 				
 				mom.getGeneralPublicKnowledge ().setConjunctionEventID (event.getEventID ());
 				mom.getGeneralServerKnowledge ().setConjunctionStartedTurnNumber (mom.getGeneralPublicKnowledge ().getTurnNumber ());
@@ -181,11 +181,10 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 	 * @throws XMLStreamException If there is a problem sending the message
 	 */
 	@Override
-	public void cancelEvent (final Event event, final MomSessionVariables mom)
+	public final void cancelEvent (final Event event, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		// So far this is only used for conjunctions
-		getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, true, true, mom.getPlayers ());
+		getRandomEvents ().sendRandomEventMessage (event.getEventID (), null, null, null, null, null, null, true, true, mom.getPlayers (), null);
 		
 		mom.getGeneralPublicKnowledge ().setConjunctionEventID (null);
 		mom.getGeneralServerKnowledge ().setConjunctionStartedTurnNumber (null);

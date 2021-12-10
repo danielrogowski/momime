@@ -213,8 +213,11 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenderUnits = new ArrayList<MemoryUnit> ();
 		defenderUnits.add (defender);
 		
-		assertFalse (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom));
+		final ResolveAttackResult result = proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom);
+		
+		// Check results
+		assertFalse (result.isCombatEnded ());
 
 		// Ensure steps were processed
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -396,8 +399,11 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenderUnits = new ArrayList<MemoryUnit> ();
 		defenderUnits.add (defender);
 		
-		assertTrue (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom));
+		final ResolveAttackResult result = proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom);
+		
+		// Check results
+		assertTrue (result.isCombatEnded ());
 		
 		// Ensure steps were processed
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -542,8 +548,11 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenderUnits = new ArrayList<MemoryUnit> ();
 		defenderUnits.add (defender);
 		
-		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
-			null, spell, null, castingPlayer, combatLocation, false, mom));
+		final ResolveAttackResult result = proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
+			null, spell, null, castingPlayer, combatLocation, false, mom);
+		
+		// Check results
+		assertFalse (result.isCombatEnded ());
 
 		// Ensure steps were processed
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
@@ -701,8 +710,11 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defenderUnits.add (defender2);
 		defenderUnits.add (defender3);
 		
-		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
-			null, spell, null, castingPlayer, combatLocation, false, mom));
+		final ResolveAttackResult result = proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
+			null, spell, null, castingPlayer, combatLocation, false, mom);
+		
+		// Check results
+		assertFalse (result.isCombatEnded ());
 
 		// Ensure steps were processed
 		final AttackResolutionUnit defender1Wrapper = new AttackResolutionUnit (defender1);

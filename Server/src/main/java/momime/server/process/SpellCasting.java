@@ -66,18 +66,19 @@ public interface SpellCasting
 	 * Processes casting an attack spell overland that hits all units in a stack (that are valid targets), or all units in multiple stacks.
 	 * If multiple targetLocations are specified then the units may not all belong to the same player.
 	 * 
-	 * @param castingPlayer Player who cast the attack spell
+	 * @param castingPlayer Player who cast the attack spelll; can be null if not being cast by a player
 	 * @param spell Which attack spell they cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them
 	 * @param targetLocations Location(s) where the spell is aimed
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Number of units that were killed
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
+	public int castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage,
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 
@@ -85,17 +86,18 @@ public interface SpellCasting
 	 * Rolls when a spell has a certain % chance of destroying each building in a city.  Used for Earthquake and Chaos Rift.
 	 * 
 	 * @param spellID The spell that is destroying the buildings
-	 * @param castingPlayerID Who cast the spell
+	 * @param castingPlayerID Who cast the spell; null if not from a spell 
 	 * @param percentageChance The % chance of each building being destroyed
 	 * @param targetLocations The city(s) being targeted
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Number of buildings that were destroyed
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void rollChanceOfEachBuildingBeingDestroyed (final String spellID, final int castingPlayerID, final int percentageChance,
+	public int rollChanceOfEachBuildingBeingDestroyed (final String spellID, final Integer castingPlayerID, final int percentageChance,
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 

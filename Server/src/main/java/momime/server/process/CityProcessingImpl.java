@@ -723,7 +723,7 @@ public final class CityProcessingImpl implements CityProcessing
 	@Override
 	public final void destroyBuildings (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
-		final String buildingsDestroyedBySpellID, final int buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
+		final String buildingsDestroyedBySpellID, final Integer buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
 		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -771,7 +771,7 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 
 			// If it is a human player then tell them about the destroyed building
-			if (cityOwner.getPlayerDescription ().isHuman ())
+			if ((cityOwner.getPlayerDescription ().isHuman ()) && (buildingsDestroyedBySpellID != null) && (buildingDestructionSpellCastByPlayerID != null))
 			{
 				final NewTurnMessageDestroyBuilding destroyedBuilding = new NewTurnMessageDestroyBuilding ();
 				destroyedBuilding.setMsgType (NewTurnMessageTypeID.DESTROYED_BUILDING);

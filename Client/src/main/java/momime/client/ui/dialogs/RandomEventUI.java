@@ -186,6 +186,12 @@ public final class RandomEventUI extends MomClientDialogUI
 			if (getRandomEventMessage ().getGoldAmount () != null)
 				text = text.replaceAll ("GOLD_AMOUNT", getTextUtils ().intToStrCommas (getRandomEventMessage ().getGoldAmount ()));
 			
+			if (getRandomEventMessage ().getAttackCitySpellResult () != null)
+				text = text.replaceAll ("UNITS_KILLED", Integer.valueOf (getRandomEventMessage ().getAttackCitySpellResult ().getUnitsKilled ()).toString ()).replaceAll
+					("BUILDINGS_DESTROYED", Integer.valueOf (getRandomEventMessage ().getAttackCitySpellResult ().getBuildingsDestroyed ()).toString ()).replaceAll
+					("POPULATION_KILLED", (getRandomEventMessage ().getAttackCitySpellResult ().getPopulationKilled () == 0 ? "0" :
+						(getRandomEventMessage ().getAttackCitySpellResult ().getPopulationKilled () + ",000")));
+			
 			messageText.setText (text);
 		}
 		catch (final Exception e)

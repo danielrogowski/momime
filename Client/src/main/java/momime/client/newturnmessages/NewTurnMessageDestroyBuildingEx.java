@@ -137,13 +137,16 @@ public final class NewTurnMessageDestroyBuildingEx extends NewTurnMessageDestroy
 			final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getDestroyedBySpellID (), "getComponent").getSpellName ());
 			
 			final PlayerPublicDetails castingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getCastingPlayerID ());
-			final String castingPlayerName = (castingPlayer != null) ? castingPlayer.getPlayerDescription ().getPlayerName () : getCastingPlayerID ().toString ();
-			
-			label.setText (getLanguageHolder ().findDescription (getLanguages ().getNewTurnMessages ().getBuildingDestroyed ()).replaceAll
+
+			String text = getLanguageHolder ().findDescription (getLanguages ().getNewTurnMessages ().getBuildingDestroyed ()).replaceAll
 				("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
 				("DESTROYED_BUILDING", destroyedBuildingName).replaceAll
-				("PLAYER_NAME", castingPlayerName).replaceAll
-				("SPELL_NAME", spellName));
+				("SPELL_NAME", spellName);
+			
+			if (castingPlayer != null)
+				text = text.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (castingPlayer));
+			
+			label.setText (text);
 		}
 		catch (final Exception e)
 		{

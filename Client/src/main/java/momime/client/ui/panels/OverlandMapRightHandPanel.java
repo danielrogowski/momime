@@ -1223,10 +1223,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (), null,
 					getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
 				
+				final CityProductionBreakdown food = getCityCalculations ().listCityFoodProductionFromTerrainTiles
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
+						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
+				getCityCalculations ().halveAddPercentageBonusAndCapProduction (null, food, 0,
+					getClient ().getSessionDescription ().getDifficultyLevel (), getClient ().getClientDB ());
+				
 				cityInfo = getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCanBuildCity ()).replaceAll
-					("MAXIMUM_POPULATION", Integer.valueOf (getCityCalculations ().listCityFoodProductionFromTerrainTiles
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
-							getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()).getProductionAmountBeforePercentages ()).toString () + ",000").replaceAll
+					("MAXIMUM_POPULATION", Integer.valueOf (food.getProductionAmountBeforePercentages ()).toString () + ",000").replaceAll
 					("PRODUCTION_BONUS", Integer.valueOf (getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getSurveyorLocation (),

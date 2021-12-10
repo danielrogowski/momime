@@ -43,6 +43,7 @@ import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -200,13 +201,17 @@ public final class TestCitiesListUI extends ClientTestData
 			(eq (players), eq (terrain), eq (fow.getBuilding ()), eq (fow.getMaintainedSpell ()),
 				any (MapCoordinates3DEx.class), eq ("TR01"), eq (sd), isNull (), eq (true), eq (false), eq (db))).thenReturn (cityProductions);
 		
-		// Client
+		// Event
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		
+		// Client		
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPlayerID ()).thenReturn (1);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CitiesListUI.xml"));

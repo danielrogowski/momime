@@ -22,8 +22,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.ValidUnitTarget;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.PlayerPickUtils;
 
@@ -102,7 +102,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	public final String listValidMagicRealmLifeformTypeTargetsOfSpell (final Spell spell) throws RecordNotFoundException
 	{
 		final StringBuilder magicRealms = new StringBuilder ();
-		for (final SpellValidUnitTarget target : spell.getSpellValidUnitTarget ())
+		for (final ValidUnitTarget target : spell.getSpellValidUnitTarget ())
 		{
 			final String magicRealmPlural = getLanguageHolder ().findDescription
 				(getClient ().getClientDB ().findPick (target.getTargetMagicRealmID (), "listValidMagicRealmLifeformTypeTargetsOfSpell").getUnitMagicRealmPlural ());
@@ -127,7 +127,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		final List<Integer> additionalSavingThrowModifiers = new ArrayList<Integer> ();
 
 		// See if spell has any additional saving throw modifiers vs certain magic realms, e.g. Dispel Evil or Holy Word
-		for (final SpellValidUnitTarget target : spell.getSpellValidUnitTarget ())
+		for (final ValidUnitTarget target : spell.getSpellValidUnitTarget ())
 		{
 			final int additionalSavingThrowModifier = (target.getMagicRealmAdditionalSavingThrowModifier () == null) ? 0 : target.getMagicRealmAdditionalSavingThrowModifier ();
 			if (!additionalSavingThrowModifiers.contains (additionalSavingThrowModifier))

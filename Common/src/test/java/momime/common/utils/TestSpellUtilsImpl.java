@@ -26,8 +26,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
-import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitEx;
+import momime.common.database.ValidUnitTarget;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
@@ -583,7 +583,7 @@ public final class TestSpellUtilsImpl
 
 		// Shatter can only be cast on normal units (has a Target record defined, with no saving throw)
 		final Spell shatter = new Spell ();
-		final SpellValidUnitTarget shatterSavingThrowModifier = new SpellValidUnitTarget ();
+		final ValidUnitTarget shatterSavingThrowModifier = new ValidUnitTarget ();
 		shatterSavingThrowModifier.setTargetMagicRealmID (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		shatter.getSpellValidUnitTarget ().add (shatterSavingThrowModifier);
 
@@ -603,7 +603,7 @@ public final class TestSpellUtilsImpl
 		for (final String magicRealmID : new String [] {CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL,
 			CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO, CHAOS_CHANNELED_CREATURE})
 		{
-			final SpellValidUnitTarget flameBladeTarget = new SpellValidUnitTarget ();
+			final ValidUnitTarget flameBladeTarget = new ValidUnitTarget ();
 			flameBladeTarget.setTargetMagicRealmID (magicRealmID);
 			flameBlade.getSpellValidUnitTarget ().add (flameBladeTarget);
 		}
@@ -630,7 +630,7 @@ public final class TestSpellUtilsImpl
 		final Spell spell = new Spell ();
 		for (final String magicRealmID : new String [] {"A", "B", "C"})
 		{
-			final SpellValidUnitTarget target = new SpellValidUnitTarget ();
+			final ValidUnitTarget target = new ValidUnitTarget ();
 			target.setTargetMagicRealmID (magicRealmID);
 			spell.getSpellValidUnitTarget ().add (target);
 		}
@@ -652,7 +652,7 @@ public final class TestSpellUtilsImpl
 		final Spell spell = new Spell ();
 		for (final String magicRealmID : new String [] {"A", "B", "C"})
 		{
-			final SpellValidUnitTarget target = new SpellValidUnitTarget ();
+			final ValidUnitTarget target = new ValidUnitTarget ();
 			target.setTargetMagicRealmID (magicRealmID);
 			spell.getSpellValidUnitTarget ().add (target);
 		}

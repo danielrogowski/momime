@@ -3564,7 +3564,7 @@ Technically one is chosen at random when the spell is cast, however there's no s
 		        </xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpellEffect" type="momimecommon:unitSpellEffect" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidUnitTarget" type="momimecommon:spellValidUnitTarget" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidUnitTarget" type="momimecommon:validUnitTarget" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidTileTypeTarget" type="momimecommon:spellValidTileTypeTarget" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidMapFeatureTarget" type="momimecommon:spellValidMapFeatureTarget" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellUpkeep" type="momimecommon:productionTypeAndUndoubledValue" nxe:label="Upkeep" nxe:plural="Upkeep">
@@ -3602,7 +3602,7 @@ variableDamage slot instead.  Used to store HP of webs.</xsd:documentation>
 		</xsd:complexContent>
 	</xsd:complexType>
 
-	<xsd:complexType name="spellValidUnitTarget" nxe:singular="Valid Unit Target" nxe:plural="Valid Unit Targets">
+	<xsd:complexType name="validUnitTarget" nxe:singular="Valid Unit Target" nxe:plural="Valid Unit Targets">
         <xsd:annotation>
         	<xsd:documentation>Some spells can only be cast on certain types of unit, e.g. Dispel Evil can only be cast on Chaos &amp; Death creatures, in which case they are listed here.  Also defines saving throw penalties for spells which can be resisted.  
 Can have different saving throw depending on the type of unit.</xsd:documentation>

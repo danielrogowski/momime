@@ -308,7 +308,7 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 			
 			// No SpellValidUnitTarget records should specify an additional saving throw modifier if the base dmg doesn't specify one
 			if (spellDef.getCombatBaseDamage () == null)
-				for (final SpellValidUnitTarget target : spellDef.getSpellValidUnitTarget ())
+				for (final ValidUnitTarget target : spellDef.getSpellValidUnitTarget ())
 					if (target.getMagicRealmAdditionalSavingThrowModifier () != null)
 						
 						throw new MomException ("Spell " + spellDef.getSpellID () + " has no combat base damage defined, but has magic realm/lifeform type additional saving throw penalties defined");

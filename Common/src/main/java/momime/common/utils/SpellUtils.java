@@ -9,7 +9,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
-import momime.common.database.SpellValidUnitTarget;
+import momime.common.database.ValidUnitTarget;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
@@ -160,7 +160,7 @@ public interface SpellUtils
 	 * @param targetMagicRealmLifeformTypeID the unique string ID of the magic realm/lifeform type to check
 	 * @return Record for the specific magicRealmLifeformTypeID if there is one; otherwise the null record if there is one; otherwise null
 	 */
-	public SpellValidUnitTarget findMagicRealmLifeformTypeTarget (final Spell spell, final String targetMagicRealmLifeformTypeID);
+	public ValidUnitTarget findMagicRealmLifeformTypeTarget (final Spell spell, final String targetMagicRealmLifeformTypeID);
 	
 	// Methods dealing with lists of spells
 

@@ -40,10 +40,10 @@ import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpellEffect;
+import momime.common.database.ValidUnitTarget;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.PlayerPickUtils;
 
@@ -273,7 +273,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		
 		for (int n = 1; n <= 2; n++)
 		{
-			final SpellValidUnitTarget target = new SpellValidUnitTarget ();
+			final ValidUnitTarget target = new ValidUnitTarget ();
 			target.setTargetMagicRealmID ("LT0" + n);
 			
 			spell.getSpellValidUnitTarget ().add (target);
@@ -337,7 +337,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Spell details
 		final Spell spell = new Spell ();
 		
-		final SpellValidUnitTarget target = new SpellValidUnitTarget ();
+		final ValidUnitTarget target = new ValidUnitTarget ();
 		target.setTargetMagicRealmID ("X");
 		spell.getSpellValidUnitTarget ().add (target);
 
@@ -370,7 +370,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final Spell spell = new Spell ();
 		spell.setCombatBaseDamage (0);
 		
-		final SpellValidUnitTarget target = new SpellValidUnitTarget ();
+		final ValidUnitTarget target = new ValidUnitTarget ();
 		spell.getSpellValidUnitTarget ().add (target);
 
 		// Set up object to test
@@ -447,8 +447,8 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		
 		// Spell has some spellValidUnitTarget records because it can only be targetted against creatures from certain magic realms
 		// but this doesn't alter its saving throw modifier
-		spell.getSpellValidUnitTarget ().add (new SpellValidUnitTarget ());
-		spell.getSpellValidUnitTarget ().add (new SpellValidUnitTarget ());
+		spell.getSpellValidUnitTarget ().add (new ValidUnitTarget ());
+		spell.getSpellValidUnitTarget ().add (new ValidUnitTarget ());
 		
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
@@ -487,15 +487,15 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final Spell spell = new Spell ();
 		spell.setCombatBaseDamage (3);
 		
-		final SpellValidUnitTarget target1 = new SpellValidUnitTarget ();
+		final ValidUnitTarget target1 = new ValidUnitTarget ();
 		target1.setMagicRealmAdditionalSavingThrowModifier (2);
 		spell.getSpellValidUnitTarget ().add (target1);
 
-		final SpellValidUnitTarget target2 = new SpellValidUnitTarget ();
+		final ValidUnitTarget target2 = new ValidUnitTarget ();
 		target2.setMagicRealmAdditionalSavingThrowModifier (3);
 		spell.getSpellValidUnitTarget ().add (target2);
 
-		final SpellValidUnitTarget target3 = new SpellValidUnitTarget ();
+		final ValidUnitTarget target3 = new ValidUnitTarget ();
 		spell.getSpellValidUnitTarget ().add (target3);
 
 		// Set up object to test

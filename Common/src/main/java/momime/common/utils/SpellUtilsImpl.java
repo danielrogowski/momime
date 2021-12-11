@@ -15,7 +15,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
-import momime.common.database.SpellValidUnitTarget;
+import momime.common.database.ValidUnitTarget;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
@@ -362,7 +362,7 @@ public final class SpellUtilsImpl implements SpellUtils
 		boolean targetIsValidForThisSpell = (spell.getSpellValidUnitTarget ().size () == 0);
 
 		if (!targetIsValidForThisSpell)
-			for (final SpellValidUnitTarget spellValidUnitTarget : spell.getSpellValidUnitTarget ())
+			for (final ValidUnitTarget spellValidUnitTarget : spell.getSpellValidUnitTarget ())
 				if (spellValidUnitTarget.getTargetMagicRealmID ().equals (targetMagicRealmLifeformTypeID))
 					targetIsValidForThisSpell = true;
 
@@ -375,14 +375,14 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @return Record for the specific magicRealmLifeformTypeID if there is one; otherwise the null record if there is one; otherwise null
 	 */
 	@Override
-	public final SpellValidUnitTarget findMagicRealmLifeformTypeTarget (final Spell spell, final String targetMagicRealmLifeformTypeID)
+	public final ValidUnitTarget findMagicRealmLifeformTypeTarget (final Spell spell, final String targetMagicRealmLifeformTypeID)
 	{
-		SpellValidUnitTarget found = null;
-		final Iterator<SpellValidUnitTarget> iter = spell.getSpellValidUnitTarget ().iterator ();
+		ValidUnitTarget found = null;
+		final Iterator<ValidUnitTarget> iter = spell.getSpellValidUnitTarget ().iterator ();
 		
 		while ((found == null) && (iter.hasNext ()))
 		{
-			final SpellValidUnitTarget spellValidUnitTarget = iter.next ();
+			final ValidUnitTarget spellValidUnitTarget = iter.next ();
 			if (targetMagicRealmLifeformTypeID.equals (spellValidUnitTarget.getTargetMagicRealmID ()))
 				found = spellValidUnitTarget;
 		}

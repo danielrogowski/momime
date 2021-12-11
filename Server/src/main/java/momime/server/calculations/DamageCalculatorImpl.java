@@ -198,7 +198,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		{
 			// nulls are ok here, its possible to attack with some valueless skills, such as Cloak of Fear.
 			// However negative values are not ok, that would indicate our attack had been reduced to useless by some effect such as Black Prayer.
-			final Integer damage = xuAttacker.getModifiedSkillValue (attackSkillID);
+			Integer damage = xuAttacker.getModifiedSkillValue (attackSkillID);
 			if ((damage != null) && (damage < 0))
 				attackDamage = null;
 			else
@@ -217,8 +217,23 @@ public final class DamageCalculatorImpl implements DamageCalculator
 					(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.RESISTANCE_ROLLS)))
 					
 					attackDamage = null;
+				
+				// Check for skills that only affect certain types of creatures (you can't Touch Dispels Evil normal units)
+				else if ((unitSkill.getSkillValidUnitTarget ().size () > 0) && (unitSkill.getSkillValidUnitTarget ().stream ().noneMatch
+					(t -> t.getTargetMagicRealmID ().equals (xuDefender.getModifiedUnitMagicRealmLifeformType ().getPickID ()))))
+					
+					attackDamage = null;
+				
 				else
 				{
+					// Does the particular magic realm/lifeform type of the target make it take more damage than usual?
+					if (damage != null)
+						for (final ValidUnitTarget validUnitTarget : unitSkill.getSkillValidUnitTarget ())
+							if ((validUnitTarget.getTargetMagicRealmID ().equals (xuDefender.getModifiedUnitMagicRealmLifeformType ().getPickID ())) &&
+								(validUnitTarget.getMagicRealmAdditionalSavingThrowModifier () != null))
+								
+								damage = damage + validUnitTarget.getMagicRealmAdditionalSavingThrowModifier ();
+					
 					// Figure out the magic realm of the attack; getting a null here is fine, this just means the attack deals physical damage
 					final String attackFromMagicRealmID;
 					if (attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))

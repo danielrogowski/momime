@@ -390,6 +390,11 @@
 						<xsd:selector xpath="unitSkillHelpText" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:unique name="skillValidUnitTargetPK">
+						<!-- This constraint almost works - it prevents two identical Magic Realm IDs, but does not prevent two entries without a Magic Realm ID -->
+						<xsd:selector xpath="skillValidUnitTarget" />
+						<xsd:field xpath="@targetMagicRealmID" />
+					</xsd:unique>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimecommon:rangedAttackType">
 					<xsd:key name="rangedAttackTypeWeaponGradePK">
@@ -1507,6 +1512,10 @@
 		<xsd:keyref refer="momimecommon:damageTypePK" name="spellFKdamageType">
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="attackSpellDamageTypeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:pickPK" name="skillValidUnitTargetFKpick">
+			<xsd:selector xpath="unitSkill/skillValidUnitTarget" />
+			<xsd:field xpath="@targetMagicRealmID" />
 		</xsd:keyref>
 		
 		<!-- Overland AI, new for 0.9.8.0 -->
@@ -2880,6 +2889,7 @@ So like this, its possible to basically break skills down into multiple sub-skil
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="addsToSkill" type="momimecommon:addsToSkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="negatedBySkill" type="momimecommon:negatedBySkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillWeaponGrade" type="momimecommon:unitSkillWeaponGrade" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="skillValidUnitTarget" type="momimecommon:validUnitTarget" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="attackResolution" type="momimecommon:attackResolution">
 				<xsd:key name="attackResolutionConditionPK">
 					<xsd:selector xpath="attackResolutionCondition" />

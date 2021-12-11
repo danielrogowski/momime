@@ -230,6 +230,7 @@ public final class TestExpandUnitDetailsImpl
 			(skillsGrantedFromCombatAreaEffects, modifiedSkillValues, enemyUnits, db);
 		verify (expandUnitDetailsUtils).addBonusesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db);
 		verify (expandUnitDetailsUtils).addBonusesFromHeroItems (unit.getHeroItemSlot (), modifiedSkillValues, db);
+		verify (expandUnitDetailsUtils).addPenaltiesFromHeroItems (mu, modifiedSkillValues, "US001", "MB01", "MB02", db);
 		verify (expandUnitDetailsUtils).addPenaltiesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits, "US001", "MB01", "MB02", db);
 		verifyNoMoreInteractions (expandUnitDetailsUtils);
 	}		

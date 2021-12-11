@@ -269,7 +269,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 						damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
 						if ((unitSkill.isDamageResolutionTypeUpgradeable () != null) && (unitSkill.isDamageResolutionTypeUpgradeable ()))
 						{
-							if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK))
+							if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_DOOM_ATTACK))
+								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.DOOM);
+							else if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK))
 								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
 							else if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ARMOUR_PIERCING))
 								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ARMOUR_PIERCING);

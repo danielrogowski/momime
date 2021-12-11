@@ -157,20 +157,25 @@ public final class ExpandUnitDetailsImpl implements ExpandUnitDetails
 			if (modifiedSkillValues.get (unitSkillID).getComponents ().isEmpty ())
 				modifiedSkillValues.remove (unitSkillID);
 		
-		// STEP 18 - Apply any skill adjustments that set to a fixed value (shatter), divide by a value (warp creature) or multiply by a value (berserk)
+		// STEP 18 - Add penalties for hero items (special coding for the Chaos attribute halving attack strength)
+		if (mu.isMemoryUnit ())
+			getExpandUnitDetailsUtils ().addPenaltiesFromHeroItems (mu, modifiedSkillValues,
+				attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID (), db);
+		
+		// STEP 19 - Apply any skill adjustments that set to a fixed value (shatter), divide by a value (warp creature) or multiply by a value (berserk)
 		getExpandUnitDetailsUtils ().addPenaltiesFromOtherSkills (mu, modifiedSkillValues, unitStackSkills, enemyUnits,
 			attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformType.getPickID (), db);
 		
-		// STEP 19 - Basic upkeep values - just copy from the unit definition
+		// STEP 20 - Basic upkeep values - just copy from the unit definition
 		final Map<String, Integer> basicUpkeepValues = mu.getBasicUpeepValues ();
 		
-		// STEP 20 - Modify upkeep values
+		// STEP 21 - Modify upkeep values
 		final Map<String, Integer> modifiedUpkeepValues = getExpandUnitDetailsUtils ().buildModifiedUpkeepValues (mu, basicUpkeepValues, modifiedSkillValues, db);
 		
-		// STEP 21 - Work out who has control of the unit at the moment
+		// STEP 23 - Work out who has control of the unit at the moment
 		final int controllingPlayerID = getExpandUnitDetailsUtils ().determineControllingPlayerID (mu, skillsFromSpellsCastOnThisUnit);
 		
-		// STEP 22 - Finally can build the unit object
+		// STEP 24 - Finally can build the unit object
 		final RangedAttackTypeEx rangedAttackType = (mu.getUnitDefinition ().getRangedAttackType () == null) ? null : db.findRangedAttackType (mu.getUnitDefinition ().getRangedAttackType (), "expandUnitDetails");
 
 		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, mu.getUnitDefinition (), mu.getUnitType (), mu.getOwningPlayer (), magicRealmLifeformType,

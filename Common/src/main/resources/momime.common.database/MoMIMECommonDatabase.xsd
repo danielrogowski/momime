@@ -3825,8 +3825,11 @@ pick both e.g. +1 and +2 attack on the same item.  However "Flaming" looks ident
 				<xsd:sequence>
 					<xsd:element minOccurs="0" maxOccurs="1" name="appliesOnlyToAttacksAppropriateForTypeOfHeroItem" type="xsd:boolean" nxe:label="Applies only to attacks appropriate for type of hero item?">
 				        <xsd:annotation>
-				        	<xsd:documentation>Attack bonuses such as "Lightning" only grant their effect when the hero is making an attack that's appropriate for the type of hero item the bonus is imbued in.
-e.g. The Elven Archer hero can use both swords and bows, but if she has a Sword of Lightning then it doesn't make her ranged attacks armour piercing.</xsd:documentation>
+				        	<xsd:documentation>Attack modifiers such as "Lightning" only grant their effect when the hero is making an attack that's appropriate
+for the type of hero item the bonus is imbued in.  e.g. The Elven Archer hero can use both swords and bows, but if she has a Sword of Lightning then it
+doesn't make her ranged attacks armour piercing.
+
+This is used for stats that affect an existing attack in ways other than adding to the strength of that attack (which is done via HS16 attribute).</xsd:documentation>
 				        </xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>

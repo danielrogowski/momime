@@ -234,6 +234,24 @@ public interface ExpandUnitDetailsUtils
 		throws RecordNotFoundException;
 
 	/**
+	 * For now this is somewhat hard coded and just for the Chaos attribute, which halves the strength of attacks appropriate for the item type.
+	 * 
+	 * @param mu Unit we are calculating stats for
+	 * @param modifiedSkillValues Detailed breakdown of calculation of skill values
+	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
+	 * @param attackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
+	 * @param magicRealmLifeformTypeID Unit's modified magic realm/lifeform type
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	public void addPenaltiesFromHeroItems (final MinimalUnitDetails mu, final Map<String, UnitSkillValueBreakdown> modifiedSkillValues,
+		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID, final CommonDatabase db)
+		throws RecordNotFoundException, MomException;
+	
+	/**
 	 * Adds penalties from skills which lock/divide/multiply other skills late in the calculation, for example Shatter locking melee attack at 1
 	 * or Warp Creature dividing melee attack by 2.
 	 * 

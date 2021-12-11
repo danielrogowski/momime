@@ -332,6 +332,12 @@ public final class CommonDatabaseConstants
 	/** Passes through units, and other units can pass through it */
 	public final static String UNIT_SKILL_ID_MOVE_THROUGH_UNITS = "US172";
 
+	/**
+	 * Converts melee and ranged damage dealt into doom damage, in the same way that Armour Piercing and Illusionary Attack convert to their damage types.
+	 * This also functions similarly to HS16 in that it modifies attacks that match the type of the item (by halving their strength).
+	 */
+	public final static String UNIT_SKILL_ID_DOOM_ATTACK = "US173";
+	
 	/** Hidden skill granted by Blur CSE */
 	public final static String UNIT_SKILL_ID_BLUR = "CS051";
 	

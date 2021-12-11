@@ -16,6 +16,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.AddsToSkill;
+import momime.common.database.AddsToSkillValueType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
@@ -614,7 +615,7 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 				
 				// Bonuses imbued on the item
 				for (final String bonusID : slot.getHeroItem ().getHeroItemChosenBonus ())
-					for (final UnitSkillAndValue bonusStat : db.findHeroItemBonus (bonusID, "addBonusesFromHeroItems").getHeroItemBonusStat ())
+					for (final HeroItemBonusStat bonusStat : db.findHeroItemBonus (bonusID, "addBonusesFromHeroItems").getHeroItemBonusStat ())
 						if (bonusStat.getUnitSkillValue () == null)
 						{
 							// Just want bonuses with a numeric value
@@ -654,6 +655,47 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 							bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonusStat.getUnitSkillValue ();
 							breakdown.getComponents ().put (UnitSkillComponent.HERO_ITEMS, bonusValue);
 						}
+			}
+	}
+
+	/**
+	 * For now this is somewhat hard coded and just for the Chaos attribute, which halves the strength of attacks appropriate for the item type.
+	 * 
+	 * @param mu Unit we are calculating stats for
+	 * @param modifiedSkillValues Detailed breakdown of calculation of skill values
+	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
+	 * @param attackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
+	 * @param magicRealmLifeformTypeID Unit's modified magic realm/lifeform type
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	@Override
+	public final void addPenaltiesFromHeroItems (final MinimalUnitDetails mu, final Map<String, UnitSkillValueBreakdown> modifiedSkillValues,
+		final String attackFromSkillID, final String attackFromMagicRealmID, final String magicRealmLifeformTypeID, final CommonDatabase db)
+		throws RecordNotFoundException, MomException
+	{
+		for (final MemoryUnitHeroItemSlot slot : mu.getMemoryUnit ().getHeroItemSlot ())
+			if (slot.getHeroItem () != null)
+			{
+				final HeroItemType heroItemType = db.findHeroItemType (slot.getHeroItem ().getHeroItemTypeID (), "addPenaltiesFromHeroItems");
+				
+				// Penalties imbued on the item
+				for (final String bonusID : slot.getHeroItem ().getHeroItemChosenBonus ())
+					for (final HeroItemBonusStat bonusStat : db.findHeroItemBonus (bonusID, "addPenaltiesFromHeroItems").getHeroItemBonusStat ())
+						if (bonusStat.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_DOOM_ATTACK))
+							for (final String attackSkillID : heroItemType.getHeroItemTypeAttackType ())
+							{
+								final AddsToSkill addsToSkill = new AddsToSkill ();
+								addsToSkill.setAddsToSkillID (attackSkillID);
+								addsToSkill.setAddsToSkillValueType (AddsToSkillValueType.DIVIDE);
+								addsToSkill.setAddsToSkillValue (2);
+								
+								getUnitDetailsUtils ().addSkillPenalty (mu, addsToSkill, null,
+									modifiedSkillValues, attackFromSkillID, attackFromMagicRealmID, magicRealmLifeformTypeID);
+							}
 			}
 	}
 

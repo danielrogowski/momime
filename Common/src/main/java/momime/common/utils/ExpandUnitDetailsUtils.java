@@ -226,11 +226,13 @@ public interface ExpandUnitDetailsUtils
 	 * 
 	 * @param slots The item slots on the unit, which may have items in them
 	 * @param modifiedSkillValues Detailed breakdown of calculation of skill values
+	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	public void addBonusesFromHeroItems (final List<MemoryUnitHeroItemSlot> slots,
-		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final CommonDatabase db)
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final String attackFromSkillID, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**

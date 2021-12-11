@@ -218,7 +218,7 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 		for (final MemoryUnitHeroItemSlot slot : slots)
 			if (slot.getHeroItem () != null)
 			{
-				// Natural effects of the item type, e.g. +2 defence from plate mail
+				// Natural effects of the item type - as far as valueless skills go, this is the Large Shield skill you get automatically from using shield items
 				final HeroItemType heroItemType = db.findHeroItemType (slot.getHeroItem ().getHeroItemTypeID (), "addValuelessSkillsFromHeroItems");
 				for (final UnitSkillAndValue basicStat : heroItemType.getHeroItemTypeBasicStat ())
 					if ((basicStat.getUnitSkillValue () == null) && (!basicSkillValues.containsKey (basicStat.getUnitSkillID ())))
@@ -592,12 +592,14 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 	 * 
 	 * @param slots The item slots on the unit, which may have items in them
 	 * @param modifiedSkillValues Detailed breakdown of calculation of skill values
+	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	@Override
 	public final void addBonusesFromHeroItems (final List<MemoryUnitHeroItemSlot> slots,
-		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final CommonDatabase db)
+		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues, final String attackFromSkillID, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		for (final MemoryUnitHeroItemSlot slot : slots)
@@ -616,11 +618,17 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 				// Bonuses imbued on the item
 				for (final String bonusID : slot.getHeroItem ().getHeroItemChosenBonus ())
 					for (final HeroItemBonusStat bonusStat : db.findHeroItemBonus (bonusID, "addBonusesFromHeroItems").getHeroItemBonusStat ())
+						// Just want bonuses with a numeric value
 						if (bonusStat.getUnitSkillValue () == null)
 						{
-							// Just want bonuses with a numeric value
 						}
 						
+						// Some bonuses only apply if the attackFromSkillID matches the kind of item they're imbued in
+						else if ((bonusStat.isAppliesOnlyToAttacksAppropriateForTypeOfHeroItem () != null) && (bonusStat.isAppliesOnlyToAttacksAppropriateForTypeOfHeroItem ()) &&
+							((attackFromSkillID == null) || (heroItemType.getHeroItemTypeAttackType ().stream ().noneMatch (t -> t.equals (attackFromSkillID)))))
+						{
+						}
+				
 						// +Attack bonus - these apply to one or more specific skills, depending on the type of the item.
 						// This deals with that e.g. swords don't add to "Thrown Weapons" skill but axes do.
 						else if (bonusStat.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_ATTACK_APPROPRIATE_FOR_TYPE_OF_HERO_ITEM))

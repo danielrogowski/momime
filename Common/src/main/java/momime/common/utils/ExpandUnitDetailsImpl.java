@@ -149,7 +149,7 @@ public final class ExpandUnitDetailsImpl implements ExpandUnitDetails
 		
 		// STEP 16 - Hero items - numeric bonuses (dealt with valueless skills above)
 		if (mu.isMemoryUnit ())
-			getExpandUnitDetailsUtils ().addBonusesFromHeroItems (mu.getMemoryUnit ().getHeroItemSlot (), modifiedSkillValues, db);
+			getExpandUnitDetailsUtils ().addBonusesFromHeroItems (mu.getMemoryUnit ().getHeroItemSlot (), modifiedSkillValues, attackFromSkillID, db);
 		
 		// STEP 17 - If we falied to find any + to hit / + to block values and we have no basic value then there's no point keeping it in the list
 		// We know the entry has to exist and have a valid map in it from the code above, but it may be an empty map

@@ -1534,7 +1534,7 @@ public final class TestExpandUnitDetailsUtilsImpl
 		final ExpandUnitDetailsUtilsImpl utils = new ExpandUnitDetailsUtilsImpl ();
 		
 		// Run method
-		utils.addBonusesFromHeroItems (slots, modifiedSkillValues, db);
+		utils.addBonusesFromHeroItems (slots, modifiedSkillValues, null, db);
 		
 		//  Check results
 		assertEquals (3, modifiedSkillValues.size ());

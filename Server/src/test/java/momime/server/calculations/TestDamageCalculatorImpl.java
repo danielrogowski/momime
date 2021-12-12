@@ -211,7 +211,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US001", players, fow, db);
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US001", null, players, fow, db);
 		
 		// Check results
 		assertEquals (12, dmg.getPotentialHits ().intValue ());
@@ -321,7 +321,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US001", players, fow, db);
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US001", null, players, fow, db);
 		
 		// Check results
 		assertEquals (3, dmg.getPotentialHits ().intValue ());
@@ -395,7 +395,7 @@ public final class TestDamageCalculatorImpl
 		calc.setExpandUnitDetails (expand);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, null, null, "US001", players, fow, db);
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, null, null, "US001", null, players, fow, db);
 		
 		// Check results
 		assertNull (dmg);
@@ -438,7 +438,6 @@ public final class TestDamageCalculatorImpl
 			eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 
 		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has some figures
-		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (true);
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
 		when (expand.expandUnitDetails (eq (defender), anyList (), eq ("US001"), isNull (),
@@ -449,7 +448,7 @@ public final class TestDamageCalculatorImpl
 		calc.setExpandUnitDetails (expand);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, null, null, "US001", players, fow, db);
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, null, null, "US001", null, players, fow, db);
 		
 		// Check results
 		assertNull (dmg);
@@ -521,6 +520,7 @@ public final class TestDamageCalculatorImpl
 
 		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has 6 figures...
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_DOOM_ATTACK)).thenReturn (false);
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)).thenReturn (true);
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_UNDEAD)).thenReturn (false);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
@@ -544,7 +544,8 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, fow, db);
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, players, fow, db);
 		
 		// Check results
 		assertEquals (12, dmg.getPotentialHits ().intValue ());

@@ -370,8 +370,8 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final DamageType damageTypeToDefender = new DamageType (); 
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
-			players, fow, db)).thenReturn (potentialDamageToDefender);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, players, fow, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
 		when (damageCalc.calculateSingleFigureDamage (xuDefender, xuAttacker, attackingPlayer, defendingPlayer, potentialDamageToDefender,
@@ -510,12 +510,12 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final DamageType damageTypeToAttacker = new DamageType ();
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			players, fow, db)).thenReturn (potentialDamageToDefender);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, players, fow, db)).thenReturn (potentialDamageToDefender);
 
 		final AttackDamage potentialDamageToAttacker = new AttackDamage (6, 0, damageTypeToAttacker, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (defenderWrapper, attackerWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
-			players, fow, db)).thenReturn (potentialDamageToAttacker);
+		when (damageCalc.attackFromUnitSkill (defenderWrapper, attackerWrapper, attackingPlayer, defendingPlayer,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, players, fow, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage
 		when (damageCalc.calculateSingleFigureDamage (xuDefender, xuAttacker, attackingPlayer, defendingPlayer, potentialDamageToDefender,
@@ -641,14 +641,16 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		final DamageType damageTypeToAttacker = new DamageType ();
 		
 		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US001", players, fow, db)).thenReturn (null);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US001",
+			null, players, fow, db)).thenReturn (null);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US002",
-			players, fow, db)).thenReturn (potentialDamageToDefender1);
+			null, players, fow, db)).thenReturn (potentialDamageToDefender1);
 		
 		final AttackDamage potentialDamageToDefender2 = new AttackDamage (4, 0, damageTypeToAttacker, DamageResolutionTypeID.DOOM, null, null, null, 1);
-		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US003", players, fow, db)).thenReturn (null);
+		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US003",
+			null, players, fow, db)).thenReturn (null);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US004",
-			players, fow, db)).thenReturn (potentialDamageToDefender2);
+			null, players, fow, db)).thenReturn (potentialDamageToDefender2);
 
 		// 3+4 of them actually hit
 		when (damageCalc.calculateResistOrTakeDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender1, db)).thenReturn (3);

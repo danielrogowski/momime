@@ -1431,9 +1431,13 @@
 			<xsd:selector xpath="unitSkill/attackResolution/attackResolutionCondition" />
 			<xsd:field xpath="@alternativeUnitSkillID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:unitSkillPK" name="attackResolutionStepFKunitSkill">
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="attackResolutionStepFKunitSkill1">
 			<xsd:selector xpath="unitSkill/attackResolution/attackResolutionStep" />
 			<xsd:field xpath="unitSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="attackResolutionStepFKunitSkill2">
+			<xsd:selector xpath="unitSkill/attackResolution/attackResolutionStep" />
+			<xsd:field xpath="requiredUnitSkillID" />
 		</xsd:keyref>
 		
 		<!-- Hero items, new for 0.9.7 -->
@@ -4178,6 +4182,15 @@ If multiple steps have the same step number, they are executed simultaneously, i
 						<nxe:showreferencedfield>damageResolutionTypeID</nxe:showreferencedfield>
 						<nxe:showreferencedfield>damagePerFigure</nxe:showreferencedfield>
 						<nxe:showreferencedfield>magicRealmID</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="requiredUnitSkillID" type="momimecommon:unitSkillID" nxe:label="Required Skill">
+				<xsd:annotation>
+        			<xsd:documentation>Can generally be used when a second skill is required to trigger a particular step, but mostly this is used for
+things like axe heroes with Touch Dispels Evil where there is a touch component of their thrown attack as well as a touch component of their melee attack.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>

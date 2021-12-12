@@ -63,6 +63,9 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 	
 	/** Unit skill the attack is coming from */
 	private UnitSkillEx unitSkillDef;
+
+	/** Secondary attack skill the attack is coming from, if applicable */
+	private UnitSkillEx requiredSkillDef;
 	
 	/**
 	 * These damage calculations can live in the history for a long time, easily after the unit(s) in question have been destroyed
@@ -94,7 +97,11 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		if (getAttackSpellID () != null)
 			spellDef = getClient ().getClientDB ().findSpell (getAttackSpellID (), "DamageCalculationAttackDataEx-s");
 		else
+		{
 			unitSkillDef = getClient ().getClientDB ().findUnitSkill (getAttackSkillID (), "DamageCalculationAttackDataEx-u");
+			if (getRequiredUnitSkillID () != null)
+				requiredSkillDef = getClient ().getClientDB ().findUnitSkill (getRequiredUnitSkillID (), "DamageCalculationAttackDataEx-r"); 
+		}
 
 		// Was the attack caused by an event?
 		if (getEventID () != null)
@@ -112,6 +119,9 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		final String attackType;
 		if (spellDef != null)
 			attackType = getLanguageHolder ().findDescription (spellDef.getSpellName ());
+		else if (requiredSkillDef != null)
+			attackType = getLanguageHolder ().findDescription (unitSkillDef.getUnitSkillDescription ()) + " (" +
+				getLanguageHolder ().findDescription (requiredSkillDef.getUnitSkillDescription ()) + ")";
 		else
 			attackType = getLanguageHolder ().findDescription (unitSkillDef.getUnitSkillDescription ());
 

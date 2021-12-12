@@ -152,6 +152,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackSkillID The skill being used to attack
+	 * @param requiredSkillID Optional secondary skill we must also have in order to make this kind of attack; usually null
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -165,7 +166,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	@Override
 	public final AttackDamage attackFromUnitSkill (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final String attackSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		final String attackSkillID, final String requiredSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		// We need the attacker's full details to generate the defender's full details, and vice versa, so this is a real chicken and egg situation.
@@ -192,143 +193,175 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// The unit's skill level indicates the strength of the attack (e.g. Poison Touch 2 vs Poison Touch 4)
 		final AttackDamage attackDamage;
 		final int figureCount = xuAttacker.calculateAliveFigureCount () - attacker.getFiguresFrozenInFear ();
-		if ((!xuAttacker.hasModifiedSkill (attackSkillID)) || (figureCount <= 0))
+		
+		// If attacker is dead then can't do any damage
+		if (figureCount <= 0)
 			attackDamage = null;
 		else
 		{
-			// nulls are ok here, its possible to attack with some valueless skills, such as Cloak of Fear.
-			// However negative values are not ok, that would indicate our attack had been reduced to useless by some effect such as Black Prayer.
-			Integer damage = xuAttacker.getModifiedSkillValue (attackSkillID);
-			if ((damage != null) && (damage < 0))
+			final boolean haveSkill;
+			Integer damage = null;
+
+			// We have to have the attack skill (normal check)
+			if (requiredSkillID == null)
+			{
+				haveSkill = xuAttacker.hasModifiedSkill (attackSkillID);
+				if (haveSkill)
+					damage = xuAttacker.getModifiedSkillValue (attackSkillID);
+			}
+			
+			// If there is a secondary required skill, then we need to have it, and then compute the skill map with respect to that skill instead to see if we have the main skill,
+			// because what we are asking is "Do we have a thrown weapon attack, and does our Touch Dispels Evil skill apply to thrown weapon attacks?"
+			// since this has to take into account what kind of hero weapon granted us the skill.
+			else if (xuAttacker.hasModifiedSkill (requiredSkillID))
+			{
+				final ExpandedUnitDetails xuAttackerRequiredSkill = getExpandUnitDetails ().expandUnitDetails
+					(attacker.getUnit (), defenders, requiredSkillID, null, players, mem, db);
+				haveSkill = xuAttackerRequiredSkill.hasModifiedSkill (attackSkillID);
+				if (haveSkill)
+					damage = xuAttackerRequiredSkill.getModifiedSkillValue (attackSkillID);
+			}
+			else
+				haveSkill = false;
+			
+			if (!haveSkill)
 				attackDamage = null;
 			else
-			{			
-				// Certain types of damage resolution must do at least one point of attack in order to even stand a chance
-				final UnitSkill unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
-				if (unitSkill.getDamageResolutionTypeID () == null)
-					throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageResolutionTypeID defined");
-				
-				if (((damage == null) || (damage < 1)) &&
-					((unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.SINGLE_FIGURE) ||
-					(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.ARMOUR_PIERCING) ||
-					(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.ILLUSIONARY) ||
-					(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.MULTI_FIGURE) ||
-					(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.DOOM) ||
-					(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.RESISTANCE_ROLLS)))
-					
+			{
+				// nulls are ok here, its possible to attack with some valueless skills, such as Cloak of Fear.
+				// However negative values are not ok, that would indicate our attack had been reduced to useless by some effect such as Black Prayer.
+				if ((damage != null) && (damage < 0))
 					attackDamage = null;
-				
-				// Check for skills that only affect certain types of creatures (you can't Touch Dispels Evil normal units)
-				else if ((unitSkill.getSkillValidUnitTarget ().size () > 0) && (unitSkill.getSkillValidUnitTarget ().stream ().noneMatch
-					(t -> t.getTargetMagicRealmID ().equals (xuDefender.getModifiedUnitMagicRealmLifeformType ().getPickID ()))))
-					
-					attackDamage = null;
-				
 				else
-				{
-					// Does the particular magic realm/lifeform type of the target make it take more damage than usual?
-					if (damage != null)
-						for (final ValidUnitTarget validUnitTarget : unitSkill.getSkillValidUnitTarget ())
-							if ((validUnitTarget.getTargetMagicRealmID ().equals (xuDefender.getModifiedUnitMagicRealmLifeformType ().getPickID ())) &&
-								(validUnitTarget.getMagicRealmAdditionalSavingThrowModifier () != null))
-								
-								damage = damage + validUnitTarget.getMagicRealmAdditionalSavingThrowModifier ();
+				{			
+					// Certain types of damage resolution must do at least one point of attack in order to even stand a chance
+					final UnitSkill unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
+					if (unitSkill.getDamageResolutionTypeID () == null)
+						throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageResolutionTypeID defined");
 					
-					// Figure out the magic realm of the attack; getting a null here is fine, this just means the attack deals physical damage
-					final String attackFromMagicRealmID;
-					if (attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
-					{
-						// Ranged attack magic realms are defined against the RAT rather than the realm of the attacker
-						// so e.g. Storm Giants throw lightning bolts, which are Chaos-based RATs, rather than the Storm Giant being a Sorcery creature... which is a bit weird
-						attackFromMagicRealmID = xuAttacker.getRangedAttackType ().getMagicRealmID ();
-					}
-					else
-					{
-						// Special attack magic realms are defined against the unit skill rather than the realm of the attacker
-						// so e.g. Sky Drakes have lightning breath, which is a skill that deals Chaos damage, rather than the Sky Drake being a Sorcery creature... which is also a bit weird
-						attackFromMagicRealmID = unitSkill.getMagicRealmID ();
-					}
-		
-					// Figure out the type of damage, and check whether the defender is immune to it.
-					// Firstly if the unit has the "create undead" skill, then force all damage to "life stealing" as long as the defender isn't immune to it -
-					// if they are immune to it, leave it as regular melee damage (tested in the original MoM that Ghouls can hurt Zombies).
-					DamageType damageType = null;
-					if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_UNDEAD))
-					{
-						damageType = db.findDamageType (ServerDatabaseValues.DAMAGE_TYPE_ID_LIFE_STEALING, "attackFromUnitSkill");
-						if (xuDefender.isUnitImmuneToDamageType (damageType))
-							damageType = null;
-					}
-					
-					// If life stealing damage didn't apply, just use whatever is defined against the unit skill like normal
-					if (damageType == null)
-						damageType = getDamageTypeCalculations ().determineSkillDamageType (xuAttacker, attackSkillID, db);
-					
-					if (xuDefender.isUnitImmuneToDamageType (damageType))
+					if (((damage == null) || (damage < 1)) &&
+						((unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.SINGLE_FIGURE) ||
+						(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.ARMOUR_PIERCING) ||
+						(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.ILLUSIONARY) ||
+						(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.MULTI_FIGURE) ||
+						(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.DOOM) ||
+						(unitSkill.getDamageResolutionTypeID () == DamageResolutionTypeID.RESISTANCE_ROLLS)))
+						
 						attackDamage = null;
+					
+					// Check for skills that only affect certain types of creatures (you can't Touch Dispels Evil normal units)
+					else if ((unitSkill.getSkillValidUnitTarget ().size () > 0) && (unitSkill.getSkillValidUnitTarget ().stream ().noneMatch
+						(t -> t.getTargetMagicRealmID ().equals (xuDefender.getModifiedUnitMagicRealmLifeformType ().getPickID ()))))
+						
+						attackDamage = null;
+					
 					else
 					{
-						// Expend ammo server side - the client expends ammo when it receives the above message, so the two stay in step
+						// Does the particular magic realm/lifeform type of the target make it take more damage than usual?
+						if (damage != null)
+							for (final ValidUnitTarget validUnitTarget : unitSkill.getSkillValidUnitTarget ())
+								if ((validUnitTarget.getTargetMagicRealmID ().equals (xuDefender.getModifiedUnitMagicRealmLifeformType ().getPickID ())) &&
+									(validUnitTarget.getMagicRealmAdditionalSavingThrowModifier () != null))
+									
+									damage = damage + validUnitTarget.getMagicRealmAdditionalSavingThrowModifier ();
+						
+						// Figure out the magic realm of the attack; getting a null here is fine, this just means the attack deals physical damage
+						final String attackFromMagicRealmID;
 						if (attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
-							getUnitCalculations ().decreaseRangedAttackAmmo (attacker.getUnit ());
-						
-						// Start breakdown message
-						final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
-						damageCalculationMsg.setAttackerUnitURN (attacker.getUnit ().getUnitURN ());
-						damageCalculationMsg.setAttackerPlayerID (attacker.getUnit ().getOwningPlayerID ());
-						damageCalculationMsg.setAttackSkillID (attackSkillID);
-						damageCalculationMsg.setDamageTypeID (damageType.getDamageTypeID ());
-						damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
-						
-						// Different skills deal different types of damage; illusionary attack skill overrides the damage resolution type, if the defender isn't immune to it
-						damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
-						if ((unitSkill.isDamageResolutionTypeUpgradeable () != null) && (unitSkill.isDamageResolutionTypeUpgradeable ()))
 						{
-							if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_DOOM_ATTACK))
-								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.DOOM);
-							else if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK))
-								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
-							else if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ARMOUR_PIERCING))
-								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ARMOUR_PIERCING);
+							// Ranged attack magic realms are defined against the RAT rather than the realm of the attacker
+							// so e.g. Storm Giants throw lightning bolts, which are Chaos-based RATs, rather than the Storm Giant being a Sorcery creature... which is a bit weird
+							attackFromMagicRealmID = xuAttacker.getRangedAttackType ().getMagicRealmID ();
+						}
+						else
+						{
+							// Special attack magic realms are defined against the unit skill rather than the realm of the attacker
+							// so e.g. Sky Drakes have lightning breath, which is a skill that deals Chaos damage, rather than the Sky Drake being a Sorcery creature... which is also a bit weird
+							attackFromMagicRealmID = unitSkill.getMagicRealmID ();
+						}
+			
+						// Figure out the type of damage, and check whether the defender is immune to it.
+						// Firstly if the unit has the "create undead" skill, then force all damage to "life stealing" as long as the defender isn't immune to it -
+						// if they are immune to it, leave it as regular melee damage (tested in the original MoM that Ghouls can hurt Zombies).
+						DamageType damageType = null;
+						if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_UNDEAD))
+						{
+							damageType = db.findDamageType (ServerDatabaseValues.DAMAGE_TYPE_ID_LIFE_STEALING, "attackFromUnitSkill");
+							if (xuDefender.isUnitImmuneToDamageType (damageType))
+								damageType = null;
 						}
 						
-						// Some skills hit just once from the whole attacking unit, some hit once per figure
-						if (unitSkill.getDamagePerFigure () == null)
-							throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damagePerFigure defined");
+						// If life stealing damage didn't apply, just use whatever is defined against the unit skill like normal
+						if (damageType == null)
+							damageType = getDamageTypeCalculations ().determineSkillDamageType (xuAttacker, attackSkillID, db);
 						
-						final int repetitions;
-						switch (unitSkill.getDamagePerFigure ())
+						if (xuDefender.isUnitImmuneToDamageType (damageType))
+							attackDamage = null;
+						else
 						{
-							case PER_UNIT:
-								damageCalculationMsg.setPotentialHits (damage);
-								repetitions = 1;
-								break;
-			
-							case PER_FIGURE_SEPARATE:
-								damageCalculationMsg.setPotentialHits (damage);
-								repetitions = figureCount;
-								break;
-			
-							case PER_FIGURE_COMBINED:
-								damageCalculationMsg.setAttackerFigures (figureCount);
-								damageCalculationMsg.setAttackStrength (damage);
-								damageCalculationMsg.setPotentialHits (damage * damageCalculationMsg.getAttackerFigures ());
-								repetitions = 1;
-								break;
-								
-							default:
-								throw new MomException ("attackFromUnitSkill does not know how to handle damagePerFigure of " + unitSkill.getDamagePerFigure ());
+							// Expend ammo server side - the client expends ammo when it receives the above message, so the two stay in step
+							if (attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+								getUnitCalculations ().decreaseRangedAttackAmmo (attacker.getUnit ());
+							
+							// Start breakdown message
+							final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
+							damageCalculationMsg.setAttackerUnitURN (attacker.getUnit ().getUnitURN ());
+							damageCalculationMsg.setAttackerPlayerID (attacker.getUnit ().getOwningPlayerID ());
+							damageCalculationMsg.setAttackSkillID (attackSkillID);
+							damageCalculationMsg.setRequiredUnitSkillID (requiredSkillID);
+							damageCalculationMsg.setDamageTypeID (damageType.getDamageTypeID ());
+							damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
+							
+							// Different skills deal different types of damage; illusionary attack skill overrides the damage resolution type, if the defender isn't immune to it
+							damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
+							if ((unitSkill.isDamageResolutionTypeUpgradeable () != null) && (unitSkill.isDamageResolutionTypeUpgradeable ()))
+							{
+								if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_DOOM_ATTACK))
+									damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.DOOM);
+								else if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ILLUSIONARY_ATTACK))
+									damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
+								else if (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ARMOUR_PIERCING))
+									damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ARMOUR_PIERCING);
+							}
+							
+							// Some skills hit just once from the whole attacking unit, some hit once per figure
+							if (unitSkill.getDamagePerFigure () == null)
+								throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damagePerFigure defined");
+							
+							final int repetitions;
+							switch (unitSkill.getDamagePerFigure ())
+							{
+								case PER_UNIT:
+									damageCalculationMsg.setPotentialHits (damage);
+									repetitions = 1;
+									break;
+				
+								case PER_FIGURE_SEPARATE:
+									damageCalculationMsg.setPotentialHits (damage);
+									repetitions = figureCount;
+									break;
+				
+								case PER_FIGURE_COMBINED:
+									damageCalculationMsg.setAttackerFigures (figureCount);
+									damageCalculationMsg.setAttackStrength (damage);
+									damageCalculationMsg.setPotentialHits (damage * damageCalculationMsg.getAttackerFigures ());
+									repetitions = 1;
+									break;
+									
+								default:
+									throw new MomException ("attackFromUnitSkill does not know how to handle damagePerFigure of " + unitSkill.getDamagePerFigure ());
+							}
+					
+							sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+					
+							// Fill in the damage object
+							// Work out to hit bonuses - to hit penalties are applied in processAttackResolutionStep
+							final int plusToHit = !xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT) ? 0 :
+								xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT);
+					
+							attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageType, damageCalculationMsg.getDamageResolutionTypeID (), null,
+								attackSkillID, attackFromMagicRealmID, repetitions);
 						}
-				
-						sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
-				
-						// Fill in the damage object
-						// Work out to hit bonuses - to hit penalties are applied in processAttackResolutionStep
-						final int plusToHit = !xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT) ? 0 :
-							xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT);
-				
-						attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageType, damageCalculationMsg.getDamageResolutionTypeID (), null,
-							attackSkillID, attackFromMagicRealmID, repetitions);
 					}
 				}
 			}

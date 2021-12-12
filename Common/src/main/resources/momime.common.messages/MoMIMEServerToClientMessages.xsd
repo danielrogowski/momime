@@ -670,6 +670,13 @@ or all 3 being blank indicates this is a counterattack in response to a melee at
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="eventID" type="momimecommon:eventID" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="requiredUnitSkillID" type="momimecommon:unitSkillID">
+				<xsd:annotation>
+        			<xsd:documentation>Can generally be used when a second skill is required to trigger a particular step, but mostly this is used for
+things like axe heroes with Touch Dispels Evil where there is a touch component of their thrown attack as well as a touch component of their melee attack.
+Gets sent to the client so the damage breakdown can distinguish between Touch Dispels Evil (Thrown Weapons) and Touch Dispels Evil (Melee)</xsd:documentation>
+				</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="damageTypeID" type="momimecommon:damageTypeID" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="storedDamageTypeID" type="momimecommon:storedDamageTypeID" />

@@ -251,7 +251,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						else
 							potentialDamage = getDamageCalculator ().attackFromUnitSkill
 								(unitMakingAttack, unitBeingAttacked, attackingPlayer, defendingPlayer, step.getUnitSkillStep ().getUnitSkillID (),
-									mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+									step.getUnitSkillStep ().getRequiredUnitSkillID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					}
 					
 					// We may get null here, if the step says to attack with a skill that this unit doesn't have

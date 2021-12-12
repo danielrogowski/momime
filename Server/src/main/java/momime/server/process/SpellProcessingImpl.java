@@ -929,7 +929,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 						
 						getFogOfWarMidTurnChanges ().sendDamageToClients (null, attackingPlayer, defendingPlayer,
-							unitWrappers, null, spell.getSpellID (), null, null, null, skipAnimation, mom.getPlayers (),
+							unitWrappers, null, spell.getSpellID (), null, null, skipAnimation, mom.getPlayers (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 					}
 					else if (kind == KindOfSpell.RECALL)

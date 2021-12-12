@@ -19,7 +19,6 @@ import momime.common.MomException;
 import momime.common.database.AttackResolution;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
@@ -134,8 +133,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final ServerGridCellEx tc = (combatLocation == null) ? null : (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
-		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		
 		// If any defenders are being attacked by a different kind of spell, skip them until the next iteration
 		final List<ResolveAttackTarget> defendersLeftToProcess = new ArrayList<ResolveAttackTarget> ();
 		defendersLeftToProcess.addAll (defenders);
@@ -228,13 +225,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 					{
 						final List<AttackResolutionStepContainer> step = steps.get (stepNumber);
 						
-						final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
+						getAttackResolutionProcessing ().processAttackResolutionStep
 							(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step, mom);
 						
-						for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)
-							if (!specialDamageResolutionsApplied.contains (thisSpecialDamageResolutionApplied))
-								specialDamageResolutionsApplied.add (thisSpecialDamageResolutionApplied);
-		
 						stepNumber++;
 						
 						// Warp lightning generates additional steps, each time subtracting off the stepNumber in damage until we reach 0.
@@ -292,7 +285,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		getFogOfWarMidTurnChanges ().sendDamageToClients (attacker,
 			(combatLocation == null) ? null : attackingPlayer, (combatLocation == null) ? null : defendingPlayer,
 			defenders, attackSkillID, (spell == null) ? null : spell.getSpellID (),
-			specialDamageResolutionsApplied, wreckTilePosition, sendWrecked, skipAnimation, mom.getPlayers (),
+			wreckTilePosition, sendWrecked, skipAnimation, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose

@@ -504,7 +504,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 			final List<ResolveAttackTarget> unitWrappers = healedUnits.stream ().map (u -> new ResolveAttackTarget (u)).collect (Collectors.toList ());
 			
 			getFogOfWarMidTurnChanges ().sendDamageToClients (null, null, null,
-				unitWrappers, null, null, null, null, null, false, players, mem.getMap (), db, fogOfWarSettings);
+				unitWrappers, null, null, null, null, false, players, mem.getMap (), db, fogOfWarSettings);
 		}
 	}
 

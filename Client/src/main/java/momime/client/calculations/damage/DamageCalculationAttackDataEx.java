@@ -147,6 +147,10 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 					languageText = getLanguages ().getCombatDamage ().getAttackZeroesAmmo ();
 					break;
 	
+				case DRAINS_MANA:
+					languageText = getLanguages ().getCombatDamage ().getAttackDrainsMana ();
+					break;
+	
 				// Leave saving throw modifier as positive on here, so the text can say "destroys any with resistance 9 + 2 or less"
 				case DISINTEGRATE:
 					languageText = getLanguages ().getCombatDamage ().getAttackDisintegrate ();

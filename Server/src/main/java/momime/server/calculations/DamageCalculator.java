@@ -394,4 +394,36 @@ public interface DamageCalculator
 	public void calculateFearDamage (final AttackResolutionUnit defender, final ExpandedUnitDetails xuDefender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * Rolls the effect of a Drain Power attack, which causes no actual damage, but drains 2-20 MP from the target.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @return Amount of MP to drain
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public int calculateDrainPowerDamage (final MemoryUnit defender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Rolls the effect of a Warp Wood attack, which causes no actual damage, but eliminates all remaining ammo on the target.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @return Amount of MP to drain
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public int calculateZeroesAmmoDamage (final MemoryUnit defender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
 }

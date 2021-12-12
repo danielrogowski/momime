@@ -31,7 +31,6 @@ import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RangedAttackTypeActionID;
 import momime.common.database.RangedAttackTypeCombatImage;
 import momime.common.database.Spell;
@@ -519,18 +518,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			// Apply regular damage
 			thisUnit.getDefUnit ().getUnitDamage ().clear ();
 			thisUnit.getDefUnit ().getUnitDamage ().addAll (thisUnit.getDefenderDamageTakenEndDetails ());
-			
-			// Apply special effects
-			for (final DamageResolutionTypeID damageResolutionType : getSpecialDamageResolutionTypeID ())
-				switch (damageResolutionType)
-				{
-					case ZEROES_AMMO:
-						thisUnit.getDefUnit ().setAmmoRemaining (0);
-						break;
-						
-					default:
-						break;
-				}
 			
 			final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
 			if (defenderUI != null)

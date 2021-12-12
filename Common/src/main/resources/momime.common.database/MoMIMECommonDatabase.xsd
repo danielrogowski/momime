@@ -5319,6 +5319,10 @@ which is why it is last in the list, so it will only be healed when all healable
 				<xsd:documentation>Zeroes ammo remaining (warp wood)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ZEROES_AMMO" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="O"><xsd:annotation>
+				<xsd:documentation>Loses 2-20 mana (power drain hero item skill)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DRAINS_MANA" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="Y"><xsd:annotation>
 				<xsd:documentation>Each figure must resist or can make no further attacks during this attack resolution (fear)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="FEAR" /></xsd:appinfo>

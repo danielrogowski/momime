@@ -160,6 +160,17 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 					else
 						languageText = getLanguages ().getCombatDamage ().getDefenceResistsTerror ();
 					break;
+
+				// For zeroes ammo and drains mana, we actually make the update here too
+				case ZEROES_AMMO:
+					languageText = getLanguages ().getCombatDamage ().getDefenceZeroesAmmo ();
+					getDefenderUnit ().setAmmoRemaining (getDefenderUnit ().getAmmoRemaining () - getFinalHits ());
+					break;
+	
+				case DRAINS_MANA:
+					languageText = getLanguages ().getCombatDamage ().getDefenceDrainsMana ();
+					getDefenderUnit ().setManaRemaining (getDefenderUnit ().getManaRemaining () - getFinalHits ());
+					break;
 					
 				default:
 					if (getModifiedDefenceStrength () == null)

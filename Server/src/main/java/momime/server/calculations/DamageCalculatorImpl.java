@@ -1299,6 +1299,85 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 		defender.setFiguresFrozenInFear (defender.getFiguresFrozenInFear () + figuresFrozen);
 	}
+
+	/**
+	 * Rolls the effect of a Drain Power attack, which causes no actual damage, but drains 2-20 MP from the target.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @return Amount of MP to drain
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateDrainPowerDamage (final MemoryUnit defender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+	{
+		int manaDrained = 0;
+		if (defender.getManaRemaining () > 0)
+		{
+			// Store values straight into the message
+			final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+			damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+			damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
+			damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
+			
+			// Make dice roll
+			final int mana = getRandomUtils ().nextInt (19) + 2;
+			
+			// Can't drain more MP than the unit has
+			manaDrained = Math.min (mana, defender.getManaRemaining ());
+			
+			// Store and send final totals
+			damageCalculationMsg.setActualHits (mana);
+			damageCalculationMsg.setFinalHits (manaDrained);
+			sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		}
+		
+		return manaDrained;
+	}
+
+	/**
+	 * Rolls the effect of a Warp Wood attack, which causes no actual damage, but eliminates all remaining ammo on the target.
+	 * 
+	 * @param defender Unit being hit
+	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
+	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @return Amount of MP to drain
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final int calculateZeroesAmmoDamage (final MemoryUnit defender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+	{
+		int ammoDrained = 0;
+		if (defender.getAmmoRemaining () > 0)
+		{
+			// Store values straight into the message
+			final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
+			damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
+			damageCalculationMsg.setDefenderUnitOwningPlayerID (defender.getOwningPlayerID ());
+			damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
+			
+			// No dice roll, always eliminates all ammo
+			ammoDrained = defender.getAmmoRemaining ();
+			
+			// Store and send final totals
+			damageCalculationMsg.setActualHits (ammoDrained);
+			damageCalculationMsg.setFinalHits (ammoDrained);
+			sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
+		}
+		
+		return ammoDrained;
+	}
 	
 	/**
 	 * @return expandUnitDetails method

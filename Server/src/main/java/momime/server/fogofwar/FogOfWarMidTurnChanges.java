@@ -14,7 +14,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
-import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
@@ -316,7 +315,6 @@ public interface FogOfWarMidTurnChanges
 	 * @param tuDefenders Server's true memory of unit(s) that got hit
 	 * @param attackSkillID Skill used to make the attack, e.g. for gaze or breath attacks
 	 * @param attackSpellID Spell used to make the attack
-	 * @param specialDamageResolutionsApplied List of special damage resolutions done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @param wreckTilePosition If the tile was attacked directly with Wall Crusher skill, the location of the tile that was attacked
 	 * @param wrecked If the tile was attacked directly with Wall Crusher skill, whether the attempt was successful or not
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
@@ -331,7 +329,7 @@ public interface FogOfWarMidTurnChanges
 	 */
 	public void sendDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<ResolveAttackTarget> tuDefenders, final String attackSkillID, final String attackSpellID,
-		final List<DamageResolutionTypeID> specialDamageResolutionsApplied, final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked,
+		final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked,
 		final boolean skipAnimation, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;

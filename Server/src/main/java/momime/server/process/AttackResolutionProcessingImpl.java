@@ -162,7 +162,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param combatLocation Location the combat is taking place; null if its damage from an overland spell
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return List of special damage resolutions done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit or other rule errors
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
@@ -170,7 +169,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
+	public void processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
 		final List<AttackResolutionStepContainer> steps, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
@@ -188,7 +187,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		int lifeStealingDamageToAttacker = 0;
 		
 		// Calculate and total up all the damage before we apply any of it
-		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		for (final AttackResolutionStepContainer step : steps)
 		{
 			// Which unit is being attacked?
@@ -381,7 +379,13 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									break;
 										
 									case ZEROES_AMMO:
-										thisDamage = 0;
+										thisDamage = getDamageCalculator ().calculateZeroesAmmoDamage
+											(unitBeingAttacked.getUnit (), attackingPlayer, defendingPlayer, potentialDamage);
+										break;
+										
+									case DRAINS_MANA:
+										thisDamage = getDamageCalculator ().calculateDrainPowerDamage
+											(unitBeingAttacked.getUnit (), attackingPlayer, defendingPlayer, potentialDamage);
 										break;
 										
 									default:
@@ -392,32 +396,31 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 								// Add damage to running total
 								if (thisDamage != 0)
 								{
-									getUnitServerUtils ().addDamage ((unitBeingAttacked == defender) ? damageToDefender : damageToAttacker,
-										potentialDamage.getDamageType ().getStoredDamageTypeID (), thisDamage);
-									
-									if (CommonDatabaseConstants.UNIT_SKILL_ID_LIFE_STEALING.equals (potentialDamage.getAttackFromSkillID ()))
+									switch (potentialDamage.getDamageResolutionTypeID ())
 									{
-										if (unitBeingAttacked == defender)
-											lifeStealingDamageToDefender = lifeStealingDamageToDefender + thisDamage;
-										else
-											lifeStealingDamageToAttacker = lifeStealingDamageToAttacker + thisDamage;
+										case ZEROES_AMMO:
+											unitBeingAttacked.getUnit ().setAmmoRemaining (unitBeingAttacked.getUnit ().getAmmoRemaining () - thisDamage);
+											break;
+											
+										case DRAINS_MANA:
+											unitBeingAttacked.getUnit ().setManaRemaining (unitBeingAttacked.getUnit ().getManaRemaining () - thisDamage);
+											break;
+											
+										// Normal damage
+										default:
+											getUnitServerUtils ().addDamage ((unitBeingAttacked == defender) ? damageToDefender : damageToAttacker,
+												potentialDamage.getDamageType ().getStoredDamageTypeID (), thisDamage);
+											
+											if (CommonDatabaseConstants.UNIT_SKILL_ID_LIFE_STEALING.equals (potentialDamage.getAttackFromSkillID ()))
+											{
+												if (unitBeingAttacked == defender)
+													lifeStealingDamageToDefender = lifeStealingDamageToDefender + thisDamage;
+												else
+													lifeStealingDamageToAttacker = lifeStealingDamageToAttacker + thisDamage;
+											}
+											
 									}
 								}
-							}
-						
-							// Apply any special effect
-							switch (potentialDamage.getDamageResolutionTypeID ())
-							{
-								case ZEROES_AMMO:
-									unitBeingAttacked.getUnit ().setAmmoRemaining (0);
-									
-									// Make sure ammo is zeroed on the client as well
-									if (!specialDamageResolutionsApplied.contains (potentialDamage.getDamageResolutionTypeID ()))
-										specialDamageResolutionsApplied.add (potentialDamage.getDamageResolutionTypeID ());
-									break;
-									
-								default:
-									break;
 							}
 						}
 						else if (step.getSpellStep () != null)
@@ -482,8 +485,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -xuAttacker.calculateHitPointsRemaining (), true);
 		}
-		
-		return specialDamageResolutionsApplied;
 	}
 
 	/**

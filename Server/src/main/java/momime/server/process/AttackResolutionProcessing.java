@@ -13,7 +13,6 @@ import momime.common.MomException;
 import momime.common.database.AttackResolution;
 import momime.common.database.AttackResolutionStep;
 import momime.common.database.CommonDatabase;
-import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
@@ -57,14 +56,13 @@ public interface AttackResolutionProcessing
 	 * @param combatLocation Location the combat is taking place; null if its damage from an overland spell
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return List of special damage resolutions done to the defender (used for warp wood); limitation that client assumes this damage type is applied to ALL defenders
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit or other rule errors
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
+	public void processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
 		final List<AttackResolutionStepContainer> steps, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;

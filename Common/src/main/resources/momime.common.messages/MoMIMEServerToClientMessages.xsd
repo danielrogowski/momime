@@ -1205,13 +1205,6 @@ Exactly one and only one of attackSkillID or attackSpellID will be filled in to 
 						<xsd:element minOccurs="0" maxOccurs="1" name="wrecked" type="xsd:boolean">
 						    <xsd:annotation><xsd:documentation>Filled in only if Wall Crusher skill successfully wrecked the tile.</xsd:documentation></xsd:annotation>
 						</xsd:element>
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="specialDamageResolutionTypeID" type="momimecommon:damageResolutionTypeID">
-						    <xsd:annotation>
-    							<xsd:documentation>List of special damage types done to the defender (used for warp wood);
-limitation that client assumes this damage type is applied to ALL defenders.</xsd:documentation>
-							</xsd:annotation>
-						</xsd:element>
-
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="defenderUnit" type="momimestoc:applyDamageMessageUnit" />
 					</xsd:sequence>
 				</xsd:extension>

@@ -131,7 +131,7 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 			else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_REBELLION))
 			{
 				if (getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-					cityLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null)
+					cityLocation, CommonDatabaseConstants.BUILDING_FORTRESS) == null)
 				{
 					// How many of each type of unit type are here?
 					boolean heroFound = false;

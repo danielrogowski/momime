@@ -242,6 +242,7 @@ public final class TestCombatAIImpl
 		
 		// Caster with MP remaining
 		when (defender.getManaRemaining ()).thenReturn (10);
+		when (defender.canCastSpells ()).thenReturn (true);
 		assertEquals (3, ai.evaluateTarget (attacker, defender));
 		
 		// Unit with a ranged attack

@@ -1478,6 +1478,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			getSpellMultiCasting ().castCityAttackSpell (spell, castingPlayer, null, maintainedSpell.getVariableDamage (), targetLocation, mom);
+			
+			// Remove the maintained spell on the server (clients would never have gotten it to begin with)
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
 		}
 
 		else if (spell.getBuildingID () == null)

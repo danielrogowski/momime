@@ -651,6 +651,12 @@
 						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSetting" type="momimecommon:heroItemSetting">
+					<xsd:key name="heroItemSettingDescriptionPK">
+						<xsd:selector xpath="heroItemSettingDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="1" name="newGameDefaults" type="momimecommon:newGameDefaults" />			
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityImage" type="momimecommon:cityImage">
 					<xsd:key name="cityImagePrerequisitePK">
@@ -847,6 +853,10 @@
 		<xsd:key name="spellSettingPK">
 			<xsd:selector xpath="spellSetting" />
 			<xsd:field xpath="@spellSettingID" />
+		</xsd:key>
+		<xsd:key name="heroItemSettingPK">
+			<xsd:selector xpath="heroItemSetting" />
+			<xsd:field xpath="@heroItemSettingID" />
 		</xsd:key>
 
 		<!-- Combat map generation, new for 0.9.3 -->
@@ -1368,6 +1378,10 @@
 		<xsd:keyref refer="momimecommon:spellSettingPK" name="newGameDefaultsFKspellSetting">
 			<xsd:selector xpath="newGameDefaults" />
 			<xsd:field xpath="defaultSpellSettingID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:heroItemSettingPK" name="newGameDefaultsFKheroItemSetting">
+			<xsd:selector xpath="newGameDefaults" />
+			<xsd:field xpath="defaultHeroItemSettingID" />
 		</xsd:keyref>
 
 		<!-- Combat map generation, new for 0.9.3 -->
@@ -1911,6 +1925,20 @@
 		<xsd:attribute name="spellSettingID" type="momimecommon:spellSettingID" use="optional" nxe:label="Spell Setting ID" nxe:gridwidth="120" />
 	</xsd:complexType>
 
+	<xsd:complexType name="heroItemSetting" nxe:singular="Hero Item settings" nxe:plural="Hero Item settings" nxe:submenu="New game settings">
+        <xsd:annotation>
+        	<xsd:documentation>Defines hero item settings that must be supplied when creating a new game.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSettingDescription" type="momimecommon:languageText" nxe:label="Description" />
+		
+			<xsd:element minOccurs="1" maxOccurs="1" name="requireBooksForTreasureRewards" type="xsd:boolean" nxe:label="Require books for treasure rewards?" nxe:gridwidth="300" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="requireBooksForMerchants" type="xsd:boolean" nxe:label="Require books for merchants?" nxe:gridwidth="300" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="requireBooksForGiftEvent" type="xsd:boolean" nxe:label="Require books for gift event?" nxe:gridwidth="300" />
+		</xsd:sequence>
+		<xsd:attribute name="heroItemSettingID" type="momimecommon:heroItemSettingID" use="optional" nxe:label="Hero Item Setting ID" nxe:gridwidth="150" />
+	</xsd:complexType>
+
 	<xsd:complexType name="newGameDefaults" nxe:singular="Default new game settings" nxe:plural="Default new game settings" nxe:submenu="New game settings">
         <xsd:annotation>
         	<xsd:documentation>Default map size, difficulty level and so on to preselect on the new game screen.</xsd:documentation>
@@ -1962,6 +1990,13 @@
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>spellSettingDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultHeroItemSettingID" type="momimecommon:heroItemSettingID" nxe:label="Default Hero Item Settings" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>heroItemSettingDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -4581,6 +4616,10 @@ Ordering of this list is very significant.
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="spellSettingID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="heroItemSettingID">
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 

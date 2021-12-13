@@ -34,6 +34,7 @@ This includes the session description and all knowledge structures - i.e. any ru
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWarSetting" type="momimecommon:fogOfWarSetting" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitSetting" type="momimecommon:unitSetting" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="spellSetting" type="momimecommon:spellSetting" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSetting" type="momimecommon:heroItemSetting" />
 					
 					<!--  Special debug options -->
 

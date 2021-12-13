@@ -22,6 +22,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseImpl;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.HeroItemSetting;
 import momime.common.database.LandProportion;
 import momime.common.database.NodeStrength;
 import momime.common.database.OverlandMapSize;
@@ -73,6 +74,9 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		for (final SpellSetting spellSetting : src.getSpellSetting ())
 			dest.getSpellSetting ().add (spellSetting);
 
+		for (final HeroItemSetting heroItemSetting : src.getHeroItemSetting ())
+			dest.getHeroItemSetting ().add (heroItemSetting);
+		
 		return dest;
 	}
 

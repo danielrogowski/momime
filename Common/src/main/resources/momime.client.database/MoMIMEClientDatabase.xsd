@@ -24,6 +24,7 @@ the common project and so accessible to the server so that the server is able to
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSetting" type="momimecommon:fogOfWarSetting" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSetting" type="momimecommon:unitSetting" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSetting" type="momimecommon:spellSetting" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSetting" type="momimecommon:heroItemSetting" />
 		</xsd:sequence>
 		<xsd:attribute name="dbName" type="momimeclient:filename" use="required" />
 	</xsd:complexType>

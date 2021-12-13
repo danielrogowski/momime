@@ -2222,6 +2222,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<spellSettings language="pl">
 			<text>Ustawienia Czarów</text>
 		</spellSettings>
+		<heroItemSettings language="en">
+			<text>Hero Items</text>
+		</heroItemSettings>
 		<debugOptions language="en">
 			<text>Use any debug options?</text>
 		</debugOptions>
@@ -3248,6 +3251,23 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 				<text>(blank = unlimited)</text>
 			</unlimited>
 		</customUnitsTab>
+		<customHeroItemsTab>
+			<title language="en">
+				<text>New Game: Hero Items</text>
+			</title>
+			<requireBooks language="en">
+				<text>Must have the necessary books to craft hero items in order to receive them from:</text>
+			</requireBooks>
+			<treasureRewards language="en">
+				<text>Treasure rewards</text>
+			</treasureRewards>
+			<merchants language="en">
+				<text>Merchants</text>
+			</merchants>
+			<giftEvent language="en">
+				<text>The Gift random event</text>
+			</giftEvent>
+		</customHeroItemsTab>
 		<customDebugTab>
 			<title language="en">
 				<text>New Game: Debug Options</text>

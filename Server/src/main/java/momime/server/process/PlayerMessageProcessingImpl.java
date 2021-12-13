@@ -759,8 +759,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					if ((unitsOffer != null) && (!player.getPlayerDescription ().isHuman ()))
 						getMomAI ().decideOffer (player, unitsOffer, mom);
 					
-					final NewTurnMessageOfferItem itemOffer = getOfferGenerator ().generateItemOffer
-						(player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getGeneralServerKnowledge ());
+					final NewTurnMessageOfferItem itemOffer = getOfferGenerator ().generateItemOffer (player, mom.getPlayers (),
+						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getGeneralServerKnowledge (), mom.getSessionDescription ());
 					if ((itemOffer != null) && (!player.getPlayerDescription ().isHuman ()))
 						getMomAI ().decideOffer (player, itemOffer, mom);
 					

@@ -1226,6 +1226,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-SpellSettings.xml" />
 	</bean>
 	
+	<bean id="newGameLayoutHeroItems" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-HeroItemSettings.xml" />
+	</bean>
+	
 	<bean id="newGameLayoutDebug" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Debug.xml" />
 	</bean>
@@ -1254,6 +1258,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameLayoutFogOfWar" ref="newGameLayoutFogOfWar" />
 		<property name="newGameLayoutUnits" ref="newGameLayoutUnits" />
 		<property name="newGameLayoutSpells" ref="newGameLayoutSpells" />
+		<property name="newGameLayoutHeroItems" ref="newGameLayoutHeroItems" />
 		<property name="newGameLayoutDebug" ref="newGameLayoutDebug" />
 		<property name="newGameLayoutFlagColour" ref="newGameLayoutFlagColour" />
 		<property name="newGameLayoutPicks" ref="newGameLayoutPicks" />

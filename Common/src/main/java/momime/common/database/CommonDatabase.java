@@ -69,6 +69,11 @@ public interface CommonDatabase
 	public List<SpellSetting> getSpellSetting ();
 
 	/**
+	 * @return Complete list of all pre-defined hero item settings
+	 */
+	public List<HeroItemSetting> getHeroItemSetting ();
+	
+	/**
 	 * @return Default map size, difficulty level and so on to preselect on the new game screen
 	 */
 	public NewGameDefaults getNewGameDefaults ();

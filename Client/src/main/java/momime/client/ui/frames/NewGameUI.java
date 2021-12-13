@@ -89,6 +89,7 @@ import momime.common.database.DifficultyLevelNodeStrength;
 import momime.common.database.DifficultyLevelPlane;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
+import momime.common.database.HeroItemSetting;
 import momime.common.database.LandProportion;
 import momime.common.database.LandProportionPlane;
 import momime.common.database.LandProportionTileType;
@@ -170,6 +171,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** XML layout of the "custom spell settings" right hand side */
 	private XmlLayoutContainerEx newGameLayoutSpells;
+	
+	/** XML layout of the "custom hero item settings" right hand side */
+	private XmlLayoutContainerEx newGameLayoutHeroItems;
 	
 	/** XML layout of the "custom debug options" right hand side */
 	private XmlLayoutContainerEx newGameLayoutDebug;
@@ -391,6 +395,15 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** Checkbox for customizing spell settings */
 	JCheckBox customizeSpells;
+
+	/** Label for hero item settings button */
+	private JLabel heroItemSettingsLabel;
+
+	/** Action for selecting pre-defined hero item settings or custom */
+	private CycleAction<HeroItemSetting> changeHeroItemSettingsAction;
+
+	/** Checkbox for customizing hero item settings */
+	JCheckBox customizeHeroItems;
 	
 	/** Label for debug options button */
 	private JLabel debugOptionsLabel;
@@ -1108,6 +1121,26 @@ public final class NewGameUI extends MomClientFrameUI
 
 	/** Spells stolen from fortress when a wizard is banished */
 	private JTextField stolenFromFortress;
+
+	// CUSTOM HERO ITEM SETTINGS PANEL
+	
+	/** Panel key */
+	private final static String HERO_ITEMS_PANEL = "HeroItems";
+	
+	/** Panel */
+	private JPanel heroItemsPanel;
+	
+	/** Options for when we require books in order to receive hero items */
+	private JTextArea requireBooks;
+	
+	/** Require books to receive hero items from treasure rewards? */
+	private JCheckBox requireBooksForTreasureRewards;
+	
+	/** Require books to buy hero items from merchants? */
+	private JCheckBox requireBooksForMerchants;
+	
+	/** Require books to receive hero items from The Gift random event? */
+	private JCheckBox requireBooksForGiftEvent;
 	
 	// DEBUG OPTIONS PANEL
 	
@@ -1304,7 +1337,7 @@ public final class NewGameUI extends MomClientFrameUI
 			// What this does depends on which 'card' is currently displayed
 			if ((newGamePanel.isVisible ()) || (mapSizePanel.isVisible ()) || (landProportionPanel.isVisible ()) || (nodesPanel.isVisible ()) ||
 				(difficulty1Panel.isVisible ()) || (difficulty2Panel.isVisible ()) || (difficulty3Panel.isVisible ()) || (fogOfWarPanel.isVisible ()) ||
-				(unitsPanel.isVisible ()) || (spellsPanel.isVisible ()) || (debugPanel.isVisible ()))
+				(unitsPanel.isVisible ()) || (spellsPanel.isVisible ()) || (heroItemsPanel.isVisible ()) || (debugPanel.isVisible ()))
 				
 				showNextNewGamePanel ();
 			
@@ -1535,6 +1568,7 @@ public final class NewGameUI extends MomClientFrameUI
 		changeFogOfWarSettingsAction = new CycleAction<FogOfWarSetting> ();
 		changeUnitSettingsAction = new CycleAction<UnitSetting> ();
 		changeSpellSettingsAction = new CycleAction<SpellSetting> ();
+		changeHeroItemSettingsAction = new CycleAction<HeroItemSetting> ();
 		changeDebugOptionsAction = new CycleAction<Boolean> ();
 		
 		newGamePanel = new JPanel (new XmlLayoutManager (getNewGameLayoutNew ()));
@@ -1623,6 +1657,15 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		customizeSpells = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
 		newGamePanel.add (customizeSpells, "frmNewGameSpellCustomize");
+		
+		heroItemSettingsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		newGamePanel.add (heroItemSettingsLabel, "frmNewGameHeroItemSettings");
+		
+		newGamePanel.add (getUtils ().createImageButton (changeHeroItemSettingsAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
+			midButtonNormal, midButtonPressed, midButtonNormal), "frmNewGameHeroItemButton");
+		
+		customizeHeroItems = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
+		newGamePanel.add (customizeHeroItems, "frmNewGameHeroItemCustomize");
 		
 		debugOptionsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		newGamePanel.add (debugOptionsLabel, "frmNewGameDebugOptions");
@@ -2406,6 +2449,24 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		cards.add (spellsPanel, SPELLS_PANEL);
 
+		// CUSTOM HERO ITEM SETTINGS PANEL
+		heroItemsPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutHeroItems ()));
+		heroItemsPanel.setOpaque (false);
+
+		requireBooks = getUtils ().createWrappingLabel (MomUIConstants.GOLD, getSmallFont ());
+		heroItemsPanel.add (requireBooks, "frmNewGameCustomHeroItemsRequireBooks");
+		
+		requireBooksForTreasureRewards = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		heroItemsPanel.add (requireBooksForTreasureRewards, "frmNewGameCustomHeroItemsTreasureRewards");
+
+		requireBooksForMerchants = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		heroItemsPanel.add (requireBooksForMerchants, "frmNewGameCustomHeroItemsMerchants");
+
+		requireBooksForGiftEvent = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		heroItemsPanel.add (requireBooksForGiftEvent, "frmNewGameCustomHeroItemsGiftEvent");
+
+		cards.add (heroItemsPanel, HERO_ITEMS_PANEL);
+		
 		// DEBUG OPTIONS PANEL
 		debugPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutDebug ()));
 		debugPanel.setOpaque (false);
@@ -2614,8 +2675,10 @@ public final class NewGameUI extends MomClientFrameUI
 			currentPanel = 8;
 		else if (spellsPanel.isVisible ())
 			currentPanel = 9;
-		else if (debugPanel.isVisible ())
+		else if (heroItemsPanel.isVisible ())
 			currentPanel = 10;
+		else if (debugPanel.isVisible ())
+			currentPanel = 11;
 		else
 			throw new MomException ("showNextNewGamePanel could not determine currently visible panel");
 		
@@ -2655,8 +2718,12 @@ public final class NewGameUI extends MomClientFrameUI
 		else if ((customizeSpells.isSelected ()) && (currentPanel < 9))
 			cardLayout.show (cards, SPELLS_PANEL);
 		
+		// Customize hero items
+		else if ((customizeHeroItems.isSelected ()) && (currentPanel < 10))
+			cardLayout.show (cards, HERO_ITEMS_PANEL);
+		
 		// Debug options
-		else if ((changeDebugOptionsAction.getSelectedItem ()) && (currentPanel < 10))
+		else if ((changeDebugOptionsAction.getSelectedItem ()) && (currentPanel < 11))
 			cardLayout.show (cards, DEBUG_PANEL);
 		
 		// Start up game
@@ -3430,6 +3497,7 @@ public final class NewGameUI extends MomClientFrameUI
 			fogOfWarLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getFogOfWar ()));
 			unitSettingsLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getUnitSettings ()));
 			spellSettingsLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getSpellSettings ()));
+			heroItemSettingsLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getHeroItemSettings ()));
 			debugOptionsLabel.setText			(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getDebugOptions ()));
 			gameNameLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getGameName ()));
 			customizeLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomize ()));
@@ -3601,6 +3669,15 @@ public final class NewGameUI extends MomClientFrameUI
 				researchBonusCapLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getResearchBonusCap ()));
 				stolenFromFortressLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getStolenFromFortress ()));
 			}
+
+			// CUSTOM HERO ITEM SETTINGS PANEL
+			if (getLanguages ().getNewGameScreen ().getCustomHeroItemsTab () != null)
+			{
+				requireBooks.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomHeroItemsTab ().getRequireBooks ()));
+				requireBooksForTreasureRewards.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomHeroItemsTab ().getTreasureRewards ()));
+				requireBooksForMerchants.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomHeroItemsTab ().getMerchants ()));
+				requireBooksForGiftEvent.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomHeroItemsTab ().getGiftEvent ()));
+			}
 			
 			// DEBUG OPTIONS PANEL
 			if (getLanguages ().getNewGameScreen ().getCustomDebugTab () != null)
@@ -3674,6 +3751,8 @@ public final class NewGameUI extends MomClientFrameUI
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getTitle ()));
 		else if (spellsPanel.isVisible ())
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomSpellsTab ().getTitle ()));
+		else if (heroItemsPanel.isVisible ())
+			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomHeroItemsTab ().getTitle ()));
 		else if (debugPanel.isVisible ())
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDebugTab ().getTitle ()));		
 		else if (wizardPanel.isVisible ())
@@ -3754,6 +3833,10 @@ public final class NewGameUI extends MomClientFrameUI
 		for (final SpellSetting spellSetting : changeDatabaseAction.getSelectedItem ().getSpellSetting ())
 			changeSpellSettingsAction.addItem (spellSetting, getLanguageHolder ().findDescription (spellSetting.getSpellSettingDescription ()));
 		
+		changeHeroItemSettingsAction.clearItems ();
+		for (final HeroItemSetting heroItemSetting : changeDatabaseAction.getSelectedItem ().getHeroItemSetting ())
+			changeHeroItemSettingsAction.addItem (heroItemSetting, getLanguageHolder ().findDescription (heroItemSetting.getHeroItemSettingDescription ()));
+		
 		// Select the default values for each button
 		final NewGameDefaults defaults = changeDatabaseAction.getSelectedItem ().getNewGameDefaults ();
 		if (defaults != null)
@@ -3778,6 +3861,9 @@ public final class NewGameUI extends MomClientFrameUI
 
 			while ((defaults.getDefaultSpellSettingID () != null) && (!defaults.getDefaultSpellSettingID ().equals (changeSpellSettingsAction.getSelectedItem ().getSpellSettingID ())))
 				changeSpellSettingsAction.actionPerformed (null);
+			
+			while ((defaults.getDefaultHeroItemSettingID () != null) && (!defaults.getDefaultHeroItemSettingID ().equals (changeHeroItemSettingsAction.getSelectedItem ().getHeroItemSettingID ())))
+				changeHeroItemSettingsAction.actionPerformed (null);
 		}
 	}
 	
@@ -4255,6 +4341,12 @@ public final class NewGameUI extends MomClientFrameUI
 		researchBonusCap.setText								(Integer.valueOf (spellSettings.getSpellBooksResearchBonusCap ()).toString ());
 		stolenFromFortress.setText								(Integer.valueOf (spellSettings.getSpellsStolenFromFortress ()).toString ());
 		
+		// Hero item settings
+		final HeroItemSetting heroItemSettings = changeHeroItemSettingsAction.getSelectedItem ();
+		requireBooksForTreasureRewards.setSelected	(heroItemSettings.isRequireBooksForTreasureRewards ());
+		requireBooksForMerchants.setSelected				(heroItemSettings.isRequireBooksForMerchants ());
+		requireBooksForGiftEvent.setSelected				(heroItemSettings.isRequireBooksForGiftEvent ());
+		
 		// Debug options
 		disableFogOfWar.setSelected (false);
 	}
@@ -4533,6 +4625,14 @@ public final class NewGameUI extends MomClientFrameUI
 			spellSettings.setSpellSettingID (changeSpellSettingsAction.getSelectedItem ().getSpellSettingID ());
 		
 		sd.setSpellSetting (spellSettings);
+		
+		// Hero Item setings
+		final HeroItemSetting heroItemSettings = new HeroItemSetting ();
+		heroItemSettings.setRequireBooksForTreasureRewards	(requireBooksForTreasureRewards.isSelected ());
+		heroItemSettings.setRequireBooksForMerchants			(requireBooksForMerchants.isSelected ());
+		heroItemSettings.setRequireBooksForGiftEvent				(requireBooksForGiftEvent.isSelected ());
+		
+		sd.setHeroItemSetting (heroItemSettings);
 		
 		// Debug options
 		sd.setDisableFogOfWar (disableFogOfWar.isSelected ());
@@ -4914,6 +5014,22 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void setNewGameLayoutSpells (final XmlLayoutContainerEx layout)
 	{
 		newGameLayoutSpells = layout;
+	}
+
+	/**
+	 * @return XML layout of the "custom hero item settings" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutHeroItems ()
+	{
+		return newGameLayoutHeroItems;
+	}
+
+	/**
+	 * @param layout XML layout of the "custom hero item settings" right hand side
+	 */
+	public final void setNewGameLayoutHeroItems (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutHeroItems = layout;
 	}
 	
 	/**

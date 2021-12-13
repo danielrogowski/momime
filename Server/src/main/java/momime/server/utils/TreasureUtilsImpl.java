@@ -229,7 +229,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			// Get a list of all hero items we might possibly get as a reward.
 			final List<NumberedHeroItem> availableHeroItems = new ArrayList<NumberedHeroItem> ();
 			for (final NumberedHeroItem item : gsk.getAvailableHeroItem ())
-				if ((getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), db)) &&
+				if (((!sd.getHeroItemSetting ().isRequireBooksForTreasureRewards ()) || (getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), db))) &&
 					(getHeroItemCalculations ().calculateCraftingCost (item, db) <= remainingTreasureValue))
 					
 					availableHeroItems.add (item);
@@ -561,7 +561,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		
 					final List<NumberedHeroItem> availableHeroItems = new ArrayList<NumberedHeroItem> ();
 					for (final NumberedHeroItem item : gsk.getAvailableHeroItem ())
-						if (getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), db))
+						if ((!sd.getHeroItemSetting ().isRequireBooksForTreasureRewards ()) && (getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), db)))
 							availableHeroItems.add (item);
 				
 					log.debug ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation +

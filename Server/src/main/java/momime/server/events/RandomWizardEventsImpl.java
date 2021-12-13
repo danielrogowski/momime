@@ -1,6 +1,7 @@
 package momime.server.events;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -15,6 +16,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Event;
 import momime.common.database.RecordNotFoundException;
@@ -51,6 +53,9 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
+	
+	/** Hero item calculations */
+	private HeroItemCalculations heroItemCalculations;
 	
 	/**
 	 * Can only call this on events that are targeted at wizards
@@ -129,7 +134,21 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 			
 			// Do we need to find a target hero item?  The Gift
 			else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_GIFT))
-				valid = !mom.getGeneralServerKnowledge ().getAvailableHeroItem ().isEmpty ();
+			{
+				if (!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForGiftEvent ())
+					valid = !mom.getGeneralServerKnowledge ().getAvailableHeroItem ().isEmpty ();
+				else
+				{
+					// Have to see if we can find an item we have the prereqs for
+					final Iterator<NumberedHeroItem> iter = mom.getGeneralServerKnowledge ().getAvailableHeroItem ().iterator ();
+					while ((!valid) && (iter.hasNext ()))
+					{
+						final NumberedHeroItem heroItem = iter.next ();
+						if (getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, pub.getPick (), mom.getServerDB ()))
+							valid = true;
+					}
+				}
+			}
 				
 			// Do we have to have some gold?  Piracy
 			else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_PIRACY))
@@ -222,13 +241,20 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 		
 		else
 		{
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) targetWizard.getPersistentPlayerPublicKnowledge ();
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) targetWizard.getPersistentPlayerPrivateKnowledge ();
 			
 			// Do we need to pick a target hero item?  The Gift
 			if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_GIFT))
 			{
-				final NumberedHeroItem item = mom.getGeneralServerKnowledge ().getAvailableHeroItem ().get
-					(getRandomUtils ().nextInt (mom.getGeneralServerKnowledge ().getAvailableHeroItem ().size ()));
+				final List<NumberedHeroItem> heroItems = new ArrayList<NumberedHeroItem> ();
+				for (final NumberedHeroItem heroItem : mom.getGeneralServerKnowledge ().getAvailableHeroItem ())
+					if ((!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForGiftEvent ()) ||
+						(getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, pub.getPick (), mom.getServerDB ())))
+						
+						heroItems.add (heroItem);
+				
+				final NumberedHeroItem item = heroItems.get (getRandomUtils ().nextInt (heroItems.size ()));
 				log.debug ("Gift event giving wizard " + targetWizard.getPlayerDescription ().getPlayerName () + " hero item " + item.getHeroItemName ());
 				
 				getRandomEvents ().sendRandomEventMessage (event.getEventID (), targetWizard.getPlayerDescription ().getPlayerID (),
@@ -372,5 +398,21 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Hero item calculations
+	 */
+	public final HeroItemCalculations getHeroItemCalculations ()
+	{
+		return heroItemCalculations;
+	}
+
+	/**
+	 * @param calc Hero item calculations
+	 */
+	public final void setHeroItemCalculations (final HeroItemCalculations calc)
+	{
+		heroItemCalculations = calc;
 	}
 }

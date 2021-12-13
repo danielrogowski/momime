@@ -1396,6 +1396,10 @@
 						<xsd:selector xpath="spellSettings" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="newGameScreenHeroItemSettingsPK">
+						<xsd:selector xpath="heroItemSettings" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="newGameScreenDebugOptionsPK">
 						<xsd:selector xpath="debugOptions" />
 						<xsd:field xpath="@language" />
@@ -3262,6 +3266,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="fogOfWar" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitSettings" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellSettings" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="heroItemSettings" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="debugOptions" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="gameName" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="customize" />
@@ -3772,6 +3777,28 @@
 					<xsd:field xpath="@language" />
 				</xsd:key>
    			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customHeroItemsTab" type="momimelangs:customHeroItemsTab">
+				<xsd:key name="customHeroItemsTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customHeroItemsTabRequireBooksPK">
+					<xsd:selector xpath="requireBooks" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customHeroItemsTabTreasureRewardsPK">
+					<xsd:selector xpath="treasureRewards" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customHeroItemsTabMerchantsPK">
+					<xsd:selector xpath="merchants" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customHeroItemsTabGiftEventPK">
+					<xsd:selector xpath="giftEvent" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
    			<xsd:element minOccurs="0" maxOccurs="1" name="customDebugTab" type="momimelangs:customDebugTab">
 				<xsd:key name="customDebugTabTitlePK">
 					<xsd:selector xpath="title" />
@@ -3935,6 +3962,16 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingReductionCap" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchBonusCap" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="stolenFromFortress" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customHeroItemsTab" nxe:submenu="New game UI" nxe:singular="Custom hero item settings" nxe:plural="Custom hero item settings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="requireBooks" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="treasureRewards" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="merchants" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="giftEvent" />
 		</xsd:sequence>
     </xsd:complexType>
 	

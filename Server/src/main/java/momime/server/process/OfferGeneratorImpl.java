@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageOffer;
 import momime.common.messages.NewTurnMessageOfferHero;
@@ -301,6 +303,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	 * @param trueMap True map details
 	 * @param db Lookup lists built over the XML database
 	 * @param gsk General server knowledge
+	 * @param sd Session description
 	 * @return The offer that was generate if there was one, otherwise null
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
@@ -308,12 +311,28 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	 */
 	@Override
 	public final NewTurnMessageOfferItem generateItemOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final CommonDatabase db, final MomGeneralServerKnowledge gsk)
+		final FogOfWarMemory trueMap, final CommonDatabase db, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		NewTurnMessageOfferItem offer = null;
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+
+		// For now (before we rolled to see if we actually get an item), just scan them and exit fast if we find one we can get
+		boolean anyItems = false;
+		if (!sd.getHeroItemSetting ().isRequireBooksForMerchants ())
+			anyItems = (gsk.getAvailableHeroItem ().size () > 0);
+		else
+		{
+			final Iterator<NumberedHeroItem> iter = gsk.getAvailableHeroItem ().iterator ();
+			while ((!anyItems) && (iter.hasNext ()))
+			{
+				final NumberedHeroItem heroItem = iter.next ();
+				if (getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, pub.getPick (), db))
+					anyItems = true;
+			}
+		}		
 		
-		if (gsk.getAvailableHeroItem ().size () > 0)
+		if (anyItems)
 		{
 			// How much fame do we have?
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -322,7 +341,6 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			// 2% chance +1 per each 25 fame
 			int chance = 2 + (fame / 25);
 			
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_FAMOUS) > 0)
 				chance = chance * 2;
 			
@@ -335,7 +353,12 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			if (getRandomUtils ().nextInt (100) < chance)
 			{
 				// Randomly pick an item
-				final NumberedHeroItem item = gsk.getAvailableHeroItem ().get (getRandomUtils ().nextInt (gsk.getAvailableHeroItem ().size ()));
+				final List<NumberedHeroItem> heroItems = new ArrayList<NumberedHeroItem> ();
+				for (final NumberedHeroItem heroItem : gsk.getAvailableHeroItem ())
+					if ((!sd.getHeroItemSetting ().isRequireBooksForMerchants ()) || (getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, pub.getPick (), db)))
+						heroItems.add (heroItem);
+				
+				final NumberedHeroItem item = heroItems.get (getRandomUtils ().nextInt (heroItems.size ()));
 				
 				// How much does it cost?
 				final boolean halfPrice = (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHARISMATIC) > 0);

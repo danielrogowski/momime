@@ -12,6 +12,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MomSessionDescription;
 import momime.common.messages.NewTurnMessageOffer;
 import momime.common.messages.NewTurnMessageOfferHero;
 import momime.common.messages.NewTurnMessageOfferItem;
@@ -64,13 +65,14 @@ public interface OfferGenerator
 	 * @param trueMap True map details
 	 * @param db Lookup lists built over the XML database
 	 * @param gsk General server knowledge
+	 * @param sd Session description
 	 * @return The offer that was generate if there was one, otherwise null
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public NewTurnMessageOfferItem generateItemOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final CommonDatabase db, final MomGeneralServerKnowledge gsk)
+		final FogOfWarMemory trueMap, final CommonDatabase db, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**

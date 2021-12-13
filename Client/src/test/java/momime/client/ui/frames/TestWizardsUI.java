@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtilsImpl;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -28,14 +29,19 @@ import momime.client.languages.database.Simple;
 import momime.client.languages.database.WizardsScreen;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.PlayerPickClientUtilsImpl;
+import momime.client.utils.TextUtilsImpl;
+import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
+import momime.common.database.Pick;
 import momime.common.database.WizardEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 
@@ -59,6 +65,7 @@ public final class TestWizardsUI extends ClientTestData
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
 		simpleLang.getClose ().add (createLanguageText (Language.ENGLISH, "Close"));
+		simpleLang.getAnd ().add (createLanguageText (Language.ENGLISH, "and"));
 		
 		final WizardsScreen wizardsScreenLang = new WizardsScreen ();
 		wizardsScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Wizards"));
@@ -85,6 +92,42 @@ public final class TestWizardsUI extends ClientTestData
 			when (db.findWizard (wizard.getWizardID (), "WizardsUI")).thenReturn (wizard);
 		}
 		
+		for (int n = 1; n <= 6; n++)
+		{
+			final Pick retort = new Pick ();
+			switch (n)
+			{
+				case 1: retort.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Warlord")); break;
+				case 2: retort.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Divine Power")); break;
+				case 3: retort.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Nature Mastery")); break;
+				case 4: retort.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Charismatic")); break;
+				case 5: retort.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Sage Master")); break;
+				case 6: retort.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Node Mastery")); break;
+			}
+			
+			when (db.findPick (eq ("RT0" + n), anyString ())).thenReturn (retort);
+		}
+		
+		for (int n = 1; n <= 5; n++)
+		{
+			final Pick book = new Pick ();
+			final String imageName;
+			switch (n)
+			{
+				case 1: imageName = "life"; break;
+				case 2: imageName = "death"; break;
+				case 3: imageName = "chaos"; break;
+				case 4: imageName = "nature"; break;
+				case 5: imageName = "sorcery"; break;
+				default:
+					throw new Exception ("Don't know image name for pick " + n);
+			}
+			
+			for (int m = 1; m <= 3; m++)
+				book.getBookImageFile ().add ("/momime.client.graphics/picks/" + imageName + "-" + m + ".png");
+			
+			when (db.findPick (eq ("MB0" + n), anyString ())).thenReturn (book);
+		}
 		// Players
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		
@@ -124,6 +167,27 @@ public final class TestWizardsUI extends ClientTestData
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getClientDB ()).thenReturn (db);
 		
+		// First wizard
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		when (wizardClientUtils.getPlayerName (players.get (0))).thenReturn ("Merlin");
+		
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) players.get (0).getPersistentPlayerPublicKnowledge ();
+		for (int n = 1; n <= 6; n++)
+		{
+			final PlayerPick pick = new PlayerPick ();
+			pick.setPickID ("RT0" + n);
+			pick.setQuantity (1);
+			pub.getPick ().add (pick);
+		}
+
+		for (int n = 1; n <= 5; n++)
+		{
+			final PlayerPick pick = new PlayerPick ();
+			pick.setPickID ("MB0" + n);
+			pick.setQuantity (7);
+			pub.getPick ().add (pick);
+		}
+		
 		// Memory
 		final FogOfWarMemory mem = new FogOfWarMemory ();
 		
@@ -143,6 +207,13 @@ public final class TestWizardsUI extends ClientTestData
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/WizardsUI.xml"));
 		layout.buildMaps ();
 		
+		// This is only used for a tiny random number function, easier to use real one than to mock it
+		final PlayerPickClientUtilsImpl playerPickClientUtils = new PlayerPickClientUtilsImpl ();
+		playerPickClientUtils.setRandomUtils (new RandomUtilsImpl ());
+		
+		final TextUtilsImpl textUtils = new TextUtilsImpl ();
+		textUtils.setLanguageHolder (langHolder);
+		
 		// Set up form
 		final WizardsUI wizards = new WizardsUI ();
 		wizards.setWizardsLayout (layout);
@@ -151,12 +222,17 @@ public final class TestWizardsUI extends ClientTestData
 		wizards.setLanguageChangeMaster (langMaster);
 		wizards.setClient (client);
 		wizards.setPlayerColourImageGenerator (gen);
+		wizards.setWizardClientUtils (wizardClientUtils);
 		wizards.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		wizards.setSmallFont (CreateFontsForTests.getSmallFont ());
+		wizards.setMediumFont (CreateFontsForTests.getMediumFont ());
 		wizards.setLargeFont (CreateFontsForTests.getLargeFont ());
+		wizards.setTextUtils (textUtils);
+		wizards.setPlayerPickClientUtils (playerPickClientUtils);
 
 		// Display form		
 		wizards.setVisible (true);
+		wizards.wizardButtons.get (0).doClick ();
 		Thread.sleep (5000);
 		wizards.setVisible (false);
 	}

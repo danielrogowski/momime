@@ -125,7 +125,7 @@ public final class WizardsUI extends MomClientFrameUI
 	private PrototypeFrameCreator prototypeFrameCreator;
 
 	/** List of gem buttons for each wizard */
-	private final List<JButton> wizardButtons = new ArrayList<JButton> ();
+	final List<JButton> wizardButtons = new ArrayList<JButton> ();
 	
 	/** Content pane */
 	private JPanel contentPane;

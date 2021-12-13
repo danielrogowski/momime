@@ -435,9 +435,9 @@
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmWizardsBookshelf">
-		<left>86</left>
+		<left>24</left>
 		<top>363</top>
-		<width>186</width>
+		<width>314</width>
 		<height>48</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>

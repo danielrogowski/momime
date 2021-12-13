@@ -888,29 +888,31 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		// Start phase for the new player
 		startPhase (mom, mom.getGeneralPublicKnowledge ().getCurrentPlayerID ());
-
-		// Tell everyone who the new current player is, and send each of them their New Turn Messages in the process
-		sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), mom.getSessionDescription ().getTurnSystem ());
-
-		// Erase all pending movements on the client, since we're about to process movement
-		if (currentPlayer.getPlayerDescription ().isHuman ())
-			currentPlayer.getConnection ().sendMessageToClient (new ErasePendingMovementsMessage ());
-
-		// Continue the player's movement
-		continueMovement (currentPlayer.getPlayerDescription ().getPlayerID (), mom);
-
-		if (currentPlayer.getPlayerDescription ().isHuman ())
+		if (mom.getPlayers ().size () > 0)
 		{
-			log.info ("Human turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-			currentPlayer.getConnection ().sendMessageToClient (new EndOfContinuedMovementMessage ());
-		}
-		else
-		{
-			log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-			if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
-			
-				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
-				nextTurnButton (mom, currentPlayer);
+			// Tell everyone who the new current player is, and send each of them their New Turn Messages in the process
+			sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), mom.getSessionDescription ().getTurnSystem ());
+	
+			// Erase all pending movements on the client, since we're about to process movement
+			if (currentPlayer.getPlayerDescription ().isHuman ())
+				currentPlayer.getConnection ().sendMessageToClient (new ErasePendingMovementsMessage ());
+	
+			// Continue the player's movement
+			continueMovement (currentPlayer.getPlayerDescription ().getPlayerID (), mom);
+	
+			if (currentPlayer.getPlayerDescription ().isHuman ())
+			{
+				log.info ("Human turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
+				currentPlayer.getConnection ().sendMessageToClient (new EndOfContinuedMovementMessage ());
+			}
+			else
+			{
+				log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
+				if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
+				
+					// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
+					nextTurnButton (mom, currentPlayer);
+			}
 		}
 	}
 
@@ -953,24 +955,26 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		// Process everybody's start phases together
 		startPhase (mom, useOnlyOnePlayerID);
-
-		// Tell all human players to take their go, and send each of them their New Turn Messages in the process
-		sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), mom.getSessionDescription ().getTurnSystem ());
-
-		// Process each player
-		for (final PlayerServerDetails player : mom.getPlayers ())
-			if ((timeStop != null) && (timeStop.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()))
-				nextTurnButton (mom, player);		// Auto end everybody else's turn except the player with Time Stop
-		
-			// Every AI player has their turn
-			else if (!player.getPlayerDescription ().isHuman ())
-			{
-				log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + player.getPlayerDescription ().getPlayerName () + "...");
-				getMomAI ().aiPlayerTurn (player, mom);
+		if (mom.getPlayers ().size () > 0)
+		{
+			// Tell all human players to take their go, and send each of them their New Turn Messages in the process
+			sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), mom.getSessionDescription ().getTurnSystem ());
+	
+			// Process each player
+			for (final PlayerServerDetails player : mom.getPlayers ())
+				if ((timeStop != null) && (timeStop.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()))
+					nextTurnButton (mom, player);		// Auto end everybody else's turn except the player with Time Stop
 			
-				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
-				nextTurnButton (mom, player);
-			}
+				// Every AI player has their turn
+				else if (!player.getPlayerDescription ().isHuman ())
+				{
+					log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + player.getPlayerDescription ().getPlayerName () + "...");
+					getMomAI ().aiPlayerTurn (player, mom);
+				
+					// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
+					nextTurnButton (mom, player);
+				}
+		}
 	}
 
 	/**

@@ -152,7 +152,7 @@ public final class CombatAIImpl implements CombatAI
 		final int result;
 
 		// Go for units with sufficient mana to still cast spells first
-		if (defender.getManaRemaining () >= 10)
+		if ((defender.getManaRemaining () >= 10) && (defender.canCastSpells ()))
 			result = 3;
 
 		// Then go for units with ranged attacks left
@@ -401,7 +401,7 @@ public final class CombatAIImpl implements CombatAI
 							
 							// Next consider casting a spell if the unit is a spellcaster without a ranged attack (e.g. Angel)
 							if ((thisResult == CombatAIMovementResult.NOTHING) &&
-								(tu.getUnit ().getManaRemaining () > 0) && (!getUnitCalculations ().canMakeRangedAttack (tu.getUnit ())))
+								(tu.getUnit ().getManaRemaining () > 0) && (tu.getUnit ().canCastSpells ()) && (!getUnitCalculations ().canMakeRangedAttack (tu.getUnit ())))
 								
 								thisResult = getSpellAI ().decideWhatToCastCombat (currentPlayer, tu.getUnit (), combatLocation, mom);
 							

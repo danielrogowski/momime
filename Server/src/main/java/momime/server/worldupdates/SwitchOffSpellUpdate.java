@@ -215,7 +215,7 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 			
 			// If spell was cast on a unit, then see the spell gave it an HP boost.  If so then removing the spell may have killed it.
 			// e.g. Unit has 5 HP, cast Lionheart on it in combat gives +3 so now has 8 HP.  Unit takes 6 HP damage, then wins the combat.
-			// Lionheart gets cancelled so now unit has -1 HP.
+			// Lionheart gets cancelled so now unit has -1 HP.  Heroism can have the same effect because Elite units have +1 HP per figure.
 			if (trueSpell.getUnitURN () != null)
 			{
 				boolean killed = false;
@@ -226,7 +226,9 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 				if (trueSpell.getUnitSkillID () != null)
 				{
 					final UnitSkillEx unitSkill = mom.getServerDB ().findUnitSkill (trueSpell.getUnitSkillID (), "SwitchOffSpellUpdate");
-					if (unitSkill.getAddsToSkill ().stream ().anyMatch (s -> s.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)))
+					if (unitSkill.getAddsToSkill ().stream ().anyMatch
+						(s -> (s.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ||
+							(s.getAddsToSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)))))
 					{
 						xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());

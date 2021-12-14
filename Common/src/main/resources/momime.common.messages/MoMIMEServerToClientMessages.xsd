@@ -1478,6 +1478,11 @@ So this is what drives the Spell of Return animation on the client, not the AddB
 	<xsd:complexType name="powerBaseHistoryPlayer">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="zeroCount" type="xsd:unsignedShort">
+			    <xsd:annotation>
+		    		<xsd:documentation>Number of zeroes to add, prior to adding the real value below.  Used when player has missed turns because of Time Stop.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="powerBase" type="momimecommon:undoubledProductionValue" />
 		</xsd:sequence>
 	</xsd:complexType>

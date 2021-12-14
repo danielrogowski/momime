@@ -736,7 +736,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// 2) Cities eating more food due to increased population
 			// 3) Completed buildings (both bonuses and increased maintenance)
 			getServerResourceCalculations ().recalculateGlobalProductionValues (useOnlyOnePlayerID, false, mom);
-			storePowerBaseHistory (useOnlyOnePlayerID, mom.getPlayers ());
+			storePowerBaseHistory (useOnlyOnePlayerID, mom.getGeneralPublicKnowledge ().getTurnNumber (), mom.getPlayers ());
 		}
 		
 		// Generate offers for heroes, mercenaries and items to hire or buy
@@ -1336,11 +1336,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * During the start phase, when resources are recalculated, this stores the power base of each wizard, which is public info to every player via the Historian screen.
 	 * 
 	 * @param onlyOnePlayerID If zero, will record power base for all players; if specified will record power base only for the specified player
+	 * @param turnNumber Current turn number, so we can check that the right number of entries have been logged to the power base history
 	 * @param players List of players in the session
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	final void storePowerBaseHistory (final int onlyOnePlayerID, final List<PlayerServerDetails> players) throws JAXBException, XMLStreamException
+	final void storePowerBaseHistory (final int onlyOnePlayerID, final int turnNumber, final List<PlayerServerDetails> players)
+		throws JAXBException, XMLStreamException
 	{
 		final AddPowerBaseHistoryMessage msg = new AddPowerBaseHistoryMessage ();
 		
@@ -1355,13 +1357,20 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();					
 					final int powerBase = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 					
+					// Its possible some tries were missed if the player missed turns due to Time Stop
+					final int zeroCount = turnNumber - pub.getPowerBaseHistory ().size () - 1;
+					
 					// Store on server
+					for (int n = 0; n < zeroCount; n++)
+						pub.getPowerBaseHistory ().add (0);
+
 					pub.getPowerBaseHistory ().add (powerBase);
 					
 					// Send to clients
 					final PowerBaseHistoryPlayer item = new PowerBaseHistoryPlayer ();
 					item.setPlayerID (player.getPlayerDescription ().getPlayerID ());
 					item.setPowerBase (powerBase);
+					item.setZeroCount (zeroCount);
 					msg.getPlayer ().add (item);
 				}
 			}		

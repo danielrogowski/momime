@@ -37,8 +37,48 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.9.8</b></td>
-			<td align=left><b>6 Dec 2021</b></td>
+			<td align=left><b>Current version: 0.9.9.9</b></td>
+			<td align=left><b>14 Dec 2021</b></td>
+			<td align=left>
+				<b>New features:</b>
+				<ul>
+					<li>Random Events
+					<li>New option on New Game settings that allows you to control whether or not you must have the necessary books to craft hero items in order to receive them from treasure rewards, merchants and The Gift random event
+				</ul>
+				
+				<b>Hero item attack modifiers that now work correctly:</b>
+				<ul>
+					<li>Chaos
+					<li>Destruction
+					<li>Death
+					<li>Power Drain
+					<li>Touch attacks on hero weapons when put on an axe used by a hero with Thrown Weapons ability will now attack twice, one as a component of the Thrown attack, and one as a component of the Melee attack
+					<li>Corrected the "Touch Dispels Evil" ability from Holy Avenger (also Angels) to make 1 roll per attacking figure rather than 1 roll per defending figure
+					<li>Corrected the "Touch Dispels Evil" ability from Holy Avenger (also Angels) to only work on chaos and death creatures as well as undead (previously it would hit anything, even normal units)
+					<li>Corrected the "Touch Dispels Evil" ability from Holy Avenger (also Angels) to have -9 resistance penalty when used on undead
+					<li>Stoning now works on ranged weapons
+					<li>+ to hit imbued on hero items now only affects attacks appropriate for the type of weapon, so a +to hit sword does not make
+thrown weapons hit more often, or when put on an archer does not make their ranged attack hit more often.  As this is now a conditional bonus, it no longer shows up on the unit info screen.
+					<li>Giant Strength imbued on hero items works on thrown weapon attacks as well as melee, if imbued on an axe.
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Giant Strength spell will now add +1 to thrown weapons as well as melee attack, and will stack with the Giant Strength hero item skill
+					<li>Fixed bug introduced in 0.9.9.7 where surveryor would say every location had a max population of 0,000
+					<li>Fixed missing image for Water Walking imbued on a hero item
+					<li>Non-caster heroes equipped with a +Spell Skill item were still able to cast spells if owned by AI wizards or put on auto
+					<li>Fixed clipping problem on wizards screen displaying the books a wizard has, so it can fit 34 books instead of 20
+					<li>A unit with Heroism being damaged and then losing Heroism (because dispelled, or it was temporary spell cast in combat) can have same issue as Lionheart that the unit ends up alive but with 0 or negative
+						figures because Elite units have +1 HP, so fixed this
+					<li>Fixed issue with Earthquake and Call the Void leaving a copy of the spell in server memory and in the save game file after it had been targeted
+					<li>Fixed power history graph after casting Time Stop, where the players who are not getting a turn would log no data and so after Time Stop is cancelled, would be recording data for the wrong turn
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.9.8</td>
+			<td align=left>6 Dec 2021</td>
 			<td align=left>
 				<b>Very Rare spells that now work correctly:</b>
 				<ul>
@@ -126,8 +166,8 @@
 					<li>Fixed error trying to determine name of a wizard who was a human player who was defeated and converted to an AI player
 					<li>Fixed bug which prevented AI wizards from capturing nodes on Myrror
 				</ul>
-			</tr>
-		<tr>
+			</td>
+		</tr>
 		<tr>
 			<td align=left>0.9.9.7</td>
 			<td align=left>7 Nov 2011</td>
@@ -203,8 +243,8 @@ High Prayer to not stack with Prayer.  Darkness, Cloud of Shadow and Eternal Nig
 					<li>In 0.9.9.0 Chaos/Sorcery/Nature mastery and Archmage made spells more difficult to dispel, but same had not been applied to Combat Area Effects
 					<li>Stop being able to close the combat screen from taskbar thereby locking up the game
 				</ul>
-			</tr>
-		<tr>
+			</td>
+		</tr>
 		<tr>
 			<td align=left>0.9.9.6</td>
 			<td align=left>28 Sep 2021</td>
@@ -250,8 +290,8 @@ High Prayer to not stack with Prayer.  Darkness, Cloud of Shadow and Eternal Nig
 					<li>Fixed bug when someone starts casting Spell of Mastery, it would show the animation for it, and immediately show the animation for them finishing casting it and winning the game
 						(though game wouldn't end until they really did finish casting it and the animation would play again)
 				</ul>
-			</tr>
-		<tr>
+			</td>
+		</tr>
 		<tr>
 			<td align=left>0.9.9.5</td>
 			<td align=left>17 Aug 2021</td>
@@ -394,7 +434,7 @@ High Prayer to not stack with Prayer.  Darkness, Cloud of Shadow and Eternal Nig
 				<ul>
 					<li>Removed option to change max number of units per map cell to anything other than 9 (I feel this is too tightly tied to the economy and needing to provide food for bigger stacks)
 				</ul>
-			<td>
+			</td>
 		</tr>
 		<tr>
 			<td align=left>0.9.9.2</td>
@@ -442,7 +482,8 @@ High Prayer to not stack with Prayer.  Darkness, Cloud of Shadow and Eternal Nig
 				<ul>
 					<li>Server now exposes MBeans so you can use JConsole to see who is connected, which sessions are running and other useful info
 				</ul>
-			</tr>
+			</td>
+		</tr>
 		<tr>
 			<td align=left>0.9.9.1</td>
 			<td align=left>4 Jun 2021</td>

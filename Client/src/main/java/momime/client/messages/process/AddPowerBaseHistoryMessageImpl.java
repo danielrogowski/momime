@@ -43,6 +43,9 @@ public final class AddPowerBaseHistoryMessageImpl extends AddPowerBaseHistoryMes
 			if (thisPlayer != null)
 			{
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
+				for (int n = 0; n < value.getZeroCount (); n++)
+					pub.getPowerBaseHistory ().add (0);
+				
 				pub.getPowerBaseHistory ().add (value.getPowerBase ());
 			}
 		}

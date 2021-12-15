@@ -472,6 +472,7 @@ public final class CityProcessingImpl implements CityProcessing
 										{
 											// Current building is now finished
 											cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);											
+											cityData.setProductionSoFar (0);
 
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())
@@ -491,59 +492,66 @@ public final class CityProcessingImpl implements CityProcessing
 										// Did we construct a unit?
 										else if (unit != null)
 										{
-											// AI players need to reset construction back to default so they reconsider what to construct next,
-											// otherwise they'd construct the same unit forever.
-											if (!cityOwner.getPlayerDescription ().isHuman ())
+											// First see if it was a settler.  Blocked from constructing settlers if city population is below 2,000 or it would return to being an Outpost.
+											final boolean isSettler = unit.getUnitHasSkill ().stream ().anyMatch (s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST));
+											if ((isSettler) && (cityData.getCityPopulation () < 2000))
+												cityData.setProductionSoFar (productionCost);
+											else
 											{
-												cityData.setCurrentlyConstructingUnitID (null);
-												cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+												cityData.setProductionSoFar (0);
+												
+												// AI players need to reset construction back to default so they reconsider what to construct next,
+												// otherwise they'd construct the same unit forever.
+												if (!cityOwner.getPlayerDescription ().isHuman ())
+												{
+													cityData.setCurrentlyConstructingUnitID (null);
+													cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+												}
+												
+												// Check if the city has space for the unit
+												final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
+													(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
+														mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+	
+												// Show on new turn messages for the player who built it
+												if (cityOwner.getPlayerDescription ().isHuman ())
+												{
+													final NewTurnMessageConstructUnit completedConstruction = new NewTurnMessageConstructUnit ();
+													completedConstruction.setMsgType (NewTurnMessageTypeID.COMPLETED_UNIT);
+													completedConstruction.setUnitID (unit.getUnitID ());
+													completedConstruction.setCityLocation (cityLocation);
+													completedConstruction.setUnitAddBumpType (addLocation.getBumpType ());
+													((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (completedConstruction);
+												}
+	
+												// Now actually add the unit
+												final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
+													unit.getUnitID (), addLocation.getUnitLocation (), cityLocation, null, null, cityOwner, UnitStatusID.ALIVE,
+													mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());												
+												
+												// If the caster has Doom Mastery cast then cast Chaos Channels on the new unit
+												if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+													cityData.getCityOwnerID (), CommonDatabaseConstants.SPELL_ID_DOOM_MASTERY, null, null, null, null) != null)
+												{
+													final Spell chaosChannels = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, "progressConstructionProjects");
+													final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+														(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), chaosChannels, cityData.getCityOwnerID (), newUnit.getUnitURN ());
+													if ((unitSpellEffects != null) && (unitSpellEffects.size () > 0))
+														
+														getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (), cityData.getCityOwnerID (),
+															CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, newUnit.getUnitURN (),
+															unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID (), false, null, null, null, true,
+															mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+												}
+												
+												// If it was a settler, reduce the city population by 1000
+												if (isSettler)
+													cityData.setCityPopulation (cityData.getCityPopulation () - 1000);
 											}
-											
-											// Check if the city has space for the unit
-											final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-												(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
-													mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-
-											// Show on new turn messages for the player who built it
-											if (cityOwner.getPlayerDescription ().isHuman ())
-											{
-												final NewTurnMessageConstructUnit completedConstruction = new NewTurnMessageConstructUnit ();
-												completedConstruction.setMsgType (NewTurnMessageTypeID.COMPLETED_UNIT);
-												completedConstruction.setUnitID (unit.getUnitID ());
-												completedConstruction.setCityLocation (cityLocation);
-												completedConstruction.setUnitAddBumpType (addLocation.getBumpType ());
-												((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (completedConstruction);
-											}
-
-											// Now actually add the unit
-											final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-												unit.getUnitID (), addLocation.getUnitLocation (), cityLocation, null, null, cityOwner, UnitStatusID.ALIVE,
-												mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());												
-											
-											// If the caster has Doom Mastery cast then cast Chaos Channels on the new unit
-											if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-												cityData.getCityOwnerID (), CommonDatabaseConstants.SPELL_ID_DOOM_MASTERY, null, null, null, null) != null)
-											{
-												final Spell chaosChannels = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, "progressConstructionProjects");
-												final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
-													(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), chaosChannels, cityData.getCityOwnerID (), newUnit.getUnitURN ());
-												if ((unitSpellEffects != null) && (unitSpellEffects.size () > 0))
-													
-													getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (), cityData.getCityOwnerID (),
-														CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, newUnit.getUnitURN (),
-														unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID (), false, null, null, null, true,
-														mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-											}
-											
-											// If it was a settler, reduce the city population by 1000
-											if (unit.getUnitHasSkill ().stream ().anyMatch (s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST)))
-												cityData.setCityPopulation (cityData.getCityPopulation () - 1000);
 										}
-
-										// Zero production for the next construction project
-										cityData.setProductionSoFar (0);
-										mom.getWorldUpdates ().recalculateCity (cityLocation);
 									}
+									
+									mom.getWorldUpdates ().recalculateCity (cityLocation);
 								}
 							}
 						}

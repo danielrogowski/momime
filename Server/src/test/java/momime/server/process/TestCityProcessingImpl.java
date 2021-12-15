@@ -504,6 +504,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		// Check results
 		assertEquals (600, cityData.getProductionSoFar ());
 		
+		verify (wu).recalculateCity (new MapCoordinates3DEx (25, 15, 1));
 		verify (wu).process (mom);
 		
 		verifyNoMoreInteractions (wu);
@@ -587,6 +588,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		// Check results
 		assertEquals (600, cityData.getProductionSoFar ());
 		
+		verify (wu).recalculateCity (new MapCoordinates3DEx (25, 15, 1));
 		verify (wu).process (mom);
 		
 		verifyNoMoreInteractions (wu);

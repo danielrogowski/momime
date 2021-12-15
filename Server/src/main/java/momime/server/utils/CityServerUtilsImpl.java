@@ -142,6 +142,10 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		String msg = null;
 		if ((cityData == null) || (cityData.getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 			msg = "You tried to change the construction of a city which isn't yours - change ignored.";
+		
+		else if (cityData.getCityPopulation () < 1000)
+			msg = "You must wait for an Outpost to reach 1,000 population and grow into a Hamlet before you can set its construction"; 
+		
 		else
 		{
 			// Check if we're constructing a building or a unit
@@ -254,7 +258,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityOwnerID (player.getPlayerDescription ().getPlayerID ());
-		cityData.setCityPopulation (1000);
+		cityData.setCityPopulation (300);
 		cityData.setCityRaceID (settlerUnit.getUnitRaceID ());
 		cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 		cityData.setCityName (getOverlandMapServerUtils ().generateCityName (mom.getGeneralServerKnowledge (),

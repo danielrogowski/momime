@@ -1178,7 +1178,7 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		// Is it ours or not (note this can change - the city view might already be open when a city is captured).
 		// Also we have to take care to disable the buttons - just showing the panel doesn't stop you from clicking the buttons that its covering up.
-		notOursPanel.setVisible (!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ()));
+		notOursPanel.setVisible ((!getClient ().getOurPlayerID ().equals (cityData.getCityOwnerID ())) || (cityData.getCityPopulation () < 1000));
 		production.setVisible (!notOursPanel.isVisible ());
 		changeConstructionAction.setEnabled (!notOursPanel.isVisible ());
 		renameButton.setVisible (!notOursPanel.isVisible ());

@@ -177,6 +177,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");		// Orcs can build everything
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
 
@@ -230,6 +231,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");		// Orcs can build everything
 		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
@@ -282,6 +284,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");		// Orcs can build everything
 		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
@@ -334,6 +337,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");		// Orcs can build everything
 		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
@@ -387,6 +391,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");		// Orcs can build everything
 		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, "BL08", null, sys, db));
@@ -434,6 +439,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");
 		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		assertNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
@@ -480,6 +486,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");
 		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
@@ -526,6 +533,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");
 		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
@@ -573,6 +581,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");
 		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		assertNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));
@@ -620,6 +629,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC09");
 		cityData.setCityOwnerID (2);
+		cityData.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (2).getCell ().get (2).setCityData (cityData);
 
 		assertNotNull (utils.validateCityConstruction (player, trueMap, cityLocation, null, "UN001", sys, db));

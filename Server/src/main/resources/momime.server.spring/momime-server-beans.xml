@@ -555,7 +555,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="playerPickServerUtils" ref="playerPickServerUtils" />

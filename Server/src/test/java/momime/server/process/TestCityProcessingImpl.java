@@ -3,6 +3,7 @@ package momime.server.process;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -30,20 +31,16 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.CityCalculations;
-import momime.common.calculations.CityProductionBreakdownsEx;
-import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Plane;
 import momime.common.database.RaceEx;
 import momime.common.database.TaxRate;
 import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
-import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
@@ -51,10 +48,13 @@ import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.NewTurnMessageConstructBuilding;
+import momime.common.messages.NewTurnMessageConstructUnit;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
@@ -81,6 +81,7 @@ import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
+import momime.server.worldupdates.WorldUpdates;
 
 /**
  * Tests the CityProcessingImpl class
@@ -427,44 +428,399 @@ public final class TestCityProcessingImpl extends ServerTestData
 	}
 	
 	/**
-	 * Tests the growCitiesAndProgressConstructionProjects method
+	 * Tests the progressConstructionProjects method when we didn't finish the building we're constructing
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGrowCitiesAndProgressConstructionProjects () throws Exception
+	public final void testProgressConstructionProjects_Building_Unfinished () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
-		myrror.setPlaneNumber (1);
+		final Building building = new Building ();
+		building.setBuildingID ("BL01");
+		building.setProductionCost (1000);
+		when (db.findBuilding ("BL01", "progressConstructionProjects")).thenReturn (building);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
-		planes.add (arcanus);
-		planes.add (myrror);
+		// Session description
+		final OverlandMapSize sys = createOverlandMapSize ();
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setOverlandMapSize (sys);
+		
+		// General server knowledge
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Players
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setTaxRateID ("TR01");
+		
+		final PlayerServerDetails cityOwner = new PlayerServerDetails (null, null, priv, null, null);
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
-		when (db.getPlane ()).thenReturn (planes);
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, 1, "progressConstructionProjects")).thenReturn (cityOwner);		
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		cityData.setCurrentlyConstructingBuildingID ("BL01");
+		cityData.setProductionSoFar (500);
+		
+		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
+		
+		// Production each turn
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
+		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
+		
+		// No event
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
+		// Set up object to test
+		final CityProcessingImpl proc = new CityProcessingImpl ();
+		proc.setCityCalculations (cityCalculations);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		
+		// Run method
+		proc.progressConstructionProjects (0, mom);
+		
+		// Check results
+		assertEquals (600, cityData.getProductionSoFar ());
+		
+		verify (wu).process (mom);
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (cityCalculations);
+	}
+	
+	/**
+	 * Tests the progressConstructionProjects method when we didn't finish the unit we're constructing
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressConstructionProjects_Unit_Unfinished () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitEx unit = new UnitEx ();
+		unit.setUnitID ("UN001");
+		unit.setProductionCost (1000);
+		when (db.findUnit ("UN001", "progressConstructionProjects")).thenReturn (unit);				
+		
+		// Session description
+		final OverlandMapSize sys = createOverlandMapSize ();
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setOverlandMapSize (sys);
+		
+		// General server knowledge
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Players
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setTaxRateID ("TR01");
+		
+		final PlayerServerDetails cityOwner = new PlayerServerDetails (null, null, priv, null, null);
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, 1, "progressConstructionProjects")).thenReturn (cityOwner);		
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		cityData.setCurrentlyConstructingUnitID ("UN001");
+		cityData.setProductionSoFar (500);
+		
+		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
+		
+		// Production each turn
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
+		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
+		
+		// No event
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
+		// Set up object to test
+		final CityProcessingImpl proc = new CityProcessingImpl ();
+		proc.setCityCalculations (cityCalculations);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		
+		// Run method
+		proc.progressConstructionProjects (0, mom);
+		
+		// Check results
+		assertEquals (600, cityData.getProductionSoFar ());
+		
+		verify (wu).process (mom);
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (cityCalculations);
+	}
+	
+	/**
+	 * Tests the progressConstructionProjects method when we finish the building we're constructing
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressConstructionProjects_Building_Finished () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final Building building = new Building ();
 		building.setBuildingID ("BL01");
 		building.setProductionCost (1000);
-		when (db.findBuilding ("BL01", "growCitiesAndProgressConstructionProjects")).thenReturn (building);
-		
-		final UnitEx unit = new UnitEx ();
-		unit.setUnitID ("UN001");
-		unit.setProductionCost (100);
-		when (db.findUnit ("UN001", "growCitiesAndProgressConstructionProjects")).thenReturn (unit);				
+		when (db.findBuilding ("BL01", "progressConstructionProjects")).thenReturn (building);
 		
 		// Session description
 		final OverlandMapSize sys = createOverlandMapSize ();
-		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (sys);
-		sd.setFogOfWarSetting (fogOfWarSettings);
 		
+		// General server knowledge
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Players
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+
+		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setTaxRateID ("TR01");
+		
+		final PlayerServerDetails cityOwner = new PlayerServerDetails (pd, null, priv, null, trans);
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, 1, "progressConstructionProjects")).thenReturn (cityOwner);		
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		cityData.setCurrentlyConstructingBuildingID ("BL01");
+		cityData.setProductionSoFar (950);
+		
+		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
+		
+		// Production each turn
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
+		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
+		
+		// No event
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
+		// Set up object to test
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
+		final CityProcessingImpl proc = new CityProcessingImpl ();
+		proc.setCityCalculations (cityCalculations);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setFogOfWarMidTurnChanges (midTurn);
+		
+		// Run method
+		proc.progressConstructionProjects (0, mom);
+		
+		// Check results
+		assertEquals (0, cityData.getProductionSoFar ());
+		
+		assertEquals (1, trans.getNewTurnMessage ().size ());
+		assertSame (NewTurnMessageConstructBuilding.class, trans.getNewTurnMessage ().get (0).getClass ());
+		final NewTurnMessageConstructBuilding ntm = (NewTurnMessageConstructBuilding) trans.getNewTurnMessage ().get (0);
+		assertEquals (NewTurnMessageTypeID.COMPLETED_BUILDING, ntm.getMsgType ());
+		assertEquals ("BL01", ntm.getBuildingID ());
+		assertEquals (new MapCoordinates3DEx (25, 15, 1), ntm.getCityLocation ());
+
+		verify (midTurn).addBuildingOnServerAndClients (gsk, players, new MapCoordinates3DEx (25, 15, 1), Arrays.asList ("BL01"), null, null, sd, db);
+		
+		verify (wu).recalculateCity (new MapCoordinates3DEx (25, 15, 1));
+		verify (wu).process (mom);
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (midTurn);
+		verifyNoMoreInteractions (cityCalculations);
+	}
+	
+	/**
+	 * Tests the progressConstructionProjects method when we finish the unit we're constructing
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressConstructionProjects_Unit_Finished () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitEx unit = new UnitEx ();
+		unit.setUnitID ("UN001");
+		unit.setProductionCost (1000);
+		when (db.findUnit ("UN001", "progressConstructionProjects")).thenReturn (unit);				
+		
+		// Session description
+		final OverlandMapSize sys = createOverlandMapSize ();
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setOverlandMapSize (sys);
+		
+		// General server knowledge
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		// Players
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		
+		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setTaxRateID ("TR01");
+		
+		final PlayerServerDetails cityOwner = new PlayerServerDetails (pd, null, priv, null, trans);
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, 1, "progressConstructionProjects")).thenReturn (cityOwner);		
+		
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		cityData.setCurrentlyConstructingUnitID ("UN001");
+		cityData.setProductionSoFar (950);
+		
+		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
+		
+		// Production each turn
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
+		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
+		
+		// Where the unit will appear
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (new MapCoordinates3DEx (25, 15, 1), "UN001", 1, trueMap, players, sd, db)).thenReturn
+			(new UnitAddLocation (new MapCoordinates3DEx (26, 15, 1), UnitAddBumpTypeID.BUMPED));
+		
+		// No event
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
+		// Set up object to test
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+
+		final CityProcessingImpl proc = new CityProcessingImpl ();
+		proc.setCityCalculations (cityCalculations);
+		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setUnitServerUtils (unitServerUtils);
+		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// Run method
+		proc.progressConstructionProjects (0, mom);
+		
+		// Check results
+		assertEquals (0, cityData.getProductionSoFar ());
+		assertEquals ("UN001", cityData.getCurrentlyConstructingUnitID ());
+		
+		assertEquals (1, trans.getNewTurnMessage ().size ());
+		assertSame (NewTurnMessageConstructUnit.class, trans.getNewTurnMessage ().get (0).getClass ());
+		final NewTurnMessageConstructUnit ntm = (NewTurnMessageConstructUnit) trans.getNewTurnMessage ().get (0);
+		assertEquals (NewTurnMessageTypeID.COMPLETED_UNIT, ntm.getMsgType ());
+		assertEquals ("UN001", ntm.getUnitID ());
+		assertEquals (new MapCoordinates3DEx (25, 15, 1), ntm.getCityLocation ());
+
+		verify (midTurn).addUnitOnServerAndClients (gsk, "UN001", new MapCoordinates3DEx (26, 15, 1), new MapCoordinates3DEx (25, 15, 1), null, null,
+			cityOwner, UnitStatusID.ALIVE, players, sd, db);
+		
+		verify (wu).recalculateCity (new MapCoordinates3DEx (25, 15, 1));
+		verify (wu).process (mom);
+		
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (midTurn);
+		verifyNoMoreInteractions (cityCalculations);
+	}
+	
+	/**
+	 * Tests the growCities method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGrowCities () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Session description
+		final OverlandMapSize sys = createOverlandMapSize ();
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
-		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setOverlandMapSize (sys);
 		sd.setDifficultyLevel (difficultyLevel);
 		
 		// General server knowledge
@@ -477,229 +833,76 @@ public final class TestCityProcessingImpl extends ServerTestData
 		gsk.setTrueMap (trueMap);
 		
 		// Players
-		final MomPersistentPlayerPublicKnowledge humanPpk = new MomPersistentPlayerPublicKnowledge ();
-		humanPpk.setWizardID ("");				// Custom wizard
-
-		final MomPersistentPlayerPrivateKnowledge humanPriv = new MomPersistentPlayerPrivateKnowledge ();
-		humanPriv.setTaxRateID ("TR01");
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
 		
-		final MomTransientPlayerPrivateKnowledge humanTrans = new MomTransientPlayerPrivateKnowledge ();
-				
-		final PlayerDescription humanPd = new PlayerDescription ();
-		humanPd.setHuman (true);
-		humanPd.setPlayerID (5);
-		final PlayerServerDetails humanPlayer = new PlayerServerDetails (humanPd, humanPpk, humanPriv, null, humanTrans);
+		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setTaxRateID ("TR01");
 		
-		final MomPersistentPlayerPublicKnowledge aiPpk = new MomPersistentPlayerPublicKnowledge ();
-		aiPpk.setWizardID ("WZ01");				// Standard wizard
-		
-		final MomPersistentPlayerPrivateKnowledge aiPriv = new MomPersistentPlayerPrivateKnowledge ();
-		aiPriv.setTaxRateID ("TR02");
-		
-		final PlayerDescription aiPd = new PlayerDescription ();
-		aiPd.setHuman (false);
-		aiPd.setPlayerID (-1);
-		final PlayerServerDetails aiPlayer = new PlayerServerDetails (aiPd, aiPpk, aiPriv, null, null);
-
-		final MomPersistentPlayerPublicKnowledge raidersPpk = new MomPersistentPlayerPublicKnowledge ();
-		raidersPpk.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
-		
-		final MomPersistentPlayerPrivateKnowledge raidersPriv = new MomPersistentPlayerPrivateKnowledge ();
-		raidersPriv.setTaxRateID ("TR03");
-		
-		final PlayerDescription raidersPd = new PlayerDescription ();
-		raidersPd.setHuman (false);
-		raidersPd.setPlayerID (-2);
-		final PlayerServerDetails raidersPlayer = new PlayerServerDetails (raidersPd, raidersPpk, raidersPriv, null, null);
-		
+		final PlayerServerDetails cityOwner = new PlayerServerDetails (pd, null, priv, null, trans);
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		players.add (humanPlayer);
-		players.add (aiPlayer);
-		players.add (raidersPlayer);
-		
-		// Session utils
+
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, humanPd.getPlayerID (), "growCitiesAndProgressConstructionProjects")).thenReturn (humanPlayer);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, aiPd.getPlayerID (), "growCitiesAndProgressConstructionProjects")).thenReturn (aiPlayer);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, raidersPd.getPlayerID (), "growCitiesAndProgressConstructionProjects")).thenReturn (raidersPlayer);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, 1, "growCities")).thenReturn (cityOwner);
 		
-		// Human player is constructing a building, and won't finish it this turn
-		final MapCoordinates3DEx humanLocation = new MapCoordinates3DEx (25, 15, 1);
+		// City
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (4950);
+		
+		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
+		
+		// Max city size
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
+		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)).thenReturn (9000);
+		
+		// Growth rate
+		final CityGrowthRateBreakdown growthRate = new CityGrowthRateBreakdown ();
+		growthRate.setCappedTotal (100);
+		
+		when (cityCalculations.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			new MapCoordinates3DEx (25, 15, 1), 9000, difficultyLevel, db)).thenReturn (growthRate);
+		
+		// No event
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		
+		// Session variables
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 
-		final MemoryGridCell humanCell = trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		final OverlandMapCityData humanCity = new OverlandMapCityData ();
-		humanCity.setCityOwnerID (humanPd.getPlayerID ());
-		humanCity.setCityPopulation (4400);
-		humanCity.setCurrentlyConstructingBuildingID ("BL01");
-		humanCity.setProductionSoFar (500);
-		humanCell.setCityData (humanCity);
-		final int humanCityMaxSize = 12;
-		
-		// AI player is constructing a building, and will finish it now
-		final MapCoordinates3DEx aiLocation = new MapCoordinates3DEx (40, 20, 0);
-
-		final MemoryGridCell aiCell = trueTerrain.getPlane ().get (0).getRow ().get (20).getCell ().get (40);
-		final OverlandMapCityData aiCity = new OverlandMapCityData ();
-		aiCity.setCityOwnerID (aiPd.getPlayerID ());
-		aiCity.setCityPopulation (5700);
-		aiCity.setCurrentlyConstructingBuildingID ("BL01");
-		aiCity.setProductionSoFar (500);
-		aiCell.setCityData (aiCity);
-		final int aiCityMaxSize = 11;
-		
-		// Raiders player is constructing a unit, and will finish it now 
-		final MapCoordinates3DEx raidersLocation = new MapCoordinates3DEx (7, 27, 0);
-
-		final ServerGridCellEx raidersCell = (ServerGridCellEx) trueTerrain.getPlane ().get (0).getRow ().get (27).getCell ().get (7);
-		final OverlandMapCityData raidersCity = new OverlandMapCityData ();
-		raidersCity.setCityOwnerID (raidersPd.getPlayerID ());
-		raidersCity.setCityPopulation (8700);
-		raidersCity.setCurrentlyConstructingUnitID ("UN001");
-		raidersCity.setProductionSoFar (50);
-		final int raidersCityMaxSize = 15;
-		
-		raidersCell.setRaiderCityAdditionalPopulationCap (9000);
-		raidersCell.setCityData (raidersCity);
-		
-		// City production
-		final CityProductionCalculations cityProd = mock (CityProductionCalculations.class);
-		
-		final CityProductionBreakdown humanCityMaxSizeContainer = new CityProductionBreakdown ();
-		humanCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-		humanCityMaxSizeContainer.setCappedProductionAmount (humanCityMaxSize);
-		final CityProductionBreakdown humanProduction = new CityProductionBreakdown ();
-		humanProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		humanProduction.setCappedProductionAmount (150);
-		final CityProductionBreakdownsEx humanCityProductions = new CityProductionBreakdownsEx ();
-		humanCityProductions.getProductionType ().add (humanCityMaxSizeContainer);
-		humanCityProductions.getProductionType ().add (humanProduction);
-		when (cityProd.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			humanLocation, "TR01", sd, null, true, false, db)).thenReturn (humanCityProductions);
-
-		final CityProductionBreakdown aiCityMaxSizeContainer = new CityProductionBreakdown ();
-		aiCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-		aiCityMaxSizeContainer.setCappedProductionAmount (aiCityMaxSize);
-		final CityProductionBreakdown aiProduction = new CityProductionBreakdown ();
-		aiProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		aiProduction.setCappedProductionAmount (650);
-		final CityProductionBreakdownsEx aiCityProductions = new CityProductionBreakdownsEx ();
-		aiCityProductions.getProductionType ().add (aiCityMaxSizeContainer);
-		aiCityProductions.getProductionType ().add (aiProduction);
-		when (cityProd.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			aiLocation, "TR02", sd, null, true, false, db)).thenReturn (aiCityProductions);
-		
-		final CityProductionBreakdown raidersCityMaxSizeContainer = new CityProductionBreakdown ();
-		raidersCityMaxSizeContainer.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-		raidersCityMaxSizeContainer.setCappedProductionAmount (raidersCityMaxSize);
-		final CityProductionBreakdown raidersProduction = new CityProductionBreakdown ();
-		raidersProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		raidersProduction.setCappedProductionAmount (60);
-		final CityProductionBreakdownsEx raidersCityProductions = new CityProductionBreakdownsEx ();
-		raidersCityProductions.getProductionType ().add (raidersCityMaxSizeContainer);
-		raidersCityProductions.getProductionType ().add (raidersProduction);
-		when (cityProd.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			raidersLocation, "TR03", sd, null, true, false, db)).thenReturn (raidersCityProductions);
-		
-		// City growth rate
-		final CityCalculations cityCalc = mock (CityCalculations.class);
-
-		final CityGrowthRateBreakdown humanGrowthRate = new CityGrowthRateBreakdown ();
-		humanGrowthRate.setCappedTotal (650);
-		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			humanLocation, humanCityMaxSize, difficultyLevel, db)).thenReturn (humanGrowthRate);
-
-		final CityGrowthRateBreakdown aiGrowthRate = new CityGrowthRateBreakdown ();
-		aiGrowthRate.setCappedTotal (250);
-		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			aiLocation, aiCityMaxSize, difficultyLevel, db)).thenReturn (aiGrowthRate);
-		
-		final CityGrowthRateBreakdown raidersGrowthRate = new CityGrowthRateBreakdown ();
-		raidersGrowthRate.setCappedTotal (400);
-		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			raidersLocation, raidersCityMaxSize, difficultyLevel, db)).thenReturn (raidersGrowthRate);
-
-		// Rebels in each city
-		final CityUnrestBreakdown humanRebels = new CityUnrestBreakdown ();
-		humanRebels.setFinalTotal (1);
-		final CityUnrestBreakdown aiRebels = new CityUnrestBreakdown ();
-		aiRebels.setFinalTotal (2);
-		final CityUnrestBreakdown raidersRebels = new CityUnrestBreakdown ();
-		raidersRebels.setFinalTotal (3);
-		
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			humanLocation, "TR01", db)).thenReturn (humanRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			aiLocation, "TR02", db)).thenReturn (aiRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			raidersLocation, "TR03", db)).thenReturn (raidersRebels);
-		
-		// Where the unit built by the raider city will appear
-		final UnitAddLocation unitAddLocation = new UnitAddLocation (raidersLocation, UnitAddBumpTypeID.CITY);
-		
-		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (raidersLocation, "UN001", raidersPd.getPlayerID (), trueMap, players, sd, db)).thenReturn (unitAddLocation);
-		
 		// Set up object to test
-		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
-		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
-		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
-		
 		final CityProcessingImpl proc = new CityProcessingImpl ();
-		proc.setCityCalculations (cityCalc);
-		proc.setCityProductionCalculations (cityProd);
-		proc.setServerCityCalculations (serverCityCalc);
-		proc.setFogOfWarMidTurnChanges (midTurn);
-		proc.setUnitServerUtils (unitServerUtils);
+		proc.setCityCalculations (cityCalculations);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		
 		// Run method
-		proc.growCitiesAndProgressConstructionProjects (0, players, gsk, sd, db, null);
+		proc.growCities (1, mom);
 		
-		// Check human city
-		assertEquals (4400+650, humanCity.getCityPopulation ());
-		assertEquals (1, humanCity.getNumberOfRebels ());
+		// Check results
+		assertEquals (5050, cityData.getCityPopulation ());
 		
-		assertEquals (1, humanTrans.getNewTurnMessage ().size ());
-		assertEquals (NewTurnMessageTypeID.POPULATION_CHANGE, humanTrans.getNewTurnMessage ().get (0).getMsgType ());
-		final NewTurnMessagePopulationChange ntm = (NewTurnMessagePopulationChange) humanTrans.getNewTurnMessage ().get (0);
-		assertEquals (humanLocation, ntm.getCityLocation ());
-		assertEquals (4400, ntm.getOldPopulation ());
-		assertEquals (4400+650, ntm.getNewPopulation ());
+		assertEquals (1, trans.getNewTurnMessage ().size ());
+		assertSame (NewTurnMessagePopulationChange.class, trans.getNewTurnMessage ().get (0).getClass ());
+		final NewTurnMessagePopulationChange ntm = (NewTurnMessagePopulationChange) trans.getNewTurnMessage ().get (0);
+		assertEquals (NewTurnMessageTypeID.POPULATION_CHANGE, ntm.getMsgType ());
+		assertEquals (new MapCoordinates3DEx (25, 15, 1), ntm.getCityLocation ());
+		assertEquals (4950, ntm.getOldPopulation ());
+		assertEquals (5050, ntm.getNewPopulation ());
 		
-		assertEquals ("BL01", humanCity.getCurrentlyConstructingBuildingID ());
-		assertEquals (650, humanCity.getProductionSoFar ().intValue ());
+		verify (wu).recalculateCity (new MapCoordinates3DEx (25, 15, 1));
+		verify (wu).process (mom);
 		
-		// Check AI city
-		assertEquals (5700+250, aiCity.getCityPopulation ());
-		assertEquals (2, aiCity.getNumberOfRebels ());
-
-		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, aiCity.getCurrentlyConstructingBuildingID ());
-		assertEquals (0, aiCity.getProductionSoFar ().intValue ());
-		
-		verify (midTurn, times (1)).addBuildingOnServerAndClients (gsk, players, aiLocation, Arrays.asList ("BL01"), null, null, sd, db);
-		
-		// Check raiders city
-		assertEquals (9000, raidersCity.getCityPopulation ());		// Not 9100, because its over the special Raiders cap
-		assertEquals (3, raidersCity.getNumberOfRebels ());
-
-		assertEquals ("UN001", raidersCity.getCurrentlyConstructingUnitID ());
-		assertEquals (0, raidersCity.getProductionSoFar ().intValue ());
-		
-		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", raidersLocation, raidersLocation, null, null,
-			raidersPlayer, UnitStatusID.ALIVE, players, sd, db);
-		
-		// Check calcs were done
-		verify (serverCityCalc, times (3)).calculateCitySizeIDAndMinimumFarmers (eq (players), eq (trueTerrain), eq (trueMap.getBuilding ()),
-			eq (trueMap.getMaintainedSpell ()), any (MapCoordinates3DEx.class), eq (sd), eq (db), isNull ());
-		
-		verify (serverCityCalc, times (3)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
-		
-		// Gets called once per city
-		verify (midTurn, times (3)).updatePlayerMemoryOfCity (eq (trueTerrain), eq (players), any (MapCoordinates3DEx.class), eq (fogOfWarSettings));
-
-		verifyNoMoreInteractions (serverCityCalc);
-		verifyNoMoreInteractions (midTurn);
+		verifyNoMoreInteractions (wu);
+		verifyNoMoreInteractions (cityCalculations);
 	}
 	
 	/**

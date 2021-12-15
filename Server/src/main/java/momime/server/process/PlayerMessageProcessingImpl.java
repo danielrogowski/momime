@@ -716,8 +716,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// Do this AFTER calculating and accumulating production, so checking for units dying due to insufficient rations happens before city populations might change
 			// Also at this point the session may already have ended, if somebody cast Spell of Mastery
 			if ((mom.getPlayers ().size () > 0) && (timeStop == null))
-				getCityProcessing ().growCitiesAndProgressConstructionProjects (useOnlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
-					mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+			{
+				getCityProcessing ().progressConstructionProjects (useOnlyOnePlayerID, mom);
+				getCityProcessing ().growCities (useOnlyOnePlayerID, mom);
+			}
 		}
 		
 		if (mom.getPlayers ().size () > 0)

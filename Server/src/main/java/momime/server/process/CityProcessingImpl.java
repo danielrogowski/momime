@@ -24,8 +24,6 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
-import momime.common.calculations.CityProductionBreakdownsEx;
-import momime.common.calculations.CityProductionCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
@@ -39,7 +37,6 @@ import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpellEffect;
-import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -105,9 +102,6 @@ public final class CityProcessingImpl implements CityProcessing
 	/** City calculations */
 	private CityCalculations cityCalculations;
 
-	/** City production calculations */
-	private CityProductionCalculations cityProductionCalculations;
-	
 	/** Server-only city calculations */
 	private ServerCityCalculations serverCityCalculations;
 	
@@ -414,14 +408,10 @@ public final class CityProcessingImpl implements CityProcessing
 	}
 	
 	/**
-	 * All cities owner grow population a little and progress a little towards construction projects
+	 * All cities progress a little towards construction projects
 	 *
 	 * @param onlyOnePlayerID If zero, will process grow cities + progress construction for all players; if specified will do so only for the specified player
-	 * @param players List of players in this session
-	 * @param gsk Server knowledge structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -429,28 +419,20 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
-		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
+	public final void progressConstructionProjects (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		for (final Plane plane : db.getPlane ())
-			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				{
-					final ServerGridCellEx mc = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
-					final OverlandMapCityData cityData = mc.getCityData ();
+					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())))
 					{
-						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "growCitiesAndProgressConstructionProjects");
+						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "progressConstructionProjects");
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
-						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
 
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
-
-						final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions
-							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (),
-								cityLocation, priv.getTaxRateID (), sd, conjunctionEventID, true, false, db);
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 
 						// Use calculated values to determine construction rate
 						if ((cityData.getCurrentlyConstructingBuildingID () != null) || (cityData.getCurrentlyConstructingUnitID () != null))
@@ -460,24 +442,27 @@ public final class CityProcessingImpl implements CityProcessing
 							Integer productionCost = null;
 							if (cityData.getCurrentlyConstructingBuildingID () != null)
 							{
-								building = db.findBuilding (cityData.getCurrentlyConstructingBuildingID (), "growCitiesAndProgressConstructionProjects");
+								building = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "progressConstructionProjects");
 								productionCost = building.getProductionCost ();
 							}
 
 							Unit unit = null;
 							if (cityData.getCurrentlyConstructingUnitID () != null)
 							{
-								unit = db.findUnit (cityData.getCurrentlyConstructingUnitID (), "growCitiesAndProgressConstructionProjects");
+								unit = mom.getServerDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "progressConstructionProjects");
 								productionCost = unit.getProductionCost ();
 							}
 
 							if (productionCost != null)
 							{
-								final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-								if (productionAmount != null)
+								final int productionThisTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+									cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true,
+									mom.getServerDB (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+								
+								if (productionThisTurn > 0)
 								{
-									cityData.setProductionSoFar (((cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ()) +
-										productionAmount.getCappedProductionAmount () - productionAmount.getConsumptionAmount () + productionAmount.getConvertToProductionAmount ());
+									cityData.setProductionSoFar (((cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ()) + productionThisTurn);
 
 									// Is it finished?
 									if (cityData.getProductionSoFar () >= productionCost)
@@ -499,8 +484,8 @@ public final class CityProcessingImpl implements CityProcessing
 											}
 
 											// Now actually add the building - this will trigger the messages to be sent to the clients
-											getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, players, cityLocation,
-												Arrays.asList (building.getBuildingID ()), null, null, sd, db);
+											getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (), mom.getPlayers (), cityLocation,
+												Arrays.asList (building.getBuildingID ()), null, null, mom.getSessionDescription (), mom.getServerDB ());
 										}
 
 										// Did we construct a unit?
@@ -509,11 +494,15 @@ public final class CityProcessingImpl implements CityProcessing
 											// AI players need to reset construction back to default so they reconsider what to construct next,
 											// otherwise they'd construct the same unit forever.
 											if (!cityOwner.getPlayerDescription ().isHuman ())
+											{
+												cityData.setCurrentlyConstructingUnitID (null);
 												cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+											}
 											
 											// Check if the city has space for the unit
 											final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-												(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), gsk.getTrueMap (), players, sd, db);
+												(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
+													mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())
@@ -527,38 +516,83 @@ public final class CityProcessingImpl implements CityProcessing
 											}
 
 											// Now actually add the unit
-											final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, unit.getUnitID (), addLocation.getUnitLocation (),
-												cityLocation, null, null, cityOwner, UnitStatusID.ALIVE, players, sd, db);
+											final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
+												unit.getUnitID (), addLocation.getUnitLocation (), cityLocation, null, null, cityOwner, UnitStatusID.ALIVE,
+												mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());												
 											
 											// If the caster has Doom Mastery cast then cast Chaos Channels on the new unit
-											if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (gsk.getTrueMap ().getMaintainedSpell (), cityData.getCityOwnerID (),
-												CommonDatabaseConstants.SPELL_ID_DOOM_MASTERY, null, null, null, null) != null)
+											if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+												cityData.getCityOwnerID (), CommonDatabaseConstants.SPELL_ID_DOOM_MASTERY, null, null, null, null) != null)
 											{
-												final Spell chaosChannels = db.findSpell (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, "growCitiesAndProgressConstructionProjects");
+												final Spell chaosChannels = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, "progressConstructionProjects");
 												final List<UnitSpellEffect> unitSpellEffects = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
-													(gsk.getTrueMap ().getMaintainedSpell (), chaosChannels, cityData.getCityOwnerID (), newUnit.getUnitURN ());
+													(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), chaosChannels, cityData.getCityOwnerID (), newUnit.getUnitURN ());
 												if ((unitSpellEffects != null) && (unitSpellEffects.size () > 0))
 													
-													getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (gsk, cityData.getCityOwnerID (),
+													getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (), cityData.getCityOwnerID (),
 														CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, newUnit.getUnitURN (),
-														unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID (), false, null, null, null, true, players, db, sd);
+														unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID (), false, null, null, null, true,
+														mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 											}
+											
+											// If it was a settler, reduce the city population by 1000
+											if (unit.getUnitHasSkill ().stream ().anyMatch (s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST)))
+												cityData.setCityPopulation (cityData.getCityPopulation () - 1000);
 										}
 
 										// Zero production for the next construction project
 										cityData.setProductionSoFar (0);
+										mom.getWorldUpdates ().recalculateCity (cityLocation);
 									}
 								}
 							}
 						}
+					}
+				}
+		
+		mom.getWorldUpdates ().process (mom);
+	}
 
+	/**
+	 * All cities grow population a little
+	 *
+	 * @param onlyOnePlayerID If zero, will process grow cities + progress construction for all players; if specified will do so only for the specified player
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void growCities (final int onlyOnePlayerID, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+				{
+					final ServerGridCellEx mc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+					final OverlandMapCityData cityData = mc.getCityData ();
+					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())))
+					{
+						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "growCities");
+						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
+
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+						
 						// Use calculated values to determine population growth
-						final CityProductionBreakdown productionAmount = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-						final int maxCitySize = (productionAmount == null) ? 0 : productionAmount.getCappedProductionAmount ();
+						final int maxCitySize = getCityCalculations ().calculateSingleCityProduction
+							(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (),
+								mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
+								CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 
 						final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate
-							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (),
-								cityLocation, maxCitySize, sd.getDifficultyLevel (), db).getCappedTotal ();
+							(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, maxCitySize,
+								mom.getSessionDescription ().getDifficultyLevel (), mom.getServerDB ()).getCappedTotal ();
 
 						if (cityGrowthRate != 0)
 						{
@@ -588,22 +622,14 @@ public final class CityProcessingImpl implements CityProcessing
 							}
 
 							// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change
-							getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (),
-								gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, sd, db, conjunctionEventID);
-
-							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
-								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (),
-								 gsk.getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
-
-							getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
+							mom.getWorldUpdates ().recalculateCity (cityLocation);
 						}
-
-						// Now update player memory with all the changes
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 					}
 				}
+		
+		mom.getWorldUpdates ().process (mom);
 	}
-
+	
 	/**
 	 * The method in the FOW class physically removed builidngs from the server and players' memory; this method
 	 * deals with all the knock on effects of buildings being sold, such as paying the gold from the sale to the city owner,
@@ -1276,22 +1302,6 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
-	}
-
-	/**
-	 * @return City production calculations
-	 */
-	public final CityProductionCalculations getCityProductionCalculations ()
-	{
-		return cityProductionCalculations;
-	}
-
-	/**
-	 * @param calc City production calculations
-	 */
-	public final void setCityProductionCalculations (final CityProductionCalculations calc)
-	{
-		cityProductionCalculations = calc;
 	}
 	
 	/**

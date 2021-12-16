@@ -225,6 +225,9 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		if ((cityData == null) || (cityData.getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
 			msg = "You tried to change the number of farmers & workers in a city which isn't yours - change ignored.";
 
+		else if (cityData.getCityPopulation () < 1000)
+			msg = "You must wait for an Outpost to reach 1,000 population and grow into a Hamlet before you can change the number of farmers"; 
+		
 		else if ((optionalFarmers < 0) || (optionalFarmers + cityData.getMinimumFarmers () + cityData.getNumberOfRebels () > cityData.getCityPopulation () / 1000))
 		{
 			log.warn ("Player " + player.getPlayerDescription ().getPlayerID () + " tried to set an invalid number of optional farmers, O" +
@@ -329,7 +332,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	/**
 	 * @param terrain Terrain to search
 	 * @param playerID Player whose cities to look for
-	 * @return Number of cities the player has
+	 * @return Number of cities the player has.  Will not count outposts.
 	 */
 	@Override
 	public final int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID)
@@ -339,8 +342,8 @@ public final class CityServerUtilsImpl implements CityServerUtils
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 				{
-					final OverlandMapCityData terrainData = cell.getCityData ();
-					if ((terrainData != null) && (terrainData.getCityOwnerID () == playerID))
+					final OverlandMapCityData cityData = cell.getCityData ();
+					if ((cityData != null) && (cityData.getCityOwnerID () == playerID) && (cityData.getCityPopulation () >= 1000))
 						numberOfCities++;
 				}
 		

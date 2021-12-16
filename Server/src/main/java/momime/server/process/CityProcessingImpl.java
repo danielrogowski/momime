@@ -427,7 +427,7 @@ public final class CityProcessingImpl implements CityProcessing
 				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				{
 					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())))
+					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())) && (cityData.getCityPopulation () >= 1000))
 					{
 						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "progressConstructionProjects");
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
@@ -665,7 +665,7 @@ public final class CityProcessingImpl implements CityProcessing
 									razeCity (cityLocation, mom);		// Outposts can die off completely
 								
 								// Show on new turn messages?
-								if ((cityOwner.getPlayerDescription ().isHuman ()) && ((newPopulation > 1000) || (newPopulation <= 0)))
+								if ((cityOwner.getPlayerDescription ().isHuman ()) && ((newPopulation >= 1000) || (newPopulation <= 0)))
 								{
 									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
 									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
@@ -952,7 +952,7 @@ public final class CityProcessingImpl implements CityProcessing
 					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					{
 						final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
-						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 							

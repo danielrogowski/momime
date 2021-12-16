@@ -460,7 +460,8 @@ public final class SpellAIImpl implements SpellAI
 							for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 							{
 								final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-								if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+								if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
+									(mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 								{
 									final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 									

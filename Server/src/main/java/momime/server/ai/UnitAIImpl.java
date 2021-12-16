@@ -167,7 +167,7 @@ public final class UnitAIImpl implements UnitAI
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
 					final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
 					{
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 						

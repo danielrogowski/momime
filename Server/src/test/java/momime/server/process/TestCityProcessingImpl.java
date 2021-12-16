@@ -471,6 +471,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		cityData.setCityOwnerID (1);
 		cityData.setCurrentlyConstructingBuildingID ("BL01");
 		cityData.setProductionSoFar (500);
+		cityData.setCityPopulation (1000);
 		
 		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
 		
@@ -555,6 +556,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		cityData.setCityOwnerID (1);
 		cityData.setCurrentlyConstructingUnitID ("UN001");
 		cityData.setProductionSoFar (500);
+		cityData.setCityPopulation (1000);
 		
 		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
 		
@@ -643,6 +645,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		cityData.setCityOwnerID (1);
 		cityData.setCurrentlyConstructingBuildingID ("BL01");
 		cityData.setProductionSoFar (950);
+		cityData.setCityPopulation (1000);
 		
 		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
 		
@@ -744,6 +747,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		cityData.setCityOwnerID (1);
 		cityData.setCurrentlyConstructingUnitID ("UN001");
 		cityData.setProductionSoFar (950);
+		cityData.setCityPopulation (1000);
 		
 		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
 		
@@ -1340,7 +1344,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final OverlandMapCityData cityData1 = new OverlandMapCityData ();
 		cityData1.setCityOwnerID (3);
-		cityData1.setCityPopulation (1);
+		cityData1.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (15).getCell ().get (23).setCityData (cityData1);
 		
 		final CityUnrestBreakdown breakdown1 = new CityUnrestBreakdown ();
@@ -1351,18 +1355,16 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final OverlandMapCityData cityData2 = new OverlandMapCityData ();
 		cityData2.setCityOwnerID (3);
-		cityData2.setCityPopulation (1);
+		cityData2.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (15).getCell ().get (24).setCityData (cityData2);
 		
 		final CityUnrestBreakdown breakdown2 = new CityUnrestBreakdown ();
 		breakdown2.setFinalTotal (5);
 		
 		// Someone else's city
-		// final MapCoordinates3DEx cityLocation3 = new MapCoordinates3DEx (25, 15, 0);
-		
 		final OverlandMapCityData cityData3 = new OverlandMapCityData ();
 		cityData3.setCityOwnerID (4);
-		cityData3.setCityPopulation (1);
+		cityData3.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (0).getRow ().get (15).getCell ().get (25).setCityData (cityData3);
 		
 		final CityUnrestBreakdown breakdown3 = new CityUnrestBreakdown ();

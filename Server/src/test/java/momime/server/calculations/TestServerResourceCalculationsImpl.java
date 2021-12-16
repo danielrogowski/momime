@@ -463,10 +463,12 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Cities used below
 		final OverlandMapCityData ourCity = new OverlandMapCityData ();
 		ourCity.setCityOwnerID (2);
+		ourCity.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (ourCity);
 
 		final OverlandMapCityData enemyCity = new OverlandMapCityData ();
 		enemyCity.setCityOwnerID (3);
+		enemyCity.setCityPopulation (1000);
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (21).setCityData (enemyCity);
 
 		// Unit with wrong type of consumption

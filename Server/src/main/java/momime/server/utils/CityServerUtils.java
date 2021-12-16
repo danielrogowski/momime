@@ -98,7 +98,7 @@ public interface CityServerUtils
 	/**
 	 * @param terrain Terrain to search
 	 * @param playerID Player whose cities to look for
-	 * @return Number of cities the player has
+	 * @return Number of cities the player has.  Will not count outposts.
 	 */
 	public int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID);
 

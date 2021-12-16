@@ -544,7 +544,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// There's a city here
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityPopulation (1);
+		cityData.setCityPopulation (1000);
 		cityData.setCityOwnerID (defendingPd.getPlayerID ());
 
 		final ServerGridCellEx tc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
@@ -654,7 +654,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// There's a city here, owned by the defender
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCityPopulation (1);
+		cityData.setCityPopulation (1000);
 		cityData.setCityOwnerID (defendingPd.getPlayerID ());
 		
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);

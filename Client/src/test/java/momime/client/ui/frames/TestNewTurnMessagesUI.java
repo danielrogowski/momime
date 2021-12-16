@@ -33,11 +33,7 @@ import momime.client.utils.TextUtilsImpl;
 import momime.common.database.CommonDatabase;
 import momime.common.database.HeroItemType;
 import momime.common.database.Language;
-import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NumberedHeroItem;
-import momime.common.messages.OverlandMapCityData;
 
 /**
  * Tests the NewTurnMessagesUI class
@@ -73,29 +69,8 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
-		// City names
-		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (createOverlandMapCoordinateSystem ());
-		
-		final OverlandMapCityData city1 = new OverlandMapCityData ();
-		city1.setCityName ("Foo");
-		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setCityData (city1);
-
-		final OverlandMapCityData city2 = new OverlandMapCityData ();
-		city2.setCityName ("Bar");
-		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (21).setCityData (city2);
-
-		final OverlandMapCityData city3 = new OverlandMapCityData ();
-		city3.setCityName ("Pants");
-		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (22).setCityData (city3);
-
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		fow.setMap (terrain);
-		
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		priv.setFogOfWarMemory (fow);
-		
+		// Client
 		final MomClient client = mock (MomClient.class);
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Dummy list of messages to display
 		final TextUtilsImpl textUtils = new TextUtilsImpl ();
@@ -113,6 +88,7 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 		msg1.setSmallFont (CreateFontsForTests.getSmallFont ());
 		msg1.setClient (client);
 		msg1.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
+		msg1.setCityName ("Foo");
 		msg1.setTextUtils (textUtils);
 		msg1.setOldPopulation (4567);
 		msg1.setNewPopulation (5678);
@@ -123,6 +99,7 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 		msg2.setSmallFont (CreateFontsForTests.getSmallFont ());
 		msg2.setClient (client);
 		msg2.setCityLocation (new MapCoordinates3DEx (21, 10, 0));
+		msg2.setCityName ("Bar");
 		msg2.setTextUtils (textUtils);
 		msg2.setOldPopulation (14567);
 		msg2.setNewPopulation (15678);
@@ -139,6 +116,7 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 		msg3.setSmallFont (CreateFontsForTests.getSmallFont ());
 		msg3.setClient (client);
 		msg3.setCityLocation (new MapCoordinates3DEx (22, 10, 0));
+		msg3.setCityName ("Pants");
 		msg3.setTextUtils (textUtils);
 		msg3.setOldPopulation (23100);
 		msg3.setNewPopulation (22850);
@@ -196,28 +174,8 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
-		// City names
-		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (createOverlandMapCoordinateSystem ());
-		
-		for (int x = 1; x <= 20; x++)
-		{
-			final OverlandMapCityData city1 = new OverlandMapCityData ();
-			city1.setCityName ("City #" + x);
-			terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x).setCityData (city1);
-
-			final OverlandMapCityData city2 = new OverlandMapCityData ();
-			city2.setCityName ("City #" + (20+x));
-			terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (x).setCityData (city2);
-		}
-
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		fow.setMap (terrain);
-		
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		priv.setFogOfWarMemory (fow);
-		
+		// Client
 		final MomClient client = mock (MomClient.class);
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Dummy list of messages to display
 		final TextUtilsImpl textUtils = new TextUtilsImpl ();
@@ -237,6 +195,7 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 			msg.setSmallFont (CreateFontsForTests.getSmallFont ());
 			msg.setClient (client);
 			msg.setCityLocation (new MapCoordinates3DEx (x, 10, 0));
+			msg.setCityName ("City #" + x);
 			msg.setTextUtils (textUtils);
 			msg.setOldPopulation (4567);
 			msg.setNewPopulation (5678);
@@ -256,6 +215,7 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 			msg.setSmallFont (CreateFontsForTests.getSmallFont ());
 			msg.setClient (client);
 			msg.setCityLocation (new MapCoordinates3DEx (x, 11, 0));
+			msg.setCityName ("City #" + (20+x));
 			msg.setTextUtils (textUtils);
 			msg.setOldPopulation (23100);
 			msg.setNewPopulation (22850);
@@ -322,25 +282,8 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
-		// City names
-		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (createOverlandMapCoordinateSystem ());
-		
-		final OverlandMapCityData city1 = new OverlandMapCityData ();
-		city1.setCityName ("Normal city");
-		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (0).setCityData (city1);
-
-		final OverlandMapCityData city2 = new OverlandMapCityData ();
-		city2.setCityName ("City with a ridiculously long name so it has to wrap over multiple lines to fit on the scroll");
-		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (1).setCityData (city2);
-
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		fow.setMap (terrain);
-		
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		priv.setFogOfWarMemory (fow);
-		
+		// Client		
 		final MomClient client = mock (MomClient.class);
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Items offered
@@ -372,6 +315,7 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 			msg.setSmallFont (CreateFontsForTests.getSmallFont ());
 			msg.setClient (client);
 			msg.setCityLocation (new MapCoordinates3DEx (x, 10, 0));
+			msg.setCityName ((x == 0) ? "Normal city" : "City with a ridiculously long name so it has to wrap over multiple lines to fit on the scroll");
 			msg.setTextUtils (textUtils);
 			msg.setOldPopulation (4567);
 			msg.setNewPopulation (5678);

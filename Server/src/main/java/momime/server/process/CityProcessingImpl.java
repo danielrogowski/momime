@@ -1169,7 +1169,8 @@ public final class CityProcessingImpl implements CityProcessing
 				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
-						final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						final MemoryGridCell mc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+						final OverlandMapTerrainData terrainData = mc.getTerrainData ();
 						boolean terrainUpdated = false;
 						if ((terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()))
 						{
@@ -1187,6 +1188,14 @@ public final class CityProcessingImpl implements CityProcessing
 						if (terrainUpdated)
 							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
 								new MapCoordinates3DEx (x, y, z), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+						
+						// Remove any outposts
+						if ((mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()))
+						{
+							mc.setCityData (null);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+								new MapCoordinates3DEx (x, y, z), mom.getSessionDescription ().getFogOfWarSetting ());
+						}
 					}
 			
 			// If it was a human player, convert them to AI and possibly end the session

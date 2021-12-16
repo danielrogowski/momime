@@ -29,6 +29,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.Event;
 import momime.common.database.MapFeature;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
@@ -37,6 +38,7 @@ import momime.common.database.ProductionAmountBucketID;
 import momime.common.database.ProductionType;
 import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.Race;
+import momime.common.database.RaceEx;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RaceUnrest;
 import momime.common.database.RecordNotFoundException;
@@ -60,6 +62,11 @@ import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
 import momime.common.internal.CityUnrestBreakdownSpell;
+import momime.common.internal.OutpostDeathChanceBreakdown;
+import momime.common.internal.OutpostDeathChanceBreakdownSpell;
+import momime.common.internal.OutpostGrowthChanceBreakdown;
+import momime.common.internal.OutpostGrowthChanceBreakdownMapFeature;
+import momime.common.internal.OutpostGrowthChanceBreakdownSpell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
@@ -603,6 +610,111 @@ public final class CityCalculationsImpl implements CityCalculations
 		breakdown.setCurrentPopulation (currentPopulation);
 		breakdown.setMaximumPopulation (maximumPopulation);		
 
+		return breakdown;
+	}
+	
+	/**
+	 * Calculates the percentage chance of an outpost growing
+	 * 
+	 * @param map Known terrain
+	 * @param spells Known spells
+	 * @param cityLocation Location of the city to calculate for
+	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param db Lookup lists built over the XML database
+	 * @return Breakdown of all the values used in calculating the chance of this outpost growing
+	 * @throws RecordNotFoundException If we encounter a race, building or city spell effect that can't be found
+	 */
+	@Override
+	public final OutpostGrowthChanceBreakdown calculateOutpostGrowthChance (final MapVolumeOfMemoryGridCells map, final List<MemoryMaintainedSpell> spells,
+		final MapCoordinates3DEx cityLocation, final int maxCitySize, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		
+		// Start off breakdown
+		final OutpostGrowthChanceBreakdown breakdown = new OutpostGrowthChanceBreakdown ();
+		breakdown.setMaximumPopulation (maxCitySize);
+		
+		final RaceEx race = db.findRace (cityData.getCityRaceID (), "calculateOutpostGrowthChance");
+		breakdown.setRacialGrowthModifier (race.getOutpostRacialGrowthModifier ());
+		breakdown.setTotalChance (breakdown.getMaximumPopulation () + breakdown.getRacialGrowthModifier ());
+		
+		// Map features
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
+		for (final SquareMapDirection direction : DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
+			{
+				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+				if (terrainData.getMapFeatureID () != null)
+				{
+					final MapFeatureEx mapFeature = db.findMapFeature (terrainData.getMapFeatureID (), "calculateOutpostGrowthChance");
+					if (mapFeature.getOutpostMapFeatureGrowthModifier () != null)
+					{
+						final OutpostGrowthChanceBreakdownMapFeature mapFeatureBreakdown = new OutpostGrowthChanceBreakdownMapFeature ();
+						mapFeatureBreakdown.setMapFeatureID (terrainData.getMapFeatureID ());
+						mapFeatureBreakdown.setMapFeatureModifier (mapFeature.getOutpostMapFeatureGrowthModifier ());
+						breakdown.getMapFeatureModifier ().add (mapFeatureBreakdown);
+						
+						breakdown.setTotalChance (breakdown.getTotalChance () + mapFeature.getOutpostMapFeatureGrowthModifier ());
+					}
+				}
+			}
+		
+		// Spells
+		for (final MemoryMaintainedSpell spell : spells)
+			if ((cityLocation.equals (spell.getCityLocation ())) && (spell.getCitySpellEffectID () != null))
+			{
+				final CitySpellEffect citySpellEffect = db.findCitySpellEffect (spell.getCitySpellEffectID (), "calculateOutpostGrowthChance");
+				if (citySpellEffect.getOutpostSpellGrowthModifier () != null)
+				{
+					final OutpostGrowthChanceBreakdownSpell spellBreakdown = new OutpostGrowthChanceBreakdownSpell ();
+					spellBreakdown.setSpellID (spell.getSpellID ());
+					spellBreakdown.setSpellModifier (citySpellEffect.getOutpostSpellGrowthModifier ());
+					breakdown.getSpellModifier ().add (spellBreakdown);
+					
+					breakdown.setTotalChance (breakdown.getTotalChance () + citySpellEffect.getOutpostSpellGrowthModifier ());
+				}
+			}
+		
+		return breakdown;
+	}
+
+	/**
+	 * Calculates the percentage chance of an outpost shrinking
+	 * 
+	 * @param spells Known spells
+	 * @param cityLocation Location of the city to calculate for
+	 * @param db Lookup lists built over the XML database
+	 * @return Breakdown of all the values used in calculating the chance of this outpost growing
+	 * @throws RecordNotFoundException If we encounter a spell that can't be found
+	 */
+	@Override
+	public final OutpostDeathChanceBreakdown calculateOutpostDeathChance (final List<MemoryMaintainedSpell> spells,
+		final MapCoordinates3DEx cityLocation, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		// Start off breakdown, fixed at 5%
+		final OutpostDeathChanceBreakdown breakdown = new OutpostDeathChanceBreakdown ();
+		breakdown.setBaseChance (5);
+		breakdown.setTotalChance (breakdown.getBaseChance ());
+		
+		// Spells
+		for (final MemoryMaintainedSpell spell : spells)
+			if ((cityLocation.equals (spell.getCityLocation ())) && (spell.getCitySpellEffectID () != null))
+			{
+				final CitySpellEffect citySpellEffect = db.findCitySpellEffect (spell.getCitySpellEffectID (), "calculateOutpostDeathChance");
+				if (citySpellEffect.getOutpostSpellDeathModifier () != null)
+				{
+					final OutpostDeathChanceBreakdownSpell spellBreakdown = new OutpostDeathChanceBreakdownSpell ();
+					spellBreakdown.setSpellID (spell.getSpellID ());
+					spellBreakdown.setSpellModifier (citySpellEffect.getOutpostSpellDeathModifier ());
+					breakdown.getSpellModifier ().add (spellBreakdown);
+					
+					breakdown.setTotalChance (breakdown.getTotalChance () + citySpellEffect.getOutpostSpellDeathModifier ());
+				}
+			}
+		
 		return breakdown;
 	}
 

@@ -177,6 +177,11 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 			<xsd:extension base="momimemsgs:newTurnMessageData">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="cityName" type="momimecommon:description">
+					    <xsd:annotation>
+				    		<xsd:documentation>Client may not be able to look this up themselves if the message is about an Outpost being abandoned.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="oldPopulation" type="momimecommon:cityPopulation" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="newPopulation" type="momimecommon:cityPopulation" />
 				</xsd:sequence>

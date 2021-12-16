@@ -116,6 +116,66 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 		</xsd:complexContent>
 	</xsd:complexType>
 
+	<xsd:complexType name="outpostGrowthChanceBreakdown">
+		<xsd:annotation>
+			<xsd:documentation>Outposts (cities less than 1,000 people) have their own rules to calculate growth rate, which calculates a
+percentage chance that the population will grow, rather than calculating the amount it will grow by.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="maximumPopulation" type="momimecommon:percentage" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="racialGrowthModifier" type="momimecommon:percentage" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="totalChance" type="momimecommon:percentage" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureModifier" type="momimeinternal:outpostGrowthChanceBreakdownMapFeature" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellModifier" type="momimeinternal:outpostGrowthChanceBreakdownSpell" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="outpostGrowthChanceBreakdownMapFeature">
+		<xsd:annotation>
+			<xsd:documentation>Stores the boost to the percentage chance of an outpost growing provided by one map feature.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="mapFeatureID" type="momimecommon:mapFeatureID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="mapFeatureModifier" type="momimecommon:percentage" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="outpostGrowthChanceBreakdownSpell">
+		<xsd:annotation>
+			<xsd:documentation>Stores the boost to the percentage chance of an outpost growing provided by one beneficial spell.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellModifier" type="momimecommon:percentage" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="outpostDeathChanceBreakdown">
+		<xsd:annotation>
+			<xsd:documentation>Outposts (cities less than 1,000 people) have their own rules to calculate death rate, which calculates a
+percentage chance that the population will shrink, rather than calculating the amount it will shrink by.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseChance" type="momimecommon:percentage">
+				<xsd:annotation>
+					<xsd:documentation>Locked at 5%.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="totalChance" type="momimecommon:percentage" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellModifier" type="momimeinternal:outpostDeathChanceBreakdownSpell" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="outpostDeathChanceBreakdownSpell">
+		<xsd:annotation>
+			<xsd:documentation>Stores the boost to the percentage chance of an outpost dying provided by one harmful spell.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellModifier" type="momimecommon:percentage" />
+		</xsd:sequence>
+	</xsd:complexType>
+
 	<!-- City unrest calculation -->
 
 	<xsd:complexType name="cityUnrestBreakdownBuilding">

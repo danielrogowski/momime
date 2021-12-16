@@ -87,25 +87,26 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
 		
+		final String raceID = (cityData != null) ? cityData.getCityRaceID () : null;
+		final Race cityRace = (raceID != null) ? db.findRace (raceID, "calculateAllCityProductions") : null;
+
+		final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
+		final PlayerPublicDetails cityOwner = ((players != null) && (cityOwnerID != null)) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
+		final List<PlayerPick> cityOwnerPicks = (cityOwner != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick () : null;
+
+		// Food production from surrounding tiles
+		final CityProductionBreakdown food = getCityCalculations ().listCityFoodProductionFromTerrainTiles (map, cityLocation, sd.getOverlandMapSize (), db);
+		productionValues.getProductionType ().add (food);
+
+		// Production % increase from surrounding tiles
+		final CityProductionBreakdown production = getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
+			(map, spells, cityLocation, sd.getOverlandMapSize (), db);
+		productionValues.getProductionType ().add (production);
+	
 		// If its still an outpost, it produces and consumes nothing (especially that it doesn't get bonuses from map features like Gold mines)
+		// But allow calculating food (max city size) and production % bonus and gold % bonus
 		if ((cityData == null) || (cityData.getCityPopulation () >= 1000))
 		{
-			final String raceID = (cityData != null) ? cityData.getCityRaceID () : null;
-			final Race cityRace = (raceID != null) ? db.findRace (raceID, "calculateAllCityProductions") : null;
-	
-			final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
-			final PlayerPublicDetails cityOwner = ((players != null) && (cityOwnerID != null)) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
-			final List<PlayerPick> cityOwnerPicks = (cityOwner != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick () : null;
-	
-			// Food production from surrounding tiles
-			final CityProductionBreakdown food = getCityCalculations ().listCityFoodProductionFromTerrainTiles (map, cityLocation, sd.getOverlandMapSize (), db);
-			productionValues.getProductionType ().add (food);
-	
-			// Production % increase from surrounding tiles
-			final CityProductionBreakdown production = getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
-				(map, spells, cityLocation, sd.getOverlandMapSize (), db);
-			productionValues.getProductionType ().add (production);
-	
 			// Deal with people
 			if (includeProductionAndConsumptionFromPopulation)
 			{
@@ -200,36 +201,36 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 			// Production from nearby map features
 			// Have to do this after buildings, so we can have discovered if we have the miners' guild bonus to map features
 			getCityCalculations ().addProductionFromMapFeatures (productionValues, map, cityLocation, sd.getOverlandMapSize (), db, raceMineralBonusMultipler, buildingMineralPercentageBonus);
-			
-			// Halve and cap food (max city size) production first, because if calculatePotential=true then we need to know the potential max city size before
-			// we can calculate the gold trade % cap.
-			// Have to do this after map features are added in, since wild game increase max city size.
-			getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, food, 0, sd.getDifficultyLevel (), db);
-			
-			// Gold trade % from rivers and oceans
-			// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
-			// into considering the potential maximum size this city will reach and cap the gold trade % accordingly
-			final CityProductionBreakdown gold = productionValues.findOrAddProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-			getCityCalculations ().calculateGoldTradeBonus (gold, map, cityLocation, (calculatePotential ? food.getCappedProductionAmount () : null), sd.getOverlandMapSize (), db);
-	
-			// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
-			for (final CityProductionBreakdown thisProduction : productionValues.getProductionType ())
-				if (thisProduction != food)
-					getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, thisProduction, food.getProductionAmountPlusPercentageBonus (),
-						sd.getDifficultyLevel (), db);
-			
-			// Convert production to gold, if set to trade goods
-			final String currentlyConstructingBuildingID = (cityData != null) ? cityData.getCurrentlyConstructingBuildingID () : null;
-			if ((CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (currentlyConstructingBuildingID)) && (production.getCappedProductionAmount () > 1))
-			{
-				gold.setConvertFromProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-				gold.setConvertFromProductionAmount (production.getCappedProductionAmount () - production.getConsumptionAmount ());
-				gold.setConvertToProductionAmount (gold.getConvertFromProductionAmount () / 2);
-			}
-	
-			// Sort the list
-			Collections.sort (productionValues.getProductionType (), new CityProductionBreakdownSorter ());
 		}
+		
+		// Halve and cap food (max city size) production first, because if calculatePotential=true then we need to know the potential max city size before
+		// we can calculate the gold trade % cap.
+		// Have to do this after map features are added in, since wild game increase max city size.
+		getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, food, 0, sd.getDifficultyLevel (), db);
+		
+		// Gold trade % from rivers and oceans
+		// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
+		// into considering the potential maximum size this city will reach and cap the gold trade % accordingly
+		final CityProductionBreakdown gold = productionValues.findOrAddProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		getCityCalculations ().calculateGoldTradeBonus (gold, map, cityLocation, (calculatePotential ? food.getCappedProductionAmount () : null), sd.getOverlandMapSize (), db);
+
+		// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
+		for (final CityProductionBreakdown thisProduction : productionValues.getProductionType ())
+			if (thisProduction != food)
+				getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, thisProduction, food.getProductionAmountPlusPercentageBonus (),
+					sd.getDifficultyLevel (), db);
+		
+		// Convert production to gold, if set to trade goods
+		final String currentlyConstructingBuildingID = (cityData != null) ? cityData.getCurrentlyConstructingBuildingID () : null;
+		if ((CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (currentlyConstructingBuildingID)) && (production.getCappedProductionAmount () > 1))
+		{
+			gold.setConvertFromProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+			gold.setConvertFromProductionAmount (production.getCappedProductionAmount () - production.getConsumptionAmount ());
+			gold.setConvertToProductionAmount (gold.getConvertFromProductionAmount () / 2);
+		}
+		
+		// Sort the list
+		Collections.sort (productionValues.getProductionType (), new CityProductionBreakdownSorter ());
 		
 		return productionValues;
 	}

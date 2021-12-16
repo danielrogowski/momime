@@ -760,6 +760,52 @@
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="outpostGrowthChance" type="momimelangs:outpostGrowthChance">
+					<xsd:key name="outpostGrowthChanceTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceGrowthHeadingPK">
+						<xsd:selector xpath="growthHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceMaximumPopulationPK">
+						<xsd:selector xpath="maximumPopulation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceRacialGrowthModifierPK">
+						<xsd:selector xpath="racialGrowthModifier" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceGrowthMapFeaturePK">
+						<xsd:selector xpath="growthMapFeature" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceGrowthSpellPK">
+						<xsd:selector xpath="growthSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceGrowthTotalPK">
+						<xsd:selector xpath="growthTotal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceDeathHeadingPK">
+						<xsd:selector xpath="deathHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceBaseChancePK">
+						<xsd:selector xpath="baseChance" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceDeathSpellPK">
+						<xsd:selector xpath="deathSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="outpostGrowthChanceDeathTotalPK">
+						<xsd:selector xpath="deathTotal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="cityProduction" type="momimelangs:cityProduction">
 					<xsd:key name="cityProductionTitlePK">
 						<xsd:selector xpath="title" />
@@ -1095,12 +1141,20 @@
 						<xsd:selector xpath="cityGrowthCategory" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="newTurnMessagesOutpostGrowthPK">
+						<xsd:selector xpath="outpostGrowth" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="newTurnMessagesCityGrowthPK">
 						<xsd:selector xpath="cityGrowth" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="newTurnMessagesCityDeathCategoryPK">
 						<xsd:selector xpath="cityDeathCategory" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOutpostDeathPK">
+						<xsd:selector xpath="outpostDeath" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="newTurnMessagesCityDeathPK">
@@ -1682,6 +1736,10 @@
 					</xsd:key>
 					<xsd:key name="cityScreenMaxCitySizePK">
 						<xsd:selector xpath="maxCitySize" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenPopulationOutpostPK">
+						<xsd:selector xpath="populationOutpost" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="cityScreenPopulationMaxedPK">
@@ -3074,6 +3132,22 @@
 		</xsd:sequence>
     </xsd:complexType>
 	
+	<xsd:complexType name="outpostGrowthChance" nxe:submenu="Cities" nxe:singular="Outpost growth/death chance string" nxe:plural="Outpost growth/death chance strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="growthHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maximumPopulation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="racialGrowthModifier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="growthMapFeature" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="growthSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="growthTotal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deathHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="baseChance" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deathSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deathTotal" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
 	<xsd:complexType name="cityProduction" nxe:submenu="Cities" nxe:singular="City production string" nxe:plural="City production strings">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
@@ -3173,8 +3247,10 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nextConstruction" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="lackOfProductionCategory" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowthCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="outpostGrowth" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowth" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityDeathCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="outpostDeath" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityDeath" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellsCategory" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchNotChosen" />
@@ -4306,6 +4382,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="changeConstruction" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rename" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxCitySize" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="populationOutpost" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="populationMaxed" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="populationAndGrowth" />
 		</xsd:sequence>

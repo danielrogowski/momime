@@ -597,40 +597,88 @@ public final class CityProcessingImpl implements CityProcessing
 								mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
 								CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 
-						final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate
-							(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, maxCitySize,
-								mom.getSessionDescription ().getDifficultyLevel (), mom.getServerDB ()).getCappedTotal ();
-
-						if (cityGrowthRate != 0)
+						if (cityData.getCityPopulation () >= 1000)
 						{
-							final int oldPopulation = cityData.getCityPopulation ();
-							int newPopulation = oldPopulation + cityGrowthRate;
-
-							// Special raiders cap?
-							if ((mc.getRaiderCityAdditionalPopulationCap () != null) && (mc.getRaiderCityAdditionalPopulationCap () > 0) &&
-								(pub.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
-								(newPopulation > mc.getRaiderCityAdditionalPopulationCap ()))
+							// Normal city growth rate calculation
+							final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate
+								(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+									mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, maxCitySize,
+									mom.getSessionDescription ().getDifficultyLevel (), mom.getServerDB ()).getCappedTotal ();
+	
+							if (cityGrowthRate != 0)
 							{
-								newPopulation = mc.getRaiderCityAdditionalPopulationCap ();
-								log.debug ("Special raider population cap enforced: " + oldPopulation + " + " + cityGrowthRate + " = " + newPopulation);
+								final int oldPopulation = cityData.getCityPopulation ();
+								int newPopulation = oldPopulation + cityGrowthRate;
+	
+								// Special raiders cap?
+								if ((mc.getRaiderCityAdditionalPopulationCap () != null) && (mc.getRaiderCityAdditionalPopulationCap () > 0) &&
+									(pub.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
+									(newPopulation > mc.getRaiderCityAdditionalPopulationCap ()))
+								{
+									newPopulation = mc.getRaiderCityAdditionalPopulationCap ();
+									log.debug ("Special raider population cap enforced: " + oldPopulation + " + " + cityGrowthRate + " = " + newPopulation);
+								}
+	
+								cityData.setCityPopulation (newPopulation);
+	
+								// Show on new turn messages?
+								if ((cityOwner.getPlayerDescription ().isHuman ()) && ((oldPopulation / 1000) != (newPopulation / 1000)))
+								{
+									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
+									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
+									populationChange.setCityLocation (cityLocation);
+									populationChange.setCityName (cityData.getCityName ());
+									populationChange.setOldPopulation (oldPopulation);
+									populationChange.setNewPopulation (newPopulation);
+									((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
+								}
+	
+								// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change; if not we still need to update player memory about the city
+								mom.getWorldUpdates ().recalculateCity (cityLocation);
 							}
+						}
+						else
+						{
+							// Outposts have a chance of growing, and a chance of dying too
+							final int growthChance = getCityCalculations ().calculateOutpostGrowthChance (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, maxCitySize,
+								mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ()).getTotalChance ();
 
-							cityData.setCityPopulation (newPopulation);
-
-							// Show on new turn messages?
-							if ((cityOwner.getPlayerDescription ().isHuman ()) && ((oldPopulation / 1000) != (newPopulation / 1000)))
+							final int deathChance = getCityCalculations ().calculateOutpostDeathChance
+								(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, mom.getServerDB ()).getTotalChance ();
+							
+							int outpostGrowthRate = 0;
+							if (getRandomUtils ().nextInt (100) < growthChance)
+								outpostGrowthRate = outpostGrowthRate + (100 * (getRandomUtils ().nextInt (3) + 1));
+							
+							if (getRandomUtils ().nextInt (100) < deathChance)
+								outpostGrowthRate = outpostGrowthRate - (100 * (getRandomUtils ().nextInt (2) + 1));
+							
+							if (outpostGrowthRate != 0)
 							{
-								final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
-								populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
-								populationChange.setCityLocation (cityLocation);
-								populationChange.setOldPopulation (oldPopulation);
-								populationChange.setNewPopulation (newPopulation);
-								((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
+								final int oldPopulation = cityData.getCityPopulation ();
+								int newPopulation = Math.min (oldPopulation + outpostGrowthRate, 1000);
+								
+								if (newPopulation > 0)
+									cityData.setCityPopulation (newPopulation);
+								else
+									razeCity (cityLocation, mom);		// Outposts can die off completely
+								
+								// Show on new turn messages?
+								if ((cityOwner.getPlayerDescription ().isHuman ()) && ((newPopulation > 1000) || (newPopulation <= 0)))
+								{
+									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
+									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
+									populationChange.setCityLocation (cityLocation);
+									populationChange.setCityName (cityData.getCityName ());
+									populationChange.setOldPopulation (oldPopulation);
+									populationChange.setNewPopulation (newPopulation);
+									((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
+								}
+	
+								// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change; if not we still need to update player memory about the city
+								mom.getWorldUpdates ().recalculateCity (cityLocation);
 							}
-
-							// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change
-							mom.getWorldUpdates ().recalculateCity (cityLocation);
 						}
 					}
 				}

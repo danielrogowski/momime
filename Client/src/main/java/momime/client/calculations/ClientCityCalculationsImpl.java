@@ -17,6 +17,8 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.CityGrowthRateLanguageVariableReplacer;
 import momime.client.language.replacer.CityProductionLanguageVariableReplacer;
 import momime.client.language.replacer.CityUnrestLanguageVariableReplacer;
+import momime.client.language.replacer.OutpostDeathChanceLanguageVariableReplacer;
+import momime.client.language.replacer.OutpostGrowthChanceLanguageVariableReplacer;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.MomException;
@@ -43,6 +45,11 @@ import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
 import momime.common.internal.CityUnrestBreakdownSpell;
+import momime.common.internal.OutpostDeathChanceBreakdown;
+import momime.common.internal.OutpostDeathChanceBreakdownSpell;
+import momime.common.internal.OutpostGrowthChanceBreakdown;
+import momime.common.internal.OutpostGrowthChanceBreakdownMapFeature;
+import momime.common.internal.OutpostGrowthChanceBreakdownSpell;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
@@ -78,6 +85,12 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	
 	/** City growth rate variable replacer */
 	private CityGrowthRateLanguageVariableReplacer growthReplacer;
+	
+	/** Outpost growth chance variable replacer */
+	private OutpostGrowthChanceLanguageVariableReplacer outpostGrowthReplacer;
+	
+	/** Outpost death chance variable replacer */
+	private OutpostDeathChanceLanguageVariableReplacer outpostDeathReplacer;
 	
 	/** City production variable replacer */
 	private CityProductionLanguageVariableReplacer productionReplacer;
@@ -248,6 +261,57 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		// Population cap
 		if (breakdown.getCappedTotal () != breakdown.getInitialTotal ())
 			getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getCityGrowthRateCapped ()));
+		
+		return text.toString ();
+	}
+	
+	/**
+	 * @param growthBreakdown Results of growth chance calculation
+	 * @param deathBreakdown Results of death chance calculation
+	 * @return Readable calculation details
+	 */
+	@Override
+	public final String describeOutpostGrowthAndDeathChanceCalculation (final OutpostGrowthChanceBreakdown growthBreakdown,
+		final OutpostDeathChanceBreakdown deathBreakdown)
+	{
+		getOutpostGrowthReplacer ().setBreakdown (growthBreakdown);
+		getOutpostDeathReplacer ().setBreakdown (deathBreakdown);
+		final StringBuilder text = new StringBuilder ();
+		
+		// Growth chance
+		getOutpostGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getGrowthHeading ()));
+		getOutpostGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getMaximumPopulation ()));
+		getOutpostGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getRacialGrowthModifier ()));
+		
+		for (final OutpostGrowthChanceBreakdownMapFeature mapFeature : growthBreakdown.getMapFeatureModifier ())
+		{
+			getOutpostGrowthReplacer ().setCurrentMapFeature (mapFeature);
+			getOutpostGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getGrowthMapFeature ()));
+		}
+		
+		for (final OutpostGrowthChanceBreakdownSpell spell : growthBreakdown.getSpellModifier ())
+		{
+			getOutpostGrowthReplacer ().setCurrentSpell (spell);
+			getOutpostGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getGrowthSpell ()));
+		}
+		
+		// There's always at least maximum population + racial growth modifier, so always need to show total
+		getOutpostGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getGrowthTotal ()));
+		
+		// Death chance
+		getOutpostDeathReplacer ().addLine (text, null);
+		getOutpostDeathReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getDeathHeading ()));
+		getOutpostDeathReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getBaseChance ()));
+		
+		for (final OutpostDeathChanceBreakdownSpell spell : deathBreakdown.getSpellModifier ())
+		{
+			getOutpostDeathReplacer ().setCurrentSpell (spell);
+			getOutpostDeathReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getDeathSpell ()));
+		}
+		
+		// Only need total if there was at least one spell, otherwise its just the base chance and nothing else
+		if (!deathBreakdown.getSpellModifier ().isEmpty ())
+			getOutpostDeathReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getDeathTotal ()));
 		
 		return text.toString ();
 	}
@@ -845,6 +909,38 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		growthReplacer = replacer;
 	}
 
+	/**
+	 * @return Outpost growth chance variable replacer
+	 */
+	public final OutpostGrowthChanceLanguageVariableReplacer getOutpostGrowthReplacer ()
+	{
+		return outpostGrowthReplacer;
+	}
+
+	/**
+	 * @param o Outpost growth chance variable replacer
+	 */
+	public final void setOutpostGrowthReplacer (final OutpostGrowthChanceLanguageVariableReplacer o)
+	{
+		outpostGrowthReplacer = o;
+	}
+	
+	/**
+	 * @return Outpost death chance variable replacer
+	 */
+	public final OutpostDeathChanceLanguageVariableReplacer getOutpostDeathReplacer ()
+	{
+		return outpostDeathReplacer;
+	}
+	
+	/**
+	 * @param o Outpost death chance variable replacer
+	 */
+	public final void setOutpostDeathReplacer (final OutpostDeathChanceLanguageVariableReplacer o)
+	{
+		outpostDeathReplacer = o;
+	}
+	
 	/**
 	 * @return City production variable replacer
 	 */

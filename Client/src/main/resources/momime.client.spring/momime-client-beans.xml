@@ -948,6 +948,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="unrestReplacer" ref="unrestReplacer" />
 		<property name="growthReplacer" ref="growthReplacer" />
+		<property name="outpostGrowthReplacer" ref="outpostGrowthReplacer" />
+		<property name="outpostDeathReplacer" ref="outpostDeathReplacer" />
 		<property name="productionReplacer" ref="productionReplacer" />
 	</bean>
 
@@ -1068,6 +1070,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="growthReplacer" class="momime.client.language.replacer.CityGrowthRateLanguageVariableReplacerImpl">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="client" />
+	</bean>
+
+	<bean id="outpostGrowthReplacer" class="momime.client.language.replacer.OutpostGrowthChanceLanguageVariableReplacerImpl">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="client" />
+	</bean>
+	
+	<bean id="outpostDeathReplacer" class="momime.client.language.replacer.OutpostDeathChanceLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="client" ref="client" />

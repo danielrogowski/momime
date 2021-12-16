@@ -2089,6 +2089,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="1" name="raceMineralMultiplerApplies" type="xsd:boolean" nxe:label="Race Mineral Multipler Applies?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimecommon:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="500" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityQualityEstimate" type="momimecommon:cityQualityEstimate" nxe:label="+ to City Quality Estimate" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="outpostMapFeatureGrowthModifier" type="momimecommon:percentage" nxe:label="% bonus to chance of outpost growing" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureTreasureBookReward" type="momimecommon:pickID" nxe:label="Treasure book reward" nxe:showmaincolumn="false">
 		        <xsd:annotation>
 		        	<xsd:documentation>Lists the different books we can win from "special" awards when capturing a lair of this type.</xsd:documentation>
@@ -2545,6 +2546,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="mineralBonusMultiplier" type="momimecommon:mineralBonusMultiplier" nxe:label="Mineral Bonus Multipler" nxe:gridwidth="130" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="outpostRacialGrowthModifier" type="momimecommon:percentage" nxe:label="% bonus to chance of outpost growing" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateModifier" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Modifier" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="goldTradeBonus" type="momimecommon:percentage" nxe:label="Gold Trade Bonus" nxe:gridwidth="130" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceCannotBuild" type="momimecommon:buildingID" nxe:label="Cannot build" nxe:plural="Cannot build">
@@ -4043,6 +4045,8 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 			<xsd:element minOccurs="0" maxOccurs="1" name="purifyCorruptedTilesChance" type="momimecommon:percentage" nxe:label="Change to Purify Corruption %" nxe:gridwidth="160" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="blockEntryByCreaturesOfRealm" type="xsd:boolean" nxe:label="Block entry by creatures?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="blockCastingCombatSpellsOfRealm" type="xsd:boolean" nxe:label="Block casting combat spells?" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="outpostSpellGrowthModifier" type="momimecommon:percentage" nxe:label="% bonus to chance of outpost growing" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="outpostSpellDeathModifier" type="momimecommon:percentage" nxe:label="% bonus to chance of outpost dying" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="protectsAgainstSpellRealm" type="momimecommon:pickID" nxe:label="Protects against Realm" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:documentation>For Consecration and Spell Ward</xsd:documentation>

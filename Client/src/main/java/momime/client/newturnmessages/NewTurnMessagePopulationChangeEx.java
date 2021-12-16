@@ -72,14 +72,16 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	@Override
 	public final String getText ()
 	{
-		final List<LanguageText> languageText = (getNewPopulation () > getOldPopulation ()) ?
-			getLanguages ().getNewTurnMessages ().getCityGrowth () : getLanguages ().getNewTurnMessages ().getCityDeath ();
-		
-		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+		final List<LanguageText> languageText;
+		if (getOldPopulation () < 1000)
+			languageText = (getNewPopulation () > getOldPopulation ()) ?
+				getLanguages ().getNewTurnMessages ().getOutpostGrowth () : getLanguages ().getNewTurnMessages ().getOutpostDeath ();
+		else
+			languageText = (getNewPopulation () > getOldPopulation ()) ?
+				getLanguages ().getNewTurnMessages ().getCityGrowth () : getLanguages ().getNewTurnMessages ().getCityDeath ();
 		
 		return getLanguageHolder ().findDescription (languageText).replaceAll
-			("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
+			("CITY_NAME", getCityName ()).replaceAll
 			("OLD_POPULATION", getTextUtils ().intToStrCommas (getOldPopulation ())).replaceAll
 			("NEW_POPULATION", getTextUtils ().intToStrCommas (getNewPopulation ()));
 	}
@@ -109,16 +111,21 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	@Override
 	public final void clicked () throws Exception
 	{
-		// Is there a city view already open for this city?
-		CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
-		if (cityView == null)
+		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+		if (cityData != null)
 		{
-			cityView = getPrototypeFrameCreator ().createCityView ();
-			cityView.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getCityLocation ()));
-			getClient ().getCityViews ().put (getCityLocation ().toString (), cityView);
+			// Is there a city view already open for this city?
+			CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
+			if (cityView == null)
+			{
+				cityView = getPrototypeFrameCreator ().createCityView ();
+				cityView.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) getCityLocation ()));
+				getClient ().getCityViews ().put (getCityLocation ().toString (), cityView);
+			}
+			
+			cityView.setVisible (true);
 		}
-		
-		cityView.setVisible (true);
 	}
 	
 	/**

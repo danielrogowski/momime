@@ -1419,6 +1419,41 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 			<text>Miasto jest wielkości maksymalnej</text>
 		</atMaximumSize>
 	</cityGrowthRate>
+	<outpostGrowthChance>
+		<title language="en">
+			<text>Growth and death chance for CITY_SIZE_AND_NAME</text>
+		</title>
+		<growthHeading language="en">
+			<text>CHANCE OF GROWING</text>
+		</growthHeading>
+		<maximumPopulation language="en">
+			<text>MAXIMUM_POPULATION% from maximum population</text>
+		</maximumPopulation>
+		<racialGrowthModifier language="en">
+			<text>RACIAL_GROWTH_MODIFIER% from Racial Growth Modifier</text>
+		</racialGrowthModifier>
+		<growthMapFeature language="en">
+			<text>MAP_FEATURE_MODIFIER% from MAP_FEATURE</text>
+		</growthMapFeature>
+		<growthSpell language="en">
+			<text>SPELL_MODIFIER% from SPELL_NAME</text>
+		</growthSpell>
+		<growthTotal language="en">
+			<text>Total chance of outpost growing each turn = TOTAL_CHANCE%</text>
+		</growthTotal>
+		<deathHeading language="en">
+			<text>CHANCE OF SHRINKING</text>
+		</deathHeading>
+		<baseChance language="en">
+			<text>BASE_CHANCE% base chance</text>
+		</baseChance>
+		<deathSpell language="en">
+			<text>SPELL_MODIFIER% from SPELL_NAME</text>
+		</deathSpell>
+		<deathTotal language="en">
+			<text>Total chance of outpost shrinking each turn = TOTAL_CHANCE%</text>
+		</deathTotal>
+	</outpostGrowthChance>
 	<cityProduction>
 		<title language="en">
 			<text>PRODUCTION_TYPE production in CITY_SIZE_AND_NAME</text>
@@ -1884,12 +1919,18 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<cityGrowthCategory language="en">
 			<text>City Growth</text>
 		</cityGrowthCategory>
+		<outpostGrowth language="en">
+			<text>Outpost of CITY_NAME has grown into a Hamlet</text>
+		</outpostGrowth>
 		<cityGrowth language="en">
 			<text>CITY_NAME population has grown from OLD_POPULATION to NEW_POPULATION</text>
 		</cityGrowth>
 		<cityDeathCategory language="en">
 			<text>City Death</text>
 		</cityDeathCategory>
+		<outpostDeath language="en">
+			<text>Outpost of CITY_NAME was abandoned</text>
+		</outpostDeath>
 		<cityDeath language="en">
 			<text>CITY_NAME population has dropped from OLD_POPULATION to NEW_POPULATION</text>
 		</cityDeath>
@@ -3839,6 +3880,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<maxCitySize language="en">
 			<text>maximum MAX_CITY_SIZE</text>
 		</maxCitySize>
+		<populationOutpost language="en">
+			<text>Population: POPULATION (Outpost)</text>
+		</populationOutpost>
 		<populationMaxed language="en">
 			<text>Population: POPULATION (At maximum size)</text>
 		</populationMaxed>

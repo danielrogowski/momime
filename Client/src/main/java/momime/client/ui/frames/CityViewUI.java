@@ -76,6 +76,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
+import momime.common.internal.OutpostDeathChanceBreakdown;
+import momime.common.internal.OutpostGrowthChanceBreakdown;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
@@ -326,9 +328,8 @@ public final class CityViewUI extends MomClientFrameUI
 			String text = getLanguageHolder ().findDescription (getLanguages ().getBuyingAndSellingBuildings ().getRushBuyPrompt ());
 			
 			// How much will it cost us to rush buy it?
-			final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
-			final OverlandMapCityData cityData = mc.getCityData ();
+			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
 			final Building buildingDef = (cityData.getCurrentlyConstructingBuildingID () == null) ? null :
 				getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "rushBuyAction");
@@ -430,23 +431,45 @@ public final class CityViewUI extends MomClientFrameUI
 		// Explain the city growth calculation
 		currentPopulationAction = new LoggingAction ((ev) ->
 		{
+			final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
+			
 			final int maxCitySize = getCityCalculations ().calculateSingleCityProduction
 				(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
-				getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, getClient ().getClientDB (),
-				CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
+					getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, getClient ().getClientDB (),
+					CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		
-			final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
-				(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), maxCitySize,
-				getClient ().getSessionDescription ().getDifficultyLevel (), getClient ().getClientDB ());
+			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
+			if (cityData.getCityPopulation () >= 1000)
+			{
+				// Normal city growth/death rate calculation
+				final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
+					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), maxCitySize,
+						getClient ().getSessionDescription ().getDifficultyLevel (), getClient ().getClientDB ());
 
-			final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
-			calc.setTitle (getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getTitle ()).replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
-			calc.setText (getClientCityCalculations ().describeCityGrowthRateCalculation (breakdown));
+				calc.setTitle (getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getTitle ()).replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
+				calc.setText (getClientCityCalculations ().describeCityGrowthRateCalculation (breakdown));
+			}
+			else
+			{
+				// Outpost growth/death chance calculation
+				final OutpostGrowthChanceBreakdown growthBreakdown = getCityCalculations ().calculateOutpostGrowthChance
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), maxCitySize,
+						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
+
+				final OutpostDeathChanceBreakdown deathBreakdown = getCityCalculations ().calculateOutpostDeathChance
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), getClient ().getClientDB ());
+				
+				calc.setTitle (getLanguageHolder ().findDescription (getLanguages ().getOutpostGrowthChance ().getTitle ()).replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
+				calc.setText (getClientCityCalculations ().describeOutpostGrowthAndDeathChanceCalculation (growthBreakdown, deathBreakdown));
+			}
+
 			calc.setVisible (true);
 		});
 		
@@ -1236,21 +1259,26 @@ public final class CityViewUI extends MomClientFrameUI
 					getTextUtils ().intToStrCommas (maxCitySize * 1000)));
 			
 				// Growth rate
-				final CityGrowthRateBreakdown cityGrowthBreakdown = getCityCalculations ().calculateCityGrowthRate
-					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), maxCitySize,
-					getClient ().getSessionDescription ().getDifficultyLevel (), getClient ().getClientDB ());
-			
-				final int cityGrowth = cityGrowthBreakdown.getCappedTotal ();
 				final String cityPopulation = getTextUtils ().intToStrCommas (cityData.getCityPopulation ());
-			
-				if (cityGrowth == 0)
+				if (cityData.getCityPopulation () < 1000)
+					currentPopulationAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCityScreen ().getPopulationOutpost ()).replaceAll
+						("POPULATION", cityPopulation));
+				else if (cityData.getCityPopulation () == maxCitySize * 1000)
 					currentPopulationAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCityScreen ().getPopulationMaxed ()).replaceAll
 						("POPULATION", cityPopulation));
 				else
+				{
+					final CityGrowthRateBreakdown cityGrowthBreakdown = getCityCalculations ().calculateCityGrowthRate
+						(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), maxCitySize,
+						getClient ().getSessionDescription ().getDifficultyLevel (), getClient ().getClientDB ());
+				
+					final int cityGrowth = cityGrowthBreakdown.getCappedTotal ();
+				
 					currentPopulationAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCityScreen ().getPopulationAndGrowth ()).replaceAll
 						("POPULATION", cityPopulation).replaceAll ("GROWTH_RATE", getTextUtils ().intToStrPlusMinus (cityGrowth)));
+				}
 			}
 			catch (final IOException e)
 			{

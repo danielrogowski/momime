@@ -37,6 +37,7 @@ import momime.client.languages.database.NameCityScreen;
 import momime.client.languages.database.NewGameScreen;
 import momime.client.languages.database.NewTurnMessages;
 import momime.client.languages.database.OptionsScreen;
+import momime.client.languages.database.OutpostGrowthChance;
 import momime.client.languages.database.OverlandMapScreen;
 import momime.client.languages.database.RazeCityScreen;
 import momime.client.languages.database.SelectAdvisorScreen;
@@ -154,7 +155,12 @@ public interface MomLanguagesEx
 	 * @return Container for language strings
 	 */
     public CityGrowthRate getCityGrowthRate ();
-	
+
+	/**
+	 * @return Container for language strings
+	 */
+    public OutpostGrowthChance getOutpostGrowthChance ();
+    
 	/**
 	 * @return Container for language strings
 	 */

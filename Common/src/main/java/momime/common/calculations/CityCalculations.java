@@ -22,6 +22,8 @@ import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
+import momime.common.internal.OutpostDeathChanceBreakdown;
+import momime.common.internal.OutpostGrowthChanceBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -114,6 +116,35 @@ public interface CityCalculations
 		final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 
+	/**
+	 * Calculates the percentage chance of an outpost growing
+	 * 
+	 * @param map Known terrain
+	 * @param spells Known spells
+	 * @param cityLocation Location of the city to calculate for
+	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param db Lookup lists built over the XML database
+	 * @return Breakdown of all the values used in calculating the chance of this outpost growing
+	 * @throws RecordNotFoundException If we encounter a race, building or city spell effect that can't be found
+	 */
+	public OutpostGrowthChanceBreakdown calculateOutpostGrowthChance (final MapVolumeOfMemoryGridCells map, final List<MemoryMaintainedSpell> spells,
+		final MapCoordinates3DEx cityLocation, final int maxCitySize, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
+		throws RecordNotFoundException;
+
+	/**
+	 * Calculates the percentage chance of an outpost shrinking
+	 * 
+	 * @param spells Known spells
+	 * @param cityLocation Location of the city to calculate for
+	 * @param db Lookup lists built over the XML database
+	 * @return Breakdown of all the values used in calculating the chance of this outpost growing
+	 * @throws RecordNotFoundException If we encounter a spell that can't be found
+	 */
+	public OutpostDeathChanceBreakdown calculateOutpostDeathChance (final List<MemoryMaintainedSpell> spells,
+		final MapCoordinates3DEx cityLocation, final CommonDatabase db)
+		throws RecordNotFoundException;
+	
 	/**
 	 * Strategy guide p191
 	 *

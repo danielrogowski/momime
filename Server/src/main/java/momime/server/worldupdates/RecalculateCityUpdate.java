@@ -89,18 +89,21 @@ public final class RecalculateCityUpdate implements WorldUpdate
 		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		
-		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "RecalculateCityUpdate");
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
-		
-		getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-			getCityLocation (), mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
-
-		tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), getCityLocation (), priv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
-
-		getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
+		if (tc.getCityData () != null)
+		{
+			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "RecalculateCityUpdate");
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
+			
+			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				getCityLocation (), mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+	
+			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), getCityLocation (), priv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
+	
+			getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
+		}
 
 		// Send the updated city stats to any clients that can see the city
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),

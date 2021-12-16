@@ -10,6 +10,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
+import momime.common.internal.OutpostDeathChanceBreakdown;
+import momime.common.internal.OutpostGrowthChanceBreakdown;
 
 /**
  * Client side only methods dealing with city calculations
@@ -27,6 +29,14 @@ public interface ClientCityCalculations
 	 * @return Readable calculation details
 	 */
 	public String describeCityGrowthRateCalculation (final CityGrowthRateBreakdown breakdown);
+
+	/**
+	 * @param growthBreakdown Results of growth chance calculation
+	 * @param deathBreakdown Results of death chance calculation
+	 * @return Readable calculation details
+	 */
+	public String describeOutpostGrowthAndDeathChanceCalculation (final OutpostGrowthChanceBreakdown growthBreakdown,
+		final OutpostDeathChanceBreakdown deathBreakdown);
 	
 	/**
 	 * @param calc Results of production calculation

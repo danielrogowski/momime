@@ -52,6 +52,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -91,6 +92,9 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/** Blobs expand out only in north/south/east/west directions - no diagonals */
 	private final static int [] BLOB_EXPANSION_DIRECTIONS = new int [] {1, 3, 5, 7};
@@ -1618,6 +1622,55 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	}
 
 	/**
+	 * Mechanism for generating rampaging monsters spawning from a lair/node is different than populating the lair/node in the first place.
+	 * Basically just pick random units until we run out of budget.
+	 * 
+	 * @param spawnLocation Location next to a lair/node to add monsters to
+	 * @param magicRealmLifeformTypeID Type of monsters to add
+	 * @param monsterBudget Maximum amount of points to spend buying monsters
+	 * @param monsterPlayer Player who owns the monsters we add
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	final void spawnRampagingMonsters (final MapCoordinates3DEx spawnLocation, final String magicRealmLifeformTypeID,
+		final int monsterBudget, final PlayerServerDetails monsterPlayer, final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
+	{
+		int remainingBudget = monsterBudget;
+		int monstersCreated = 0;
+		boolean keepGoing = true;
+		
+		while (keepGoing)
+		{
+			// What monsters are within our budget?
+			final List<UnitEx> choices = new ArrayList<UnitEx> ();
+			for (final UnitEx thisUnit : mom.getServerDB ().getUnits ())
+				if (magicRealmLifeformTypeID.equals (thisUnit.getUnitMagicRealm ()))
+					if ((thisUnit.getProductionCost () != null) && (thisUnit.getProductionCost () <= remainingBudget) && (thisUnit.getProductionCost () > 0))
+						choices.add (thisUnit);
+			
+			if (choices.isEmpty ())
+				keepGoing = false;
+			else
+			{
+				final UnitEx unitDef = choices.get (getRandomUtils ().nextInt (choices.size ()));
+				monstersCreated++;
+				remainingBudget = remainingBudget - unitDef.getProductionCost ();
+
+				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (), unitDef.getUnitID (), spawnLocation, null, null, null,
+					monsterPlayer, UnitStatusID.ALIVE, null, mom.getSessionDescription (), mom.getServerDB ());
+				
+				if (monstersCreated >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
+					keepGoing = false;
+			}
+		}
+	}
+
+	/**
 	 * Sets the treasure value according to the powerProportion rolled at this location
 	 * See strategy guide pages 416 & 418
 	 *
@@ -1821,10 +1874,13 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If an expected data item can't be found
 	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
 	public final void generateRampagingMonsters (final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		// Accumulator does tick up and reset even before the minimum turn, otherwise it would be guaranteed to get monsters on turn 50, so check turn here
 		if (mom.getGeneralPublicKnowledge ().getTurnNumber () >= mom.getSessionDescription ().getDifficultyLevel ().getRampagingMonstersMinimumTurnNumber ())
@@ -1907,6 +1963,29 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				log.debug ("Generating rampaing monsters from node/lair at " + monsterLocation + " of realm " + monsterMagicRealm + " with budget " + monsterBudget);
 				
 				// Pick the adjacent tile where the monsters will spawn
+				final List<MapCoordinates3DEx> spawnLocations = new ArrayList<MapCoordinates3DEx> ();
+				for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType ()); d++)
+				{
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx (monsterLocation);
+					if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
+					{
+						final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+						final TileType tileType = mom.getServerDB ().findTileType (terrainData.getTileTypeID (), "generateRampagingMonsters");
+						if ((tileType.isLand () != null) && (tileType.isLand ()) &&
+							(getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), coords.getX (), coords.getY (), coords.getZ (), 0) == null))
+							spawnLocations.add (coords);
+					}
+				}
+				
+				if (spawnLocations.isEmpty ())
+					log.debug ("Wanted to spawn rampaging monsters from " + monsterLocation + ", but there is no free adjacent land tile");
+				else
+				{
+					final MapCoordinates3DEx spawnLocation = spawnLocations.get (getRandomUtils ().nextInt (spawnLocations.size ()));
+					log.debug ("Spawning rampaing monsters from node/lair at " + monsterLocation + " to tile " + spawnLocation);
+					
+					spawnRampagingMonsters (spawnLocation, monsterMagicRealm, monsterBudget, monsterPlayer, mom);
+				}
 			}
 		}
 	}
@@ -2037,5 +2116,21 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

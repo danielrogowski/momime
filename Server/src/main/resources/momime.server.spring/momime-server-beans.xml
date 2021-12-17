@@ -1083,6 +1083,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
+		<property name="unitUtils" ref="unitUtils" />
 		<!-- <property name="gsk" ref="gsk" /> see comment above, this is done in the code instead -->
 	</bean>
 

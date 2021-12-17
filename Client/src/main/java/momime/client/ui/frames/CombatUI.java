@@ -1758,48 +1758,51 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void setUnitToDrawAtLocation (final int x, final int y, final ExpandedUnitDetails xu) throws IOException
 	{
-		final int special = getClient ().getClientDB ().getUnitsThatMoveThroughOtherUnits ().contains (xu.getUnitID ()) ? 1 : 0;
-		
-		final List<BufferedImage> overlays = new ArrayList<BufferedImage> ();
-		final List<AnimationEx> animations = new ArrayList<AnimationEx> ();
-		final List<String> shadingColours = new ArrayList<String> ();
-		
-		for (final String unitSkillID : xu.listModifiedSkillIDs ())
+		if (unitToDrawAtEachLocation != null)
 		{
-			final UnitSkillEx unitSkillDef = getClient ().getClientDB ().findUnitSkill (unitSkillID, "setUnitToDrawAtLocation");
-			if ((unitSkillDef.getUnitSkillCombatOverlay () != null) || (unitSkillDef.getUnitSkillCombatAnimation () != null))
-			{
-				// Do we need a certain skill value to draw this?
-				final boolean drawOverlay;
-				if (unitSkillDef.getUnitSkillCombatOverlayMinimumValue () == null)
-					drawOverlay = true;
-				else
-				{
-					final Integer testSkillValue = xu.getModifiedSkillValue (unitSkillID);
-					if (testSkillValue == null)
-						drawOverlay = false;
-					else
-						drawOverlay = (testSkillValue >= unitSkillDef.getUnitSkillCombatOverlayMinimumValue ());
-				}
-				
-				if (drawOverlay)
-				{
-					if (unitSkillDef.getUnitSkillCombatOverlay () != null)
-						overlays.add (getUtils ().loadImage (unitSkillDef.getUnitSkillCombatOverlay ()));
-					
-					if (unitSkillDef.getUnitSkillCombatAnimation () != null)
-						animations.add (getClient ().getClientDB ().findAnimation (unitSkillDef.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
-				}
-			}				
+			final int special = getClient ().getClientDB ().getUnitsThatMoveThroughOtherUnits ().contains (xu.getUnitID ()) ? 1 : 0;
 			
-			if (unitSkillDef.getUnitSkillCombatColour () != null)
-				shadingColours.add (unitSkillDef.getUnitSkillCombatColour ());
+			final List<BufferedImage> overlays = new ArrayList<BufferedImage> ();
+			final List<AnimationEx> animations = new ArrayList<AnimationEx> ();
+			final List<String> shadingColours = new ArrayList<String> ();
+			
+			for (final String unitSkillID : xu.listModifiedSkillIDs ())
+			{
+				final UnitSkillEx unitSkillDef = getClient ().getClientDB ().findUnitSkill (unitSkillID, "setUnitToDrawAtLocation");
+				if ((unitSkillDef.getUnitSkillCombatOverlay () != null) || (unitSkillDef.getUnitSkillCombatAnimation () != null))
+				{
+					// Do we need a certain skill value to draw this?
+					final boolean drawOverlay;
+					if (unitSkillDef.getUnitSkillCombatOverlayMinimumValue () == null)
+						drawOverlay = true;
+					else
+					{
+						final Integer testSkillValue = xu.getModifiedSkillValue (unitSkillID);
+						if (testSkillValue == null)
+							drawOverlay = false;
+						else
+							drawOverlay = (testSkillValue >= unitSkillDef.getUnitSkillCombatOverlayMinimumValue ());
+					}
+					
+					if (drawOverlay)
+					{
+						if (unitSkillDef.getUnitSkillCombatOverlay () != null)
+							overlays.add (getUtils ().loadImage (unitSkillDef.getUnitSkillCombatOverlay ()));
+						
+						if (unitSkillDef.getUnitSkillCombatAnimation () != null)
+							animations.add (getClient ().getClientDB ().findAnimation (unitSkillDef.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
+					}
+				}				
+				
+				if (unitSkillDef.getUnitSkillCombatColour () != null)
+					shadingColours.add (unitSkillDef.getUnitSkillCombatColour ());
+			}
+			
+			unitToDrawAtEachLocation [special] [y] [x] = new CombatUIUnitAndAnimations (xu, 
+				(overlays.size () == 0) ? null : overlays,
+				(animations.size () == 0) ? null : animations,
+				(shadingColours.size () == 0) ? null : shadingColours);
 		}
-		
-		unitToDrawAtEachLocation [special] [y] [x] = new CombatUIUnitAndAnimations (xu, 
-			(overlays.size () == 0) ? null : overlays,
-			(animations.size () == 0) ? null : animations,
-			(shadingColours.size () == 0) ? null : shadingColours);
 	}
 
 	/**
@@ -1812,8 +1815,11 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void clearUnitToDrawFromLocation (final int x, final int y, final String unitID)
 	{
-		final int special = getClient ().getClientDB ().getUnitsThatMoveThroughOtherUnits ().contains (unitID) ? 1 : 0;
-		unitToDrawAtEachLocation [special] [y] [x] = null;
+		if (unitToDrawAtEachLocation != null)
+		{
+			final int special = getClient ().getClientDB ().getUnitsThatMoveThroughOtherUnits ().contains (unitID) ? 1 : 0;
+			unitToDrawAtEachLocation [special] [y] [x] = null;
+		}
 	}
 	
 	/**

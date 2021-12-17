@@ -56,7 +56,10 @@ public interface OverlandMapGenerator
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If an expected data item can't be found
 	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void generateRampagingMonsters (final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException;
+		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

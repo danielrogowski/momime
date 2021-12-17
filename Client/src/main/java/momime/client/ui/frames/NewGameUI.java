@@ -162,6 +162,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** XML layout of the "custom difficulty 3" right hand side */
 	private XmlLayoutContainerEx newGameLayoutDifficulty3;
+
+	/** XML layout of the "custom node difficulty" right hand side */
+	private XmlLayoutContainerEx newGameLayoutNodeDifficulty;
 	
 	/** XML layout of the "custom fog of war" right hand side */
 	private XmlLayoutContainerEx newGameLayoutFogOfWar;
@@ -877,6 +880,14 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Maximum value of treasure in weak lairs on Myrror */
 	private JTextField myrrorWeakLairTreasureMax;
 
+	// CUSTOM DIFFICULTY PANEL (3 of 3)
+	
+	/** Panel key */
+	private final static String DIFFICULTY_3_PANEL = "Diff3";
+	
+	/** Panel */
+	private JPanel difficulty3Panel;
+
 	/** Turn number before random events will occur */
 	private JLabel eventMinimumTurnNumberLabel;
 
@@ -898,13 +909,31 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Increase in chance of a random event each turn */
 	private JLabel eventChanceSuffix;
 	
-	// CUSTOM DIFFICULTY PANEL (3 of 3 - nodes/difficulty)
+	/** Turn number before rampaging monsters will be generated */
+	private JLabel rampagingMonstersMinimumTurnNumberLabel;
+
+	/** Turn number before rampaging monsters will be generated */
+	private JTextField rampagingMonstersMinimumTurnNumber;
 	
+	/** Maximum amount accumulator may increase by each turn */
+	private JLabel rampagingMonstersAccumulatorMaximumLabel;
+
+	/** Maximum amount accumulator may increase by each turn */
+	private JTextField rampagingMonstersAccumulatorMaximum;
+	
+	/** Rampaging monsters will be generated when accumulator reaches this value */
+	private JLabel rampagingMonstersAccumulatorThresholdLabel;
+
+	/** Rampaging monsters will be generated when accumulator reaches this value */
+	private JTextField rampagingMonstersAccumulatorThreshold;
+	
+	// CUSTOM NODE DIFFICULTY PANEL
+
 	/** Panel key */
-	private final static String DIFFICULTY_3_PANEL = "Diff3";
+	private final static String NODE_DIFFICULTY_PANEL = "NodeDiff";
 	
 	/** Panel */
-	private JPanel difficulty3Panel;
+	private JPanel nodeDifficultyPanel;
 	
 	/** Strength of monsters in nodes on Arcanus */
 	private JLabel arcanusNodeMonsters;
@@ -1336,7 +1365,7 @@ public final class NewGameUI extends MomClientFrameUI
 		{
 			// What this does depends on which 'card' is currently displayed
 			if ((newGamePanel.isVisible ()) || (mapSizePanel.isVisible ()) || (landProportionPanel.isVisible ()) || (nodesPanel.isVisible ()) ||
-				(difficulty1Panel.isVisible ()) || (difficulty2Panel.isVisible ()) || (difficulty3Panel.isVisible ()) || (fogOfWarPanel.isVisible ()) ||
+				(difficulty1Panel.isVisible ()) || (difficulty2Panel.isVisible ()) || (difficulty3Panel.isVisible ()) || (nodeDifficultyPanel.isVisible ()) || (fogOfWarPanel.isVisible ()) ||
 				(unitsPanel.isVisible ()) || (spellsPanel.isVisible ()) || (heroItemsPanel.isVisible ()) || (debugPanel.isVisible ()))
 				
 				showNextNewGamePanel ();
@@ -2169,78 +2198,102 @@ public final class NewGameUI extends MomClientFrameUI
 		myrrorWeakLairTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		difficulty2Panel.add (myrrorWeakLairTreasureMax, "frmNewGameCustomDifficulty2WeakMyrrorLairTreasureMax");
 
-		eventMinimumTurnNumberLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty2Panel.add (eventMinimumTurnNumberLabel, "frmNewGameCustomDifficulty2EventMinimumTurnNumber");
-
-		eventMinimumTurnNumber = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty2Panel.add (eventMinimumTurnNumber, "frmNewGameCustomDifficulty2EventMinimumTurnNumberEdit");
-
-		minimumTurnsBetweenEventsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty2Panel.add (minimumTurnsBetweenEventsLabel, "frmNewGameCustomDifficulty2MinimumTurnsBetweenEvents");
-
-		minimumTurnsBetweenEvents = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty2Panel.add (minimumTurnsBetweenEvents, "frmNewGameCustomDifficulty2MinimumTurnsBetweenEventsEdit");
-
-		eventChancePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty2Panel.add (eventChancePrefix, "frmNewGameCustomDifficulty2EventChancePrefix");
-
-		eventChance = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty2Panel.add (eventChance, "frmNewGameCustomDifficulty2EventChanceEdit");
-
-		eventChanceSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty2Panel.add (eventChanceSuffix, "frmNewGameCustomDifficulty2EventChanceSuffix");
-		
 		cards.add (difficulty2Panel, DIFFICULTY_2_PANEL);
 		
 		// CUSTOM DIFFICULTY PANEL (3 of 3)
 		difficulty3Panel = new JPanel (new XmlLayoutManager (getNewGameLayoutDifficulty3 ()));
 		difficulty3Panel.setOpaque (false);
 
-		arcanusNodeMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty3Panel.add (arcanusNodeMonsters, "frmNewGameCustomDifficulty3ArcanusNodeMonsters");
+		eventMinimumTurnNumberLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (eventMinimumTurnNumberLabel, "frmNewGameCustomDifficulty3EventMinimumTurnNumber");
 
-		arcanusNodeMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty3Panel.add (arcanusNodeMonstersMin, "frmNewGameCustomDifficulty3ArcanusNodeMonstersMin");
+		eventMinimumTurnNumber = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (eventMinimumTurnNumber, "frmNewGameCustomDifficulty3EventMinimumTurnNumberEdit");
 
-		difficulty3Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty3ArcanusNodeMonstersDash");
+		minimumTurnsBetweenEventsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (minimumTurnsBetweenEventsLabel, "frmNewGameCustomDifficulty3MinimumTurnsBetweenEvents");
+
+		minimumTurnsBetweenEvents = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (minimumTurnsBetweenEvents, "frmNewGameCustomDifficulty3MinimumTurnsBetweenEventsEdit");
+
+		eventChancePrefix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (eventChancePrefix, "frmNewGameCustomDifficulty3EventChancePrefix");
+
+		eventChance = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (eventChance, "frmNewGameCustomDifficulty3EventChanceEdit");
+
+		eventChanceSuffix = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (eventChanceSuffix, "frmNewGameCustomDifficulty3EventChanceSuffix");
+
+		rampagingMonstersMinimumTurnNumberLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (rampagingMonstersMinimumTurnNumberLabel, "frmNewGameCustomDifficulty3RampagingMonstersMinimumTurnNumber");
 		
-		arcanusNodeMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty3Panel.add (arcanusNodeMonstersMax, "frmNewGameCustomDifficulty3ArcanusNodeMonstersMax");
+		rampagingMonstersMinimumTurnNumber = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (rampagingMonstersMinimumTurnNumber, "frmNewGameCustomDifficulty3RampagingMonstersMinimumTurnNumberEdit");
 		
-		arcanusNodeTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty3Panel.add (arcanusNodeTreasure, "frmNewGameCustomDifficulty3ArcanusNodeTreasure");
-
-		arcanusNodeTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty3Panel.add (arcanusNodeTreasureMin, "frmNewGameCustomDifficulty3ArcanusNodeTreasureMin");
-
-		difficulty3Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty3ArcanusNodeTreasureDash");
+		rampagingMonstersAccumulatorMaximumLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (rampagingMonstersAccumulatorMaximumLabel, "frmNewGameCustomDifficulty3RampagingMonstersAccumulatorMaximum");
 		
-		arcanusNodeTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty3Panel.add (arcanusNodeTreasureMax, "frmNewGameCustomDifficulty3ArcanusNodeTreasureMax");
+		rampagingMonstersAccumulatorMaximum = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (rampagingMonstersAccumulatorMaximum, "frmNewGameCustomDifficulty3RampagingMonstersAccumulatorMaximumEdit");
 		
-		myrrorNodeMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty3Panel.add (myrrorNodeMonsters, "frmNewGameCustomDifficulty3MyrrorNodeMonsters");
-
-		myrrorNodeMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty3Panel.add (myrrorNodeMonstersMin, "frmNewGameCustomDifficulty3MyrrorNodeMonstersMin");
-
-		difficulty3Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty3MyrrorNodeMonstersDash");
+		rampagingMonstersAccumulatorThresholdLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty3Panel.add (rampagingMonstersAccumulatorThresholdLabel, "frmNewGameCustomDifficulty3RampagingMonstersAccumulatorThreshold");
 		
-		myrrorNodeMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty3Panel.add (myrrorNodeMonstersMax, "frmNewGameCustomDifficulty3MyrrorNodeMonstersMax");
-		
-		myrrorNodeTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty3Panel.add (myrrorNodeTreasure, "frmNewGameCustomDifficulty3MyrrorNodeTreasure");
-
-		myrrorNodeTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty3Panel.add (myrrorNodeTreasureMin, "frmNewGameCustomDifficulty3MyrrorNodeTreasureMin");
-
-		difficulty3Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomDifficulty3MyrrorNodeTreasureDash");
-		
-		myrrorNodeTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty3Panel.add (myrrorNodeTreasureMax, "frmNewGameCustomDifficulty3MyrrorNodeTreasureMax");
+		rampagingMonstersAccumulatorThreshold = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty3Panel.add (rampagingMonstersAccumulatorThreshold, "frmNewGameCustomDifficulty3RampagingMonstersAccumulatorThresholdEdit");
 		
 		cards.add (difficulty3Panel, DIFFICULTY_3_PANEL);
+		
+		// NODE DIFFICULTY PANEL
+		nodeDifficultyPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutNodeDifficulty ()));
+		nodeDifficultyPanel.setOpaque (false);
+
+		arcanusNodeMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodeDifficultyPanel.add (arcanusNodeMonsters, "frmNewGameCustomNodeDifficultyArcanusNodeMonsters");
+
+		arcanusNodeMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodeDifficultyPanel.add (arcanusNodeMonstersMin, "frmNewGameCustomNodeDifficultyArcanusNodeMonstersMin");
+
+		nodeDifficultyPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomNodeDifficultyArcanusNodeMonstersDash");
+		
+		arcanusNodeMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodeDifficultyPanel.add (arcanusNodeMonstersMax, "frmNewGameCustomNodeDifficultyArcanusNodeMonstersMax");
+		
+		arcanusNodeTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodeDifficultyPanel.add (arcanusNodeTreasure, "frmNewGameCustomNodeDifficultyArcanusNodeTreasure");
+
+		arcanusNodeTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodeDifficultyPanel.add (arcanusNodeTreasureMin, "frmNewGameCustomNodeDifficultyArcanusNodeTreasureMin");
+
+		nodeDifficultyPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomNodeDifficultyArcanusNodeTreasureDash");
+		
+		arcanusNodeTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodeDifficultyPanel.add (arcanusNodeTreasureMax, "frmNewGameCustomNodeDifficultyArcanusNodeTreasureMax");
+		
+		myrrorNodeMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodeDifficultyPanel.add (myrrorNodeMonsters, "frmNewGameCustomNodeDifficultyMyrrorNodeMonsters");
+
+		myrrorNodeMonstersMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodeDifficultyPanel.add (myrrorNodeMonstersMin, "frmNewGameCustomNodeDifficultyMyrrorNodeMonstersMin");
+
+		nodeDifficultyPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomNodeDifficultyMyrrorNodeMonstersDash");
+		
+		myrrorNodeMonstersMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodeDifficultyPanel.add (myrrorNodeMonstersMax, "frmNewGameCustomNodeDifficultyMyrrorNodeMonstersMax");
+		
+		myrrorNodeTreasure = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		nodeDifficultyPanel.add (myrrorNodeTreasure, "frmNewGameCustomNodeDifficultyMyrrorNodeTreasure");
+
+		myrrorNodeTreasureMin = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodeDifficultyPanel.add (myrrorNodeTreasureMin, "frmNewGameCustomNodeDifficultyMyrrorNodeTreasureMin");
+
+		nodeDifficultyPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "-"), "frmNewGameCustomNodeDifficultyMyrrorNodeTreasureDash");
+		
+		myrrorNodeTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		nodeDifficultyPanel.add (myrrorNodeTreasureMax, "frmNewGameCustomNodeDifficultyMyrrorNodeTreasureMax");
+		
+		cards.add (nodeDifficultyPanel, NODE_DIFFICULTY_PANEL);
 		
 		// CUSTOM FOG OF WAR PANEL
 		fogOfWarPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutFogOfWar ()));
@@ -2669,16 +2722,18 @@ public final class NewGameUI extends MomClientFrameUI
 			currentPanel = 5;
 		else if (difficulty3Panel.isVisible ())
 			currentPanel = 6;
-		else if (fogOfWarPanel.isVisible ())
+		else if (nodeDifficultyPanel.isVisible ())
 			currentPanel = 7;
-		else if (unitsPanel.isVisible ())
+		else if (fogOfWarPanel.isVisible ())
 			currentPanel = 8;
-		else if (spellsPanel.isVisible ())
+		else if (unitsPanel.isVisible ())
 			currentPanel = 9;
-		else if (heroItemsPanel.isVisible ())
+		else if (spellsPanel.isVisible ())
 			currentPanel = 10;
-		else if (debugPanel.isVisible ())
+		else if (heroItemsPanel.isVisible ())
 			currentPanel = 11;
+		else if (debugPanel.isVisible ())
+			currentPanel = 12;
 		else
 			throw new MomException ("showNextNewGamePanel could not determine currently visible panel");
 		
@@ -2703,27 +2758,31 @@ public final class NewGameUI extends MomClientFrameUI
 			cardLayout.show (cards, DIFFICULTY_2_PANEL);
 
 		// Customize difficulty (3 of 3)
-		else if (((customizeDifficulty.isSelected ()) || (customizeNodes.isSelected ())) && (currentPanel < 6))
+		else if ((customizeDifficulty.isSelected ()) && (currentPanel < 6))
 			cardLayout.show (cards, DIFFICULTY_3_PANEL);
+		
+		// Customize node difficulty
+		else if (((customizeDifficulty.isSelected ()) || (customizeNodes.isSelected ())) && (currentPanel < 7))
+			cardLayout.show (cards, NODE_DIFFICULTY_PANEL);
 
 		// Customize fog of war
-		else if ((customizeFogOfWar.isSelected ()) && (currentPanel < 7))
+		else if ((customizeFogOfWar.isSelected ()) && (currentPanel < 8))
 			cardLayout.show (cards, FOG_OF_WAR_PANEL);
 
 		// Customize units
-		else if ((customizeUnits.isSelected ()) && (currentPanel < 8))
+		else if ((customizeUnits.isSelected ()) && (currentPanel < 9))
 			cardLayout.show (cards, UNITS_PANEL);
 		
 		// Customize spells
-		else if ((customizeSpells.isSelected ()) && (currentPanel < 9))
+		else if ((customizeSpells.isSelected ()) && (currentPanel < 10))
 			cardLayout.show (cards, SPELLS_PANEL);
 		
 		// Customize hero items
-		else if ((customizeHeroItems.isSelected ()) && (currentPanel < 10))
+		else if ((customizeHeroItems.isSelected ()) && (currentPanel < 11))
 			cardLayout.show (cards, HERO_ITEMS_PANEL);
 		
 		// Debug options
-		else if ((changeDebugOptionsAction.getSelectedItem ()) && (currentPanel < 11))
+		else if ((changeDebugOptionsAction.getSelectedItem ()) && (currentPanel < 12))
 			cardLayout.show (cards, DEBUG_PANEL);
 		
 		// Start up game
@@ -3600,19 +3659,27 @@ public final class NewGameUI extends MomClientFrameUI
 				arcanusWeakLairTreasure.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakArcanusLairTreasure ()));
 				myrrorWeakLairMonsters.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairMonsters ()));
 				myrrorWeakLairTreasure.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getWeakMyrrorLairTreasure ()));
-				eventMinimumTurnNumberLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getEventMinimumTurnNumber ()));
-				minimumTurnsBetweenEventsLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getMinimumTurnsBetweenEvents ()));
-				eventChancePrefix.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getEventChancePrefix ()));
-				eventChanceSuffix.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getEventChanceSuffix ()));
 			}
 			
 			// CUSTOM DIFFICULTY PANEL (3 of 3)
 			if (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 () != null)
 			{
-				arcanusNodeMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getArcanusNodeMonsters ()));
-				arcanusNodeTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getArcanusNodeTreasure ()));
-				myrrorNodeMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getMyrrorNodeMonsters ()));
-				myrrorNodeTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getMyrrorNodeTreasure ()));
+				eventMinimumTurnNumberLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getEventMinimumTurnNumber ()));
+				minimumTurnsBetweenEventsLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getMinimumTurnsBetweenEvents ()));
+				eventChancePrefix.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getEventChancePrefix ()));
+				eventChanceSuffix.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getEventChanceSuffix ()));
+				rampagingMonstersMinimumTurnNumberLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getRampagingMonstersMinimumTurnNumber ()));
+				rampagingMonstersAccumulatorMaximumLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getRampagingMonstersAccumulatorMaximum ()));
+				rampagingMonstersAccumulatorThresholdLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getRampagingMonstersAccumulatorThreshold ()));
+			}
+			
+			// CUSTOM NODE DIFFICULTY PANEL
+			if (getLanguages ().getNewGameScreen ().getCustomNodeDifficultyTab () != null)
+			{
+				arcanusNodeMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodeDifficultyTab ().getArcanusNodeMonsters ()));
+				arcanusNodeTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodeDifficultyTab ().getArcanusNodeTreasure ()));
+				myrrorNodeMonsters.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodeDifficultyTab ().getMyrrorNodeMonsters ()));
+				myrrorNodeTreasure.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodeDifficultyTab ().getMyrrorNodeTreasure ()));
 			}
 			
 			// CUSTOM FOG OF WAR PANEL
@@ -3743,8 +3810,10 @@ public final class NewGameUI extends MomClientFrameUI
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getTitle ()));
 		else if ((difficulty2Panel.isVisible ()) && (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 () != null))
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab2 ().getTitle ()));
-		else if (difficulty3Panel.isVisible ())
+		else if ((difficulty3Panel.isVisible ()) && (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 () != null))
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab3 ().getTitle ()));
+		else if (nodeDifficultyPanel.isVisible ())
+			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomNodeDifficultyTab ().getTitle ()));
 		else if (fogOfWarPanel.isVisible ())
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getTitle ()));
 		else if (unitsPanel.isVisible ())
@@ -4230,31 +4299,34 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = changeDifficultyLevelAction.getSelectedItem ();
-		humanSpellPicks.setText										(Integer.valueOf (difficultyLevel.getHumanSpellPicks ()).toString ());
-		aiSpellPicks.setText											(Integer.valueOf (difficultyLevel.getAiSpellPicks ()).toString ());
-		humanStartingGold.setText									(Integer.valueOf (difficultyLevel.getHumanStartingGold ()).toString ());
-		aiStartingGold.setText											(Integer.valueOf (difficultyLevel.getAiStartingGold ()).toString ());
-		aiWizardsPopulationGrowthRateMultiplier.setText	(Integer.valueOf (difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier ()).toString ());
-		aiWizardsProductionRateMultiplier.setText			(Integer.valueOf (difficultyLevel.getAiWizardsProductionRateMultiplier ()).toString ());
-		aiRaidersPopulationGrowthRateMultiplier.setText	(Integer.valueOf (difficultyLevel.getAiRaidersPopulationGrowthRateMultiplier ()).toString ());
-		aiRaidersProductionRateMultiplier.setText				(Integer.valueOf (difficultyLevel.getAiRaidersProductionRateMultiplier ()).toString ());
-		aiSpellResearchMultiplier.setText							(Integer.valueOf (difficultyLevel.getAiSpellResearchMultiplier ()).toString ());
-		aiUpkeepMultiplier.setText									(Integer.valueOf (difficultyLevel.getAiUpkeepMultiplier ()).toString ());
-		allowCustomWizards.setSelected							(difficultyLevel.isCustomWizards ());
-		eachWizardOnlyOnce.setSelected							(difficultyLevel.isEachWizardOnlyOnce ());
-		fameRazingPenalty.setSelected							(difficultyLevel.isFameRazingPenalty ());
-		wizardCityStartSize.setText									(Integer.valueOf (difficultyLevel.getWizardCityStartSize ()).toString ());
-		maxCitySize.setText											(Integer.valueOf (difficultyLevel.getCityMaxSize ()).toString ());
-		raiderCityStartSizeMin.setText								(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMin ()).toString ());
-		raiderCityStartSizeMax.setText							(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMax ()).toString ());
-		raiderCitySizeCap.setText									(Integer.valueOf (difficultyLevel.getRaiderCityGrowthCap ()).toString ());
-		towersMonstersMin.setText									(Integer.valueOf (difficultyLevel.getTowerMonstersMinimum ()).toString ());
-		towersMonstersMax.setText								(Integer.valueOf (difficultyLevel.getTowerMonstersMaximum ()).toString ());
-		towersTreasureMin.setText									(Integer.valueOf (difficultyLevel.getTowerTreasureMinimum ()).toString ());
-		towersTreasureMax.setText								(Integer.valueOf (difficultyLevel.getTowerTreasureMaximum ()).toString ());
-		eventMinimumTurnNumber.setText						(Integer.valueOf (difficultyLevel.getEventMinimumTurnNumber ()).toString ());
-		minimumTurnsBetweenEvents.setText					(Integer.valueOf (difficultyLevel.getMinimumTurnsBetweenEvents ()).toString ());
-		eventChance.setText											(Integer.valueOf (difficultyLevel.getEventChance ()).toString ());
+		humanSpellPicks.setText											(Integer.valueOf (difficultyLevel.getHumanSpellPicks ()).toString ());
+		aiSpellPicks.setText												(Integer.valueOf (difficultyLevel.getAiSpellPicks ()).toString ());
+		humanStartingGold.setText										(Integer.valueOf (difficultyLevel.getHumanStartingGold ()).toString ());
+		aiStartingGold.setText												(Integer.valueOf (difficultyLevel.getAiStartingGold ()).toString ());
+		aiWizardsPopulationGrowthRateMultiplier.setText		(Integer.valueOf (difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier ()).toString ());
+		aiWizardsProductionRateMultiplier.setText				(Integer.valueOf (difficultyLevel.getAiWizardsProductionRateMultiplier ()).toString ());
+		aiRaidersPopulationGrowthRateMultiplier.setText		(Integer.valueOf (difficultyLevel.getAiRaidersPopulationGrowthRateMultiplier ()).toString ());
+		aiRaidersProductionRateMultiplier.setText					(Integer.valueOf (difficultyLevel.getAiRaidersProductionRateMultiplier ()).toString ());
+		aiSpellResearchMultiplier.setText								(Integer.valueOf (difficultyLevel.getAiSpellResearchMultiplier ()).toString ());
+		aiUpkeepMultiplier.setText										(Integer.valueOf (difficultyLevel.getAiUpkeepMultiplier ()).toString ());
+		allowCustomWizards.setSelected								(difficultyLevel.isCustomWizards ());
+		eachWizardOnlyOnce.setSelected								(difficultyLevel.isEachWizardOnlyOnce ());
+		fameRazingPenalty.setSelected								(difficultyLevel.isFameRazingPenalty ());
+		wizardCityStartSize.setText										(Integer.valueOf (difficultyLevel.getWizardCityStartSize ()).toString ());
+		maxCitySize.setText												(Integer.valueOf (difficultyLevel.getCityMaxSize ()).toString ());
+		raiderCityStartSizeMin.setText									(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMin ()).toString ());
+		raiderCityStartSizeMax.setText								(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMax ()).toString ());
+		raiderCitySizeCap.setText										(Integer.valueOf (difficultyLevel.getRaiderCityGrowthCap ()).toString ());
+		towersMonstersMin.setText										(Integer.valueOf (difficultyLevel.getTowerMonstersMinimum ()).toString ());
+		towersMonstersMax.setText									(Integer.valueOf (difficultyLevel.getTowerMonstersMaximum ()).toString ());
+		towersTreasureMin.setText										(Integer.valueOf (difficultyLevel.getTowerTreasureMinimum ()).toString ());
+		towersTreasureMax.setText									(Integer.valueOf (difficultyLevel.getTowerTreasureMaximum ()).toString ());
+		eventMinimumTurnNumber.setText							(Integer.valueOf (difficultyLevel.getEventMinimumTurnNumber ()).toString ());
+		minimumTurnsBetweenEvents.setText						(Integer.valueOf (difficultyLevel.getMinimumTurnsBetweenEvents ()).toString ());
+		eventChance.setText												(Integer.valueOf (difficultyLevel.getEventChance ()).toString ());
+		rampagingMonstersMinimumTurnNumber.setText		(Integer.valueOf (difficultyLevel.getRampagingMonstersMinimumTurnNumber ()).toString ());
+		rampagingMonstersAccumulatorMaximum.setText		(Integer.valueOf (difficultyLevel.getRampagingMonstersAccumulatorMaximum ()).toString ());
+		rampagingMonstersAccumulatorThreshold.setText		(Integer.valueOf (difficultyLevel.getRampagingMonstersAccumulatorThreshold ()).toString ());
 		
 		for (final DifficultyLevelPlane plane : difficultyLevel.getDifficultyLevelPlane ())
 			if (plane.getPlaneNumber () == 0)
@@ -4481,48 +4553,51 @@ public final class NewGameUI extends MomClientFrameUI
 		arcanusDifficultyLevel.setNormalLairMonstersMaximum	(Integer.parseInt (arcanusNormalLairMonstersMax.getText ()));
 		arcanusDifficultyLevel.setNormalLairTreasureMinimum	(Integer.parseInt (arcanusNormalLairTreasureMin.getText ()));
 		arcanusDifficultyLevel.setNormalLairTreasureMaximum	(Integer.parseInt (arcanusNormalLairTreasureMax.getText ()));
-		arcanusDifficultyLevel.setWeakLairMonstersMinimum	(Integer.parseInt (arcanusWeakLairMonstersMin.getText ()));
-		arcanusDifficultyLevel.setWeakLairMonstersMaximum	(Integer.parseInt (arcanusWeakLairMonstersMax.getText ()));
-		arcanusDifficultyLevel.setWeakLairTreasureMinimum	(Integer.parseInt (arcanusWeakLairTreasureMin.getText ()));
-		arcanusDifficultyLevel.setWeakLairTreasureMaximum	(Integer.parseInt (arcanusWeakLairTreasureMax.getText ()));
+		arcanusDifficultyLevel.setWeakLairMonstersMinimum		(Integer.parseInt (arcanusWeakLairMonstersMin.getText ()));
+		arcanusDifficultyLevel.setWeakLairMonstersMaximum		(Integer.parseInt (arcanusWeakLairMonstersMax.getText ()));
+		arcanusDifficultyLevel.setWeakLairTreasureMinimum		(Integer.parseInt (arcanusWeakLairTreasureMin.getText ()));
+		arcanusDifficultyLevel.setWeakLairTreasureMaximum		(Integer.parseInt (arcanusWeakLairTreasureMax.getText ()));
 		
 		final DifficultyLevelPlane myrrorDifficultyLevel = new DifficultyLevelPlane ();
 		myrrorDifficultyLevel.setPlaneNumber (1);
-		myrrorDifficultyLevel.setNormalLairMonstersMinimum	(Integer.parseInt (myrrorNormalLairMonstersMin.getText ()));
+		myrrorDifficultyLevel.setNormalLairMonstersMinimum		(Integer.parseInt (myrrorNormalLairMonstersMin.getText ()));
 		myrrorDifficultyLevel.setNormalLairMonstersMaximum	(Integer.parseInt (myrrorNormalLairMonstersMax.getText ()));
-		myrrorDifficultyLevel.setNormalLairTreasureMinimum	(Integer.parseInt (myrrorNormalLairTreasureMin.getText ()));
+		myrrorDifficultyLevel.setNormalLairTreasureMinimum		(Integer.parseInt (myrrorNormalLairTreasureMin.getText ()));
 		myrrorDifficultyLevel.setNormalLairTreasureMaximum	(Integer.parseInt (myrrorNormalLairTreasureMax.getText ()));
-		myrrorDifficultyLevel.setWeakLairMonstersMinimum	(Integer.parseInt (myrrorWeakLairMonstersMin.getText ()));
-		myrrorDifficultyLevel.setWeakLairMonstersMaximum	(Integer.parseInt (myrrorWeakLairMonstersMax.getText ()));
-		myrrorDifficultyLevel.setWeakLairTreasureMinimum	(Integer.parseInt (myrrorWeakLairTreasureMin.getText ()));
-		myrrorDifficultyLevel.setWeakLairTreasureMaximum	(Integer.parseInt (myrrorWeakLairTreasureMax.getText ()));
+		myrrorDifficultyLevel.setWeakLairMonstersMinimum		(Integer.parseInt (myrrorWeakLairMonstersMin.getText ()));
+		myrrorDifficultyLevel.setWeakLairMonstersMaximum		(Integer.parseInt (myrrorWeakLairMonstersMax.getText ()));
+		myrrorDifficultyLevel.setWeakLairTreasureMinimum		(Integer.parseInt (myrrorWeakLairTreasureMin.getText ()));
+		myrrorDifficultyLevel.setWeakLairTreasureMaximum		(Integer.parseInt (myrrorWeakLairTreasureMax.getText ()));
 		
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
-	    difficultyLevel.setHumanSpellPicks									(Integer.parseInt (humanSpellPicks.getText ()));
-	    difficultyLevel.setAiSpellPicks											(Integer.parseInt (aiSpellPicks.getText ()));
-	    difficultyLevel.setHumanStartingGold									(Integer.parseInt (humanStartingGold.getText ()));
-	    difficultyLevel.setAiStartingGold										(Integer.parseInt (aiStartingGold.getText ()));
-	    difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier	(Integer.parseInt (aiWizardsPopulationGrowthRateMultiplier.getText ()));
-	    difficultyLevel.setAiWizardsProductionRateMultiplier			(Integer.parseInt (aiWizardsProductionRateMultiplier.getText ()));
-	    difficultyLevel.setAiRaidersPopulationGrowthRateMultiplier	(Integer.parseInt (aiRaidersPopulationGrowthRateMultiplier.getText ()));
-	    difficultyLevel.setAiRaidersProductionRateMultiplier			(Integer.parseInt (aiRaidersProductionRateMultiplier.getText ()));
-	    difficultyLevel.setAiSpellResearchMultiplier						(Integer.parseInt (aiSpellResearchMultiplier.getText ()));
-	    difficultyLevel.setAiUpkeepMultiplier									(Integer.parseInt (aiUpkeepMultiplier.getText ()));
-	    difficultyLevel.setCustomWizards										(allowCustomWizards.isSelected ());
-	    difficultyLevel.setEachWizardOnlyOnce								(eachWizardOnlyOnce.isSelected ());
-	    difficultyLevel.setFameRazingPenalty								(fameRazingPenalty.isSelected ());
-	    difficultyLevel.setTowerMonstersMinimum							(Integer.parseInt (towersMonstersMin.getText ()));
-	    difficultyLevel.setTowerMonstersMaximum						(Integer.parseInt (towersMonstersMax.getText ()));
-	    difficultyLevel.setTowerTreasureMinimum							(Integer.parseInt (towersTreasureMin.getText ()));
-	    difficultyLevel.setTowerTreasureMaximum						(Integer.parseInt (towersTreasureMax.getText ()));
-	    difficultyLevel.setRaiderCityStartSizeMin							(Integer.parseInt (raiderCityStartSizeMin.getText ()));
-	    difficultyLevel.setRaiderCityStartSizeMax							(Integer.parseInt (raiderCityStartSizeMax.getText ()));
-	    difficultyLevel.setRaiderCityGrowthCap								(Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
-	    difficultyLevel.setWizardCityStartSize								(Integer.parseInt (wizardCityStartSize.getText ()));
-	    difficultyLevel.setCityMaxSize											(Integer.parseInt (maxCitySize.getText ()));
-	    difficultyLevel.setEventMinimumTurnNumber						(Integer.parseInt (eventMinimumTurnNumber.getText ()));
-	    difficultyLevel.setMinimumTurnsBetweenEvents					(Integer.parseInt (minimumTurnsBetweenEvents.getText ()));
-	    difficultyLevel.setEventChance											(Integer.parseInt (eventChance.getText ()));
+	    difficultyLevel.setHumanSpellPicks										(Integer.parseInt (humanSpellPicks.getText ()));
+	    difficultyLevel.setAiSpellPicks												(Integer.parseInt (aiSpellPicks.getText ()));
+	    difficultyLevel.setHumanStartingGold										(Integer.parseInt (humanStartingGold.getText ()));
+	    difficultyLevel.setAiStartingGold											(Integer.parseInt (aiStartingGold.getText ()));
+	    difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier		(Integer.parseInt (aiWizardsPopulationGrowthRateMultiplier.getText ()));
+	    difficultyLevel.setAiWizardsProductionRateMultiplier				(Integer.parseInt (aiWizardsProductionRateMultiplier.getText ()));
+	    difficultyLevel.setAiRaidersPopulationGrowthRateMultiplier		(Integer.parseInt (aiRaidersPopulationGrowthRateMultiplier.getText ()));
+	    difficultyLevel.setAiRaidersProductionRateMultiplier				(Integer.parseInt (aiRaidersProductionRateMultiplier.getText ()));
+	    difficultyLevel.setAiSpellResearchMultiplier							(Integer.parseInt (aiSpellResearchMultiplier.getText ()));
+	    difficultyLevel.setAiUpkeepMultiplier										(Integer.parseInt (aiUpkeepMultiplier.getText ()));
+	    difficultyLevel.setCustomWizards											(allowCustomWizards.isSelected ());
+	    difficultyLevel.setEachWizardOnlyOnce									(eachWizardOnlyOnce.isSelected ());
+	    difficultyLevel.setFameRazingPenalty									(fameRazingPenalty.isSelected ());
+	    difficultyLevel.setTowerMonstersMinimum								(Integer.parseInt (towersMonstersMin.getText ()));
+	    difficultyLevel.setTowerMonstersMaximum							(Integer.parseInt (towersMonstersMax.getText ()));
+	    difficultyLevel.setTowerTreasureMinimum								(Integer.parseInt (towersTreasureMin.getText ()));
+	    difficultyLevel.setTowerTreasureMaximum							(Integer.parseInt (towersTreasureMax.getText ()));
+	    difficultyLevel.setRaiderCityStartSizeMin								(Integer.parseInt (raiderCityStartSizeMin.getText ()));
+	    difficultyLevel.setRaiderCityStartSizeMax								(Integer.parseInt (raiderCityStartSizeMax.getText ()));
+	    difficultyLevel.setRaiderCityGrowthCap									(Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
+	    difficultyLevel.setWizardCityStartSize									(Integer.parseInt (wizardCityStartSize.getText ()));
+	    difficultyLevel.setCityMaxSize												(Integer.parseInt (maxCitySize.getText ()));
+	    difficultyLevel.setEventMinimumTurnNumber							(Integer.parseInt (eventMinimumTurnNumber.getText ()));
+	    difficultyLevel.setMinimumTurnsBetweenEvents						(Integer.parseInt (minimumTurnsBetweenEvents.getText ()));
+	    difficultyLevel.setEventChance												(Integer.parseInt (eventChance.getText ()));
+	    difficultyLevel.setRampagingMonstersMinimumTurnNumber	(Integer.parseInt (rampagingMonstersMinimumTurnNumber.getText ()));
+	    difficultyLevel.setRampagingMonstersAccumulatorMaximum	(Integer.parseInt (rampagingMonstersAccumulatorMaximum.getText ()));
+	    difficultyLevel.setRampagingMonstersAccumulatorThreshold	(Integer.parseInt (rampagingMonstersAccumulatorThreshold.getText ()));
 	    difficultyLevel.getDifficultyLevelPlane ().add (arcanusDifficultyLevel);
 	    difficultyLevel.getDifficultyLevelPlane ().add (myrrorDifficultyLevel);
 	    
@@ -4966,6 +5041,22 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void setNewGameLayoutDifficulty3 (final XmlLayoutContainerEx layout)
 	{
 		newGameLayoutDifficulty3 = layout;
+	}
+
+	/**
+	 * @return XML layout of the "custom node difficulty" right hand side
+	 */
+	public final XmlLayoutContainerEx getNewGameLayoutNodeDifficulty ()
+	{
+		return newGameLayoutNodeDifficulty;
+	}
+
+	/**
+	 * @param layout XML layout of the "custom node difficulty" right hand side
+	 */
+	public final void setNewGameLayoutNodeDifficulty (final XmlLayoutContainerEx layout)
+	{
+		newGameLayoutNodeDifficulty = layout;
 	}
 	
 	/**

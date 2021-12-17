@@ -5,6 +5,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.server.MomSessionVariables;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -48,4 +49,14 @@ public interface OverlandMapGenerator
 	 */
 	public void fillNodesLairsAndTowersWithMonsters (final PlayerServerDetails monsterPlayer)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * Tries to find a node or lair to generate rampaging monsters from
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws MomException If there is a problem with any of the calculations
+	 */
+	public void generateRampagingMonsters (final MomSessionVariables mom)
+		throws RecordNotFoundException, MomException;
 }

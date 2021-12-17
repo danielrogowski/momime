@@ -2,99 +2,81 @@
 <ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
 	<formWidth>320</formWidth>
 	<formHeight>400</formHeight>
-	<component name="frmNewGameCustomDifficulty3ArcanusNodeMonsters">
+	<component name="frmNewGameCustomDifficulty3EventMinimumTurnNumber">
 		<left>20</left>
 		<top>10</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty3ArcanusNodeMonstersMin">
-		<left>175</left>
-		<top>3</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty3ArcanusNodeMonstersDash">
-		<left>240</left>
-		<top>10</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty3ArcanusNodeMonstersMax">
+	<component name="frmNewGameCustomDifficulty3EventMinimumTurnNumberEdit">
 		<left>245</left>
 		<top>3</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty3ArcanusNodeTreasure">
+	<component name="frmNewGameCustomDifficulty3MinimumTurnsBetweenEvents">
 		<left>20</left>
 		<top>30</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty3ArcanusNodeTreasureMin">
-		<left>175</left>
-		<top>23</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty3ArcanusNodeTreasureDash">
-		<left>240</left>
-		<top>30</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty3ArcanusNodeTreasureMax">
+	<component name="frmNewGameCustomDifficulty3MinimumTurnsBetweenEventsEdit">
 		<left>245</left>
 		<top>23</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty3MyrrorNodeMonsters">
+	<component name="frmNewGameCustomDifficulty3EventChancePrefix">
 		<left>20</left>
-		<top>60</top>
+		<top>50</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty3MyrrorNodeMonstersMin">
-		<left>175</left>
-		<top>53</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty3MyrrorNodeMonstersDash">
-		<left>240</left>
-		<top>60</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty3MyrrorNodeMonstersMax">
+	<component name="frmNewGameCustomDifficulty3EventChanceEdit">
 		<left>245</left>
-		<top>53</top>
+		<top>43</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty3MyrrorNodeTreasure">
+	<component name="frmNewGameCustomDifficulty3EventChanceSuffix">
+		<left>310</left>
+		<top>65</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty3RampagingMonstersMinimumTurnNumber">
 		<left>20</left>
-		<top>80</top>
+		<top>100</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty3MyrrorNodeTreasureMin">
-		<left>175</left>
-		<top>73</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty3MyrrorNodeTreasureDash">
-		<left>240</left>
-		<top>80</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty3MyrrorNodeTreasureMax">
+	<component name="frmNewGameCustomDifficulty3RampagingMonstersMinimumTurnNumberEdit">
 		<left>245</left>
-		<top>73</top>
+		<top>93</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty3RampagingMonstersAccumulatorMaximum">
+		<left>20</left>
+		<top>120</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty3RampagingMonstersAccumulatorMaximumEdit">
+		<left>245</left>
+		<top>113</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty3RampagingMonstersAccumulatorThreshold">
+		<left>20</left>
+		<top>140</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty3RampagingMonstersAccumulatorThresholdEdit">
+		<left>245</left>
+		<top>133</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

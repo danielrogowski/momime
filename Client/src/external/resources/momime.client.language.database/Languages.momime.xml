@@ -2667,13 +2667,13 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		</customNodesTab>
 		<customDifficultyTab1>
 			<title language="en">
-				<text>New Game: Custom Difficulty (1 of 2)</text>
+				<text>New Game: Custom Difficulty (1 of 3)</text>
 			</title>
 			<title language="fr">
-				<text>Nouvelle Partie : Difficulté Personnalisée (1/ 2)</text>
+				<text>Nouvelle Partie : Difficulté Personnalisée (1 / 3)</text>
 			</title>
 			<title language="pl">
-				<text>Nowa Gra: Własny Poziom Trudności (1 z 2)</text>
+				<text>Nowa Gra: Własny Poziom Trudności (1 z 3)</text>
 			</title>
 			<humanSpellPicks language="en">
 				<text>Human</text>
@@ -2831,13 +2831,13 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		</customDifficultyTab1>
 		<customDifficultyTab2>
 			<title language="en">
-				<text>New Game: Custom Difficulty (2 of 2)</text>
+				<text>New Game: Custom Difficulty (2 of 3)</text>
 			</title>
 			<title language="fr">
-				<text>Nouvelle Partie : Difficulté Personnalisée (2/2)</text>
+				<text>Nouvelle Partie : Difficulté Personnalisée (2 / 3)</text>
 			</title>
 			<title language="pl">
-				<text>Nowa Gra: Własny Poziom Trudności (2 of 2)</text>
+				<text>Nowa Gra: Własny Poziom Trudności (2 of 3)</text>
 			</title>
 			<towerMonsters language="en">
 				<text>Towers: Monsters</text>
@@ -2935,6 +2935,17 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 			<weakMyrrorLairTreasure language="pl">
 				<text>Na Myrrorze: Skarby</text>
 			</weakMyrrorLairTreasure>
+		</customDifficultyTab2>
+		<customDifficultyTab3>
+			<title language="en">
+				<text>New Game: Custom Difficulty (3 of 3)</text>
+			</title>
+			<title language="fr">
+				<text>Nouvelle Partie : Difficulté Personnalisée (3 / 3)</text>
+			</title>
+			<title language="pl">
+				<text>Nowa Gra: Własny Poziom Trudności (3 of 3)</text>
+			</title>
 			<eventMinimumTurnNumber language="en">
 				<text>Random events can start after turn</text>
 			</eventMinimumTurnNumber>
@@ -2947,8 +2958,17 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 			<eventChanceSuffix language="en">
 				<text>/ 30,720 each turn</text>
 			</eventChanceSuffix>
-		</customDifficultyTab2>
-		<customDifficultyTab3>
+			<rampagingMonstersMinimumTurnNumber language="en">
+				<text>Rampaging monsters start after turn</text>
+			</rampagingMonstersMinimumTurnNumber>
+			<rampagingMonstersAccumulatorMaximum language="en">
+				<text>Accumulator increment each turn 1 -</text>
+			</rampagingMonstersAccumulatorMaximum>
+			<rampagingMonstersAccumulatorThreshold language="en">
+				<text>Accumulator threshold</text>
+			</rampagingMonstersAccumulatorThreshold>
+		</customDifficultyTab3>
+		<customNodeDifficultyTab>
 			<title language="en">
 				<text>New Game: Custom Node Difficulty</text>
 			</title>
@@ -2994,7 +3014,7 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 			<myrrorNodeTreasure language="pl">
 				<text>Na Myrrorze: Skarby</text>
 			</myrrorNodeTreasure>
-		</customDifficultyTab3>
+		</customNodeDifficultyTab>
 		<customFogOfWarTab>
 			<title language="en">
 				<text>New Game: Custom Fog of War</text>

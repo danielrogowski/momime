@@ -722,6 +722,24 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 		}
 		
+		// Generate more rampaging monsters
+		if (timeStop == null)
+			for (final PlayerServerDetails player : mom.getPlayers ())
+				if ((useOnlyOnePlayerID == 0) || (useOnlyOnePlayerID == player.getPlayerDescription ().getPlayerID ()))
+				{
+					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+					if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+					{
+						final int accumulator = getRandomUtils ().nextInt (mom.getSessionDescription ().getDifficultyLevel ().getRampagingMonstersAccumulatorMaximum ()) + 1;
+						mom.getGeneralServerKnowledge ().setRampagingMonstersAccumulator (mom.getGeneralServerKnowledge ().getRampagingMonstersAccumulator () + accumulator);
+						if (mom.getGeneralServerKnowledge ().getRampagingMonstersAccumulator () >= mom.getSessionDescription ().getDifficultyLevel ().getRampagingMonstersAccumulatorThreshold ())
+						{
+							mom.getOverlandMapGenerator ().generateRampagingMonsters (mom);
+							mom.getGeneralServerKnowledge ().setRampagingMonstersAccumulator (0);
+						}
+					}
+				}		
+		
 		if (mom.getPlayers ().size () > 0)
 		{
 			// Send info about what everyone is casting to anybody who has Detect Magic cast

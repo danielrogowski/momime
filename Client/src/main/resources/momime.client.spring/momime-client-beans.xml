@@ -1228,6 +1228,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-Difficulty3.xml" />
 	</bean>
 	
+	<bean id="newGameLayoutNodeDifficulty" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml" />
+	</bean>
+	
 	<bean id="newGameLayoutFogOfWar" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewGameUI-FogOfWar.xml" />
 	</bean>
@@ -1269,6 +1273,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameLayoutDifficulty1" ref="newGameLayoutDifficulty1" />
 		<property name="newGameLayoutDifficulty2" ref="newGameLayoutDifficulty2" />
 		<property name="newGameLayoutDifficulty3" ref="newGameLayoutDifficulty3" />
+		<property name="newGameLayoutNodeDifficulty" ref="newGameLayoutNodeDifficulty" />
 		<property name="newGameLayoutFogOfWar" ref="newGameLayoutFogOfWar" />
 		<property name="newGameLayoutUnits" ref="newGameLayoutUnits" />
 		<property name="newGameLayoutSpells" ref="newGameLayoutSpells" />

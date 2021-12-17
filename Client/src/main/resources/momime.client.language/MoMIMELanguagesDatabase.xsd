@@ -3669,41 +3669,59 @@
 					<xsd:selector xpath="weakMyrrorLairTreasure" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
-				<xsd:key name="customDifficultyTab2EventMinimumTurnNumberPK">
-					<xsd:selector xpath="eventMinimumTurnNumber" />
-					<xsd:field xpath="@language" />
-				</xsd:key>
-				<xsd:key name="customDifficultyTab2MinimumTurnsBetweenEventsPK">
-					<xsd:selector xpath="minimumTurnsBetweenEvents" />
-					<xsd:field xpath="@language" />
-				</xsd:key>
-				<xsd:key name="customDifficultyTab2EventChancePrefixPK">
-					<xsd:selector xpath="eventChancePrefix" />
-					<xsd:field xpath="@language" />
-				</xsd:key>
-				<xsd:key name="customDifficultyTab2EventChanceSuffixPK">
-					<xsd:selector xpath="eventChanceSuffix" />
-					<xsd:field xpath="@language" />
-				</xsd:key>
    			</xsd:element>
    			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab3" type="momimelangs:customDifficultyTab3">
 				<xsd:key name="customDifficultyTab3TitlePK">
 					<xsd:selector xpath="title" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
-				<xsd:key name="customDifficultyTab3ArcanusNodeMonstersPK">
+				<xsd:key name="customDifficultyTab3EventMinimumTurnNumberPK">
+					<xsd:selector xpath="eventMinimumTurnNumber" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3MinimumTurnsBetweenEventsPK">
+					<xsd:selector xpath="minimumTurnsBetweenEvents" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3EventChancePrefixPK">
+					<xsd:selector xpath="eventChancePrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3EventChanceSuffixPK">
+					<xsd:selector xpath="eventChanceSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3RampagingMonstersMinimumTurnNumberPK">
+					<xsd:selector xpath="rampagingMonstersMinimumTurnNumber" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3RampagingMonstersAccumulatorMaximumPK">
+					<xsd:selector xpath="rampagingMonstersAccumulatorMaximum" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3RampagingMonstersAccumulatorThresholdPK">
+					<xsd:selector xpath="rampagingMonstersAccumulatorThreshold" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customNodeDifficultyTab" type="momimelangs:customNodeDifficultyTab">
+				<xsd:key name="customNodeDifficultyTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customNodeDifficultyTabArcanusNodeMonstersPK">
 					<xsd:selector xpath="arcanusNodeMonsters" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
-				<xsd:key name="customDifficultyTab3ArcanusNodeTreasurePK">
+				<xsd:key name="customNodeDifficultyTabArcanusNodeTreasurePK">
 					<xsd:selector xpath="arcanusNodeTreasure" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
-				<xsd:key name="customDifficultyTab3MyrrorNodeMonstersPK">
+				<xsd:key name="customNodeDifficultyTabMyrrorNodeMonstersPK">
 					<xsd:selector xpath="myrrorNodeMonsters" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
-				<xsd:key name="customDifficultyTab3MyrrorNodeTreasurePK">
+				<xsd:key name="customNodeDifficultyTabMyrrorNodeTreasurePK">
 					<xsd:selector xpath="myrrorNodeTreasure" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
@@ -3992,14 +4010,23 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakArcanusLairTreasure" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakMyrrorLairMonsters" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakMyrrorLairTreasure" />
+		</xsd:sequence>
+    </xsd:complexType>
+    
+	<xsd:complexType name="customDifficultyTab3" nxe:submenu="New game UI" nxe:singular="Custom difficulty level (3 of 3)" nxe:plural="Custom difficulty level (3 of 3)">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eventMinimumTurnNumber" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="minimumTurnsBetweenEvents" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eventChancePrefix" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eventChanceSuffix" />
-		</xsd:sequence>
-    </xsd:complexType>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rampagingMonstersMinimumTurnNumber" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rampagingMonstersAccumulatorMaximum" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rampagingMonstersAccumulatorThreshold" />
+        </xsd:sequence>
+	</xsd:complexType>
 	
-	<xsd:complexType name="customDifficultyTab3" nxe:submenu="New game UI" nxe:singular="Custom difficulty level (3 of 3)" nxe:plural="Custom difficulty level (3 of 3)">
+	<xsd:complexType name="customNodeDifficultyTab" nxe:submenu="New game UI" nxe:singular="Custom node difficulty" nxe:plural="Custom node difficulty">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="arcanusNodeMonsters" />

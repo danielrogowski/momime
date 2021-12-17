@@ -43,6 +43,7 @@ import momime.client.languages.database.CustomFogOfWarTab;
 import momime.client.languages.database.CustomHeroItemsTab;
 import momime.client.languages.database.CustomLandProportionTab;
 import momime.client.languages.database.CustomMapSizeTab;
+import momime.client.languages.database.CustomNodeDifficultyTab;
 import momime.client.languages.database.CustomNodesTab;
 import momime.client.languages.database.CustomPicksScreen;
 import momime.client.languages.database.CustomSpellsTab;
@@ -226,6 +227,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -242,6 +244,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -268,6 +271,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -380,6 +384,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -396,6 +401,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -422,6 +428,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -531,6 +538,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -547,6 +555,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -573,6 +582,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -671,6 +681,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -687,6 +698,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -713,6 +725,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -770,7 +783,7 @@ public final class TestNewGameUI extends ClientTestData
 		
 		// CUSTOM DIFFICULTY PANEL (1 of 3)
 		final CustomDifficultyTab1 customDifficultyTab1Lang = new CustomDifficultyTab1 ();
-		customDifficultyTab1Lang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Difficulty (1 of 2)"));
+		customDifficultyTab1Lang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Difficulty (1 of 3)"));
 		customDifficultyTab1Lang.getSpellPicks ().add (createLanguageText (Language.ENGLISH, "Spell picks:"));
 		customDifficultyTab1Lang.getHumanSpellPicks ().add (createLanguageText (Language.ENGLISH, "Human"));
 		customDifficultyTab1Lang.getAiSpellPicks ().add (createLanguageText (Language.ENGLISH, "AI"));
@@ -826,6 +839,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -842,6 +856,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -868,6 +883,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -925,7 +941,7 @@ public final class TestNewGameUI extends ClientTestData
 		
 		// CUSTOM DIFFICULTY PANEL (2 of 3)
 		final CustomDifficultyTab2 customDifficultyTab2Lang = new CustomDifficultyTab2 ();
-		customDifficultyTab2Lang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Difficulty (2 of 2)"));
+		customDifficultyTab2Lang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Difficulty (2 of 3)"));
 		customDifficultyTab2Lang.getTowerMonsters ().add (createLanguageText (Language.ENGLISH, "Towers: Monsters"));
 		customDifficultyTab2Lang.getTowerTreasure ().add (createLanguageText (Language.ENGLISH, "Towers: Treasure"));
 		customDifficultyTab2Lang.getNormalLairs ().add (createLanguageText (Language.ENGLISH, "Normal strength lairs:"));
@@ -938,10 +954,6 @@ public final class TestNewGameUI extends ClientTestData
 		customDifficultyTab2Lang.getWeakArcanusLairTreasure ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Treasure"));
 		customDifficultyTab2Lang.getWeakMyrrorLairMonsters ().add (createLanguageText (Language.ENGLISH, "On Myrror: Monsters"));
 		customDifficultyTab2Lang.getWeakMyrrorLairTreasure ().add (createLanguageText (Language.ENGLISH, "On Myrror: Treasure"));
-		customDifficultyTab2Lang.getEventMinimumTurnNumber ().add (createLanguageText (Language.ENGLISH, "Random events can start after turn"));
-		customDifficultyTab2Lang.getMinimumTurnsBetweenEvents ().add (createLanguageText (Language.ENGLISH, "Minimum turns between random events"));
-		customDifficultyTab2Lang.getEventChancePrefix ().add (createLanguageText (Language.ENGLISH, "Chance of random event increases by"));
-		customDifficultyTab2Lang.getEventChanceSuffix ().add (createLanguageText (Language.ENGLISH, "/ 30,720 each turn"));
 
 		final NewGameScreen newGameScreenLang = new NewGameScreen ();
 		newGameScreenLang.setCustomDifficultyTab2 (customDifficultyTab2Lang);
@@ -974,6 +986,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -990,6 +1003,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -1016,6 +1030,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -1074,11 +1089,14 @@ public final class TestNewGameUI extends ClientTestData
 		
 		// CUSTOM DIFFICULTY PANEL (3 of 3)
 		final CustomDifficultyTab3 customDifficultyTab3Lang = new CustomDifficultyTab3 ();
-		customDifficultyTab3Lang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Node Difficulty"));
-		customDifficultyTab3Lang.getArcanusNodeMonsters ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Monsters"));
-		customDifficultyTab3Lang.getArcanusNodeTreasure ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Treasure"));
-		customDifficultyTab3Lang.getMyrrorNodeMonsters ().add (createLanguageText (Language.ENGLISH, "On Myrror: Monsters"));
-		customDifficultyTab3Lang.getMyrrorNodeTreasure ().add (createLanguageText (Language.ENGLISH, "On Myrror: Treasure"));
+		customDifficultyTab3Lang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Difficulty (3 of 3)"));
+		customDifficultyTab3Lang.getEventMinimumTurnNumber ().add (createLanguageText (Language.ENGLISH, "Random events can start after turn"));
+		customDifficultyTab3Lang.getMinimumTurnsBetweenEvents ().add (createLanguageText (Language.ENGLISH, "Minimum turns between random events"));
+		customDifficultyTab3Lang.getEventChancePrefix ().add (createLanguageText (Language.ENGLISH, "Chance of random event increases by"));
+		customDifficultyTab3Lang.getEventChanceSuffix ().add (createLanguageText (Language.ENGLISH, "/ 30,720 each turn"));
+		customDifficultyTab3Lang.getRampagingMonstersMinimumTurnNumber ().add (createLanguageText (Language.ENGLISH, "Rampaging monsters start after turn"));
+		customDifficultyTab3Lang.getRampagingMonstersAccumulatorMaximum ().add (createLanguageText (Language.ENGLISH, "Accumulator increment each turn 1 -"));
+		customDifficultyTab3Lang.getRampagingMonstersAccumulatorThreshold ().add (createLanguageText (Language.ENGLISH, "Accumulator threshold"));
 
 		final NewGameScreen newGameScreenLang = new NewGameScreen ();
 		newGameScreenLang.setCustomDifficultyTab3 (customDifficultyTab3Lang);
@@ -1111,6 +1129,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -1127,6 +1146,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -1153,6 +1173,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -1168,6 +1189,148 @@ public final class TestNewGameUI extends ClientTestData
 		// Display form
 		game.setVisible (true);
 		game.customizeDifficulty.setSelected (true);
+		game.showNextNewGamePanel ();
+		game.showNextNewGamePanel ();
+		game.showNextNewGamePanel ();
+		Thread.sleep (5000);
+		game.setVisible (false);
+	}
+
+	/**
+	 * Tests the "custom node difficulty" screen
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testNewGameUI_NodeDifficulty () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+
+		// Players
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		pd.setPlayerName ("Mr. Blah");
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("");
+		
+		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
+
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		players.add (ourPlayer);
+		
+		// Mock entries from the language XML
+		final Simple simpleLang = new Simple ();
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		simpleLang.getAnd ().add (createLanguageText (Language.ENGLISH, "And"));
+		
+		final TurnSystems turnSystemsLang = new TurnSystems ();
+		turnSystemsLang.getOnePlayerAtATime ().add (createLanguageText (Language.ENGLISH, "One player at a time"));
+		
+		// CUSTOM NODE DIFFICULTY PANEL
+		final CustomNodeDifficultyTab customNodeDifficultyTabLang = new CustomNodeDifficultyTab ();
+		customNodeDifficultyTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Node Difficulty"));
+		customNodeDifficultyTabLang.getArcanusNodeMonsters ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Monsters"));
+		customNodeDifficultyTabLang.getArcanusNodeTreasure ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Treasure"));
+		customNodeDifficultyTabLang.getMyrrorNodeMonsters ().add (createLanguageText (Language.ENGLISH, "On Myrror: Monsters"));
+		customNodeDifficultyTabLang.getMyrrorNodeTreasure ().add (createLanguageText (Language.ENGLISH, "On Myrror: Treasure"));
+
+		final NewGameScreen newGameScreenLang = new NewGameScreen ();
+		newGameScreenLang.setCustomNodeDifficultyTab (customNodeDifficultyTabLang);
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getTurnSystems ()).thenReturn (turnSystemsLang);
+		when (lang.getNewGameScreen ()).thenReturn (newGameScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+
+		// Mock list of available databases
+		final MomClient client = mock (MomClient.class);
+
+		final NewGameDatabase dbs = createNewGameDatabase ();
+		when (client.getNewGameDatabase ()).thenReturn (dbs);
+		when (client.getPlayers ()).thenReturn (players);
+
+		// Layouts
+		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
+		final XmlLayoutContainerEx mainLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Main.xml"));
+		final XmlLayoutContainerEx newLayout						= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-New.xml"));
+		final XmlLayoutContainerEx mapSizeLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-MapSize.xml"));
+		final XmlLayoutContainerEx landProportionLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-LandProportion.xml"));
+		final XmlLayoutContainerEx nodesLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Nodes.xml"));
+		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
+		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
+		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
+		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
+		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
+		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
+		final XmlLayoutContainerEx heroItemSettingsLayout	= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-HeroItemSettings.xml"));
+		final XmlLayoutContainerEx debugOptionsLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Debug.xml"));
+		final XmlLayoutContainerEx flagColourLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FlagColour.xml"));
+		final XmlLayoutContainerEx picksLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Picks.xml"));
+		final XmlLayoutContainerEx waitLayout						= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Wait.xml"));
+		mainLayout.buildMaps ();
+		newLayout.buildMaps ();
+		mapSizeLayout.buildMaps ();
+		landProportionLayout.buildMaps ();
+		nodesLayout.buildMaps ();
+		difficulty1Layout.buildMaps ();
+		difficulty2Layout.buildMaps ();
+		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
+		fogOfWarLayout.buildMaps ();
+		unitSettingsLayout.buildMaps ();
+		spellSettingsLayout.buildMaps ();
+		heroItemSettingsLayout.buildMaps ();
+		debugOptionsLayout.buildMaps ();
+		flagColourLayout.buildMaps ();
+		picksLayout.buildMaps ();
+		waitLayout.buildMaps ();
+		
+		// Set up form
+		final NewGameUI game = new NewGameUI ();
+		game.setUtils (utils);
+		game.setLanguageHolder (langHolder);
+		game.setLanguageChangeMaster (langMaster);
+		game.setClient (client);
+		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
+		game.setRandomUtils (new RandomUtilsImpl ());
+		game.setTextUtils (new TextUtilsImpl ());
+		game.setNewGameLayoutMain (mainLayout);
+		game.setNewGameLayoutNew (newLayout);
+		game.setNewGameLayoutMapSize (mapSizeLayout);
+		game.setNewGameLayoutLandProportion (landProportionLayout);
+		game.setNewGameLayoutNodes (nodesLayout);
+		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
+		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
+		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
+		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
+		game.setNewGameLayoutUnits (unitSettingsLayout);
+		game.setNewGameLayoutSpells (spellSettingsLayout);
+		game.setNewGameLayoutHeroItems (heroItemSettingsLayout);
+		game.setNewGameLayoutDebug (debugOptionsLayout);
+		game.setNewGameLayoutFlagColour (flagColourLayout);
+		game.setNewGameLayoutPicks (picksLayout);
+		game.setNewGameLayoutWait (waitLayout);
+		game.setSmallFont (CreateFontsForTests.getSmallFont ());
+		game.setMediumFont (CreateFontsForTests.getMediumFont ());
+		game.setLargeFont (CreateFontsForTests.getLargeFont ());
+		
+		// Display form
+		game.setVisible (true);
+		game.customizeDifficulty.setSelected (true);
+		game.showNextNewGamePanel ();
 		game.showNextNewGamePanel ();
 		game.showNextNewGamePanel ();
 		game.showNextNewGamePanel ();
@@ -1252,6 +1415,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -1268,6 +1432,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -1294,6 +1459,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -1392,6 +1558,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -1408,6 +1575,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -1434,6 +1602,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -1542,6 +1711,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -1558,6 +1728,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -1584,6 +1755,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -1678,6 +1850,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -1694,6 +1867,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -1720,6 +1894,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -1811,6 +1986,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -1827,6 +2003,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -1853,6 +2030,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -2050,6 +2228,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -2066,6 +2245,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -2092,6 +2272,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -2268,6 +2449,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -2284,6 +2466,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -2310,6 +2493,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -2404,6 +2588,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -2420,6 +2605,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -2447,6 +2633,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -2636,6 +2823,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -2652,6 +2840,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -2678,6 +2867,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -2803,6 +2993,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -2819,6 +3010,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -2845,6 +3037,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -3058,6 +3251,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -3074,6 +3268,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -3101,6 +3296,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);
@@ -3197,6 +3393,7 @@ public final class TestNewGameUI extends ClientTestData
 		final XmlLayoutContainerEx difficulty1Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty1.xml"));
 		final XmlLayoutContainerEx difficulty2Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty2.xml"));
 		final XmlLayoutContainerEx difficulty3Layout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Difficulty3.xml"));
+		final XmlLayoutContainerEx nodeDifficultyLayout		= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-NodeDifficulty.xml"));
 		final XmlLayoutContainerEx fogOfWarLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-FogOfWar.xml"));
 		final XmlLayoutContainerEx unitSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-UnitSettings.xml"));
 		final XmlLayoutContainerEx spellSettingsLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-SpellSettings.xml"));
@@ -3213,6 +3410,7 @@ public final class TestNewGameUI extends ClientTestData
 		difficulty1Layout.buildMaps ();
 		difficulty2Layout.buildMaps ();
 		difficulty3Layout.buildMaps ();
+		nodeDifficultyLayout.buildMaps ();
 		fogOfWarLayout.buildMaps ();
 		unitSettingsLayout.buildMaps ();
 		spellSettingsLayout.buildMaps ();
@@ -3240,6 +3438,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setNewGameLayoutDifficulty1 (difficulty1Layout);
 		game.setNewGameLayoutDifficulty2 (difficulty2Layout);
 		game.setNewGameLayoutDifficulty3 (difficulty3Layout);
+		game.setNewGameLayoutNodeDifficulty (nodeDifficultyLayout);
 		game.setNewGameLayoutFogOfWar (fogOfWarLayout);
 		game.setNewGameLayoutUnits (unitSettingsLayout);
 		game.setNewGameLayoutSpells (spellSettingsLayout);

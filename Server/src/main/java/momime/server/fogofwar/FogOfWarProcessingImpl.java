@@ -23,6 +23,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
@@ -37,6 +38,7 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -206,12 +208,14 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// Nature Awareness allows us to see the whole map, in which case no point checking each city or unit
-		if (((sd.isDisableFogOfWar () != null) && (sd.isDisableFogOfWar ())) ||
-			getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
-				ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null)
+		if ((CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ())) ||
+			((sd.isDisableFogOfWar () != null) && (sd.isDisableFogOfWar ())) ||
+			(getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
+				ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null))
 		{
 			for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)

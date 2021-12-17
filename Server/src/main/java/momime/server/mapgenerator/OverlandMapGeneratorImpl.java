@@ -10,11 +10,14 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.areas.operations.BooleanMapAreaOperations2D;
 import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -32,7 +35,9 @@ import momime.common.database.MapFeatureEx;
 import momime.common.database.MapFeatureMagicRealm;
 import momime.common.database.MapSizePlane;
 import momime.common.database.NodeStrengthPlane;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileType;
 import momime.common.database.TileTypeAreaEffect;
 import momime.common.database.TileTypeEx;
 import momime.common.database.TileTypeFeatureChance;
@@ -41,10 +46,13 @@ import momime.common.database.UnitEx;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.ServerGridCellEx;
@@ -1771,6 +1779,135 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 						}
 					}
 				}
+		}
+	}
+	
+	/**
+	 * Sets the race for all land squares connected to x, y
+	 * @param map True terrain
+	 * @param area Area to mark connected land
+	 * @param x X coordinate of starting location
+	 * @param y Y coordinate of starting location
+	 * @param plane Plane of starting location
+	 * @param cdb Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
+	 */
+	final void markContinent (final MapVolumeOfMemoryGridCells map, final MapArea3D<Boolean> area,
+		final int x, final int y, final int plane, final CommonDatabase cdb) throws RecordNotFoundException
+	{
+		final CoordinateSystem sys = area.getCoordinateSystem ();
+
+		// Set centre tile
+		area.set (x, y, plane, true);
+
+		// Now branch out in every direction from here
+		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
+		{
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
+			if (getCoordinateSystemUtils ().move3DCoordinates (sys, coords, d))
+			{
+				final OverlandMapTerrainData terrain = map.getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+				final TileType tileType = cdb.findTileType (terrain.getTileTypeID (), "markContinent");
+				
+				if ((tileType.isLand () != null) && (tileType.isLand ()) && (area.get (coords) == null))
+					markContinent (map, area, coords.getX (), coords.getY (), plane, cdb);
+			}
+		}
+	}
+	
+	/**
+	 * Tries to find a node or lair to generate rampaging monsters from
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws MomException If there is a problem with any of the calculations
+	 */
+	@Override
+	public final void generateRampagingMonsters (final MomSessionVariables mom)
+		throws RecordNotFoundException, MomException
+	{
+		// Accumulator does tick up and reset even before the minimum turn, otherwise it would be guaranteed to get monsters on turn 50, so check turn here
+		if (mom.getGeneralPublicKnowledge ().getTurnNumber () >= mom.getSessionDescription ().getDifficultyLevel ().getRampagingMonstersMinimumTurnNumber ())
+		{
+			// Find the 2 players we need
+			PlayerServerDetails raidersPlayer = null;
+			PlayerServerDetails monsterPlayer = null;
+			for (final PlayerServerDetails player : mom.getPlayers ())
+			{
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ()))
+					raidersPlayer = player;
+				else if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+					monsterPlayer = player;
+			}
+			
+			if (raidersPlayer == null)
+				throw new MomException ("generateRampagingMonsters can't find raiders player");
+			if (monsterPlayer == null)
+				throw new MomException ("generateRampagingMonsters can't find rampaging monsters player");
+			
+			// Mark all continents containing non-raider cities
+			final MapArea3D<Boolean> monsterContinents = new MapArea3DArrayListImpl<Boolean> ();
+			monsterContinents.setCoordinateSystem (mom.getSessionDescription ().getOverlandMapSize ());
+			
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+						if ((gc.getCityData () != null) && (gc.getCityData ().getCityOwnerID () != raidersPlayer.getPlayerDescription ().getPlayerID ()))
+							markContinent (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), monsterContinents, x, y, z, mom.getServerDB ());
+					}
+			
+			// Search for nodes and lairs which haven't been cleared yet (the treasureValue gets set to null when they've been cleared),
+			// are on the same continent as a non-raider city, and contained summoned units besides Life creatures
+			final List<MapCoordinates3DEx> monsterLocations = new ArrayList<MapCoordinates3DEx> ();
+			final List<String> monsterMagicRealms = new ArrayList<String> ();
+			
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+						if ((gc.getTreasureValue () != null) && (!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ())) && (monsterContinents.get (x, y, z) != null))
+						{
+							// Find the magic realms of the creatures here
+							final MapCoordinates3DEx monsterLocation = new MapCoordinates3DEx (x, y, z);
+							final List<String> magicRealms = new ArrayList<String> ();
+							for (final MemoryUnit mu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+								if ((monsterLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) && (mu.getOwningPlayerID () == monsterPlayer.getPlayerDescription ().getPlayerID ()))
+								{
+									final UnitEx unitDef = mom.getServerDB ().findUnit (mu.getUnitID (), "generateRampagingMonsters");
+									if (!magicRealms.contains (unitDef.getUnitMagicRealm ()))
+										magicRealms.add (unitDef.getUnitMagicRealm ());
+								}									
+							
+							if (magicRealms.size () == 1)
+							{
+								final Pick pick = mom.getServerDB ().findPick (magicRealms.get (0), "generateRampagingMonsters");
+								if ((pick.isGenerateRampagingMonsters () != null) && (pick.isGenerateRampagingMonsters ()))
+								{
+									monsterLocations.add (monsterLocation);
+									monsterMagicRealms.add (magicRealms.get (0));
+								}
+							}
+						}
+					}
+			
+			// Pick the node/lair that will generate monsters
+			if (!monsterLocations.isEmpty ())
+			{
+				final int index = getRandomUtils ().nextInt (monsterLocations.size ());
+				final MapCoordinates3DEx monsterLocation = monsterLocations.get (index);
+				final String monsterMagicRealm = monsterMagicRealms.get (index);
+				final int monsterBudget = ((2 + getRandomUtils ().nextInt (mom.getSessionDescription ().getDifficultyLevel ().getRampagingMonstersAccumulatorMaximum ()) +
+					getRandomUtils ().nextInt (mom.getSessionDescription ().getDifficultyLevel ().getRampagingMonstersAccumulatorMaximum ())) *
+						mom.getGeneralPublicKnowledge ().getTurnNumber ()) / 5;
+				
+				log.debug ("Generating rampaing monsters from node/lair at " + monsterLocation + " of realm " + monsterMagicRealm + " with budget " + monsterBudget);
+				
+				// Pick the adjacent tile where the monsters will spawn
+			}
 		}
 	}
 

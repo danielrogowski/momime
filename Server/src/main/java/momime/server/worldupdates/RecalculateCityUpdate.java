@@ -89,7 +89,8 @@ public final class RecalculateCityUpdate implements WorldUpdate
 		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		
-		if ((tc.getCityData () != null) && (tc.getCityData ().getCityPopulation () >= 1000))
+		// Must do this even for Outposts, so their citySizeID gets set to CS01
+		if (tc.getCityData () != null)
 		{
 			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "RecalculateCityUpdate");
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();

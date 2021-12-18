@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Action;
@@ -59,12 +60,14 @@ public final class CombatEndedUI extends MomClientDialogUI
 	/** Whether we've unblocked the message queue */
 	private boolean unblocked;
 	
-	/** Single line of heading text */
-	private JLabel headingText;
+	/** Lines of heading text */
+	private List<JLabel> headingText = new ArrayList<JLabel> ();
 	
 	/** Bulk of message text */
 	private JTextArea mainText;
 	
+	/** Content pane */
+	private JPanel contentPane;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -112,7 +115,7 @@ public final class CombatEndedUI extends MomClientDialogUI
 		});
 		
 		// Initialize the content pane
-		final JPanel contentPane = new JPanel ()
+		contentPane = new JPanel ()
 		{
 			@Override
 			protected final void paintComponent (final Graphics g)
@@ -127,9 +130,6 @@ public final class CombatEndedUI extends MomClientDialogUI
 		contentPane.setLayout (new XmlLayoutManager (getCombatEndedLayout ()));
 		
 		contentPane.add (getUtils ().createImage (footer), "frmCombatEndedBottomScroll");
-		
-		headingText = getUtils ().createLabel (MomUIConstants.DARK_BROWN, getSmallFont ());
-		contentPane.add (headingText, "frmCombatEndedHeading");
 		
 		mainText = getUtils ().createWrappingLabel (MomUIConstants.DARK_BROWN, getSmallFont ());
 		contentPane.add (mainText, "frmCombatEndedText");
@@ -284,10 +284,24 @@ public final class CombatEndedUI extends MomClientDialogUI
 				("ZOMBIE_COUNT", Integer.valueOf (getMessage ().getZombiesCreated ()).toString ()));
 		}
 		
+		for (final JLabel oldLabel : headingText)
+			contentPane.remove (oldLabel);
+		
+		headingText.clear ();
+		
 		if (languageText != null)
-			headingText.setText (getLanguageHolder ().findDescription (languageText).replaceAll ("CITY_NAME", cityName));
+		{
+			headingText.addAll (getUtils ().wrapLabels (getSmallFont (), MomUIConstants.DARK_BROWN,
+				getLanguageHolder ().findDescription (languageText).replaceAll ("CITY_NAME", cityName), 182));
+			
+			for (int n = 1; n <= Math.min (2, headingText.size ()); n++)
+				contentPane.add (headingText.get (n-1), "frmCombatEndedHeadingLine" + n);
+		}
 		
 		mainText.setText (bottomText.toString ());
+		
+		contentPane.revalidate ();
+		contentPane.repaint ();
 	}
 	
 	/**

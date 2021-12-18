@@ -46,7 +46,7 @@ public final class TestCombatEndedUI extends ClientTestData
 
 		// Mock entries from the language XML
 		final CombatEndedScreen combatEndedScreenLang = new CombatEndedScreen ();
-		combatEndedScreenLang.getDefeat ().add (createLanguageText (Language.ENGLISH, "You have been defeated"));
+		combatEndedScreenLang.getDefeat ().add (createLanguageText (Language.ENGLISH, "You have been defeated with extra long text to show that it wraps"));
 		combatEndedScreenLang.getVictory ().add (createLanguageText (Language.ENGLISH, "You are triumphant"));
 		
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);

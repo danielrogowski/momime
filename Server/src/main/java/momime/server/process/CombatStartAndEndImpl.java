@@ -448,8 +448,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// there in the code below; if the defender won, the undead need to be moved to be stacked with the rest of the defenders.
 			// This doesn't bother checking if we end up with too many units; if there are, they get removed in killUnitsIfTooManyInMapCell below.
 			final PlayerServerDetails losingPlayer = (winningPlayer == attackingPlayer) ? defendingPlayer : attackingPlayer;
-			final List<MemoryUnit> undead = getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer,
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+			final List<MemoryUnit> undead;
+			if (useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE)
+				undead = new ArrayList<MemoryUnit> ();
+			else
+				undead = getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer,
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+			
 			msg.setUndeadCreated (undead.size ());
 
 			final List<MemoryUnit> zombies = getCombatProcessing ().createZombies (combatLocation, moveTo, winningPlayer, mom);
@@ -613,7 +618,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// From here on have to be really careful, as banishWizard may have completely tore down the session, which we can tell because the players list will be empty
 				
 				// If their summoning circle was taken, but they still have their fortress elsewhere, then move summoning circle to there
-				if ((wasSummoningCircle) && (mom.getPlayers ().size () > 0))
+				if ((wasSummoningCircle) && (useCaptureCityDecision != CaptureCityDecisionID.RAMPAGE) && (mom.getPlayers ().size () > 0))
 					getCityProcessing ().moveSummoningCircleToWizardsFortress (defendingPlayer.getPlayerDescription ().getPlayerID (),
 						mom.getGeneralServerKnowledge (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}

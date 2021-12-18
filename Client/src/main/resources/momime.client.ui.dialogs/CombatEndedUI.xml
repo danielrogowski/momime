@@ -8,9 +8,15 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmCombatEndedHeading">
+	<component name="frmCombatEndedHeadingLine1">
 		<left>106</left>
 		<top>26</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCombatEndedHeadingLine2">
+		<left>106</left>
+		<top>36</top>
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

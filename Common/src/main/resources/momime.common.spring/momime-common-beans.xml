@@ -416,6 +416,7 @@
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
 </beans>

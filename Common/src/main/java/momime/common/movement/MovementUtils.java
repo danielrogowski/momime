@@ -76,16 +76,18 @@ public interface MovementUtils
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @param players List of players in this session
 	 * @param spells Known spells
 	 * @param terrain Player knowledge of terrain
 	 * @param db Lookup lists built over the XML database
 	 * @return Set of all overland map locations this unit stack is blocked from entering for one of the above reasons
 	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws PlayerNotFoundException If we can't find the player who is moving
 	 */
 	public Set<MapCoordinates3DEx> determineBlockedLocations (final UnitStack unitStack, final int movingPlayerID,
-		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem,
+		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem, final List<? extends PlayerPublicDetails> players,
 		final List<MemoryMaintainedSpell> spells, final MapVolumeOfMemoryGridCells terrain, final CommonDatabase db)
-		throws RecordNotFoundException;
+		throws RecordNotFoundException, PlayerNotFoundException;
 
 	/**
 	 * @param movingPlayerID The player who is trying to move

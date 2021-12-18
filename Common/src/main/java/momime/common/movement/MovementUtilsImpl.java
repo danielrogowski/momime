@@ -13,6 +13,7 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.utils.Holder;
@@ -32,6 +33,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
@@ -72,6 +74,9 @@ public final class MovementUtilsImpl implements MovementUtils
 	
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/**
 	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
@@ -203,17 +208,19 @@ public final class MovementUtilsImpl implements MovementUtils
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @param players List of players in this session
 	 * @param spells Known spells
 	 * @param terrain Player knowledge of terrain
 	 * @param db Lookup lists built over the XML database
 	 * @return Set of all overland map locations this unit stack is blocked from entering for one of the above reasons
 	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws PlayerNotFoundException If we can't find the player who is moving
 	 */
 	@Override
 	public final Set<MapCoordinates3DEx> determineBlockedLocations (final UnitStack unitStack, final int movingPlayerID,
-		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem,
+		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem, final List<? extends PlayerPublicDetails> players,
 		final List<MemoryMaintainedSpell> spells, final MapVolumeOfMemoryGridCells terrain, final CommonDatabase db)
-		throws RecordNotFoundException
+		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		// What magic realm(s) are the units in the stack?
 		final Set<String> unitStackMagicRealms = new HashSet<String> ();
@@ -249,23 +256,40 @@ public final class MovementUtilsImpl implements MovementUtils
 			spells.stream ().filter (s -> (s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS)) && (s.getCastingPlayerID () != movingPlayerID)).map
 				(s -> (MapCoordinates3DEx) s.getCityLocation ()).forEach (l -> blockedLocations.add (l));
 		
-		// Towers are impassable if Planar Seal is cast; also check numbers of units we have in each cell here too
-		final boolean planarSeal = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-			(spells, null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null);
-				
-		for (int z = 0; z < overlandMapCoordinateSystem.getDepth (); z++)
-			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
-				for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
-					
-					if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
-						blockedLocations.add (new MapCoordinates3DEx (x, y, z));
-		
-					else if (planarSeal)
+		// To rampaging monsters, all nodes, lairs and towers are blocked so they don't end up clearing or joining the lair
+		final PlayerPublicDetails movingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, movingPlayerID, "determineBlockedLocations");
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) movingPlayer.getPersistentPlayerPublicKnowledge ();
+		if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+		{
+			for (int z = 0; z < overlandMapCoordinateSystem.getDepth (); z++)
+				for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
+					for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
 					{
 						final OverlandMapTerrainData terrainData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
-						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
+						if (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db))
 							blockedLocations.add (new MapCoordinates3DEx (x, y, z));
-					}							
+					}
+		}
+		else
+		{
+			// Towers are impassable if Planar Seal is cast; also check numbers of units we have in each cell here too
+			final boolean planarSeal = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+				(spells, null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null);
+					
+			for (int z = 0; z < overlandMapCoordinateSystem.getDepth (); z++)
+				for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
+					for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
+						
+						if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
+							blockedLocations.add (new MapCoordinates3DEx (x, y, z));
+			
+						else if (planarSeal)
+						{
+							final OverlandMapTerrainData terrainData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+							if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
+								blockedLocations.add (new MapCoordinates3DEx (x, y, z));
+						}
+		}
 		
 		return blockedLocations;
 	}
@@ -736,5 +760,21 @@ public final class MovementUtilsImpl implements MovementUtils
 	public final void setCombatMapUtils (final CombatMapUtils util)
 	{
 		combatMapUtils = util;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 }

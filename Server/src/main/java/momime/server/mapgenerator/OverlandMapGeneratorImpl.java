@@ -1971,7 +1971,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					{
 						final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 						final TileType tileType = mom.getServerDB ().findTileType (terrainData.getTileTypeID (), "generateRampagingMonsters");
-						if ((tileType.isLand () != null) && (tileType.isLand ()) &&
+						if ((tileType.isLand () != null) && (tileType.isLand ()) && (!getMemoryGridCellUtils ().isNodeLairTower (terrainData, mom.getServerDB ())) &&
 							(getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), coords.getX (), coords.getY (), coords.getZ (), 0) == null))
 							spawnLocations.add (coords);
 					}

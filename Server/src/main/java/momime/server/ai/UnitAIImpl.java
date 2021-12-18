@@ -1,6 +1,7 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -74,6 +75,10 @@ public final class UnitAIImpl implements UnitAI
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (UnitAIImpl.class);
+	
+	/** Rampaging monsters only attack, they won't merge stacks together do anything clever */
+	private final static List<AiMovementCode> RAMPAGING_MONSTERS_MOVEMENT_CODES = Arrays.asList
+		(AiMovementCode.REINFORCE, AiMovementCode.ATTACK_STATIONARY, AiMovementCode.ATTACK_WANDERING);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -220,6 +225,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param ourUnits Array to populate our unit ratings into
 	 * @param enemyUnits Array to populate enemy unit ratings into
 	 * @param playerID Player ID to consider as "our" units
+	 * @param ignorePlayerID Player ID whose units to ignore, usually null
 	 * @param mem Memory data known to playerID
 	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
@@ -229,11 +235,12 @@ public final class UnitAIImpl implements UnitAI
 	 */
 	@Override
 	public final void calculateUnitRatingsAtEveryMapCell (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final int playerID, final FogOfWarMemory mem, final List<PlayerServerDetails> players, final CommonDatabase db)
+		final int playerID, final Integer ignorePlayerID, final FogOfWarMemory mem, final List<PlayerServerDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		for (final MemoryUnit mu : mem.getUnit ())
-			if (mu.getStatus () == UnitStatusID.ALIVE)
+			if ((mu.getStatus () == UnitStatusID.ALIVE) &&
+				((ignorePlayerID == null) || (mu.getOwningPlayerID () != ignorePlayerID)))
 			{
 				final AIUnitsAndRatings [] [] [] unitArray = (mu.getOwningPlayerID () == playerID) ? ourUnits : enemyUnits;
 				AIUnitsAndRatings unitList = unitArray [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()];
@@ -364,6 +371,66 @@ public final class UnitAIImpl implements UnitAI
 		
 		Collections.sort (underdefendedLocations);
 		return underdefendedLocations;
+	}
+	
+	/**
+	 * evaluateCurrentDefence lists every city, node, lair and tower that we either own or is undefended that we want to send units to.
+	 * The rampaging monsters player isn't interested in nodes/lairs/towers so the equivalent for them is to list all undefended wizard owned cities.
+	 * 
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param playerID Player ID to consider as "our" units
+	 * @param ignorePlayerID Player ID whose cities to ignore
+	 * @param terrain Known terrain
+	 * @param sys Overland map coordinate system
+	 * @return List of all defence locations, and how many points short we are of our desired defence level
+	 */
+	@Override
+	public final List<AIDefenceLocation> listUndefendedWizardCities (final AIUnitsAndRatings [] [] [] enemyUnits,
+		final int playerID, final int ignorePlayerID, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
+	{
+		final List<AIDefenceLocation> undefendedWizardCities = new ArrayList<AIDefenceLocation> ();
+		
+		for (int z = 0; z < sys.getDepth (); z++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				for (int x = 0; x < sys.getWidth (); x++)
+				{
+					final AIUnitsAndRatings theirs = enemyUnits [z] [y] [x];
+					final OverlandMapCityData cityData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
+					if ((theirs == null) && (cityData != null) && (cityData.getCityOwnerID () != ignorePlayerID))
+					{
+						log.debug ("Rampaging monsters Player ID " + playerID + " sees undefended wizard city at (" + x + ", " + y + ", " + z + ")");						
+						undefendedWizardCities.add (new AIDefenceLocation (new MapCoordinates3DEx (x, y, z), 0));
+					}
+				}
+		
+		return undefendedWizardCities;
+	}
+
+	/**
+	 * Checks every city, node, lair and tower that we either own or is undefended, and checks how much short of our desired defence level it currently is.
+	 * As a side effect, any units where we have too much defence, or units which are not in a defensive location, are put into a list of mobile units.
+	 * 
+	 * @param ourUnits Array of our unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param mobileUnits List to populate with details of all units that are in excess of defensive requirements, or are not in defensive positions
+	 * @param terrain Known terrain
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 */
+	@Override
+	public final void listUnitsNotInNodeLairTowers (final AIUnitsAndRatings [] [] [] ourUnits, final List<AIUnitAndRatings> mobileUnits,
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db) throws RecordNotFoundException
+	{
+		for (int z = 0; z < sys.getDepth (); z++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				for (int x = 0; x < sys.getWidth (); x++)
+				{
+					final OverlandMapTerrainData terrainData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+					final AIUnitsAndRatings ours = ourUnits [z] [y] [x];
+					
+					if ((ours != null) && (!getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))
+						mobileUnits.addAll (ours);
+				}
 	}
 	
 	/**
@@ -620,6 +687,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param terrain Player knowledge of terrain
 	 * @param desiredSpecialUnitLocations Locations we want to put cities, road, capture nodes, purify corruption
 	 * @param isRaiders Whether it is the raiders player
+	 * @param isMonsters Whether it is the rampaging monsters player
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
@@ -630,7 +698,7 @@ public final class UnitAIImpl implements UnitAI
 	public final AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final OverlandMovementCell [] [] [] moves,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations,
-		final boolean isRaiders, final CoordinateSystem sys, final CommonDatabase db)
+		final boolean isRaiders, final boolean isMonsters, final CoordinateSystem sys, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		AIMovementDecision decision = null;
@@ -638,77 +706,79 @@ public final class UnitAIImpl implements UnitAI
 		while ((decision == null) && (iter.hasNext ()))
 		{
 			final AiMovementCode movementCode = iter.next ();
-			
-			log.debug ("AI considering movement code " + movementCode + " for stack of " + units.size () + " units at " + units.get (0).getUnit ().getUnitLocation ());
-			
-			switch (movementCode)
-			{
-				case REINFORCE:
-					decision = getUnitAIMovement ().considerUnitMovement_Reinforce (units, moves, underdefendedLocations, sys);
-					break;
-					
-				case ATTACK_STATIONARY:
-					decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (units, moves, enemyUnits, isRaiders, terrain, sys, db);
-					break;
-					
-				case ATTACK_WANDERING:
-					decision = getUnitAIMovement ().considerUnitMovement_AttackWandering (units, moves, enemyUnits, terrain, sys, db);
-					break;
-					
-				case SCOUT_LAND:
-					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (units, moves, terrain, sys, db, units.get (0).getUnit ().getOwningPlayerID ());
-					break;
-					
-				case SCOUT_ALL:
-					decision = getUnitAIMovement ().considerUnitMovement_ScoutAll (units, moves, terrain, sys, units.get (0).getUnit ().getOwningPlayerID ());
-					break;
-					
-				case JOIN_STACK:
-					decision = getUnitAIMovement ().considerUnitMovement_JoinStack (units, moves, ourUnitsInSameCategory, enemyUnits, isRaiders, terrain, sys, db);
-					break;
-					
-				case GET_IN_TRANSPORT:
-					decision = getUnitAIMovement ().considerUnitMovement_GetInTransport (units, moves, sys);
-					break;
-					
-				case OVERDEFEND:
-					decision = getUnitAIMovement ().considerUnitMovement_Overdefend (units, moves, enemyUnits, isRaiders, terrain, sys, db);
-					break;
-				
-				case BUILD_CITY:
-					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (units, moves, desiredSpecialUnitLocations.get (AIUnitType.BUILD_CITY), sys);
-					break;
-				
-				case BUILD_ROAD:
-					decision = getUnitAIMovement ().considerUnitMovement_BuildRoad (units, moves, desiredSpecialUnitLocations.get (AIUnitType.BUILD_ROAD), sys);
-					break;
-				
-				case PURIFY:
-					decision = getUnitAIMovement ().considerUnitMovement_Purify (units, moves, sys);
-					break;
-					
-				case MELD_WITH_NODE:
-					decision = getUnitAIMovement ().considerUnitMovement_MeldWithNode (units, moves, desiredSpecialUnitLocations.get (AIUnitType.MELD_WITH_NODE), sys);
-					break;
-				
-				case CARRY_UNITS:
-					decision = getUnitAIMovement ().considerUnitMovement_CarryUnits (units, moves, sys);
-					break;
-					
-				case LOAD_UNITS:
-					decision = getUnitAIMovement ().considerUnitMovement_LoadUnits (units, moves, sys);
-					break;
-					
-				case FORTRESS_ISLAND:
-					decision = getUnitAIMovement ().considerUnitMovement_FortressIsland (units, moves, sys);
-					break;
-					
-				default:
-					throw new MomException ("decideUnitMovement doesn't know what to do with AI movement code: " + movementCode);
-			}
 
-			log.debug ("AI movement code " + movementCode + " for stack of " + units.size () + " units at " + units.get (0).getUnit ().getUnitLocation () +
-				((decision == null) ? " rejected" : (" accepted = " + decision)));
+			if ((!isMonsters) || (RAMPAGING_MONSTERS_MOVEMENT_CODES.contains (movementCode)))
+			{
+				log.debug ("AI considering movement code " + movementCode + " for stack of " + units.size () + " units at " + units.get (0).getUnit ().getUnitLocation ());
+				switch (movementCode)
+				{
+					case REINFORCE:
+						decision = getUnitAIMovement ().considerUnitMovement_Reinforce (units, moves, underdefendedLocations, sys);
+						break;
+						
+					case ATTACK_STATIONARY:
+						decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (units, moves, enemyUnits, isRaiders, isMonsters, terrain, sys, db);
+						break;
+						
+					case ATTACK_WANDERING:
+						decision = getUnitAIMovement ().considerUnitMovement_AttackWandering (units, moves, enemyUnits, isMonsters, terrain, sys, db);
+						break;
+						
+					case SCOUT_LAND:
+						decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (units, moves, terrain, sys, db, units.get (0).getUnit ().getOwningPlayerID ());
+						break;
+						
+					case SCOUT_ALL:
+						decision = getUnitAIMovement ().considerUnitMovement_ScoutAll (units, moves, terrain, sys, units.get (0).getUnit ().getOwningPlayerID ());
+						break;
+						
+					case JOIN_STACK:
+						decision = getUnitAIMovement ().considerUnitMovement_JoinStack (units, moves, ourUnitsInSameCategory, enemyUnits, isRaiders, terrain, sys, db);
+						break;
+						
+					case GET_IN_TRANSPORT:
+						decision = getUnitAIMovement ().considerUnitMovement_GetInTransport (units, moves, sys);
+						break;
+						
+					case OVERDEFEND:
+						decision = getUnitAIMovement ().considerUnitMovement_Overdefend (units, moves, enemyUnits, isRaiders, terrain, sys, db);
+						break;
+					
+					case BUILD_CITY:
+						decision = getUnitAIMovement ().considerUnitMovement_BuildCity (units, moves, desiredSpecialUnitLocations.get (AIUnitType.BUILD_CITY), sys);
+						break;
+					
+					case BUILD_ROAD:
+						decision = getUnitAIMovement ().considerUnitMovement_BuildRoad (units, moves, desiredSpecialUnitLocations.get (AIUnitType.BUILD_ROAD), sys);
+						break;
+					
+					case PURIFY:
+						decision = getUnitAIMovement ().considerUnitMovement_Purify (units, moves, sys);
+						break;
+						
+					case MELD_WITH_NODE:
+						decision = getUnitAIMovement ().considerUnitMovement_MeldWithNode (units, moves, desiredSpecialUnitLocations.get (AIUnitType.MELD_WITH_NODE), sys);
+						break;
+					
+					case CARRY_UNITS:
+						decision = getUnitAIMovement ().considerUnitMovement_CarryUnits (units, moves, sys);
+						break;
+						
+					case LOAD_UNITS:
+						decision = getUnitAIMovement ().considerUnitMovement_LoadUnits (units, moves, sys);
+						break;
+						
+					case FORTRESS_ISLAND:
+						decision = getUnitAIMovement ().considerUnitMovement_FortressIsland (units, moves, sys);
+						break;
+						
+					default:
+						throw new MomException ("decideUnitMovement doesn't know what to do with AI movement code: " + movementCode);
+				}
+	
+				log.debug ("AI movement code " + movementCode + " for stack of " + units.size () + " units at " + units.get (0).getUnit ().getUnitLocation () +
+					((decision == null) ? " rejected" : (" accepted = " + decision)));
+			}
 		}
 		
 		return decision;
@@ -772,9 +842,11 @@ public final class UnitAIImpl implements UnitAI
 			
 			// Use list of movement codes from the unit stack's category
 			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
+			final boolean isMonsters = CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ());
 	
 			final AIMovementDecision destination = decideUnitMovement (units, category.getMovementCode (), moves, underdefendedLocations,
-				ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredSpecialUnitLocations, isRaiders, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+				ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredSpecialUnitLocations, isRaiders, isMonsters,
+				mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 			
 			// Move, if we found somewhere to go
 			if (destination == null)

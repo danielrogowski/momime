@@ -124,44 +124,71 @@ public final class MomAIImpl implements MomAI
 		boolean combatStarted = false;
 		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane = new HashMap<Integer, List<AIUnitType>> ();
 		
-		if (cityConstructableCombatUnits.isEmpty ())
+		if ((cityConstructableCombatUnits.isEmpty ()) && (!CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ())))
 			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't make any combat units in cities at all");
 		else
 		{
-			for (final AIConstructableUnit unit : cityConstructableCombatUnits)
-				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " could make combat unit " + unit);
-			
-			final int highestAverageRating = cityConstructableCombatUnits.get (0).getAverageRating ();
-			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s strongest UAR of city constructable combat units = " + highestAverageRating);
-
-			// Raiders have some special handling
+			// Raiders and Rampaging monsters have some special handling
 			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
+			final boolean isMonsters = CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ());
 			
+			final PlayerServerDetails raidersPlayer = mom.getPlayers ().stream ().filter (p -> CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals
+				(((MomPersistentPlayerPublicKnowledge) p.getPersistentPlayerPublicKnowledge ()).getWizardID ())).findAny ().orElse (null);
+			final Integer ignorePlayerID = isMonsters ? raidersPlayer.getPlayerDescription ().getPlayerID () : null;
+
 			// Estimate the total strength of all the units we have at every point on the map for attack and defense purposes,
 			// as well as the strength of all enemy units for attack purposes.
 			final AIUnitsAndRatings [] [] [] ourUnits = new AIUnitsAndRatings [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 			final AIUnitsAndRatings [] [] [] enemyUnits = new AIUnitsAndRatings [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-			getUnitAI ().calculateUnitRatingsAtEveryMapCell (ourUnits, enemyUnits, player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), mom.getPlayers (), mom.getServerDB ());
+			getUnitAI ().calculateUnitRatingsAtEveryMapCell (ourUnits, enemyUnits, player.getPlayerDescription ().getPlayerID (), ignorePlayerID,
+				priv.getFogOfWarMemory (), mom.getPlayers (), mom.getServerDB ());
 			
-			// Go through every defensive position that we either own, or is unoccupied and we should capture, seeing if we have enough units there defending
 			final List<AIUnitAndRatings> mobileUnits = new ArrayList<AIUnitAndRatings> ();
-			final List<AIDefenceLocation> underdefendedLocations = getUnitAI ().evaluateCurrentDefence (ourUnits, enemyUnits, mobileUnits,
-				player.getPlayerDescription ().getPlayerID (), isRaiders, priv.getFogOfWarMemory (), highestAverageRating, mom.getGeneralPublicKnowledge ().getTurnNumber (),
-				mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+			final List<AIDefenceLocation> underdefendedLocations;
+			final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations;
+			final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> specialistUnitsOnEachPlane;
+			
+			if (isMonsters)
+			{
+				// Rampaging monsters won't go join a node/lair/tower to help defend it, but we do need to list here cities owned by wizards that have no defence
+				underdefendedLocations = getUnitAI ().listUndefendedWizardCities (enemyUnits, player.getPlayerDescription ().getPlayerID (),
+					raidersPlayer.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
 
-			for (final AIDefenceLocation location : underdefendedLocations)
-				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " is underdefended at " + location);
+				// Rampaging monsters don't evaluate defence, just any unit not in a node/lair/tower is considered mobile
+				getUnitAI ().listUnitsNotInNodeLairTowers (ourUnits, mobileUnits, priv.getFogOfWarMemory ().getMap (),
+					mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+				
+				// Rampaging monsters don't use settlers, engineers and so on, so just make empty maps
+				desiredSpecialUnitLocations = new HashMap<AIUnitType, List<MapCoordinates3DEx>> ();
+				specialistUnitsOnEachPlane = new HashMap<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> ();
+			}
+			else
+			{
+				for (final AIConstructableUnit unit : cityConstructableCombatUnits)
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " could make combat unit " + unit);
+				
+				final int highestAverageRating = cityConstructableCombatUnits.get (0).getAverageRating ();
+				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s strongest UAR of city constructable combat units = " + highestAverageRating);
+	
+				// Go through every defensive position that we either own, or is unoccupied and we should capture, seeing if we have enough units there defending
+				underdefendedLocations = getUnitAI ().evaluateCurrentDefence (ourUnits, enemyUnits, mobileUnits,
+					player.getPlayerDescription ().getPlayerID (), isRaiders, priv.getFogOfWarMemory (), highestAverageRating, mom.getGeneralPublicKnowledge ().getTurnNumber (),
+					mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+	
+				for (final AIDefenceLocation location : underdefendedLocations)
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " is underdefended at " + location);
+				
+				// Get a list of all specialist units split by category and what plane they are on
+				specialistUnitsOnEachPlane = getUnitAI ().determineSpecialistUnitsOnEachPlane
+					(player.getPlayerDescription ().getPlayerID (), mobileUnits, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
+				
+				// What's the best place we can put a new city on each plane?
+				desiredSpecialUnitLocations = getUnitAI ().determineDesiredSpecialUnitLocations
+					(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getSessionDescription (), mom.getServerDB ());
+			}
 			
-			// Get a list of all specialist units split by category and what plane they are on
-			final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> specialistUnitsOnEachPlane = getUnitAI ().determineSpecialistUnitsOnEachPlane
-				(player.getPlayerDescription ().getPlayerID (), mobileUnits, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
-			
-			// What's the best place we can put a new city on each plane?
-			final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations = getUnitAI ().determineDesiredSpecialUnitLocations
-				(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getSessionDescription (), mom.getServerDB ());
-			
-			if (((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) || (isRaiders)) && (!mobileUnits.isEmpty ()))
+			if (!mobileUnits.isEmpty ())
 			{
 				// Try to find somewhere to move each mobile unit to.
 				// In "one player at a time" games, we can see the results our each movement step, so here we only ever move 1 cell at a time.
@@ -233,51 +260,51 @@ public final class MomAIImpl implements MomAI
 
 			if (!combatStarted)
 			{
-				// Raiders consider every city to be a unit factory
-				final List<MapCoordinates3DEx> unitFactories;
-				if (isRaiders)
-					unitFactories = null;
-				else
-				{
-					// Which city can build the best units? (even if we can't afford to make another one)
-					final OptionalInt bestAverageRatingFromConstructableUnits = cityConstructableCombatUnits.stream ().mapToInt (u -> u.getAverageRating ()).max ();				
-					if (!bestAverageRatingFromConstructableUnits.isPresent ())
-					{
-						unitFactories = null;
-						log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't construct any combat units in any cities");
-					}
-					else
-					{
-						log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s best unit(s) it can construct in any cities are UAR = " + bestAverageRatingFromConstructableUnits.getAsInt ());
-		
-						// What units can we make that match our best?
-						// This restricts to only units we can afford maintenance of, so if our economy is struggling, we may get an empty list here.
-						final List<AIConstructableUnit> bestConstructableUnits = cityConstructableCombatUnits.stream ().filter
-							(u -> (u.isCanAffordMaintenance ()) && (u.getAverageRating () == bestAverageRatingFromConstructableUnits.getAsInt ())).collect (Collectors.toList ());
-						
-						unitFactories = bestConstructableUnits.stream ().map (u -> u.getCityLocation ()).distinct ().collect (Collectors.toList ());
-						unitFactories.forEach (c -> log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s city at " + c + " is designated as a unit factory")); 
-					}
-				}
-				
-				int needForNewUnitsMod = 0;
-				if ((isRaiders) || ((unitFactories != null) && (!unitFactories.isEmpty ())))
-				{
-					// We need some kind of rating for how badly we think we need to construct more combat units.
-					// So base this on, 1) how many locations are underdefended, 2) whether we have sufficient mobile units.
-					// This could be a bit more clever, like "are there places we want to attack that we need more/stronger units to consider the attack",
-					// but I don't want the AI churning out armies of swordsmen just to try to beat a great drake.
-					final int mobileCombatUnits = (int) mobileUnits.stream ().filter (u -> u.getAiUnitType () == AIUnitType.COMBAT_UNIT).count ();
-					needForNewUnitsMod = 3 + underdefendedLocations.size () +
-						(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 5) - mobileCombatUnits;
-				}
-				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnitsMod);
-				
 				// Decide what to build in all of this players' cities, in any that don't currently have construction projects.
 				// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
 				// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
 				if (numberOfCities > 0)
 				{
+					// Raiders consider every city to be a unit factory
+					final List<MapCoordinates3DEx> unitFactories;
+					if (isRaiders)
+						unitFactories = null;
+					else
+					{
+						// Which city can build the best units? (even if we can't afford to make another one)
+						final OptionalInt bestAverageRatingFromConstructableUnits = cityConstructableCombatUnits.stream ().mapToInt (u -> u.getAverageRating ()).max ();				
+						if (!bestAverageRatingFromConstructableUnits.isPresent ())
+						{
+							unitFactories = null;
+							log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't construct any combat units in any cities");
+						}
+						else
+						{
+							log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s best unit(s) it can construct in any cities are UAR = " + bestAverageRatingFromConstructableUnits.getAsInt ());
+			
+							// What units can we make that match our best?
+							// This restricts to only units we can afford maintenance of, so if our economy is struggling, we may get an empty list here.
+							final List<AIConstructableUnit> bestConstructableUnits = cityConstructableCombatUnits.stream ().filter
+								(u -> (u.isCanAffordMaintenance ()) && (u.getAverageRating () == bestAverageRatingFromConstructableUnits.getAsInt ())).collect (Collectors.toList ());
+							
+							unitFactories = bestConstructableUnits.stream ().map (u -> u.getCityLocation ()).distinct ().collect (Collectors.toList ());
+							unitFactories.forEach (c -> log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s city at " + c + " is designated as a unit factory")); 
+						}
+					}
+					
+					int needForNewUnitsMod = 0;
+					if ((isRaiders) || ((unitFactories != null) && (!unitFactories.isEmpty ())))
+					{
+						// We need some kind of rating for how badly we think we need to construct more combat units.
+						// So base this on, 1) how many locations are underdefended, 2) whether we have sufficient mobile units.
+						// This could be a bit more clever, like "are there places we want to attack that we need more/stronger units to consider the attack",
+						// but I don't want the AI churning out armies of swordsmen just to try to beat a great drake.
+						final int mobileCombatUnits = (int) mobileUnits.stream ().filter (u -> u.getAiUnitType () == AIUnitType.COMBAT_UNIT).count ();
+						needForNewUnitsMod = 3 + underdefendedLocations.size () +
+							(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 5) - mobileCombatUnits;
+					}
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnitsMod);
+				
 					final Wizard wizard = mom.getServerDB ().findWizard (pub.getWizardID (), "aiPlayerTurn");
 					
 					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)

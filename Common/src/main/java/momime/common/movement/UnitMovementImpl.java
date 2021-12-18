@@ -92,6 +92,7 @@ public final class UnitMovementImpl implements UnitMovement
 		final OverlandMovementCell [] [] [] moves, final List<MapCoordinates3DEx> cellsLeftToCheck, final FogOfWarMemory mem, final CommonDatabase db)
 	{
 		// Don't bother rechecking if we can already move here for free since we know we can't improve on that
+		// So do recheck if we've never found a route to here, or if we've found a route to here that takes non-zero moves to reach here
 		OverlandMovementCell cell = moves [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()];
 		if ((cell == null) || (cell.getDoubleMovementDistance () > 0))
 		{
@@ -187,7 +188,7 @@ public final class UnitMovementImpl implements UnitMovement
 		
 		// Determine all the places we are blocked from entering for all reasons other than impassable terrain
 		final Set<MapCoordinates3DEx> blockedLocations = getMovementUtils ().determineBlockedLocations
-			(unitStack, movingPlayerID, ourUnitCountAtLocation, overlandMapCoordinateSystem, mem.getMaintainedSpell (), mem.getMap (), db);
+			(unitStack, movingPlayerID, ourUnitCountAtLocation, overlandMapCoordinateSystem, players, mem.getMaintainedSpell (), mem.getMap (), db);
 	
 		// Find usable Earth Gates
 		final Set<MapCoordinates3DEx> earthGates = getMovementUtils ().findEarthGates (movingPlayerID, mem.getMaintainedSpell ());

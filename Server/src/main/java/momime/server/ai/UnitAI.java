@@ -55,6 +55,7 @@ public interface UnitAI
 	 * @param ourUnits Array to populate our unit ratings into
 	 * @param enemyUnits Array to populate enemy unit ratings into
 	 * @param playerID Player ID to consider as "our" units
+	 * @param ignorePlayerID Player ID whose units to ignore, usually null
 	 * @param mem Memory data known to playerID
 	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
@@ -63,7 +64,7 @@ public interface UnitAI
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public void calculateUnitRatingsAtEveryMapCell (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final int playerID, final FogOfWarMemory mem, final List<PlayerServerDetails> players, final CommonDatabase db)
+		final int playerID, final Integer ignorePlayerID, final FogOfWarMemory mem, final List<PlayerServerDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -87,6 +88,34 @@ public interface UnitAI
 		final List<AIUnitAndRatings> mobileUnits, final int playerID, final boolean isRaiders, final FogOfWarMemory mem, final int highestAverageRating, final int turnNumber,
 		final CoordinateSystem sys, final CommonDatabase db) throws RecordNotFoundException;
 
+	/**
+	 * evaluateCurrentDefence lists every city, node, lair and tower that we either own or is undefended that we want to send units to.
+	 * The rampaging monsters player isn't interested in nodes/lairs/towers so the equivalent for them is to list all undefended wizard owned cities.
+	 * 
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param playerID Player ID to consider as "our" units
+	 * @param ignorePlayerID Player ID whose cities to ignore
+	 * @param terrain Known terrain
+	 * @param sys Overland map coordinate system
+	 * @return List of all defence locations, and how many points short we are of our desired defence level
+	 */
+	public List<AIDefenceLocation> listUndefendedWizardCities (final AIUnitsAndRatings [] [] [] enemyUnits,
+		final int playerID, final int ignorePlayerID, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys);
+
+	/**
+	 * Checks every city, node, lair and tower that we either own or is undefended, and checks how much short of our desired defence level it currently is.
+	 * As a side effect, any units where we have too much defence, or units which are not in a defensive location, are put into a list of mobile units.
+	 * 
+	 * @param ourUnits Array of our unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param mobileUnits List to populate with details of all units that are in excess of defensive requirements, or are not in defensive positions
+	 * @param terrain Known terrain
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 */
+	public void listUnitsNotInNodeLairTowers (final AIUnitsAndRatings [] [] [] ourUnits, final List<AIUnitAndRatings> mobileUnits,
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db) throws RecordNotFoundException;
+	
 	/**
 	 * @param mu Unit to check
 	 * @param players Players list
@@ -152,6 +181,7 @@ public interface UnitAI
 	 * @param terrain Player knowledge of terrain
 	 * @param desiredSpecialUnitLocations Locations we want to put cities, road, capture nodes, purify corruption
 	 * @param isRaiders Whether it is the raiders player
+	 * @param isMonsters Whether it is the rampaging monsters player
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
@@ -161,7 +191,7 @@ public interface UnitAI
 	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final OverlandMovementCell [] [] [] moves,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations,
-		final boolean isRaiders, final CoordinateSystem sys, final CommonDatabase db)
+		final boolean isRaiders, final boolean isMonsters, final CoordinateSystem sys, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 	
 	/**

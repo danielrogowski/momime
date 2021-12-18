@@ -106,6 +106,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param isRaiders Whether it is the raiders player
+	 * @param isMonsters Whether it is the rampaging monsters player
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
@@ -114,7 +115,8 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_AttackStationary (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final boolean isMonsters,
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
@@ -137,8 +139,9 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						final OverlandMapCityData cityData = mc.getCityData ();
 						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 						final OverlandMovementCell cell = moves [z] [y] [x];
-						if (((cityData != null) || ((!isRaiders) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))) &&
-							(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (cell != null))
+						if (((cityData != null) || ((!isRaiders) && (!isMonsters) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))) &&
+							(enemyUnitStack != null) && (cell != null) &&
+							((isMonsters) || (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ())))
 						{
 							// We can get there eventually, and stand a chance of beating them
 							final int doubleThisDistance = cell.getDoubleMovementDistance ();
@@ -178,6 +181,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @param units The units to move
 	 * @param moves Array listing all cells we can reach and the paths to get there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param isMonsters Whether it is the rampaging monsters player
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
@@ -186,7 +190,8 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_AttackWandering (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isMonsters,
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
@@ -205,7 +210,8 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 					final OverlandMovementCell cell = moves [z] [y] [x];
 					if ((cityData == null) && (!getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)) &&
-						(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (cell != null))
+						(enemyUnitStack != null) && (cell != null) &&
+						((isMonsters) || (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ())))
 					{
 						// We can get there eventually, and stand a chance of beating them
 						final int doubleThisDistance = cell.getDoubleMovementDistance ();

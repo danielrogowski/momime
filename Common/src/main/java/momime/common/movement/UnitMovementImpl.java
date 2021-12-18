@@ -188,7 +188,7 @@ public final class UnitMovementImpl implements UnitMovement
 		
 		// Determine all the places we are blocked from entering for all reasons other than impassable terrain
 		final Set<MapCoordinates3DEx> blockedLocations = getMovementUtils ().determineBlockedLocations
-			(unitStack, movingPlayerID, ourUnitCountAtLocation, overlandMapCoordinateSystem, players, mem.getMaintainedSpell (), mem.getMap (), db);
+			(unitStack, movingPlayerID, ourUnitCountAtLocation, overlandMapCoordinateSystem, players, mem, db);
 	
 		// Find usable Earth Gates
 		final Set<MapCoordinates3DEx> earthGates = getMovementUtils ().findEarthGates (movingPlayerID, mem.getMaintainedSpell ());

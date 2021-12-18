@@ -41,6 +41,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * There's a lot of methods involved in calculating movement.  All the component methods are here, then the main front end methods are in UnitMovementImpl
@@ -209,8 +210,7 @@ public final class MovementUtilsImpl implements MovementUtils
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
 	 * @param players List of players in this session
-	 * @param spells Known spells
-	 * @param terrain Player knowledge of terrain
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param db Lookup lists built over the XML database
 	 * @return Set of all overland map locations this unit stack is blocked from entering for one of the above reasons
 	 * @throws RecordNotFoundException If an expected data item can't be found
@@ -219,7 +219,7 @@ public final class MovementUtilsImpl implements MovementUtils
 	@Override
 	public final Set<MapCoordinates3DEx> determineBlockedLocations (final UnitStack unitStack, final int movingPlayerID,
 		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryMaintainedSpell> spells, final MapVolumeOfMemoryGridCells terrain, final CommonDatabase db)
+		final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		// What magic realm(s) are the units in the stack?
@@ -232,7 +232,7 @@ public final class MovementUtilsImpl implements MovementUtils
 			(e -> (e.isBlockEntryByCreaturesOfRealm () != null) && (e.isBlockEntryByCreaturesOfRealm ()) &&
 				(!Collections.disjoint (e.getProtectsAgainstSpellRealm (), unitStackMagicRealms))).map (e -> e.getCitySpellEffectID ()).collect (Collectors.toSet ());
 		
-		final Set<MapCoordinates3DEx> blockedLocations = spells.stream ().filter
+		final Set<MapCoordinates3DEx> blockedLocations = mem.getMaintainedSpell ().stream ().filter
 			(s -> (s.getCityLocation () != null) && (blockingCitySpellEffectIDs.contains (s.getCitySpellEffectID ()))).map
 			(s -> (MapCoordinates3DEx) s.getCityLocation ()).collect (Collectors.toSet ());
 
@@ -253,7 +253,7 @@ public final class MovementUtilsImpl implements MovementUtils
 		
 		// Unless every single unit can fly, we're blocked from entering anywhere with Flying Fortress
 		if (!allCanFly.getValue ())
-			spells.stream ().filter (s -> (s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS)) && (s.getCastingPlayerID () != movingPlayerID)).map
+			mem.getMaintainedSpell ().stream ().filter (s -> (s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_FLYING_FORTRESS)) && (s.getCastingPlayerID () != movingPlayerID)).map
 				(s -> (MapCoordinates3DEx) s.getCityLocation ()).forEach (l -> blockedLocations.add (l));
 		
 		// To rampaging monsters, all nodes, lairs and towers are blocked so they don't end up clearing or joining the lair
@@ -265,7 +265,7 @@ public final class MovementUtilsImpl implements MovementUtils
 				for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
 					for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
 					{
-						final OverlandMapTerrainData terrainData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
 						if (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db))
 							blockedLocations.add (new MapCoordinates3DEx (x, y, z));
 					}
@@ -274,7 +274,7 @@ public final class MovementUtilsImpl implements MovementUtils
 		{
 			// Towers are impassable if Planar Seal is cast; also check numbers of units we have in each cell here too
 			final boolean planarSeal = (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-				(spells, null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null);
+				(mem.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null);
 					
 			for (int z = 0; z < overlandMapCoordinateSystem.getDepth (); z++)
 				for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
@@ -285,10 +285,21 @@ public final class MovementUtilsImpl implements MovementUtils
 			
 						else if (planarSeal)
 						{
-							final OverlandMapTerrainData terrainData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+							final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
 							if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 								blockedLocations.add (new MapCoordinates3DEx (x, y, z));
 						}
+		}
+		
+		// Raiders are impassable to Rampaging Monsters and vice versa
+		if (!PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+		{
+			final Integer blockedPlayerID = players.stream ().filter (p -> (p.getPlayerDescription ().getPlayerID () != movingPlayerID) &&
+				(!PlayerKnowledgeUtils.isWizard (((MomPersistentPlayerPublicKnowledge) p.getPersistentPlayerPublicKnowledge ()).getWizardID ()))).map
+				(p -> p.getPlayerDescription ().getPlayerID ()).findAny ().orElse (null);
+			if (blockedPlayerID != null)
+				mem.getUnit ().stream ().filter (u -> (u.getStatus () == UnitStatusID.ALIVE) && (u.getOwningPlayerID () == blockedPlayerID) && (u.getUnitLocation () != null)).forEach
+					(u -> blockedLocations.add ((MapCoordinates3DEx) u.getUnitLocation ()));
 		}
 		
 		return blockedLocations;

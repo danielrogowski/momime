@@ -1958,7 +1958,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 				final String monsterMagicRealm = monsterMagicRealms.get (index);
 				final int monsterBudget = ((2 + getRandomUtils ().nextInt (mom.getSessionDescription ().getDifficultyLevel ().getRampagingMonstersAccumulatorMaximum ()) +
 					getRandomUtils ().nextInt (mom.getSessionDescription ().getDifficultyLevel ().getRampagingMonstersAccumulatorMaximum ())) *
-						mom.getGeneralPublicKnowledge ().getTurnNumber ()) / 5;
+						mom.getGeneralPublicKnowledge ().getTurnNumber ()) / 4;
 				
 				log.debug ("Generating rampaing monsters from node/lair at " + monsterLocation + " of realm " + monsterMagicRealm + " with budget " + monsterBudget);
 				

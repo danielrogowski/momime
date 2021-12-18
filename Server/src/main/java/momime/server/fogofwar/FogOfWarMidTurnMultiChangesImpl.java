@@ -668,6 +668,13 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					unitStackOwner, players, db);
 			tc.setTreasureValue (null);
 		}
+		
+		else if (tc.getGoldInRuin () != null)
+		{
+			getTreasureUtils ().sendTreasureReward (getTreasureUtils ().giveGoldInRuin (tc.getGoldInRuin (), unitStackOwner, moveTo, tileTypeID, mapFeatureID),
+				unitStackOwner, players, db);
+			tc.setGoldInRuin (null);
+		}
 	}
 
 	/**

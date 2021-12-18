@@ -28,7 +28,6 @@ import momime.client.messages.process.CombatEndedMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
 import momime.common.database.LanguageText;
-import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
 
@@ -180,10 +179,27 @@ public final class CombatEndedUI extends MomClientDialogUI
 		else
 		{
 			// Was a city combat
-			if (getMessage ().getCaptureCityDecisionID () == CaptureCityDecisionID.CAPTURE)
-				languageText = weWon ? getLanguages ().getCombatEndedScreen ().getYouCaptured () : getLanguages ().getCombatEndedScreen ().getEnemyCaptured ();
-			else
-				languageText = weWon ? getLanguages ().getCombatEndedScreen ().getYouRazed () : getLanguages ().getCombatEndedScreen ().getEnemyRazed ();
+			switch (getMessage ().getCaptureCityDecisionID ())
+			{
+				case CAPTURE:
+					languageText = weWon ? getLanguages ().getCombatEndedScreen ().getYouCaptured () : getLanguages ().getCombatEndedScreen ().getEnemyCaptured ();
+					break;
+					
+				case RAZE:
+					languageText = weWon ? getLanguages ().getCombatEndedScreen ().getYouRazed () : getLanguages ().getCombatEndedScreen ().getEnemyRazed ();
+					break;
+					
+				case RAMPAGE:
+					languageText = getLanguages ().getCombatEndedScreen ().getEnemyRampaged ();
+					break;
+					
+				case RUIN:
+					languageText = getLanguages ().getCombatEndedScreen ().getEnemyRuined ();
+					break;
+					
+				default:
+					languageText = null;
+			}
 			
 			// Gold looted from the city
 			if (getMessage ().getGoldSwiped () != null)
@@ -268,7 +284,9 @@ public final class CombatEndedUI extends MomClientDialogUI
 				("ZOMBIE_COUNT", Integer.valueOf (getMessage ().getZombiesCreated ()).toString ()));
 		}
 		
-		headingText.setText (getLanguageHolder ().findDescription (languageText).replaceAll ("CITY_NAME", cityName));
+		if (languageText != null)
+			headingText.setText (getLanguageHolder ().findDescription (languageText).replaceAll ("CITY_NAME", cityName));
+		
 		mainText.setText (bottomText.toString ());
 	}
 	

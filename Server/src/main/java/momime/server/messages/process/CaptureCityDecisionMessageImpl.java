@@ -5,13 +5,18 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
+import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.clienttoserver.CaptureCityDecisionMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CombatStartAndEnd;
 
@@ -20,6 +25,9 @@ import momime.server.process.CombatStartAndEnd;
  */
 public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMessage implements PostSessionClientToServerMessage
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (CaptureCityDecisionMessageImpl.class);
+	
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
 	
@@ -39,8 +47,19 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
-		getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
+		if ((getCaptureCityDecision () == CaptureCityDecisionID.CAPTURE) || (getCaptureCityDecision () == CaptureCityDecisionID.RAZE))
+		{
+			final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
+			getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
+		}
+		else
+		{
+			log.warn ("Received Capture City Decision message from " + sender.getPlayerDescription ().getPlayerName () + " who sent an invalid decision - " + getCaptureCityDecision ());
+
+			final TextPopupMessage reply = new TextPopupMessage ();
+			reply.setText ("You can only pick Capture or Raze for the captured city.");
+			sender.getConnection ().sendMessageToClient (reply);
+		}
 	}	
 
 	/**

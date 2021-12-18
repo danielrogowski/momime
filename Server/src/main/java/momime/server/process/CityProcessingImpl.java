@@ -1064,6 +1064,31 @@ public final class CityProcessingImpl implements CityProcessing
 	}
 	
 	/**
+	 * Rampaging monsters destroy a city and convert it to a ruin
+	 * 
+	 * @param cityLocation Location of the city
+	 * @param goldInRuin The gold the player lost in the city is kept in the ruin and awarded to whoever captures it
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void ruinCity (final MapCoordinates3DEx cityLocation, final int goldInRuin, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+	{
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		tc.getTerrainData ().setMapFeatureID (CommonDatabaseConstants.MAP_FEATURE_ID_RUINS);
+		tc.setGoldInRuin (goldInRuin);
+
+		// This has the call to updatePlayerMemoryOfTerrain at the end
+		razeCity (cityLocation, mom);
+	}
+	
+	/**
 	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
 	 * 
 	 * @param attackingPlayer Player who won the combat, who is doing the banishing

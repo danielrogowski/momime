@@ -175,6 +175,9 @@ public final class CommonDatabaseConstants
 
 	/** Cleared Tower of Wizardry */
 	public final static String FEATURE_CLEARED_TOWER_OF_WIZARDRY = "MF12B";
+	
+	/** Ruins */
+	public final static String MAP_FEATURE_ID_RUINS = "MF16";
 
 	// population tasks
 

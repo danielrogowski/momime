@@ -630,6 +630,41 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	}
 	
 	/**
+	 * When Rampaging Monsters ruin a city, the gold the player lost is waiting in the ruin to be reclaimed.  So then they get the gold
+	 * as a fixed treasure reward rather than the usual treasure rolling method above.
+	 * 
+	 * @param goldAmount Amount of gold to award
+	 * @param player Player who recaptured the ruin
+	 * @param lairNodeTowerLocation The location of where the ruin was
+	 * @param tileTypeID The tile type that the ruin was, before it was possibly altered/removed by capturing it
+	 * @param mapFeatureID The map feature that the ruin was, before it was possibly altered/removed by capturing it (will be null for nodes/towers)
+	 * @return Details of all rewards given (pre-built message ready to send back to client)
+	 */
+	@Override
+	public final TreasureRewardMessage giveGoldInRuin (final int goldAmount, final PlayerServerDetails player,
+		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID)
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
+		// Initialize message
+		final TreasureRewardMessage reward = new TreasureRewardMessage ();
+		reward.setTileTypeID (tileTypeID);
+		reward.setMapFeatureID (mapFeatureID);
+		
+		log.debug ("Gold in ruin reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation +
+			" is " + goldAmount + " gold");
+
+		getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldAmount);
+		
+		final ProductionTypeAndUndoubledValue resourceValue = new ProductionTypeAndUndoubledValue ();
+		resourceValue.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		resourceValue.setUndoubledProductionValue (goldAmount);
+		reward.getResource ().add (resourceValue);
+		
+		return reward;
+	}
+		
+	/**
 	 * Adds a type of reward to the list of possible rewards, adding it the the number of times for the relative chance of this reward 
 	 * 
 	 * @param list List of possible reward types to add to

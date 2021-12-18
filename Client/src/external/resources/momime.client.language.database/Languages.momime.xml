@@ -4227,6 +4227,12 @@ Bonus Or +GOLD_BONUS%</text>
 		<enemyRazed language="pl">
 			<text>CITY_NAME zostało zniszczone</text>
 		</enemyRazed>
+        <enemyRampaged language="en">
+            <text>The monsters rampage through CITY_NAME then disappear</text>
+        </enemyRampaged>
+        <enemyRuined language="en">
+            <text>CITY_NAME was reduced to ruins</text>
+        </enemyRuined>
 		<enemyGotGoldFromYourCity language="en">
 			<text>GOLD_FROM_CITY gold pieces were lost.</text>
 		</enemyGotGoldFromYourCity>

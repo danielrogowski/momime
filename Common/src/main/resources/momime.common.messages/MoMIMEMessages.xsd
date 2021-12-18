@@ -1015,6 +1015,14 @@ All hits are removed from the first figure until it is dead and disappears, then
 				<xsd:documentation>Raze</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="RAZE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Rampage (leave city intact)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RAMPAGE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Ruin</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="RUIN" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 

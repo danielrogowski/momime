@@ -1925,7 +1925,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
 						final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-						if ((gc.getTreasureValue () != null) && (!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ())) && (monsterContinents.get (x, y, z) != null))
+						if (((gc.getTreasureValue () != null) || (gc.getGoldInRuin () != null)) &&
+							(!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ())) && (monsterContinents.get (x, y, z) != null))
 						{
 							// Find the magic realms of the creatures here
 							final MapCoordinates3DEx monsterLocation = new MapCoordinates3DEx (x, y, z);

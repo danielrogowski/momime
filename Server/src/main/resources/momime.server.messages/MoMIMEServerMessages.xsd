@@ -90,6 +90,11 @@ Only the true map on the server is these cells; the players' FOW storage just us
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="populationEventStartedTurnNumber" type="momimecommon:turnNumber" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatMap" type="momimemsgs:mapAreaOfCombatTiles" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="goldInRuin" type="momimecommon:undoubledProductionValue">
+					    <xsd:annotation>
+    						<xsd:documentation>When Rampaging Monsters ruin a city, the gold the player lost is waiting in the ruin to be reclaimed.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 		        </xsd:sequence>
 	        </xsd:extension>
 		</xsd:complexContent>

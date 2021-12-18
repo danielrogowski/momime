@@ -2014,6 +2014,14 @@
 						<xsd:selector xpath="enemyRazed" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="combatEndedScreenEnemyRampagedPK">
+						<xsd:selector xpath="enemyRampaged" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenEnemyRuinedPK">
+						<xsd:selector xpath="enemyRuined" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="combatEndedScreenEnemyGotGoldFromYourCityPK">
 						<xsd:selector xpath="enemyGotGoldFromYourCity" />
 						<xsd:field xpath="@language" />
@@ -4523,6 +4531,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="youGotGoldFromRazing" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyCaptured" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyRazed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyRampaged" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyRuined" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyGotGoldFromYourCity" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="heroItems" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="regeneratedSingular" />

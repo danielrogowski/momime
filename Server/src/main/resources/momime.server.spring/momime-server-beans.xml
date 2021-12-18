@@ -722,6 +722,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">

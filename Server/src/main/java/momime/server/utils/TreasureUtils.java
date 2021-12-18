@@ -61,6 +61,20 @@ public interface TreasureUtils
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**
+	 * When Rampaging Monsters ruin a city, the gold the player lost is waiting in the ruin to be reclaimed.  So then they get the gold
+	 * as a fixed treasure reward rather than the usual treasure rolling method above.
+	 * 
+	 * @param goldAmount Amount of gold to award
+	 * @param player Player who recaptured the ruin
+	 * @param lairNodeTowerLocation The location of where the ruin was
+	 * @param tileTypeID The tile type that the ruin was, before it was possibly altered/removed by capturing it
+	 * @param mapFeatureID The map feature that the ruin was, before it was possibly altered/removed by capturing it (will be null for nodes/towers)
+	 * @return Details of all rewards given (pre-built message ready to send back to client)
+	 */
+	public TreasureRewardMessage giveGoldInRuin (final int goldAmount, final PlayerServerDetails player,
+		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID);
+	
+	/**
 	 * Sends the reward info to the client, including all separate messages to e.g. add hero items and so on.
 	 * 
 	 * @param reward Details of treasure reward to send

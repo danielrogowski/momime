@@ -13,6 +13,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.CitySize;
@@ -133,6 +134,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -316,6 +320,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
 		CaptureCityDecisionID useCaptureCityDecision = captureCityDecision;
+
+		final MomPersistentPlayerPublicKnowledge atkPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
 		
 		// If we're walking into a city that we don't already own (its possible we're moving into our own city if this is a "walk in without a fight")
 		// then don't end the combat just yet - first ask the winner whether they want to capture or raze the city
@@ -339,6 +345,16 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
 			}
+			
+			// Rampaging monsters have their own special options for captured cities
+			else if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (atkPub.getWizardID ()))
+			{
+				if (getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null)
+					useCaptureCityDecision = CaptureCityDecisionID.RAMPAGE;
+				else
+					useCaptureCityDecision = getRandomUtils ().nextBoolean () ? CaptureCityDecisionID.RAMPAGE : CaptureCityDecisionID.RUIN;
+			}
+			
 			else
 			{
 				log.debug ("AI player ID " + attackingPlayer.getPlayerDescription ().getPlayerID () + " captured a city");
@@ -360,6 +376,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Start to work out fame change for each player involved
 			int winningFameChange = 0;
 			int losingFameChange = 0;
+			long goldSwiped = 0;
 			boolean wasWizardsFortress = false;
 			
 			// Deal with the attacking player swiping gold from a city they just took - we do this first so we can send it with the CombatEnded message
@@ -374,7 +391,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				final long totalPopulation = getOverlandMapServerUtils ().totalPlayerPopulation
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID (),
 					mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
-				final long goldSwiped = (totalGold * cityPopulation) / totalPopulation;
+				goldSwiped = (totalGold * cityPopulation) / totalPopulation;
 				msg.setGoldSwiped ((int) goldSwiped);
 				
 				// Any gold from razing buildings?
@@ -477,7 +494,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				attackerFameChange = attackerFameChange - tc.getAttackerSpecialFameLost ();
 			
 			// Update fame
-			final MomPersistentPlayerPublicKnowledge atkPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
 			final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 
 			if ((attackerFameChange != 0) && (PlayerKnowledgeUtils.isWizard (atkPub.getWizardID ())))
@@ -541,24 +557,28 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Also find any similar defenders, who didn't participate in the combat.
 				MapCoordinates3DEx moveFrom = null;
 				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
-				final List<MemoryUnit> leftoverDefenders = new ArrayList<MemoryUnit> ();
 				
 				for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) && (trueUnit.getCombatSide () != null))
 					{
 						if (trueUnit.getCombatSide () == UnitCombatSideID.ATTACKER)
 						{
-							unitStack.add (trueUnit);
-							moveFrom = new MapCoordinates3DEx ((MapCoordinates3DEx) trueUnit.getUnitLocation ());
+							// Rampaging monsters that rampage through the city are just killed off rather than advancing
+							if (useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE)
+								mom.getWorldUpdates ().killUnit (trueUnit.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
+							else
+							{
+								unitStack.add (trueUnit);
+								moveFrom = new MapCoordinates3DEx ((MapCoordinates3DEx) trueUnit.getUnitLocation ());
+							}
 						}
+						
+						// Kill any leftover defenders
 						else if ((!undead.contains (trueUnit)) && (!zombies.contains (trueUnit)))
-							leftoverDefenders.add (trueUnit);
+							mom.getWorldUpdates ().killUnit (trueUnit.getUnitURN (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE);
 					}
 				
 				// Kill any leftover defenders
-				for (final MemoryUnit trueUnit : leftoverDefenders)
-					mom.getWorldUpdates ().killUnit (trueUnit.getUnitURN (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE);
-				
 				mom.getWorldUpdates ().process (mom);
 				
 				// Its possible to get a list of 0 here, if the only surviving attacking units were combat summons like phantom warriors which have now been removed
@@ -577,6 +597,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				else if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
 					getCityProcessing ().razeCity (combatLocation, mom);
 
+				else if (useCaptureCityDecision == CaptureCityDecisionID.RUIN)
+					getCityProcessing ().ruinCity (combatLocation, (int) goldSwiped, mom);
+				
 				// If they're already banished and this was their last city being taken, then treat it just like their wizard's fortress being taken
 				if ((!wasWizardsFortress) && (useCaptureCityDecision != null) &&
 					(getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0))
@@ -988,5 +1011,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

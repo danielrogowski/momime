@@ -607,7 +607,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					wasWizardsFortress = true;
 				
 				// Deal with wizard being banished
-				if (wasWizardsFortress)
+				if ((wasWizardsFortress) && (useCaptureCityDecision != CaptureCityDecisionID.RAMPAGE))
 					getCityProcessing ().banishWizard (attackingPlayer, defendingPlayer, mom);
 				
 				// From here on have to be really careful, as banishWizard may have completely tore down the session, which we can tell because the players list will be empty

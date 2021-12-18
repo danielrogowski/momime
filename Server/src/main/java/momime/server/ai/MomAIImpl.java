@@ -195,7 +195,7 @@ public final class MomAIImpl implements MomAI
 				// In "simultaneous turns" games, we will move anywhere that we can reach in one turn.
 				boolean restart = true;
 				int pass = 0;
-				while (restart)
+				while ((restart) && (pass < 100))
 				{
 					pass++;
 					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " movement pass " + pass);					

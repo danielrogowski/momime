@@ -43,19 +43,18 @@ import momime.client.ui.renderer.CitiesListCellRenderer;
 import momime.client.ui.renderer.CitiesListEntry;
 import momime.client.utils.CitiesListSorter;
 import momime.client.utils.WizardClientUtils;
-import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityProductionCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.internal.CityProductionBreakdown;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 
 /**
  * Screen showing a summary list of all the player's cities
- * @author Nigel Gay
- *
  */
 public final class CitiesListUI extends MomClientFrameUI
 {
@@ -88,6 +87,9 @@ public final class CitiesListUI extends MomClientFrameUI
 	
 	/** City production calculations */
 	private CityProductionCalculations cityProductionCalculations;
+	
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/** OK action */
 	private Action okAction;
@@ -285,6 +287,13 @@ public final class CitiesListUI extends MomClientFrameUI
 			
 			final MapCoordinates3DEx fortressLocation = (fortress == null) ? null : (MapCoordinates3DEx) fortress.getCityLocation ();
 			
+			// Player picks
+			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "refreshCitiesList");
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+
+			// Container for weapon grade images
+			final UnitSkillEx melee = getClient ().getClientDB ().findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "refreshCitiesList");
+			
 			// Make a new list of every city owned by the player
 			final List<CitiesListEntry> cities = new ArrayList<CitiesListEntry> ();
 			for (int plane = 0; plane < getClient ().getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
@@ -298,21 +307,20 @@ public final class CitiesListUI extends MomClientFrameUI
 						if ((cityData != null) && (cityData.getCityPopulation () > 0) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ()))
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
-							final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions
-								(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), cityLocation,
-								getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getSessionDescription (),
-								getClient ().getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, getClient ().getClientDB ());
 							
-							final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
-							final CityProductionBreakdown gold = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-							final CityProductionBreakdown production = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+							final int weaponGrade = getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
+								(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), cityLocation,
+									pub.getPick (), getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
+							final String weaponGradeImageFile = melee.findWeaponGradeImageFile (weaponGrade, "refreshCitiesList");
+							
+							final int enchantmentCount = (int) getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
+								(s -> (cityLocation.equals (s.getCityLocation ())) && (s.getCastingPlayerID () == getClient ().getOurPlayerID ())).count ();
+							final int curseCount = (int) getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
+								(s -> (cityLocation.equals (s.getCityLocation ())) && (s.getCastingPlayerID () != getClient ().getOurPlayerID ())).count ();
 							
 							cities.add (new CitiesListEntry (cityData, cityLocation, cityLocation.equals (fortressLocation),
-								(rations == null) ? 0 : rations.getCappedProductionAmount () - rations.getConsumptionAmount () + rations.getConvertToProductionAmount (),
-								(gold == null) ? 0 : gold.getCappedProductionAmount () - gold.getConsumptionAmount () + gold.getConvertToProductionAmount (),
-								(production == null) ? 0 : production.getCappedProductionAmount () - production.getConsumptionAmount () + production.getConvertToProductionAmount ()));
+								weaponGradeImageFile, enchantmentCount, curseCount));
 						}
 					}
 			
@@ -526,6 +534,22 @@ public final class CitiesListUI extends MomClientFrameUI
 	public final void setCityProductionCalculations (final CityProductionCalculations c)
 	{
 		cityProductionCalculations = c;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 	
 	/**

@@ -20,31 +20,32 @@ public final class CitiesListEntry
 	/** Whether this city contains the wizard's fortress */
 	private final boolean capital;
 	
-	/** Amount of rations being harvested - amount of rations being eaten by population */
-	private final int rations;
+	/** Weapon grade of units constructed at this city */
+	private final String weaponGradeImageFile;
 	
-	/** Gold being generated - upkeep of buildings */
-	private final int gold;
+	/** Number of our spells cast on this city */
+	private final int enchantmentCount;
 	
-	/** Production generated each turn */ 
-	private final int production;
+	/** Number of enemy spells cast on this city */ 
+	private final int curseCount;
 
 	/**
 	 * @param aCityData All of the non calculated elements can be read straight from here
 	 * @param aCityLocation Location of the city
 	 * @param aCapital Whether this city contains the wizard's fortress
-	 * @param aRations Amount of rations being harvested - amount of rations being eaten by population
-	 * @param aGold Gold being generated - upkeep of buildings
-	 * @param aProduction Production generated each turn
+	 * @param aWeaponGradeImageFile Weapon grade of units constructed at this city
+	 * @param anEnchantmentCount Number of our spells cast on this city
+	 * @param aCurseCount Number of enemy spells cast on this city
 	 */
-	public CitiesListEntry (final OverlandMapCityData aCityData, final MapCoordinates3DEx aCityLocation, final boolean aCapital, final int aRations, final int aGold, final int aProduction)
+	public CitiesListEntry (final OverlandMapCityData aCityData, final MapCoordinates3DEx aCityLocation, final boolean aCapital,
+		final String aWeaponGradeImageFile, final int anEnchantmentCount, final int aCurseCount)
 	{
 		cityData = aCityData;
 		cityLocation = aCityLocation;
 		capital = aCapital;
-		rations = aRations;
-		gold = aGold;
-		production = aProduction;
+		weaponGradeImageFile = aWeaponGradeImageFile;
+		enchantmentCount = anEnchantmentCount;
+		curseCount = aCurseCount;
 	}
 
 	/**
@@ -128,26 +129,26 @@ public final class CitiesListEntry
 	}
 	
 	/**
-	 * @return Amount of rations being harvested - amount of rations being eaten by population
+	 * @return Weapon grade of units constructed at this city
 	 */
-	public final int getRations ()
+	public final String getWeaponGradeImageFile ()
 	{
-		return rations;
+		return weaponGradeImageFile;
 	}
 	
 	/**
-	 * @return Gold being generated - upkeep of buildings
+	 * @return Number of our spells cast on this city
 	 */
-	public final int getGold ()
+	public final int getEnchantmentCount ()
 	{
-		return gold;
+		return enchantmentCount;
 	}
 	
 	/**
-	 * @return Production generated each turn
+	 * @return Number of enemy spells cast on this city
 	 */ 
-	public final int getProduction ()
+	public final int getCurseCount ()
 	{
-		return production;
+		return curseCount;
 	}
 }

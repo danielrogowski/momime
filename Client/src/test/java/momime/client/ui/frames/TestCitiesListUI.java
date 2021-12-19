@@ -1,9 +1,7 @@
 package momime.client.ui.frames;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,8 +29,7 @@ import momime.client.languages.database.Simple;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.CitiesListCellRenderer;
 import momime.client.utils.WizardClientUtils;
-import momime.common.calculations.CityProductionBreakdownsEx;
-import momime.common.calculations.CityProductionCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -41,11 +38,14 @@ import momime.common.database.OverlandMapSize;
 import momime.common.database.RaceEx;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
+import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MomGeneralPublicKnowledge;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
@@ -104,6 +104,20 @@ public final class TestCitiesListUI extends ClientTestData
 			when (db.findUnit (eq ("UN00" + n), anyString ())).thenReturn (unitDef);
 		}
 		
+		final UnitSkillEx melee = new UnitSkillEx ();
+		int w = 0;
+		for (final String weaponGradeName : new String [] {"Normal", "Alchemy", "Mithril", "Adamantium"})
+		{
+			final UnitSkillWeaponGrade weaponGrade = new UnitSkillWeaponGrade ();
+			weaponGrade.setWeaponGradeNumber (w);
+			weaponGrade.setSkillImageFile ("/momime.client.graphics/unitSkills/melee" + weaponGradeName + ".png");
+			melee.getUnitSkillWeaponGrade ().add (weaponGrade);
+			
+			w++;
+		}
+		melee.buildMap ();
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "refreshCitiesList")).thenReturn (melee);
+		
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
 		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
@@ -129,11 +143,14 @@ public final class TestCitiesListUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Player
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (null, null, null);
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (null, pub, null);
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, 1)).thenReturn (ourPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (1), anyString ())).thenReturn (ourPlayer);
 		
 		// Player name
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
@@ -194,6 +211,8 @@ public final class TestCitiesListUI extends ClientTestData
 		city5Data.setCityRaceID ("RC03");
 		city5Data.setCurrentlyConstructingBuildingID ("BL02");
 		
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		int cityNumber = 0;
 		for (final OverlandMapCityData cityData : new OverlandMapCityData [] {city1Data, city2Data, city3Data, city4Data, city5Data})
 		{
 			final int x = cityData.getCityPopulation () % 100;
@@ -203,7 +222,32 @@ public final class TestCitiesListUI extends ClientTestData
 			terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).setCityData (cityData);
 			
 			if (cityData.getCityName ().startsWith ("Z"))
-				terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).setBuildingIdSoldThisTurn ("X");	
+				terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).setBuildingIdSoldThisTurn ("X");
+			
+			when (unitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
+				(fow.getBuilding (), fow.getMap (), new MapCoordinates3DEx (x, y, z), pub.getPick (), mapSize, db)).thenReturn (cityNumber % 4); 
+			
+			// Enchantments and curses
+			final int enchantmentCount = cityNumber / 2;
+			final int curseCount = cityNumber % 2;
+			
+			for (int n = 0; n < enchantmentCount; n++)
+			{
+				final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+				spell.setCityLocation (new MapCoordinates3DEx (x, y, z));
+				spell.setCastingPlayerID (1);
+				fow.getMaintainedSpell ().add (spell);
+			}
+			
+			for (int n = 0; n < curseCount; n++)
+			{
+				final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
+				spell.setCityLocation (new MapCoordinates3DEx (x, y, z));
+				spell.setCastingPlayerID (2);
+				fow.getMaintainedSpell ().add (spell);
+			}
+			
+			cityNumber++;
 		}
 		
 		// Capital
@@ -213,17 +257,6 @@ public final class TestCitiesListUI extends ClientTestData
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, terrain, fow.getBuilding ())).thenReturn (fortress);
 		
-		// Production
-		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		
-		final CityProductionBreakdownsEx cityProductions = new CityProductionBreakdownsEx ();
-		when (prod.calculateAllCityProductions
-			(eq (players), eq (terrain), eq (fow.getBuilding ()), eq (fow.getMaintainedSpell ()),
-				any (MapCoordinates3DEx.class), eq ("TR01"), eq (sd), isNull (), eq (true), eq (false), eq (db))).thenReturn (cityProductions);
-		
-		// Event
-		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
-		
 		// Client		
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPlayerID ()).thenReturn (1);
@@ -231,7 +264,6 @@ public final class TestCitiesListUI extends ClientTestData
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
-		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CitiesListUI.xml"));
@@ -259,7 +291,7 @@ public final class TestCitiesListUI extends ClientTestData
 		cities.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		cities.setWizardClientUtils (wizardClientUtils);
 		cities.setMemoryBuildingUtils (memoryBuildingUtils);
-		cities.setCityProductionCalculations (prod);
+		cities.setUnitCalculations (unitCalculations);
 		cities.setCitiesListCellRenderer (renderer);
 		
 		// Display form		

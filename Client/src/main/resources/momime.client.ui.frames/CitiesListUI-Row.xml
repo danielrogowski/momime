@@ -27,9 +27,9 @@
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitiesListRowWeaponGrade">
-		<left>586</left>
+		<left>592</left>		<!--  586, tweaked to make it look centred -->
 		<top>4</top>
-		<width>32</width>
+		<width>26</width>	<!--  32, tweaked to make it look centred -->
 		<height>18</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
@@ -37,7 +37,15 @@
 	<component name="frmCitiesListRowEnchantments">
 		<left>626</left>
 		<top>4</top>
-		<width>32</width>
+		<width>16</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowCurses">
+		<left>642</left>
+		<top>4</top>
+		<width>16</width>
 		<height>18</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>

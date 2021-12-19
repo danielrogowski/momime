@@ -1731,6 +1731,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="citiesListCellRenderer" ref="citiesListCellRenderer" />
 	</bean>
 	

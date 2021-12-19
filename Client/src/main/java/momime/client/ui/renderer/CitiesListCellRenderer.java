@@ -1,6 +1,7 @@
 package momime.client.ui.renderer;
 
 import java.awt.Component;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -19,6 +21,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -116,8 +119,11 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/** Icon showing the weapon grade units constructed in this city will get */
 	private JLabel cityWeaponGrade;
 	
-	/** Count of how many enchantments + curses are cast on this city */
+	/** Count of how many enchantments are cast on this city */
 	private JLabel cityEnchantments;
+	
+	/** Count of how many curses are cast on this city */
+	private JLabel cityCurses;
 	
 	/** Icon to open popup to select a building to sell */
 	private JLabel sellIcon;
@@ -147,11 +153,16 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		cityUnits = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		add (cityUnits, "frmCitiesListRowUnits");
 
-		cityWeaponGrade = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		cityWeaponGrade = new JLabel ();
 		add (cityWeaponGrade, "frmCitiesListRowWeaponGrade");
 
 		cityEnchantments = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		cityEnchantments.setHorizontalAlignment (SwingConstants.CENTER);
 		add (cityEnchantments, "frmCitiesListRowEnchantments");
+
+		cityCurses = getUtils ().createLabel (Color.RED, getSmallFont ());
+		cityCurses.setHorizontalAlignment (SwingConstants.CENTER);
+		add (cityCurses, "frmCitiesListRowCurses");
 
 		sellIcon = getUtils ().createImage (pendingSaleImage);
 		add (sellIcon, "frmCitiesListRowSell");
@@ -170,8 +181,12 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	{
 		cityName.setText (city.getCityName ());
 		cityUnits.setText (Integer.valueOf (city.getCityPopulation () / 1000).toString ());
-		cityWeaponGrade.setText (Integer.valueOf (city.getRations ()).toString ());
-		cityEnchantments.setText (Integer.valueOf (city.getGold ()).toString ());
+
+		cityEnchantments.setText (Integer.valueOf (city.getEnchantmentCount ()).toString ());
+		cityEnchantments.setVisible (city.getEnchantmentCount () > 0);
+
+		cityCurses.setText (Integer.valueOf (city.getCurseCount ()).toString ());
+		cityCurses.setVisible (city.getCurseCount () > 0);
 		
 		final String buildingID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(city.getCityLocation ().getZ ()).getRow ().get (city.getCityLocation ().getY ()).getCell ().get (city.getCityLocation ().getX ()).getBuildingIdSoldThisTurn ();
@@ -180,6 +195,8 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		civilianPanel.removeAll ();
 		try
 		{
+			cityWeaponGrade.setIcon (new ImageIcon (getUtils ().loadImage (city.getWeaponGradeImageFile ())));
+
 			final RaceEx race = getClient ().getClientDB ().findRace (city.getCityRaceID (), "CitiesListCellRenderer");
 			
 			// Start with farmers

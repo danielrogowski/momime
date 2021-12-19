@@ -4445,21 +4445,21 @@ Bonus Or +GOLD_BONUS%</text>
 		<cityName language="en">
 			<text>Name</text>
 		</cityName>
-		<cityRace language="en">
-			<text>Race</text>
-		</cityRace>
 		<cityPopulation language="en">
-			<text>Pop.</text>
+			<text>Population</text>
 		</cityPopulation>
-		<cityRations language="en">
-			<text>Rat.</text>
-		</cityRations>
-		<cityGold language="en">
-			<text>Gold</text>
-		</cityGold>
-		<cityProduction language="en">
-			<text>Prod.</text>
-		</cityProduction>
+		<cityUnits language="en">
+			<text>Units</text>
+		</cityUnits>
+		<cityWeaponGrade language="en">
+			<text>Wep</text>
+		</cityWeaponGrade>
+		<cityEnchantments language="en">
+			<text>Ench</text>
+		</cityEnchantments>
+		<citySell language="en">
+			<text>Sell</text>
+		</citySell>
 		<cityConstructing language="en">
 			<text>Constructing</text>
 		</cityConstructing>

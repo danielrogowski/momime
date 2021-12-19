@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.utils.MemoryBuildingUtils;
@@ -23,6 +24,9 @@ public final class PendingSaleMessageImpl extends PendingSaleMessage implements 
 
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Cities list */
+	private CitiesListUI citiesListUI;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -42,6 +46,8 @@ public final class PendingSaleMessageImpl extends PendingSaleMessage implements 
 		final CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
 		if (cityView != null)
 			cityView.getCityViewPanel ().repaint ();
+		
+		getCitiesListUI ().refreshCitiesList ();
 	}
 
 	/**
@@ -74,5 +80,21 @@ public final class PendingSaleMessageImpl extends PendingSaleMessage implements 
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Cities list
+	 */
+	public final CitiesListUI getCitiesListUI ()
+	{
+		return citiesListUI;
+	}
+
+	/**
+	 * @param ui Cities list
+	 */
+	public final void setCitiesListUI (final CitiesListUI ui)
+	{
+		citiesListUI = ui;
 	}
 }

@@ -531,6 +531,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="pendingSaleMessage" class="momime.client.messages.process.PendingSaleMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="citiesListUI" ref="citiesListUI" />
 	</bean>
 
 	<bean id="addUnassignedHeroItemMessage" class="momime.client.messages.process.AddUnassignedHeroItemMessageImpl" scope="prototype">
@@ -1851,6 +1852,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="citiesListUI" ref="citiesListUI" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="textUtils" ref="textUtils" />
 	</bean>
 
 	<bean id="heroLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

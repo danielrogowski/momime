@@ -201,6 +201,9 @@ public final class TestCitiesListUI extends ClientTestData
 			final int z = cityData.getCityName ().startsWith ("W") ? 1 : 0;
 			
 			terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).setCityData (cityData);
+			
+			if (cityData.getCityName ().startsWith ("Z"))
+				terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).setBuildingIdSoldThisTurn ("X");	
 		}
 		
 		// Capital

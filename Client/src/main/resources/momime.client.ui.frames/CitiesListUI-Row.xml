@@ -45,8 +45,8 @@
 	<component name="frmCitiesListRowSell">
 		<left>666</left>
 		<top>4</top>
-		<width>30</width>
-		<height>18</height>
+		<width>26</width>		<!-- 30, tweaked to make it look centred -->
+		<height>16</height>		<!--18, tweaked to make it look centred -->
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

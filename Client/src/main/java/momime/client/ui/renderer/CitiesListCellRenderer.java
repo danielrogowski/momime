@@ -9,11 +9,13 @@ import java.awt.GridBagLayout;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
@@ -36,17 +38,24 @@ import momime.client.calculations.ClientCityCalculations;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.utils.TextUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.LanguageText;
 import momime.common.database.RaceEx;
 import momime.common.database.Unit;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.TurnSystem;
 import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
 import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
+import momime.common.messages.clienttoserver.SellBuildingMessage;
+import momime.common.utils.MemoryBuildingUtils;
 
 /**
  * Renderer for drawing the details about each city on the cities list screen
@@ -86,6 +95,12 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/** Cities list */
 	private CitiesListUI citiesListUI;
 	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Text utils */
+	private TextUtils textUtils;
+	
 	/** Background image */
 	private BufferedImage background;
 	
@@ -117,6 +132,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void init () throws IOException
 	{
 		background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/citiesListRow.png");
+		final BufferedImage pendingSaleImage = getUtils ().loadImage ("/momime.client.graphics/cityView/spellEffects/SE145.png");
 		
 		setLayout (new XmlLayoutManager (getCitiesListEntryLayout ()));
 
@@ -137,7 +153,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		cityEnchantments = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		add (cityEnchantments, "frmCitiesListRowEnchantments");
 
-		sellIcon = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		sellIcon = getUtils ().createImage (pendingSaleImage);
 		add (sellIcon, "frmCitiesListRowSell");
 
 		cityCurrentlyConstructing = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
@@ -156,7 +172,10 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		cityUnits.setText (Integer.valueOf (city.getCityPopulation () / 1000).toString ());
 		cityWeaponGrade.setText (Integer.valueOf (city.getRations ()).toString ());
 		cityEnchantments.setText (Integer.valueOf (city.getGold ()).toString ());
-		sellIcon.setText (Integer.valueOf (city.getProduction ()).toString ());
+		
+		final String buildingID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(city.getCityLocation ().getZ ()).getRow ().get (city.getCityLocation ().getY ()).getCell ().get (city.getCityLocation ().getX ()).getBuildingIdSoldThisTurn ();
+		sellIcon.setVisible (buildingID != null);
 		
 		civilianPanel.removeAll ();
 		try
@@ -267,6 +286,89 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					}
 					break;
 					
+				// Clicking the sell column brings up a popup list so we can pick a building to sell, maybe
+				case "frmCitiesListRowSell":
+					final String soldBuildingID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(city.getCityLocation ().getZ ()).getRow ().get (city.getCityLocation ().getY ()).getCell ().get (city.getCityLocation ().getX ()).getBuildingIdSoldThisTurn ();
+					if (soldBuildingID != null)
+					{
+						// There's already a building been sold / being sold
+						if (getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
+						{
+							final SellBuildingMessage msg = new SellBuildingMessage ();
+							msg.setCityLocation (city.getCityLocation ());
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+						}
+					}
+					else
+					{
+						// Build popup menu listing everything that can be sold
+						final JPopupMenu popup = new JPopupMenu ();
+						boolean anythingCanBeSold = false;
+						
+						for (final MemoryBuilding building : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ())
+						{
+							final Building buildingDef = getClient ().getClientDB ().findBuilding (building.getBuildingID (), "CitiesListCellRenderer");
+							final int goldValue = getMemoryBuildingUtils ().goldFromSellingBuilding (buildingDef);
+							if ((goldValue > 0)	&&	// Stop trying to sell Summoning Circle or something else that isn't really a building
+								(getMemoryBuildingUtils ().doAnyBuildingsDependOn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+									city.getCityLocation (), building.getBuildingID (), getClient ().getClientDB ()) == null))		// Trying to sell Granary when we have a Farmers' Market
+							{
+								final String buildingName = getLanguageHolder ().findDescription (buildingDef.getBuildingName ());
+								
+								final JMenuItem item = new JMenuItem (new LoggingAction
+									((buildingName != null) ? buildingName : building.getBuildingID (), (ev2) ->
+								{
+									// OK - but first check if current construction project depends on the one we're selling
+									// If so, then we can still sell it, but it will cancel our current construction project
+									final List<LanguageText> languageText;
+									String prerequisiteBuildingName = null;
+									
+									if (((city.getCurrentlyConstructingBuildingID () != null) &&
+											(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (building.getBuildingID (), city.getCurrentlyConstructingBuildingID (), getClient ().getClientDB ()))) ||
+										((city.getCurrentlyConstructingUnitID () != null) &&
+											(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (building.getBuildingID (), city.getCurrentlyConstructingUnitID (), getClient ().getClientDB ()))))
+									{
+										languageText = getLanguages ().getBuyingAndSellingBuildings ().getSellPromptPrerequisite ();
+										if (city.getCurrentlyConstructingBuildingID () != null)
+											prerequisiteBuildingName = getLanguageHolder ().findDescription
+												(getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "CitiesListCellRenderer").getBuildingName ());
+										else if (city.getCurrentlyConstructingUnitID () != null)
+											prerequisiteBuildingName = getLanguageHolder ().findDescription
+												(getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "CitiesListCellRenderer").getUnitName ());
+									}
+									else
+										languageText = getLanguages ().getBuyingAndSellingBuildings ().getSellPromptNormal ();
+									
+									// Work out the text for the message box
+									String text = getLanguageHolder ().findDescription (languageText).replaceAll
+										("BUILDING_NAME", getLanguageHolder ().findDescription (buildingDef.getBuildingName ())).replaceAll
+										("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldValue));
+									
+									if (prerequisiteBuildingName != null)
+										text = text.replaceAll ("PREREQUISITE_NAME", prerequisiteBuildingName);
+									
+									// Show message box
+									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+									msg.setLanguageTitle (getLanguages ().getBuyingAndSellingBuildings ().getSellTitle ());
+									msg.setText (text);
+									msg.setCityLocation (city.getCityLocation ());
+									msg.setBuildingURN (building.getBuildingURN ());
+									msg.setVisible (true);
+								}));
+								
+								item.setFont (getSmallFont ());
+								popup.add (item);
+								anythingCanBeSold = true;
+							}
+						}
+						
+						if (anythingCanBeSold)
+							popup.show (ev.getComponent (), ev.getX (), ev.getY ());
+					}
+					
+					break;
+					
 				// Clicking in the construction column brings up a popup list so we can change the construction of a city
 				case "frmCitiesListRowCurrentlyConstructing":
 					// Build popup menu listing everything this city can construct
@@ -282,14 +384,14 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 						
 						final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction
 							((buildingName != null) ? buildingName : building.getBuildingID (), (ev2) ->
-							{
-								// Tell server that we want to change our construction
-								// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
-								final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
-								msg.setBuildingID (building.getBuildingID ());
-								msg.setCityLocation (cityLocation);
-								getClient ().getServerConnection ().sendMessageToServer (msg);
-							}));
+						{
+							// Tell server that we want to change our construction
+							// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
+							final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
+							msg.setBuildingID (building.getBuildingID ());
+							msg.setCityLocation (cityLocation);
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+						}));
 						
 						item.setSelected (building.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()));
 						item.setFont (getSmallFont ());
@@ -483,5 +585,37 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void setCitiesListUI (final CitiesListUI list)
 	{
 		citiesListUI = list;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param mbu Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils mbu)
+	{
+		memoryBuildingUtils = mbu;
+	}
+
+	/**
+	 * @return Text utils
+	 */
+	public final TextUtils getTextUtils ()
+	{
+		return textUtils;
+	}
+
+	/**
+	 * @param tu Text utils
+	 */
+	public final void setTextUtils (final TextUtils tu)
+	{
+		textUtils = tu;
 	}
 }

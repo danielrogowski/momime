@@ -1141,7 +1141,7 @@
 			<xsd:selector xpath="pick" />
 			<xsd:field xpath="unitTypeID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:pickTypePK" name="pickFKpick_mastery">
+		<xsd:keyref refer="momimecommon:pickPK" name="pickFKpick_mastery">
 			<xsd:selector xpath="pick" />
 			<xsd:field xpath="nodeAndDispelBonus" />
 		</xsd:keyref>		

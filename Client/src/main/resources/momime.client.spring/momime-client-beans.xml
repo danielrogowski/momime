@@ -1729,11 +1729,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
-		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="citiesListCellRenderer" ref="citiesListCellRenderer" />
-		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
-		<property name="clientCityCalculations" ref="clientCityCalculations" />
 	</bean>
 	
 	<bean id="heroItemsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1850,6 +1847,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="citiesListEntryLayout" ref="citiesListEntryLayout" />
 		<property name="utils" ref="uiUtils" />
 		<property name="smallFont" ref="smallFont" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="clientCityCalculations" ref="clientCityCalculations" />
+		<property name="citiesListUI" ref="citiesListUI" />
 	</bean>
 
 	<bean id="heroLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

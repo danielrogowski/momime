@@ -16,11 +16,9 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -39,24 +37,19 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.MiniMapBitmapGenerator;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.renderer.CitiesListCellRenderer;
 import momime.client.ui.renderer.CitiesListEntry;
 import momime.client.utils.CitiesListSorter;
 import momime.client.utils.WizardClientUtils;
-import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityProductionCalculations;
-import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.Unit;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
-import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
 import momime.common.utils.MemoryBuildingUtils;
 
 /**
@@ -93,17 +86,8 @@ public final class CitiesListUI extends MomClientFrameUI
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
-	/** City calculations */
-	private CityCalculations cityCalculations;
-	
 	/** City production calculations */
 	private CityProductionCalculations cityProductionCalculations;
-	
-	/** Prototype frame creator */
-	private PrototypeFrameCreator prototypeFrameCreator;
-	
-	/** Client city calculations */
-	private ClientCityCalculations clientCityCalculations;
 	
 	/** OK action */
 	private Action okAction;
@@ -245,40 +229,12 @@ public final class CitiesListUI extends MomClientFrameUI
 			miniMapPanel.repaint ();
 		}).start ();
 		
-		// Update the map as we click on different unit stacks
-		citiesList.addListSelectionListener ((ev) ->
-		{
-			if (citiesList.getSelectedIndex () >= 0)
-				try
-				{
-					// Open city screen for the city that was clicked on
-					final MapCoordinates3DEx coords = citiesItems.get (citiesList.getSelectedIndex ()).getCityLocation ();
-					CityViewUI cityView = getClient ().getCityViews ().get (coords.toString ());
-					if (cityView == null)
-					{
-						cityView = getPrototypeFrameCreator ().createCityView ();
-						cityView.setCityLocation (coords);
-						getClient ().getCityViews ().put (coords.toString (), cityView);
-					}
-				
-					cityView.setVisible (true);
-					
-					// Show flashing white dot for location of the clicked on city
-					regenerateMiniMapBitmaps ();
-				}
-				catch (final IOException e)
-				{
-					log.error (e, e);
-				}
-		});
-		
-		// Right clicks brings up a popup list so we can change the construction of a city
 		citiesList.addMouseListener (new MouseAdapter ()
 		{
 			@Override
 			public final void mouseClicked (final MouseEvent ev)
 			{
-				if (SwingUtilities.isRightMouseButton (ev))
+				if (!SwingUtilities.isRightMouseButton (ev))
 				{
 					final int row = citiesList.locationToIndex (ev.getPoint ());
 					if ((row >= 0) && (row < citiesItems.size ()))
@@ -287,60 +243,9 @@ public final class CitiesListUI extends MomClientFrameUI
 						if (rect.contains (ev.getPoint ()))
 							try
 							{
-								// Build popup menu listing everything this city can construct
-								final JPopupMenu popup = new JPopupMenu ();
-	
-								final MapCoordinates3DEx cityLocation = citiesItems.getElementAt (row).getCityLocation ();
-								final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-									(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-	
-								for (final Building building : getClientCityCalculations ().listBuildingsCityCanConstruct (cityLocation))
-								{
-									final String buildingName = getLanguageHolder ().findDescription (building.getBuildingName ());
-									
-									final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction
-										((buildingName != null) ? buildingName : building.getBuildingID (), (ev2) ->
-										{
-											// Tell server that we want to change our construction
-											// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
-											final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
-											msg.setBuildingID (building.getBuildingID ());
-											msg.setCityLocation (cityLocation);
-											getClient ().getServerConnection ().sendMessageToServer (msg);
-										}));
-									
-									item.setSelected (building.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()));
-									item.setFont (getSmallFont ());
-									popup.add (item);
-								}
-
-								popup.addSeparator ();
-								
-								for (final Unit unitDef : getCityCalculations ().listUnitsCityCanConstruct (cityLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getClientDB ()))									
-								{
-									final String unitName = getLanguageHolder ().findDescription (unitDef.getUnitName ());
-
-									final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction (unitName, (ev2) ->
-									{
-										// Tell server that we want to change our construction
-										// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
-										final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
-										msg.setUnitID (unitDef.getUnitID ());
-										msg.setCityLocation (cityLocation);
-										getClient ().getServerConnection ().sendMessageToServer (msg);
-									}));
-
-									item.setSelected (unitDef.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()));
-									item.setFont (getSmallFont ());
-									popup.add (item);
-								}
-								
-								// NB. Normally you'd specify the popup location as ev.getX (), ev.getY (), but I want the popup list
-								// to always appear over the top of the "construction" column
-								popup.show (ev.getComponent (), rect.getBounds ().x + 382, rect.getBounds ().y + 2);
+								getCitiesListCellRenderer ().handleClick (ev, citiesItems.getElementAt (row), ev.getPoint ().x - rect.x, ev.getPoint ().y - rect.y);
 							}
-							catch (final IOException e)
+							catch (final Exception e)
 							{
 								log.error (e, e);
 							}
@@ -348,7 +253,7 @@ public final class CitiesListUI extends MomClientFrameUI
 				}
 			}
 		});
-
+								
 		// Initialize the list
 		refreshCitiesList ();
 		
@@ -608,22 +513,6 @@ public final class CitiesListUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return City calculations
-	 */
-	public final CityCalculations getCityCalculations ()
-	{
-		return cityCalculations;
-	}
-
-	/**
-	 * @param calc City calculations
-	 */
-	public final void setCityCalculations (final CityCalculations calc)
-	{
-		cityCalculations = calc;
-	}
-
-	/**
 	 * @return City production calculations
 	 */
 	public final CityProductionCalculations getCityProductionCalculations ()
@@ -637,38 +526,6 @@ public final class CitiesListUI extends MomClientFrameUI
 	public final void setCityProductionCalculations (final CityProductionCalculations c)
 	{
 		cityProductionCalculations = c;
-	}
-	
-	/**
-	 * @return Prototype frame creator
-	 */
-	public final PrototypeFrameCreator getPrototypeFrameCreator ()
-	{
-		return prototypeFrameCreator;
-	}
-
-	/**
-	 * @param obj Prototype frame creator
-	 */
-	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
-	{
-		prototypeFrameCreator = obj;
-	}
-
-	/**
-	 * @return Client city calculations
-	 */
-	public final ClientCityCalculations getClientCityCalculations ()
-	{
-		return clientCityCalculations;
-	}
-
-	/**
-	 * @param calc Client city calculations
-	 */
-	public final void setClientCityCalculations (final ClientCityCalculations calc)
-	{
-		clientCityCalculations = calc;
 	}
 	
 	/**

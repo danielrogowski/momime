@@ -39,6 +39,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RaceEx;
+import momime.common.database.RacePopulationTask;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -69,11 +70,24 @@ public final class TestCitiesListUI extends ClientTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		for (int n = 1; n <= 3; n++)
+		int r = 0;
+		for (String raceName : new String [] {"barbarian", "gnoll", "halfling"})
 		{
+			r++;
 			final RaceEx race = new RaceEx ();
-			race.getRaceNameSingular ().add (createLanguageText (Language.ENGLISH, "Race " + n));
-			when (db.findRace (eq ("RC0" + n), anyString ())).thenReturn (race);
+			
+			int t = 0;
+			for (String taskImage : new String [] {"farmer", "worker", "rebel"})
+			{
+				t++;
+				final RacePopulationTask task = new RacePopulationTask ();
+				task.setPopulationTaskID ("PT0" + t);
+				task.setCivilianImageFile ("/momime.client.graphics/races/" + raceName + "/" + taskImage + ".png");
+				race.getRacePopulationTask ().add (task);
+			}
+			
+			race.buildMap ();
+			when (db.findRace (eq ("RC0" + r), anyString ())).thenReturn (race);
 		}
 		
 		for (int n = 1; n <= 2; n++)
@@ -158,7 +172,10 @@ public final class TestCitiesListUI extends ClientTestData
 
 		final OverlandMapCityData city3Data = new OverlandMapCityData ();
 		city3Data.setCityName ("Weedy");
-		city3Data.setCityPopulation (3557);
+		city3Data.setCityPopulation (25000);
+		city3Data.setMinimumFarmers (5);
+		city3Data.setOptionalFarmers (3);
+		city3Data.setNumberOfRebels (4);
 		city3Data.setCityOwnerID (1);
 		city3Data.setCityRaceID ("RC02");
 		city3Data.setCurrentlyConstructingUnitID ("UN001");
@@ -180,7 +197,7 @@ public final class TestCitiesListUI extends ClientTestData
 		for (final OverlandMapCityData cityData : new OverlandMapCityData [] {city1Data, city2Data, city3Data, city4Data, city5Data})
 		{
 			final int x = cityData.getCityPopulation () % 100;
-			final int y = cityData.getCityPopulation () / 100;
+			final int y = cityData.getCityPopulation () / 1000;
 			final int z = cityData.getCityName ().startsWith ("W") ? 1 : 0;
 			
 			terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).setCityData (cityData);

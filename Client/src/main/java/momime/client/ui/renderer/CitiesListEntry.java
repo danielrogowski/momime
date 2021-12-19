@@ -88,6 +88,30 @@ public final class CitiesListEntry
 	}
 	
 	/**
+	 * @return Minimum number of farmers to feed the civilian population
+	 */
+	public final int getMinimumFarmers ()
+	{
+		return cityData.getMinimumFarmers ();
+	}
+	
+	/**
+	 * @return Chosen number of optional additional farmers 
+	 */
+	public final int getOptionalFarmers ()
+	{
+		return cityData.getOptionalFarmers ();
+	}
+	
+	/**
+	 * @return Number of rebels
+	 */
+	public final int getNumberOfRebels ()
+	{
+		return cityData.getNumberOfRebels ();
+	}
+	
+	/**
 	 * @return Location of the city
 	 */
 	public final MapCoordinates3DEx getCityLocation ()

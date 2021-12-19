@@ -1,27 +1,52 @@
 package momime.client.ui.renderer;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javax.swing.Box;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.actions.LoggingAction;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.calculations.ClientCityCalculations;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.CitiesListUI;
+import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.common.calculations.CityCalculations;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RaceEx;
+import momime.common.database.Unit;
+import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
+import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
 
 /**
  * Renderer for drawing the details about each city on the cities list screen
@@ -30,6 +55,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (CitiesListCellRenderer.class);
+	
+	/** Typical inset used on this screen layout */
+	private final static int INSET = 0;
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
@@ -46,6 +74,18 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/** Small font */
 	private Font smallFont;
 	
+	/** City calculations */
+	private CityCalculations cityCalculations;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** Client city calculations */
+	private ClientCityCalculations clientCityCalculations;
+	
+	/** Cities list */
+	private CitiesListUI citiesListUI;
+	
 	/** Background image */
 	private BufferedImage background;
 	
@@ -53,7 +93,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	private JLabel cityName;
 	
 	/** Images showing all the civilian population; clickable to set number of optional farmers */
-	private JLabel cityPopulation;
+	private JPanel civilianPanel;
 	
 	/** Images showing units garrisoned in the city */
 	private JLabel cityUnits;
@@ -83,8 +123,10 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		cityName = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		add (cityName, "frmCitiesListRowName");
 
-		cityPopulation = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		add (cityPopulation, "frmCitiesListRowPopulation");
+		civilianPanel = new JPanel ();
+		civilianPanel.setOpaque (false);
+		civilianPanel.setLayout (new GridBagLayout ());
+		add (civilianPanel, "frmCitiesListRowPopulation");
 
 		cityUnits = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		add (cityUnits, "frmCitiesListRowUnits");
@@ -116,10 +158,42 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		cityEnchantments.setText (Integer.valueOf (city.getGold ()).toString ());
 		sellIcon.setText (Integer.valueOf (city.getProduction ()).toString ());
 		
+		civilianPanel.removeAll ();
 		try
 		{
-			cityPopulation.setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findRace (city.getCityRaceID (), "CitiesListCellRenderer").getRaceNameSingular ()));
+			final RaceEx race = getClient ().getClientDB ().findRace (city.getCityRaceID (), "CitiesListCellRenderer");
 			
+			// Start with farmers
+			BufferedImage civilianImage = getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "CitiesListCellRenderer"));
+			final int civvyCount = city.getCityPopulation () / 1000;
+			int x = 0;
+			for (int civvyNo = 1; civvyNo <= civvyCount; civvyNo++)
+			{
+				// Is this the first rebel?
+				if (civvyNo == civvyCount - city.getNumberOfRebels () + 1)
+					civilianImage = getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, "CitiesListCellRenderer"));
+				
+				// Is this the first worker?
+				else if (civvyNo == city.getMinimumFarmers () + city.getOptionalFarmers () + 1)
+					civilianImage = getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, "CitiesListCellRenderer"));
+				
+				// Left justify all the civilians
+				final GridBagConstraints imageConstraints = getUtils ().createConstraintsNoFill (x, 0, 1, 1, INSET, GridBagConstraintsNoFill.SOUTHWEST);
+				if (civvyNo == civvyCount)
+					imageConstraints.weightx = 1;
+				
+				civilianPanel.add (getUtils ().createImage (civilianImage), imageConstraints);
+				x++;
+				
+				// If this is the last farmer who's necessary to feed the population (& so we cannot convert them to a worker) then leave a gap to show this
+				if (civvyNo == city.getMinimumFarmers ())
+				{
+					civilianPanel.add (Box.createRigidArea (new Dimension (6, 0)), getUtils ().createConstraintsNoFill (x, 0, 1, 1, INSET, GridBagConstraintsNoFill.SOUTHWEST));
+					x++;
+				}
+			}
+			
+			// Name of what's currently being constructed
 			if (city.getCurrentlyConstructingBuildingID () != null)
 				cityCurrentlyConstructing.setText (getLanguageHolder ().findDescription
 					(getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "CitiesListCellRenderer").getBuildingName ()));
@@ -133,6 +207,120 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		}
 		
 		return this;
+	}
+	
+	/**
+	 * Handles left mouse clicks in a list row
+	 * 
+	 * @param ev Click event
+	 * @param city Which city was clicked on 
+	 * @param x X coordinate within the row that was clicked
+	 * @param y Y coordinate within the row that was clicked
+	 * @throws IOException If there is a problem
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public final void handleClick (final MouseEvent ev, final CitiesListEntry city, final int x, final int y)
+		throws IOException, JAXBException, XMLStreamException
+	{
+		final XmlLayoutComponent cell = getCitiesListEntryLayout ().findComponentAt (x, y);
+		if (cell != null)
+			switch (cell.getName ())
+			{
+				// Clicking the name of the city opens up the city screen
+				case "frmCitiesListRowName":
+					CityViewUI cityView = getClient ().getCityViews ().get (city.getCityLocation ().toString ());
+					if (cityView == null)
+					{
+						cityView = getPrototypeFrameCreator ().createCityView ();
+						cityView.setCityLocation (city.getCityLocation ());
+						getClient ().getCityViews ().put (city.getCityLocation ().toString (), cityView);
+					}
+				
+					cityView.setVisible (true);
+					
+					// Show flashing white dot for location of the clicked on city
+					getCitiesListUI ().regenerateMiniMapBitmaps ();
+					break;
+					
+				// Clicking the population sets the number of optional farmers, but first we have to figure out exactly which figure was clicked on
+				case "frmCitiesListRowPopulation":
+					final RaceEx race = getClient ().getClientDB ().findRace (city.getCityRaceID (), "CitiesListCellRenderer");
+					final BufferedImage civilianImage = getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "CitiesListCellRenderer"));
+					final int minimumFarmersWidth = (civilianImage.getWidth () * city.getMinimumFarmers ()) + 6;
+					if (x >= minimumFarmersWidth)
+					{
+						int optionalFarmers = ((x - cell.getLeft () - minimumFarmersWidth) / civilianImage.getWidth ()) + 1;
+						if (optionalFarmers + city.getMinimumFarmers () + city.getNumberOfRebels () <= city.getCityPopulation () / 1000)
+						{
+							// Clicking on the same number toggles it, so we can turn the last optional farmer into a worker
+							if (optionalFarmers == city.getOptionalFarmers ())
+								optionalFarmers--;
+							
+							log.debug ("Requesting optional farmers in city " + city.getCityLocation () + " to be set to " + optionalFarmers + " (from cities list)");
+							
+							final ChangeOptionalFarmersMessage msg = new ChangeOptionalFarmersMessage ();
+							msg.setCityLocation (city.getCityLocation ());
+							msg.setOptionalFarmers (optionalFarmers);
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+						}						
+					}
+					break;
+					
+				// Clicking in the construction column brings up a popup list so we can change the construction of a city
+				case "frmCitiesListRowCurrentlyConstructing":
+					// Build popup menu listing everything this city can construct
+					final JPopupMenu popup = new JPopupMenu ();
+
+					final MapCoordinates3DEx cityLocation = city.getCityLocation ();
+					final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+						(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+
+					for (final Building building : getClientCityCalculations ().listBuildingsCityCanConstruct (cityLocation))
+					{
+						final String buildingName = getLanguageHolder ().findDescription (building.getBuildingName ());
+						
+						final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction
+							((buildingName != null) ? buildingName : building.getBuildingID (), (ev2) ->
+							{
+								// Tell server that we want to change our construction
+								// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
+								final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
+								msg.setBuildingID (building.getBuildingID ());
+								msg.setCityLocation (cityLocation);
+								getClient ().getServerConnection ().sendMessageToServer (msg);
+							}));
+						
+						item.setSelected (building.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()));
+						item.setFont (getSmallFont ());
+						popup.add (item);
+					}
+
+					popup.addSeparator ();
+					
+					for (final Unit unitDef : getCityCalculations ().listUnitsCityCanConstruct (cityLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getClientDB ()))									
+					{
+						final String unitName = getLanguageHolder ().findDescription (unitDef.getUnitName ());
+
+						final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction (unitName, (ev2) ->
+						{
+							// Tell server that we want to change our construction
+							// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
+							final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
+							msg.setUnitID (unitDef.getUnitID ());
+							msg.setCityLocation (cityLocation);
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+						}));
+
+						item.setSelected (unitDef.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()));
+						item.setFont (getSmallFont ());
+						popup.add (item);
+					}
+					
+					popup.show (ev.getComponent (), ev.getX (), ev.getY ());
+					break;
+			}
 	}
 
 	/**
@@ -231,5 +419,69 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void setSmallFont (final Font font)
 	{
 		smallFont = font;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+	
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Client city calculations
+	 */
+	public final ClientCityCalculations getClientCityCalculations ()
+	{
+		return clientCityCalculations;
+	}
+
+	/**
+	 * @param calc Client city calculations
+	 */
+	public final void setClientCityCalculations (final ClientCityCalculations calc)
+	{
+		clientCityCalculations = calc;
+	}
+
+	/**
+	 * @return Cities list
+	 */
+	public final CitiesListUI getCitiesListUI ()
+	{
+		return citiesListUI;
+	}
+
+	/**
+	 * @param list Cities list
+	 */
+	public final void setCitiesListUI (final CitiesListUI list)
+	{
+		citiesListUI = list;
 	}
 }

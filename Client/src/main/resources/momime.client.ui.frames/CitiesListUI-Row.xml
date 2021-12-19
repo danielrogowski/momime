@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
-	<formWidth>538</formWidth>
+	<formWidth>858</formWidth>
 	<formHeight>28</formHeight>
 	<component name="frmCitiesListRowName">
 		<left>4</left>
@@ -10,40 +10,40 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmCitiesListRowRace">
+	<component name="frmCitiesListRowPopulation">
 		<left>128</left>
 		<top>4</top>
-		<width>90</width>
+		<width>280</width>
 		<height>18</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmCitiesListRowPopulation">
-		<left>226</left>
+	<component name="frmCitiesListRowUnits">
+		<left>416</left>
+		<top>4</top>
+		<width>162</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowWeaponGrade">
+		<left>586</left>
 		<top>4</top>
 		<width>32</width>
 		<height>18</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmCitiesListRowRations">
-		<left>266</left>
+	<component name="frmCitiesListRowEnchantments">
+		<left>626</left>
 		<top>4</top>
 		<width>32</width>
 		<height>18</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmCitiesListRowGold">
-		<left>306</left>
-		<top>4</top>
-		<width>32</width>
-		<height>18</height>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmCitiesListRowProduction">
-		<left>346</left>
+	<component name="frmCitiesListRowSell">
+		<left>666</left>
 		<top>4</top>
 		<width>30</width>
 		<height>18</height>
@@ -51,7 +51,7 @@
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitiesListRowCurrentlyConstructing">
-		<left>384</left>
+		<left>704</left>
 		<top>4</top>
 		<width>152</width>
 		<height>18</height>

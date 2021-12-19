@@ -114,20 +114,20 @@ public final class CitiesListUI extends MomClientFrameUI
 	/** City name column heading */
 	private JLabel cityNameHeading;
 	
-	/** City race column heading */
-	private JLabel cityRaceHeading;
-	
 	/** City population column heading */
 	private JLabel cityPopulationHeading;
 	
-	/** City rations column heading */
-	private JLabel cityRationsHeading;
+	/** Units garrison in city column heading */
+	private JLabel cityUnitsHeading;
 	
-	/** City gold column heading */
-	private JLabel cityGoldHeading;
+	/** Weapon grade of units constructed in city column heading */
+	private JLabel cityWeaponGradeHeading;
 	
-	/** City production column heading */
-	private JLabel cityProductionHeading;
+	/** Enchantments and curses column heading */
+	private JLabel cityEnchantmentsHeading;
+	
+	/** Sell building column heading */
+	private JLabel citySellHeading;
 	
 	/** City construction project column heading */
 	private JLabel cityConstructingHeading;
@@ -184,20 +184,20 @@ public final class CitiesListUI extends MomClientFrameUI
 		cityNameHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (cityNameHeading, "frmCitiesListHeadingName");
 		
-		cityRaceHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		contentPane.add (cityRaceHeading, "frmCitiesListHeadingRace");
-		
 		cityPopulationHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (cityPopulationHeading, "frmCitiesListHeadingPopulation");
 		
-		cityRationsHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		contentPane.add (cityRationsHeading, "frmCitiesListHeadingRations");
+		cityUnitsHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		contentPane.add (cityUnitsHeading, "frmCitiesListHeadingUnits");
 		
-		cityGoldHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		contentPane.add (cityGoldHeading, "frmCitiesListHeadingGold");
+		cityWeaponGradeHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		contentPane.add (cityWeaponGradeHeading, "frmCitiesListHeadingWeaponGrade");
 		
-		cityProductionHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		contentPane.add (cityProductionHeading, "frmCitiesListHeadingProduction");
+		cityEnchantmentsHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		contentPane.add (cityEnchantmentsHeading, "frmCitiesListHeadingEnchantments");
+		
+		citySellHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
+		contentPane.add (citySellHeading, "frmCitiesListHeadingSell");
 		
 		cityConstructingHeading = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (cityConstructingHeading, "frmCitiesListHeadingCurrentlyConstructing");
@@ -357,8 +357,9 @@ public final class CitiesListUI extends MomClientFrameUI
 		getFrame ().setResizable (false);
 		getFrame ().setUndecorated (true);
 		
+		final int w = getCitiesListLayout ().getFormWidth ();
 		getFrame ().setShape (new Polygon
-			(new int [] {10, 6, 6, 10, 0, 0,		652, 652, 642, 646, 646, 642,		642, 646, 646, 642, 652, 652,		0, 0, 10, 6, 6, 10},
+			(new int [] {10, 6, 6, 10, 0, 0,		w, w, w-10, w-6, w-6, w-10,		w-10, w-6, w-6, w-10, w, w,		0, 0, 10, 6, 6, 10},
 			new int [] {38, 38, 30, 30, 10, 0,	0, 10, 30, 30, 38, 38,					378, 378, 386, 386, 406, 416,		416, 406, 386, 386, 378, 378},
 			24));		
 	}
@@ -466,13 +467,13 @@ public final class CitiesListUI extends MomClientFrameUI
 		getFrame ().setTitle (titleText);
 
 		// Column headings
-		cityNameHeading.setText			(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityName ()));
-		cityRaceHeading.setText				(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityRace ()));
-		cityPopulationHeading.setText		(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityPopulation ()));
-		cityRationsHeading.setText			(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityRations ()));
-		cityGoldHeading.setText				(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityGold ()));
-		cityProductionHeading.setText		(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityProduction ()));
-		cityConstructingHeading.setText	(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityConstructing ()));
+		cityNameHeading.setText				(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityName ()));
+		cityPopulationHeading.setText			(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityPopulation ()));
+		cityUnitsHeading.setText					(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityUnits ()));
+		cityWeaponGradeHeading.setText	(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityWeaponGrade ()));
+		cityEnchantmentsHeading.setText		(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityEnchantments ()));
+		citySellHeading.setText					(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCitySell ()));
+		cityConstructingHeading.setText		(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityConstructing ()));
 		
 		// Buttons
 		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));

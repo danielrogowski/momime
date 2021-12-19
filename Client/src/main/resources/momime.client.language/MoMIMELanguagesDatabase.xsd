@@ -2290,24 +2290,24 @@
 						<xsd:selector xpath="cityName" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="citiesListScreenCityRacePK">
-						<xsd:selector xpath="cityRace" />
-						<xsd:field xpath="@language" />
-					</xsd:key>
 					<xsd:key name="citiesListScreenCityPopulationPK">
 						<xsd:selector xpath="cityPopulation" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="citiesListScreenCityRationsPK">
-						<xsd:selector xpath="cityRations" />
+					<xsd:key name="citiesListScreenCityUnitsPK">
+						<xsd:selector xpath="cityUnits" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="citiesListScreenCityGoldPK">
-						<xsd:selector xpath="cityGold" />
+					<xsd:key name="citiesListScreenCityWeaponGradePK">
+						<xsd:selector xpath="cityWeaponGrade" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="citiesListScreenCityProductionPK">
-						<xsd:selector xpath="cityProduction" />
+					<xsd:key name="citiesListScreenCityEnchantmentsPK">
+						<xsd:selector xpath="cityEnchantments" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCitySellPK">
+						<xsd:selector xpath="citySell" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="citiesListScreenCityConstructingPK">
@@ -4645,11 +4645,11 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityName" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityRace" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityPopulation" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityRations" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGold" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityProduction" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityUnits" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityWeaponGrade" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityEnchantments" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="citySell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityConstructing" />
 		</xsd:sequence>
     </xsd:complexType>

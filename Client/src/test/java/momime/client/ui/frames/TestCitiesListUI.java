@@ -97,11 +97,11 @@ public final class TestCitiesListUI extends ClientTestData
 		final CitiesListScreen citiesListScreenLang = new CitiesListScreen ();
 		citiesListScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "The Cities of PLAYER_NAME"));
 		citiesListScreenLang.getCityName ().add (createLanguageText (Language.ENGLISH, "Name"));
-		citiesListScreenLang.getCityRace ().add (createLanguageText (Language.ENGLISH, "Race"));
-		citiesListScreenLang.getCityPopulation ().add (createLanguageText (Language.ENGLISH, "Pop."));
-		citiesListScreenLang.getCityRations ().add (createLanguageText (Language.ENGLISH, "Rat."));
-		citiesListScreenLang.getCityGold ().add (createLanguageText (Language.ENGLISH, "Gold"));
-		citiesListScreenLang.getCityProduction ().add (createLanguageText (Language.ENGLISH, "Prod."));
+		citiesListScreenLang.getCityPopulation ().add (createLanguageText (Language.ENGLISH, "Population"));
+		citiesListScreenLang.getCityUnits ().add (createLanguageText (Language.ENGLISH, "Units"));
+		citiesListScreenLang.getCityWeaponGrade ().add (createLanguageText (Language.ENGLISH, "Wep"));
+		citiesListScreenLang.getCityEnchantments ().add (createLanguageText (Language.ENGLISH, "Ench"));
+		citiesListScreenLang.getCitySell ().add (createLanguageText (Language.ENGLISH, "Sell"));
 		citiesListScreenLang.getCityConstructing ().add (createLanguageText (Language.ENGLISH, "Constructing"));
 
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);

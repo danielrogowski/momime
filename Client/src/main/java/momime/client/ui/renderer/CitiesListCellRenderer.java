@@ -505,56 +505,58 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					
 				// Clicking in the construction column brings up a popup list so we can change the construction of a city
 				case "frmCitiesListRowCurrentlyConstructing":
-					// Build popup menu listing everything this city can construct
-					final JPopupMenu popup = new JPopupMenu ();
-
 					final MapCoordinates3DEx cityLocation = city.getCityLocation ();
 					final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-
-					for (final Building building : getClientCityCalculations ().listBuildingsCityCanConstruct (cityLocation))
+					if (cityData.getCityPopulation () >= 1000)
 					{
-						final String buildingName = getLanguageHolder ().findDescription (building.getBuildingName ());
-						
-						final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction
-							((buildingName != null) ? buildingName : building.getBuildingID (), (ev2) ->
+						// Build popup menu listing everything this city can construct
+						final JPopupMenu popup = new JPopupMenu ();
+	
+						for (final Building building : getClientCityCalculations ().listBuildingsCityCanConstruct (cityLocation))
 						{
-							// Tell server that we want to change our construction
-							// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
-							final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
-							msg.setBuildingID (building.getBuildingID ());
-							msg.setCityLocation (cityLocation);
-							getClient ().getServerConnection ().sendMessageToServer (msg);
-						}));
+							final String buildingName = getLanguageHolder ().findDescription (building.getBuildingName ());
+							
+							final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction
+								((buildingName != null) ? buildingName : building.getBuildingID (), (ev2) ->
+							{
+								// Tell server that we want to change our construction
+								// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
+								final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
+								msg.setBuildingID (building.getBuildingID ());
+								msg.setCityLocation (cityLocation);
+								getClient ().getServerConnection ().sendMessageToServer (msg);
+							}));
+							
+							item.setSelected (building.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()));
+							item.setFont (getSmallFont ());
+							popup.add (item);
+						}
+	
+						popup.addSeparator ();
 						
-						item.setSelected (building.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()));
-						item.setFont (getSmallFont ());
-						popup.add (item);
-					}
-
-					popup.addSeparator ();
-					
-					for (final Unit unitDef : getCityCalculations ().listUnitsCityCanConstruct (cityLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getClientDB ()))									
-					{
-						final String unitName = getLanguageHolder ().findDescription (unitDef.getUnitName ());
-
-						final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction (unitName, (ev2) ->
+						for (final Unit unitDef : getCityCalculations ().listUnitsCityCanConstruct (cityLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getClientDB ()))									
 						{
-							// Tell server that we want to change our construction
-							// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
-							final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
-							msg.setUnitID (unitDef.getUnitID ());
-							msg.setCityLocation (cityLocation);
-							getClient ().getServerConnection ().sendMessageToServer (msg);
-						}));
-
-						item.setSelected (unitDef.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()));
-						item.setFont (getSmallFont ());
-						popup.add (item);
+							final String unitName = getLanguageHolder ().findDescription (unitDef.getUnitName ());
+	
+							final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction (unitName, (ev2) ->
+							{
+								// Tell server that we want to change our construction
+								// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
+								final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
+								msg.setUnitID (unitDef.getUnitID ());
+								msg.setCityLocation (cityLocation);
+								getClient ().getServerConnection ().sendMessageToServer (msg);
+							}));
+	
+							item.setSelected (unitDef.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()));
+							item.setFont (getSmallFont ());
+							popup.add (item);
+						}
+						
+						popup.show (ev.getComponent (), ev.getX (), ev.getY ());
 					}
-					
-					popup.show (ev.getComponent (), ev.getX (), ev.getY ());
 					break;
 					
 				// Rush buy

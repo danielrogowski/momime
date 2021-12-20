@@ -1,7 +1,7 @@
 package momime.client.ui.renderer;
 
-import java.awt.Component;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -44,6 +44,7 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.CityCalculations;
@@ -53,6 +54,7 @@ import momime.common.database.LanguageText;
 import momime.common.database.RaceEx;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
@@ -100,6 +102,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Combat UI */
+	private CombatUI combatUI;
 	
 	/** Text utils */
 	private TextUtils textUtils;
@@ -300,6 +305,36 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 							msg.setOptionalFarmers (optionalFarmers);
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 						}						
+					}
+					break;
+					
+				// Clicking the enchantments column brings up a popup list of enchantments we can switch off
+				case "frmCitiesListRowEnchantments":
+					if ((city.getEnchantmentCount () > 0) && (getClient ().isPlayerTurn ()) && (!getCombatUI ().isVisible ()))
+					{
+						final JPopupMenu popup = new JPopupMenu ();
+						
+						for (final MemoryMaintainedSpell spell : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ())
+							if ((city.getCityLocation ().equals (spell.getCityLocation ())) && (spell.getCastingPlayerID () == getClient ().getOurPlayerID ()) &&
+								(spell.getCitySpellEffectID () != null))
+							{
+								final String effectName = getLanguageHolder ().findDescription
+									(getClient ().getClientDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "CitiesListCellRenderer").getCitySpellEffectName ());
+								
+								final JMenuItem item = new JMenuItem (new LoggingAction (effectName, (ev2) ->
+								{
+									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+									msg.setLanguageTitle (getLanguages ().getSpellCasting ().getSwitchOffSpellTitle ());
+									msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll ("SPELL_NAME", effectName));
+									msg.setSwitchOffSpell (spell);
+									msg.setVisible (true);
+								}));
+								
+								item.setFont (getSmallFont ());
+								popup.add (item);								
+							}
+						
+						popup.show (ev.getComponent (), ev.getX (), ev.getY ());
 					}
 					break;
 					
@@ -634,5 +669,21 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param cui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI cui)
+	{
+		combatUI = cui;
 	}
 }

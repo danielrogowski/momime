@@ -1855,6 +1855,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="citiesListUI" ref="citiesListUI" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="combatUI" ref="combatUI" />
 	</bean>
 
 	<bean id="heroLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

@@ -440,61 +440,62 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 						boolean anythingCanBeSold = false;
 						
 						for (final MemoryBuilding building : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ())
-						{
-							final Building buildingDef = getClient ().getClientDB ().findBuilding (building.getBuildingID (), "CitiesListCellRenderer");
-							final int goldValue = getMemoryBuildingUtils ().goldFromSellingBuilding (buildingDef);
-							if ((goldValue > 0)	&&	// Stop trying to sell Summoning Circle or something else that isn't really a building
-								(getMemoryBuildingUtils ().doAnyBuildingsDependOn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-									city.getCityLocation (), building.getBuildingID (), getClient ().getClientDB ()) == null))		// Trying to sell Granary when we have a Farmers' Market
+							if (city.getCityLocation ().equals (building.getCityLocation ()))
 							{
-								final String buildingName = getLanguageHolder ().findDescription (buildingDef.getBuildingName ());
-								
-								final JMenuItem item = new JMenuItem (new LoggingAction
-									((buildingName != null) ? buildingName : building.getBuildingID (), (ev2) ->
+								final Building buildingDef = getClient ().getClientDB ().findBuilding (building.getBuildingID (), "CitiesListCellRenderer");
+								final int goldValue = getMemoryBuildingUtils ().goldFromSellingBuilding (buildingDef);
+								if ((goldValue > 0)	&&	// Stop trying to sell Summoning Circle or something else that isn't really a building
+									(getMemoryBuildingUtils ().doAnyBuildingsDependOn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+										city.getCityLocation (), building.getBuildingID (), getClient ().getClientDB ()) == null))		// Trying to sell Granary when we have a Farmers' Market
 								{
-									// OK - but first check if current construction project depends on the one we're selling
-									// If so, then we can still sell it, but it will cancel our current construction project
-									final List<LanguageText> languageText;
-									String prerequisiteBuildingName = null;
+									final String buildingName = getLanguageHolder ().findDescription (buildingDef.getBuildingName ());
 									
-									if (((city.getCurrentlyConstructingBuildingID () != null) &&
-											(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (building.getBuildingID (), city.getCurrentlyConstructingBuildingID (), getClient ().getClientDB ()))) ||
-										((city.getCurrentlyConstructingUnitID () != null) &&
-											(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (building.getBuildingID (), city.getCurrentlyConstructingUnitID (), getClient ().getClientDB ()))))
+									final JMenuItem item = new JMenuItem (new LoggingAction
+										((buildingName != null) ? buildingName : building.getBuildingID (), (ev2) ->
 									{
-										languageText = getLanguages ().getBuyingAndSellingBuildings ().getSellPromptPrerequisite ();
-										if (city.getCurrentlyConstructingBuildingID () != null)
-											prerequisiteBuildingName = getLanguageHolder ().findDescription
-												(getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "CitiesListCellRenderer").getBuildingName ());
-										else if (city.getCurrentlyConstructingUnitID () != null)
-											prerequisiteBuildingName = getLanguageHolder ().findDescription
-												(getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "CitiesListCellRenderer").getUnitName ());
-									}
-									else
-										languageText = getLanguages ().getBuyingAndSellingBuildings ().getSellPromptNormal ();
+										// OK - but first check if current construction project depends on the one we're selling
+										// If so, then we can still sell it, but it will cancel our current construction project
+										final List<LanguageText> languageText;
+										String prerequisiteBuildingName = null;
+										
+										if (((city.getCurrentlyConstructingBuildingID () != null) &&
+												(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (building.getBuildingID (), city.getCurrentlyConstructingBuildingID (), getClient ().getClientDB ()))) ||
+											((city.getCurrentlyConstructingUnitID () != null) &&
+												(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (building.getBuildingID (), city.getCurrentlyConstructingUnitID (), getClient ().getClientDB ()))))
+										{
+											languageText = getLanguages ().getBuyingAndSellingBuildings ().getSellPromptPrerequisite ();
+											if (city.getCurrentlyConstructingBuildingID () != null)
+												prerequisiteBuildingName = getLanguageHolder ().findDescription
+													(getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "CitiesListCellRenderer").getBuildingName ());
+											else if (city.getCurrentlyConstructingUnitID () != null)
+												prerequisiteBuildingName = getLanguageHolder ().findDescription
+													(getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "CitiesListCellRenderer").getUnitName ());
+										}
+										else
+											languageText = getLanguages ().getBuyingAndSellingBuildings ().getSellPromptNormal ();
+										
+										// Work out the text for the message box
+										String text = getLanguageHolder ().findDescription (languageText).replaceAll
+											("BUILDING_NAME", getLanguageHolder ().findDescription (buildingDef.getBuildingName ())).replaceAll
+											("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldValue));
+										
+										if (prerequisiteBuildingName != null)
+											text = text.replaceAll ("PREREQUISITE_NAME", prerequisiteBuildingName);
+										
+										// Show message box
+										final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+										msg.setLanguageTitle (getLanguages ().getBuyingAndSellingBuildings ().getSellTitle ());
+										msg.setText (text);
+										msg.setCityLocation (city.getCityLocation ());
+										msg.setBuildingURN (building.getBuildingURN ());
+										msg.setVisible (true);
+									}));
 									
-									// Work out the text for the message box
-									String text = getLanguageHolder ().findDescription (languageText).replaceAll
-										("BUILDING_NAME", getLanguageHolder ().findDescription (buildingDef.getBuildingName ())).replaceAll
-										("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldValue));
-									
-									if (prerequisiteBuildingName != null)
-										text = text.replaceAll ("PREREQUISITE_NAME", prerequisiteBuildingName);
-									
-									// Show message box
-									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-									msg.setLanguageTitle (getLanguages ().getBuyingAndSellingBuildings ().getSellTitle ());
-									msg.setText (text);
-									msg.setCityLocation (city.getCityLocation ());
-									msg.setBuildingURN (building.getBuildingURN ());
-									msg.setVisible (true);
-								}));
-								
-								item.setFont (getSmallFont ());
-								popup.add (item);
-								anythingCanBeSold = true;
+									item.setFont (getSmallFont ());
+									popup.add (item);
+									anythingCanBeSold = true;
+								}
 							}
-						}
 						
 						if (anythingCanBeSold)
 							popup.show (ev.getComponent (), ev.getX (), ev.getY ());

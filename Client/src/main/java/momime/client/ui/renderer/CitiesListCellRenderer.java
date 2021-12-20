@@ -365,7 +365,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					final RaceEx race = getClient ().getClientDB ().findRace (city.getCityRaceID (), "CitiesListCellRenderer");
 					final BufferedImage civilianImage = getUtils ().loadImage (race.findCivilianImageFile (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "CitiesListCellRenderer"));
 					final int minimumFarmersWidth = (civilianImage.getWidth () * city.getMinimumFarmers ()) + 6;
-					if (x >= minimumFarmersWidth)
+					if (x - cell.getLeft () >= minimumFarmersWidth)
 					{
 						int optionalFarmers = ((x - cell.getLeft () - minimumFarmersWidth) / civilianImage.getWidth ()) + 1;
 						if (optionalFarmers + city.getMinimumFarmers () + city.getNumberOfRebels () <= city.getCityPopulation () / 1000)

@@ -78,7 +78,6 @@ import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.OutpostDeathChanceBreakdown;
 import momime.common.internal.OutpostGrowthChanceBreakdown;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -322,59 +321,7 @@ public final class CityViewUI extends MomClientFrameUI
 		final int productionProgressDivisor = (getClient ().getClientDB ().getMostExpensiveConstructionCost () + coinsTotal - 1) / coinsTotal;
 		
 		// Actions
-		rushBuyAction = new LoggingAction ((ev) ->
-		{
-			// Get the text to display
-			String text = getLanguageHolder ().findDescription (getLanguages ().getBuyingAndSellingBuildings ().getRushBuyPrompt ());
-			
-			// How much will it cost us to rush buy it?
-			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
-
-			final Building buildingDef = (cityData.getCurrentlyConstructingBuildingID () == null) ? null :
-				getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "rushBuyAction");
-			
-			Integer productionCost = null;
-			if (buildingDef != null)
-				productionCost = buildingDef.getProductionCost ();
-			else if (cityData.getCurrentlyConstructingUnitID () != null)
-				productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "rushBuyAction").getProductionCost ();
-
-			if (productionCost != null)
-			{
-				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
-				text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
-			}
-			
-			// Work out remainder of description
-			if (buildingDef != null)
-				text = text.replaceAll ("A_UNIT_NAME", getLanguageHolder ().findDescription (buildingDef.getBuildingName ()));
-
-			else if (cityData.getCurrentlyConstructingUnitID () != null)
-			{
-				final AvailableUnit unit = new AvailableUnit ();
-				unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
-				
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null,
-					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-				getUnitStatsReplacer ().setUnit (xu);
-
-				text = getUnitStatsReplacer ().replaceVariables (text);
-			}
-			
-			if (productionCost != null)
-			{
-				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
-				text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
-			
-				// Now show the message
-				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setLanguageTitle (getLanguages ().getBuyingAndSellingBuildings ().getRushBuyTitle ());
-				msg.setText (text);
-				msg.setCityLocation (getCityLocation ());
-				msg.setVisible (true);
-			}
-		});
+		rushBuyAction = new LoggingAction ((ev) -> getClientCityCalculations ().showRushBuyPrompt (getCityLocation ()));
 
 		final CityViewUI ui = this;
 		changeConstructionAction = new LoggingAction ((ev) ->

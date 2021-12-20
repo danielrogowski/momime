@@ -1,5 +1,6 @@
 package momime.client.calculations;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -58,4 +59,12 @@ public interface ClientCityCalculations
 	 * @throws RecordNotFoundException If the race inhabiting the city cannot be found
 	 */
 	public List<Building> listBuildingsCityCanConstruct (final MapCoordinates3DEx cityLocation) throws RecordNotFoundException;
+	
+	/**
+	 * Shows prompt asking player to confirm they want to rush buy current construction
+	 * 
+	 * @param cityLocation City where we want to rush buy
+	 * @throws IOException If there is a problem
+	 */
+	public void showRushBuyPrompt (final MapCoordinates3DEx cityLocation) throws IOException;
 }

@@ -61,7 +61,15 @@
 	<component name="frmCitiesListRowCurrentlyConstructing">
 		<left>704</left>
 		<top>4</top>
-		<width>152</width>
+		<width>140</width>
+		<height>18</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmCitiesListRowRushBuy">
+		<left>844</left>
+		<top>4</top>
+		<width>10</width>
 		<height>18</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>

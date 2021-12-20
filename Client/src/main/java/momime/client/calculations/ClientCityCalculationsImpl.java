@@ -1,5 +1,6 @@
 package momime.client.calculations;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,6 +20,10 @@ import momime.client.language.replacer.CityProductionLanguageVariableReplacer;
 import momime.client.language.replacer.CityUnrestLanguageVariableReplacer;
 import momime.client.language.replacer.OutpostDeathChanceLanguageVariableReplacer;
 import momime.client.language.replacer.OutpostGrowthChanceLanguageVariableReplacer;
+import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.MomException;
@@ -52,6 +57,8 @@ import momime.common.internal.OutpostGrowthChanceBreakdownMapFeature;
 import momime.common.internal.OutpostGrowthChanceBreakdownSpell;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.utils.ExpandUnitDetails;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 
 /**
@@ -95,6 +102,18 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	/** City production variable replacer */
 	private CityProductionLanguageVariableReplacer productionReplacer;
 	
+	/** Text utils */
+	private TextUtils textUtils;
+
+	/** Variable replacer for outputting skill descriptions */
+	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
+
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+
+	/** expandUnitDetails method */
+	private ExpandUnitDetails expandUnitDetails;
+
 	/**
 	 * @param breakdown Results of unrest calculation
 	 * @return Readable calculation details
@@ -787,6 +806,67 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		
 		return buildList;
 	}
+	
+	/**
+	 * Shows prompt asking player to confirm they want to rush buy current construction
+	 * 
+	 * @param cityLocation City where we want to rush buy
+	 * @throws IOException If there is a problem
+	 */
+	@Override
+	public final void showRushBuyPrompt (final MapCoordinates3DEx cityLocation) throws IOException
+	{
+		// Get the text to display
+		String text = getLanguageHolder ().findDescription (getLanguages ().getBuyingAndSellingBuildings ().getRushBuyPrompt ());
+		
+		// How much will it cost us to rush buy it?
+		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+
+		final Building buildingDef = (cityData.getCurrentlyConstructingBuildingID () == null) ? null :
+			getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "showRushBuyPrompt");
+		
+		Integer productionCost = null;
+		if (buildingDef != null)
+			productionCost = buildingDef.getProductionCost ();
+		else if (cityData.getCurrentlyConstructingUnitID () != null)
+			productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "showRushBuyPrompt").getProductionCost ();
+
+		if (productionCost != null)
+		{
+			final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
+			text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
+		}
+		
+		// Work out remainder of description
+		if (buildingDef != null)
+			text = text.replaceAll ("A_UNIT_NAME", getLanguageHolder ().findDescription (buildingDef.getBuildingName ()));
+
+		else if (cityData.getCurrentlyConstructingUnitID () != null)
+		{
+			final AvailableUnit unit = new AvailableUnit ();
+			unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
+			
+			final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			getUnitStatsReplacer ().setUnit (xu);
+
+			text = getUnitStatsReplacer ().replaceVariables (text);
+		}
+		
+		if (productionCost != null)
+		{
+			final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
+			text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
+		
+			// Now show the message
+			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+			msg.setLanguageTitle (getLanguages ().getBuyingAndSellingBuildings ().getRushBuyTitle ());
+			msg.setText (text);
+			msg.setCityLocation (cityLocation);
+			msg.setVisible (true);
+		}
+	}
 		
 	/**
 	 * @return Multiplayer client
@@ -955,5 +1035,69 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	public final void setProductionReplacer (final CityProductionLanguageVariableReplacer replacer)
 	{
 		productionReplacer = replacer;
+	}
+
+	/**
+	 * @return Text utils
+	 */
+	public final TextUtils getTextUtils ()
+	{
+		return textUtils;
+	}
+
+	/**
+	 * @param tu Text utils
+	 */
+	public final void setTextUtils (final TextUtils tu)
+	{
+		textUtils = tu;
+	}
+
+	/**
+	 * @return Variable replacer for outputting skill descriptions
+	 */
+	public final UnitStatsLanguageVariableReplacer getUnitStatsReplacer ()
+	{
+		return unitStatsReplacer;
+	}
+
+	/**
+	 * @param replacer Variable replacer for outputting skill descriptions
+	 */
+	public final void setUnitStatsReplacer (final UnitStatsLanguageVariableReplacer replacer)
+	{
+		unitStatsReplacer = replacer;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return expandUnitDetails method
+	 */
+	public final ExpandUnitDetails getExpandUnitDetails ()
+	{
+		return expandUnitDetails;
+	}
+
+	/**
+	 * @param e expandUnitDetails method
+	 */
+	public final void setExpandUnitDetails (final ExpandUnitDetails e)
+	{
+		expandUnitDetails = e;
 	}
 }

@@ -11,6 +11,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.AlchemyUI;
+import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.HeroItemsUI;
@@ -59,6 +60,9 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	/** Wizards UI */
 	private WizardsUI wizardsUI;
 	
+	/** Cities list */
+	private CitiesListUI citiesListUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -83,6 +87,8 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 		// We may now have more gold to rush buy construction projects
 		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
 			cityView.recheckRushBuyEnabled ();
+		
+		getCitiesListUI ();
 		
 		// Update remaining casting skill and MP in the combat we're in.
 		// Usually this value is ever non-null is if our wizard casts a combat spell, so stop us from casting another one this turn, but Mana Leak is an exception
@@ -225,5 +231,21 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	public final void setWizardsUI (final WizardsUI ui)
 	{
 		wizardsUI = ui;
+	}
+
+	/**
+	 * @return Cities list
+	 */
+	public final CitiesListUI getCitiesListUI ()
+	{
+		return citiesListUI;
+	}
+
+	/**
+	 * @param ui Cities list
+	 */
+	public final void setCitiesListUI (final CitiesListUI ui)
+	{
+		citiesListUI = ui;
 	}
 }

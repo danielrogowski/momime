@@ -66,6 +66,7 @@ import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
 import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
 import momime.common.messages.clienttoserver.SellBuildingMessage;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.ResourceValueUtils;
 
 /**
  * Renderer for drawing the details about each city on the cities list screen
@@ -120,9 +121,12 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/** Text utils */
 	private TextUtils textUtils;
 	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
 	/** Background image */
 	private BufferedImage background;
-	
+
 	/** Label showing the city name */
 	private JLabel cityName;
 	
@@ -143,6 +147,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	
 	/** Icon to open popup to select a building to sell */
 	private JLabel sellIcon;
+
+	/** Icon to rush buy current construction */
+	private JLabel rushBuyIcon;
 	
 	/** Label showing what's currently being constructed in the city */
 	private JLabel cityCurrentlyConstructing;
@@ -154,6 +161,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void init () throws IOException
 	{
 		background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/citiesListRow.png");
+		final BufferedImage rushBuyImage = getUtils ().loadImage ("/momime.client.graphics/production/gold/1.png");
 		final BufferedImage pendingSaleImage = getUtils ().loadImage ("/momime.client.graphics/cityView/spellEffects/SE145.png");
 		
 		setLayout (new XmlLayoutManager (getCitiesListEntryLayout ()));
@@ -187,6 +195,9 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 
 		cityCurrentlyConstructing = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		add (cityCurrentlyConstructing, "frmCitiesListRowCurrentlyConstructing");
+		
+		rushBuyIcon = getUtils ().createImage (rushBuyImage);
+		add (rushBuyIcon, "frmCitiesListRowRushBuy");
 	}
 
 	/**
@@ -270,12 +281,29 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 				}
 			
 			// Name of what's currently being constructed
+			Integer productionCost = null;
 			if (city.getCurrentlyConstructingBuildingID () != null)
+			{
 				cityCurrentlyConstructing.setText (getLanguageHolder ().findDescription
 					(getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "CitiesListCellRenderer").getBuildingName ()));
+				productionCost = getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "CitiesListCellRenderer").getProductionCost ();
+			}
 			else
+			{
 				cityCurrentlyConstructing.setText (getLanguageHolder ().findDescription
 					(getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "CitiesListCellRenderer").getUnitName ()));
+				productionCost = getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "CitiesListCellRenderer").getProductionCost ();
+			}
+			
+			// Check if we can rush buy it
+			boolean rushBuyEnabled = false;
+			if (productionCost != null)
+			{
+				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (city.getProductionSoFar () == null) ? 0 : city.getProductionSoFar ());
+				rushBuyEnabled = (goldToRushBuy > 0) && (goldToRushBuy <= getResourceValueUtils ().findAmountStoredForProductionType
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD));
+			}
+			rushBuyIcon.setVisible (rushBuyEnabled);
 		}
 		catch (final Exception e)
 		{
@@ -513,6 +541,12 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					}
 					
 					popup.show (ev.getComponent (), ev.getX (), ev.getY ());
+					break;
+					
+				// Rush buy
+				case "frmCitiesListRowRushBuy":
+					if (rushBuyIcon.isVisible ())
+						getClientCityCalculations ().showRushBuyPrompt (city.getCityLocation ());
 					break;
 			}
 	}
@@ -757,5 +791,21 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param r Resource value  utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils r)
+	{
+		resourceValueUtils = r;
 	}
 }

@@ -232,6 +232,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="citiesListUI" ref="citiesListUI" />
 	</bean>
 
 	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype">
@@ -953,6 +954,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="outpostGrowthReplacer" ref="outpostGrowthReplacer" />
 		<property name="outpostDeathReplacer" ref="outpostDeathReplacer" />
 		<property name="productionReplacer" ref="productionReplacer" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="tileSetBitmaskGenerator" class="momime.client.calculations.TileSetBitmaskGeneratorImpl">
@@ -1859,6 +1864,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatUI" ref="combatUI" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
 	</bean>
 
 	<bean id="heroLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

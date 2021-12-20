@@ -151,4 +151,12 @@ public final class CitiesListEntry
 	{
 		return curseCount;
 	}
+	
+	/**
+	 * @return Amount of production put towards current construction so far
+	 */
+	public final Integer getProductionSoFar ()
+	{
+		return cityData.getProductionSoFar ();
+	}
 }

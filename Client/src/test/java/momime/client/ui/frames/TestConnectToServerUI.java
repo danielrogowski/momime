@@ -49,6 +49,7 @@ public final class TestConnectToServerUI extends ClientTestData
 		connectToServerScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Connect to Server"));
 		connectToServerScreenLang.getPickFromList ().add (createLanguageText (Language.ENGLISH, "Select a server from the list"));
 		connectToServerScreenLang.getEnterServer ().add (createLanguageText (Language.ENGLISH, "or enter a server IP address below"));
+		connectToServerScreenLang.getPortNumber ().add (createLanguageText (Language.ENGLISH, "port"));
 		connectToServerScreenLang.getPlayerName ().add (createLanguageText (Language.ENGLISH, "Player name:"));
 		connectToServerScreenLang.getPassword ().add (createLanguageText (Language.ENGLISH, "Password:"));
 		connectToServerScreenLang.getCreateAccount ().add (createLanguageText (Language.ENGLISH, "This is a new account"));
@@ -61,12 +62,14 @@ public final class TestConnectToServerUI extends ClientTestData
 		final KnownServer localhost = new KnownServer ();
 		localhost.setKnownServerID ("SRV01");
 		localhost.setKnownServerIP ("127.0.0.1");
+		localhost.setKnownServerPort (18250);
 		localhost.getKnownServerDescription ().add (createLanguageText (Language.ENGLISH, "Local PC"));
 		when (lang.findKnownServer (localhost.getKnownServerID ())).thenReturn (localhost);
 
 		final KnownServer another = new KnownServer ();
 		another.setKnownServerID ("SRV02");
 		another.setKnownServerIP ("123.45.67.89");
+		another.setKnownServerPort (12345);
 		another.getKnownServerDescription ().add (createLanguageText (Language.ENGLISH, "Some other server"));
 		when (lang.findKnownServer (another.getKnownServerID ())).thenReturn (another);
 		

@@ -43,6 +43,11 @@ public interface MomClient
 	public void setServerAddress (final String addr);
 	
 	/**
+	 * @param port Port TCP/IP port number that the server is listening on
+	 */
+	public void setServerPort (final int port);
+	
+	/**
 	 * Initiate connection to the server
 	 * @throws IOException If there is a problem making the connection
 	 * @throws InterruptedException If there is a problem waiting for the thread to start up

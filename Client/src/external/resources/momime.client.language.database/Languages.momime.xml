@@ -20,6 +20,7 @@
 			<text>Lokalny PC</text>
 		</knownServerDescription>
 		<knownServerIP>localhost</knownServerIP>
+		<knownServerPort>18250</knownServerPort>
 	</knownServer>
 	<shortcutKey shortcut="ARMIES_SCREEN">
 		<keyLang language="en">
@@ -2153,6 +2154,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<enterServer language="pl">
 			<text>lub wpisz poniżej adres IP serwera</text>
 		</enterServer>
+        <portNumber language="en">
+            <text>port</text>
+        </portNumber>
 		<playerName language="en">
 			<text>Player name:</text>
 		</playerName>

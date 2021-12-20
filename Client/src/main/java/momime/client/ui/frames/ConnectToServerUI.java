@@ -50,6 +50,12 @@ public final class ConnectToServerUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (ConnectToServerUI.class);
+
+	/** Typical inset used on this screen layout */
+	private final static int INSET = 3;
+
+	/** Zero inset */
+	private final static int NO_INSET = 0;
 	
 	/** Large font */
 	private Font largeFont;
@@ -78,6 +84,12 @@ public final class ConnectToServerUI extends MomClientFrameUI
 	/** IP address edit box */
 	private JTextField ipAddress;
 
+	/** Port number label */
+	private JLabel portNumberLabel;
+	
+	/** Port number edit box */
+	private JTextField portNumber;
+	
 	/** Player name label */
 	private JLabel playerNameLabel;
 
@@ -105,9 +117,6 @@ public final class ConnectToServerUI extends MomClientFrameUI
 	/** Map of known server IDs to the actions for each */
 	private Map<String, Action> serverActions;
 	
-	/** Typical inset used on this screen layout */
-	private final static int INSET = 3;
-	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -126,6 +135,7 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		final BufferedImage checkboxUnticked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Unticked.png");
 		final BufferedImage checkboxTicked = getUtils ().loadImage ("/momime.client.graphics/ui/checkBoxes/checkbox11x11Ticked.png");
 		final BufferedImage editbox = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox125x23.png");
+		final BufferedImage smallEditbox = getUtils ().loadImage ("/momime.client.graphics/ui/editBoxes/editBox65x23.png");
 
 		// Actions
 		cancelAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
@@ -135,6 +145,7 @@ public final class ConnectToServerUI extends MomClientFrameUI
 			try
 			{
 				getClient ().setServerAddress (ipAddress.getText ());
+				getClient ().setServerPort (Integer.parseInt (portNumber.getText ()));
 				getClient ().connect ();
 				
 				// The next thing that happens from there is we either get an exception if we can't
@@ -223,7 +234,11 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		serverActions = new HashMap<String, Action> ();
 		for (final KnownServer server : getLanguages ().getKnownServer ())
 		{
-			final Action serverAction = new LoggingAction (server.getKnownServerIP (), (ev) -> ipAddress.setText (server.getKnownServerIP ()));
+			final Action serverAction = new LoggingAction (server.getKnownServerIP (), (ev) ->
+			{
+				ipAddress.setText (server.getKnownServerIP ());
+				portNumber.setText (Integer.valueOf (server.getKnownServerPort ()).toString ());
+			});
 			serverActions.put (server.getKnownServerID (), serverAction);
 			
 			// There's no "disabled" image for the wide button
@@ -237,10 +252,21 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		contentPane.add (ipAddressLabel, getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 		gridy++;
 
+		final JPanel ipAndPortPanel = new JPanel ();
+		ipAndPortPanel.setOpaque (false);
+		
 		ipAddress = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getMediumFont (), editbox);
-		contentPane.add (ipAddress, getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE));
-		gridy++;
+		ipAndPortPanel.add (ipAddress, getUtils ().createConstraintsNoFill (0, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
+		portNumberLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		ipAndPortPanel.add (portNumberLabel, getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+
+		portNumber = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getMediumFont (), smallEditbox);
+		ipAndPortPanel.add (portNumber, getUtils ().createConstraintsNoFill (2, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
+		
+		contentPane.add (ipAndPortPanel, getUtils ().createConstraintsNoFill (1, gridy, 3, 1, NO_INSET, GridBagConstraintsNoFill.CENTRE));
+		gridy++;
+				
 		// Space in between
 		final GridBagConstraints constraints = getUtils ().createConstraintsNoFill (1, gridy, 3, 1, INSET, GridBagConstraintsNoFill.CENTRE);
 		constraints.weightx = 1;
@@ -310,6 +336,7 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		};
 		
 		ipAddress.getDocument ().addDocumentListener (documentListener);
+		portNumber.getDocument ().addDocumentListener (documentListener);
 		playerName.getDocument ().addDocumentListener (documentListener);
 		password.getDocument ().addDocumentListener (documentListener);
 		enabledOrDisableOkButton ();
@@ -324,9 +351,20 @@ public final class ConnectToServerUI extends MomClientFrameUI
 	 */
 	private final void enabledOrDisableOkButton ()
 	{
-		okAction.setEnabled ((!ipAddress.getText ().trim ().equals ("")) &&
-			(!playerName.getText ().trim ().equals ("")) &&
-			(!password.getText ().trim ().equals ("")));
+		boolean enable = false;
+		try
+		{
+			enable = (!ipAddress.getText ().trim ().equals ("")) &&
+				(!portNumber.getText ().trim ().equals ("")) &&
+				(!playerName.getText ().trim ().equals ("")) &&
+				(!password.getText ().trim ().equals ("")) &&
+				(Integer.parseInt (portNumber.getText ()) > 0);
+		}
+		catch (final NumberFormatException e)
+		{
+		}
+			
+		okAction.setEnabled (enable);
 	}
 	
 	/**
@@ -341,6 +379,7 @@ public final class ConnectToServerUI extends MomClientFrameUI
 
 		selectServer.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getPickFromList ()));
 		ipAddressLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getEnterServer ()));
+		portNumberLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getPortNumber ()));
 		playerNameLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getPlayerName ()));
 		passwordLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getPassword ()));
 		

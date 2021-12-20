@@ -838,7 +838,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="client" class="momime.client.MomClientImpl" init-method="start">
-		<property name="serverPort" value="18250" />
 		<property name="processMessagesOnSwingEventDispatcherThread" value="true" />
 		<property name="clientToServerContext" ref="clientToServerJaxbContext" />
 		<property name="serverToClientContext" ref="serverToClientJaxbContext" />

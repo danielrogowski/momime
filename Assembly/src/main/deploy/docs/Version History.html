@@ -37,8 +37,41 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.9.9</b></td>
-			<td align=left><b>14 Dec 2021</b></td>
+			<td align=left><b>Current version: 1.0</b></td>
+			<td align=left><b>21 Dec 2021</b></td>
+			<td align=left>
+				<b>Added game mechanics for Outposts:</b>
+				<ul>
+					<li>Constructing settlers now reduces city population by 1,000
+					<li>Blocked from constructing settlers if city population is below 2,000 - progress bar will just wait at max until city grows over 2,000 and then the settlers will be completed
+					<li>New outposts made from settlers start at size 300 instead of 1,000
+					<li>Distinct icon drawn on overland map so outposts look different from hamlets
+					<li>Can't choose construction project or rush buy until population reaches 1,000
+					<li>Zero production and consumption until population reaches 1,000, including free bonuses from map features like Wild Game or Gold Ore
+					<li>Different calculations are used for outpost growth (or death) rate before they reach 1,000 population as detailed on the MoM wiki; client will give detailed breakdown of the chance calculation
+					<li>Captured outposts are automatically razed and cannot be captured
+					<li>Spells that create buildings cannot be used on Outposts, for example Summoning Circle, Wall of Stone, Move Fortress, Spell of Return
+					<li>A wizard who has a city captured and only has outposts remaining is defeated rather than just banished
+				</ul>
+
+				<b>Other new features:</b>
+				<ul>
+					<li>Rampaging Monsters will spawn from uncleared lairs and nodes and attack the nearest unit stack or wizard-owned city they can reach
+					<li>Updated cities list screen so you can see the civilian population, set the number of farmers/workers, see units garrisoned in the city and sell buildings, rush buy, and switch off enchantments
+						with the aim that everything can be done from the list screen as keeping 20+ individual city screens open at the same time later in the game becomes difficult to manage
+					<li>Cities can now lose population and buildings after combat
+					<li>Can alter the port number the client connects to
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed trivial XSD error that prevented running on JDK 13
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.9.9</td>
+			<td align=left>14 Dec 2021</td>
 			<td align=left>
 				<b>New features:</b>
 				<ul>

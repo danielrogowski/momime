@@ -327,6 +327,9 @@ public final class CitiesListUI extends MomClientFrameUI
 			// Sort it and update the list
 			citiesItems.clear ();
 			cities.stream ().sorted (new CitiesListSorter ()).forEach (c -> citiesItems.addElement (c));
+			
+			citiesList.revalidate ();
+			citiesList.repaint ();
 		}
 	}
 

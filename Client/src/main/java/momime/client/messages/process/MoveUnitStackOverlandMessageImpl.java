@@ -11,6 +11,7 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfig;
+import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.UnitInfoUI;
@@ -18,6 +19,7 @@ import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.TileSetEx;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
@@ -50,6 +52,9 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	
 	/** Overland map tile set */
 	private TileSetEx overlandMapTileSet;
+	
+	/** Cities list */
+	private CitiesListUI citiesListUI;
 	
 	/** Number of animation ticks */
 	private int tickCount;
@@ -142,6 +147,11 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		}
 		
 		// If we've got the city screen open for the map cell the units just left then we need to update it to remove their select unit buttons
+		final OverlandMapCityData moveFromCity = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(getMoveFrom ().getZ ()).getRow ().get (getMoveFrom ().getY ()).getCell ().get (getMoveFrom ().getX ()).getCityData ();
+		if ((moveFromCity != null) && (moveFromCity.getCityOwnerID () == getClient ().getOurPlayerID ()))
+			getCitiesListUI ().refreshCitiesList ();
+		
 		final CityViewUI cityView = getClient ().getCityViews ().get (getMoveFrom ().toString ());
 		if (cityView != null)
 			cityView.unitsChanged ();
@@ -237,6 +247,11 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		getOverlandMapUI ().repaintSceneryPanel ();
 		
 		// If we've got the city screen open for the map cell the units just moved into then we need to update it to add their select unit buttons
+		final OverlandMapCityData moveToCity = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+			(getMoveTo ().getZ ()).getRow ().get (getMoveTo ().getY ()).getCell ().get (getMoveTo ().getX ()).getCityData ();
+		if ((moveToCity != null) && (moveToCity.getCityOwnerID () == getClient ().getOurPlayerID ()))
+			getCitiesListUI ().refreshCitiesList ();
+
 		final CityViewUI cityView = getClient ().getCityViews ().get (getMoveTo ().toString ());
 		if (cityView != null)
 			cityView.unitsChanged ();
@@ -345,6 +360,22 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		unitClientUtils = util;
 	}
 
+	/**
+	 * @return Cities list
+	 */
+	public final CitiesListUI getCitiesListUI ()
+	{
+		return citiesListUI;
+	}
+
+	/**
+	 * @param ui Cities list
+	 */
+	public final void setCitiesListUI (final CitiesListUI ui)
+	{
+		citiesListUI = ui;
+	}
+	
 	/**
 	 * @return Client config, containing the scale setting
 	 */

@@ -311,6 +311,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="clientConfig" ref="clientConfig" />
+		<property name="citiesListUI" ref="citiesListUI" />
 	</bean>
 
 	<bean id="spellResearchChangedMessage" class="momime.client.messages.process.SpellResearchChangedMessageImpl" scope="prototype">
@@ -1856,6 +1857,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 
 	<bean id="heroLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

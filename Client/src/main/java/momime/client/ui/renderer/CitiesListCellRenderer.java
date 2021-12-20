@@ -40,7 +40,9 @@ import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
+import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
@@ -53,10 +55,13 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
 import momime.common.database.RaceEx;
 import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.TurnSystem;
+import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
 import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
 import momime.common.messages.clienttoserver.SellBuildingMessage;
@@ -106,6 +111,12 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/** Combat UI */
 	private CombatUI combatUI;
 	
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
+	
+	/** Turn sequence and movement helper methods */
+	private OverlandMapProcessing overlandMapProcessing;
+	
 	/** Text utils */
 	private TextUtils textUtils;
 	
@@ -119,7 +130,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	private JPanel civilianPanel;
 	
 	/** Images showing units garrisoned in the city */
-	private JLabel cityUnits;
+	private JPanel unitsPanel;
 	
 	/** Icon showing the weapon grade units constructed in this city will get */
 	private JLabel cityWeaponGrade;
@@ -155,8 +166,10 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		civilianPanel.setLayout (new GridBagLayout ());
 		add (civilianPanel, "frmCitiesListRowPopulation");
 
-		cityUnits = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		add (cityUnits, "frmCitiesListRowUnits");
+		unitsPanel = new JPanel ();
+		unitsPanel.setOpaque (false);
+		unitsPanel.setLayout (new GridBagLayout ());
+		add (unitsPanel, "frmCitiesListRowUnits");
 
 		cityWeaponGrade = new JLabel ();
 		add (cityWeaponGrade, "frmCitiesListRowWeaponGrade");
@@ -185,7 +198,6 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		final CitiesListEntry city, final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		cityName.setText (city.getCityName ());
-		cityUnits.setText (Integer.valueOf (city.getCityPopulation () / 1000).toString ());
 
 		cityEnchantments.setText (Integer.valueOf (city.getEnchantmentCount ()).toString ());
 		cityEnchantments.setVisible (city.getEnchantmentCount () > 0);
@@ -198,6 +210,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		sellIcon.setVisible (buildingID != null);
 		
 		civilianPanel.removeAll ();
+		unitsPanel.removeAll ();
 		try
 		{
 			cityWeaponGrade.setIcon (new ImageIcon (getUtils ().loadImage (city.getWeaponGradeImageFile ())));
@@ -233,6 +246,28 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					x++;
 				}
 			}
+			
+			// Units
+			final int unitCount = (int) getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().stream ().filter
+				(mu -> (city.getCityLocation ().equals (mu.getUnitLocation ())) && (mu.getOwningPlayerID () == getClient ().getOurPlayerID ()) &&
+					(mu.getStatus () == UnitStatusID.ALIVE)).count ();
+			
+			x = 0;
+			for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+				if ((city.getCityLocation ().equals (mu.getUnitLocation ())) && (mu.getOwningPlayerID () == getClient ().getOurPlayerID ()) &&
+					(mu.getStatus () == UnitStatusID.ALIVE))
+				{
+					final UnitEx unitDef = getClient ().getClientDB ().findUnit (mu.getUnitID (), "CitiesListCellRenderer");
+					final BufferedImage image = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID ());
+					
+					// Left justify all the units
+					final GridBagConstraints imageConstraints = getUtils ().createConstraintsNoFill (x, 0, 1, 1, INSET, GridBagConstraintsNoFill.SOUTHWEST);
+					x++;
+					if (x == unitCount)
+						imageConstraints.weightx = 1;
+					
+					unitsPanel.add (getUtils ().createImage (image), imageConstraints);
+				}
 			
 			// Name of what's currently being constructed
 			if (city.getCurrentlyConstructingBuildingID () != null)
@@ -306,6 +341,11 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 						}						
 					}
+					break;
+					
+				// Clicking the units column selects those units to move
+				case "frmCitiesListRowUnits":
+					getOverlandMapProcessing ().showSelectUnitBoxes (city.getCityLocation ());
 					break;
 					
 				// Clicking the enchantments column brings up a popup list of enchantments we can switch off
@@ -685,5 +725,37 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	public final void setCombatUI (final CombatUI cui)
 	{
 		combatUI = cui;
+	}
+
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param gen Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
+	{
+		playerColourImageGenerator = gen;
+	}
+
+	/**
+	 * @return Turn sequence and movement helper methods
+	 */
+	public final OverlandMapProcessing getOverlandMapProcessing ()
+	{
+		return overlandMapProcessing;
+	}
+
+	/**
+	 * @param proc Turn sequence and movement helper methods
+	 */
+	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
+	{
+		overlandMapProcessing = proc;
 	}
 }

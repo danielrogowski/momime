@@ -384,6 +384,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					(useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE))) ||
 				(winningPlayer == defendingPlayer)))
 			{
+				if (tc.getCollateralAccumulator () == null)
+					tc.setCollateralAccumulator (0);
+				
 				int baseChance = 0;
 				if (winningPlayer == attackingPlayer)
 					baseChance = baseChance + 10;

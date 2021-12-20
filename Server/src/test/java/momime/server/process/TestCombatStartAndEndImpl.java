@@ -25,6 +25,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.CitySize;
@@ -1268,6 +1269,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCityProcessing (cityProcessing);
 		cse.setMemoryBuildingUtils (memoryBuildingUtils);
 		cse.setCityServerUtils (cityServerUtils);
+		cse.setRandomUtils (mock (RandomUtils.class));
+		cse.setSpellCasting (mock (SpellCasting.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);

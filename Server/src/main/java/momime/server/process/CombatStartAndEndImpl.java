@@ -378,54 +378,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			msg.setCaptureCityDecisionID (useCaptureCityDecision);
 			msg.setHeroItemCount (tc.getItemsFromHeroesWhoDiedInCombat ().size ());
 			
-			// If its a city combat, population or buildings may be lost even if the attacker did not win
-			if ((tc.getCityData () != null) &&
-				(((winningPlayer == attackingPlayer) && ((useCaptureCityDecision == CaptureCityDecisionID.CAPTURE) ||
-					(useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE))) ||
-				(winningPlayer == defendingPlayer)))
-			{
-				if (tc.getCollateralAccumulator () == null)
-					tc.setCollateralAccumulator (0);
-				
-				int baseChance = 0;
-				if (winningPlayer == attackingPlayer)
-					baseChance = baseChance + 10;
-				
-				if (useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE)
-					baseChance = baseChance + 40;
-				
-				if ((tc.getCollateralAccumulator () > 0) || (baseChance > 0))
-				{
-					// Roll population
-					final int populationChance = Math.min (baseChance + (tc.getCollateralAccumulator () * 2), 50);
-					final int populationRolls = (tc.getCityData ().getCityPopulation () / 1000) - 1;
-					int populationKilled = 0;
-					for (int n = 0; n < populationRolls; n++)
-						if (getRandomUtils ().nextInt (100) < populationChance)
-							populationKilled++;
-			
-					if (populationKilled > 0)
-					{
-						tc.getCityData ().setCityPopulation (tc.getCityData ().getCityPopulation () - (populationKilled * 1000));
-						msg.setPopulationKilled (populationKilled);
-					}
-					
-					// Roll buildings
-					final int buildingsChance = Math.min (baseChance + tc.getCollateralAccumulator (), 75);
-					final int buildingsDestroyed = getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (null, null, buildingsChance, Arrays.asList (combatLocation), mom);
-					
-					if (buildingsDestroyed > 0)
-						msg.setBuildingsDestroyed (buildingsDestroyed);
-
-					// If buildings are destroyed, that recalculates the city anyway
-					if ((populationKilled > 0) && (buildingsDestroyed == 0))
-					{
-						mom.getWorldUpdates ().recalculateCity (combatLocation);
-						mom.getWorldUpdates ().process (mom);
-					}
-				}
-			}
-			
 			// Start to work out fame change for each player involved
 			int winningFameChange = 0;
 			int losingFameChange = 0;
@@ -482,6 +434,54 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null);
 				if (wasWizardsFortress)
 					winningFameChange = winningFameChange + 5;
+			}
+			
+			// If its a city combat, population or buildings may be lost even if the attacker did not win
+			if ((tc.getCityData () != null) &&
+				(((winningPlayer == attackingPlayer) && ((useCaptureCityDecision == CaptureCityDecisionID.CAPTURE) ||
+					(useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE))) ||
+				(winningPlayer == defendingPlayer)))
+			{
+				if (tc.getCollateralAccumulator () == null)
+					tc.setCollateralAccumulator (0);
+				
+				int baseChance = 0;
+				if (winningPlayer == attackingPlayer)
+					baseChance = baseChance + 10;
+				
+				if (useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE)
+					baseChance = baseChance + 40;
+				
+				if ((tc.getCollateralAccumulator () > 0) || (baseChance > 0))
+				{
+					// Roll population
+					final int populationChance = Math.min (baseChance + (tc.getCollateralAccumulator () * 2), 50);
+					final int populationRolls = (tc.getCityData ().getCityPopulation () / 1000) - 1;
+					int populationKilled = 0;
+					for (int n = 0; n < populationRolls; n++)
+						if (getRandomUtils ().nextInt (100) < populationChance)
+							populationKilled++;
+			
+					if (populationKilled > 0)
+					{
+						tc.getCityData ().setCityPopulation (tc.getCityData ().getCityPopulation () - (populationKilled * 1000));
+						msg.setPopulationKilled (populationKilled);
+					}
+					
+					// Roll buildings
+					final int buildingsChance = Math.min (baseChance + tc.getCollateralAccumulator (), 75);
+					final int buildingsDestroyed = getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (null, null, buildingsChance, Arrays.asList (combatLocation), mom);
+					
+					if (buildingsDestroyed > 0)
+						msg.setBuildingsDestroyed (buildingsDestroyed);
+
+					// If buildings are destroyed, that recalculates the city anyway
+					if ((populationKilled > 0) && (buildingsDestroyed == 0))
+					{
+						mom.getWorldUpdates ().recalculateCity (combatLocation);
+						mom.getWorldUpdates ().process (mom);
+					}
+				}
 			}
 			
 			// Cancel any spells that were cast in combat, note doing so can actually kill some units

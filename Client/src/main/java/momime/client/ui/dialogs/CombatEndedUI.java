@@ -29,6 +29,7 @@ import momime.client.messages.process.CombatEndedMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
 import momime.common.database.LanguageText;
+import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
 
@@ -219,6 +220,27 @@ public final class CombatEndedUI extends MomClientDialogUI
 				bottomText.append (getLanguageHolder ().findDescription (getLanguages ().getCombatEndedScreen ().getYouGotGoldFromRazing ()).replaceAll
 					("GOLD_FROM_RAZING", getTextUtils ().intToStrCommas (getMessage ().getGoldFromRazing ())));
 			}
+			
+			// Population killed?
+			if ((getMessage ().getPopulationKilled () != null) && ((weWon) || (getMessage ().getCaptureCityDecisionID () == CaptureCityDecisionID.RAMPAGE)))
+			{
+				if (bottomText.length () > 0)
+					bottomText.append (System.lineSeparator ());
+				bottomText.append (getLanguageHolder ().findDescription (getLanguages ().getCombatEndedScreen ().getPopulationKilled ()).replaceAll
+					("POPULATION_KILLED", getTextUtils ().intToStrCommas (getMessage ().getPopulationKilled () * 1000)));
+			}
+			
+			// Buildings destroyed?
+			if ((getMessage ().getBuildingsDestroyed () != null) && ((weWon) || (getMessage ().getCaptureCityDecisionID () == CaptureCityDecisionID.RAMPAGE)))
+			{
+				if (bottomText.length () > 0)
+					bottomText.append (System.lineSeparator ());
+				
+				final List<LanguageText> buildingsText = (getMessage ().getBuildingsDestroyed () > 1) ?
+					getLanguages ().getCombatEndedScreen ().getBuildingsDestroyedPlural () : getLanguages ().getCombatEndedScreen ().getBuildingsDestroyedSingular ();
+				bottomText.append (getLanguageHolder ().findDescription (buildingsText).replaceAll
+					("BUILDINGS_DESTROYED", getMessage ().getBuildingsDestroyed ().toString ()));
+			}			
 		}
 		
 		// Fame changed?
@@ -277,10 +299,10 @@ public final class CombatEndedUI extends MomClientDialogUI
 			if (bottomText.length () > 0)
 				bottomText.append (System.lineSeparator ());
 			
-			final List<LanguageText> ZombiesText = (getMessage ().getZombiesCreated () == 1) ?
+			final List<LanguageText> zombiesText = (getMessage ().getZombiesCreated () == 1) ?
 				getLanguages ().getCombatEndedScreen ().getZombieCreatedSingular () : getLanguages ().getCombatEndedScreen ().getZombiesCreatedPlural ();
 			
-			bottomText.append (getLanguageHolder ().findDescription (ZombiesText).replaceAll
+			bottomText.append (getLanguageHolder ().findDescription (zombiesText).replaceAll
 				("ZOMBIE_COUNT", Integer.valueOf (getMessage ().getZombiesCreated ()).toString ()));
 		}
 		

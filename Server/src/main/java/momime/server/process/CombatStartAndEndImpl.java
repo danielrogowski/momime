@@ -1,6 +1,7 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -138,6 +139,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** Casting for each type of spell */
+	private SpellCasting spellCasting;
+	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
 	 *
@@ -267,6 +271,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			
 			// Store the two players involved
 			tc.setCombatTurnCount (0);
+			tc.setCollateralAccumulator (0);
 			tc.setAttackingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
 			tc.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
 			tc.getLastCombatMoveDirection ().clear ();
@@ -372,6 +377,51 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			msg.setWinningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
 			msg.setCaptureCityDecisionID (useCaptureCityDecision);
 			msg.setHeroItemCount (tc.getItemsFromHeroesWhoDiedInCombat ().size ());
+			
+			// If its a city combat, population or buildings may be lost even if the attacker did not win
+			if ((tc.getCityData () != null) &&
+				(((winningPlayer == attackingPlayer) && ((useCaptureCityDecision == CaptureCityDecisionID.CAPTURE) ||
+					(useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE))) ||
+				(winningPlayer == defendingPlayer)))
+			{
+				int baseChance = 0;
+				if (winningPlayer == attackingPlayer)
+					baseChance = baseChance + 10;
+				
+				if (useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE)
+					baseChance = baseChance + 40;
+				
+				if ((tc.getCollateralAccumulator () > 0) || (baseChance > 0))
+				{
+					// Roll population
+					final int populationChance = Math.min (baseChance + (tc.getCollateralAccumulator () * 2), 50);
+					final int populationRolls = (tc.getCityData ().getCityPopulation () / 1000) - 1;
+					int populationKilled = 0;
+					for (int n = 0; n < populationRolls; n++)
+						if (getRandomUtils ().nextInt (100) < populationChance)
+							populationKilled++;
+			
+					if (populationKilled > 0)
+					{
+						tc.getCityData ().setCityPopulation (tc.getCityData ().getCityPopulation () - (populationKilled * 1000));
+						msg.setPopulationKilled (populationKilled);
+					}
+					
+					// Roll buildings
+					final int buildingsChance = Math.min (baseChance + tc.getCollateralAccumulator (), 75);
+					final int buildingsDestroyed = getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (null, null, buildingsChance, Arrays.asList (combatLocation), mom);
+					
+					if (buildingsDestroyed > 0)
+						msg.setBuildingsDestroyed (buildingsDestroyed);
+
+					// If buildings are destroyed, that recalculates the city anyway
+					if ((populationKilled > 0) && (buildingsDestroyed == 0))
+					{
+						mom.getWorldUpdates ().recalculateCity (combatLocation);
+						mom.getWorldUpdates ().process (mom);
+					}
+				}
+			}
 			
 			// Start to work out fame change for each player involved
 			int winningFameChange = 0;
@@ -701,6 +751,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				tc.setAttackerMostExpensiveUnitCost (null);
 				tc.setDefenderSpecialFameLost (null);
 				tc.setAttackerSpecialFameLost (null);
+				tc.setCollateralAccumulator (null);
 				
 				// Figure out what to do next now the combat is over
 				if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
@@ -1032,5 +1083,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Casting for each type of spell
+	 */
+	public final SpellCasting getSpellCasting ()
+	{
+		return spellCasting;
+	}
+
+	/**
+	 * @param c Casting for each type of spell
+	 */
+	public final void setSpellCasting (final SpellCasting c)
+	{
+		spellCasting = c;
 	}
 }

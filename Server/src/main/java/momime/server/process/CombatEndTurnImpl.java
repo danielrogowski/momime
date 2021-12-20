@@ -30,6 +30,7 @@ import momime.common.messages.CombatMapSize;
 import momime.common.messages.ConfusionEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationConfusionData;
@@ -116,6 +117,9 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		
 		// Look for units with confusion cast on them
 		// Map is from unit URN to casting player ID
 		final Map<Integer, Integer> unitsWithConfusion = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
@@ -159,9 +163,6 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 								final int d = getRandomUtils ().nextInt (getCoordinateSystemUtils ().getMaxDirection (combatMapSize.getCoordinateSystemType ())) + 1;
 								
 								// Walk until run out of movement or hit something impassable
-								final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-									(thisUnit.getCombatLocation ().getZ ()).getRow ().get (thisUnit.getCombatLocation ().getY ()).getCell ().get (thisUnit.getCombatLocation ().getX ());
-
 								boolean keepGoing = true;
 								while (keepGoing)
 								{
@@ -193,6 +194,23 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 						}
 					}
 				}
+		
+		// Accumulate damage to the city
+		final List<String> cityTiles = mom.getServerDB ().getCombatTileType ().stream ().filter
+			(t -> (t.isInsideCity () != null) && (t.isInsideCity ())).map (t -> t.getCombatTileTypeID ()).collect (Collectors.toList ());
+
+		for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+				(thisUnit.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ()) &&
+				(!mom.getServerDB ().getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())))		// Ignore vortexes, they have their own way of increasing dmg
+			{
+				// Are they in the 4x4 town area?  Get the specific tile where the unit is
+				final MomCombatTile combatTile = tc.getCombatMap ().getRow ().get (thisUnit.getCombatPosition ().getY ()).getCell ().get (thisUnit.getCombatPosition ().getX ());
+				
+				if (combatTile.getTileLayer ().stream ().anyMatch (l -> cityTiles.contains (l.getCombatTileTypeID ())))
+					tc.setCollateralAccumulator (tc.getCollateralAccumulator () + 1);
+			}
 	}
 	
 	/**

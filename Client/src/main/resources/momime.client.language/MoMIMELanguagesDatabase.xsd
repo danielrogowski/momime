@@ -2066,6 +2066,18 @@
 						<xsd:selector xpath="fameLost" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="combatEndedScreenPopulationKilledPK">
+						<xsd:selector xpath="populationKilled" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenBuildingsDestroyedSingularPK">
+						<xsd:selector xpath="buildingsDestroyedSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenBuildingsDestroyedPluralPK">
+						<xsd:selector xpath="buildingsDestroyedPlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="magicSlidersScreen" type="momimelangs:magicSlidersScreen">
 					<xsd:key name="magicSlidersScreenTitlePK">
@@ -4549,6 +4561,9 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="zombiesCreatedPlural" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="fameGained" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="fameLost" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="populationKilled" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buildingsDestroyedSingular" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buildingsDestroyedPlural" />
 		</xsd:sequence>
     </xsd:complexType>
 	

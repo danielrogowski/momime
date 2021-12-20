@@ -2,6 +2,7 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -21,13 +22,14 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.messages.ServerGridCell;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.CombatMapServerUtils;
 
 /**
@@ -136,8 +138,17 @@ public final class CombatHandlingImpl implements CombatHandling
 	{
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), vortex.getOwningPlayerID (), "damageFromVortex");
 		
-		final ServerGridCell gc = (ServerGridCell) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(vortex.getCombatLocation ().getZ ()).getRow ().get (vortex.getCombatLocation ().getY ()).getCell ().get (vortex.getCombatLocation ().getX ());
+		
+		// Vortexes rack up damage to the city if they are in the 4x4 town area - so check the specific tile where the vortex is
+		final List<String> cityTiles = mom.getServerDB ().getCombatTileType ().stream ().filter
+			(t -> (t.isInsideCity () != null) && (t.isInsideCity ())).map (t -> t.getCombatTileTypeID ()).collect (Collectors.toList ());
+		
+		final MomCombatTile combatTile = gc.getCombatMap ().getRow ().get (vortex.getCombatPosition ().getY ()).getCell ().get (vortex.getCombatPosition ().getX ());
+		
+		if (combatTile.getTileLayer ().stream ().anyMatch (l -> cityTiles.contains (l.getCombatTileTypeID ())))
+			gc.setCollateralAccumulator (gc.getCollateralAccumulator () + 5);
 		
 		// Build a list of all the units being attacked
 		final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();

@@ -4273,6 +4273,15 @@ Bonus Or +GOLD_BONUS%</text>
 		<fameLost language="en">
 			<text>You have lost FAME_LOST fame.</text>
 		</fameLost>
+		<populationKilled language="en">
+			<text>POPULATION_KILLED of population were killed.</text>
+		</populationKilled>
+		<buildingsDestroyedSingular language="en">
+			<text>BUILDINGS_DESTROYED building was destroyed.</text>
+		</buildingsDestroyedSingular>
+		<buildingsDestroyedPlural language="en">
+			<text>BUILDINGS_DESTROYED buildings were destroyed.</text>
+		</buildingsDestroyedPlural>
 	</combatEndedScreen>
 	<magicSlidersScreen>
 		<title language="en">

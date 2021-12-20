@@ -68,6 +68,9 @@ public final class ServerGridCellEx extends ServerGridCell
 	
 	/** Fame the attacker lost in combat due to particular units dying */
 	private Integer attackerSpecialFameLost;
+	
+	/** Keeps track of how bad the chances are of the town being damaged by combat */
+	private Integer collateralAccumulator;
 
 	/** List of items held by any heroes that died in this combat, no matter which side they were on */
 	private final List<NumberedHeroItem> itemsFromHeroesWhoDiedInCombat = new ArrayList<NumberedHeroItem> ();
@@ -348,6 +351,22 @@ public final class ServerGridCellEx extends ServerGridCell
 	public final void setAttackerSpecialFameLost (final Integer f)
 	{
 		attackerSpecialFameLost = f;
+	}
+
+	/**
+	 * @return Keeps track of how bad the chances are of the town being damaged by combat
+	 */
+	public final Integer getCollateralAccumulator ()
+	{
+		return collateralAccumulator;
+	}
+
+	/**
+	 * @param a Keeps track of how bad the chances are of the town being damaged by combat
+	 */
+	public final void setCollateralAccumulator (final Integer a)
+	{
+		collateralAccumulator = a;
 	}
 	
 	/**

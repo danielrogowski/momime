@@ -54,6 +54,7 @@ import momime.common.database.Building;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
 import momime.common.database.RaceEx;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
 import momime.common.messages.MemoryBuilding;
@@ -281,29 +282,15 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 				}
 			
 			// Name of what's currently being constructed
-			Integer productionCost = null;
 			if (city.getCurrentlyConstructingBuildingID () != null)
-			{
 				cityCurrentlyConstructing.setText (getLanguageHolder ().findDescription
 					(getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "CitiesListCellRenderer").getBuildingName ()));
-				productionCost = getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "CitiesListCellRenderer").getProductionCost ();
-			}
 			else
-			{
 				cityCurrentlyConstructing.setText (getLanguageHolder ().findDescription
 					(getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "CitiesListCellRenderer").getUnitName ()));
-				productionCost = getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "CitiesListCellRenderer").getProductionCost ();
-			}
 			
 			// Check if we can rush buy it
-			boolean rushBuyEnabled = false;
-			if (productionCost != null)
-			{
-				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (city.getProductionSoFar () == null) ? 0 : city.getProductionSoFar ());
-				rushBuyEnabled = (goldToRushBuy > 0) && (goldToRushBuy <= getResourceValueUtils ().findAmountStoredForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD));
-			}
-			rushBuyIcon.setVisible (rushBuyEnabled);
+			rushBuyIcon.setVisible (isRushBuyAllowed (city));
 		}
 		catch (final Exception e)
 		{
@@ -311,6 +298,32 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		}
 		
 		return this;
+	}
+
+	/**
+	 * @param city City to test
+	 * @return Whether rush buy should be enabled for this city or not
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 */
+	private final boolean isRushBuyAllowed (final CitiesListEntry city) throws RecordNotFoundException
+	{
+		// Name of what's currently being constructed
+		Integer productionCost = null;
+		if (city.getCurrentlyConstructingBuildingID () != null)
+			productionCost = getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "isRushBuyAllowed").getProductionCost ();
+		else
+			productionCost = getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "isRushBuyAllowed").getProductionCost ();
+		
+		// Check if we can rush buy it
+		boolean rushBuyEnabled = false;
+		if (productionCost != null)
+		{
+			final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (city.getProductionSoFar () == null) ? 0 : city.getProductionSoFar ());
+			rushBuyEnabled = (goldToRushBuy > 0) && (goldToRushBuy <= getResourceValueUtils ().findAmountStoredForProductionType
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD));
+		}
+		
+		return rushBuyEnabled;
 	}
 	
 	/**
@@ -545,7 +558,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 					
 				// Rush buy
 				case "frmCitiesListRowRushBuy":
-					if (rushBuyIcon.isVisible ())
+					if (isRushBuyAllowed (city))
 						getClientCityCalculations ().showRushBuyPrompt (city.getCityLocation ());
 					break;
 			}

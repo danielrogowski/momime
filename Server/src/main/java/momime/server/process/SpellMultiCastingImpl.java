@@ -2,7 +2,7 @@ package momime.server.process;
 
 import java.util.Arrays;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystemUtils;

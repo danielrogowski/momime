@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -24,7 +22,10 @@ import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutConstants;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
+import com.ndg.utils.XmlConstants;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import momime.client.graphics.database.GraphicsDatabase;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -157,7 +158,7 @@ public class ClientTestData
 		final Schema schema = schemaFactory.newSchema (xsdResource);
 
 		final Unmarshaller unmarshaller = JAXBContext.newInstance (GraphicsDatabase.class).createUnmarshaller ();		
-		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {commonDatabaseFactory, graphicsDatabaseFactory});
+		unmarshaller.setProperty (XmlConstants.OBJECT_FACTORY, new Object [] {commonDatabaseFactory, graphicsDatabaseFactory});
 		unmarshaller.setSchema (schema);
 		
 		// XML
@@ -282,7 +283,7 @@ public class ClientTestData
 		final Schema schema = schemaFactory.newSchema (xsdResource);
 
 		final Unmarshaller unmarshaller = JAXBContext.newInstance (XmlLayoutContainer.class).createUnmarshaller ();		
-		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {new XmlLayoutObjectFactory ()});
+		unmarshaller.setProperty (XmlConstants.OBJECT_FACTORY, new Object [] {new XmlLayoutObjectFactory ()});
 		unmarshaller.setSchema (schema);
 		
 		return unmarshaller;

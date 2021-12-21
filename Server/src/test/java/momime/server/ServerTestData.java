@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -16,7 +14,10 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
+import com.ndg.utils.XmlConstants;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -117,7 +118,7 @@ public class ServerTestData
 		final Schema schema = schemaFactory.newSchema (xsdResource);
 
 		final Unmarshaller unmarshaller = JAXBContext.newInstance (MomDatabase.class).createUnmarshaller ();		
-		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {factory});
+		unmarshaller.setProperty (XmlConstants.OBJECT_FACTORY, new Object [] {factory});
 		unmarshaller.setSchema (schema);
 		
 		// XML - not straightforward to find this, because its in src/external/resources so isn't on the classpath

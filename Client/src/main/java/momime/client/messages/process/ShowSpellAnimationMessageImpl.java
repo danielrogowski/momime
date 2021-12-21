@@ -3,7 +3,7 @@ package momime.client.messages.process;
 import java.awt.Color;
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;

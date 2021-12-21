@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JComponent;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;

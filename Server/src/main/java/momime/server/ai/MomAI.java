@@ -1,6 +1,6 @@
 package momime.server.ai;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;

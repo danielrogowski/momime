@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
 	xmlns:momimecommon="http://momime/common/database" xmlns:momimeclient="http://momime/client/database"
 	xmlns:momimemsgs="http://momime/common/messages" targetNamespace="http://momime/common/messages"
-	jaxb:version="2.0">
+	jaxb:version="3.0">
 
 	<xsd:import namespace="http://www.ndg.com/map" />
 	<xsd:import namespace="http://www.ndg.com/multiplayer/base" />

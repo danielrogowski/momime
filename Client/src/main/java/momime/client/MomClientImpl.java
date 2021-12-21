@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipException;
 
 import javax.swing.SwingUtilities;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;

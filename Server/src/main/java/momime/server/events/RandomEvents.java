@@ -2,7 +2,7 @@ package momime.server.events;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;

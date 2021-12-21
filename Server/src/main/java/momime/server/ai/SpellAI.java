@@ -3,7 +3,7 @@ package momime.server.ai;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;

@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;

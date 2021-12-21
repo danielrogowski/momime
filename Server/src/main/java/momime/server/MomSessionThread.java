@@ -3,8 +3,8 @@ package momime.server;
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;

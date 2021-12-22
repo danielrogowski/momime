@@ -3,7 +3,7 @@ package momime.client.messages.process;
 import java.io.IOException;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;

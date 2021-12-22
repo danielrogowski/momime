@@ -11,9 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -24,6 +21,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
+import com.ndg.utils.XmlConstants;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import momime.client.database.AvailableDatabase;
 import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
@@ -115,7 +117,7 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 		// Build it
 		// Locate the server XML file, then go one level up to the folder that it is in
 		final Unmarshaller serverDatabaseUnmarshaller = JAXBContext.newInstance (MomDatabase.class).createUnmarshaller ();
-		serverDatabaseUnmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {factory});
+		serverDatabaseUnmarshaller.setProperty (XmlConstants.OBJECT_FACTORY, new Object [] {factory});
 		serverDatabaseUnmarshaller.setSchema (xsd);
 		
 		final NewGameDatabaseMessage msg = conv.buildNewGameDatabase (map, serverDatabaseUnmarshaller);

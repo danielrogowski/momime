@@ -10,8 +10,8 @@ import java.io.File;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
 
 import org.junit.jupiter.api.Test;

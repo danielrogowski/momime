@@ -35,7 +35,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg type="java.net.URL" value="/momime.server.config/MoMIMEServerConfig.xsd" />
 	</bean>
 	
-	<bean id="serverConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+	<bean id="serverConfigJaxbContext" class="jakarta.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
     			<value>momime.server.config.MomImeServerConfig</value>
@@ -43,7 +43,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
    		</constructor-arg>
 	</bean>
 	
-	<bean id="serverConfigUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="serverConfigJaxbContext" factory-method="createUnmarshaller">
+	<bean id="serverConfigUnmarshaller" class="jakarta.xml.bind.Unmarshaller" factory-bean="serverConfigJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="serverConfigSchema" />
 	</bean>
 	
@@ -246,7 +246,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg type="java.net.URL" value="/com.ndg.multiplayer.userregistry/MultiplayerSessionUserRegistry.xsd" />
 	</bean>
 	
-	<bean id="userRegistryJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+	<bean id="userRegistryJaxbContext" class="jakarta.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
     			<value>com.ndg.multiplayer.userregistry.UserRegistry</value>
@@ -254,11 +254,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
    		</constructor-arg>
 	</bean>
 
-	<bean id="userRegistryUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="userRegistryJaxbContext" factory-method="createUnmarshaller">
+	<bean id="userRegistryUnmarshaller" class="jakarta.xml.bind.Unmarshaller" factory-bean="userRegistryJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="userRegistrySchema" />
 	</bean>
 	
-	<bean id="userRegistryMarshaller" class="javax.xml.bind.Marshaller" factory-bean="userRegistryJaxbContext" factory-method="createMarshaller">
+	<bean id="userRegistryMarshaller" class="jakarta.xml.bind.Marshaller" factory-bean="userRegistryJaxbContext" factory-method="createMarshaller">
 		<property name="schema" ref="userRegistrySchema" />
 	</bean>
 	
@@ -318,7 +318,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="serverKnowledgeObjectFactory" class="momime.server.knowledge.MomServerKnowledgeObjectFactory" />
 
-	<bean id="savedGamesContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+	<bean id="savedGamesContext" class="jakarta.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
     			<value>com.ndg.multiplayer.persistence.SavedGame</value>
@@ -332,14 +332,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
    		</constructor-arg>
 	</bean>
 
-	<bean id="savedGamesUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="savedGamesContext" factory-method="createUnmarshaller" />
+	<bean id="savedGamesUnmarshaller" class="jakarta.xml.bind.Unmarshaller" factory-bean="savedGamesContext" factory-method="createUnmarshaller" />
 	
 	<bean id="configureSavedGamesUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetObject" ref="savedGamesUnmarshaller" />
 		<property name="targetMethod" value="setProperty" />
 		<property name="arguments">
 			<list>
-				<value>com.sun.xml.bind.ObjectFactory</value>
+				 <value>org.glassfish.jaxb.core.ObjectFactory</value>
 				<array>
 					<ref bean="serverKnowledgeObjectFactory" />
 					<ref bean="objectFactoryMap" />
@@ -348,7 +348,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		</property>
 	</bean>	
 	
-	<bean id="savedGamesMarshaller" class="javax.xml.bind.Marshaller" factory-bean="savedGamesContext" factory-method="createMarshaller" />
+	<bean id="savedGamesMarshaller" class="jakarta.xml.bind.Marshaller" factory-bean="savedGamesContext" factory-method="createMarshaller" />
 
 	<bean id="configureSavedGamesMarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetObject" ref="savedGamesMarshaller" />

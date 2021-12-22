@@ -1,6 +1,6 @@
 package momime.common.database;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 /**
  * Creates our custom extended database when it is unmarshalled with JAXB

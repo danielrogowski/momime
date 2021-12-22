@@ -4,7 +4,7 @@
 
 	<!-- Common beans used both by the MoM IME client and server -->
 	
-	<bean id="clientToServerJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+	<bean id="clientToServerJaxbContext" class="jakarta.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
     			<value>com.ndg.multiplayer.base.ClientToServerMessage</value>
@@ -63,7 +63,7 @@
    		</constructor-arg>
 	</bean>
 
-	<bean id="serverToClientJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+	<bean id="serverToClientJaxbContext" class="jakarta.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
     			<value>com.ndg.multiplayer.base.ServerToClientMessage</value>
@@ -190,7 +190,7 @@
 		<constructor-arg type="java.net.URL" value="/momime.common.database/MoMIMECommonDatabase.xsd" />
 	</bean>
 	
-	<bean id="commonDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+	<bean id="commonDatabaseJaxbContext" class="jakarta.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
     			<value>momime.common.database.MomDatabase</value>
@@ -206,7 +206,7 @@
 		<property name="factory" ref="commonDatabaseFactory" />
 	</bean>
 	
-	<bean id="commonDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="commonDatabaseJaxbContext" factory-method="createUnmarshaller">
+	<bean id="commonDatabaseUnmarshaller" class="jakarta.xml.bind.Unmarshaller" factory-bean="commonDatabaseJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="commonDatabaseSchema" />
 	</bean>
 	
@@ -215,7 +215,7 @@
 		<property name="targetMethod" value="setProperty" />
 		<property name="arguments">
 			<list>
-				<value>com.sun.xml.bind.ObjectFactory</value>
+				 <value>org.glassfish.jaxb.core.ObjectFactory</value>
 				<array>
 					<ref bean="commonDatabaseObjectFactory" />
 				</array>

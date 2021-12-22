@@ -1,6 +1,6 @@
 package momime.client.graphics.database;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 /**
  * Creates our custom extended GraphicsDatabase when it is unmarshalled with JAXB

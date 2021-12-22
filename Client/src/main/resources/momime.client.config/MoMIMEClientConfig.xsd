@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
 	xmlns:momimecltconfig="http://momime/client/config" xmlns:momimecommon="http://momime/common/database" targetNamespace="http://momime/client/config"
-	jaxb:version="2.0">
+	jaxb:version="3.0">
 
 	<xsd:import namespace="http://momime/common/database"/>
 

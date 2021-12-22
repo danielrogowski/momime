@@ -1,6 +1,6 @@
 package momime.server.messages.process;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 import momime.common.messages.clienttoserver.AlchemyMessage;
 import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;

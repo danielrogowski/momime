@@ -57,8 +57,8 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	/** Number of pixels that the roller at the bottom of the scroll overlaps the main piece of background */
 	public final static int SCROLL_OVERLAP_BOTTOM = 7;
 	
-	/** Width of the drawable (list box) area of the NTM scroll */
-	public final static int SCROLL_WIDTH = 452;
+	/** Width of the drawable (list box) area of the NTM scroll, to allow space on the right hand side for a scroll bar to appear */
+	public final static int SCROLL_WIDTH = 439;
 	
 	/** Stores the list of messages to display on the scroll; initialize it out here, prior to the init method, so we can write to it before the UI gets displayed */
 	private final DefaultListModel<NewTurnMessageUI> newTurnMessages = new DefaultListModel<NewTurnMessageUI> ();

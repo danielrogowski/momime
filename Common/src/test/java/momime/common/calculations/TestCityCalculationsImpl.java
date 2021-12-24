@@ -79,6 +79,7 @@ import momime.common.messages.servertoclient.RenderCityData;
 import momime.common.utils.CityProductionUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 
 /**
@@ -1287,6 +1288,9 @@ public final class TestCityCalculationsImpl
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
@@ -1329,6 +1333,7 @@ public final class TestCityCalculationsImpl
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Call method
 		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
@@ -4478,6 +4483,9 @@ public final class TestCityCalculationsImpl
 		
 		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, pub, null);
 		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 		difficultyLevel.setAiWizardsProductionRateMultiplier (300);
@@ -4494,6 +4502,7 @@ public final class TestCityCalculationsImpl
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Call method
 		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, difficultyLevel, db);
@@ -4534,6 +4543,9 @@ public final class TestCityCalculationsImpl
 		
 		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, pub, null);
 		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS)).thenReturn (false);
+		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 		difficultyLevel.setAiWizardsProductionRateMultiplier (300);
@@ -4550,6 +4562,7 @@ public final class TestCityCalculationsImpl
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Call method
 		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, difficultyLevel, db);
@@ -4646,6 +4659,9 @@ public final class TestCityCalculationsImpl
 		
 		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, pub, null);
 		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS)).thenReturn (false);
+		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 		difficultyLevel.setAiWizardsProductionRateMultiplier (300);
@@ -4662,6 +4678,7 @@ public final class TestCityCalculationsImpl
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
+		calc.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Call method
 		calc.halveAddPercentageBonusAndCapProduction (cityOwner, breakdown, 12, difficultyLevel, db);

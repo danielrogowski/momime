@@ -35,6 +35,7 @@ import momime.common.database.Language;
 import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Tests the SpellOfMasteryEndUI class
@@ -164,6 +165,10 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		
 		when (client.getPlayers ()).thenReturn (players);
 		
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard (null)).thenReturn (true);
+		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/SpellOfMasteryEndUI.xml"));
 		layout.buildMaps ();
@@ -178,6 +183,7 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		spellOfMasteryEnd.setLanguageChangeMaster (langMaster);
 		spellOfMasteryEnd.setLargeFont (CreateFontsForTests.getLargeFont ());
 		spellOfMasteryEnd.setCastingWizard (castingWizard);
+		spellOfMasteryEnd.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		spellOfMasteryEnd.setMusicPlayer (mock (AudioPlayer.class));
 		spellOfMasteryEnd.setWizardClientUtils (wizardClientUtils);
 		

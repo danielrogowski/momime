@@ -56,6 +56,9 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * @param picks Player's picks to count up
 	 * @param db Lookup lists built over the XML database
@@ -410,8 +413,8 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 
 		final boolean isCustomPicksChosen = (priv.isCustomPicksChosen () == null) ? false : priv.isCustomPicksChosen ();
 
-		final boolean result = ((PlayerKnowledgeUtils.hasWizardBeenChosen (ppk.getWizardID ())) && (priv.getFirstCityRaceID () != null) &&
-			((!PlayerKnowledgeUtils.isCustomWizard (ppk.getWizardID ())) || (isCustomPicksChosen)));
+		final boolean result = ((getPlayerKnowledgeUtils ().hasWizardBeenChosen (ppk.getWizardID ())) && (priv.getFirstCityRaceID () != null) &&
+			((!getPlayerKnowledgeUtils ().isCustomWizard (ppk.getWizardID ())) || (isCustomPicksChosen)));
 
 		return result;
 	}
@@ -599,5 +602,21 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

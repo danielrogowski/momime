@@ -142,6 +142,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Casting for each type of spell */
 	private SpellCasting spellCasting;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
 	 *
@@ -554,7 +557,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Update fame
 			final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 
-			if ((attackerFameChange != 0) && (PlayerKnowledgeUtils.isWizard (atkPub.getWizardID ())))
+			if ((attackerFameChange != 0) && (getPlayerKnowledgeUtils ().isWizard (atkPub.getWizardID ())))
 			{
 				// Fame cannot go negative
 				int attackerFame = getResourceValueUtils ().findAmountStoredForProductionType (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
@@ -565,7 +568,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getResourceValueUtils ().addToAmountStored (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME, attackerFameChange);
 			}
 
-			if ((defenderFameChange != 0) && (defendingPlayer != null) && (PlayerKnowledgeUtils.isWizard (defPub.getWizardID ())))
+			if ((defenderFameChange != 0) && (defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (defPub.getWizardID ())))
 			{
 				// Fame cannot go negative
 				int defenderFame = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
@@ -1102,5 +1105,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setSpellCasting (final SpellCasting c)
 	{
 		spellCasting = c;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

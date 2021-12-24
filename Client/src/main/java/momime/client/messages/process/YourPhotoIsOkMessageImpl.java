@@ -20,6 +20,9 @@ public final class YourPhotoIsOkMessageImpl extends YourPhotoIsOkMessage impleme
 	/** New Game UI */
 	private NewGameUI newGameUI;
 
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -29,7 +32,7 @@ public final class YourPhotoIsOkMessageImpl extends YourPhotoIsOkMessage impleme
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
 		// Standard portraits have fixed colours, only if we chose a custom portrait do we need to go to the flag colour screen
-		if (PlayerKnowledgeUtils.isCustomWizard (getNewGameUI ().getPortraitChosen ()))
+		if (getPlayerKnowledgeUtils ().isCustomWizard (getNewGameUI ().getPortraitChosen ()))
 			getNewGameUI ().showCustomFlagColourPanel ();
 		else
 			getNewGameUI ().showCustomPicksPanel ();
@@ -49,5 +52,21 @@ public final class YourPhotoIsOkMessageImpl extends YourPhotoIsOkMessage impleme
 	public final void setNewGameUI (final NewGameUI ui)
 	{
 		newGameUI = ui;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

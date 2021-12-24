@@ -18,6 +18,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Tests the WizardClientUtilsImpl class
@@ -51,10 +52,15 @@ public final class TestWizardClientUtilsImpl extends ClientTestData
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null); 
 		
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isCustomWizard ("WZ01")).thenReturn (false);
+		
 		// Set up object to test
 		final WizardClientUtilsImpl utils = new WizardClientUtilsImpl ();
 		utils.setLanguageHolder (new LanguageDatabaseHolder ());
 		utils.setClient (client);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Try with a human player
 		pd.setHuman (true);

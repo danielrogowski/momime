@@ -31,6 +31,7 @@ import momime.common.database.Language;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Tests the HistoryUI class
@@ -111,6 +112,14 @@ public final class TestHistoryUI extends ClientTestData
 		
 		when (client.getPlayers ()).thenReturn (players);
 		
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		for (int n = 1; n <= 14; n++)
+		{
+			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
+			when (playerKnowledgeUtils.isWizard (wizardID)).thenReturn (true);
+		}
+		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HistoryUI.xml"));
 		layout.buildMaps ();
@@ -121,6 +130,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setUtils (utils);
 		history.setClient (client);
 		history.setWizardClientUtils (wizardClientUtils);
+		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
@@ -206,6 +216,14 @@ public final class TestHistoryUI extends ClientTestData
 		
 		when (client.getPlayers ()).thenReturn (players);
 		
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		for (int n = 1; n <= 14; n++)
+		{
+			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
+			when (playerKnowledgeUtils.isWizard (wizardID)).thenReturn (true);
+		}
+		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HistoryUI.xml"));
 		layout.buildMaps ();
@@ -216,6 +234,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setUtils (utils);
 		history.setClient (client);
 		history.setWizardClientUtils (wizardClientUtils);
+		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
@@ -300,6 +319,14 @@ public final class TestHistoryUI extends ClientTestData
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
+
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		for (int n = 1; n <= 14; n++)
+		{
+			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
+			when (playerKnowledgeUtils.isWizard (wizardID)).thenReturn (true);
+		}
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HistoryUI.xml"));
@@ -311,6 +338,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setUtils (utils);
 		history.setClient (client);
 		history.setWizardClientUtils (wizardClientUtils);
+		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
@@ -396,6 +424,14 @@ public final class TestHistoryUI extends ClientTestData
 		
 		when (client.getPlayers ()).thenReturn (players);
 		
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		for (int n = 1; n <= 14; n++)
+		{
+			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
+			when (playerKnowledgeUtils.isWizard (wizardID)).thenReturn (true);
+		}
+		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HistoryUI.xml"));
 		layout.buildMaps ();
@@ -406,6 +442,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setUtils (utils);
 		history.setClient (client);
 		history.setWizardClientUtils (wizardClientUtils);
+		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());

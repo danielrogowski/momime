@@ -270,6 +270,7 @@
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="cityProductionUtils" ref="cityProductionUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="cityProductionCalculations" class="momime.common.calculations.CityProductionCalculationsImpl">
@@ -302,6 +303,8 @@
 	<bean id="memoryCombatAreaEffectUtils" class="momime.common.utils.MemoryCombatAreaEffectUtilsImpl" />
 	
 	<bean id="memoryGridCellUtils" class="momime.common.utils.MemoryGridCellUtilsImpl" />
+
+	<bean id="playerKnowledgeUtils" class="momime.common.utils.PlayerKnowledgeUtilsImpl" />
 	
 	<bean id="memoryMaintainedSpellUtils" class="momime.common.utils.MemoryMaintainedSpellUtilsImpl">
 		<property name="spellUtils" ref="spellUtils" />
@@ -315,6 +318,7 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />
@@ -417,6 +421,7 @@
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 	
 </beans>

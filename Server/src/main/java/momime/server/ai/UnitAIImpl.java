@@ -140,6 +140,9 @@ public final class UnitAIImpl implements UnitAI
 	/** Sample unit method */
 	private SampleUnitUtils sampleUnitUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * Lists every unit this AI player can build at every city they own, as well as any units they can summon, sorted with the best units first.
 	 * This won't list heroes, since if we cast Summon Hero/Champion, we never know which one we're going to get.
@@ -195,7 +198,7 @@ public final class UnitAIImpl implements UnitAI
 				}
 		
 		// Summonining spells we know
-		if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+		if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 			for (final Spell spell : db.getSpell ())
 				if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getOverlandCastingCost () != null) &&
 					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
@@ -1405,5 +1408,21 @@ public final class UnitAIImpl implements UnitAI
 	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
 		sampleUnitUtils = s;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

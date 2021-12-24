@@ -79,6 +79,9 @@ public final class MovementUtilsImpl implements MovementUtils
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
 	 * @param unitStackSkills Collective list of skills of all units in the stack
@@ -292,10 +295,10 @@ public final class MovementUtilsImpl implements MovementUtils
 		}
 		
 		// Raiders are impassable to Rampaging Monsters and vice versa
-		if (!PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+		if (!getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 		{
 			final Integer blockedPlayerID = players.stream ().filter (p -> (p.getPlayerDescription ().getPlayerID () != movingPlayerID) &&
-				(!PlayerKnowledgeUtils.isWizard (((MomPersistentPlayerPublicKnowledge) p.getPersistentPlayerPublicKnowledge ()).getWizardID ()))).map
+				(!getPlayerKnowledgeUtils ().isWizard (((MomPersistentPlayerPublicKnowledge) p.getPersistentPlayerPublicKnowledge ()).getWizardID ()))).map
 				(p -> p.getPlayerDescription ().getPlayerID ()).findAny ().orElse (null);
 			if (blockedPlayerID != null)
 				mem.getUnit ().stream ().filter (u -> (u.getStatus () == UnitStatusID.ALIVE) && (u.getOwningPlayerID () == blockedPlayerID) && (u.getUnitLocation () != null)).forEach
@@ -787,5 +790,21 @@ public final class MovementUtilsImpl implements MovementUtils
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

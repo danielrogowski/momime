@@ -117,6 +117,9 @@ public final class CityCalculationsImpl implements CityCalculations
 	/** Utils for totalling up city production */
 	private CityProductionUtils cityProductionUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * A list of directions for traversing from a city's coordinates through all the map cells within that city's radius
 	 * Note this is different from the Delphi list TRACE_CITY_DIRECTION is in MomMap.pas in that the list here DOES include the tile the city itself is on, the Delphi code (unnecessarily) deals with the centre tile separately
@@ -561,7 +564,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if ((cityOwner.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingPopulationBoom () <= 0))
 				growing.setDifficultyLevelMultiplier (100);
 			else
-				growing.setDifficultyLevelMultiplier (PlayerKnowledgeUtils.isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier () :
+				growing.setDifficultyLevelMultiplier (getPlayerKnowledgeUtils ().isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier () :
 					difficultyLevel.getAiRaidersPopulationGrowthRateMultiplier ());
 
 			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingPopulationBoom () * growing.getDifficultyLevelMultiplier ()) / 100);
@@ -1534,7 +1537,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			(cityOwner != null) && (!cityOwner.getPlayerDescription ().isHuman ()) && (productionType.isDifficultyLevelMultiplierApplies ()))
 		{
 			final MomPersistentPlayerPublicKnowledge cityOwnerPub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
-			thisProduction.setDifficultyLevelMultiplier (PlayerKnowledgeUtils.isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsProductionRateMultiplier () :
+			thisProduction.setDifficultyLevelMultiplier (getPlayerKnowledgeUtils ().isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsProductionRateMultiplier () :
 				difficultyLevel.getAiRaidersProductionRateMultiplier ());
 		}
 		else
@@ -1870,5 +1873,21 @@ public final class CityCalculationsImpl implements CityCalculations
 	public final void setCityProductionUtils (final CityProductionUtils c)
 	{
 		cityProductionUtils = c;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

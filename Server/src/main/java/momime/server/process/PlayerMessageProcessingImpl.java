@@ -190,6 +190,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/** Rolls random events */
 	private RandomEvents randomEvents;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/** Number of save points to keep for each session */
 	private int savePointKeepCount;
 	
@@ -215,11 +218,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// Check if not specified
 		boolean valid;
 		WizardEx wizard = null;
-		if (!PlayerKnowledgeUtils.hasWizardBeenChosen (wizardID))
+		if (!getPlayerKnowledgeUtils ().hasWizardBeenChosen (wizardID))
 			valid = false;
 		
 		// Check if custom
-		else if (PlayerKnowledgeUtils.isCustomWizard (wizardID))
+		else if (getPlayerKnowledgeUtils ().isCustomWizard (wizardID))
 			valid = sd.getDifficultyLevel ().isCustomWizards ();
 
 		// Check if Raiders
@@ -254,7 +257,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		}
 
 		// Wizard might be valid, but check if option prohibits player from choosing same wizard as another player has already chosen
-		else if ((sd.getDifficultyLevel ().isEachWizardOnlyOnce ()) && (!PlayerKnowledgeUtils.isCustomWizard (wizardID)) &&
+		else if ((sd.getDifficultyLevel ().isEachWizardOnlyOnce ()) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardID)) &&
 			(getPlayerPickServerUtils ().findPlayerUsingWizard (players, wizardID) != null))
 		{
 			final TextPopupMessage reply = new TextPopupMessage ();
@@ -572,7 +575,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 
-				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
 				{
 					// Calculate each wizard's initial starting casting skills
 					// This effectively gives each wizard some starting stored skill in RE10, which will then be sent to the client by RecalculateGlobalProductionValues below
@@ -767,7 +770,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 				
 				// Don't let raiders buy units or hire heroes
-				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+				if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 				{
 					final NewTurnMessageOfferHero heroOffer = getOfferGenerator ().generateHeroOffer
 						(player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
@@ -1372,7 +1375,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				
 				// Ignore raiders and rampaging monsters
-				if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 				{
 					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();					
 					final int powerBase = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
@@ -1416,7 +1419,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.DEFEATED))
+			if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.DEFEATED))
 			{
 				aliveCount++;
 				aliveWizard = player;
@@ -1881,5 +1884,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setRandomEvents (final RandomEvents e)
 	{
 		randomEvents = e;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

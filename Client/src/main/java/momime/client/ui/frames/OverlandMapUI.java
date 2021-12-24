@@ -191,6 +191,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** Spell Ward popup */
 	private ChooseCitySpellEffectUI chooseCitySpellEffectUI;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/** Unit stack that's in the middle of moving from one cell to another */
 	private MoveUnitStackOverlandMessageImpl unitStackMoving;
 
@@ -401,7 +404,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 				for (final PlayerPublicDetails thisPlayer : getClient ().getPlayers ())
 				{
 					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-					if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+					if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 					{
 						if (((thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowOurBorder ())) ||
 							((!thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowEnemyBorders ())))
@@ -2007,6 +2010,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setChooseCitySpellEffectUI (final ChooseCitySpellEffectUI w)
 	{
 		chooseCitySpellEffectUI = w;
+	}
+	
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 	
 	/**

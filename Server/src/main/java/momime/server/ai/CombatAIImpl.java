@@ -73,6 +73,9 @@ public final class CombatAIImpl implements CombatAI
 	/** Methods dealing with unit movement */
 	private UnitMovement unitMovement;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param currentPlayerID AI player whose turn we are taking
@@ -346,7 +349,7 @@ public final class CombatAIImpl implements CombatAI
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) currentPlayer.getPersistentPlayerPublicKnowledge ();
 		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
 		
-		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
+		if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
 			(pub.getWizardState () == WizardState.ACTIVE))
 			
 			result = getSpellAI ().decideWhatToCastCombat (currentPlayer, null, combatLocation, mom);
@@ -531,5 +534,21 @@ public final class CombatAIImpl implements CombatAI
 	public final void setUnitMovement (final UnitMovement u)
 	{
 		unitMovement = u;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

@@ -159,6 +159,9 @@ public final class CityProcessingImpl implements CityProcessing
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
 	 *
@@ -190,7 +193,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 			// How many cities?
 			final int numberOfCities;
-			if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
+			if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
 				numberOfCities = 1;
 
 			else if (ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))
@@ -202,7 +205,7 @@ public final class CityProcessingImpl implements CityProcessing
 			for (int cityNo = 0; cityNo < numberOfCities; cityNo++)
 			{
 				final int plane;
-				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
 					plane = getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), db);
 				else
 					// Raiders just pick a random plane
@@ -222,7 +225,7 @@ public final class CityProcessingImpl implements CityProcessing
 				city.setCityOwnerID (thisPlayer.getPlayerDescription ().getPlayerID ());
 				city.setOptionalFarmers (0);
 
-				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
 				{
 					final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) thisPlayer.getTransientPlayerPrivateKnowledge ();
 
@@ -278,7 +281,7 @@ public final class CityProcessingImpl implements CityProcessing
 				city.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 
 				// Add starting buildings
-				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
 				{
 					// Wizards always get the same buildings (this also adds their Fortress & Summoning Circle)
 					for (final Building thisBuilding : db.getBuilding ())
@@ -1122,7 +1125,7 @@ public final class CityProcessingImpl implements CityProcessing
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 
 		// Things that only apply if two wizards
-		if ((PlayerKnowledgeUtils.isWizard (defenderPub.getWizardID ())) && (PlayerKnowledgeUtils.isWizard (attackerPub.getWizardID ())))
+		if ((getPlayerKnowledgeUtils ().isWizard (defenderPub.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (attackerPub.getWizardID ())))
 		{
 			// Does the attacker get to steal any spells?
 			final List<String> stolenSpellIDs = getSpellProcessing ().stealSpells (defendingPlayer, attackingPlayer,
@@ -1696,5 +1699,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

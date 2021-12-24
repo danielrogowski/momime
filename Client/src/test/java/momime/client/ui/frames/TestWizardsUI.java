@@ -44,6 +44,7 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Tests the WizardsUI class
@@ -128,6 +129,7 @@ public final class TestWizardsUI extends ClientTestData
 			
 			when (db.findPick (eq ("MB0" + n), anyString ())).thenReturn (book);
 		}
+		
 		// Players
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		
@@ -196,6 +198,14 @@ public final class TestWizardsUI extends ClientTestData
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		for (int n = 1; n <= 14; n++)
+		{
+			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
+			when (playerKnowledgeUtils.isWizard (wizardID)).thenReturn (true);
+		}
 		
 		// Image generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
@@ -224,6 +234,7 @@ public final class TestWizardsUI extends ClientTestData
 		wizards.setPlayerColourImageGenerator (gen);
 		wizards.setWizardClientUtils (wizardClientUtils);
 		wizards.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		wizards.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		wizards.setSmallFont (CreateFontsForTests.getSmallFont ());
 		wizards.setMediumFont (CreateFontsForTests.getMediumFont ());
 		wizards.setLargeFont (CreateFontsForTests.getLargeFont ());

@@ -75,6 +75,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtilsImpl;
 
 /**
@@ -2218,6 +2219,15 @@ public final class TestNewGameUI extends ClientTestData
 		sd.setDifficultyLevel (dbs.getMomimeXmlDatabase ().get (0).getDifficultyLevel ().get (0));
 		when (client.getSessionDescription ()).thenReturn (sd);
 
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		for (int n = 1; n <= 14; n++)
+		{
+			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
+			when (playerKnowledgeUtils.isCustomWizard (wizardID)).thenReturn (false);
+		}	
+		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
 		final XmlLayoutContainerEx mainLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Main.xml"));
@@ -2261,6 +2271,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setLanguageHolder (langHolder);
 		game.setLanguageChangeMaster (langMaster);
 		game.setClient (client);
+		game.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		game.setRandomUtils (new RandomUtilsImpl ());
 		game.setTextUtils (new TextUtilsImpl ());
@@ -2439,6 +2450,15 @@ public final class TestNewGameUI extends ClientTestData
 		sd.setDifficultyLevel (dbs.getMomimeXmlDatabase ().get (0).getDifficultyLevel ().get (0));
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		for (int n = 1; n <= 14; n++)
+		{
+			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
+			when (playerKnowledgeUtils.isCustomWizard (wizardID)).thenReturn (false);
+		}	
+		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
 		final XmlLayoutContainerEx mainLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Main.xml"));
@@ -2482,6 +2502,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setLanguageHolder (langHolder);
 		game.setLanguageChangeMaster (langMaster);
 		game.setClient (client);
+		game.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		game.setRandomUtils (new RandomUtilsImpl ());
 		game.setTextUtils (new TextUtilsImpl ());
@@ -2813,6 +2834,15 @@ public final class TestNewGameUI extends ClientTestData
 		sd.setDifficultyLevel (dbs.getMomimeXmlDatabase ().get (0).getDifficultyLevel ().get (0));
 		when (client.getSessionDescription ()).thenReturn (sd);
 
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		for (int n = 1; n <= 14; n++)
+		{
+			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
+			when (playerKnowledgeUtils.isCustomWizard (wizardID)).thenReturn (false);
+		}	
+		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
 		final XmlLayoutContainerEx mainLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Main.xml"));
@@ -2856,6 +2886,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setLanguageHolder (langHolder);
 		game.setLanguageChangeMaster (langMaster);
 		game.setClient (client);
+		game.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		game.setRandomUtils (new RandomUtilsImpl ());
 		game.setTextUtils (new TextUtilsImpl ());
@@ -3241,6 +3272,15 @@ public final class TestNewGameUI extends ClientTestData
 		sd.setDifficultyLevel (dbs.getMomimeXmlDatabase ().get (0).getDifficultyLevel ().get (0));
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		for (int n = 1; n <= 14; n++)
+		{
+			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
+			when (playerKnowledgeUtils.isCustomWizard (wizardID)).thenReturn (false);
+		}	
+		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
 		final XmlLayoutContainerEx mainLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Main.xml"));
@@ -3285,6 +3325,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setLanguageChangeMaster (langMaster);
 		game.setClient (client);
 		game.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		game.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		game.setRandomUtils (new RandomUtilsImpl ());
 		game.setTextUtils (new TextUtilsImpl ());

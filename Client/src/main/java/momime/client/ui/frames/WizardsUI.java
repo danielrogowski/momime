@@ -124,6 +124,9 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/** List of gem buttons for each wizard */
 	final List<JButton> wizardButtons = new ArrayList<JButton> ();
 	
@@ -352,7 +355,7 @@ public final class WizardsUI extends MomClientFrameUI
 			for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			{
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 				{
 					final Action wizardAction = new LoggingAction ((ev) ->
 					{
@@ -696,7 +699,7 @@ public final class WizardsUI extends MomClientFrameUI
 				for (final PlayerPublicDetails player : getClient ().getPlayers ())
 				{
 					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-					if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+					if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 					{
 						final OverlandCastingInfo info = getOverlandCastingInfo ().get (player.getPlayerDescription ().getPlayerID ());
 						
@@ -752,7 +755,7 @@ public final class WizardsUI extends MomClientFrameUI
 		for (final PlayerPublicDetails player : getClient ().getPlayers ())
 		{
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+			if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 			{
 				n++;
 				if (player.getPlayerDescription ().getPlayerID () == playerID)
@@ -999,6 +1002,22 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+	
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 	
 	/**

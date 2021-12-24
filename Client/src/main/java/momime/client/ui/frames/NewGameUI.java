@@ -226,6 +226,9 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Text utils */
 	private TextUtils textUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -1380,7 +1383,7 @@ public final class NewGameUI extends MomClientFrameUI
 			}
 			else if (portraitPanel.isVisible ())
 			{
-				if (PlayerKnowledgeUtils.isCustomWizard (portraitChosen))
+				if (getPlayerKnowledgeUtils ().isCustomWizard (portraitChosen))
 				{
 					try (final FileInputStream in = new FileInputStream (customPortraitChooser.getSelectedFile ()))
 					{
@@ -3208,14 +3211,14 @@ public final class NewGameUI extends MomClientFrameUI
 			for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			{
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if ((PlayerKnowledgeUtils.hasWizardBeenChosen (pub.getWizardID ())) && (PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) &&
-					(!PlayerKnowledgeUtils.isCustomWizard (pub.getWizardID ())))
+				if ((getPlayerKnowledgeUtils ().hasWizardBeenChosen (pub.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) &&
+					(!getPlayerKnowledgeUtils ().isCustomWizard (pub.getWizardID ())))
 					
 					wizardButtonActions.get (pub.getWizardID ()).setEnabled (false);
 			}
 			
 			// If we've now got a wizard selected who's become disabled, better disable the OK button
-			if ((okAction.isEnabled ()) && (!PlayerKnowledgeUtils.isCustomWizard (wizardChosen)) &&
+			if ((okAction.isEnabled ()) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardChosen)) &&
 				(!wizardButtonActions.get (wizardChosen).isEnabled ()))
 				
 				okAction.setEnabled (false);
@@ -4038,7 +4041,7 @@ public final class NewGameUI extends MomClientFrameUI
 	{
 		// Choose wizard buttons
 		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
-			if (PlayerKnowledgeUtils.isCustomWizard (wizard.getKey ()))
+			if (getPlayerKnowledgeUtils ().isCustomWizard (wizard.getKey ()))
 				wizard.getValue ().putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getChooseWizardScreen ().getCustom ()));
 			else
 				wizard.getValue ().putValue (Action.NAME, getLanguageHolder ().findDescription
@@ -4046,7 +4049,7 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Choose portrait buttons
 		for (final Entry<String, Action> portrait : portraitButtonActions.entrySet ())
-			if (PlayerKnowledgeUtils.isCustomWizard (portrait.getKey ()))
+			if (getPlayerKnowledgeUtils ().isCustomWizard (portrait.getKey ()))
 				portrait.getValue ().putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getChoosePortraitScreen ().getCustom ()));
 			else
 				portrait.getValue ().putValue (Action.NAME, getLanguageHolder ().findDescription
@@ -4916,6 +4919,22 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
+	}
+	
+	/**
 	 * @return XML layout of the main form
 	 */
 	public final XmlLayoutContainerEx getNewGameLayoutMain ()
@@ -5286,10 +5305,10 @@ public final class NewGameUI extends MomClientFrameUI
 					break;
 
 				case 1:
-					if (!PlayerKnowledgeUtils.hasWizardBeenChosen (pub.getWizardID ()))
+					if (!getPlayerKnowledgeUtils ().hasWizardBeenChosen (pub.getWizardID ()))
 						value = "";
 					
-					else if (PlayerKnowledgeUtils.isCustomWizard (pub.getWizardID ()))
+					else if (getPlayerKnowledgeUtils ().isCustomWizard (pub.getWizardID ()))
 						value = getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ());
 					
 					else

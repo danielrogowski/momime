@@ -29,6 +29,9 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -45,7 +48,7 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 		// If it is us, and we chose Custom, then we need to go to the Choose Portrait screen
 		// If it is us and we picked a pre-defined Wizard then do nothing - the server will have already sent us either mmChooseInitialSpells or
 		// mmChooseYourRaceNow to tell us what to do next before it sent this mmChosenWizard message
-		if ((getPlayerID () == getClient ().getOurPlayerID ()) && (PlayerKnowledgeUtils.isCustomWizard (getWizardID ())))
+		if ((getPlayerID () == getClient ().getOurPlayerID ()) && (getPlayerKnowledgeUtils ().isCustomWizard (getWizardID ())))
 			getNewGameUI ().showPortraitPanel ();
 		
 		// Show chosen wizard on wait for players list, or enable/disable selection buttons, depending what stage of game setup we're at
@@ -99,5 +102,21 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

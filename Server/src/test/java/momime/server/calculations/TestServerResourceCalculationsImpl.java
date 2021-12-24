@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.junit.jupiter.api.Test;
@@ -27,6 +26,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityProductionCalculations;
@@ -67,6 +67,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.ResourceValueUtilsImpl;
@@ -134,11 +135,16 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		pd.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 		players.add (player);
+		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
@@ -166,6 +172,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setCityProductionCalculations (cityCalc);
 		calc.setUnitServerUtils (mock (UnitServerUtils.class));
+		calc.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Use real resource value utils, so we don't have to mock every possible value of addToAmountPerTurn
 		final ResourceValueUtilsImpl resourceValueUtils = new ResourceValueUtilsImpl ();

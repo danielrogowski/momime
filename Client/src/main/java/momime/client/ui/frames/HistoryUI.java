@@ -57,6 +57,9 @@ public final class HistoryUI extends MomClientFrameUI
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
 
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/** Turn label */
 	private JLabel turnLabel;
 
@@ -103,7 +106,7 @@ public final class HistoryUI extends MomClientFrameUI
 					for (final PlayerPublicDetails player : getClient ().getPlayers ())
 					{
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-						if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+						if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 						{
 							maxScore = Math.max (maxScore, pub.getPowerBaseHistory ().stream ().mapToInt (v -> v).max ().orElse (0));
 							maxTurns = Math.max (maxTurns, pub.getPowerBaseHistory ().size ());
@@ -130,7 +133,7 @@ public final class HistoryUI extends MomClientFrameUI
 					for (final PlayerPublicDetails player : getClient ().getPlayers ())
 					{
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-						if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+						if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 						{
 							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
 							g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
@@ -346,5 +349,21 @@ public final class HistoryUI extends MomClientFrameUI
 	public final void setWizardClientUtils (final WizardClientUtils util)
 	{
 		wizardClientUtils = util;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

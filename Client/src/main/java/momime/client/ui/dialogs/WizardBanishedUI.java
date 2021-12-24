@@ -81,6 +81,9 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	
 	/** Multiplayer client */
 	private MomClient client;
+
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
 	/** Graphics data stored about banished wizard */
 	private WizardEx banishedWizardDef;
@@ -317,7 +320,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		final MomPersistentPlayerPublicKnowledge banishingWizardPub = (MomPersistentPlayerPublicKnowledge) getBanishingWizard ().getPersistentPlayerPublicKnowledge ();
 		
 		final List<LanguageText> languageText;
-		if (PlayerKnowledgeUtils.isWizard (banishingWizardPub.getWizardID ()))
+		if (getPlayerKnowledgeUtils ().isWizard (banishingWizardPub.getWizardID ()))
 			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
 		else
 			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
@@ -504,5 +507,21 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

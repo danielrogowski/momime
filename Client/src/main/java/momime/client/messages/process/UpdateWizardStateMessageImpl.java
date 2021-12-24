@@ -48,6 +48,9 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -62,7 +65,7 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 		pub.setWizardState (getWizardState ());
 
 		// Don't show anything when raiders have been defeated
-		if (!PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+		if (!getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 			getClient ().finishCustomDurationMessage (this);
 		else
 		{
@@ -100,7 +103,7 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 				{
 					// Custom portrait, so cannot show animation, just a message box
 					final List<LanguageText> languageText;
-					if (PlayerKnowledgeUtils.isWizard (banishingPub.getWizardID ()))
+					if (getPlayerKnowledgeUtils ().isWizard (banishingPub.getWizardID ()))
 						languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
 					else
 						languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
@@ -231,5 +234,21 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	public final void setWizardClientUtils (final WizardClientUtils util)
 	{
 		wizardClientUtils = util;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

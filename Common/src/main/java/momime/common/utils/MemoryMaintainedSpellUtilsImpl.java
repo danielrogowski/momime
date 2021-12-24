@@ -79,6 +79,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
+
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -820,7 +823,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		if (targetPub.getWizardState () != WizardState.ACTIVE)
     			result = TargetSpellResult.WIZARD_BANISHED_OR_DEFEATED;
     		
-    		else if (!PlayerKnowledgeUtils.isWizard (targetPub.getWizardID ()))
+    		else if (!getPlayerKnowledgeUtils ().isWizard (targetPub.getWizardID ()))
     			result = TargetSpellResult.NOT_A_WIZARD;
     		
     		// Above checks are only ones that apply if the spell is anything other than Spell Blast
@@ -1135,5 +1138,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setCombatMapUtils (final CombatMapUtils util)
 	{
 		combatMapUtils = util;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

@@ -57,6 +57,9 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	/** Hero item calculations */
 	private HeroItemCalculations heroItemCalculations;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * Can only call this on events that are targeted at wizards
 	 * 
@@ -73,7 +76,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 		boolean valid = false;
 
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+		if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 		{
 			// Do we need to find a target city owned by the wizard?  Great Meteor, Earthquake, Plague, Rebellion, Depletion, New Minerals, Population Boom
 			if ((event.isTargetCity () != null) && (event.isTargetCity ()))
@@ -297,7 +300,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				{
 					final MomPersistentPlayerPublicKnowledge thisPub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-					if ((PlayerKnowledgeUtils.isWizard (thisPub.getWizardID ())) && (thisPub.getWizardState () == WizardState.ACTIVE))
+					if ((getPlayerKnowledgeUtils ().isWizard (thisPub.getWizardID ())) && (thisPub.getWizardState () == WizardState.ACTIVE))
 					{
 						final MomPersistentPlayerPrivateKnowledge thisPriv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 						final int gold = getResourceValueUtils ().findAmountStoredForProductionType (thisPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
@@ -414,5 +417,21 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	public final void setHeroItemCalculations (final HeroItemCalculations calc)
 	{
 		heroItemCalculations = calc;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

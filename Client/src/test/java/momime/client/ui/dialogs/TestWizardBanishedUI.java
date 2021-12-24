@@ -29,6 +29,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Tests the WizardBanishedUI class
@@ -63,6 +64,10 @@ public final class TestWizardBanishedUI extends ClientTestData
 			banishingWizardDef.setBanishingHandImageFile ("/momime.client.graphics/wizards/WZ03-banishing-hand.png");
 			when (db.findWizard ("WZ03", "WizardBanishedUI (B)")).thenReturn (banishingWizardDef);
 		}
+		
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard (null)).thenReturn (true);
 		
 		// Client
 		final MomClient client = mock (MomClient.class);
@@ -143,6 +148,7 @@ public final class TestWizardBanishedUI extends ClientTestData
 		wizardBanished.setGraphicsDB (gfx);
 		wizardBanished.setUtils (utils);
 		wizardBanished.setWizardClientUtils (wizardClientUtils);
+		wizardBanished.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		wizardBanished.setLanguageHolder (langHolder);
 		wizardBanished.setLanguageChangeMaster (langMaster);
 		wizardBanished.setLargeFont (CreateFontsForTests.getLargeFont ());		

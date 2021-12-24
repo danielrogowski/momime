@@ -176,10 +176,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype">
 		<property name="newGameUI" ref="newGameUI" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="replacePicksMessage" class="momime.client.messages.process.ReplacePicksMessageImpl" scope="prototype">
@@ -587,6 +589,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="addPowerBaseHistoryMessage" class="momime.client.messages.process.AddPowerBaseHistoryMessageImpl" scope="prototype">
@@ -1028,6 +1031,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="wizardClientUtils" class="momime.client.utils.WizardClientUtilsImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="spellClientUtils" class="momime.client.utils.SpellClientUtilsImpl">
@@ -1303,6 +1307,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="helpUI" ref="helpUI" />
 		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="joinGameLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1398,6 +1403,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="chooseCitySpellEffectUI" ref="chooseCitySpellEffectUI" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<bean id="magicSlidersLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1624,6 +1630,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 	
 	<bean id="optionsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1778,6 +1785,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="client" ref="client" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 
 	<!-- Prototype UI components -->
@@ -2220,6 +2228,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="client" ref="client" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 	
 	<bean id="wizardWonLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -2267,6 +2276,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="client" ref="client" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 	</bean>
 	
 	<bean id="armyListLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

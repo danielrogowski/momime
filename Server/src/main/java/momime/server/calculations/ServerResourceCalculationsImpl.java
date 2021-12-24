@@ -113,6 +113,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * Recalculates all per turn production values
 	 * Note: Delphi version could either calculate the values for one player or all players and was named RecalcProductionValues
@@ -135,7 +138,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		final Event conjunctionEvent = (mom.getGeneralPublicKnowledge ().getConjunctionEventID () == null) ? null :
 			mom.getServerDB ().findEvent (mom.getGeneralPublicKnowledge ().getConjunctionEventID (), "recalculateAmountsPerTurn");
 		
-		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.ACTIVE))
+		if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.ACTIVE))
 		{
 			for (final ProductionTypeEx productionType : mom.getServerDB ().getProductionTypes ())
 				if ((productionType.isZeroWhenBanished () != null) && (productionType.isZeroWhenBanished ()))
@@ -199,7 +202,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		if (timeStop == null)
 		{
 			// Gold upkeep of troops is reduced by wizard's fame
-			if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+			if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 			{
 				final int goldConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				if (goldConsumption < 0)
@@ -984,5 +987,21 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils s)
 	{
 		memoryMaintainedSpellUtils = s;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

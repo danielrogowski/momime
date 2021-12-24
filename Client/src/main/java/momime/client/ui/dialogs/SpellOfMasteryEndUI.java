@@ -73,6 +73,9 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/** Line of text */
 	private JLabel lineLabel;
 	
@@ -104,7 +107,7 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 			if (player != getCastingWizard ())
 			{
 				final MomPersistentPlayerPublicKnowledge banishedWizardPub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if ((PlayerKnowledgeUtils.isWizard (banishedWizardPub.getWizardID ())) && (banishedWizardPub.getWizardState () != WizardState.DEFEATED) &&
+				if ((getPlayerKnowledgeUtils ().isWizard (banishedWizardPub.getWizardID ())) && (banishedWizardPub.getWizardState () != WizardState.DEFEATED) &&
 					(banishedWizardPub.getStandardPhotoID () != null))
 				{
 					final WizardEx banishedWizardDef = getClient ().getClientDB ().findWizard (banishedWizardPub.getStandardPhotoID (), "SpellOfMasteryEndUI (B)");
@@ -396,5 +399,21 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

@@ -88,6 +88,9 @@ public final class MomAIImpl implements MomAI
 	/** Spell utils */
 	private SpellUtils spellUtils;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * @param player AI player whose turn to take
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -105,7 +108,7 @@ public final class MomAIImpl implements MomAI
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
-		if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+		if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
 			getUnitAI ().reallocateHeroItems (player, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (),
 				mom.getSessionDescription ().getFogOfWarSetting ());
 		
@@ -373,7 +376,7 @@ public final class MomAIImpl implements MomAI
 		{
 			// Only wizards can use alchemy (raiders don't need mana)
 			// Make sure we do this before rush buying projects in cities, as generating mana for Spell of Return is more important
-			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 20))
+			if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 20))
 			{
 				considerAlchemy (player, mom.getPlayers (), mom.getServerDB ());
 				decideMagicPowerDistribution (player, mom.getPlayers (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
@@ -393,7 +396,7 @@ public final class MomAIImpl implements MomAI
 			}
 			
 			// Only wizards can do anything with spells
-			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+			if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 			{
 				// Do we need to choose a spell to research?
 				if (priv.getSpellIDBeingResearched () == null)
@@ -739,5 +742,21 @@ public final class MomAIImpl implements MomAI
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

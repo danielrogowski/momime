@@ -25,6 +25,9 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 	/** Multiplayer client */
 	private MomClient client;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * Human players display as whatever name they've chosen, i.e. the account name associated with their playerID.
 	 * AI players pull their wizard name from the language XML file and will only default to the playerName from the
@@ -42,7 +45,7 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 		if (!player.getPlayerDescription ().isHuman ())
 		{
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if ((pub.getWizardID () != null) && (!PlayerKnowledgeUtils.isCustomWizard (pub.getWizardID ())))
+			if ((pub.getWizardID () != null) && (!getPlayerKnowledgeUtils ().isCustomWizard (pub.getWizardID ())))
 				try
 				{
 					playerName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (pub.getWizardID (), "getPlayerName").getWizardName ());
@@ -86,5 +89,21 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

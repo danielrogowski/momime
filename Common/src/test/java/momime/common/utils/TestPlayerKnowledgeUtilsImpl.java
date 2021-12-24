@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * Tests the PlayerKnowledgeUtils class
  */
 @ExtendWith(MockitoExtension.class)
-public final class TestPlayerKnowledgeUtils
+public final class TestPlayerKnowledgeUtilsImpl
 {
 	/**
 	 * Tests the hasWizardBeenChosen method on a player who hasn't yet chosen a wizard
@@ -21,7 +21,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testHasWizardBeenChosen_NotChosen ()
 	{
-		assertFalse (PlayerKnowledgeUtils.hasWizardBeenChosen (null));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertFalse (utils.hasWizardBeenChosen (null));
 	}
 
 	/**
@@ -30,7 +31,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testHasWizardBeenChosen_Standard ()
 	{
-		assertTrue (PlayerKnowledgeUtils.hasWizardBeenChosen ("X"));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertTrue (utils.hasWizardBeenChosen ("X"));
 	}
 
 	/**
@@ -39,7 +41,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testHasWizardBeenChosen_Custom ()
 	{
-		assertTrue (PlayerKnowledgeUtils.hasWizardBeenChosen (""));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertTrue (utils.hasWizardBeenChosen (""));
 	}
 
 	/**
@@ -48,7 +51,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testHasWizardBeenChosen_Raiders ()
 	{
-		assertTrue (PlayerKnowledgeUtils.hasWizardBeenChosen (CommonDatabaseConstants.WIZARD_ID_RAIDERS));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertTrue (utils.hasWizardBeenChosen (CommonDatabaseConstants.WIZARD_ID_RAIDERS));
 	}
 
 	/**
@@ -57,7 +61,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testHasWizardBeenChosen_Monsters ()
 	{
-		assertTrue (PlayerKnowledgeUtils.hasWizardBeenChosen (CommonDatabaseConstants.WIZARD_ID_MONSTERS));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertTrue (utils.hasWizardBeenChosen (CommonDatabaseConstants.WIZARD_ID_MONSTERS));
 	}
 
 	/**
@@ -66,7 +71,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsWizard_NotChosen ()
 	{
-		assertTrue (PlayerKnowledgeUtils.isWizard (null));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertTrue (utils.isWizard (null));
 	}
 
 	/**
@@ -75,7 +81,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsWizard_Standard ()
 	{
-		assertTrue (PlayerKnowledgeUtils.isWizard ("X"));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertTrue (utils.isWizard ("X"));
 	}
 
 	/**
@@ -84,7 +91,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsWizard_Custom ()
 	{
-		assertTrue (PlayerKnowledgeUtils.isWizard (""));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertTrue (utils.isWizard (""));
 	}
 
 	/**
@@ -93,7 +101,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsWizard_Raiders ()
 	{
-		assertFalse (PlayerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertFalse (utils.isWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS));
 	}
 
 	/**
@@ -102,7 +111,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsWizard_Monsters ()
 	{
-		assertFalse (PlayerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertFalse (utils.isWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS));
 	}
 
 	/**
@@ -111,7 +121,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsCustomWizard_NotChosen ()
 	{
-		assertFalse (PlayerKnowledgeUtils.isCustomWizard (null));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertFalse (utils.isCustomWizard (null));
 	}
 
 	/**
@@ -120,7 +131,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsCustomWizard_Standard ()
 	{
-		assertFalse (PlayerKnowledgeUtils.isCustomWizard ("X"));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertFalse (utils.isCustomWizard ("X"));
 	}
 
 	/**
@@ -129,7 +141,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsCustomWizard_Custom ()
 	{
-		assertTrue (PlayerKnowledgeUtils.isCustomWizard (""));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertTrue (utils.isCustomWizard (""));
 	}
 
 	/**
@@ -138,7 +151,8 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsCustomWizard_Raiders ()
 	{
-		assertFalse (PlayerKnowledgeUtils.isCustomWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertFalse (utils.isCustomWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS));
 	}
 
 	/**
@@ -147,6 +161,7 @@ public final class TestPlayerKnowledgeUtils
 	@Test
 	public final void testIsCustomWizard_Monsters ()
 	{
-		assertFalse (PlayerKnowledgeUtils.isCustomWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS));
+		final PlayerKnowledgeUtilsImpl utils = new PlayerKnowledgeUtilsImpl ();
+		assertFalse (utils.isCustomWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS));
 	}
 }

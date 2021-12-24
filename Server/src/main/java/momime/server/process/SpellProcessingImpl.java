@@ -237,6 +237,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Casting spells that have more than one effect */
 	private SpellMultiCasting spellMultiCasting;
 	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -399,7 +402,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						if (defeatedPlayer != player)
 						{
 							final MomPersistentPlayerPublicKnowledge defeatedPub = (MomPersistentPlayerPublicKnowledge) defeatedPlayer.getPersistentPlayerPublicKnowledge ();
-							if ((PlayerKnowledgeUtils.isWizard (defeatedPub.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
+							if ((getPlayerKnowledgeUtils ().isWizard (defeatedPub.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
 							{
 								defeatedPub.setWizardState (WizardState.DEFEATED);
 								if (defeatedPlayer.getPlayerDescription ().isHuman ())
@@ -2713,5 +2716,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setSpellMultiCasting (final SpellMultiCasting c)
 	{
 		spellMultiCasting = c;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
 	}
 }

@@ -66,6 +66,7 @@ import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
@@ -250,6 +251,13 @@ public final class TestCityProcessingImpl extends ServerTestData
 		players.add (raidersPlayer);
 		players.add (monstersPlayer);
 		
+		// Who are wizards, raiders, monsters
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("")).thenReturn (true);		// custom wizard
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+		when (playerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS)).thenReturn (false);
+		when (playerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS)).thenReturn (false);
+		
 		// Human player chose Myrran retort; AI player did not
 		final PlayerPickServerUtils playerPickServerUtils = mock (PlayerPickServerUtils.class);
 		when (playerPickServerUtils.startingPlaneForWizard (humanPpk.getPick (), db)).thenReturn (1);
@@ -329,6 +337,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		proc.setCityAI (cityAI);
 		proc.setRandomUtils (random);
 		proc.setFogOfWarMidTurnChanges (midTurn);
+		proc.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
 		proc.createStartingCities (players, gsk, sd, db);

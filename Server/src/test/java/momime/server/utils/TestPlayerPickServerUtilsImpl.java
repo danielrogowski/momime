@@ -39,6 +39,7 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.ai.SpellAI;
@@ -1413,8 +1414,13 @@ public final class TestPlayerPickServerUtilsImpl
 		ppk.setWizardID ("WZ01");
 		priv.setFirstCityRaceID ("RC01");
 
+		// Has wizard been chosen?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
+				
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
 		assertTrue (utils.hasChosenAllDetails (player));
@@ -1441,8 +1447,14 @@ public final class TestPlayerPickServerUtilsImpl
 		priv.setFirstCityRaceID ("RC01");
 		priv.setCustomPicksChosen (true);
 
+		// Has wizard been chosen?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.hasWizardBeenChosen ("")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
 		assertTrue (utils.hasChosenAllDetails (player));
@@ -1468,8 +1480,14 @@ public final class TestPlayerPickServerUtilsImpl
 		ppk.setWizardID ("");
 		priv.setFirstCityRaceID ("RC01");
 
+		// Has wizard been chosen?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.hasWizardBeenChosen ("")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+				
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
 		assertFalse (utils.hasChosenAllDetails (player));
@@ -1490,12 +1508,17 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
-		
+
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
 
+		// Has wizard been chosen?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.hasWizardBeenChosen (null)).thenReturn (false);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
 		assertFalse (utils.hasChosenAllDetails (player));
@@ -1520,8 +1543,13 @@ public final class TestPlayerPickServerUtilsImpl
 		// Make selections
 		ppk.setWizardID ("WZ01");
 
+		// Has wizard been chosen?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
 		assertFalse (utils.hasChosenAllDetails (player));
@@ -1540,8 +1568,15 @@ public final class TestPlayerPickServerUtilsImpl
 
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		// Has wizard been chosen?
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.hasWizardBeenChosen (null)).thenReturn (false);
+		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
+		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ02")).thenReturn (true);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Single player game just against raiders, and nothing chosen yet
 		final PlayerDescription pd = new PlayerDescription ();

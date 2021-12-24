@@ -19,7 +19,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillEx;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -70,7 +70,7 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 		final List<PlayerPick> picks = (owningPlayer == null) ? null : ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
 		
 		final String unitTypeID = db.findPick (unitDef.getUnitMagicRealm (), "expandMinimalUnitDetails").getUnitTypeID ();
-		final UnitType unitType = db.findUnitType (unitTypeID, "expandMinimalUnitDetails");
+		final UnitTypeEx unitType = db.findUnitType (unitTypeID, "expandMinimalUnitDetails");
 		
 		// STEP 3 - Find the unit's experience level
 		// Experience can never be increased by spells, combat area effects, weapon grades, etc. etc. therefore safe to do this from the basic skill value on the unmerged list
@@ -142,7 +142,7 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 			// then giving them +1 level on top of that will move them to an undefined level
 			do
 			{
-				levelFromExperience = UnitTypeUtils.findExperienceLevel (unitType, levelIncludingBonuses);
+				levelFromExperience = unitType.findExperienceLevel (levelIncludingBonuses);
 				levelIncludingBonuses--;
 			} while (levelFromExperience == null);
 

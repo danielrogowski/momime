@@ -18,7 +18,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 
 /**
  * Tests the MinimalUnitDetailsImpl class
@@ -67,7 +67,7 @@ public final class TestMinimalUnitDetailsImpl
 	public final void testIsSummoned_Yes ()
 	{
 		// Mock database
-		final UnitType unitTypeDef = new UnitType ();
+		final UnitTypeEx unitTypeDef = new UnitTypeEx ();
 		unitTypeDef.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		
 		// Set up object to test
@@ -84,7 +84,7 @@ public final class TestMinimalUnitDetailsImpl
 	public final void testIsSummoned_No ()
 	{
 		// Mock database
-		final UnitType unitTypeDef = new UnitType ();
+		final UnitTypeEx unitTypeDef = new UnitTypeEx ();
 		unitTypeDef.setUnitTypeID ("N");
 		
 		// Set up object to test

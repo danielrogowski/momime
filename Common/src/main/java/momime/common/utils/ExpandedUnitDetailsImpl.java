@@ -15,7 +15,7 @@ import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 
@@ -66,7 +66,7 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	 * @param aModifiedUpkeepValues Upkeep values, modified by reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here
 	 * @param aUnitUtils Unit utils
 	 */
-	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final UnitEx aUnitDefinition, final UnitType aUnitType, final PlayerPublicDetails anOwningPlayer,
+	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final UnitEx aUnitDefinition, final UnitTypeEx aUnitType, final PlayerPublicDetails anOwningPlayer,
 		final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackTypeEx aRangedAttackType,
 		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl, final int aControllingPlayerID,
 		final Map<String, Integer> aBasicSkillValues, final Map<String, UnitSkillValueBreakdown> aModifiedSkillValues,

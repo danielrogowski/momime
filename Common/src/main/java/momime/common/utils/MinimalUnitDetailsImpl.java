@@ -23,7 +23,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSpecialOrder;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
@@ -45,7 +45,7 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	private final UnitEx unitDefinition;
 
 	/** Unit type (normal, hero or summoned) */
-	private final UnitType unitType;
+	private final UnitTypeEx unitType;
 	
 	/** Details about the player who owns the unit */
 	private final PlayerPublicDetails owningPlayer;
@@ -79,7 +79,7 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	 * @param aModifiedExpLvl Experience level of this unit (0-5 for regular units, 0-8 for heroes) including bonuses from Warlord/Crusade; null for units that don't gain experience (e.g. summoned)
 	 * @param aBasicSkillValues Calculated basic skill map
 	 */
-	public MinimalUnitDetailsImpl (final AvailableUnit aUnit, final UnitEx aUnitDefinition, final UnitType aUnitType, final PlayerPublicDetails anOwningPlayer,
+	public MinimalUnitDetailsImpl (final AvailableUnit aUnit, final UnitEx aUnitDefinition, final UnitTypeEx aUnitType, final PlayerPublicDetails anOwningPlayer,
 		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl, final Map<String, Integer> aBasicSkillValues)
 	{
 		unit = aUnit;
@@ -135,7 +135,7 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	 * @return Unit type (normal, hero or summoned)
 	 */
 	@Override
-	public final UnitType getUnitType ()
+	public final UnitTypeEx getUnitType ()
 	{
 		return unitType;
 	}

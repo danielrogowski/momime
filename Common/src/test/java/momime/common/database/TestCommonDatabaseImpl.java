@@ -412,7 +412,7 @@ public final class TestCommonDatabaseImpl
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitType newUnitType = new UnitType ();
+			final UnitTypeEx newUnitType = new UnitTypeEx ();
 			newUnitType.setUnitTypeID ("T" + n);		// Real values are N, H, S
 			db.getUnitType ().add (newUnitType);
 		}
@@ -432,7 +432,7 @@ public final class TestCommonDatabaseImpl
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitType newUnitType = new UnitType ();
+			final UnitTypeEx newUnitType = new UnitTypeEx ();
 			newUnitType.setUnitTypeID ("T" + n);		// Real values are N, H, S
 			db.getUnitType ().add (newUnitType);
 		}

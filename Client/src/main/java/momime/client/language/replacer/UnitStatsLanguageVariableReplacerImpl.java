@@ -22,7 +22,6 @@ import momime.common.messages.PlayerPick;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitTypeUtils;
 
 /**
  * Replacer for replacing language strings to do with unit stats
@@ -198,7 +197,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 					text = null;
 				else
 				{
-					final ExperienceLevel nextExpLevel = UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), naturalExpLvl.getLevelNumber () + 1);
+					final ExperienceLevel nextExpLevel = getUnit ().getUnitType ().findExperienceLevel (naturalExpLvl.getLevelNumber () + 1);
 
 					// See if there's a higher level we can reach at all, either by gaining more experience or by warlord/crusade
 					if (nextExpLevel == null)
@@ -217,16 +216,16 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 						final ExperienceLevel modifiedExpLvl = getUnit ().getModifiedExperienceLevel ();
 						
 						// Does this wizard get any level boosts from warlord/crusade?  And if so, is there a higher level than the next natural level for this unit?						
-						if ((naturalExpLvl != modifiedExpLvl) && (UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), naturalExpLvl.getLevelNumber () + 2) != null))
+						if ((naturalExpLvl != modifiedExpLvl) && (getUnit ().getUnitType ().findExperienceLevel (naturalExpLvl.getLevelNumber () + 2) != null))
 						{
 							// We've only proved that some higher level exists - we don't know if the actual level boost will be +1 or +2, if they have both Warlord and Crusade
 							// Equally if they DO have both Warlord and Crusade, we have to make sure we don't raise up to a level that doesn't exist
 							int modifiedLevelNumber = modifiedExpLvl.getLevelNumber () + 1;
-							ExperienceLevel modifiedLevel = UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), modifiedLevelNumber);
+							ExperienceLevel modifiedLevel = getUnit ().getUnitType ().findExperienceLevel (modifiedLevelNumber);
 							while (modifiedLevel == null)
 							{
 								modifiedLevelNumber--;
-								modifiedLevel = UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), modifiedLevelNumber);
+								modifiedLevel = getUnit ().getUnitType ().findExperienceLevel (modifiedLevelNumber);
 							}
 							
 							text = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getExperienceForNextLevelWithBoost ()).replaceAll

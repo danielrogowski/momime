@@ -39,6 +39,15 @@ public final class CommonDatabaseObjectFactory extends ObjectFactory
 	}
 
 	/**
+	 * @return Custom extended unit type
+	 */
+	@Override
+	public final UnitType createUnitType ()
+	{
+		return new UnitTypeEx ();
+	}
+
+	/**
 	 * @return Custom extended race 
 	 */
 	@Override

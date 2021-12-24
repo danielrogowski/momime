@@ -1,20 +1,17 @@
-package momime.common.utils;
+package momime.common.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
-import momime.common.database.ExperienceLevel;
-import momime.common.database.UnitType;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Tests the UnitTypeUtils class
+ * Tests the UnitTypeex class
  */
 @ExtendWith(MockitoExtension.class)
-public final class TestUnitTypeUtils
+public final class TestUnitTypeEx
 {
 	/**
 	 * Tests the findExperienceLevel method on a level that exists
@@ -22,7 +19,7 @@ public final class TestUnitTypeUtils
 	@Test
 	public final void testFindExperienceLevel_Exists ()
 	{
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		for (int n = 0; n <= 2; n++)
 		{
 			final ExperienceLevel level = new ExperienceLevel ();
@@ -30,7 +27,7 @@ public final class TestUnitTypeUtils
 			unitType.getExperienceLevel ().add (level);
 		}
 
-		assertEquals (2, UnitTypeUtils.findExperienceLevel (unitType, 2).getLevelNumber ());
+		assertEquals (2, unitType.findExperienceLevel (2).getLevelNumber ());
 	}
 
 	/**
@@ -39,7 +36,7 @@ public final class TestUnitTypeUtils
 	@Test
 	public final void testFindExperienceLevel_NotExists ()
 	{
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		for (int n = 0; n <= 2; n++)
 		{
 			final ExperienceLevel level = new ExperienceLevel ();
@@ -47,6 +44,6 @@ public final class TestUnitTypeUtils
 			unitType.getExperienceLevel ().add (level);
 		}
 
-		assertNull (UnitTypeUtils.findExperienceLevel (unitType, 3));
+		assertNull (unitType.findExperienceLevel (3));
 	}
 }

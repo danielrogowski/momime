@@ -27,11 +27,10 @@ import momime.common.database.ExperienceLevel;
 import momime.common.database.LanguageText;
 import momime.common.database.Pick;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 import momime.common.messages.NewTurnMessageOfferUnits;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SampleUnitUtils;
-import momime.common.utils.UnitTypeUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -122,8 +121,8 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 	{
 		// Work out the experience value from the level
 		final Pick normalUnitRealm = getClient ().getClientDB ().findPick (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "NewTurnMessageOfferUnitsEx");
-		final UnitType normalUnit = getClient ().getClientDB ().findUnitType (normalUnitRealm.getUnitTypeID (), "NewTurnMessageOfferUnitsEx");
-		final ExperienceLevel expLevel = UnitTypeUtils.findExperienceLevel (normalUnit, getLevelNumber ());
+		final UnitTypeEx normalUnit = getClient ().getClientDB ().findUnitType (normalUnitRealm.getUnitTypeID (), "NewTurnMessageOfferUnitsEx");
+		final ExperienceLevel expLevel = normalUnit.findExperienceLevel (getLevelNumber ());
 		
 		// Now can create a sample unit
 		xu = getSampleUnitUtils ().createSampleUnit (getUnitID (), getClient ().getOurPlayerID (), expLevel.getExperienceRequired (),

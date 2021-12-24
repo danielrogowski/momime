@@ -29,7 +29,7 @@ import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryUnit;
@@ -176,7 +176,7 @@ public final class TestUnitUtilsImpl
 		unitMagicRealm.setUnitTypeID ("N");
 		when (db.findPick ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
 		
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
 		
 		// Set up test unit
@@ -211,7 +211,7 @@ public final class TestUnitUtilsImpl
 		unitMagicRealm.setUnitTypeID ("N");
 		when (db.findPick ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
 		
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		unitType.getExperienceLevel ().add (null);		// Any record here is good enough
 		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
 		
@@ -254,7 +254,7 @@ public final class TestUnitUtilsImpl
 		unitMagicRealm.setUnitTypeID ("N");
 		when (db.findPick ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
 		
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
 		
 		// Set up test unit
@@ -296,7 +296,7 @@ public final class TestUnitUtilsImpl
 		unitMagicRealm.setUnitTypeID ("N");
 		when (db.findPick ("MB01", "initializeUnitSkills")).thenReturn (unitMagicRealm);
 		
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		unitType.getExperienceLevel ().add (null);		// Any record here is good enough
 		when (db.findUnitType ("N", "initializeUnitSkills")).thenReturn (unitType);
 		

@@ -39,7 +39,7 @@ import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpellEffect;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.ConfusionEffect;
@@ -1671,7 +1671,7 @@ public final class TestExpandUnitDetailsUtilsImpl
 		// Unit we are calculating stats for
 		final MinimalUnitDetails mu = mock (MinimalUnitDetails.class);
 		
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		unitType.setUndeadUpkeepPercentage (0);
 		when (mu.getUnitType ()).thenReturn (unitType);
 		
@@ -1773,7 +1773,7 @@ public final class TestExpandUnitDetailsUtilsImpl
 		// Unit we are calculating stats for
 		final MinimalUnitDetails mu = mock (MinimalUnitDetails.class);
 
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		unitType.setUndeadUpkeepPercentage (150);
 		when (mu.getUnitType ()).thenReturn (unitType);
 
@@ -1809,7 +1809,7 @@ public final class TestExpandUnitDetailsUtilsImpl
 		// Unit we are calculating stats for
 		final MinimalUnitDetails mu = mock (MinimalUnitDetails.class);
 
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		unitType.setUnitTypeID ("X");
 		when (mu.getUnitType ()).thenReturn (unitType);
 		

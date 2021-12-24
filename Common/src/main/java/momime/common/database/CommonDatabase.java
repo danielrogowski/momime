@@ -180,7 +180,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all unit types in game
 	 */
-	public List<UnitType> getUnitType ();
+	public List<UnitTypeEx> getUnitTypes ();
 	
 	/**
 	 * @param unitTypeID Unit type ID to search for
@@ -188,7 +188,7 @@ public interface CommonDatabase
 	 * @return Unit type object
 	 * @throws RecordNotFoundException If the unitTypeID doesn't exist
 	 */
-	public UnitType findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException;
+	public UnitTypeEx findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @return Complete list of all units in game

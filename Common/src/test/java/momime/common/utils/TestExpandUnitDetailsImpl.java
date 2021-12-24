@@ -29,7 +29,7 @@ import momime.common.database.Pick;
 import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -103,7 +103,7 @@ public final class TestExpandUnitDetailsImpl
 		final ExperienceLevel basicExpLvl = new ExperienceLevel ();
 		final ExperienceLevel modifiedExpLvl = new ExperienceLevel ();
 		
-		final UnitType unitType = new UnitType ();
+		final UnitTypeEx unitType = new UnitTypeEx ();
 		
 		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (null, null, null);
 		

@@ -15,7 +15,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
@@ -51,7 +51,7 @@ public interface MinimalUnitDetails
 	/**
 	 * @return Unit type (normal, hero or summoned)
 	 */
-	public UnitType getUnitType ();
+	public UnitTypeEx getUnitType ();
 
 	/**
 	 * @return Details about the player who owns the unit

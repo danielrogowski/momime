@@ -54,7 +54,7 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	private Map<String, CombatAction> combatActionsMap;
 	
 	/** Map of unit type IDs to unit type XML objects */
-	private Map<String, UnitType> unitTypesMap;
+	private Map<String, UnitTypeEx> unitTypesMap;
 
 	/** Map of unit IDs to unit XML objects */
 	private Map<String, UnitEx> unitsMap;
@@ -184,7 +184,7 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		picksMap = getPick ().stream ().collect (Collectors.toMap (p -> p.getPickID (), p -> p));
 		wizardsMap = getWizards ().stream ().collect (Collectors.toMap (w -> w.getWizardID (), w -> w));
 		combatActionsMap = getCombatAction ().stream ().collect (Collectors.toMap (a -> a.getCombatActionID (), a -> a));
-		unitTypesMap = getUnitType ().stream ().collect (Collectors.toMap (u -> u.getUnitTypeID (), u -> u));
+		unitTypesMap = getUnitTypes ().stream ().collect (Collectors.toMap (u -> u.getUnitTypeID (), u -> u));
 		unitsMap = getUnits ().stream ().collect (Collectors.toMap (u -> u.getUnitID (), u -> u));
 		unitSkillsMap = getUnitSkills ().stream ().collect (Collectors.toMap (s -> s.getUnitSkillID (), s -> s));
 		weaponGradesMap = getWeaponGrade ().stream ().collect (Collectors.toMap (g -> g.getWeaponGradeNumber (), g -> g));
@@ -643,6 +643,16 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 
 		return found;
 	}
+
+	/**
+	 * @return Complete list of all unit types in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<UnitTypeEx> getUnitTypes ()
+	{
+		return (List<UnitTypeEx>) (List<?>) getUnitType ();
+	}
 	
 	/**
 	 * @param unitTypeID Unit type ID to search for
@@ -651,9 +661,9 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	 * @throws RecordNotFoundException If the unitTypeID doesn't exist
 	 */
 	@Override
-	public final UnitType findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException
+	public final UnitTypeEx findUnitType (final String unitTypeID, final String caller) throws RecordNotFoundException
 	{
-		final UnitType found = unitTypesMap.get (unitTypeID);
+		final UnitTypeEx found = unitTypesMap.get (unitTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitType.class, unitTypeID, caller);
 

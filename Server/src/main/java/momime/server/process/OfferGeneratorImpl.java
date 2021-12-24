@@ -24,7 +24,7 @@ import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitType;
+import momime.common.database.UnitTypeEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
@@ -46,7 +46,6 @@ import momime.common.utils.HeroItemUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.UnitTypeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
@@ -465,8 +464,8 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			
 			// How much experience will the new unit(s) have?
 			final Pick normalUnitRealm = mom.getServerDB ().findPick (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "acceptOffer");
-			final UnitType normalUnit = mom.getServerDB ().findUnitType (normalUnitRealm.getUnitTypeID (), "acceptOffer");
-			final ExperienceLevel expLevel = UnitTypeUtils.findExperienceLevel (normalUnit, unitsOffer.getLevelNumber ());
+			final UnitTypeEx normalUnit = mom.getServerDB ().findUnitType (normalUnitRealm.getUnitTypeID (), "acceptOffer");
+			final ExperienceLevel expLevel = normalUnit.findExperienceLevel (unitsOffer.getLevelNumber ());
 			
 			// Keep looping until we run out of units to add, or run out of places to put them
 			boolean keepGoing = true;

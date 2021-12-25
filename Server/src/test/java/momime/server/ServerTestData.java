@@ -198,7 +198,6 @@ public class ServerTestData
 			    dest.setHumanStartingGold			(src.getHumanStartingGold ());
 			    dest.setAiStartingGold					(src.getAiStartingGold ());
 			    dest.setCustomWizards				(src.isCustomWizards ());
-			    dest.setEachWizardOnlyOnce		(src.isEachWizardOnlyOnce ());
 			    dest.setTowerMonstersMinimum	(src.getTowerMonstersMinimum ());
 			    dest.setTowerMonstersMaximum	(src.getTowerMonstersMaximum ());
 			    dest.setTowerTreasureMinimum	(src.getTowerTreasureMinimum ());

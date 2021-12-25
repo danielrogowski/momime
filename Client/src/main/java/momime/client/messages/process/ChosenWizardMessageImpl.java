@@ -51,8 +51,7 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 		if ((getPlayerID () == getClient ().getOurPlayerID ()) && (getPlayerKnowledgeUtils ().isCustomWizard (getWizardID ())))
 			getNewGameUI ().showPortraitPanel ();
 		
-		// Show chosen wizard on wait for players list, or enable/disable selection buttons, depending what stage of game setup we're at
-		getNewGameUI ().enableOrDisableWizardButtons ();
+		// Show chosen wizard on wait for players list
 		getNewGameUI ().updateWaitPanelPlayersList ();
 	}
 	

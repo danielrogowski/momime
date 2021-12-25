@@ -728,9 +728,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Allow custom wizards? */
 	private JCheckBox allowCustomWizards;
 	
-	/** Each wizard can be chosen only once? */
-	private JCheckBox eachWizardOnlyOnce;
-
 	/** Gain or lose fame for razing captured cities? */
 	private JCheckBox fameRazingPenalty;
 	
@@ -2040,9 +2037,6 @@ public final class NewGameUI extends MomClientFrameUI
 		allowCustomWizards = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
 		difficulty1Panel.add (allowCustomWizards, "frmNewGameCustomDifficulty1CustomWizards");
 		
-		eachWizardOnlyOnce = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
-		difficulty1Panel.add (eachWizardOnlyOnce, "frmNewGameCustomDifficulty1EachWizardOnlyOnce");
-
 		fameRazingPenalty = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
 		difficulty1Panel.add (fameRazingPenalty, "frmNewGameCustomDifficulty1FameRazingPenalty");
 		
@@ -2991,9 +2985,6 @@ public final class NewGameUI extends MomClientFrameUI
 			portraitComponents.add (portraitGlue);
 		}
 		
-		// Deal with the 'each wizard only once' option
-		enableOrDisableWizardButtons ();
-		
 		// CUSTOM PICKS PANEL (for custom wizards)
 		// First we need to count how many bookshelves we need
 		int bookshelfCount = 0;
@@ -3194,35 +3185,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Show the page
 		cardLayout.show (cards, WIZARD_PANEL);
-	}
-
-	/**
-	 * Enables or disables all the wizard selection buttons, on the chance that the "allow each wizard only once" option is ticked
-	 */
-	public final void enableOrDisableWizardButtons ()
-	{
-		// First enable them all
-		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
-			wizard.getValue ().setEnabled (true);
-		
-		// Then if the option is chosen, disable actions for any already chosen wizards
-		if (getClient ().getSessionDescription ().getDifficultyLevel ().isEachWizardOnlyOnce ())
-		{
-			for (final PlayerPublicDetails player : getClient ().getPlayers ())
-			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if ((getPlayerKnowledgeUtils ().hasWizardBeenChosen (pub.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) &&
-					(!getPlayerKnowledgeUtils ().isCustomWizard (pub.getWizardID ())))
-					
-					wizardButtonActions.get (pub.getWizardID ()).setEnabled (false);
-			}
-			
-			// If we've now got a wizard selected who's become disabled, better disable the OK button
-			if ((okAction.isEnabled ()) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardChosen)) &&
-				(!wizardButtonActions.get (wizardChosen).isEnabled ()))
-				
-				okAction.setEnabled (false);
-		}
 	}
 
 	/**
@@ -3637,7 +3599,6 @@ public final class NewGameUI extends MomClientFrameUI
 				aiSpellResearchMultiplierLabel.setText							(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiSpellResearchMultiplier ()));
 				aiUpkeepMultiplierLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiUpkeepMultiplier ()));
 				allowCustomWizards.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getCustomWizards ()));
-				eachWizardOnlyOnce.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getEachWizardOnlyOnce ()));
 				fameRazingPenalty.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getFameRazingPenalty ()));
 				wizardCityStartSizeLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getWizardCitySize ()));
 				maxCitySizeLabel.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getMaxCitySize ()));
@@ -4313,7 +4274,6 @@ public final class NewGameUI extends MomClientFrameUI
 		aiSpellResearchMultiplier.setText								(Integer.valueOf (difficultyLevel.getAiSpellResearchMultiplier ()).toString ());
 		aiUpkeepMultiplier.setText										(Integer.valueOf (difficultyLevel.getAiUpkeepMultiplier ()).toString ());
 		allowCustomWizards.setSelected								(difficultyLevel.isCustomWizards ());
-		eachWizardOnlyOnce.setSelected								(difficultyLevel.isEachWizardOnlyOnce ());
 		fameRazingPenalty.setSelected								(difficultyLevel.isFameRazingPenalty ());
 		wizardCityStartSize.setText										(Integer.valueOf (difficultyLevel.getWizardCityStartSize ()).toString ());
 		maxCitySize.setText												(Integer.valueOf (difficultyLevel.getCityMaxSize ()).toString ());
@@ -4584,7 +4544,6 @@ public final class NewGameUI extends MomClientFrameUI
 	    difficultyLevel.setAiSpellResearchMultiplier							(Integer.parseInt (aiSpellResearchMultiplier.getText ()));
 	    difficultyLevel.setAiUpkeepMultiplier										(Integer.parseInt (aiUpkeepMultiplier.getText ()));
 	    difficultyLevel.setCustomWizards											(allowCustomWizards.isSelected ());
-	    difficultyLevel.setEachWizardOnlyOnce									(eachWizardOnlyOnce.isSelected ());
 	    difficultyLevel.setFameRazingPenalty									(fameRazingPenalty.isSelected ());
 	    difficultyLevel.setTowerMonstersMinimum								(Integer.parseInt (towersMonstersMin.getText ()));
 	    difficultyLevel.setTowerMonstersMaximum							(Integer.parseInt (towersMonstersMax.getText ()));

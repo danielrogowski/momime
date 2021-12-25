@@ -81,28 +81,6 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 
 	/**
 	 * @param players List of players
-	 * @param wizardID Wizard ID we want to pick
-	 * @return Player with the specified wizard ID, or null if none are found
-	 */
-	@Override
-	public final PlayerServerDetails findPlayerUsingWizard (final List<PlayerServerDetails> players, final String wizardID)
-	{
-		PlayerServerDetails result = null;
-		final Iterator<PlayerServerDetails> iter = players.iterator ();
-		while ((result == null) && (iter.hasNext ()))
-		{
-			final PlayerServerDetails player = iter.next ();
-			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-
-			if ((ppk.getWizardID () != null) && (ppk.getWizardID ().equals (wizardID)))
-				result = player;
-		}
-
-		return result;
-	}
-
-	/**
-	 * @param players List of players
 	 * @param standardPhotoID Standard photo ID we want to pick
 	 * @return Player with the specified Standard photo ID, or null if none are found
 	 */

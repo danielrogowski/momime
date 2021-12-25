@@ -800,7 +800,6 @@ public final class TestNewGameUI extends ClientTestData
 		customDifficultyTab1Lang.getAiSpellResearchMultiplier ().add (createLanguageText (Language.ENGLISH, "AI spell research multiplier:"));
 		customDifficultyTab1Lang.getAiUpkeepMultiplier ().add (createLanguageText (Language.ENGLISH, "AI upkeep multiplier:"));
 		customDifficultyTab1Lang.getCustomWizards ().add (createLanguageText (Language.ENGLISH, "Allow custom wizards?"));
-		customDifficultyTab1Lang.getEachWizardOnlyOnce ().add (createLanguageText (Language.ENGLISH, "Each wizard can be chosen only once?"));
 		customDifficultyTab1Lang.getFameRazingPenalty ().add (createLanguageText (Language.ENGLISH, "Fame penalty for razing captured cities?"));
 		customDifficultyTab1Lang.getWizardCitySize ().add (createLanguageText (Language.ENGLISH, "Wizards' cities start at size"));
 		customDifficultyTab1Lang.getMaxCitySize ().add (createLanguageText (Language.ENGLISH, "Maximum city size"));

@@ -2820,15 +2820,6 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 			<customWizards language="pl">
 				<text>Pozwól na własnych czarodziejów?</text>
 			</customWizards>
-			<eachWizardOnlyOnce language="en">
-				<text>Each wizard can be chosen only once?</text>
-			</eachWizardOnlyOnce>
-			<eachWizardOnlyOnce language="fr">
-				<text>Chaque sorcier peut-il n'être choisit qu'une seule fois ?</text>
-			</eachWizardOnlyOnce>
-			<eachWizardOnlyOnce language="pl">
-				<text>Każdy czarodziej może zostać wybrany tylko raz?</text>
-			</eachWizardOnlyOnce>
 			<fameRazingPenalty language="en">
 				<text>Fame penalty for razing captured cities?</text>
 			</fameRazingPenalty>

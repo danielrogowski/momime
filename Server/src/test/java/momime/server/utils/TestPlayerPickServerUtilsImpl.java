@@ -109,55 +109,6 @@ public final class TestPlayerPickServerUtilsImpl
 	}
 
 	/**
-	 * Tests the findPlayerUsingWizard method on a wizard who is in the list
-	 */
-	@Test
-	public final void testFindPlayerUsingWizard_Exists ()
-	{
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		for (int n = 1; n <= 9; n++)
-		{
-			final PlayerDescription pd = new PlayerDescription ();
-			pd.setPlayerID (n);
-
-			final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-			ppk.setWizardID ("WZ0" + n);
-
-			players.add (new PlayerServerDetails (pd, ppk, null, null, null));
-		}
-
-		// Set up object to test
-		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
-		
-		// Run test
-		final PlayerServerDetails player = utils.findPlayerUsingWizard (players, "WZ04");
-		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		assertEquals ("WZ04", ppk.getWizardID ());
-	}
-
-	/**
-	 * Tests the findPlayerUsingWizard method on a wizard who isn't in the list
-	 */
-	@Test
-	public final void testFindPlayerUsingWizard_NotExists ()
-	{
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		for (int n = 1; n <= 9; n++)
-		{
-			final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-			ppk.setWizardID ("WZ0" + n);
-
-			players.add (new PlayerServerDetails (null, ppk, null, null, null));
-		}
-
-		// Set up object to test
-		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
-		
-		// Run test
-		assertNull (utils.findPlayerUsingWizard (players, "WZ10"));
-	}
-
-	/**
 	 * Tests the findPlayerUsingStandardPhoto method on a standard photo that is in the list
 	 */
 	@Test

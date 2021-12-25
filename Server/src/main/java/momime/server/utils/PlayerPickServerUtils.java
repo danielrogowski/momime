@@ -28,13 +28,6 @@ public interface PlayerPickServerUtils
 
 	/**
 	 * @param players List of players
-	 * @param wizardID Wizard ID we want to pick
-	 * @return Player with the specified wizard ID, or null if none are found
-	 */
-	public PlayerServerDetails findPlayerUsingWizard (final List<PlayerServerDetails> players, final String wizardID);
-
-	/**
-	 * @param players List of players
 	 * @param standardPhotoID Standard photo ID we want to pick
 	 * @return Player with the specified Standard photo ID, or null if none are found
 	 */

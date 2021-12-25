@@ -3634,10 +3634,6 @@
 					<xsd:selector xpath="customWizards" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
-				<xsd:key name="customDifficultyTab1EachWizardOnlyOncePK">
-					<xsd:selector xpath="eachWizardOnlyOnce" />
-					<xsd:field xpath="@language" />
-				</xsd:key>
 				<xsd:key name="customDifficultyTab1FameRazingPenaltyPK">
 					<xsd:selector xpath="fameRazingPenalty" />
 					<xsd:field xpath="@language" />
@@ -4017,7 +4013,6 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="raiderCityGrowthSuffix" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxCitySize" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="customWizards" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eachWizardOnlyOnce" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="fameRazingPenalty" />
 		</xsd:sequence>
     </xsd:complexType>

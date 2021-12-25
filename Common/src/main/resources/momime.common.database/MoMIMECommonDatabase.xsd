@@ -1800,7 +1800,6 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="rampagingMonstersAccumulatorThreshold" type="momimecommon:accumulator" nxe:label="RM accumulator threshold" nxe:gridwidth="150" />
 	
 			<!-- New MoM IME settings -->
-			<xsd:element minOccurs="1" maxOccurs="1" name="eachWizardOnlyOnce" type="xsd:boolean" nxe:label="Each wizard only once?" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="fameRazingPenalty" type="xsd:boolean" nxe:label="Penalize fame for razing?" nxe:gridwidth="150" />
 			
 			<!-- Strategy Guide p417 -->

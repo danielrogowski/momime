@@ -253,14 +253,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			player.getConnection ().sendMessageToClient (reply);
 		}
 
-		// Wizard might be valid, but check if option prohibits player from choosing same wizard as another player has already chosen
-		else if ((sd.getDifficultyLevel ().isEachWizardOnlyOnce ()) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardID)) &&
-			(getPlayerPickServerUtils ().findPlayerUsingWizard (players, wizardID) != null))
-		{
-			final TextPopupMessage reply = new TextPopupMessage ();
-			reply.setText ("Game is set to only allow each Wizard to be chosen once, and another player already chose this Wizard, please try again");
-			player.getConnection ().sendMessageToClient (reply);
-		}
 		else
 		{
 			// Successful - Remember choice on the server

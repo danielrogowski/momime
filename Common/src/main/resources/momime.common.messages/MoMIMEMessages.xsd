@@ -144,6 +144,7 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWar" type="momimemsgs:mapVolumeOfFogOfWarStates" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWarMemory" type="momimemsgs:fogOfWarMemory" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pendingMovement" type="momimemsgs:pendingMovement" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="knownWizardDetails" type="momimemsgs:knownWizardDetails" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -488,45 +489,45 @@ so must include the full details of the item here.</xsd:documentation>
         </xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:complexType name="momPersistentPlayerPublicKnowledge">
+	<xsd:complexType name="knownWizardDetails">
 	    <xsd:annotation>
-    		<xsd:documentation>Holds all knowledge about a player in the game that is freely known to all players once they have joined the game,
-    										and is persisted to save game files.</xsd:documentation>
+    		<xsd:documentation>Holds all knowledge about a player we have met or know about in game.  Each player has a list of these that initially only contains
+themselves, raiders and rampaging monsters.  Each time they "meet" a new wizard (or an unknown wizard announces themselves to the world by casting an
+overland enchantment or banishing/being banished) they will be added to the list.
+
+Server has their own simple list of all the details of each player, so it can update them in one place and then copy it to each player's PPK who knows that wizard (including themselves).</xsd:documentation>
 		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="mps:persistentPlayerPublicKnowledge">
-		        <xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="1" name="wizardID" type="momimecommon:wizardID">
-					    <xsd:annotation>
-    						<xsd:documentation>RAIDERS and MONSTERS are special values; other values indicate pre-defined wizards;
-    														null indicates a player who hasn't chosen a wizard yet; empty string represents a custom wizard</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="standardPhotoID" type="momimecommon:wizardID">
-					    <xsd:annotation>
-    						<xsd:documentation>For pre-defined wizards or custom wizards choosing a standard photo, indicates the wizard ID of the photo;
-    														for RAIDERS, MONSTERS and custom wizards uploading a custom photo, will be null.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="customPhoto" type="xsd:base64Binary">
-					    <xsd:annotation>
-    						<xsd:documentation>Custom 218x250 photo encoded in any image format supported by Java, e.g. JPG or PNG;
-    														for RAIDERS, MONSTERS and custom wizards uploading a standard photo, will be null.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="1" name="customFlagColour" type="momimecommon:colour">
-					    <xsd:annotation>
-    						<xsd:documentation>Only filled in if player chose a custom photo, otherwise their flag colour is derived from standardPhotoID; whichever of the two is
-    														used, the resulting value is written into momTransientPlayerPublicKnowledge so that we don't keep having to look up the flag colour of
-    														standardPhotoIDs over and over again</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
-		        </xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
+        <xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="wizardID" type="momimecommon:wizardID">
+			    <xsd:annotation>
+  						<xsd:documentation>RAIDERS and MONSTERS are special values; other values indicate pre-defined wizards;
+  														null indicates a player who hasn't chosen a wizard yet; empty string represents a custom wizard</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="standardPhotoID" type="momimecommon:wizardID">
+			    <xsd:annotation>
+  						<xsd:documentation>For pre-defined wizards or custom wizards choosing a standard photo, indicates the wizard ID of the photo;
+  														for RAIDERS, MONSTERS and custom wizards uploading a custom photo, will be null.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="customPhoto" type="xsd:base64Binary">
+			    <xsd:annotation>
+  						<xsd:documentation>Custom 218x250 photo encoded in any image format supported by Java, e.g. JPG or PNG;
+  														for RAIDERS, MONSTERS and custom wizards uploading a standard photo, will be null.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="customFlagColour" type="momimecommon:colour">
+			    <xsd:annotation>
+  						<xsd:documentation>Only filled in if player chose a custom photo, otherwise their flag colour is derived from standardPhotoID; whichever of the two is
+  														used, the resulting value is written into momTransientPlayerPublicKnowledge so that we don't keep having to look up the flag colour of
+  														standardPhotoIDs over and over again</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
+        </xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="momTransientPlayerPublicKnowledge">

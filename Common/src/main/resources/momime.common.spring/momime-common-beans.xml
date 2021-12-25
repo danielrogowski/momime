@@ -259,6 +259,8 @@
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
+	<bean id="knownWizardUtils" class="momime.common.utils.KnownWizardUtilsImpl" />
+
 	<bean id="cityProductionUtils" class="momime.common.utils.CityProductionUtilsImpl" />
 
 	<bean id="cityCalculations" class="momime.common.calculations.CityCalculationsImpl">

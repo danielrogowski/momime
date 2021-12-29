@@ -47,10 +47,12 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the FogOfWarProcessing class
@@ -331,6 +333,16 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		// Astral gates
 		final MovementUtils movementUtils = mock (MovementUtils.class);
 
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final FogOfWarProcessingImpl proc = new FogOfWarProcessingImpl ();
 		proc.setMemoryMaintainedSpellUtils (spellUtils);
@@ -343,7 +355,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 
 		// Test with no special spells
 		priv.setFogOfWar (createFogOfWarArea (sd.getOverlandMapSize ()));
-		proc.markVisibleArea (trueMap, player, players, sd, db);
+		proc.markVisibleArea (player, mom);
 
 		try (final Workbook workbook = WorkbookFactory.create (getClass ().getResourceAsStream ("/markVisibleArea.xlsx")))
 		{
@@ -366,7 +378,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 			when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 	
 			priv.setFogOfWar (createFogOfWarArea (sd.getOverlandMapSize ()));
-			proc.markVisibleArea (trueMap, player, players, sd, db);
+			proc.markVisibleArea (player, mom);
 	
 			for (final Plane plane : db.getPlane ())
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
@@ -386,7 +398,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 
 		priv.setFogOfWar (createFogOfWarArea (sd.getOverlandMapSize ()));
-		proc.markVisibleArea (trueMap, player, players, sd, db);
+		proc.markVisibleArea (player, mom);
 
 		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)

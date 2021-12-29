@@ -22,13 +22,10 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarValue;
-import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -39,7 +36,6 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -196,112 +192,109 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	 * This calls canSee () for every cell the map that the player can see for any reason (because they have units there, cities, awareness, etc.)
 	 * It is part of updateAndSendFogOfWar () but just declared separately so we can run a JUnit test against it
 	 *
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param player The player whose FOW we are recalculating
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	final void markVisibleArea (final FogOfWarMemory trueMap, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	final void markVisibleArea (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-
+		
 		// Nature Awareness allows us to see the whole map, in which case no point checking each city or unit
 		if ((CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ())) ||
-			((sd.isDisableFogOfWar () != null) && (sd.isDisableFogOfWar ())) ||
-			(getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
+			((mom.getSessionDescription ().isDisableFogOfWar () != null) && (mom.getSessionDescription ().isDisableFogOfWar ())) ||
+			(getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
 				ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null))
 		{
-			for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
-				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-						canSee (priv.getFogOfWar (), trueMap.getMap (), x, y, z);
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+						canSee (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), x, y, z);
 		}
 		else
 		{
 			// Check if we have regular Awareness cast, so we don't have to check individually for every city
-			final boolean awareness = (getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
-				ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null) != null);
+			final boolean awareness = (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+				player.getPlayerDescription ().getPlayerID (), ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null) != null);
 
 			// Check what areas we can see because we have cities there
-			for (final Plane plane : db.getPlane ())
-				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
-						final OverlandMapCityData trueCity = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
+						final OverlandMapCityData trueCity = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
 						if (trueCity != null)
 						{
-							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
+							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
 
 							// Our city
 							if (trueCity.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())
 							{
 								// Most cities can 'see' the same pattern as their resource range, but some special buildings can extend this
 								// This does not handle the "Nature's Eye" spell - this is done with the spells below
-								final int scoutingRange = getServerCityCalculations ().calculateCityScoutingRange (trueMap.getBuilding (), coords, db);
+								final int scoutingRange = getServerCityCalculations ().calculateCityScoutingRange (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), coords, mom.getServerDB ());
 								if (scoutingRange >= 0)
-									canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (), x, y, plane.getPlaneNumber (), scoutingRange);
+									canSeeRadius (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize (), x, y, z, scoutingRange);
 								else
 								{
 									// Standard city pattern
 									for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-										if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, direction.getDirectionID ()))
-											canSee (priv.getFogOfWar (), trueMap.getMap (), coords.getX (), coords.getY (), coords.getZ ());
+										if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+											canSee (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), coords.getX (), coords.getY (), coords.getZ ());
 								}
 							}
 
 							// Enemy city - we can see a small area around it if we either have Awareness cast or a curse cast on the city
 							else if ((awareness) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-								(trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), null, null, null, coords, null) != null))
+								(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), null, null, null, coords, null) != null))
 
-								canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (), x, y, plane.getPlaneNumber (), 1);
+								canSeeRadius (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize (), x, y, z, 1);
 						}
 					}
 
 			// Check what areas we can see because we have units there
-			for (final MemoryUnit thisUnit : trueMap.getUnit ())
+			for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 				if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
 				{
-					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
-					final int scoutingRange = getServerUnitCalculations ().calculateUnitScoutingRange (xu, db);
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					final int scoutingRange = getServerUnitCalculations ().calculateUnitScoutingRange (xu, mom.getServerDB ());
 
 					// If standing in a tower, can see both planes
-					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
-						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ()))
+					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(thisUnit.getUnitLocation ().getZ ()).getRow ().get (thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ()))
 					{
-						for (final Plane plane : db.getPlane ())
-							canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (),
-								thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), plane.getPlaneNumber (), scoutingRange);
+						for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+							canSeeRadius (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize (),
+								thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), z, scoutingRange);
 					}
 					else
 						// Can see single plane only
-						canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (),
+						canSeeRadius (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize (),
 							thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), thisUnit.getUnitLocation ().getZ (), scoutingRange);
 				}
 
 			// Check what areas we can see because of visibility spells
 			// This is mainly for Nature's Eye, but is handled separately from cities to allow Earth Lore to be a maintained spell so it works sensibly with "Forget" FOW settings
-			for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
+			for (final MemoryMaintainedSpell thisSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 				if ((thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisSpell.getCityLocation () != null))
 				{
 					// See if this spell has a scouting range
-					final Spell spellDef = db.findSpell (thisSpell.getSpellID (), "markVisibleArea");
+					final Spell spellDef = mom.getServerDB ().findSpell (thisSpell.getSpellID (), "markVisibleArea");
 					if ((spellDef.getSpellRadius () != null) && (spellDef.getTileTypeID () == null))
-						canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (), thisSpell.getCityLocation ().getX (),
+						canSeeRadius (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize (), thisSpell.getCityLocation ().getX (),
 							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getZ (), spellDef.getSpellRadius ());
 				}
 			
 			// Astral Gate lets us see 1 cell on the opposite plane, so movement routines know whether its safe to cross
-			final Set<MapCoordinates2DEx> astralGates = getMovementUtils ().findAstralGates (player.getPlayerDescription ().getPlayerID (), trueMap.getMaintainedSpell ());
+			final Set<MapCoordinates2DEx> astralGates = getMovementUtils ().findAstralGates (player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 			for (final MapCoordinates2DEx astralGate : astralGates)
-				for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
-					canSee (priv.getFogOfWar (), trueMap.getMap (), astralGate.getX (), astralGate.getY (), z);
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+					canSee (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), astralGate.getX (), astralGate.getY (), z);
 		}
 	}
 
@@ -378,7 +371,7 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	public final void updateAndSendFogOfWar (final PlayerServerDetails player, final String triggeredFrom, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		markVisibleArea (mom.getGeneralServerKnowledge ().getTrueMap (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		markVisibleArea (player, mom);
 
 		// Start off the big message, if a human player
 		final FogOfWarVisibleAreaChangedMessage msg;

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystemUtils;
@@ -16,6 +15,7 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CitySpellEffect;
@@ -24,7 +24,6 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -59,6 +58,7 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.messages.MomGeneralServerKnowledge;
@@ -234,10 +234,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * After updating the true copy of a spell, this routine copies and sends the new value to players who can see it
 	 *
 	 * @param trueSpell True spell that was updated
-	 * @param gsk Server knowledge structure
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws PlayerNotFoundException If we can't find one of the players
@@ -245,8 +242,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 */
 	@Override
-	public final void updatePlayerMemoryOfSpell (final MemoryMaintainedSpell trueSpell, final MomGeneralServerKnowledge gsk,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public final void updatePlayerMemoryOfSpell (final MemoryMaintainedSpell trueSpell, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		// First build the message
@@ -254,11 +250,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		spellMsg.setMaintainedSpell (trueSpell);
 
 		// Check which players can see the spell
-		for (final PlayerServerDetails thisPlayer : players)
+		for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 			
-			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), thisPlayer, db, sd.getFogOfWarSetting ()))
+			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), thisPlayer, mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ()))
 			{
 				// Update player's memory on server
 				if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
@@ -271,8 +268,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// The stolen spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of wag of the player who cast it.
 		// Technically we should also do this for the old player who lost the spell, but its fine, they will end up losing sight of it soon enough.
-		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "updatePlayerMemoryOfSpell");
-		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), castingPlayer, players, "updatePlayerMemoryOfSpell", sd, db);
+		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), trueSpell.getCastingPlayerID (), "updatePlayerMemoryOfSpell");
+		getFogOfWarProcessing ().updateAndSendFogOfWar (castingPlayer, "updatePlayerMemoryOfSpell", mom);
 	}
 	
 	/**
@@ -315,7 +312,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * Heroes are added using this method during game startup - at which point they're added only on the server and they're off
 	 * the map (null location) - so heroes are NEVER sent to the client using this method, meaning that we don't need to worry about sending skill lists with this method
 	 *
-	 * @param gsk Server knowledge structure to add the unit to
 	 * @param unitID Type of unit to create
 	 * @param locationToAddUnit Location to add the new unit; can be null for adding heroes that haven't been summoned yet
 	 * @param buildingsLocation Location the unit was built - might be different from locationToAddUnit if the city is full and the unit got bumped to an adjacent tile; passed as null for units not built in cities such as summons
@@ -323,9 +319,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param combatLocation The location of the combat that this unit is being summoned into; null for anything other than combat summons
 	 * @param unitOwner Player who will own the new unit
 	 * @param initialStatus Initial status of the unit, typically ALIVE
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param addOnClients Usually true, can set to false when monsters are initially added to the map and don't need to worry about who can see them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Newly created unit
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
@@ -334,10 +329,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation, final Integer overrideStartingExperience,
-		final MapCoordinates3DEx combatLocation, final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public final MemoryUnit addUnitOnServerAndClients (final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation,
+		final Integer overrideStartingExperience, final MapCoordinates3DEx combatLocation, final PlayerServerDetails unitOwner, final UnitStatusID initialStatus,
+		final boolean addOnClients, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		// There's a bunch of other unit statuses that don't make sense to use here - so worth checking this
@@ -358,11 +352,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}
 		else if (buildingsLocation != null)
 		{
-			startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
-				(gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), buildingsLocation, db);
+			startingExperience = getMemoryBuildingUtils ().experienceFromBuildings (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), buildingsLocation, mom.getServerDB ());
 			
 			weaponGrade = getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-				(gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMap (), buildingsLocation, unitOwnerPPK.getPick (), sd.getOverlandMapSize (), db);
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					buildingsLocation, unitOwnerPPK.getPick (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 		}
 		else
 		{
@@ -372,15 +367,15 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Add on server
 		// Even for heroes, we load in their default skill list - this is how heroes default skills are loaded during game startup
-		final MemoryUnit newUnit = getUnitServerUtils ().createMemoryUnit (unitID, gsk.getNextFreeUnitURN (), weaponGrade, startingExperience, db);
+		final MemoryUnit newUnit = getUnitServerUtils ().createMemoryUnit (unitID, mom.getGeneralServerKnowledge ().getNextFreeUnitURN (), weaponGrade, startingExperience, mom.getServerDB ());
 		newUnit.setOwningPlayerID (unitOwner.getPlayerDescription ().getPlayerID ());
 		newUnit.setCombatLocation (combatLocation);
 
-		gsk.setNextFreeUnitURN (gsk.getNextFreeUnitURN () + 1);
-		gsk.getTrueMap ().getUnit ().add (newUnit);
+		mom.getGeneralServerKnowledge ().setNextFreeUnitURN (mom.getGeneralServerKnowledge ().getNextFreeUnitURN () + 1);
+		mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().add (newUnit);
 
 		if (initialStatus == UnitStatusID.ALIVE)
-			updateUnitStatusToAliveOnServerAndClients (newUnit, locationToAddUnit, unitOwner, players, gsk.getTrueMap (), sd, db);
+			updateUnitStatusToAliveOnServerAndClients (newUnit, locationToAddUnit, unitOwner, addOnClients, mom);
 		else
 			newUnit.setStatus (initialStatus);
 
@@ -394,10 +389,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param trueUnit The unit to set to alive
 	 * @param locationToAddUnit Location to add the new unit, must be filled in
 	 * @param unitOwner Player who will own the new unit, note the reason this has to be passed in separately is because the players list is allowed to be null
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param addOnClients Usually true, can set to false when monsters are initially added to the map and don't need to worry about who can see them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -406,8 +399,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final MapCoordinates3DEx locationToAddUnit,
-		final PlayerServerDetails unitOwner, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final PlayerServerDetails unitOwner, final boolean addOnClients, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		// Update on server
@@ -417,13 +409,13 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		trueUnit.setStatus (UnitStatusID.ALIVE);
 
 		// What can the new unit see? (it may expand the unit owner's vision to see things that they couldn't previously)
-		if ((players != null) && (trueUnit.getCombatLocation () == null))
-			getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, unitOwner, players, "updateUnitStatusToAliveOnServerAndClients", sd, db);
+		if ((addOnClients) && (trueUnit.getCombatLocation () == null))
+			getFogOfWarProcessing ().updateAndSendFogOfWar (unitOwner, "updateUnitStatusToAliveOnServerAndClients", mom);
 
 		// Tell clients?
-		// Player list can be null, we use this for pre-adding units to the map before the fog of war has even been set up
-		if (players != null)
-			updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, sd.getFogOfWarSetting (), null);
+		if (addOnClients)
+			updatePlayerMemoryOfUnit (trueUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+				mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 	}
 
 	/**
@@ -470,12 +462,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 *
 	 * Spells in this "cast-but-not-targetted" state exist on the server but not in player's memory or on clients, so when their target has been set, this method is then called
 	 *
-	 * @param gsk Server knowledge structure
 	 * @param trueSpell True spell to add
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -483,9 +472,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void addExistingTrueMaintainedSpellToClients (final MomGeneralServerKnowledge gsk,
-		final MemoryMaintainedSpell trueSpell, final boolean skipAnimation, final List<PlayerServerDetails> players,
-		final CommonDatabase db, final MomSessionDescription sd)
+	public final void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final boolean skipAnimation, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		// Build the message ready to send it to whoever can see the spell
@@ -498,10 +485,11 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		msg.setSpellTransient (false);
 
 		// Check which players can see the spell
-		for (final PlayerServerDetails player : players)
+		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), player, db, sd.getFogOfWarSetting ()))
+			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), player, mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ()))
 			{
 				// Update player's memory on server
 				if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
@@ -515,26 +503,25 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// Does the spell generate a CAE? e.g. Heavenly Light and Cloud of Shadow; if so then add it
 		if (trueSpell.getCitySpellEffectID () != null)
 		{
-			final CitySpellEffect citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "addExistingTrueMaintainedSpellToClients");
+			final CitySpellEffect citySpellEffect = mom.getServerDB ().findCitySpellEffect (trueSpell.getCitySpellEffectID (), "addExistingTrueMaintainedSpellToClients");
 			if (citySpellEffect.getCombatAreaEffectID () != null)
 			{
-				final Spell spellDef = db.findSpell (trueSpell.getSpellID (), "addExistingTrueMaintainedSpellToClients");
+				final Spell spellDef = mom.getServerDB ().findSpell (trueSpell.getSpellID (), "addExistingTrueMaintainedSpellToClients");
 				
 				// We can assume casting cost is overland casting cost, as CAEs cast in combat generate the CAE only without a maintained spell
-				addCombatAreaEffectOnServerAndClients (gsk, citySpellEffect.getCombatAreaEffectID (), trueSpell.getSpellID (), trueSpell.getCastingPlayerID (),
-					spellDef.getOverlandCastingCost (), (MapCoordinates3DEx) trueSpell.getCityLocation (), players, sd);
+				addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), citySpellEffect.getCombatAreaEffectID (), trueSpell.getSpellID (), trueSpell.getCastingPlayerID (),
+					spellDef.getOverlandCastingCost (), (MapCoordinates3DEx) trueSpell.getCityLocation (), mom.getPlayers (), mom.getSessionDescription ());
 			}
 		}
 
 		// The new spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
 		// While it may seem a bit odd to do this here (since the spell already existed on the server before calling this),
 		// the spell would have been in an untargetted state so we wouldn't know what city to apply it to, so this is definitely the right place to do this
-		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "addExistingTrueMaintainedSpellToClients");
-		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), castingPlayer, players, "addExistingTrueMaintainedSpellToClients", sd, db);
+		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), trueSpell.getCastingPlayerID (), "addExistingTrueMaintainedSpellToClients");
+		getFogOfWarProcessing ().updateAndSendFogOfWar (castingPlayer, "addExistingTrueMaintainedSpellToClients", mom);
 	}
 
 	/**
-	 * @param gsk Server knowledge structure to add the spell to
 	 * @param castingPlayerID Player who cast the spell
 	 * @param spellID Which spell it is
 	 * @param unitURN Indicates which unit the spell is cast on; null for spells not cast on units
@@ -544,9 +531,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
-	 * @param players List of players in the session, this can be passed in null for when spells that require a target are added initially only on the server
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param addOnClients Usually true, can set to false when spells that need targeting later are initially added on server only
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Newly created spell in server's true memory
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -555,10 +541,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
+	public final MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final Integer variableDamage, final boolean skipAnimation,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+		final boolean addOnClients, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		// First add on server
@@ -577,14 +562,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		trueSpell.setCityLocation (spellLocation);
 		trueSpell.setCitySpellEffectID (citySpellEffectID);
 		trueSpell.setVariableDamage (variableDamage);
-		trueSpell.setSpellURN (gsk.getNextFreeSpellURN ());
+		trueSpell.setSpellURN (mom.getGeneralServerKnowledge ().getNextFreeSpellURN ());
 
-		gsk.setNextFreeSpellURN (gsk.getNextFreeSpellURN () + 1);
-		gsk.getTrueMap ().getMaintainedSpell ().add (trueSpell);
+		mom.getGeneralServerKnowledge ().setNextFreeSpellURN (mom.getGeneralServerKnowledge ().getNextFreeSpellURN () + 1);
+		mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().add (trueSpell);
 
 		// Then let the other routine deal with updating player memory and the clients
-		if (players != null)
-			addExistingTrueMaintainedSpellToClients (gsk, trueSpell, skipAnimation, players, db, sd);
+		if (addOnClients)
+			addExistingTrueMaintainedSpellToClients (trueSpell, skipAnimation, mom);
 
 		return trueSpell;
 	}
@@ -647,14 +632,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	}
 
 	/**
-	 * @param gsk Server knowledge structure to add the building(s) to
-	 * @param players List of players in the session, this can be passed in null for when buildings are being added to the map pre-game
 	 * @param cityLocation Location of the city to add the building(s) to
 	 * @param buildingIDs List of building IDs to create, mandatory
 	 * @param buildingsCreatedFromSpellID The spell that resulted in the creation of this building (e.g. casting Wall of Stone creates City Walls); null if building was constructed in the normal way
 	 * @param buildingCreationSpellCastByPlayerID The player who cast the spell that resulted in the creation of this building; null if building was constructed in the normal way
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param addOnClients Usually true, can set to false when buildings are initially added to the map and don't need to worry about who can see them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -662,10 +645,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx cityLocation, final List<String> buildingIDs,
-		final String buildingsCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public final void addBuildingOnServerAndClients (final MapCoordinates3DEx cityLocation, final List<String> buildingIDs,
+		final String buildingsCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID, final boolean addOnClients, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		// Build the message ready to send it to whoever can see the building
@@ -678,10 +659,10 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			final MemoryBuilding trueBuilding = new MemoryBuilding ();
 			trueBuilding.setCityLocation (new MapCoordinates3DEx (cityLocation));
 			trueBuilding.setBuildingID (buildingID);
-			trueBuilding.setBuildingURN (gsk.getNextFreeBuildingURN ());
+			trueBuilding.setBuildingURN (mom.getGeneralServerKnowledge ().getNextFreeBuildingURN ());
 			
-			gsk.setNextFreeBuildingURN (gsk.getNextFreeBuildingURN () + 1);
-			gsk.getTrueMap ().getBuilding ().add (trueBuilding);
+			mom.getGeneralServerKnowledge ().setNextFreeBuildingURN (mom.getGeneralServerKnowledge ().getNextFreeBuildingURN () + 1);
+			mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ().add (trueBuilding);
 			
 			msg.getBuilding ().add (trueBuilding);
 		}
@@ -690,13 +671,13 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		msg.setBuildingCreationSpellCastByPlayerID (buildingCreationSpellCastByPlayerID);
 
 		// Check which players can see the building
-		if (players != null)
+		if (addOnClients)
 		{
-			for (final PlayerServerDetails player : players)
+			for (final PlayerServerDetails player : mom.getPlayers ())
 			{
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 				final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-				if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+				if (getFogOfWarCalculations ().canSeeMidTurn (state, mom.getSessionDescription ().getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
 				{
 					// Add into player's memory on server
 					for (final MemoryBuilding trueBuilding : msg.getBuilding ())
@@ -711,22 +692,19 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			// The new building might be an Oracle, so recalculate fog of war
 			// Buildings added at the start of the game are added straight to the TrueMap without using this
 			// routine, so this doesn't cause a bunch of FOW recalculations before the game starts
-			final OverlandMapCityData cityData = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "addBuildingOnServerAndClients");
-			getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), cityOwner, players, "addBuildingOnServerAndClients", sd, db);
+			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "addBuildingOnServerAndClients");
+			getFogOfWarProcessing ().updateAndSendFogOfWar (cityOwner, "addBuildingOnServerAndClients", mom);
 		}
 	}
 
 	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param buildingURNs Which buildings to remove
 	 * @param updateBuildingSoldThisTurn If true, tells client to update the buildingSoldThisTurn flag, which will prevents this city from selling a 2nd building this turn
 	 * @param buildingsDestroyedBySpellID The spell that resulted in destroying these building(s), e.g. Earthquake; null if buildings destroyed for any other reason
 	 * @param buildingDestructionSpellCastByPlayerID The player who cast the spell that resulted in the destruction of these buildings; null if not from a spell
 	 * @param buildingDestructionSpellLocation The location the spell was targeted - need this because it might have destroyed 0 buildings; null if not from a spell
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -734,10 +712,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final List<Integer> buildingURNs, final boolean updateBuildingSoldThisTurn,
+	public final void destroyBuildingOnServerAndClients (final List<Integer> buildingURNs, final boolean updateBuildingSoldThisTurn,
 		final String buildingsDestroyedBySpellID, final Integer buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		// Grab the details of all the buldings before we destroy them on the server
@@ -745,23 +722,23 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<MapCoordinates3DEx> cityLocations = new ArrayList<MapCoordinates3DEx> ();
 		for (final Integer buildingURN : buildingURNs)
 		{
-			final MemoryBuilding trueBuilding = getMemoryBuildingUtils ().findBuildingURN (buildingURN, trueMap.getBuilding (), "destroyBuildingOnServerAndClients");
+			final MemoryBuilding trueBuilding = getMemoryBuildingUtils ().findBuildingURN (buildingURN, mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), "destroyBuildingOnServerAndClients");
 			trueBuildings.add (trueBuilding);
 			
 			final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) trueBuilding.getCityLocation ();
 			if (!cityLocations.contains (cityLocation))
 				cityLocations.add (cityLocation);
 			
-			getMemoryBuildingUtils ().removeBuildingURN (buildingURN, trueMap.getBuilding ());
+			getMemoryBuildingUtils ().removeBuildingURN (buildingURN, mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 		}		
 		
 		// Find who's city was targeted
 		final Integer targetedCityOwnerID = (buildingDestructionSpellLocation == null ) ? null : 
-			trueMap.getMap ().getPlane ().get (buildingDestructionSpellLocation.getZ ()) .getRow ().get
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (buildingDestructionSpellLocation.getZ ()) .getRow ().get
 				(buildingDestructionSpellLocation.getY ()).getCell ().get (buildingDestructionSpellLocation.getX ()).getCityData ().getCityOwnerID ();
 		
 		// Deal with each player individually - as the buildings may be in different cities, the lists we send to each player might be different
-		for (final PlayerServerDetails player : players)
+		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -771,7 +748,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			{
 				final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) trueBuilding.getCityLocation ();
 				final FogOfWarStateID state = priv.getFogOfWar ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-				if (getFogOfWarCalculations ().canSeeMidTurn (state, sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+				if (getFogOfWarCalculations ().canSeeMidTurn (state, mom.getSessionDescription ().getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
 				{
 					// Remove from player's memory on server
 					getMemoryBuildingUtils ().removeBuildingURN (trueBuilding.getBuildingURN (), priv.getFogOfWarMemory ().getBuilding ());
@@ -801,15 +778,15 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final List<Integer> cityOwners = new ArrayList<Integer> ();
 		for (final MapCoordinates3DEx cityLocation : cityLocations)
 		{
-			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 			if (!cityOwners.contains (cityData.getCityOwnerID ()))
 				cityOwners.add (cityData.getCityOwnerID ());
 		}
 		
 		for (final Integer cityOwnerID : cityOwners)
 		{
-			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityOwnerID, "destroyBuildingOnServerAndClients");
-			getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, cityOwner, players, "destroyBuildingOnServerAndClients", sd, db);
+			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityOwnerID, "destroyBuildingOnServerAndClients");
+			getFogOfWarProcessing ().updateAndSendFogOfWar (cityOwner, "destroyBuildingOnServerAndClients", mom);
 		}
 	}
 

@@ -142,13 +142,12 @@ public final class SpellCastingImpl implements SpellCasting
 					if (newUnit.getStatus () == UnitStatusID.NOT_GENERATED)
 						getUnitServerUtils ().generateHeroNameAndRandomSkills (newUnit, mom.getServerDB ());
 
-					getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+					getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, true, mom);
 				}
 				else
 					// For non-heroes, create a new unit
-					newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-						summonedUnit.getUnitID (), addLocation.getUnitLocation (), null, null, null,
-						player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (summonedUnit.getUnitID (), addLocation.getUnitLocation (), null, null, null,
+						player, UnitStatusID.ALIVE, true, mom);
 				
 				// Let it move this turn
 				newUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (newUnit, null, null, null,
@@ -332,10 +331,8 @@ public final class SpellCastingImpl implements SpellCasting
 				destroyedBuildings.add (thisBuilding);
 
 		// Have to do this even if 0 buildings got destroyed, as for Earthquake this is how the client knows to show the animation and clean up the NTM
-		getCityProcessing ().destroyBuildings (mom.getGeneralServerKnowledge ().getTrueMap (),
-			mom.getPlayers (), destroyedBuildings, spellID, castingPlayerID,
-			(targetLocations.size () == 1) ? targetLocations.get (0) : null,
-			mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+		getCityProcessing ().destroyBuildings (destroyedBuildings, spellID, castingPlayerID,
+			(targetLocations.size () == 1) ? targetLocations.get (0) : null, mom);
 		
 		return destroyedBuildings.size ();
 	}
@@ -373,11 +370,7 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @param spell Which spell was cast
 	 * @param targetLocation Tile to change
 	 * @param castingPlayerID Player who cast the spell
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -385,12 +378,11 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void changeTileType (final Spell spell, final MapCoordinates3DEx targetLocation, final int castingPlayerID, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
+	public final void changeTileType (final Spell spell, final MapCoordinates3DEx targetLocation, final int castingPlayerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		// Change Terrain or Raise Volcano
-		final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
+		final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
 		
 		final Iterator<SpellValidTileTypeTarget> iter = spell.getSpellValidTileTypeTarget ().iterator ();				
@@ -413,7 +405,7 @@ public final class SpellCastingImpl implements SpellCasting
 				if ((thisTileType.isMineralDestroyed () != null) && (thisTileType.isMineralDestroyed ()) && (terrainData.getMapFeatureID () != null))
 				{
 					// Minerals are destroyed, but not lairs
-					final MapFeatureEx mapFeature = db.findMapFeature (terrainData.getMapFeatureID (), "targetOverlandSpell");
+					final MapFeatureEx mapFeature = mom.getServerDB ().findMapFeature (terrainData.getMapFeatureID (), "targetOverlandSpell");
 					if (mapFeature.getMapFeatureMagicRealm ().size () == 0)
 						terrainData.setMapFeatureID (null);
 				}
@@ -422,7 +414,7 @@ public final class SpellCastingImpl implements SpellCasting
 				{
 					// Every building here has a chance of being destroyed
 					final List<MemoryBuilding> destroyedBuildings = new ArrayList<MemoryBuilding> ();
-					for (final MemoryBuilding thisBuilding : trueMap.getBuilding ())
+					for (final MemoryBuilding thisBuilding : mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ())
 						if ((thisBuilding.getCityLocation ().equals (targetLocation)) &&
 							(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
 							(!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) &&
@@ -431,8 +423,7 @@ public final class SpellCastingImpl implements SpellCasting
 							destroyedBuildings.add (thisBuilding);
 					
 					if (destroyedBuildings.size () > 0)
-						getCityProcessing ().destroyBuildings (trueMap,
-							players, destroyedBuildings, spell.getSpellID (), castingPlayerID, null, sd, db, conjunctionEventID);
+						getCityProcessing ().destroyBuildings (destroyedBuildings, spell.getSpellID (), castingPlayerID, null, mom);
 				}
 				
 				found = true;
@@ -441,10 +432,11 @@ public final class SpellCastingImpl implements SpellCasting
 		
 		if (found)
 		{
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (),
-				players, targetLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 
-			getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, trueMap, players, sd, db);
+			getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
+				mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 		}
 	}
 

@@ -2,13 +2,10 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -22,6 +19,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
@@ -78,7 +76,6 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
-import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
@@ -168,10 +165,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * This happens BEFORE we initialize each players' fog of war (of course... without their cities they wouldn't be able to see much of the map!)
 	 * and so we don't need to send any messages out to anyone here, whether to add the city itself, buildings or units - just add everything to the true map
 	 *
-	 * @param players List of players in the session
-	 * @param gsk Server knowledge data structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
  	 * @throws MomException If no races are defined for a particular plane
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
@@ -179,15 +173,15 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
+	public final void createStartingCities (final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		// Allocate a race to each continent of land for raider cities
-		final MapArea3D<String> continentalRace = getOverlandMapServerUtils ().decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getOverlandMapSize (), db);
+		final MapArea3D<String> continentalRace = getOverlandMapServerUtils ().decideAllContinentalRaces
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 
 		// Now create cities for each player
-		for (final PlayerServerDetails thisPlayer : players)
+		for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 
@@ -197,7 +191,7 @@ public final class CityProcessingImpl implements CityProcessing
 				numberOfCities = 1;
 
 			else if (ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))
-				numberOfCities = sd.getOverlandMapSize ().getRaiderCityCount ();
+				numberOfCities = mom.getSessionDescription ().getOverlandMapSize ().getRaiderCityCount ();
 
 			else
 				numberOfCities = 0;	// For monsters
@@ -206,18 +200,20 @@ public final class CityProcessingImpl implements CityProcessing
 			{
 				final int plane;
 				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
-					plane = getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), db);
+					plane = getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), mom.getServerDB ());
 				else
 					// Raiders just pick a random plane
-					plane = db.getPlane ().get (getRandomUtils ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
+					plane = mom.getServerDB ().getPlane ().get (getRandomUtils ().nextInt (mom.getServerDB ().getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
-				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getMap (), plane, true, sd, db,
+				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), plane, true, mom.getSessionDescription (), mom.getServerDB (),
 					"Starter city for \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\" on plane " + plane);
 
-				final ServerGridCellEx cityCell = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+				final ServerGridCellEx cityCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(plane).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 				final OverlandMapCityData city = new OverlandMapCityData ();
 				cityCell.setCityData (city);
 
@@ -229,21 +225,21 @@ public final class CityProcessingImpl implements CityProcessing
 				{
 					final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) thisPlayer.getTransientPlayerPrivateKnowledge ();
 
-					city.setCityPopulation (sd.getDifficultyLevel ().getWizardCityStartSize () * 1000);
+					city.setCityPopulation (mom.getSessionDescription ().getDifficultyLevel ().getWizardCityStartSize () * 1000);
 					city.setCityRaceID (priv.getFirstCityRaceID ());
 				}
 				else
 				{
 					// Randomize population of raider cities
-					city.setCityPopulation ((sd.getDifficultyLevel ().getRaiderCityStartSizeMin () +
-						getRandomUtils ().nextInt (sd.getDifficultyLevel ().getRaiderCityStartSizeMax () - sd.getDifficultyLevel ().getRaiderCityStartSizeMin () + 1)) * 1000);
+					city.setCityPopulation ((mom.getSessionDescription ().getDifficultyLevel ().getRaiderCityStartSizeMin () +
+						getRandomUtils ().nextInt (mom.getSessionDescription ().getDifficultyLevel ().getRaiderCityStartSizeMax () - mom.getSessionDescription ().getDifficultyLevel ().getRaiderCityStartSizeMin () + 1)) * 1000);
 
 					// Raiders have a special population cap that prevents cities expanding by more than a certain value
 					// See strategy guide p426
-					cityCell.setRaiderCityAdditionalPopulationCap (city.getCityPopulation () + (sd.getDifficultyLevel ().getRaiderCityGrowthCap () * 1000));
+					cityCell.setRaiderCityAdditionalPopulationCap (city.getCityPopulation () + (mom.getSessionDescription ().getDifficultyLevel ().getRaiderCityGrowthCap () * 1000));
 
 					// Have a good chance of just picking the continental race ID
-					if (getRandomUtils ().nextInt (100) < sd.getOverlandMapSize ().getContinentalRaceChance ())
+					if (getRandomUtils ().nextInt (100) < mom.getSessionDescription ().getOverlandMapSize ().getContinentalRaceChance ())
 					{
 						final String raceID = continentalRace.get (cityLocation);
 						if (raceID == null)
@@ -253,27 +249,29 @@ public final class CityProcessingImpl implements CityProcessing
 					}
 					else
 						// Pick totally random race
-						city.setCityRaceID (getPlayerPickServerUtils ().chooseRandomRaceForPlane (plane, db));
+						city.setCityRaceID (getPlayerPickServerUtils ().chooseRandomRaceForPlane (plane, mom.getServerDB ()));
 				}
 
 				// Pick a name for the city
-				city.setCityName (getOverlandMapServerUtils ().generateCityName (gsk, db.findRace (city.getCityRaceID (), "createStartingCities")));
+				city.setCityName (getOverlandMapServerUtils ().generateCityName (mom.getGeneralServerKnowledge (), mom.getServerDB ().findRace (city.getCityRaceID (), "createStartingCities")));
 
 				// Cities get a free road, even if it isn't connected to anything yet
-				final Plane roadPlane = db.findPlane (cityLocation.getZ (), "createStartingCities");
+				final Plane roadPlane = mom.getServerDB ().findPlane (cityLocation.getZ (), "createStartingCities");
 				final String roadTileTypeID = ((roadPlane.isRoadsEnchanted () != null) && (roadPlane.isRoadsEnchanted ())) ?
 					CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
 				
 				cityCell.getTerrainData ().setRoadTileTypeID (roadTileTypeID);
 				
 				// Do initial calculations on the city
-				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (),
-					gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, sd, db, null);
+				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation,
+					mom.getSessionDescription (), mom.getServerDB (), null);
 
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 
-				city.setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (),
-					gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
+				city.setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
 
 				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (city);
 
@@ -284,16 +282,16 @@ public final class CityProcessingImpl implements CityProcessing
 				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
 				{
 					// Wizards always get the same buildings (this also adds their Fortress & Summoning Circle)
-					for (final Building thisBuilding : db.getBuilding ())
+					for (final Building thisBuilding : mom.getServerDB ().getBuilding ())
 						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
-							getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, Arrays.asList (thisBuilding.getBuildingID ()), null, null, sd, db);
+							getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (cityLocation, Arrays.asList (thisBuilding.getBuildingID ()), null, null, false, mom);
 				}
 				else
 				{
 					// Raiders buildings' depend on the city size
-					final RaceEx race = db.findRace (city.getCityRaceID (), "createStartingCities");
+					final RaceEx race = mom.getServerDB ().findRace (city.getCityRaceID (), "createStartingCities");
 					
-					for (final Building thisBuilding : db.getBuilding ())
+					for (final Building thisBuilding : mom.getServerDB ().getBuilding ())
 						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
 							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
 						{
@@ -305,25 +303,25 @@ public final class CityProcessingImpl implements CityProcessing
 									ok = false;
 							
 							if (ok)
-								getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, Arrays.asList (thisBuilding.getBuildingID ()), null, null, sd, db);
+								getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (cityLocation, Arrays.asList (thisBuilding.getBuildingID ()), null, null, false, mom);
 						}
 				}
 
 				// Add starting units
-				for (final UnitEx thisUnit : db.getUnits ())
+				for (final UnitEx thisUnit : mom.getServerDB ().getUnits ())
 					if ((thisUnit.getUnitRaceID () != null) && (thisUnit.getFreeAtStartCount () != null) && (thisUnit.getUnitRaceID ().equals (city.getCityRaceID ())))
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
 							final MapCoordinates3DEx unitCoords = new MapCoordinates3DEx (cityLocation);
-							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, null,
-								thisPlayer, UnitStatusID.ALIVE, null, sd, db);
+							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (thisUnit.getUnitID (), unitCoords, cityLocation, null, null, thisPlayer, UnitStatusID.ALIVE, false, mom);
 						}
 			}
 			
 			// Connect roads between starter cities owned by this player
 			if (numberOfCities > 1)
-				for (final Plane plane : db.getPlane ())
-					createStartingRoads (thisPlayer.getPlayerDescription ().getPlayerID (), plane.getPlaneNumber (), players, gsk.getTrueMap (), sd, db);
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+					createStartingRoads (thisPlayer.getPlayerDescription ().getPlayerID (), z, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+						mom.getSessionDescription (), mom.getServerDB ());
 		}
 	}
 
@@ -488,8 +486,7 @@ public final class CityProcessingImpl implements CityProcessing
 											}
 
 											// Now actually add the building - this will trigger the messages to be sent to the clients
-											getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (), mom.getPlayers (), cityLocation,
-												Arrays.asList (building.getBuildingID ()), null, null, mom.getSessionDescription (), mom.getServerDB ());
+											getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (cityLocation, Arrays.asList (building.getBuildingID ()), null, null, true, mom);
 										}
 
 										// Did we construct a unit?
@@ -528,9 +525,8 @@ public final class CityProcessingImpl implements CityProcessing
 												}
 	
 												// Now actually add the unit
-												final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-													unit.getUnitID (), addLocation.getUnitLocation (), cityLocation, null, null, cityOwner, UnitStatusID.ALIVE,
-													mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());												
+												final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unit.getUnitID (), addLocation.getUnitLocation (),
+													cityLocation, null, null, cityOwner, UnitStatusID.ALIVE, true, mom);
 												
 												// If the caster has Doom Mastery cast then cast Chaos Channels on the new unit
 												if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
@@ -541,10 +537,9 @@ public final class CityProcessingImpl implements CityProcessing
 														(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), chaosChannels, cityData.getCityOwnerID (), newUnit.getUnitURN ());
 													if ((unitSpellEffects != null) && (unitSpellEffects.size () > 0))
 														
-														getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (), cityData.getCityOwnerID (),
+														getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (cityData.getCityOwnerID (),
 															CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS, newUnit.getUnitURN (),
-															unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID (), false, null, null, null, true,
-															mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+															unitSpellEffects.get (getRandomUtils ().nextInt (unitSpellEffects.size ())).getUnitSkillID (), false, null, null, null, true, true, mom);
 												}
 												
 												// If it was a settler, reduce the city population by 1000
@@ -697,17 +692,11 @@ public final class CityProcessingImpl implements CityProcessing
 	 * Does not recalc global production (which will now be reduced from not having to pay the maintenance of the sold building),
 	 * this has to be done by the calling routine.
 	 * 
-	 * NB. Dephi method was called OkToSellBuilding.
-	 *
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param cityLocation Location of the city to remove the building from
 	 * @param buildingURN Which building to remove; this can be null to cancel a pending sale
 	 * @param pendingSale If true, building is not sold immediately but merely marked that it will be sold at the end of the turn; used for simultaneous turns games
 	 * @param voluntarySale True if building is being sold by the player's choice; false if they are being forced to sell it e.g. due to lack of production
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -715,19 +704,19 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void sellBuilding (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final Integer buildingURN,
-		final boolean pendingSale, final boolean voluntarySale,
-		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
+	public final void sellBuilding (final MapCoordinates3DEx cityLocation, final Integer buildingURN,
+		final boolean pendingSale, final boolean voluntarySale, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		// Building details
-		final MemoryBuilding trueBuilding = (buildingURN == null) ? null : getMemoryBuildingUtils ().findBuildingURN (buildingURN, trueMap.getBuilding (), "sellBuilding");
+		final MemoryBuilding trueBuilding = (buildingURN == null) ? null : getMemoryBuildingUtils ().findBuildingURN
+			(buildingURN, mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), "sellBuilding");
 		final String buildingID = (trueBuilding == null) ? null : trueBuilding.getBuildingID ();
 		
 		// City and player details
-		final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, tc.getCityData ().getCityOwnerID (), "sellBuilding");
+		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "sellBuilding");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
 		if (pendingSale)
@@ -754,9 +743,9 @@ public final class CityProcessingImpl implements CityProcessing
 
 			// If selling a building that the current construction project needs, then cancel the current construction project on the city owner's client
 			if (((tc.getCityData ().getCurrentlyConstructingBuildingID () != null) &&
-					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (buildingID, tc.getCityData ().getCurrentlyConstructingBuildingID (), db))) ||
+					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (buildingID, tc.getCityData ().getCurrentlyConstructingBuildingID (), mom.getServerDB ()))) ||
 				((tc.getCityData ().getCurrentlyConstructingUnitID () != null) &&
-					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (buildingID, tc.getCityData ().getCurrentlyConstructingUnitID (), db))))
+					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (buildingID, tc.getCityData ().getCurrentlyConstructingUnitID (), mom.getServerDB ()))))
 			{
 				tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 				tc.getCityData ().setCurrentlyConstructingUnitID (null);
@@ -764,24 +753,16 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 
 			// Actually remove the building, both on the server and on any clients who can see the city
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (buildingURN), voluntarySale, null, null, null, sd, db);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (Arrays.asList (buildingURN), voluntarySale, null, null, null, mom);
 
 			// Give gold from selling it
-			final Building building = db.findBuilding (buildingID, "sellBuilding");
+			final Building building = mom.getServerDB ().findBuilding (buildingID, "sellBuilding");
 			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD,
 				getMemoryBuildingUtils ().goldFromSellingBuilding (building));
 
 			// The sold building might have been producing rations or stemming unrest so had better recalculate everything
-			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (),
-				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db, conjunctionEventID);
-
-			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (),
-				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
-
-			getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
-
-			// Send the updated city stats to any clients that can see the city
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+			mom.getWorldUpdates ().recalculateCity (cityLocation);
+			mom.getWorldUpdates ().process (mom);
 		}
 	}
 
@@ -790,15 +771,11 @@ public final class CityProcessingImpl implements CityProcessing
 	 * the need to be notified about it as well.  Also it handles destroying multiple buildings all at once, potentially in different cities owned by
 	 * different players.
 	 * 
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param buildingsToDestroy List of buildings to destroy, from server's true list
 	 * @param buildingsDestroyedBySpellID The spell that resulted in destroying these building(s), e.g. Earthquake; null if buildings destroyed for any other reason
 	 * @param buildingDestructionSpellCastByPlayerID The player who cast the spell that resulted in the destruction of these buildings; null if not from a spell
 	 * @param buildingDestructionSpellLocation The location the spell was targeted - need this because it might have destroyed 0 buildings; null if not from a spell
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -806,27 +783,24 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void destroyBuildings (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
+	public final void destroyBuildings (final List<MemoryBuilding> buildingsToDestroy,
 		final String buildingsDestroyedBySpellID, final Integer buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
-		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
+		final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		// Keep a list of all cities with destroyed buildings, so we only recalculate each city once
-		final Set<MapCoordinates3DEx> affectedCities = new HashSet<MapCoordinates3DEx> ();
-		
 		// Process each building
 		for (final MemoryBuilding destroyBuilding : buildingsToDestroy)
 		{
 			// City and player details
-			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (destroyBuilding.getCityLocation ().getZ ()).getRow ().get (destroyBuilding.getCityLocation ().getY ()).getCell ().get (destroyBuilding.getCityLocation ().getX ());
-			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, tc.getCityData ().getCityOwnerID (), "destroyBuildings");
+			final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(destroyBuilding.getCityLocation ().getZ ()).getRow ().get (destroyBuilding.getCityLocation ().getY ()).getCell ().get (destroyBuilding.getCityLocation ().getX ());
+			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "destroyBuildings");
 
 			// If selling a building that the current construction project needs, then cancel the current construction project on the city owner's client
 			if (((tc.getCityData ().getCurrentlyConstructingBuildingID () != null) &&
-					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (destroyBuilding.getBuildingID (), tc.getCityData ().getCurrentlyConstructingBuildingID (), db))) ||
+					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForBuilding (destroyBuilding.getBuildingID (), tc.getCityData ().getCurrentlyConstructingBuildingID (), mom.getServerDB ()))) ||
 				((tc.getCityData ().getCurrentlyConstructingUnitID () != null) &&
-					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (destroyBuilding.getBuildingID (), tc.getCityData ().getCurrentlyConstructingUnitID (), db))))
+					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (destroyBuilding.getBuildingID (), tc.getCityData ().getCurrentlyConstructingUnitID (), mom.getServerDB ()))))
 			{
 				// If it is a human player then we need to let them know that this has happened
 				if (cityOwner.getPlayerDescription ().isHuman ())
@@ -867,35 +841,19 @@ public final class CityProcessingImpl implements CityProcessing
 				((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (destroyedBuilding);
 			}
 			
-			// Recalculate city data later
-			affectedCities.add ((MapCoordinates3DEx) destroyBuilding.getCityLocation ());
+			// Recalculate city data later (this is clever enough to ignore adding the same location multiple times)
+			mom.getWorldUpdates ().recalculateCity ((MapCoordinates3DEx) destroyBuilding.getCityLocation ());
 		}
 
 		// Actually remove the building, both on the server and on any clients who can see the city
 		final List<Integer> destroyBuildingURNs = buildingsToDestroy.stream ().map (b -> b.getBuildingURN ()).collect (Collectors.toList ());
-		getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, destroyBuildingURNs, false,
-			buildingsDestroyedBySpellID, buildingDestructionSpellCastByPlayerID, buildingDestructionSpellLocation, sd, db);
+		getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (destroyBuildingURNs, false,
+			buildingsDestroyedBySpellID, buildingDestructionSpellCastByPlayerID, buildingDestructionSpellLocation, mom);
 		
 		// Recalculate all affected cities
-		for (final MapCoordinates3DEx cityLocation : affectedCities)
-		{
-			final MemoryGridCell tc = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-			final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, tc.getCityData ().getCityOwnerID (), "destroyBuildings");
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
-
-			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (),
-				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, sd, db, conjunctionEventID);
-	
-			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (),
-				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
-	
-			getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
-	
-			// Send the updated city stats to any clients that can see the city
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
-		}
+		mom.getWorldUpdates ().process (mom);
 		
-		getPlayerMessageProcessing ().sendNewTurnMessages (null, players, null);
+		getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null);
 	}
 	
 	/**
@@ -1004,8 +962,7 @@ public final class CityProcessingImpl implements CityProcessing
 		}
 		
 		if (destroyedBuildingURNs.size () > 0)
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-				destroyedBuildingURNs, false, null, null, null, mom.getSessionDescription (), mom.getServerDB ());
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (destroyedBuildingURNs, false, null, null, null, mom);
 		
 		// Deal with spells cast on the city:
 		// 1) Any spells the defender had cast on the city must be enchantments - which unfortunately we don't get - so cancel these
@@ -1052,8 +1009,7 @@ public final class CityProcessingImpl implements CityProcessing
 		getFogOfWarMidTurnMultiChanges ().switchOffSpellsInLocationOnServerAndClients (cityLocation, 0, true, mom);
 		
 		// Wreck all the buildings
-		getFogOfWarMidTurnMultiChanges ().destroyAllBuildingsInLocationOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-			cityLocation, mom.getSessionDescription (), mom.getServerDB ());
+		getFogOfWarMidTurnMultiChanges ().destroyAllBuildingsInLocationOnServerAndClients (cityLocation, mom);
 		
 		// Wreck the city
 		tc.setCityData (null);
@@ -1168,8 +1124,7 @@ public final class CityProcessingImpl implements CityProcessing
 				mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 			
 			if (summoningCircle != null)
-				getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-					Arrays.asList (summoningCircle.getBuildingURN ()), false, null, null, null, mom.getSessionDescription (), mom.getServerDB ());
+				getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (Arrays.asList (summoningCircle.getBuildingURN ()), false, null, null, null, mom);
 		}
 		
 		// Clean up defeated wizards
@@ -1271,10 +1226,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * then this method auto adds their summoning circle back at the same location as their fortress.
 	 * 
 	 * @param playerID Player who lost their summoning circle 
-	 * @param gsk Server knowledge structure to add the building(s) to
-	 * @param players List of players in this session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -1282,16 +1234,16 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public final void moveSummoningCircleToWizardsFortress (final int playerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findCityWithBuilding (playerID,
-			CommonDatabaseConstants.BUILDING_FORTRESS, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding ());
+			CommonDatabaseConstants.BUILDING_FORTRESS, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 		
 		if (wizardsFortress != null)
-			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, players, (MapCoordinates3DEx) wizardsFortress.getCityLocation (),
-				Arrays.asList (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE), null, null, sd, db);
+			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients ((MapCoordinates3DEx) wizardsFortress.getCityLocation (),
+				Arrays.asList (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE), null, null, true, mom);
 	}
 
 	/**

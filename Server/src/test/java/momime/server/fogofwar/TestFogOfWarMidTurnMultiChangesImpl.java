@@ -32,7 +32,6 @@ import momime.common.database.MapFeatureEx;
 import momime.common.database.MapFeatureMagicRealm;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Pick;
-import momime.common.database.Plane;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
@@ -269,12 +268,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	@Test
 	public final void testDestroyAllBuildingsInLocationOnServerAndClients () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// 2 buildings, one in the right location, one in the wrong location
 		final MemoryBuilding buildingOne = new MemoryBuilding ();
 		buildingOne.setBuildingURN (1);
@@ -288,8 +281,12 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		trueMap.getBuilding ().add (buildingOne);
 		trueMap.getBuilding ().add (buildingTwo);
 		
-		// Players list
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges single = mock (FogOfWarMidTurnChanges.class);
@@ -298,10 +295,10 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setFogOfWarMidTurnChanges (single);
 		
 		// Run method
-		multi.destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, new MapCoordinates3DEx (20, 10, 1), sd, db);
+		multi.destroyAllBuildingsInLocationOnServerAndClients (new MapCoordinates3DEx (20, 10, 1), mom);
 		
 		// Check results
-		verify (single).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (2), false, null, null, null, sd, db);
+		verify (single).destroyBuildingOnServerAndClients (Arrays.asList (2), false, null, null, null, mom);
 		
 		verifyNoMoreInteractions (single);
 	}
@@ -762,6 +759,13 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			when (unitUtils.findUnitURN (n, fow4.getUnit (), "moveUnitStackOneCellOnServerAndClients")).thenReturn (mu4);
 		}
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final FogOfWarProcessing fowProc = mock (FogOfWarProcessing.class);
 		final FogOfWarMidTurnChanges single = mock (FogOfWarMidTurnChanges.class);
@@ -773,7 +777,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setUnitUtils (unitUtils);
 
 		// Run method
-		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, gsk, sd, db);
+		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, mom);
 		
 		// Check player 1
 		for (int n = 1; n <= 3; n++)
@@ -917,6 +921,13 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (moveToCell)).thenReturn (false);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final FogOfWarProcessing fowProc = mock (FogOfWarProcessing.class);
 		final FogOfWarMidTurnChanges single = mock (FogOfWarMidTurnChanges.class);
@@ -929,7 +940,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setMemoryGridCellUtils (memoryGridCellUtils);
 		
 		// Run method
-		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, gsk, sd, db);
+		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, mom);
 		
 		// Check player 1
 		for (int n = 1; n <= 3; n++)
@@ -960,16 +971,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final Plane arcanus = new Plane ();
-		final Plane myrror = new Plane ();
-		myrror.setPlaneNumber (1);
-		
-		final List<Plane> planes = new ArrayList<Plane> ();
-		planes.add (arcanus);
-		planes.add (myrror);
-
-		when (db.getPlane ()).thenReturn (planes);
-		
 		// Map feature is one that may contain monsters
 		final MapFeatureEx mapFeature = new MapFeatureEx ();
 		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealm ());
@@ -1061,6 +1062,13 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (moveToCell)).thenReturn (true);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final FogOfWarProcessing fowProc = mock (FogOfWarProcessing.class);
 		final FogOfWarMidTurnChanges single = mock (FogOfWarMidTurnChanges.class);
@@ -1073,7 +1081,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setMemoryGridCellUtils (memoryGridCellUtils);
 		
 		// Run method
-		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, players, gsk, sd, db);
+		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, mom);
 		
 		// Check player 1
 		for (int n = 1; n <= 3; n++)

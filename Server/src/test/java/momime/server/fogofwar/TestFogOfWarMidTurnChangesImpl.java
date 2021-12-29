@@ -48,6 +48,7 @@ import momime.common.movement.OverlandMovementCell;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.DummyServerToClientConnection;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.messages.MomGeneralServerKnowledge;
@@ -356,6 +357,13 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 						when (dup.copyMaintainedSpell (trueSpell, fow.getMaintainedSpell ())).thenReturn (!upToDateInfo);
 				}
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final FogOfWarProcessing proc = mock (FogOfWarProcessing.class);
 		
@@ -366,7 +374,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		calc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		calc.addExistingTrueMaintainedSpellToClients (gsk, trueSpell, false, players, db, sd);
+		calc.addExistingTrueMaintainedSpellToClients (trueSpell, false, mom);
 		
 		// Players 1-4 can't even see the spell so shouldn't get the dup method called; players 5-8 should
 		for (int playerIndex = 0; playerIndex < 8; playerIndex++)
@@ -397,7 +405,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		// Only the casters FOW should be updated
 		for (int playerIndex = 0; playerIndex < 8; playerIndex++)
 			verify (proc, times (playerIndex == (trueSpell.getCastingPlayerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
-				(trueMap, players.get (playerIndex), players, "addExistingTrueMaintainedSpellToClients", sd, db);
+				(players.get (playerIndex), "addExistingTrueMaintainedSpellToClients", mom);
 
 		verifyNoMoreInteractions (dup);
 		verifyNoMoreInteractions (proc);
@@ -410,9 +418,6 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	@Test
 	public final void testAddBuildingOnServerAndClients_OneBuilding () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		// Session description
 		final FogOfWarValue fowSetting = FogOfWarValue.REMEMBER_AS_LAST_SEEN;
 		
@@ -481,6 +486,12 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		cityData.setCityOwnerID (4);
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up object to test
 		final FogOfWarProcessing proc = mock (FogOfWarProcessing.class);
 		
@@ -494,7 +505,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		midTurn.addBuildingOnServerAndClients (gsk, players, new MapCoordinates3DEx (20, 10, 1), Arrays.asList ("BL03"), null, null, sd, db);
+		midTurn.addBuildingOnServerAndClients (new MapCoordinates3DEx (20, 10, 1), Arrays.asList ("BL03"), null, null, true, mom);
 		
 		// Prove that building got added to server's true map
 		assertEquals (1, trueMap.getBuilding ().size ());
@@ -544,7 +555,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		// Only the city owner's FOW should be updated
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
-				(trueMap, players.get (playerIndex), players, "addBuildingOnServerAndClients", sd, db);
+				(players.get (playerIndex), "addBuildingOnServerAndClients", mom);
 		
 		verifyNoMoreInteractions (proc);
 	}
@@ -556,9 +567,6 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	@Test
 	public final void testAddBuildingOnServerAndClients_TwoBuildings () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		// Session description
 		final FogOfWarValue fowSetting = FogOfWarValue.REMEMBER_AS_LAST_SEEN;
 		
@@ -627,6 +635,12 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		cityData.setCityOwnerID (4);
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up object to test
 		final FogOfWarProcessing proc = mock (FogOfWarProcessing.class);
 		
@@ -640,7 +654,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		midTurn.addBuildingOnServerAndClients (gsk, players, new MapCoordinates3DEx (20, 10, 1), Arrays.asList ("BL03", "BL04"), "SP001", 2, sd, db);
+		midTurn.addBuildingOnServerAndClients (new MapCoordinates3DEx (20, 10, 1), Arrays.asList ("BL03", "BL04"), "SP001", 2, true, mom);
 		
 		// Prove that both buildings got added to server's true map
 		assertEquals (2, trueMap.getBuilding ().size ());
@@ -699,7 +713,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		// Only the city owner's FOW should be updated
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
-				(trueMap, players.get (playerIndex), players, "addBuildingOnServerAndClients", sd, db);
+				(players.get (playerIndex), "addBuildingOnServerAndClients", mom);
 		
 		verifyNoMoreInteractions (proc);
 	}
@@ -711,9 +725,6 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	@Test
 	public final void testDestroyBuildingOnServerAndClients () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Session description
 		final FogOfWarValue fowSetting = FogOfWarValue.REMEMBER_AS_LAST_SEEN;
 		
@@ -789,6 +800,15 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		final MemoryBuildingUtils buildingUtils = mock (MemoryBuildingUtils.class);
 		when (buildingUtils.findBuildingURN (trueBuilding.getBuildingURN (), trueMap.getBuilding (), "destroyBuildingOnServerAndClients")).thenReturn (trueBuilding);
 		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up object to test
 		final FogOfWarProcessing proc = mock (FogOfWarProcessing.class);
 		
@@ -799,7 +819,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		midTurn.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		midTurn.destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (trueBuilding.getBuildingURN ()), false, null, null, null, sd, db);
+		midTurn.destroyBuildingOnServerAndClients (Arrays.asList (trueBuilding.getBuildingURN ()), false, null, null, null, mom);
 		
 		// Prove that building got removed from server's true map
 		verify (buildingUtils, times (1)).removeBuildingURN (trueBuilding.getBuildingURN (), trueMap.getBuilding ());
@@ -835,7 +855,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		// Only the city owner's FOW should be updated
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 			verify (proc, times (playerIndex == (cityData.getCityOwnerID () - 1) ? 1 : 0)).updateAndSendFogOfWar
-				(trueMap, players.get (playerIndex), players, "destroyBuildingOnServerAndClients", sd, db);
+				(players.get (playerIndex), "destroyBuildingOnServerAndClients", mom);
 
 		verifyNoMoreInteractions (buildingUtils);
 		verifyNoMoreInteractions (proc);

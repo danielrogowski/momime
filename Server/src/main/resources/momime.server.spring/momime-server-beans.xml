@@ -1090,14 +1090,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="gpk" class="momime.common.messages.MomGeneralPublicKnowledge" scope="prototype" />
 	
-	<bean id="overlandMapGenerator" class="momime.server.mapgenerator.OverlandMapGeneratorImpl" scope="prototype">
+	<bean id="overlandMapGenerator" class="momime.server.mapgenerator.OverlandMapGeneratorImpl">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
 		<property name="unitUtils" ref="unitUtils" />
-		<!-- <property name="gsk" ref="gsk" /> see comment above, this is done in the code instead -->
 	</bean>
 
 	<bean id="worldUpdates" class="momime.server.worldupdates.WorldUpdatesImpl" scope="prototype">

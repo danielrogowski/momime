@@ -307,8 +307,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				{
 					// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
 					getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
-						(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-							null, null, false, null, null, variableDamage, false, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+						(player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, false, null, null, variableDamage, false, true, mom);
 	
 					// Does this overland enchantment give a global combat area effect? (Not all do)
 					if (spell.getSpellHasCombatEffect ().size () > 0)
@@ -371,8 +370,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// Add it on server - note we add it without a target chosen and without adding it on any
 				// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.
 				final MemoryMaintainedSpell maintainedSpell = getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
-					(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-					null, null, false, null, null, variableDamage, false, null, mom.getServerDB (), mom.getSessionDescription ());
+					(player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, false, null, null, variableDamage, false, false, mom);
 	
 				if (player.getPlayerDescription ().isHuman ())
 				{
@@ -582,9 +580,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 					final Integer useVariableDamage = ((unitSpellEffect.isStoreSkillValueAsVariableDamage () != null) && (unitSpellEffect.isStoreSkillValueAsVariableDamage ()) &&
 						(unitSpellEffect.getUnitSkillValue () != null) && (unitSpellEffect.getUnitSkillValue () > 0)) ? unitSpellEffect.getUnitSkillValue () : variableDamage;
 					
-					getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
-						castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (),
-						true, null, null, useVariableDamage, skipAnimation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+					getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
+						targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (), true, null, null, useVariableDamage, skipAnimation, true, mom);
 					
 					// In some cases adding a new spell may kill a unit, potentially ending the combat (webbing a unit that's flying over water)
 					final MomCombatTile tile = gc.getCombatMap ().getRow ().get (targetUnit.getCombatPosition ().getY ()).getCell ().get (targetUnit.getCombatPosition ().getX ());
@@ -636,9 +633,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				// Pick an actual effect at random
 				final String citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
-				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
-					castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null,
-					true, combatLocation, citySpellEffectID, variableDamage, false, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null,
+					true, combatLocation, citySpellEffectID, variableDamage, false, true, mom);
 				
 				// The new enchantment presumably requires the combat map to be regenerated so we can see it
 				// (the only city enchantments/curses that can be cast in combat are Wall of Fire / Wall of Darkness)
@@ -751,8 +747,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 				
 				// Set it back to alive; this also sends the updates from above
-				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, summonLocation, castingPlayer,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, summonLocation, castingPlayer, true, mom);
 	
 				// Show the "summoning" animation for it
 				final ExpandedUnitDetails xuTargetUnit = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
@@ -788,9 +783,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 					
 					// Now can add it
-					final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-						unitID, summonLocation, null, null, combatLocation, castingPlayer, UnitStatusID.ALIVE,
-						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unitID, summonLocation, null, null, combatLocation,
+						castingPlayer, UnitStatusID.ALIVE, true, mom);
 					
 					// What direction should the unit face?
 					final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
@@ -952,8 +946,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							
 							// Now teleport it back to our summoning circle
 							getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
-								(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
-								mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+								(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), mom);
 							
 							// If we recalled our last remaining unit(s) out of combat, then we lose
 							if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide,
@@ -1161,12 +1154,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 						targetUnit.getUnitDamage ().clear ();
 						
 						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, resurrectLocation.getUnitLocation (),
-							castingPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());				}
+							castingPlayer, true, mom);
 					
 						// Let it move this turn
 						targetUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 					}
+				}
 			}
 			
 			// Tell the client to stop asking about targeting the spell, and show an animation for it - need to send this to all players that can see it!
@@ -1186,8 +1180,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					targetUnits.add (targetUnit);
 					
 					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, (MapCoordinates3DEx) targetUnit.getUnitLocation (),
-						(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
-						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+						(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), mom);
 				}
 			}
 			
@@ -1288,14 +1281,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 					mom.getSessionDescription ().getOverlandMapSize (), targetLocation.getX (), targetLocation.getY (),
 					targetLocation.getZ (), spell.getSpellRadius ());
 				
-				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayer, mom.getPlayers (),
-					"earthLore", mom.getSessionDescription (), mom.getServerDB ());
+				getFogOfWarProcessing ().updateAndSendFogOfWar (castingPlayer, "earthLore", mom);
 			}
 			
 			else if (kind == KindOfSpell.CHANGE_TILE_TYPE)
-				getSpellCasting ().changeTileType (spell, targetLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB (),
-					mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+				getSpellCasting ().changeTileType (spell, targetLocation, castingPlayer.getPlayerDescription ().getPlayerID (), mom);
 			
 			else if (kind == KindOfSpell.CHANGE_MAP_FEATURE)
 			{
@@ -1508,13 +1498,12 @@ public final class SpellProcessingImpl implements SpellProcessing
 							{
 								maintainedSpell.setUnitURN (tu.getUnitURN ());
 								maintainedSpell.setUnitSkillID (unitSkillID);
-								getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (mom.getGeneralServerKnowledge (), maintainedSpell, false,
-									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+								getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (maintainedSpell, false, mom);
 							}
 							else
-								getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
-									maintainedSpell.getCastingPlayerID (), maintainedSpell.getSpellID (), tu.getUnitURN (), unitSkillID, false, null, null, null, true,	// Don't show 2nd anim
-									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+								getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (maintainedSpell.getCastingPlayerID (), maintainedSpell.getSpellID (),
+									tu.getUnitURN (), unitSkillID, false, null, null, null, true,	// Don't show 2nd anim
+									true, mom);
 						}
 					}
 			}
@@ -1530,8 +1519,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				maintainedSpell.setCitySpellEffectID (citySpellEffectID);
 				
 				// Add spell on clients (they don't have a blank version of it before now)
-				getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (mom.getGeneralServerKnowledge (), maintainedSpell, false,
-					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (maintainedSpell, false, mom);
 				
 				// If its a unit enchantment, does it grant any secondary permanent effects? (Black Channels making units Undead)
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
@@ -1640,8 +1628,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				// Remove old buildings if we found any
 				if (buildingURNsToDestroy.size () > 0)
-					getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-						mom.getPlayers (), buildingURNsToDestroy, false, null, null, null, mom.getSessionDescription (), mom.getServerDB ());
+					getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (buildingURNsToDestroy, false, null, null, null, mom);
 			}
 
 			// Is the building that the spell is adding the same as what was being constructed?  If so then reset construction.
@@ -1674,9 +1661,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 
 			// Finally actually create the building(s)
-			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
-				mom.getPlayers (), targetLocation, buildingIDsToAdd, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
-				mom.getSessionDescription (), mom.getServerDB ());
+			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (targetLocation, buildingIDsToAdd, spell.getSpellID (),
+				castingPlayer.getPlayerDescription ().getPlayerID (), true, mom);
 			
 			// Remove the maintained spell on the server (clients would never have gotten it to begin with)
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
@@ -2030,8 +2016,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						if (spell.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_STASIS_FIRST_TURN))
 						{
 							spell.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_STASIS_LATER_TURNS);
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (spell, mom.getGeneralServerKnowledge (),
-								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (spell, mom);
 						}
 						else
 						{

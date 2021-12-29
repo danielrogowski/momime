@@ -115,9 +115,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	@Test
 	public final void testCastOverlandNow_OverlandEnchantment () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
 
@@ -162,7 +159,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 
 		// Spell to cast
@@ -203,7 +199,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castOverlandNow (player3, spell, null, null, mom);
 		
 		// Mocked method handles adding the spell to the true map, player's memories and sending the network msgs, so don't need to worry about any of that
-		verify (midTurn).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP001", null, null, false, null, null, null, false, players, db, sd);
+		verify (midTurn).addMaintainedSpellOnServerAndClients (pd3.getPlayerID (), "SP001", null, null, false, null, null, null, false, true, mom);
 		
 		// CAE should get added also
 		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", pd3.getPlayerID (), 22, null, players, sd);
@@ -309,18 +305,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	@Test
 	public final void testCastOverlandNow_UnitEnchantment () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-
-		// General server knowledge
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-
 		// Human player
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
@@ -337,9 +321,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Spell to cast
 		final Spell spell = new Spell ();
@@ -374,7 +355,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 
 		// Check that we recorded targetless spell on server.
 		// NB. players (arg just before 'db') intentionally null so that spell only added on server.
-		verify (midTurn).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID ().intValue (), "SP001", null, null, false, null, null, null, false, null, db, sd);
+		verify (midTurn).addMaintainedSpellOnServerAndClients (pd3.getPlayerID ().intValue (), "SP001", null, null, false, null, null, null, false, false, mom);
 		
 		verifyNoMoreInteractions (midTurn);
 	}
@@ -552,9 +533,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Database, session description and so on
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// Server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -624,7 +602,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Pick the 4th effect
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -662,8 +639,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, false, mom);
 		
 		// Prove right effect was added
-		verify (midTurn).addMaintainedSpellOnServerAndClients (gsk, attackingPd.getPlayerID (), "SP001", targetUnit.getUnitURN (),
-			"CSE004", true, null, null, null, false, players, db, sd);
+		verify (midTurn).addMaintainedSpellOnServerAndClients (attackingPd.getPlayerID (), "SP001", targetUnit.getUnitURN (),
+			"CSE004", true, null, null, null, false, true, mom);
 		
 		// We were charged MP for it
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
@@ -767,8 +744,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MemoryUnit summonedUnit = new MemoryUnit ();
 		summonedUnit.setUnitID ("UN004");
 		
-		when (midTurn.addUnitOnServerAndClients (gsk, "UN004", attackingFrom, null, null,
-			combatLocation, attackingPlayer, UnitStatusID.ALIVE, players, sd, db)).thenReturn (summonedUnit);
+		when (midTurn.addUnitOnServerAndClients ("UN004", attackingFrom, null, null,
+			combatLocation, attackingPlayer, UnitStatusID.ALIVE, true, mom)).thenReturn (summonedUnit);
 		
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);

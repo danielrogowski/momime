@@ -76,8 +76,7 @@ public final class RecalculateFogOfWarUpdate implements WorldUpdate
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getPlayerID (), "RecalculateFogOfWarUpdate");
-		getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayer,
-			mom.getPlayers (), "RecalculateFogOfWarUpdate", mom.getSessionDescription (), mom.getServerDB ());
+		getFogOfWarProcessing ().updateAndSendFogOfWar (castingPlayer, "RecalculateFogOfWarUpdate", mom);
 		
 		return WorldUpdateResult.DONE;
 	}

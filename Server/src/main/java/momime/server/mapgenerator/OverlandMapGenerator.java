@@ -19,20 +19,23 @@ public interface OverlandMapGenerator
 {
 	/**
 	 * Main routine to generate the overland terrain map
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If some fatal error happens during map generation
 	 * @throws RecordNotFoundException If some entry isn't found in the db during map generation, or one of the smoothing borders isn't found in the fixed arrays
 	 */
-	public void generateOverlandTerrain () throws MomException, RecordNotFoundException;
+	public void generateOverlandTerrain (final MomSessionVariables mom) throws MomException, RecordNotFoundException;
 	
 	/**
 	 * Creates the initial combat area effects from the map scenery i.e. node auras
 	 * This is an entirely separate process from the terrain generation, and runs separately after the terrain generation has finished
 	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we encounter a combat area effect that we can't find in the cache
 	 * @throws JAXBException This only gets generated if addCombatAreaEffectOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws XMLStreamException This only gets generated if addCombatAreaEffectOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	public void generateInitialCombatAreaEffects ()
+	public void generateInitialCombatAreaEffects (final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 
 	/**
@@ -41,13 +44,14 @@ public interface OverlandMapGenerator
 	 * However its still to do with generating the map so this class is still the most sensible place for it
 	 *
 	 * @param monsterPlayer Player who owns the monsters we add
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we encounter any records that can't be found in the cache
 	 * @throws MomException If the unit's skill list ends up containing the same skill twice
 	 * @throws PlayerNotFoundException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	public void fillNodesLairsAndTowersWithMonsters (final PlayerServerDetails monsterPlayer)
+	public void fillNodesLairsAndTowersWithMonsters (final PlayerServerDetails monsterPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**

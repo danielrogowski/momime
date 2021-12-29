@@ -476,8 +476,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 						final MemoryBuilding buildingToSell = getMemoryBuildingUtils ().findBuilding
 							(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), cityLocation, tc.getBuildingIdSoldThisTurn ());
 						
-						getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), cityLocation, buildingToSell.getBuildingURN (),
-							false, true, mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+						getCityProcessing ().sellBuilding (cityLocation, buildingToSell.getBuildingURN (), false, true, mom);
 					}
 				}
 		

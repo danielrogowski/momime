@@ -325,6 +325,13 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (overlandMapServerUtils.generateCityName (gsk, race3)).thenReturn ("Raider city I");
 		when (overlandMapServerUtils.generateCityName (gsk, race4)).thenReturn ("Raider city II");
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
@@ -340,7 +347,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		proc.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Run method
-		proc.createStartingCities (players, gsk, sd, db);
+		proc.createStartingCities (mom);
 		
 		// Check human city
 		final ServerGridCellEx humanCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
@@ -415,22 +422,22 @@ public final class TestCityProcessingImpl extends ServerTestData
 		verify (serverCityCalc, times (4)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
 		// Check units were added
-		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN001", humanLocation, humanLocation, null, null,
-			humanPlayer, UnitStatusID.ALIVE, null, sd, db);
-		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN002", aiLocation, aiLocation, null, null,
-			aiPlayer, UnitStatusID.ALIVE, null, sd, db);
-		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN003", raidersArcanusLocation, raidersArcanusLocation, null, null,
-			raidersPlayer, UnitStatusID.ALIVE, null, sd, db);
-		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN004", raidersMyrrorLocation, raidersMyrrorLocation, null, null,
-			raidersPlayer, UnitStatusID.ALIVE, null, sd, db);
+		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN001", humanLocation, humanLocation, null, null,
+			humanPlayer, UnitStatusID.ALIVE, false, mom);
+		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN002", aiLocation, aiLocation, null, null,
+			aiPlayer, UnitStatusID.ALIVE, false, mom);
+		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN003", raidersArcanusLocation, raidersArcanusLocation, null, null,
+			raidersPlayer, UnitStatusID.ALIVE, false, mom);
+		verify (midTurn, times (2)).addUnitOnServerAndClients ("UN004", raidersMyrrorLocation, raidersMyrrorLocation, null, null,
+			raidersPlayer, UnitStatusID.ALIVE, false, mom);
 		
 		// Check buildings were added.
 		// Note players intentionally left as null so that building is only added on the server.
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, humanLocation, Arrays.asList ("BL01"), null, null, sd, db);
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, aiLocation, Arrays.asList ("BL01"), null, null, sd, db);
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersArcanusLocation, Arrays.asList ("BL02"), null, null, sd, db);
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersMyrrorLocation, Arrays.asList ("BL02"), null, null, sd, db);
-		verify (midTurn).addBuildingOnServerAndClients (gsk, null, raidersMyrrorLocation, Arrays.asList ("BL03"), null, null, sd, db);
+		verify (midTurn).addBuildingOnServerAndClients (humanLocation, Arrays.asList ("BL01"), null, null, false, mom);
+		verify (midTurn).addBuildingOnServerAndClients (aiLocation, Arrays.asList ("BL01"), null, null, false, mom);
+		verify (midTurn).addBuildingOnServerAndClients (raidersArcanusLocation, Arrays.asList ("BL02"), null, null, false, mom);
+		verify (midTurn).addBuildingOnServerAndClients (raidersMyrrorLocation, Arrays.asList ("BL02"), null, null, false, mom);
+		verify (midTurn).addBuildingOnServerAndClients (raidersMyrrorLocation, Arrays.asList ("BL03"), null, null, false, mom);
 		
 		verifyNoMoreInteractions (serverCityCalc);
 		verifyNoMoreInteractions (midTurn);
@@ -698,7 +705,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals ("BL01", ntm.getBuildingID ());
 		assertEquals (new MapCoordinates3DEx (25, 15, 1), ntm.getCityLocation ());
 
-		verify (midTurn).addBuildingOnServerAndClients (gsk, players, new MapCoordinates3DEx (25, 15, 1), Arrays.asList ("BL01"), null, null, sd, db);
+		verify (midTurn).addBuildingOnServerAndClients (new MapCoordinates3DEx (25, 15, 1), Arrays.asList ("BL01"), null, null, true, mom);
 		
 		verify (wu).recalculateCity (new MapCoordinates3DEx (25, 15, 1));
 		verify (wu).process (mom);
@@ -809,8 +816,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals ("UN001", ntm.getUnitID ());
 		assertEquals (new MapCoordinates3DEx (25, 15, 1), ntm.getCityLocation ());
 
-		verify (midTurn).addUnitOnServerAndClients (gsk, "UN001", new MapCoordinates3DEx (26, 15, 1), new MapCoordinates3DEx (25, 15, 1), null, null,
-			cityOwner, UnitStatusID.ALIVE, players, sd, db);
+		verify (midTurn).addUnitOnServerAndClients ("UN001", new MapCoordinates3DEx (26, 15, 1), new MapCoordinates3DEx (25, 15, 1), null, null,
+			cityOwner, UnitStatusID.ALIVE, true, mom);
 		
 		verify (wu).recalculateCity (new MapCoordinates3DEx (25, 15, 1));
 		verify (wu).process (mom);
@@ -933,9 +940,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final Building granaryDef = new Building ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -979,6 +983,18 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findBuildingURN (granary.getBuildingURN (), trueMap.getBuilding (), "sellBuilding")).thenReturn (granary);
 		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -999,27 +1015,24 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		when (memoryBuildingUtils.isBuildingAPrerequisiteForBuilding (GRANARY, BARRACKS, db)).thenReturn (false);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granaryDef)).thenReturn (12);
-		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			cityLocation, "TR", db)).thenReturn (unrest);
 		
 		cityData.setCurrentlyConstructingBuildingID (BARRACKS);
-		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, true, sd, db, null);
+		proc.sellBuilding (cityLocation, granary.getBuildingURN (), false, true, mom);
 		
 		// Check results
 		assertEquals (BARRACKS, cityData.getCurrentlyConstructingBuildingID ());	// i.e. it didn't change
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());
-		assertEquals (3, cityData.getNumberOfRebels ());
+		//assertEquals (3, cityData.getNumberOfRebels ());
 		
-		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, null, null, null, sd, db);
+		verify (midTurn).destroyBuildingOnServerAndClients (Arrays.asList (granary.getBuildingURN ()), true, null, null, null, mom);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
-		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
-			trueMap.getMaintainedSpell (), cityLocation, sd, db, null);
-		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
-		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
+		verify (wu).recalculateCity (cityLocation);
+		verify (wu).process (mom);
 		
 		verifyNoMoreInteractions (serverCityCalculations);
 		verifyNoMoreInteractions (resourceValueUtils);
 		verifyNoMoreInteractions (midTurn);
+		verifyNoMoreInteractions (wu);
 	}
 
 	/**
@@ -1035,9 +1048,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final Building granaryDef = new Building ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -1080,6 +1090,18 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findBuildingURN (granary.getBuildingURN (), trueMap.getBuilding (), "sellBuilding")).thenReturn (granary);
+		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -1101,27 +1123,24 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		when (memoryBuildingUtils.isBuildingAPrerequisiteForBuilding (GRANARY, BARRACKS, db)).thenReturn (false);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granaryDef)).thenReturn (12);
-		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			cityLocation, "TR", db)).thenReturn (unrest);
 		
 		cityData.setCurrentlyConstructingBuildingID (BARRACKS);
-		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, false, sd, db, null);
+		proc.sellBuilding (cityLocation, granary.getBuildingURN (), false, false, mom);
 		
 		// Check results
 		assertEquals (BARRACKS, cityData.getCurrentlyConstructingBuildingID ());	// i.e. it didn't change
 		assertNull (tc.getBuildingIdSoldThisTurn ());		// Isn't updated because it was a forced sale
-		assertEquals (3, cityData.getNumberOfRebels ());
+		//assertEquals (3, cityData.getNumberOfRebels ());
 		
-		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), false, null, null, null, sd, db);
+		verify (midTurn).destroyBuildingOnServerAndClients (Arrays.asList (granary.getBuildingURN ()), false, null, null, null, mom);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
-		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
-			trueMap.getMaintainedSpell (), cityLocation, sd, db, null);
-		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
-		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
+		verify (wu).recalculateCity (cityLocation);
+		verify (wu).process (mom);
 		
 		verifyNoMoreInteractions (serverCityCalculations);
 		verifyNoMoreInteractions (resourceValueUtils);
 		verifyNoMoreInteractions (midTurn);
+		verifyNoMoreInteractions (wu);
 	}
 
 	/**
@@ -1136,9 +1155,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final Building granaryDef = new Building ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
-		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1183,6 +1199,18 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findBuildingURN (granary.getBuildingURN (), trueMap.getBuilding (), "sellBuilding")).thenReturn (granary);
 		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1196,34 +1224,31 @@ public final class TestCityProcessingImpl extends ServerTestData
 		proc.setServerCityCalculations (serverCityCalculations);
 		proc.setCityCalculations (cityCalculations);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		
+				
 		// Run test
 		final CityUnrestBreakdown unrest = new CityUnrestBreakdown ();
 		unrest.setFinalTotal (3);
 
 		when (memoryBuildingUtils.isBuildingAPrerequisiteForBuilding (GRANARY, FARMERS_MARKET, db)).thenReturn (true);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granaryDef)).thenReturn (12);
-		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			cityLocation, "TR", db)).thenReturn (unrest);
 		
 		cityData.setCurrentlyConstructingBuildingID (FARMERS_MARKET);
-		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, true, sd, db, null);
+		proc.sellBuilding (cityLocation, granary.getBuildingURN (), false, true, mom);
 		
 		// Check results
 		assertEquals (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT, cityData.getCurrentlyConstructingBuildingID ());	// Can't build Farmers' Market anymore
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());
-		assertEquals (3, cityData.getNumberOfRebels ());
+		//assertEquals (3, cityData.getNumberOfRebels ());
 		
-		verify (midTurn).destroyBuildingOnServerAndClients (trueMap, players, Arrays.asList (granary.getBuildingURN ()), true, null, null, null, sd, db);
+		verify (midTurn).destroyBuildingOnServerAndClients (Arrays.asList (granary.getBuildingURN ()), true, null, null, null, mom);
 		verify (resourceValueUtils).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, 12);
-		verify (serverCityCalculations).calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (),
-			trueMap.getMaintainedSpell (), cityLocation, sd, db, null);
-		verify (serverCityCalculations).ensureNotTooManyOptionalFarmers (cityData);
-		verify (midTurn).updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd.getFogOfWarSetting ());
+		verify (wu).recalculateCity (cityLocation);
+		verify (wu).process (mom);
 		
 		verifyNoMoreInteractions (serverCityCalculations);
 		verifyNoMoreInteractions (resourceValueUtils);
 		verifyNoMoreInteractions (midTurn);
+		verifyNoMoreInteractions (wu);
 	}
 
 	/**
@@ -1233,12 +1258,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 	@Test
 	public final void testSellBuilding_Pending () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -1283,13 +1302,21 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		when (memoryBuildingUtils.findBuildingURN (granary.getBuildingURN (), trueMap.getBuilding (), "sellBuilding")).thenReturn (granary);
 		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		
 		// Set up object to test
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		// Run test
-		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), true, true, sd, db, null);
+		proc.sellBuilding ( cityLocation, granary.getBuildingURN (), true, true, mom);
 		
 		// Check results
 		assertEquals (GRANARY, tc.getBuildingIdSoldThisTurn ());

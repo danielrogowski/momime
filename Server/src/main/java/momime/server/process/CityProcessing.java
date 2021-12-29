@@ -2,13 +2,13 @@ package momime.server.process;
 
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
@@ -16,7 +16,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
-import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Methods for any significant message processing to do with cities that isn't done in the message implementations
@@ -29,18 +28,14 @@ public interface CityProcessing
 	 * This happens BEFORE we initialize each players' fog of war (of course... without their cities they wouldn't be able to see much of the map!)
 	 * and so we don't need to send any messages out to anyone here, whether to add the city itself, buildings or units - just add everything to the true map
 	 *
-	 * @param players List of players in the session
-	 * @param gsk Server knowledge data structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
  	 * @throws MomException If no races are defined for a particular plane
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
+	public void createStartingCities (final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**
@@ -98,27 +93,19 @@ public interface CityProcessing
 	 * Does not recalc global production (which will now be reduced from not having to pay the maintenance of the sold building),
 	 * this has to be done by the calling routine.
 	 * 
-	 * NB. Dephi method was called OkToSellBuilding.
-	 *
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param cityLocation Location of the city to remove the building from
 	 * @param buildingURN Which building to remove; this can be null to cancel a pending sale
 	 * @param pendingSale If true, building is not sold immediately but merely marked that it will be sold at the end of the turn; used for simultaneous turns games
 	 * @param voluntarySale True if building is being sold by the player's choice; false if they are being forced to sell it e.g. due to lack of production
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void sellBuilding (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final Integer buildingURN,
-		final boolean pendingSale, final boolean voluntarySale,
-		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
+	public void sellBuilding (final MapCoordinates3DEx cityLocation, final Integer buildingURN,
+		final boolean pendingSale, final boolean voluntarySale, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
@@ -126,25 +113,20 @@ public interface CityProcessing
 	 * the need to be notified about it as well.  Also it handles destroying multiple buildings all at once, potentially in different cities owned by
 	 * different players.
 	 * 
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param buildingsToDestroy List of buildings to destroy, from server's true list
 	 * @param buildingsDestroyedBySpellID The spell that resulted in destroying these building(s), e.g. Earthquake; null if buildings destroyed for any other reason
 	 * @param buildingDestructionSpellCastByPlayerID The player who cast the spell that resulted in the destruction of these buildings; null if not from a spell
 	 * @param buildingDestructionSpellLocation The location the spell was targeted - need this because it might have destroyed 0 buildings; null if not from a spell
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void destroyBuildings (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final List<MemoryBuilding> buildingsToDestroy,
+	public void destroyBuildings (final List<MemoryBuilding> buildingsToDestroy,
 		final String buildingsDestroyedBySpellID, final Integer buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
-		final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
+		final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**
@@ -228,18 +210,14 @@ public interface CityProcessing
 	 * then this method auto adds their summoning circle back at the same location as their fortress.
 	 * 
 	 * @param playerID Player who lost their summoning circle 
-	 * @param gsk Server knowledge structure to add the building(s) to
-	 * @param players List of players in this session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public void moveSummoningCircleToWizardsFortress (final int playerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**

@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +20,7 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
@@ -28,7 +28,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.Pick;
-import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
@@ -37,7 +36,6 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
@@ -62,7 +60,6 @@ import momime.server.calculations.FogOfWarCalculations;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.knowledge.ServerGridCellEx;
-import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.OneCellPendingMovement;
 import momime.server.process.PlayerMessageProcessing;
@@ -217,11 +214,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	}
 
 	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param cityLocation Location of the city to remove the building from
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -229,16 +223,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void destroyAllBuildingsInLocationOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public final void destroyAllBuildingsInLocationOnServerAndClients (final MapCoordinates3DEx cityLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final List<Integer> buildingURNs = trueMap.getBuilding ().stream ().filter
+		final List<Integer> buildingURNs = mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ().stream ().filter
 			(b -> cityLocation.equals (b.getCityLocation ())).map (b -> b.getBuildingURN ()).collect (Collectors.toList ());
 
 		if (buildingURNs.size () > 0)
-			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, buildingURNs, false, null, null, null, sd, db);
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (buildingURNs, false, null, null, null, mom);
 	}
 	
 	/**
@@ -503,10 +495,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 *			in a tower (on plane 0) moving to a map cell on Myrror - in this case the only way to know the correct value
 	 *			of moveTo.getPlane () is by what map cell the player clicked on in the UI.
 	 *
-	 * @param players List of players in the session
-	 * @param gsk Server knowledge structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -515,8 +504,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 */
 	@Override
 	public final void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
+		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		// We need a list of the unit URNs
@@ -525,7 +513,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			unitURNList.add (tu.getUnitURN ());
 		
 		// Check each player in turn
-		for (final PlayerServerDetails thisPlayer : players)
+		for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 			final boolean thisPlayerCanSee;
@@ -542,15 +530,16 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				// It isn't enough to check whether the unit URNs moving are in the player's memory - they may be
 				// remembering a location that they previously saw the units at, but can't see where they're moving from/to now
 				final boolean couldSeeBeforeMove = getFogOfWarCalculations ().canSeeMidTurnOnAnyPlaneIfTower
-					(moveFrom, sd.getFogOfWarSetting ().getUnits (), gsk.getTrueMap ().getMap (), priv.getFogOfWar (), db);
+					(moveFrom, mom.getSessionDescription ().getFogOfWarSetting ().getUnits (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (), mom.getServerDB ());
 				canSeeAfterMove = getFogOfWarCalculations ().canSeeMidTurnOnAnyPlaneIfTower
-					(moveTo, sd.getFogOfWarSetting ().getUnits (), gsk.getTrueMap ().getMap (), priv.getFogOfWar (), db);
+					(moveTo, mom.getSessionDescription ().getFogOfWarSetting ().getUnits (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (), mom.getServerDB ());
 
 				// Deal with clients who could not see this unit stack before this move, but now can
 				if ((!couldSeeBeforeMove) && (canSeeAfterMove))
 				{
 					// The unit stack doesn't exist yet in the player's memory or on the client, so before they can move, we have to send all the unit details
-					getFogOfWarMidTurnChanges ().addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, gsk.getTrueMap ().getMaintainedSpell (), thisPlayer);
+					getFogOfWarMidTurnChanges ().addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient
+						(unitStack, mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), thisPlayer);
 					thisPlayerCanSee = true;
 				}
 
@@ -605,32 +594,36 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			thisUnit.setUnitLocation (new MapCoordinates3DEx (moveTo));
 
 		// See what the units can see from their new location
-		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), unitStackOwner, players, "moveUnitStackOneCellOnServerAndClients", sd, db);
+		getFogOfWarProcessing ().updateAndSendFogOfWar (unitStackOwner, "moveUnitStackOneCellOnServerAndClients", mom);
 
 		// If we moved out of or into a city, then need to recalc rebels, production, because the units may now be (or may now no longer be) helping ease unrest.
 		// Note this doesn't deal with capturing cities - attacking even an empty city is treated as a combat, so we can pick Capture/Raze.
 		final MapCoordinates3DEx [] cityLocations = new MapCoordinates3DEx [] {moveFrom, moveTo};
 		for (final MapCoordinates3DEx cityLocation : cityLocations)
 		{
-			final OverlandMapCityData cityData = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 			if (cityData != null)
 			{
-				final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "moveUnitStackOneCellOnServerAndClients");
+				final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "moveUnitStackOneCellOnServerAndClients");
 				final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
-				cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (),
-					gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, cityOwnerPriv.getTaxRateID (), db).getFinalTotal ());
+				cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
 
 				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+					cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 			}
 		}
 		
 		// Record the current tile type and map feature, in case we captured a node/lair/tower and have treasure to award.
 		// In case there's a prisoner, we need lairs to have been removed so that the prisoner doesn't get bumped to an adjacent cell unnecessarily,
 		// but the rollTreasureReward routine still needs to know what the type of lair that was removed was, since it affects the type of spell books that can be obtained.
-		final ServerGridCellEx tc = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
 		final String tileTypeID = tc.getTerrainData ().getTileTypeID ();
 		final String mapFeatureID = tc.getTerrainData ().getMapFeatureID ();
 		
@@ -638,25 +631,27 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		// This is now part of movement, rather than part of cleaning up after a combat, because capturing empty lairs no longer even initiates a combat.
 		// If the monsters in a lair are killed in a combat, then the attackers advance after the combat using this same routine, so that also works.
 		if ((tc.getTerrainData ().getMapFeatureID () != null) &&
-			(db.findMapFeature (tc.getTerrainData ().getMapFeatureID (), "moveUnitStackOneCellOnServerAndClients").getMapFeatureMagicRealm ().size () > 0) &&
+			(mom.getServerDB ().findMapFeature (tc.getTerrainData ().getMapFeatureID (), "moveUnitStackOneCellOnServerAndClients").getMapFeatureMagicRealm ().size () > 0) &&
 			(!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ())))
 		{
 			log.debug ("Removing lair at " + moveTo);
 			tc.getTerrainData ().setMapFeatureID (null);
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (gsk.getTrueMap ().getMap (), players, moveTo, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+				moveTo, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 		}					
 		
 		// If we captured a tower of wizardry, then turn the light on
 		else if (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY.equals (tc.getTerrainData ().getMapFeatureID ()))
 		{
-			for (final Plane plane : db.getPlane ())
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 			{
-				final MapCoordinates3DEx towerCoords = new MapCoordinates3DEx (moveTo.getX (), moveTo.getY (), plane.getPlaneNumber ());
+				final MapCoordinates3DEx towerCoords = new MapCoordinates3DEx (moveTo.getX (), moveTo.getY (), z);
 				log.debug ("Turning light on in tower at " + towerCoords);
 				
-				gsk.getTrueMap ().getMap ().getPlane ().get (towerCoords.getZ ()).getRow ().get (towerCoords.getY ()).getCell ().get
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (towerCoords.getZ ()).getRow ().get (towerCoords.getY ()).getCell ().get
 					(towerCoords.getX ()).getTerrainData ().setMapFeatureID (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (gsk.getTrueMap ().getMap (), players, towerCoords, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+					towerCoords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 			}
 		}
 
@@ -664,15 +659,15 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		if (tc.getTreasureValue () != null)
 		{
 			getTreasureUtils ().sendTreasureReward
-				(getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, tileTypeID, mapFeatureID, players, gsk, sd, db),
-					unitStackOwner, players, db);
+				(getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, tileTypeID, mapFeatureID, mom),
+					unitStackOwner, mom.getPlayers (), mom.getServerDB ());
 			tc.setTreasureValue (null);
 		}
 		
 		else if (tc.getGoldInRuin () != null)
 		{
 			getTreasureUtils ().sendTreasureReward (getTreasureUtils ().giveGoldInRuin (tc.getGoldInRuin (), unitStackOwner, moveTo, tileTypeID, mapFeatureID),
-				unitStackOwner, players, db);
+				unitStackOwner, mom.getPlayers (), mom.getServerDB ());
 			tc.setGoldInRuin (null);
 		}
 	}
@@ -804,8 +799,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				if (!combatInitiated)
 				{
 					// Actually move the units
-					moveUnitStackOneCellOnServerAndClients (allUnitsMem, unitStackOwner, moveFrom, oneStep,
-						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+					moveUnitStackOneCellOnServerAndClients (allUnitsMem, unitStackOwner, moveFrom, oneStep, mom);
 
 					// Prepare for next loop
 					moveFrom = oneStep;
@@ -1160,8 +1154,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 			// This method does all the proper handling for units moving from one cell to another - it doesn't really
 			// matter whether that is a conventional move or the cells are on different planes
-			moveUnitStackOneCellOnServerAndClients (unitStack, player, moveFrom, moveTo,
-				mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+			moveUnitStackOneCellOnServerAndClients (unitStack, player, moveFrom, moveTo, mom);
 			
 			// Recheck the units left behind - maybe a ship plane shifted and all the units who used to be inside it are now swimming
 			mom.getWorldUpdates ().recheckTransportCapacity (moveFrom);
@@ -1194,10 +1187,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * Units stuck in webs in combat hack/burn some of the HP off the web trying to free themselves.
 	 * 
 	 * @param webbedUnits List of units stuck in web
-	 * @param gsk Server knowledge structure
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws PlayerNotFoundException If we can't find one of the players
@@ -1205,8 +1195,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws MomException If there is a problem with any of the calculations
 	 */
 	@Override
-	public final void processWebbedUnits (final List<ExpandedUnitDetails> webbedUnits, final MomGeneralServerKnowledge gsk,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public final void processWebbedUnits (final List<ExpandedUnitDetails> webbedUnits, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		for (final ExpandedUnitDetails xu : webbedUnits)
@@ -1222,7 +1211,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			if (attackStrength > 0)
 				
 				// Process ALL web spells, there could me multiple so we can't just use findMaintainedSpell to find the first one for us
-				for (final MemoryMaintainedSpell webSpell : gsk.getTrueMap ().getMaintainedSpell ())
+				for (final MemoryMaintainedSpell webSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 					if ((webSpell.getUnitSkillID () != null) && (webSpell.getUnitURN () != null) &&
 						(webSpell.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)) && (webSpell.getUnitURN () == xu.getUnitURN ()))
 					{
@@ -1235,7 +1224,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 							
 							// Update its remaining HP
 							webSpell.setVariableDamage (newHP);
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (webSpell, gsk, players, db, sd);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (webSpell, mom);
 						}
 					}
 		}

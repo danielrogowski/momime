@@ -787,8 +787,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (defendingPlayer, "combatEnded-D", mom);
+		verify (fowProcessing).updateAndSendFogOfWar (attackingPlayer, "combatEnded-A", mom);
 		
 		// Update both players' production
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -935,8 +935,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (defendingPlayer, "combatEnded-D", mom);
+		verify (fowProcessing).updateAndSendFogOfWar (attackingPlayer, "combatEnded-A", mom);
 		
 		// Update both players' production
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -944,7 +944,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Check the attacker's units advanced forward
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), mom);
 		
 		verifyNoMoreInteractions	(midTurnMulti);
 		verifyNoMoreInteractions	(fowProcessing);
@@ -1090,8 +1090,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (defendingPlayer, "combatEnded-D", mom);
+		verify (fowProcessing).updateAndSendFogOfWar (attackingPlayer, "combatEnded-A", mom);
 		
 		// Update both players' production
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -1099,7 +1099,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Check the attacker's units advanced forward, in the process jumping to plane 0
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 0), players, gsk, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 0), mom);
 
 		verifyNoMoreInteractions	(midTurnMulti);
 		verifyNoMoreInteractions	(fowProcessing);
@@ -1295,8 +1295,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (defendingPlayer, "combatEnded-D", mom);
+		verify (fowProcessing).updateAndSendFogOfWar (attackingPlayer, "combatEnded-A", mom);
 		
 		// Update both players' production
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -1307,7 +1307,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Check the attacker's units advanced forward into the city
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), mom);
 		
 		// Check the attacker swiped gold from the defender
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped);
@@ -1510,8 +1510,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (defendingPlayer, "combatEnded-D", mom);
+		verify (fowProcessing).updateAndSendFogOfWar (attackingPlayer, "combatEnded-A", mom);
 		
 		// Update both players' production
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -1522,7 +1522,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Check the attacker's units advanced forward into where the city used to be
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), mom);
 		
 		// Check the attacker swiped gold from the defender
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);
@@ -1671,8 +1671,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (defendingPlayer, "combatEnded-D", mom);
+		verify (fowProcessing).updateAndSendFogOfWar (attackingPlayer, "combatEnded-A", mom);
 		
 		// Update both players' production
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
@@ -1680,7 +1680,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Check the attacker's units advanced forward
 		verify (midTurnMulti).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
-			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), players, gsk, sd, db);
+			new MapCoordinates3DEx (21, 10, 1), new MapCoordinates3DEx (20, 10, 1), mom);
 		
 		// Check pending movement was removed
 		assertEquals (1, attackingPriv.getPendingMovement ().size ());
@@ -1822,8 +1822,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, defendingPlayer, players, "combatEnded-D", sd, db);
-		verify (fowProcessing).updateAndSendFogOfWar (trueMap, attackingPlayer, players, "combatEnded-A", sd, db);
+		verify (fowProcessing).updateAndSendFogOfWar (defendingPlayer, "combatEnded-D", mom);
+		verify (fowProcessing).updateAndSendFogOfWar (attackingPlayer, "combatEnded-A", mom);
 		
 		// Update both players' production
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);

@@ -2,19 +2,18 @@ package momime.server.utils;
 
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
-import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.MomSessionVariables;
 
 /**
  * Methods dealing with choosing treasure to reward to a player for capturing a lair/node/tower
@@ -44,10 +43,7 @@ public interface TreasureUtils
 	 * @param lairNodeTowerLocation The location of where the lair/node/tower was
 	 * @param tileTypeID The tile type that the lair/node/tower was, before it was possibly altered/removed by capturing it
 	 * @param mapFeatureID The map feature that the lair/node/tower was, before it was possibly altered/removed by capturing it (will be null for nodes/towers)
-	 * @param players List of players in this session
-	 * @param gsk Server knowledge structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Details of all rewards given (pre-built message ready to send back to client)
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -56,8 +52,7 @@ public interface TreasureUtils
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player,
-		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
+		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**

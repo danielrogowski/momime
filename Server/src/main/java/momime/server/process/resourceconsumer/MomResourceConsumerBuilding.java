@@ -117,9 +117,7 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-			(MapCoordinates3DEx) getBuilding ().getCityLocation (), getBuilding ().getBuildingURN (), false, false, mom.getSessionDescription (), mom.getServerDB (),
-			mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+		getCityProcessing ().sellBuilding ((MapCoordinates3DEx) getBuilding ().getCityLocation (), getBuilding ().getBuildingURN (), false, false, mom);
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{

@@ -121,9 +121,8 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 		else
 		{
 			// All ok - use second routine now all validation is done
-			getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (),
-				getBuildingURN (), (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), true, mom.getSessionDescription (),
-				mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+			getCityProcessing ().sellBuilding ((MapCoordinates3DEx) getCityLocation (), getBuildingURN (),
+				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), true, mom);
 			
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}

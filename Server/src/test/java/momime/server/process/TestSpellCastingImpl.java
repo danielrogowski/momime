@@ -103,8 +103,8 @@ public final class TestSpellCastingImpl
 		// Mock creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final MemoryUnit unit = new MemoryUnit ();
-		when (midTurn.addUnitOnServerAndClients (gsk, "UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
-			player3, UnitStatusID.ALIVE, players, sd, db)).thenReturn (unit);
+		when (midTurn.addUnitOnServerAndClients ("UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
+			player3, UnitStatusID.ALIVE, true, mom)).thenReturn (unit);
 		
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -124,8 +124,8 @@ public final class TestSpellCastingImpl
 		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);
 
 		// Prove that unit got added
-		verify (midTurn).addUnitOnServerAndClients (gsk, "UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
-			player3, UnitStatusID.ALIVE, players, sd, db);
+		verify (midTurn).addUnitOnServerAndClients ("UN001", new MapCoordinates3DEx (15, 25, 0), null, null, null,
+			player3, UnitStatusID.ALIVE, true, mom);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
@@ -240,7 +240,7 @@ public final class TestSpellCastingImpl
 		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);
 
 		// Prove that unit got updated, not added
-		verify (midTurn).updateUnitStatusToAliveOnServerAndClients (theHero, new MapCoordinates3DEx (15, 25, 0), player3, players, trueMap, sd, db);
+		verify (midTurn).updateUnitStatusToAliveOnServerAndClients (theHero, new MapCoordinates3DEx (15, 25, 0), player3, true, mom);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());

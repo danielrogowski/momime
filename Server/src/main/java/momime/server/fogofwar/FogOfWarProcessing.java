@@ -1,21 +1,17 @@
 package momime.server.fogofwar;
 
-import java.util.List;
-
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MomSessionDescription;
+import momime.server.MomSessionVariables;
 
 /**
  * This contains the methods that recheck what areas of the map a specific player can see, and depending which areas
@@ -52,19 +48,15 @@ public interface FogOfWarProcessing
 	 * types of changes are dealt with by all the methods in FogOfWarMidTurnChanges - this only needs to deal with
 	 * working out updates when the visible area changes, but the true values remain the same
 	 *
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param player The player whose FOW we are recalculating
-	 * @param players List of players in the session
 	 * @param triggeredFrom What caused the change in visible area - this is only used for debug messages on the client
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void updateAndSendFogOfWar (final FogOfWarMemory trueMap, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final String triggeredFrom, final MomSessionDescription sd, final CommonDatabase db)
+	public void updateAndSendFogOfWar (final PlayerServerDetails player, final String triggeredFrom, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

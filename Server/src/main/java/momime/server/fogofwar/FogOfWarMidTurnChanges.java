@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -12,12 +11,12 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -27,6 +26,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
 import momime.common.movement.OverlandMovementCell;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.server.MomSessionVariables;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.ResolveAttackTarget;
 
@@ -71,18 +71,14 @@ public interface FogOfWarMidTurnChanges
 	 * After updating the true copy of a spell, this routine copies and sends the new value to players who can see it
 	 *
 	 * @param trueSpell True spell that was updated
-	 * @param gsk Server knowledge structure
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 */
-	public void updatePlayerMemoryOfSpell (final MemoryMaintainedSpell trueSpell, final MomGeneralServerKnowledge gsk,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public void updatePlayerMemoryOfSpell (final MemoryMaintainedSpell trueSpell, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**
@@ -103,7 +99,6 @@ public interface FogOfWarMidTurnChanges
 	 * Heroes are added using this method during game startup - at which point they're added only on the server and they're off
 	 * the map (null location) - so heroes are NEVER sent to the client using this method, meaning that we don't need to worry about sending skill lists with this method
 	 *
-	 * @param gsk Server knowledge structure to add the unit to
 	 * @param unitID Type of unit to create
 	 * @param locationToAddUnit Location to add the new unit; can be null for adding heroes that haven't been summoned yet
 	 * @param buildingsLocation Location the unit was built - might be different from locationToAddUnit if the city is full and the unit got bumped to an adjacent tile; passed as null for units not built in cities such as summons
@@ -111,9 +106,8 @@ public interface FogOfWarMidTurnChanges
 	 * @param combatLocation The location of the combat that this unit is being summoned into; null for anything other than combat summons
 	 * @param unitOwner Player who will own the new unit
 	 * @param initialStatus Initial status of the unit, typically ALIVE
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param addOnClients Usually true, can set to false when monsters are initially added to the map and don't need to worry about who can see them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Newly created unit
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
@@ -121,10 +115,9 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation, final Integer overrideStartingExperience,
-		final MapCoordinates3DEx combatLocation, final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public MemoryUnit addUnitOnServerAndClients (final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation,
+		final Integer overrideStartingExperience, final MapCoordinates3DEx combatLocation, final PlayerServerDetails unitOwner, final UnitStatusID initialStatus,
+		final boolean addOnClients, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
@@ -136,10 +129,8 @@ public interface FogOfWarMidTurnChanges
 	 * @param trueUnit The unit to set to alive
 	 * @param locationToAddUnit Location to add the new unit, must be filled in
 	 * @param unitOwner Player who will own the new unit, note the reason this has to be passed in separately is because the players list is allowed to be null
-	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param addOnClients Usually true, can set to false when monsters are initially added to the map and don't need to worry about who can see them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -147,8 +138,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void updateUnitStatusToAliveOnServerAndClients (final MemoryUnit trueUnit, final MapCoordinates3DEx locationToAddUnit,
-		final PlayerServerDetails unitOwner, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final PlayerServerDetails unitOwner, final boolean addOnClients, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
@@ -180,25 +170,19 @@ public interface FogOfWarMidTurnChanges
 	 *
 	 * Spells in this "cast-but-not-targetted" state exist on the server but not in player's memory or on clients, so when their target has been set, this method is then called
 	 *
-	 * @param gsk Server knowledge structure
 	 * @param trueSpell True spell to add
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void addExistingTrueMaintainedSpellToClients (final MomGeneralServerKnowledge gsk,
-		final MemoryMaintainedSpell trueSpell, final boolean skipAnimation, final List<PlayerServerDetails> players,
-		final CommonDatabase db, final MomSessionDescription sd)
+	public void addExistingTrueMaintainedSpellToClients (final MemoryMaintainedSpell trueSpell, final boolean skipAnimation, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
-	 * @param gsk Server knowledge structure to add the spell to
 	 * @param castingPlayerID Player who cast the spell
 	 * @param spellID Which spell it is
 	 * @param unitURN Indicates which unit the spell is cast on; null for spells not cast on units
@@ -208,9 +192,8 @@ public interface FogOfWarMidTurnChanges
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
-	 * @param players List of players in the session, this can be passed in null for when spells that require a target are added initially only on the server
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param addOnClients Usually true, can set to false when spells that need targeting later are initially added on server only
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Newly created spell in server's true memory
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -218,10 +201,9 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
+	public MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final Integer variableDamage, final boolean skipAnimation,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+		final boolean addOnClients, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -242,46 +224,38 @@ public interface FogOfWarMidTurnChanges
 		throws JAXBException, XMLStreamException;
 
 	/**
-	 * @param gsk Server knowledge structure to add the building(s) to
-	 * @param players List of players in the session, this can be passed in null for when buildings are being added to the map pre-game
 	 * @param cityLocation Location of the city to add the building(s) to
 	 * @param buildingIDs List of building IDs to create, mandatory
 	 * @param buildingsCreatedFromSpellID The spell that resulted in the creation of this building (e.g. casting Wall of Stone creates City Walls); null if building was constructed in the normal way
 	 * @param buildingCreationSpellCastByPlayerID The player who cast the spell that resulted in the creation of this building; null if building was constructed in the normal way
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param addOnClients Usually true, can set to false when buildings are initially added to the map and don't need to worry about who can see them
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx cityLocation, final List<String> buildingIDs,
-		final String buildingsCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public void addBuildingOnServerAndClients (final MapCoordinates3DEx cityLocation, final List<String> buildingIDs,
+		final String buildingsCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID, final boolean addOnClients, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param buildingURNs Which buildings to remove
 	 * @param updateBuildingSoldThisTurn If true, tells client to update the buildingSoldThisTurn flag, which will prevents this city from selling a 2nd building this turn
 	 * @param buildingsDestroyedBySpellID The spell that resulted in destroying these building(s), e.g. Earthquake; null if buildings destroyed for any other reason
 	 * @param buildingDestructionSpellCastByPlayerID The player who cast the spell that resulted in the destruction of these buildings; null if not from a spell
 	 * @param buildingDestructionSpellLocation The location the spell was targeted - need this because it might have destroyed 0 buildings; null if not from a spell
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void destroyBuildingOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final List<Integer> buildingURNs, final boolean updateBuildingSoldThisTurn,
+	public void destroyBuildingOnServerAndClients (final List<Integer> buildingURNs, final boolean updateBuildingSoldThisTurn,
 		final String buildingsDestroyedBySpellID, final Integer buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
-		final MomSessionDescription sd, final CommonDatabase db)
+		final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**

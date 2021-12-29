@@ -3,8 +3,6 @@ package momime.server;
 import java.io.File;
 import java.io.IOException;
 
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -20,6 +18,8 @@ import com.ndg.multiplayer.sessionbase.SessionDescription;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
 
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabaseImpl;
@@ -48,7 +48,6 @@ import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.mapgenerator.OverlandMapGenerator;
-import momime.server.mapgenerator.OverlandMapGeneratorImpl;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.HeroItemServerUtils;
@@ -107,12 +106,8 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		
 		// Generate the overland map
 		log.info ("Generating overland map...");
-		final OverlandMapGeneratorImpl mapGen = (OverlandMapGeneratorImpl) getOverlandMapGenerator ();
-		mapGen.setSessionDescription (getSessionDescription ());
-		mapGen.setServerDB (getServerDB ());
-		mapGen.setGsk (getGeneralServerKnowledge ());		// See comment in spring XML for why this isn't just injected
-		mapGen.generateOverlandTerrain ();
-		mapGen.generateInitialCombatAreaEffects ();
+		getOverlandMapGenerator ().generateOverlandTerrain (this);
+		getOverlandMapGenerator ().generateInitialCombatAreaEffects (this);
 		
 		// Make all predefined hero items available - need to allocate a number for each
 		for (final HeroItem item : getServerDB ().getHeroItem ())

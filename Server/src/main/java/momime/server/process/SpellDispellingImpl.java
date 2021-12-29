@@ -227,8 +227,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 						// Now take over the spell itself
 						spellToDispel.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 						
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (spellToDispel, mom.getGeneralServerKnowledge (),
-							mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (spellToDispel, mom);
 					}
 					
 					// Regular dispel

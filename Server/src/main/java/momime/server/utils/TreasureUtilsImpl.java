@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -18,6 +17,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabase;
@@ -36,7 +36,6 @@ import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -51,10 +50,10 @@ import momime.common.utils.HeroItemUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
+import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Methods dealing with choosing treasure to reward to a player for capturing a lair/node/tower
@@ -193,10 +192,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	 * @param lairNodeTowerLocation The location of where the lair/node/tower was
 	 * @param tileTypeID The tile type that the lair/node/tower was, before it was possibly altered/removed by capturing it
 	 * @param mapFeatureID The map feature that the lair/node/tower was, before it was possibly altered/removed by capturing it (will be null for nodes/towers)
-	 * @param players List of players in this session
-	 * @param gsk Server knowledge structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Details of all rewards given (pre-built message ready to send back to client)
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -206,14 +202,13 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	 */
 	@Override
 	public final TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player,
-		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
+		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
-		final Spell summonHero = db.findSpell (CommonDatabaseConstants.SPELL_ID_SUMMON_HERO, "rollTreasureReward");
+		final Spell summonHero = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_SUMMON_HERO, "rollTreasureReward");
 
 		// Initialize message
 		final TreasureRewardMessage reward = new TreasureRewardMessage ();
@@ -228,21 +223,21 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		{
 			// Get a list of all hero items we might possibly get as a reward.
 			final List<NumberedHeroItem> availableHeroItems = new ArrayList<NumberedHeroItem> ();
-			for (final NumberedHeroItem item : gsk.getAvailableHeroItem ())
-				if (((!sd.getHeroItemSetting ().isRequireBooksForTreasureRewards ()) || (getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), db))) &&
-					(getHeroItemCalculations ().calculateCraftingCost (item, db) <= remainingTreasureValue))
+			for (final NumberedHeroItem item : mom.getGeneralServerKnowledge ().getAvailableHeroItem ())
+				if (((!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForTreasureRewards ()) || (getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), mom.getServerDB ()))) &&
+					(getHeroItemCalculations ().calculateCraftingCost (item, mom.getServerDB ()) <= remainingTreasureValue))
 					
 					availableHeroItems.add (item);
 			
 			// Do we have any spells missing of each rank, within cost limits?
 			final List<SpellRank> availableSpellRanks = new ArrayList<SpellRank> ();
-			for (final SpellRank spellRank : db.getSpellRank ())
+			for (final SpellRank spellRank : mom.getServerDB ().getSpellRank ())
 				if ((spellRank.getTreasureRewardCost () != null) && (remainingTreasureValue >= spellRank.getTreasureRewardCost ()))
 				{
 					// Maybe we have all spells of this rank already, or maybe we can't them because we don't have enough books in this realm.
 					// To get spells as treasure rewards, need 1 pick for common/uncommon, 2 picks for rare, 3 picks for very rare.
 					boolean found = false;
-					final Iterator<Spell> spells = db.getSpell ().iterator ();
+					final Iterator<Spell> spells = mom.getServerDB ().getSpell ().iterator ();
 					while ((!found) && (spells.hasNext ()))
 					{
 						final Spell spell = spells.next ();
@@ -265,10 +260,10 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			if (remainingTreasureValue >= PRISONER_REWARD_COST)
 				for (final String summoned : summonHero.getSummonedUnit ())
 				{
-					final Unit possibleUnit = db.findUnit (summoned, "rollTreasureReward");
+					final Unit possibleUnit = mom.getServerDB ().findUnit (summoned, "rollTreasureReward");
 					
 					final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID
-						(gsk.getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summoned);
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summoned);
 					
 					boolean addToList = ((hero != null) && ((hero.getStatus () == UnitStatusID.GENERATED) || (hero.getStatus () == UnitStatusID.NOT_GENERATED)));
 
@@ -328,11 +323,11 @@ public final class TreasureUtilsImpl implements TreasureUtils
 				// Choose the actual hero item granted
 				case HERO_ITEM:
 					final NumberedHeroItem item = availableHeroItems.get (getRandomUtils ().nextInt (availableHeroItems.size ()));
-					final int craftingCost = getHeroItemCalculations ().calculateCraftingCost (item, db);
+					final int craftingCost = getHeroItemCalculations ().calculateCraftingCost (item, mom.getServerDB ());
 					log.debug ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation + " rolled hero item URN " +
 						item.getHeroItemURN () + " name " + item.getHeroItemName () + " with cost " + craftingCost);
 					
-					gsk.getAvailableHeroItem ().remove (item);
+					mom.getGeneralServerKnowledge ().getAvailableHeroItem ().remove (item);
 					priv.getUnassignedHeroItem ().add (item);
 					reward.getHeroItem ().add (item);
 					remainingTreasureValue = remainingTreasureValue - craftingCost;
@@ -342,7 +337,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 				case SPELL:
 					final SpellRank spellRank = availableSpellRanks.get (getRandomUtils ().nextInt (availableSpellRanks.size ()));
 					final List<SpellResearchStatus> availableSpells = new ArrayList<SpellResearchStatus> ();
-					for (final Spell spell : db.getSpell ())
+					for (final Spell spell : mom.getServerDB ().getSpell ())
 						if ((spell.getSpellRank () != null) && (spell.getSpellRank ().equals (spellRank.getSpellRankID ())))
 						{
 							final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
@@ -410,7 +405,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					// Rest of this is as per summon hero spell
 					// Check if the lair/node/tower has space for the unit
 					final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-						(lairNodeTowerLocation, hero.getUnitID (), player.getPlayerDescription ().getPlayerID (), gsk.getTrueMap (), players, sd, db);
+						(lairNodeTowerLocation, hero.getUnitID (), player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 					log.debug ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation + " rolled prisoner URN " +
 						hero.getUnitURN () + " ID " + hero.getUnitID () + " name " + hero.getUnitName () + ", bump result " + addLocation.getBumpType ());
 					
@@ -422,12 +418,13 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					if (addLocation.getUnitLocation () != null)
 					{
 						if (hero.getStatus () == UnitStatusID.NOT_GENERATED)
-							getUnitServerUtils ().generateHeroNameAndRandomSkills (hero, db);
+							getUnitServerUtils ().generateHeroNameAndRandomSkills (hero, mom.getServerDB ());
 
-						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, players, gsk.getTrueMap (), sd, db);
+						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, true, mom);
 					
 						// Let it move this turn
-						hero.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (hero, null, null, null, players, gsk.getTrueMap (), db).getMovementSpeed ());
+						hero.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (hero, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getMovementSpeed ());
 					}
 					break;
 
@@ -444,7 +441,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			
 			if (mapFeatureID != null)
 			{
-				final MapFeature mapFeature = db.findMapFeature (mapFeatureID, "rollTreasureReward");
+				final MapFeature mapFeature = mom.getServerDB ().findMapFeature (mapFeatureID, "rollTreasureReward");
 				for (final String book : mapFeature.getMapFeatureTreasureBookReward ())
 					availableSpellBookIDs.add (book);
 			}
@@ -452,7 +449,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			// If we got none, then either there was no map feature there, or its not a lair type of feature, e.g. gold
 			if (availableSpellBookIDs.size () == 0)
 			{
-				final TileType tileType = db.findTileType (tileTypeID, "rollTreasureReward");
+				final TileType tileType = mom.getServerDB ().findTileType (tileTypeID, "rollTreasureReward");
 				if (tileType.getMagicRealmID () != null)
 					availableSpellBookIDs.add (tileType.getMagicRealmID ());
 			}
@@ -480,9 +477,9 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			{
 				// Get a list of all books and all retorts that we could obtain
 				final Map<String, List<Pick>> availablePickTypes = new HashMap<String, List<Pick>> (); 
-				for (final Pick pick : db.getPick ())
+				for (final Pick pick : mom.getServerDB ().getPick ())
 				{					
-					final PickType pickType = db.findPickType (pick.getPickType (), "rollTreasureReward");
+					final PickType pickType = mom.getServerDB ().findPickType (pick.getPickType (), "rollTreasureReward");
 					
 					// Can't pick Myrran, or spend more points than we have
 					if ((pick.getPickCost () != null) && (pick.getPickCost () <= 2) && (pick.getPickCost () <= specialRewardCount) &&
@@ -502,7 +499,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 							for (final PickPrerequisite prereq : pick.getPickPrerequisite ())
 								if (prereq.getPrerequisiteID () != null)
 								{
-									final Pick prereqPick = db.findPick (prereq.getPrerequisiteID (), "rollTreasureReward");
+									final Pick prereqPick = mom.getServerDB ().findPick (prereq.getPrerequisiteID (), "rollTreasureReward");
 									
 									// Sneaky way to identify Divine Power and Infernal Power without hard coding them
 									if ((prereqPick.getPickExclusiveFrom ().size () > 0) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPrerequisiteID ()) == 0))
@@ -560,8 +557,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					specialRewardCount = 0;
 		
 					final List<NumberedHeroItem> availableHeroItems = new ArrayList<NumberedHeroItem> ();
-					for (final NumberedHeroItem item : gsk.getAvailableHeroItem ())
-						if ((!sd.getHeroItemSetting ().isRequireBooksForTreasureRewards ()) && (getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), db)))
+					for (final NumberedHeroItem item : mom.getGeneralServerKnowledge ().getAvailableHeroItem ())
+						if ((!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForTreasureRewards ()) && (getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), mom.getServerDB ())))
 							availableHeroItems.add (item);
 				
 					log.debug ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation +
@@ -570,7 +567,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					if (availableHeroItems.size () > 0)
 					{
 						final NumberedHeroItem item = availableHeroItems.get (getRandomUtils ().nextInt (availableHeroItems.size ()));
-						gsk.getAvailableHeroItem ().remove (item);
+						mom.getGeneralServerKnowledge ().getAvailableHeroItem ().remove (item);
 						priv.getUnassignedHeroItem ().add (item);
 						reward.getHeroItem ().add (item);
 
@@ -584,7 +581,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					final List<String> availablePickTypesList = new ArrayList<String> ();
 					for (final String pickTypeID : availablePickTypes.keySet ())
 					{
-						final Integer relativeChance = db.findPickType (pickTypeID, "rollTreasureReward").getRelativeChance ();
+						final Integer relativeChance = mom.getServerDB ().findPickType (pickTypeID, "rollTreasureReward").getRelativeChance ();
 						if (relativeChance != null)
 							for (int n = 0; n < relativeChance; n++)
 								availablePickTypesList.add (pickTypeID);

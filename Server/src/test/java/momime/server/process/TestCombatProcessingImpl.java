@@ -586,15 +586,11 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);

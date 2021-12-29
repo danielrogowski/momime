@@ -124,18 +124,13 @@ public interface SpellCasting
 	 * @param spell Which spell was cast
 	 * @param targetLocation Tile to change
 	 * @param castingPlayerID Player who cast the spell
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void changeTileType (final Spell spell, final MapCoordinates3DEx targetLocation, final int castingPlayerID, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
+	public void changeTileType (final Spell spell, final MapCoordinates3DEx targetLocation, final int castingPlayerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

@@ -644,8 +644,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Its possible to get a list of 0 here, if the only surviving attacking units were combat summons like phantom warriors which have now been removed
 				if (unitStack.size () > 0)
-					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
-						moveFrom, moveTo, mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer, moveFrom, moveTo, mom);
 				
 				// Before we remove buildings, check if this was the wizard's fortress and/or summoning circle
 				final boolean wasSummoningCircle = (useCaptureCityDecision != null) && (getMemoryBuildingUtils ().findBuilding
@@ -675,8 +674,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// If their summoning circle was taken, but they still have their fortress elsewhere, then move summoning circle to there
 				if ((wasSummoningCircle) && (useCaptureCityDecision != CaptureCityDecisionID.RAMPAGE) && (mom.getPlayers ().size () > 0))
-					getCityProcessing ().moveSummoningCircleToWizardsFortress (defendingPlayer.getPlayerDescription ().getPlayerID (),
-						mom.getGeneralServerKnowledge (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					getCityProcessing ().moveSummoningCircleToWizardsFortress (defendingPlayer.getPlayerDescription ().getPlayerID (), mom);
 			}
 			else
 			{
@@ -724,13 +722,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Even if one side won the combat, they might have lost their unit with the longest scouting range
 				// So easiest to just recalculate FOW for both players
 				if (defendingPlayer != null)
-					getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
-						defendingPlayer, mom.getPlayers (), "combatEnded-D", mom.getSessionDescription (), mom.getServerDB ());
+					getFogOfWarProcessing ().updateAndSendFogOfWar (defendingPlayer, "combatEnded-D", mom);
 				
 				// If attacker won, we'll have already recalc'd their FOW when their units advanced 1 square
 				// But lets do it anyway - maybe they captured a city with an Oracle
-				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
-					attackingPlayer, mom.getPlayers (), "combatEnded-A", mom.getSessionDescription (), mom.getServerDB ());
+				getFogOfWarProcessing ().updateAndSendFogOfWar (attackingPlayer, "combatEnded-A", mom);
 				
 				// Remove all combat area effects from spells like Prayer, Mass Invisibility, etc.
 				log.debug ("Removing all spell CAEs");

@@ -2,13 +2,13 @@ package momime.server.fogofwar;
 
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
@@ -16,12 +16,10 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.PendingMovementStep;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
-import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.OneCellPendingMovement;
 
 /**
@@ -73,20 +71,15 @@ public interface FogOfWarMidTurnMultiChanges
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
 	 * @param cityLocation Location of the city to remove the building from
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void destroyAllBuildingsInLocationOnServerAndClients (final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation,
-		final MomSessionDescription sd, final CommonDatabase db)
+	public void destroyAllBuildingsInLocationOnServerAndClients (final MapCoordinates3DEx cityLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**
@@ -140,10 +133,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 *			in a tower (on plane 0) moving to a map cell on Myrror - in this case the only way to know the correct value
 	 *			of moveTo.getPlane () is by what map cell the player clicked on in the UI.
 	 *
-	 * @param players List of players in the session
-	 * @param gsk Server knowledge structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -151,8 +141,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
-		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
+		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 
 	/**
@@ -255,17 +244,13 @@ public interface FogOfWarMidTurnMultiChanges
 	 * Units stuck in webs in combat hack/burn some of the HP off the web trying to free themselves.
 	 * 
 	 * @param webbedUnits List of units stuck in web
-	 * @param gsk Server knowledge structure
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 */
-	public void processWebbedUnits (final List<ExpandedUnitDetails> webbedUnits, final MomGeneralServerKnowledge gsk,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public void processWebbedUnits (final List<ExpandedUnitDetails> webbedUnits, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 }

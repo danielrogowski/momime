@@ -692,8 +692,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					final List<ExpandedUnitDetails> webbedUnits = getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayerID (), combatLocation,
 						terrifiedUnitURNs, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
-					getFogOfWarMidTurnMultiChanges ().processWebbedUnits (webbedUnits,
-						mom.getGeneralServerKnowledge (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+					getFogOfWarMidTurnMultiChanges ().processWebbedUnits (webbedUnits, mom);
 					
 					// Allow the player to cast a spell this turn
 					tc.setSpellCastThisCombatTurn (null);
@@ -918,9 +917,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// Now create them
 			for (int zombieNo = 0; zombieNo < zombieCount; zombieNo++)
-				zombiesCreated.add (getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-					CommonDatabaseConstants.UNIT_ID_ZOMBIE, newLocation, null, null, null,
-					winningPlayer, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()));
+				zombiesCreated.add (getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (CommonDatabaseConstants.UNIT_ID_ZOMBIE, newLocation, null, null, null,
+					winningPlayer, UnitStatusID.ALIVE, true, mom));
 		}
 	
 		log.debug ("zombiesCreated created zombies from " + zombiesCreated.size ()  + " dead normal units");

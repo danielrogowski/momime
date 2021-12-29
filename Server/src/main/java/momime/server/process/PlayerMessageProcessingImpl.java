@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -19,6 +18,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.UnitCalculations;
@@ -95,7 +95,6 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.ServerGridCellEx;
-import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.PlayerServerUtils;
@@ -387,31 +386,28 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 	/**
 	 * Finds all heroes in the XML database and creates them as ungenerated units for all players
-	 * @param players List of players in the session
-	 * @param gsk Server knowledge structure
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If initialStatus is an inappropriate value
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws PlayerNotFoundException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws JAXBException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
-	private final void createHeroes (final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
-		final MomSessionDescription sd, final CommonDatabase db)
+	private final void createHeroes (final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		for (final UnitEx thisUnit : db.getUnits ())
+		for (final UnitEx thisUnit : mom.getServerDB ().getUnits ())
 			if (thisUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 
 				// Add this hero for all players, even raiders, just not the monsters
 				// We won't end up sending these to the client since we're setting status as 'not generated'
-				for (final PlayerServerDetails thisPlayer : players)
+				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				{
 					final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 					if (!ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
-						getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), null, null, null, null,
-							thisPlayer, UnitStatusID.NOT_GENERATED, null, sd, db);
+						getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (thisUnit.getUnitID (), null, null, null, null,
+							thisPlayer, UnitStatusID.NOT_GENERATED, false, mom);
 				}
 	}
 
@@ -544,11 +540,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			// Add monsters in nodes/lairs/towers - can only do this after we've added the players
 			log.info ("Filling nodes, lairs & towers with monsters...");
-			mom.getOverlandMapGenerator ().fillNodesLairsAndTowersWithMonsters (monstersPlayer);
+			mom.getOverlandMapGenerator ().fillNodesLairsAndTowersWithMonsters (monstersPlayer, mom);
 
 			// Sort out heroes
 			log.info ("Loading list of heroes for each player...");
-			createHeroes (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+			createHeroes (mom);
 
 			if (mom.getSessionDescription ().getUnitSetting ().isRollHeroSkillsAtStartOfGame ())
 			{
@@ -560,13 +556,12 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			// Create cities
 			log.info ("Creating starting cities...");
-			getCityProcessing ().createStartingCities (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+			getCityProcessing ().createStartingCities (mom);
 
 			// Now we've created starting cities, we can figure out the initial fog of war area that each player can see
 			log.info ("Generating and sending initial fog of war...");
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
-				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), thisPlayer,
-					mom.getPlayers (), "checkIfCanStartGame", mom.getSessionDescription (), mom.getServerDB ());
+				getFogOfWarProcessing ().updateAndSendFogOfWar (thisPlayer, "checkIfCanStartGame", mom);
 
 			// Give each wizard initial skill and gold, and setting optional farmers in all cities
 			log.info ("Setting wizards' initial skill and gold, and optional farmers in all cities");

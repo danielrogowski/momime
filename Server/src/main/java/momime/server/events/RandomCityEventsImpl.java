@@ -341,10 +341,8 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 				mom.getWorldUpdates ().process (mom);
 
 				// Update what both players can see, otherwise the new city owner can't see the city they now own
-				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
-					oldCityOwner, mom.getPlayers (), "event-DM-REB-Old", mom.getSessionDescription (), mom.getServerDB ());
-				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
-					newCityOwner, mom.getPlayers (), "event-DM-REB-New", mom.getSessionDescription (), mom.getServerDB ());
+				getFogOfWarProcessing ().updateAndSendFogOfWar (oldCityOwner, "event-DM-REB-Old", mom);
+				getFogOfWarProcessing ().updateAndSendFogOfWar (newCityOwner, "event-DM-REB-New", mom);
 			}
 				
 			// Great Meteor, Earthquake 

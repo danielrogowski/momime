@@ -445,8 +445,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			// It is possible that we try to hire a hero but he has nowhere to fit
 			if (addLocation.getUnitLocation () != null)
 			{
-				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, true, mom);
 				
 				// Let it move this turn
 				hero.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (hero, null, null, null,
@@ -482,9 +481,8 @@ public final class OfferGeneratorImpl implements OfferGenerator
 					keepGoing = false;
 				else
 				{
-					final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-						unitsOffer.getUnitID (), addLocation.getUnitLocation (), null, expLevel.getExperienceRequired (),
-						null, player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (unitsOffer.getUnitID (), addLocation.getUnitLocation (), null,
+						expLevel.getExperienceRequired (), null, player, UnitStatusID.ALIVE, true, mom);
 
 					// Let it move this turn
 					newUnit.setDoubleOverlandMovesLeft (2 * getExpandUnitDetails ().expandUnitDetails (newUnit, null, null, null,

@@ -22,7 +22,6 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MomDatabase;
 import momime.common.database.PickAndQuantity;
@@ -38,7 +37,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.NewTurnMessageData;
@@ -199,17 +197,14 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 *
 	 * @param wizardID wizard ID the player wants to choose
 	 * @param player Player who sent the message
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 */
 	@Override
-	public final void chooseWizard (final String wizardID, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public final void chooseWizard (final String wizardID, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
 		// Check if not specified
@@ -220,7 +215,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		// Check if custom
 		else if (getPlayerKnowledgeUtils ().isCustomWizard (wizardID))
-			valid = sd.getDifficultyLevel ().isCustomWizards ();
+			valid = mom.getSessionDescription ().getDifficultyLevel ().isCustomWizards ();
 
 		// Check if Raiders
 		else if ((player.getPlayerDescription ().isHuman ()) &&
@@ -233,7 +228,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		{
 			try
 			{
-				wizard = db.findWizard (wizardID, "chooseWizard");
+				wizard = mom.getServerDB ().findWizard (wizardID, "chooseWizard");
 				valid = true;
 			}
 			catch (final RecordNotFoundException e)
@@ -254,8 +249,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		}
 
 		// Wizard might be valid, but check if option prohibits player from choosing same wizard as another player has already chosen
-		else if ((sd.getDifficultyLevel ().isEachWizardOnlyOnce ()) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardID)) &&
-			(getPlayerPickServerUtils ().findPlayerUsingWizard (players, wizardID) != null))
+		else if ((mom.getSessionDescription ().getDifficultyLevel ().isEachWizardOnlyOnce ()) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardID)) &&
+			(getPlayerPickServerUtils ().findPlayerUsingWizard (mom.getPlayers (), wizardID) != null))
 		{
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText ("Game is set to only allow each Wizard to be chosen once, and another player already chose this Wizard, please try again");
@@ -277,9 +272,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					// Find the correct node in the database for the number of player human players have
 					final int desiredPickCount;
 					if (player.getPlayerDescription ().isHuman ())
-						desiredPickCount = sd.getDifficultyLevel ().getHumanSpellPicks ();
+						desiredPickCount = mom.getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ();
 					else
-						desiredPickCount = sd.getDifficultyLevel ().getAiSpellPicks ();
+						desiredPickCount = mom.getSessionDescription ().getDifficultyLevel ().getAiSpellPicks ();
 
 					final Optional<WizardPickCount> pickCount = wizard.getWizardPickCount ().stream ().filter (pc -> pc.getPickCount () == desiredPickCount).findAny ();
 					if (pickCount.isEmpty ())
@@ -328,7 +323,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					{
 						// This will tell the client to either pick free spells for the first magic realm that they have earned free spells in, or pick their race, depending on what picks they've chosen
 						log.debug ("chooseWizard: About to search for first realm (if any) where human player " + player.getPlayerDescription ().getPlayerName () + " gets free spells");
-						final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
+						final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom.getServerDB ());
 						if (chooseSpellsMsg != null)
 							player.getConnection ().sendMessageToClient (chooseSpellsMsg);
 						else
@@ -339,13 +334,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						// For AI players, we call this repeatedly until all free spells have been chosen
 						log.debug ("chooseWizard: About to choose all free spells for AI player " + player.getPlayerDescription ().getPlayerName ());
 
-						while (getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, db) != null);
+						while (getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom.getServerDB ()) != null);
 					}
 				}
 			}
 
 			// Tell everyone about the wizard this player has chosen
-			broadcastWizardChoice (players, player);
+			broadcastWizardChoice (mom.getPlayers (), player);
 		}
 	}
 
@@ -444,7 +439,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					final PlayerServerDetails aiPlayer = mom.addPlayer (createAiPlayerDescription (chosenWizard), null, null, true, null);
 
 					// Choose wizard
-					chooseWizard (chosenWizard.getWizardID (), aiPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					chooseWizard (chosenWizard.getWizardID (), aiPlayer, mom);
 
 					// Choose race
 					final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) aiPlayer.getTransientPlayerPrivateKnowledge ();
@@ -462,7 +457,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			final MomPersistentPlayerPrivateKnowledge raidersPriv = (MomPersistentPlayerPrivateKnowledge) raidersPlayer.getPersistentPlayerPrivateKnowledge ();
 			raidersPriv.getSpellResearchStatus ().forEach (r -> r.setStatus (SpellResearchStatusID.UNAVAILABLE));
 			
-			chooseWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, raidersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			chooseWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, raidersPlayer, mom);
 
 			// Add monsters
 			final PlayerServerDetails monstersPlayer = mom.addPlayer (createAiPlayerDescription
@@ -471,7 +466,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			final MomPersistentPlayerPrivateKnowledge monstersPriv = (MomPersistentPlayerPrivateKnowledge) monstersPlayer.getPersistentPlayerPrivateKnowledge ();
 			monstersPriv.getSpellResearchStatus ().forEach (r -> r.setStatus (SpellResearchStatusID.UNAVAILABLE));
 			
-			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom);
 
 			// Broadcast player data
 			log.debug ("checkIfCanStartGame: Broadcasting player picks and determining which spells not chosen for free will be researchable");

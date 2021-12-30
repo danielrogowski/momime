@@ -438,9 +438,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 					hero.getUnitURN () + " but their status is " + hero.getStatus ());
 			
 			final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-				((MapCoordinates3DEx) fortressLocation.getCityLocation (), hero.getUnitID (),
-					player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				((MapCoordinates3DEx) fortressLocation.getCityLocation (), hero.getUnitID (), player.getPlayerDescription ().getPlayerID (), mom);
 			
 			// It is possible that we try to hire a hero but he has nowhere to fit
 			if (addLocation.getUnitLocation () != null)
@@ -473,9 +471,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			while (keepGoing)
 			{
 				final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-					((MapCoordinates3DEx) fortressLocation.getCityLocation (), unitsOffer.getUnitID (),
-						player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
-						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					((MapCoordinates3DEx) fortressLocation.getCityLocation (), unitsOffer.getUnitID (), player.getPlayerDescription ().getPlayerID (), mom);
 				
 				if (addLocation.getUnitLocation () == null)
 					keepGoing = false;

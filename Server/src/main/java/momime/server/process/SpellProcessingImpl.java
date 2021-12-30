@@ -1142,8 +1142,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (summoningCircleLocation != null)
 				{
 					final UnitAddLocation resurrectLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-						((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), targetUnit.getUnitID (), maintainedSpell.getCastingPlayerID (),
-							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						((MapCoordinates3DEx) summoningCircleLocation.getCityLocation (), targetUnit.getUnitID (), maintainedSpell.getCastingPlayerID (), mom);
 					
 					if (resurrectLocation.getUnitLocation () != null)
 					{

@@ -25,7 +25,6 @@ import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -60,9 +59,6 @@ public final class TestSpellCastingImpl
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -85,7 +81,6 @@ public final class TestSpellCastingImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Spell to cast
 		final Spell spell = new Spell ();
@@ -98,7 +93,7 @@ public final class TestSpellCastingImpl
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (new MapCoordinates3DEx (15, 25, 0), UnitAddBumpTypeID.CITY);
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (new MapCoordinates3DEx (15, 25, 0), "UN001", 7, trueMap, players, sd, db)).thenReturn (addLocation);
+		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (new MapCoordinates3DEx (15, 25, 0), "UN001", 7, mom)).thenReturn (addLocation);
 		
 		// Mock creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -159,9 +154,6 @@ public final class TestSpellCastingImpl
 				possibleSummons.add (unitDef);
 			}
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -184,7 +176,6 @@ public final class TestSpellCastingImpl
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Spell to cast
 		final Spell spell = new Spell ();
@@ -197,7 +188,7 @@ public final class TestSpellCastingImpl
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (new MapCoordinates3DEx (15, 25, 0), UnitAddBumpTypeID.CITY);
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (new MapCoordinates3DEx (15, 25, 0), "UN008", 7, trueMap, players, sd, db)).thenReturn (addLocation);
+		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (new MapCoordinates3DEx (15, 25, 0), "UN008", 7, mom)).thenReturn (addLocation);
 		
 		// Heroes already exist in the units list, but lets say 1 we've already summoned, and another we've already summoned and got them killed
 		MemoryUnit theHero = null;

@@ -405,8 +405,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					// Rest of this is as per summon hero spell
 					// Check if the lair/node/tower has space for the unit
 					final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-						(lairNodeTowerLocation, hero.getUnitID (), player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
-							mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						(lairNodeTowerLocation, hero.getUnitID (), player.getPlayerDescription ().getPlayerID (), mom);
 					log.debug ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation + " rolled prisoner URN " +
 						hero.getUnitURN () + " ID " + hero.getUnitID () + " name " + hero.getUnitName () + ", bump result " + addLocation.getBumpType ());
 					

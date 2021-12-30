@@ -36,6 +36,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroName;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.TileTypeEx;
@@ -60,6 +61,7 @@ import momime.common.utils.UnitUtilsImpl;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the UnitServerUtils class
@@ -1051,13 +1053,10 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		// We aren't trying to add on top of a node
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (createOverlandMapSize ());
-
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
+		trueMap.setMap (createOverlandMap (overlandMapSize));
 		
 		// Unit we're trying to add
 		final SampleUnitUtils sampleUnitUtils = mock (SampleUnitUtils.class);
@@ -1089,6 +1088,15 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (ourUnit);
 		when (unitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (8);
 		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
@@ -1100,7 +1108,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// So we eventually end up being positioned down-right of our preferred location
-		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, players, sd, db);
+		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, mom);
 		assertEquals (UnitAddBumpTypeID.CITY, result.getBumpType ());
 		assertEquals (20, result.getUnitLocation ().getX ());
 		assertEquals (10, result.getUnitLocation ().getY ());
@@ -1169,6 +1177,16 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (9).getCell ().get (21).getTerrainData ().setTileTypeID ("TT03");
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (21).getTerrainData ().setTileTypeID ("TT03");
 
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
@@ -1180,7 +1198,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// So we eventually end up being positioned down-right of our preferred location
-		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, players, sd, db);
+		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, mom);
 		assertEquals (UnitAddBumpTypeID.BUMPED, result.getBumpType ());
 		assertEquals (21, result.getUnitLocation ().getX ());
 		assertEquals (11, result.getUnitLocation ().getY ());
@@ -1226,6 +1244,16 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
 			any (CommonDatabase.class))).thenReturn (null);
 
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
@@ -1242,7 +1270,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		addLocation.setZ (1);
 		
 		// So we eventually end up being positioned down-right of our preferred location
-		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, players, sd, db);
+		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, mom);
 		assertEquals (UnitAddBumpTypeID.NO_ROOM, result.getBumpType ());
 		assertNull (result.getUnitLocation ());
 	}

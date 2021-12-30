@@ -126,7 +126,7 @@ public final class SpellCastingImpl implements SpellCasting
 
 			// Check if the summon location has space for the unit
 			final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-				(summonLocation, summonedUnit.getUnitID (), player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				(summonLocation, summonedUnit.getUnitID (), player.getPlayerDescription ().getPlayerID (), mom);
 
 			final MemoryUnit newUnit;
 			if (addLocation.getUnitLocation () == null)

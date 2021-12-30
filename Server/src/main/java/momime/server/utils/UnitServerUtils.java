@@ -22,7 +22,6 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
@@ -118,17 +117,13 @@ public interface UnitServerUtils
 	 * @param desiredLocation Location that we're trying to add a unit
 	 * @param unitID Type of unit that we're trying to add
 	 * @param playerID Player who is trying to add the unit
-	 * @param trueMap Server's true knowledge of terrain, units and so on
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Location + bump type; note class and bump type will always be filled in, but location may be null if the unit cannot fit anywhere
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final MapCoordinates3DEx desiredLocation, final String unitID, final int playerID,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final MapCoordinates3DEx desiredLocation, final String unitID, final int playerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**

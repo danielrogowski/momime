@@ -766,17 +766,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		cityData.setCityPopulation (1000);
 		
 		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25).setCityData (cityData);
-		
-		// Production each turn
-		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
-		
-		// Where the unit will appear
-		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (new MapCoordinates3DEx (25, 15, 1), "UN001", 1, trueMap, players, sd, db)).thenReturn
-			(new UnitAddLocation (new MapCoordinates3DEx (26, 15, 1), UnitAddBumpTypeID.BUMPED));
-		
+
 		// No event
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		
@@ -790,6 +780,16 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
+		// Production each turn
+		final CityCalculations cityCalculations = mock (CityCalculations.class);
+		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
+		
+		// Where the unit will appear
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (new MapCoordinates3DEx (25, 15, 1), "UN001", 1, mom)).thenReturn
+			(new UnitAddLocation (new MapCoordinates3DEx (26, 15, 1), UnitAddBumpTypeID.BUMPED));
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);

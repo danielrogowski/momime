@@ -3,7 +3,6 @@ package momime.server.ai;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystem;
@@ -12,11 +11,11 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Wizard;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
@@ -51,20 +50,15 @@ public interface CityAI
 	/**
 	 * Sets the number of optional farmers optimally in every city owned by one player
 	 *
-	 * @param trueMap True map details
-	 * @param players List of players in the session
 	 * @param player Player who we want to reset the number of optional farmers for
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws RecordNotFoundException If we encounter a unitID that doesn't exist
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
-	public void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd, final String conjunctionEventID)
+	public void setOptionalFarmersInAllCities (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**

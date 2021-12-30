@@ -385,8 +385,7 @@ public final class MomAIImpl implements MomAI
 				getCityAI ().decideTaxRate (player, mom);
 				
 				// This relies on knowing what's being built in each city and the tax rate, so do it almost last
-				getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player,
-					mom.getServerDB (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+				getCityAI ().setOptionalFarmersInAllCities (player, mom);
 				
 				// This relies on knowing the production each city is generating, so need the number of farmers + workers set, so do it really last
 				getCityAI ().checkForRushBuying (player, mom);

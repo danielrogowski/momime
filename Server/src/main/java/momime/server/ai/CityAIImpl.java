@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +20,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 import com.ndg.random.WeightedChoicesImpl;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
@@ -29,13 +29,11 @@ import momime.common.database.AiBuildingTypeID;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.Wizard;
 import momime.common.internal.CityProductionBreakdown;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
@@ -161,12 +159,8 @@ public final class CityAIImpl implements CityAI
 	/**
 	 * Sets the number of optional farmers optimally in every city owned by one player
 	 *
-	 * @param trueMap True map details
-	 * @param players List of players in the session
 	 * @param player Player who we want to reset the number of optional farmers for
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws RecordNotFoundException If we encounter a unitID that doesn't exist
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
@@ -174,18 +168,18 @@ public final class CityAIImpl implements CityAI
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	@Override
-	public final void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd, final String conjunctionEventID)
+	public final void setOptionalFarmersInAllCities (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// First find how many rations our current army needs
 		int rationsNeeded = 0;
-		for (final MemoryUnit thisUnit : trueMap.getUnit ())
+		for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				rationsNeeded = rationsNeeded + xu.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 			}
 
@@ -195,19 +189,22 @@ public final class CityAIImpl implements CityAI
 		// e.g. a size 1 city with a granary next to a wild game resource will produce +3 rations even with no farmers,
 		// or a size 1 city with no resources must be a farmer, but he only eats 1 of the 2 rations he produces so this also gives +1
 		final List<AICityRationDetails> cities = new ArrayList<AICityRationDetails> ();
-		for (final Plane plane : db.getPlane ())
-			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				{
-					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
+					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(z).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
 					{
 						cityData.setOptionalFarmers (0);
 
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 
-						final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
-							trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), sd, conjunctionEventID, true, false, db);
+						final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
+							mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ());
 						final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 						
 						final AICityRationDetails cityDetails = new AICityRationDetails ();
@@ -233,7 +230,8 @@ public final class CityAIImpl implements CityAI
 			final boolean wantTradeGoods = (category == 1) || (category == 3);
 			final boolean wantOverfarming = (category >= 3);
 			
-			final AICityRationDetails cityDetails = getAiCityCalculations ().findWorkersToConvertToFarmers (cities, wantTradeGoods, wantOverfarming, trueMap.getMap ());
+			final AICityRationDetails cityDetails = getAiCityCalculations ().findWorkersToConvertToFarmers (cities, wantTradeGoods, wantOverfarming,
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap ());
 			if (cityDetails == null)
 			{
 				log.debug ("No more cities matching category " + category);
@@ -242,12 +240,14 @@ public final class CityAIImpl implements CityAI
 			else
 			{
 				// Increase optional farmers in this city and recalculate
-				final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityDetails.getCityLocation ().getZ ()).getRow ().get
-					(cityDetails.getCityLocation ().getY ()).getCell ().get (cityDetails.getCityLocation ().getX ()).getCityData ();
+				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(cityDetails.getCityLocation ().getZ ()).getRow ().get (cityDetails.getCityLocation ().getY ()).getCell ().get (cityDetails.getCityLocation ().getX ()).getCityData ();
 				cityData.setOptionalFarmers (cityData.getOptionalFarmers () + 1);
 
-				final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
-					trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityDetails.getCityLocation (), priv.getTaxRateID (), sd, conjunctionEventID, true, false, db);
+				final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityDetails.getCityLocation (), priv.getTaxRateID (), mom.getSessionDescription (),
+						mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ());
 				final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 
 				final boolean nowOverfarming = (rations != null) && (rations.getProductionAmountAfterOverfarmingPenalty () != null);
@@ -273,16 +273,18 @@ public final class CityAIImpl implements CityAI
 		}
 
 		// Update each player's memorised view of this city with the new number of optional farmers, if they can see it
-		for (final Plane plane : db.getPlane ())
-			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				{
-					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
+					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(z).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
 					{
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), cityLocation,
+							mom.getSessionDescription ().getFogOfWarSetting ());
 					}
 				}
 	}

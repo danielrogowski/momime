@@ -582,8 +582,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				}
 
 				// Default each player's farmers to just enough to feed their initial units
-				getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), thisPlayer,
-					mom.getServerDB (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+				getCityAI ().setOptionalFarmersInAllCities (thisPlayer, mom);
 			}
 
 			// Calculate and send initial production values - This is especially important in one-at-a-time games with more

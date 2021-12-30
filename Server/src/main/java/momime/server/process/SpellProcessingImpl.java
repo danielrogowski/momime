@@ -759,9 +759,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 					(xuTargetUnit, combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 						mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 	
-				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), targetUnit,
-					combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, targetUnit,
+					combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom);
 	
 				// Allow it to be moved this combat turn
 				targetUnit.setDoubleCombatMovesLeft (2 * xuTargetUnit.getMovementSpeed ());
@@ -797,9 +796,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(xuSummonedUnit, combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 							mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
-					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
-						combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
+						combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom);
 					
 					// Allow it to be moved this combat turn
 					tu.setDoubleCombatMovesLeft (2 * xuSummonedUnit.getMovementSpeed ());
@@ -939,9 +937,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						{
 							// Recall spells - first take the unit(s) out of combat
 							for (final MemoryUnit tu : targetUnits)
-								getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
-									mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
-									combatLocation, null, null, null, castingSide, spell.getSpellID (), mom.getServerDB ());
+								getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
+									combatLocation, null, null, null, castingSide, spell.getSpellID (), mom);
 							
 							// Now teleport it back to our summoning circle
 							getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,

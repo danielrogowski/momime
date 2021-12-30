@@ -715,7 +715,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Have to do this before we recalc FOW, since if one side was wiped out, the FOW update may delete their memory of the opponent... which
 				// then crashes the client if we then try to send msgs to take those opposing units out of combat.
 				log.debug ("Removing units out of combat");
-				getCombatProcessing ().removeUnitsFromCombat (attackingPlayer, defendingPlayer, mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getServerDB ());
+				getCombatProcessing ().removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 				
 				// Even if one side won the combat, they might have lost their unit with the longest scouting range
 				// So easiest to just recalculate FOW for both players

@@ -12,12 +12,9 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
 import momime.common.messages.servertoclient.StartCombatMessage;
@@ -186,7 +183,6 @@ public interface CombatProcessing
 	 * 
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
-	 * @param trueTerrain True overland terrain
 	 * @param trueUnit The true unit being put into or taken out of combat
 	 * @param terrainLocation The location the combat is taking place
 	 * @param combatLocation For putting unit into combat, is the location the combat is taking place (i.e. = terrainLocation), for taking unit out of combat will be null
@@ -194,14 +190,14 @@ public interface CombatProcessing
 	 * @param combatHeading For putting unit into combat, is the direction the the unit is heading on the battlefield, for taking unit out of combat will be null
 	 * @param combatSide For putting unit into combat, specifies which side they're on, for taking unit out of combat will be null
 	 * @param summonedBySpellID For summoning new units directly into combat (e.g. fire elementals) gives the spellID they were summoned with; otherwise null
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 */
-	public void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapVolumeOfMemoryGridCells trueTerrain,
+	public void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final MemoryUnit trueUnit, final MapCoordinates3DEx terrainLocation, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
-		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final CommonDatabase db)
+		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
 	
 	/**
@@ -209,15 +205,14 @@ public interface CombatProcessing
 	 * 
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
-	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param combatLocation The location the combat took place
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 */
-	public void removeUnitsFromCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
-		final MapCoordinates3DEx combatLocation, final CommonDatabase db)
+	public void removeUnitsFromCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
 	
 	/**

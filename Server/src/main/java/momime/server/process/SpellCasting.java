@@ -12,7 +12,6 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.server.MomSessionVariables;
 
@@ -44,13 +43,12 @@ public interface SpellCasting
 	 * 
 	 * @param ourSpellID Which spell allows us to see the info - Detect Magic or Spell Blast
 	 * @param onlyOnePlayerID If zero, will send to all players who have Detect Magic cast; if specified will send only to the specified player
-	 * @param players List of players in the session
-	 * @param spells List of known spells
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public void sendOverlandCastingInfo (final String ourSpellID, final int onlyOnePlayerID, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells) throws JAXBException, XMLStreamException;
+	public void sendOverlandCastingInfo (final String ourSpellID, final int onlyOnePlayerID, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException;
 	
 	/**
 	 * @param player Player to create casting info for

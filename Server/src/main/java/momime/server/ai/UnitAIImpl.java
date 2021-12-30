@@ -42,7 +42,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -149,18 +148,14 @@ public final class UnitAIImpl implements UnitAI
 	 * (mana for summoned units; gold for units constructed in cities - will ignore rations since we can always allocate more farmers).
 	 * 
 	 * @param player AI player who is considering constructing a unit
-	 * @param players Players list
-	 * @param trueUnits List of true units
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return List of all possible units this AI player can construct or summon, sorted with the best first
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final List<AIConstructableUnit> listAllUnitsWeCanConstruct (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final List<MemoryUnit> trueUnits, final MomSessionDescription sd, final CommonDatabase db)
+	public final List<AIConstructableUnit> listAllUnitsWeCanConstruct (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -169,9 +164,9 @@ public final class UnitAIImpl implements UnitAI
 		final List<AIConstructableUnit> results = new ArrayList<AIConstructableUnit> ();
 		
 		// Units we can construct in cities
-		for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
-			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				{
 					final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) && (cityData.getCityPopulation () >= 1000))
@@ -179,40 +174,41 @@ public final class UnitAIImpl implements UnitAI
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 						
 						final List<UnitEx> unitDefs = getCityCalculations ().listUnitsCityCanConstruct (cityLocation,
-							priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (), db);
+							priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (), mom.getServerDB ());
 						
 						for (final UnitEx unitDef : unitDefs)
 						{
 							// Need real example of the unit so that we property take into account if we have
 							// e.g. retorts that make it cheaper to maintained summoned creatures, or so on 
 							final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnitFromCity (unitDef.getUnitID (), player, cityLocation,
-								players, priv.getFogOfWarMemory (), sd.getOverlandMapSize (), db);
+								mom.getPlayers (), priv.getFogOfWarMemory (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 							
 							results.add (new AIConstructableUnit (unitDef, cityLocation, null,
-								getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, players, priv.getFogOfWarMemory (), db),
+								getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()),
 								getAiUnitCalculations ().determineAIUnitType (xu),
-								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, xu.getUnit (), sd.getSpellSetting (), db)));
+								getAiUnitCalculations ().canAffordUnitMaintenance (player, mom.getPlayers (), xu.getUnit (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())));
 						}									
 					}
 				}
 		
 		// Summonining spells we know
 		if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
-			for (final Spell spell : db.getSpell ())
+			for (final Spell spell : mom.getServerDB ().getSpell ())
 				if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getOverlandCastingCost () != null) &&
 					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
 				{
-					final List<UnitEx> unitDefs = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, trueUnits, db);
+					final List<UnitEx> unitDefs = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player,
+						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ());
 					for (final UnitEx unitDef : unitDefs)
 						if (!unitDef.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 						{
 							final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnit (unitDef.getUnitID (), player.getPlayerDescription ().getPlayerID (), null,
-								players, priv.getFogOfWarMemory (), db);
+								mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 							
 							results.add (new AIConstructableUnit (unitDef, null, spell,
-								getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, players, priv.getFogOfWarMemory (), db),
+								getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()),
 								getAiUnitCalculations ().determineAIUnitType (xu),
-								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, xu.getUnit (), sd.getSpellSetting (), db)));
+								getAiUnitCalculations ().canAffordUnitMaintenance (player, mom.getPlayers (), xu.getUnit (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())));
 						}
 				}
 		
@@ -616,29 +612,26 @@ public final class UnitAIImpl implements UnitAI
 
 	/**
 	 * @param playerID AI player whose turn it is
-	 * @param players List of players in this session
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
-	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Map listing all locations the AI wants to send specialised units of each type
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final Map<AIUnitType, List<MapCoordinates3DEx>> determineDesiredSpecialUnitLocations (final int playerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final CommonDatabase db)
+	public final Map<AIUnitType, List<MapCoordinates3DEx>> determineDesiredSpecialUnitLocations (final int playerID,
+		final FogOfWarMemory fogOfWarMemory, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		final List<MapCoordinates3DEx> desiredCityLocations = new ArrayList<MapCoordinates3DEx> ();
 		final List<MapCoordinates3DEx> desiredRoadLocations = new ArrayList<MapCoordinates3DEx> ();
 		final List<MapCoordinates3DEx> desiredNodeLocations = new ArrayList<MapCoordinates3DEx> ();
 		
-		for (int plane = 0; plane < sd.getOverlandMapSize ().getDepth (); plane++)
+		for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 		{
 			// Best place on each plane to put a new city
-			final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (fogOfWarMemory.getMap (), trueMap, plane, false, sd, db, "considering building/moving settler");
+			final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (fogOfWarMemory.getMap (), plane, false, mom, "considering building/moving settler");
 			if (desiredCityLocation != null)
 			{
 				log.debug ("AI Player ID " + playerID + " can put a city at " + desiredCityLocation);
@@ -646,7 +639,7 @@ public final class UnitAIImpl implements UnitAI
 			}
 			
 			// All places on each plane that we want to put road tiles
-			final List<MapCoordinates3DEx> missingRoadCells = getCityProcessing ().listMissingRoadCells (playerID, plane, null, players, fogOfWarMemory, sd, db);
+			final List<MapCoordinates3DEx> missingRoadCells = getCityProcessing ().listMissingRoadCells (playerID, plane, null, fogOfWarMemory, mom);
 			if ((missingRoadCells != null) && (missingRoadCells.size () > 0))
 			{
 				log.debug ("AI Player ID " + playerID + " has " + missingRoadCells.size () + " cells it wants to put road on plane " + plane);
@@ -655,7 +648,8 @@ public final class UnitAIImpl implements UnitAI
 			
 			// All places on each plane where we have units guarding a node, but don't own the node
 			// Don't just send spirits wildly towards nodes where we have no units or they'll end up attacking enemies guarding it and just die pointlessly
-			final List<MapCoordinates3DEx> nodesWeDontOwn = listNodesWeDontOwnOnPlane (playerID, plane, fogOfWarMemory, sd.getOverlandMapSize (), db);
+			final List<MapCoordinates3DEx> nodesWeDontOwn = listNodesWeDontOwnOnPlane (playerID, plane, fogOfWarMemory,
+				mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 			if ((nodesWeDontOwn != null) && (nodesWeDontOwn.size () > 0))
 			{
 				log.debug ("AI Player ID " + playerID + " has " + nodesWeDontOwn.size () + " guarded nodes it needs to capture on plane " + plane);

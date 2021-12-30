@@ -6,10 +6,9 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MomSessionDescription;
+import momime.server.MomSessionVariables;
 
 /**
  * Calculations the AI needs to make to decide where to place cities, and decide farmers and construction
@@ -21,15 +20,15 @@ public interface AICityCalculations
 	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
 	 * @param enforceMinimumQuality Whether to avoid returning data about cities that are too small to be useful; so usually true, but false if we want to evalulate even terrible cities
 	 * @param knownMap Known terrain
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * 	When called during map creation to place initial cities, this is the true map; when called for AI players using settlers, this is only what that player knows
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if enforceMinimumQuality = true and a city here is too small to be useful; otherwise an estimate of how good a city here is/will be
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public Integer evaluateCityQuality (final MapCoordinates3DEx cityLocation, final boolean avoidOtherCities, final boolean enforceMinimumQuality,
-		final MapVolumeOfMemoryGridCells knownMap, final MomSessionDescription sd, final CommonDatabase db)
+		final MapVolumeOfMemoryGridCells knownMap, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**

@@ -25,7 +25,6 @@ import momime.common.database.Spell;
 import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatusID;
@@ -34,6 +33,7 @@ import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
+import momime.server.MomSessionVariables;
 import momime.server.ai.SpellAI;
 
 /**
@@ -107,11 +107,11 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @param player Player choosing custom picks
 	 * @param picks The custom picks they have requested
 	 * @param humanSpellPicks Number of picks that human players get at the start of the game, from the session description - difficulty level
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
 	@Override
-	public final String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final CommonDatabase db)
+	public final String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final MomSessionVariables mom)
 	{
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -134,7 +134,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			{
 				for (final PickAndQuantity thisPick : picks)
 				{
-					final Pick pick = db.findPick (thisPick.getPickID (), "validateCustomPicks");
+					final Pick pick = mom.getServerDB ().findPick (thisPick.getPickID (), "validateCustomPicks");
 					totalPickCost = totalPickCost + (thisPick.getQuantity () * pick.getPickCost ());
 				}
 
@@ -399,18 +399,18 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 
 	/**
 	 * Tests whether everyone has finished pre-game selections and is ready to start
-	 * @param players List of players
-	 * @param sd Session description
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if all players have chosen all details to start game
 	 */
 	@Override
-	public final boolean allPlayersHaveChosenAllDetails (final List<PlayerServerDetails> players, final MomSessionDescription sd)
+	public final boolean allPlayersHaveChosenAllDetails (final MomSessionVariables mom)
 	{
 		// If not all players have joined, then not all have chosen
-		boolean result = (players.size () == sd.getMaxPlayers () - sd.getAiPlayerCount () - 2);	// -2 for raiders & monsters
+		boolean result = (mom.getPlayers ().size () == mom.getSessionDescription ().getMaxPlayers () - mom.getSessionDescription ().getAiPlayerCount () - 2);	// -2 for raiders & monsters
 
 		// Check each player
-		final Iterator<PlayerServerDetails> iter = players.iterator ();
+		final Iterator<PlayerServerDetails> iter = mom.getPlayers ().iterator ();
 		while ((result) && (iter.hasNext ()))
 			if (!hasChosenAllDetails (iter.next ()))
 				result = false;

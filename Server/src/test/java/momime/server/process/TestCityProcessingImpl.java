@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -277,16 +276,18 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (playerPickServerUtils.chooseRandomRaceForPlane (1, db)).thenReturn ("RC04");
 		
 		// Locations of each starter city
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+
 		final MapCoordinates3DEx humanLocation = new MapCoordinates3DEx (25, 15, 1);
 		final MapCoordinates3DEx aiLocation = new MapCoordinates3DEx (40, 20, 0);
 		final MapCoordinates3DEx raidersMyrrorLocation = new MapCoordinates3DEx (23, 13, 1);
 		final MapCoordinates3DEx raidersArcanusLocation = new MapCoordinates3DEx (7, 27, 0);
 		
 		final CityAI cityAI = mock (CityAI.class);
-		when (cityAI.chooseCityLocation (trueTerrain, trueTerrain, 1, true, sd, db, "Starter city for \"Human player\"")).thenReturn (humanLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, trueTerrain, 1, true, sd, db, "Starter city for \"Raiders\"")).thenReturn (raidersMyrrorLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, trueTerrain, 0, true, sd, db, "Starter city for \"AI player\"")).thenReturn (aiLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, trueTerrain, 0, true, sd, db, "Starter city for \"Raiders\"")).thenReturn (raidersArcanusLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 1, true, mom, "Starter city for \"Human player\"")).thenReturn (humanLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 1, true, mom, "Starter city for \"Raiders\"")).thenReturn (raidersMyrrorLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 0, true, mom, "Starter city for \"AI player\"")).thenReturn (aiLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 0, true, mom, "Starter city for \"Raiders\"")).thenReturn (raidersArcanusLocation);
 		
 		// Race for each starter city - set these ALL to be the same race; then can test the % choice for this
 		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();
@@ -326,7 +327,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (overlandMapServerUtils.generateCityName (gsk, race4)).thenReturn ("Raider city II");
 		
 		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
@@ -416,9 +416,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals (4, count);
 		
 		// Check calcs were done
-		verify (serverCityCalc, times (4)).calculateCitySizeIDAndMinimumFarmers (eq (players), eq (trueTerrain), eq (trueMap.getBuilding ()),
-			eq (trueMap.getMaintainedSpell ()), any (MapCoordinates3DEx.class), eq (sd), eq (db), isNull ());
-		
+		verify (serverCityCalc, times (4)).calculateCitySizeIDAndMinimumFarmers (any (MapCoordinates3DEx.class), eq (mom));		
 		verify (serverCityCalc, times (4)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
 		// Check units were added

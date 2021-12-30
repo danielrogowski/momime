@@ -9,9 +9,9 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.WizardEx;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
+import momime.server.MomSessionVariables;
 
 /**
  * Server side only helper methods for dealing with picks
@@ -39,10 +39,10 @@ public interface PlayerPickServerUtils
 	 * @param player Player choosing custom picks
 	 * @param picks The custom picks they have requested
 	 * @param humanSpellPicks Number of picks that human players get at the start of the game, from the session description - difficulty level
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
-	public String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final CommonDatabase db);
+	public String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final MomSessionVariables mom);
 
 	/**
 	 * Checks each type of book this player has to see if it can find a type of book for which the player gets free spells, but has not yet chosen those free spells
@@ -88,11 +88,11 @@ public interface PlayerPickServerUtils
 
 	/**
 	 * Tests whether everyone has finished pre-game selections and is ready to start
-	 * @param players List of players
-	 * @param sd Session description
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if all players have chosen all details to start game
 	 */
-	public boolean allPlayersHaveChosenAllDetails (final List<PlayerServerDetails> players, final MomSessionDescription sd);
+	public boolean allPlayersHaveChosenAllDetails (final MomSessionVariables mom);
 
 	/**
 	 * Used when reloading multiplayer games to test whether all necessary players have joined back into the session and it can continue

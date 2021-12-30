@@ -35,8 +35,7 @@ public final class ChooseWizardMessageImpl extends ChooseWizardMessage implement
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		getPlayerMessageProcessing ().chooseWizard
-			(getWizardID (), sender, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		getPlayerMessageProcessing ().chooseWizard (getWizardID (), sender, mom);
 	}
 
 	/**

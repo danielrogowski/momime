@@ -791,8 +791,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, false, mom);
 		
 		// Prove unit was summoned
-		verify (combatProcessing).setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, summonedUnit, combatLocation, combatLocation,
-			adjustedTargetLocation, 8, UnitCombatSideID.ATTACKER, "SP001", db);
+		verify (combatProcessing).setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, summonedUnit, combatLocation, combatLocation,
+			adjustedTargetLocation, 8, UnitCombatSideID.ATTACKER, "SP001", mom);
 		
 		// We were charged MP for it
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);

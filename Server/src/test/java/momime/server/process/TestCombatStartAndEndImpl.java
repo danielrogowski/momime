@@ -682,9 +682,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	@Test
 	public final void testCombatEnded_DefenderWon () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -731,7 +728,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Location
@@ -783,7 +779,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check other tidyups were done
 		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
@@ -806,9 +802,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	@Test
 	public final void testCombatEnded_AttackerWon () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -859,7 +852,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
@@ -931,7 +923,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check other tidyups were done
 		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
@@ -958,9 +950,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	@Test
 	public final void testCombatEnded_CaptureTowerFromMyrror () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -1014,7 +1003,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
@@ -1086,7 +1074,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check other tidyups were done
 		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
@@ -1291,7 +1279,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check other tidyups were done
 		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
@@ -1506,7 +1494,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check other tidyups were done
 		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
@@ -1542,9 +1530,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	@Test
 	public final void testCombatEnded_Simultaneous () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -1588,7 +1573,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
@@ -1667,7 +1651,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check other tidyups were done
 		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see
@@ -1699,9 +1683,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	@Test
 	public final void testCombatEnded_BorderConflcit () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -1741,7 +1722,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		
 		// Location
@@ -1818,7 +1798,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check other tidyups were done
 		verify (midTurnMulti).switchOffSpellsCastInCombat (combatLocation, mom);
 		verify (combatProcessing).purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
-		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, trueMap, combatLocation, db);
+		verify (combatProcessing).removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
 		verify (midTurnMulti).removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
 		
 		// Update what both players can see

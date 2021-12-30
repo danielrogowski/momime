@@ -42,6 +42,7 @@ import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
+import momime.server.MomSessionVariables;
 import momime.server.ai.SpellAI;
 
 /**
@@ -164,9 +165,6 @@ public final class TestPlayerPickServerUtilsImpl
 	@Test
 	public final void testValidateCustomPicks_DidntPickWizardYet () throws Exception
 	{
-		// Mock some types of pick
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
@@ -189,12 +187,15 @@ public final class TestPlayerPickServerUtilsImpl
 		pick2.setPickID ("MB03");
 		pick2.setQuantity (1);
 		picks.add (pick2);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
 
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 
 	/**
@@ -204,9 +205,6 @@ public final class TestPlayerPickServerUtilsImpl
 	@Test
 	public final void testValidateCustomPicks_PickedStandardWizard () throws Exception
 	{
-		// Mock some types of pick
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
@@ -232,11 +230,14 @@ public final class TestPlayerPickServerUtilsImpl
 		pick2.setQuantity (1);
 		picks.add (pick2);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 
 	/**
@@ -274,11 +275,15 @@ public final class TestPlayerPickServerUtilsImpl
 		pick1.setQuantity (4);
 		picks.add (pick1);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 	
 	/**
@@ -323,11 +328,15 @@ public final class TestPlayerPickServerUtilsImpl
 		pick2.setQuantity (2);
 		picks.add (pick2);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 	
 	/**
@@ -372,11 +381,15 @@ public final class TestPlayerPickServerUtilsImpl
 		pick2.setQuantity (1);
 		picks.add (pick2);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 	
 	/**
@@ -1525,6 +1538,11 @@ public final class TestPlayerPickServerUtilsImpl
 		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
 		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ02")).thenReturn (true);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
@@ -1540,21 +1558,21 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		players.add (player);
 
-		assertFalse (utils.allPlayersHaveChosenAllDetails (players, sd));
+		assertFalse (utils.allPlayersHaveChosenAllDetails (mom));
 
 		// Fill in details
 		ppk.setWizardID ("WZ01");
 		priv.setFirstCityRaceID ("RC01");
-		assertTrue (utils.allPlayersHaveChosenAllDetails (players, sd));
+		assertTrue (utils.allPlayersHaveChosenAllDetails (mom));
 
 		// Add an AI player - this doesn't stop the game starting, since AI players are added after
 		sd.setMaxPlayers (4);
 		sd.setAiPlayerCount (1);
-		assertTrue (utils.allPlayersHaveChosenAllDetails (players, sd));
+		assertTrue (utils.allPlayersHaveChosenAllDetails (mom));
 
 		// Add slot for 2nd player
 		sd.setMaxPlayers (5);
-		assertFalse (utils.allPlayersHaveChosenAllDetails (players, sd));
+		assertFalse (utils.allPlayersHaveChosenAllDetails (mom));
 
 		// Add second player
 		final PlayerDescription pd2 = new PlayerDescription ();
@@ -1567,12 +1585,12 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, ppk2, null, null, priv2);
 		players.add (player2);
 
-		assertFalse (utils.allPlayersHaveChosenAllDetails (players, sd));
+		assertFalse (utils.allPlayersHaveChosenAllDetails (mom));
 
 		// Fill in second player details
 		ppk2.setWizardID ("WZ02");
 		priv2.setFirstCityRaceID ("RC02");
-		assertTrue (utils.allPlayersHaveChosenAllDetails (players, sd));
+		assertTrue (utils.allPlayersHaveChosenAllDetails (mom));
 	}
 	
 	/**

@@ -22,11 +22,10 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.server.MomSessionVariables;
 import momime.server.utils.CityServerUtils;
 
 /**
@@ -62,29 +61,22 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	 * This is called on the TrueMap to update the values there, then the calling routine checks each player's Fog of War to see
 	 * if they can see the city, and if so then sends them the updated values
 	 *
-	 * @param players Pre-locked list of players in the game
-	 * @param map True terrain
-	 * @param buildings True list of buildings
-	 * @param spells True list of spells
 	 * @param cityLocation Location of the city to update
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find the player who owns the city
 	 * @throws MomException If any of a number of expected items aren't found in the database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 */
 	@Override
-	public final void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
+	public final void calculateCitySizeIDAndMinimumFarmers (final MapCoordinates3DEx cityLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		// First work out the Size ID - There should only be one entry in the DB which matches
 		boolean found = false;
-		final Iterator<CitySize> iter = db.getCitySize ().iterator ();
+		final Iterator<CitySize> iter = mom.getServerDB ().getCitySize ().iterator ();
 		while ((!found) && (iter.hasNext ()))
 		{
 			final CitySize thisSize = iter.next ();
@@ -102,11 +94,13 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 			throw new MomException ("No city size ID is defined for cities of size " + cityData.getCityPopulation ());
 
 		// Find how many rations the city produces even if it has 0 farmers
-		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCitySizeIDAndMinimumFarmers");
+		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "calculateCitySizeIDAndMinimumFarmers");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
 		final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions
-			(players, map, buildings, spells, cityLocation, priv.getTaxRateID (), sd, conjunctionEventID, false, false, db);
+			(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
+				mom.getGeneralPublicKnowledge ().getConjunctionEventID (), false, false, mom.getServerDB ());
 		
 		// This is what the wiki calls "Base Food Level"
 		final CityProductionBreakdown food = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -125,7 +119,8 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		else
 		{
 			// Get the farming rate for this race.  If famine in effect, this will already have been halved.
-			final int doubleFarmingRate = getCityServerUtils ().calculateDoubleFarmingRate (map, buildings, spells, cityLocation, db);
+			final int doubleFarmingRate = getCityServerUtils ().calculateDoubleFarmingRate (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, mom.getServerDB ());
 
 			// Can work out value assuming every farmer is working at normal efficiency, but that might not be true, so this is optimistic
 			int minimumFarmers = ((rationsNeeded * 2) + doubleFarmingRate - 1) / doubleFarmingRate;

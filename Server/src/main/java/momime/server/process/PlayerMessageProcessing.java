@@ -3,17 +3,15 @@ package momime.server.process;
 import java.io.IOException;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomGeneralPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.TurnSystem;
 import momime.server.MomSessionVariables;
 
@@ -28,16 +26,13 @@ public interface PlayerMessageProcessing
 	 *
 	 * @param wizardID wizard ID the player wants to choose
 	 * @param player Player who sent the message
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If various elements cannot be found in the DB
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 */
-	public void chooseWizard (final String wizardID, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public void chooseWizard (final String wizardID, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException;
 
 	/**

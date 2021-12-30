@@ -28,7 +28,6 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellValidTileTypeTarget;
 import momime.common.database.UnitEx;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -174,23 +173,23 @@ public final class SpellCastingImpl implements SpellCasting
 	 * 
 	 * @param ourSpellID Which spell allows us to see the info - Detect Magic or Spell Blast
 	 * @param onlyOnePlayerID If zero, will send to all players who have Detect Magic cast; if specified will send only to the specified player
-	 * @param players List of players in the session
-	 * @param spells List of known spells
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void sendOverlandCastingInfo (final String ourSpellID, final int onlyOnePlayerID, final List<PlayerServerDetails> players,
-		final List<MemoryMaintainedSpell> spells) throws JAXBException, XMLStreamException
+	public final void sendOverlandCastingInfo (final String ourSpellID, final int onlyOnePlayerID, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException
 	{
 		// Don't bother to build the message until we find at least one human player who needs it
 		OverlandCastingInfoMessage msg = null;
 
-		for (final PlayerServerDetails sendToPlayer : players)
+		for (final PlayerServerDetails sendToPlayer : mom.getPlayers ())
 			if (((onlyOnePlayerID == 0) || (onlyOnePlayerID == sendToPlayer.getPlayerDescription ().getPlayerID ())) &&
 				(sendToPlayer.getPlayerDescription ().isHuman ()) &&
 				((ourSpellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST)) ||
-					(getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, sendToPlayer.getPlayerDescription ().getPlayerID (), ourSpellID, null, null, null, null) != null)))
+					(getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						sendToPlayer.getPlayerDescription ().getPlayerID (), ourSpellID, null, null, null, null) != null)))
 			{
 				// Need to build message or already done?
 				if (msg == null)
@@ -198,7 +197,7 @@ public final class SpellCastingImpl implements SpellCasting
 					msg = new OverlandCastingInfoMessage ();
 					msg.setOurSpellID (ourSpellID);
 					
-					for (final PlayerServerDetails player : players)
+					for (final PlayerServerDetails player : mom.getPlayers ())
 					{
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 						if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))

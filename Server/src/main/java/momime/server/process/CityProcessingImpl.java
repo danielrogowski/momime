@@ -24,7 +24,6 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Plane;
 import momime.common.database.ProductionTypeAndUndoubledValue;
@@ -43,7 +42,6 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageConstructUnit;
@@ -207,8 +205,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 				// Pick location
 				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), plane, true, mom.getSessionDescription (), mom.getServerDB (),
-					"Starter city for \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
+					plane, true, mom, "Starter city for \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\" on plane " + plane);
 
@@ -263,9 +260,7 @@ public final class CityProcessingImpl implements CityProcessing
 				cityCell.getTerrainData ().setRoadTileTypeID (roadTileTypeID);
 				
 				// Do initial calculations on the city
-				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation,
-					mom.getSessionDescription (), mom.getServerDB (), null);
+				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (cityLocation, mom);
 
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 
@@ -320,8 +315,7 @@ public final class CityProcessingImpl implements CityProcessing
 			// Connect roads between starter cities owned by this player
 			if (numberOfCities > 1)
 				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
-					createStartingRoads (thisPlayer.getPlayerDescription ().getPlayerID (), z, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-						mom.getSessionDescription (), mom.getServerDB ());
+					createStartingRoads (thisPlayer.getPlayerDescription ().getPlayerID (), z, mom);
 		}
 	}
 
@@ -331,10 +325,9 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param playerID Player who owns the cities
 	 * @param plane Plane to check cities on
 	 * @param maximumSeparation Connect cities who are at most this distance apart; null = connect all cities regardless of how far apart they are
-	 * @param players List of players in this session
 	 * @param fogOfWarMemory Known terrain, buildings, spells and so on
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * 	When called during map creation to create the initial roads between raider cities, this is the true map; when called for AI players using engineers, this is only what that player knows
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return List of map cells where we need to add road
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
@@ -342,12 +335,12 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final List<MapCoordinates3DEx> listMissingRoadCells (final int playerID, final int plane, final Integer maximumSeparation,
-		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final CommonDatabase db)
+		final FogOfWarMemory fogOfWarMemory, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final List<MapCoordinates3DEx> citiesOnThisPlane = new ArrayList<MapCoordinates3DEx> ();
-		for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+		for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+			for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 			{
 				final MemoryGridCell mc = fogOfWarMemory.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
 				final OverlandMapCityData cityData = mc.getCityData ();
@@ -364,9 +357,9 @@ public final class CityProcessingImpl implements CityProcessing
 			{
 				final MapCoordinates3DEx secondCityLocation = citiesOnThisPlane.get (secondCityNumber);
 				if ((maximumSeparation == null) || (getCoordinateSystemUtils ().determineStep2DDistanceBetween
-					(sd.getOverlandMapSize (), firstCityLocation, secondCityLocation) <= maximumSeparation))
+					(mom.getSessionDescription ().getOverlandMapSize (), firstCityLocation, secondCityLocation) <= maximumSeparation))
 				{
-					final List<MapCoordinates3DEx> newCells = getCityServerUtils ().listMissingRoadCellsBetween (firstCityLocation, secondCityLocation, playerID, players, fogOfWarMemory, sd, db);
+					final List<MapCoordinates3DEx> newCells = getCityServerUtils ().listMissingRoadCellsBetween (firstCityLocation, secondCityLocation, playerID, fogOfWarMemory, mom);
 					for (final MapCoordinates3DEx coords : newCells)
 						if (!missingRoadCells.contains (coords))
 							missingRoadCells.add (coords);
@@ -382,29 +375,26 @@ public final class CityProcessingImpl implements CityProcessing
 	 * 
 	 * @param playerID Player who owns the cities
 	 * @param plane Plane to create roads on
-	 * @param players List of players in this session
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
-	private final void createStartingRoads (final int playerID, final int plane,
-		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
+	private final void createStartingRoads (final int playerID, final int plane, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final List<MapCoordinates3DEx> missingRoadCells = listMissingRoadCells (playerID, plane, CommonDatabaseConstants.CITY_SEPARATION_TO_GET_STARTER_ROADS,
-			players, trueMap, sd, db);
+			mom.getGeneralServerKnowledge ().getTrueMap (), mom);
 		if (missingRoadCells.size () > 0)
 		{
-			final Plane planeDef = db.findPlane (plane, "createStartingRoads");
+			final Plane planeDef = mom.getServerDB ().findPlane (plane, "createStartingRoads");
 			final String roadTileTypeID = ((planeDef.isRoadsEnchanted () != null) && (planeDef.isRoadsEnchanted ())) ?
 				CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
 			
 			// This is happening prior to anybody's initial FOW being calculated, so we're fine just to update the trueMap directly and not worry about who can see the change
 			for (final MapCoordinates3DEx coords : missingRoadCells)
-				trueMap.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setRoadTileTypeID (roadTileTypeID);
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setRoadTileTypeID (roadTileTypeID);
 		}
 	}
 	

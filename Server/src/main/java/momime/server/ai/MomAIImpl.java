@@ -115,8 +115,7 @@ public final class MomAIImpl implements MomAI
 		
 		// First find out what the best units we can construct or summon are - this gives us
 		// something to gauge existing units by, to know if they're now obsolete or not
-		final List<AIConstructableUnit> constructableUnits = getUnitAI ().listAllUnitsWeCanConstruct (player, mom.getPlayers (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getSessionDescription (), mom.getServerDB ());
+		final List<AIConstructableUnit> constructableUnits = getUnitAI ().listAllUnitsWeCanConstruct (player, mom);
 		
 		// Ignore summoned units - otherwise at the start the AI realises that Magic Spirits are actually better than the Spearmen + Swordsmen that it has and tries to use them to defend its city.
 		// Similarly later on, the AI shouldn't be trying to fill its cities defensively with all great drakes.
@@ -185,9 +184,7 @@ public final class MomAIImpl implements MomAI
 					(player.getPlayerDescription ().getPlayerID (), mobileUnits, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
 				
 				// What's the best place we can put a new city on each plane?
-				desiredSpecialUnitLocations = getUnitAI ().determineDesiredSpecialUnitLocations
-					(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getSessionDescription (), mom.getServerDB ());
+				desiredSpecialUnitLocations = getUnitAI ().determineDesiredSpecialUnitLocations (player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), mom);
 			}
 			
 			if (!mobileUnits.isEmpty ())
@@ -387,8 +384,7 @@ public final class MomAIImpl implements MomAI
 				getCityAI ().decideTaxRate (player, mom);
 				
 				// This relies on knowing what's being built in each city and the tax rate, so do it almost last
-				getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player,
-					mom.getServerDB (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+				getCityAI ().setOptionalFarmersInAllCities (player, mom);
 				
 				// This relies on knowing the production each city is generating, so need the number of farmers + workers set, so do it really last
 				getCityAI ().checkForRushBuying (player, mom);

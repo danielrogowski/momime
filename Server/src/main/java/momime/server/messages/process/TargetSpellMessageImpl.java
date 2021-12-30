@@ -447,8 +447,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		}
 		
 		else if (sendInfo)
-			getSpellCasting ().sendOverlandCastingInfo (spell.getSpellID (), sender.getPlayerDescription ().getPlayerID (),
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+			getSpellCasting ().sendOverlandCastingInfo (spell.getSpellID (), sender.getPlayerDescription ().getPlayerID (), mom);
 		
 		else
 			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, getOverlandTargetPlayerID (),

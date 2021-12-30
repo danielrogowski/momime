@@ -30,9 +30,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -1067,7 +1065,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * 
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
-	 * @param trueTerrain True overland terrain
 	 * @param trueUnit The true unit being put into or taken out of combat
 	 * @param terrainLocation The location the combat is taking place
 	 * @param combatLocation For putting unit into combat, is the location the combat is taking place (i.e. = terrainLocation), for taking unit out of combat will be null
@@ -1075,24 +1072,25 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @param combatHeading For putting unit into combat, is the direction the the unit is heading on the battlefield, for taking unit out of combat will be null
 	 * @param combatSide For putting unit into combat, specifies which side they're on, for taking unit out of combat will be null
 	 * @param summonedBySpellID For summoning new units directly into combat (e.g. fire elementals) gives the spellID they were summoned with; otherwise null
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 */
 	@Override
-	public final void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapVolumeOfMemoryGridCells trueTerrain,
+	public final void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final MemoryUnit trueUnit, final MapCoordinates3DEx terrainLocation, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
-		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final CommonDatabase db)
+		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		final MemoryGridCell tc = trueTerrain.getPlane ().get (terrainLocation.getZ ()).getRow ().get (terrainLocation.getY ()).getCell ().get (terrainLocation.getX ());
+		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(terrainLocation.getZ ()).getRow ().get (terrainLocation.getY ()).getCell ().get (terrainLocation.getX ());
 		
 		// Is this someone attacking a node/lair/tower, and the combat is ending?
 		// If DefendingPlayer is nil (we wiped out the monsters), there'll be no monsters to remove, so in which case we don't care that we get this value wrong
 		final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 		final boolean attackingNodeLairTower = (defPub != null) && (combatLocation == null) && (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defPub.getWizardID ())) &&
-			getMemoryGridCellUtils ().isNodeLairTower (tc.getTerrainData (), db);
+			getMemoryGridCellUtils ().isNodeLairTower (tc.getTerrainData (), mom.getServerDB ());
 
 		// Update true unit on server
 		trueUnit.setCombatLocation (combatLocation);
@@ -1167,21 +1165,20 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * 
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - may be null if taking an empty lair, or a "walk in without a fight" in simultaneous turns games
-	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param combatLocation The location the combat took place
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 */
 	@Override
-	public final void removeUnitsFromCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
-		final MapCoordinates3DEx combatLocation, final CommonDatabase db)
+	public final void removeUnitsFromCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		for (final MemoryUnit trueUnit : trueMap.getUnit ())
+		for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if (combatLocation.equals (trueUnit.getCombatLocation ()))
-				setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueMap.getMap (), trueUnit, combatLocation, null, null, null, null, null, db);
+				setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
 	}
 	
 	/**

@@ -1897,9 +1897,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_TwoHumanPlayers () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -1991,13 +1988,23 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Combat position
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit,
-			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.ATTACKER, "SP045", db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
+			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.ATTACKER, "SP045", mom);
 		
 		// Check true memory on server
 		assertEquals (combatLocation, trueUnit.getCombatLocation ());
@@ -2056,9 +2063,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_AgainstRampagingMonsters () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -2147,13 +2151,23 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Combat position
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit,
-			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.ATTACKER, "SP045", db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
+			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.ATTACKER, "SP045", mom);
 		
 		// Check true memory on server
 		assertEquals (combatLocation, trueUnit.getCombatLocation ());
@@ -2205,9 +2219,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_RampagingMonstersAgainstUs () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -2296,13 +2307,23 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Combat position
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit,
-			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.DEFENDER, "SP045", db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
+			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.DEFENDER, "SP045", mom);
 		
 		// Check true memory on server
 		assertEquals (combatLocation, trueUnit.getCombatLocation ());
@@ -2354,9 +2375,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_AgainstNode () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -2445,13 +2463,23 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Combat position
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit,
-			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.ATTACKER, "SP045", db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
+			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.ATTACKER, "SP045", mom);
 		
 		// Check true memory on server
 		assertEquals (combatLocation, trueUnit.getCombatLocation ());
@@ -2503,9 +2531,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_NodeAgainstUs () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -2596,13 +2621,23 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Combat position
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit,
-			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.DEFENDER, "SP045", db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
+			combatLocation, combatLocation, combatPosition, 7, UnitCombatSideID.DEFENDER, "SP045", mom);
 		
 		// Check true memory on server
 		assertEquals (combatLocation, trueUnit.getCombatLocation ());
@@ -2644,9 +2679,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_TwoHumanPlayers () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -2749,12 +2781,22 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			priv.getFogOfWarMemory ().getUnit ().add (playerUnit);
 		}
 		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit, combatLocation, null, null, null, null, null, db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
 		
 		// Check true memory on server
 		assertNull (trueUnit.getCombatLocation ());
@@ -2803,9 +2845,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_AgainstRampagingMonsters () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -2905,13 +2944,23 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			priv.getFogOfWarMemory ().getUnit ().add (playerUnit);
 		}
 
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit, combatLocation, null, null, null, null, null, db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
 		
 		// Check true memory on server
 		assertNull (trueUnit.getCombatLocation ());
@@ -2952,9 +3001,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_RampagingMonstersAgainstUs () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -3054,13 +3100,23 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			priv.getFogOfWarMemory ().getUnit ().add (playerUnit);
 		}
 		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit, combatLocation, null, null, null, null, null, db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
 		
 		// Check true memory on server
 		assertNull (trueUnit.getCombatLocation ());
@@ -3101,9 +3157,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_AgainstNode () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -3204,13 +3257,23 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			priv.getFogOfWarMemory ().getUnit ().add (playerUnit);
 		}
 		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit, combatLocation, null, null, null, null, null, db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
 		
 		// Check true memory on server
 		assertNull (trueUnit.getCombatLocation ());
@@ -3251,9 +3314,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	@Test
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_NodeAgainstUs () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -3352,13 +3412,23 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			priv.getFogOfWarMemory ().getUnit ().add (playerUnit);
 		}
 		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 		
 		// Run test
-		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit, combatLocation, null, null, null, null, null, db);
+		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
 		
 		// Check true memory on server
 		assertNull (trueUnit.getCombatLocation ());

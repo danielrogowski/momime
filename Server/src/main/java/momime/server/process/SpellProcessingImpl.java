@@ -320,8 +320,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// If it is Detect Magic, the player now learns what spells everyone is casting overland
 					if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC))
-						getSpellCasting ().sendOverlandCastingInfo (spell.getSpellID (), player.getPlayerDescription ().getPlayerID (),
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+						getSpellCasting ().sendOverlandCastingInfo (spell.getSpellID (), player.getPlayerDescription ().getPlayerID (), mom);
 				}
 			}
 			
@@ -759,9 +758,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 					(xuTargetUnit, combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 						mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 	
-				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), targetUnit,
-					combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, targetUnit,
+					combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom);
 	
 				// Allow it to be moved this combat turn
 				targetUnit.setDoubleCombatMovesLeft (2 * xuTargetUnit.getMovementSpeed ());
@@ -797,9 +795,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(xuSummonedUnit, combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 							mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
-					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
-						combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
+						combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom);
 					
 					// Allow it to be moved this combat turn
 					tu.setDoubleCombatMovesLeft (2 * xuSummonedUnit.getMovementSpeed ());
@@ -939,9 +936,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						{
 							// Recall spells - first take the unit(s) out of combat
 							for (final MemoryUnit tu : targetUnits)
-								getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
-									mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
-									combatLocation, null, null, null, castingSide, spell.getSpellID (), mom.getServerDB ());
+								getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
+									combatLocation, null, null, null, castingSide, spell.getSpellID (), mom);
 							
 							// Now teleport it back to our summoning circle
 							getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
@@ -1560,9 +1556,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetOverlandSpell (C)");
 						final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 						
-						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							targetLocation, mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (targetLocation, mom);
 							
 						// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
 						cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels

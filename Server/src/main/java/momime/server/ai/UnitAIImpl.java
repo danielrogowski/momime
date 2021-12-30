@@ -635,8 +635,7 @@ public final class UnitAIImpl implements UnitAI
 		for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 		{
 			// Best place on each plane to put a new city
-			final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (fogOfWarMemory.getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				plane, false, mom.getSessionDescription (), mom.getServerDB (), "considering building/moving settler");
+			final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (fogOfWarMemory.getMap (), plane, false, mom, "considering building/moving settler");
 			if (desiredCityLocation != null)
 			{
 				log.debug ("AI Player ID " + playerID + " can put a city at " + desiredCityLocation);

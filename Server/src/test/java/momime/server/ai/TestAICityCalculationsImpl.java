@@ -28,6 +28,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.utils.CityServerUtils;
 
@@ -78,13 +79,18 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
 		calc.setCityProductionCalculations (prodCalc);
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (150 + 40 + 10, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, true, knownMap, sd, db).intValue ());
+		assertEquals (150 + 40 + 10, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, true, knownMap, mom).intValue ());
 	}
 
 	/**
@@ -143,13 +149,18 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
 		calc.setCityProductionCalculations (prodCalc);
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (150 + 40 + 10 + (9 * 7), calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, false, knownMap, sd, db).intValue ());
+		assertEquals (150 + 40 + 10 + (9 * 7), calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, false, knownMap, mom).intValue ());
 	}
 
 	/**
@@ -193,13 +204,18 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
 		calc.setCityProductionCalculations (prodCalc);
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (30 + 40 + 10, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, false, knownMap, sd, db).intValue ());
+		assertEquals (30 + 40 + 10, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, false, knownMap, mom).intValue ());
 	}
 
 	/**
@@ -243,13 +259,18 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
 		calc.setCityProductionCalculations (prodCalc);
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertNull (calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, true, knownMap, sd, db));
+		assertNull (calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, true, knownMap, mom));
 	}
 
 	/**
@@ -297,6 +318,11 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
 		when (cityServerUtils.findClosestCityTo (new MapCoordinates3DEx (20, 10, 1), knownMap, mapSize)).thenReturn (14);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final AICityCalculationsImpl calc = new AICityCalculationsImpl ();
 		calc.setCityProductionCalculations (prodCalc);
@@ -304,7 +330,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		calc.setCityServerUtils (cityServerUtils);
 		
 		// Run method
-		assertEquals (150 + 40 + 10 + 28, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), true, true, knownMap, sd, db).intValue ());
+		assertEquals (150 + 40 + 10 + 28, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), true, true, knownMap, mom).intValue ());
 	}
 	
 	/**

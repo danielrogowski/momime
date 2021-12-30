@@ -101,11 +101,10 @@ public final class CityAIImpl implements CityAI
 	 * race will most likely be the race chosen for the continent we decide to put the city on, i.e. we have to pick position first, race second
 	 *
 	 * @param knownMap Known terrain
-	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
+	 * 	When called during map creation to place initial cities, this is the true map; when called for AI players using settlers, this is only what that player knows
 	 * @param plane Plane to place a city on
 	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param purpose What this city is being placed for, just for debug message
 	 * @return Best possible location to put a new city, or null if there's no space left for any new cities on this plane
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
@@ -113,34 +112,36 @@ public final class CityAIImpl implements CityAI
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells knownMap, final MapVolumeOfMemoryGridCells trueMap,
-		final int plane, final boolean avoidOtherCities, final MomSessionDescription sd, final CommonDatabase db, final String purpose)
+	public final MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells knownMap,
+		final int plane, final boolean avoidOtherCities, final MomSessionVariables mom, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		// Mark off all places within 3 squares of an existing city, i.e. those spaces we can't put a new city
-		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (trueMap, knownMap, plane, sd.getOverlandMapSize ());
+		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), knownMap, plane, mom.getSessionDescription ().getOverlandMapSize ());
 
 		// Now consider every map location as a possible location for a new city
 		MapCoordinates3DEx bestLocation = null;
 		int bestCityQuality = -1;
 
-		for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+		for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 			{
 				// Can we build a city here?
 				final OverlandMapTerrainData terrainData = knownMap.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
 
 				if ((terrainData != null) && (!withinExistingCityRadius.get (x, y)))
 				{
-					final Boolean canBuildCityOnThisTerrain = db.findTileType (terrainData.getTileTypeID (), "chooseCityLocation").isCanBuildCity ();
-					final Boolean canBuildCityOnThisFeature = (terrainData.getMapFeatureID () == null) ? true : db.findMapFeature (terrainData.getMapFeatureID (), "chooseCityLocation").isCanBuildCity ();
+					final Boolean canBuildCityOnThisTerrain = mom.getServerDB ().findTileType (terrainData.getTileTypeID (), "chooseCityLocation").isCanBuildCity ();
+					final Boolean canBuildCityOnThisFeature = (terrainData.getMapFeatureID () == null) ? true : mom.getServerDB ().findMapFeature
+						(terrainData.getMapFeatureID (), "chooseCityLocation").isCanBuildCity ();
 
 					if ((canBuildCityOnThisTerrain != null) && (canBuildCityOnThisTerrain) &&
 						(canBuildCityOnThisFeature != null) && (canBuildCityOnThisFeature))
 					{
 						// How good will this city be?
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
-						final Integer thisCityQuality = getAiCityCalculations ().evaluateCityQuality (cityLocation, avoidOtherCities, true, knownMap, sd, db); 
+						final Integer thisCityQuality = getAiCityCalculations ().evaluateCityQuality (cityLocation, avoidOtherCities, true, knownMap, mom); 
 
 						// Is it the best so far?
 						if ((thisCityQuality != null) && ((bestLocation == null) || (thisCityQuality > bestCityQuality)))

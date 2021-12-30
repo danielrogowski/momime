@@ -24,15 +24,18 @@ import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.TileTypeEx;
 import momime.common.database.Wizard;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.MemoryBuildingUtilsImpl;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculationsImpl;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the CityAI class
@@ -71,8 +74,8 @@ public final class TestCityAIImpl extends ServerTestData
 		sd.setOverlandMapSize (mapSize);
 		
 		// Maps
-		final MapVolumeOfMemoryGridCells trueMap = createOverlandMap (mapSize);
-		final MapVolumeOfMemoryGridCells knownMap = createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells knownTerrain = createOverlandMap (mapSize);
 		
 		for (int x = 1; x <= 5; x++)
 		{
@@ -81,7 +84,7 @@ public final class TestCityAIImpl extends ServerTestData
 			if ((x >= 2) && (x <= 3))
 				terrainData.setMapFeatureID ("MF0" + x);		// Chosen tile 22, 10 also has a map feature, but we can build a city on it (e.g. gold)
 			
-			knownMap.getPlane ().get (1).getRow ().get (10).getCell ().get (20 + x).setTerrainData (terrainData);
+			knownTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20 + x).setTerrainData (terrainData);
 		}
 		
 		// Area too close to other cities
@@ -92,12 +95,24 @@ public final class TestCityAIImpl extends ServerTestData
 				withinExistingCityRadius.set (x, y, (x == 25) && (y == 10));		// So 25, 10 is blocked even though it has the highest estimate 
 		
 		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.markWithinExistingCityRadius (trueMap, knownMap, 1, mapSize)).thenReturn (withinExistingCityRadius);
+		when (cityCalc.markWithinExistingCityRadius (trueTerrain, knownTerrain, 1, mapSize)).thenReturn (withinExistingCityRadius);
+		
+		// Session variables
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Quality evaluations
 		final AICityCalculations aiCityCalc = mock (AICityCalculations.class);
 		for (int x = 1; x <= 2; x++)
-			when (aiCityCalc.evaluateCityQuality (new MapCoordinates3DEx (20 + x, 10, 1), true, true, knownMap, sd, db)).thenReturn (x * 100);
+			when (aiCityCalc.evaluateCityQuality (new MapCoordinates3DEx (20 + x, 10, 1), true, true, knownTerrain, mom)).thenReturn (x * 100);
 		
 		// Set up object to test
 		final CityAIImpl ai = new CityAIImpl ();
@@ -105,7 +120,7 @@ public final class TestCityAIImpl extends ServerTestData
 		ai.setAiCityCalculations (aiCityCalc);
 		
 		// Call method
-		final MapCoordinates3DEx location = ai.chooseCityLocation (knownMap, trueMap, 1, true, sd, db, null);
+		final MapCoordinates3DEx location = ai.chooseCityLocation (knownTerrain, 1, true, mom, "Unit test");
 		
 		// Check results
 		assertEquals (22, location.getX ());

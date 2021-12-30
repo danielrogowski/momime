@@ -205,8 +205,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 				// Pick location
 				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), plane, true, mom.getSessionDescription (), mom.getServerDB (),
-					"Starter city for \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
+					plane, true, mom, "Starter city for \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\" on plane " + plane);
 

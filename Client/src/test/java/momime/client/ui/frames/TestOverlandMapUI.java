@@ -55,6 +55,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.TurnSystem;
 import momime.common.utils.MemoryGridCellUtilsImpl;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 
 /**
@@ -180,6 +181,8 @@ public final class TestOverlandMapUI extends ClientTestData
 		pd1.setHuman (true);
 		
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 		trans.setFlagColour ("800000");
 		
@@ -191,6 +194,9 @@ public final class TestOverlandMapUI extends ClientTestData
 		
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
+		
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -253,6 +259,7 @@ public final class TestOverlandMapUI extends ClientTestData
 		map.setLanguageChangeMaster (langMaster);
 		map.setClient (client);
 		map.setClientConfig (config);
+		map.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		map.setOverlandMapRightHandPanel (rhp);
 		map.setSmallFont (CreateFontsForTests.getSmallFont ());
 

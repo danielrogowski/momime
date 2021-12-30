@@ -9,8 +9,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.Unmarshaller;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,6 +21,7 @@ import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
+import jakarta.xml.bind.Unmarshaller;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.AvailableDatabase;
@@ -3368,13 +3367,20 @@ public final class TestNewGameUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+	
+		final WizardEx wizardDef = new WizardEx ();
+		wizardDef.getWizardName ().add (createLanguageText (Language.ENGLISH, "Merlin"));
+		when (db.findWizard ("WZ01", "PlayerListTableModel")).thenReturn (wizardDef);
+		
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		pub.setWizardID ("WZ01");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
@@ -3418,10 +3424,15 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Mock list of available databases
 		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
 
 		final NewGameDatabase dbs = createNewGameDatabase ();
 		when (client.getNewGameDatabase ()).thenReturn (dbs);
 		when (client.getPlayers ()).thenReturn (players);
+		
+		// Wizards
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
 		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
@@ -3466,6 +3477,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setLanguageHolder (langHolder);
 		game.setLanguageChangeMaster (langMaster);
 		game.setClient (client);
+		game.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		game.setWizardClientUtils (wizardClientUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		game.setRandomUtils (new RandomUtilsImpl ());

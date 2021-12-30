@@ -144,8 +144,7 @@ public final class SpellTriggersImpl implements SpellTriggers
 				count--;
 			
 				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_GREAT_WASTING))
-					getSpellCasting ().corruptTile (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
-						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					getSpellCasting ().corruptTile (targetLocation, mom);
 				else
 					getSpellCasting ().changeTileType (singleTileSpell, targetLocation, spell.getCastingPlayerID (), mom);
 			}

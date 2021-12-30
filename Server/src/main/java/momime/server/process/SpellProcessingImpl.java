@@ -1238,8 +1238,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				getSpellCasting ().castOverlandSummoningSpell (spell, castingPlayer, targetLocation, true, mom);
 			
 			else if (kind == KindOfSpell.CORRUPTION)
-				getSpellCasting ().corruptTile (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				getSpellCasting ().corruptTile (targetLocation, mom);
 			
 			else if (kind == KindOfSpell.ENCHANT_ROAD)
 			{

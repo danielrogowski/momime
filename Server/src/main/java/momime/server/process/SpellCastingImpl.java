@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -19,8 +18,8 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeatureEx;
 import momime.common.database.RecordNotFoundException;
@@ -28,13 +27,11 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellValidTileTypeTarget;
 import momime.common.database.UnitEx;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -339,10 +336,7 @@ public final class SpellCastingImpl implements SpellCasting
 	
 	/**
 	 * @param targetLocation Tile to corrupt
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -350,18 +344,17 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void corruptTile (final MapCoordinates3DEx targetLocation, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public final void corruptTile (final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
+		final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
 		terrainData.setCorrupted (5);
 			
-		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (),
-			players, targetLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 			
-		getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, trueMap, players, sd, db);
+		getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, mom);
 	}
 
 	/**
@@ -435,8 +428,7 @@ public final class SpellCastingImpl implements SpellCasting
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 
-			getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
-				mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			getCityProcessing ().recheckCurrentConstructionIsStillValid (targetLocation, mom);
 		}
 	}
 

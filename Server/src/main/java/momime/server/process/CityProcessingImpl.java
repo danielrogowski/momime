@@ -1250,10 +1250,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * So this method rechecks that city construction is still valid after there's been a change to an overland tile.
 	 * 
 	 * @param targetLocation Location where terrain was changed
-	 * @param trueMap True map details
-	 * @param players List of players in this session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -1261,30 +1258,29 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public final void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		final MapCoordinates3DEx cityLocation = getCityServerUtils ().findCityWithinRadius (targetLocation,
-			trueMap.getMap (), sd.getOverlandMapSize ());
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
 		if (cityLocation != null)
 		{
 			// City probably isn't owned by the person who cast the spell
-			final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get
+			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 			if (cityData.getCurrentlyConstructingBuildingID () != null)
 			{
-				final Building buildingDef = db.findBuilding (cityData.getCurrentlyConstructingBuildingID (), "targetCorruption");
-				if (!getCityCalculations ().buildingPassesTileTypeRequirements (trueMap.getMap (), cityLocation,
-					buildingDef, sd.getOverlandMapSize ()))
+				final Building buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "targetCorruption");
+				if (!getCityCalculations ().buildingPassesTileTypeRequirements (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), cityLocation,
+					buildingDef, mom.getSessionDescription ().getOverlandMapSize ()))
 				{
 					// City can no longer proceed with their current construction project
 					cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (),
-						players, cityLocation, sd.getFogOfWarSetting ());
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 
 					// If it is a human player then we need to let them know that this has happened
-					final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "targetCorruption");
+					final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetCorruption");
 					if (cityOwner.getPlayerDescription ().isHuman ())
 					{
 						final NewTurnMessageConstructBuilding abortConstruction = new NewTurnMessageConstructBuilding ();
@@ -1293,7 +1289,7 @@ public final class CityProcessingImpl implements CityProcessing
 						abortConstruction.setCityLocation (cityLocation);
 						((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (abortConstruction);
 						
-						getPlayerMessageProcessing ().sendNewTurnMessages (null, players, null);
+						getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null);
 					}
 				}
 			}

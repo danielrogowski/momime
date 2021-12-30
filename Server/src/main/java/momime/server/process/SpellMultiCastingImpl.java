@@ -95,8 +95,7 @@ public final class SpellMultiCastingImpl implements SpellMultiCasting
 				if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
 					getRandomUtils ().nextBoolean ())
 					
-					getSpellCasting ().corruptTile (coords, mom.getGeneralServerKnowledge ().getTrueMap (),
-						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					getSpellCasting ().corruptTile (coords, mom);
 		}
 		
 		return attackCitySpellResult;

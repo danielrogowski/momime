@@ -225,17 +225,13 @@ public interface CityProcessing
 	 * So this method rechecks that city construction is still valid after there's been a change to an overland tile.
 	 * 
 	 * @param targetLocation Location where terrain was changed
-	 * @param trueMap True map details
-	 * @param players List of players in this session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	public void recheckCurrentConstructionIsStillValid (final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

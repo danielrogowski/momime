@@ -421,7 +421,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void checkIfCanStartGame (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		if (getPlayerPickServerUtils ().allPlayersHaveChosenAllDetails (mom.getPlayers (), mom.getSessionDescription ()))
+		if (getPlayerPickServerUtils ().allPlayersHaveChosenAllDetails (mom))
 		{
 			// Add AI wizards
 			log.debug ("checkIfCanStartGame: Yes, " + mom.getSessionDescription ().getAiPlayerCount () + " AI wizards to add");

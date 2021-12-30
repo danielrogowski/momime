@@ -734,8 +734,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		if (mom.getPlayers ().size () > 0)
 		{
 			// Send info about what everyone is casting to anybody who has Detect Magic cast
-			getSpellCasting ().sendOverlandCastingInfo (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, useOnlyOnePlayerID,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+			getSpellCasting ().sendOverlandCastingInfo (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, useOnlyOnePlayerID, mom);
 			
 			// Give units their full movement back again
 			// NB. Do this after our cities may have constructed new units above

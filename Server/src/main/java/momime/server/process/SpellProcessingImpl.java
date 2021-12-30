@@ -320,8 +320,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// If it is Detect Magic, the player now learns what spells everyone is casting overland
 					if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC))
-						getSpellCasting ().sendOverlandCastingInfo (spell.getSpellID (), player.getPlayerDescription ().getPlayerID (),
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+						getSpellCasting ().sendOverlandCastingInfo (spell.getSpellID (), player.getPlayerDescription ().getPlayerID (), mom);
 				}
 			}
 			

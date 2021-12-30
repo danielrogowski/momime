@@ -285,8 +285,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		getFogOfWarMidTurnChanges ().sendDamageToClients (attacker,
 			(combatLocation == null) ? null : attackingPlayer, (combatLocation == null) ? null : defendingPlayer,
 			defenders, attackSkillID, (spell == null) ? null : spell.getSpellID (),
-			wreckTilePosition, sendWrecked, skipAnimation, mom.getPlayers (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+			wreckTilePosition, sendWrecked, skipAnimation, mom);
 		
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose
 		// is whose unit - because it could be the defending players' unit making the attack in combat.
@@ -347,8 +346,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					mom.getWorldUpdates ().process (mom);
 					
 					if (combatLocation != null)
-						getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER,
-							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+						getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, mom);
 				}
 			}
 					
@@ -390,8 +388,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					mom.getWorldUpdates ().process (mom);
 					
 					if (combatLocation != null)
-						getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,
-							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+						getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, mom);
 				}
 			}
 			

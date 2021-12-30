@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -22,11 +21,11 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
@@ -743,8 +742,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					
 					// End of AI player's turn
 					if ((mom.getPlayers ().size () > 0) && (tc.getCombatCurrentPlayerID () != null))
-						getCombatEndTurn ().combatEndTurn (combatLocation, tc.getCombatCurrentPlayerID (),
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+						getCombatEndTurn ().combatEndTurn (combatLocation, tc.getCombatCurrentPlayerID (), mom);
 				}
 			}
 			
@@ -769,10 +767,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * 
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param winningPlayer The player who won the combat
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return The number of dead units that were brought back to life
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -781,20 +776,20 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final int regenerateUnits (final MapCoordinates3DEx combatLocation, final PlayerServerDetails winningPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+	public final int regenerateUnits (final MapCoordinates3DEx combatLocation, final PlayerServerDetails winningPlayer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		int count = 0;
 		
-		for (final MemoryUnit trueUnit : trueMap.getUnit ())
+		for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 
 			// Don't check combatPosition here - DEAD units should have no position
 			if ((combatLocation.equals (trueUnit.getCombatLocation ())) && (!trueUnit.isWasSummonedInCombat ()) &&
 				(trueUnit.getOwningPlayerID () == winningPlayer.getPlayerDescription ().getPlayerID ()) &&
 				((trueUnit.getStatus () != UnitStatusID.ALIVE) || (trueUnit.getUnitDamage ().size () > 0)))
 			{
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (trueUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 				boolean regeneration = false;
 				for (final String regenerationSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_REGENERATION)
@@ -811,7 +806,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					getUnitServerUtils ().healDamage (trueUnit.getUnitDamage (), 1000, false);
 					trueUnit.getUnitDamage ().clear ();
 					
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings, null);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, mom, null);
 				}
 			}
 		
@@ -827,10 +822,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @param newLocation The location the undead should be moved to on the overland map
 	 * @param winningPlayer The player who won the combat
 	 * @param losingPlayer The player who lost the combat
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return The true units that were converted into undead
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -840,18 +832,17 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	@Override
 	public final List<MemoryUnit> createUndead (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
-		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final List<MemoryUnit> undeadCreated = new ArrayList<MemoryUnit> ();
 		if ((losingPlayer != null) && (winningPlayer != null))
-			for (final MemoryUnit trueUnit : trueMap.getUnit ())
+			for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 	
 				// Don't check combatPosition here - DEAD units should have no position
 				if ((combatLocation.equals (trueUnit.getCombatLocation ())) && (trueUnit.getStatus () == UnitStatusID.DEAD) && (!trueUnit.isWasSummonedInCombat ()) &&
 					(trueUnit.getOwningPlayerID () == losingPlayer.getPlayerDescription ().getPlayerID ()) &&
-					(!db.findUnit (trueUnit.getUnitID (), "createUndead").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)) &&
+					(!mom.getServerDB ().findUnit (trueUnit.getUnitID (), "createUndead").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)) &&
 					(getUnitServerUtils ().whatKilledUnit (trueUnit.getUnitDamage ()) == StoredDamageTypeID.LIFE_STEALING))
 				{
 					undeadCreated.add (trueUnit);
@@ -866,7 +857,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					undeadSkill.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD);
 					trueUnit.getUnitHasSkill ().add (undeadSkill);
 					
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings, null);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, mom, null);
 				}
 		
 		log.debug ("createUndead created undead from " + undeadCreated.size () + " losing units");

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -19,13 +18,13 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 import com.ndg.utils.Holder;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AddsToSkill;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.MapFeature;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
@@ -38,7 +37,6 @@ import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -266,10 +264,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param trueUnit Unit to give an order to
 	 * @param specialOrder Order to give to this unit
 	 * @param player Player who owns the unit
-	 * @param trueTerrain True terrain map
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find the unit in the player's memory (they don't know about their own unit?)
 	 * @throws JAXBException If there is a problem sending the message to the client
 	 * @throws XMLStreamException If there is a problem sending the message to the client
@@ -277,8 +272,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	@Override
-	public void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException
 	{
 		// Setting a special order cancels any other kind of move
@@ -289,7 +283,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		trueUnit.setSpecialOrder (specialOrder);
 
 		// Update in player's memory and on clients
-		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings, null);
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, mom, null);
 	}
 	
 	/**
@@ -452,8 +446,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				(specialOrder == UnitSpecialOrder.PURIFY) || (specialOrder == UnitSpecialOrder.BUILD_ROAD))
 			{
 				for (final ExpandedUnitDetails trueUnit : unitsWithNecessarySkillID)
-					setAndSendSpecialOrder (trueUnit.getMemoryUnit (), specialOrder, player,
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+					setAndSendSpecialOrder (trueUnit.getMemoryUnit (), specialOrder, player, mom);
 			}
 			else
 			{

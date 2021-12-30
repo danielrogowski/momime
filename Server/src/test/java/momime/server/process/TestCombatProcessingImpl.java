@@ -683,15 +683,11 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "progressCombat")).thenReturn (attackingPlayer);
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -803,15 +799,11 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "progressCombat")).thenReturn (attackingPlayer);
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -923,15 +915,11 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "progressCombat")).thenReturn (attackingPlayer);
 		
-		// Session description
-		final MomSessionDescription sd = new MomSessionDescription ();
-		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);

@@ -35,7 +35,6 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.HeroName;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
@@ -45,7 +44,6 @@ import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -59,6 +57,7 @@ import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
@@ -611,9 +610,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 	@Test
 	public final void testSetAndSendSpecialOrder () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
@@ -628,11 +624,8 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final MemoryUnit trueUnit = new MemoryUnit ();
 		trueUnit.setUnitURN (5);
 		
-		// Terrain
-		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
-		
-		// Session description
-		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		
 		// Set up object to test
 		final PendingMovementUtils pendingMovementUtils = mock (PendingMovementUtils.class);
@@ -643,13 +636,13 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		utils.setFogOfWarMidTurnChanges (midTurn);
 		
 		// Run test
-		utils.setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.BUILD_ROAD, player, trueTerrain, players, db, fogOfWarSettings);
+		utils.setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.BUILD_ROAD, player, mom);
 		
 		// Check results
 		assertEquals (UnitSpecialOrder.BUILD_ROAD, trueUnit.getSpecialOrder ());
 		
 		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv.getPendingMovement (), 5);
-		verify (midTurn).updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings, null);
+		verify (midTurn).updatePlayerMemoryOfUnit (trueUnit, mom, null);
 
 		verifyNoMoreInteractions (pendingMovementUtils);
 		verifyNoMoreInteractions (midTurn);

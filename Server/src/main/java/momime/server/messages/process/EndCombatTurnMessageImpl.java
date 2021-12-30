@@ -56,8 +56,7 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 			log.warn ("Received EndCombatTurnMessage from wrong player - ignored");
 		else
 		{
-			getCombatEndTurn ().combatEndTurn ((MapCoordinates3DEx) getCombatLocation (), sender.getPlayerDescription ().getPlayerID (),
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+			getCombatEndTurn ().combatEndTurn ((MapCoordinates3DEx) getCombatLocation (), sender.getPlayerDescription ().getPlayerID (), mom);
 			
 			getCombatProcessing ().progressCombat ((MapCoordinates3DEx) getCombatLocation (), false, false, mom);
 		}

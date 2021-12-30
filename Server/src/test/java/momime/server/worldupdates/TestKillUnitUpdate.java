@@ -20,14 +20,12 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.utils.PendingMovementUtils;
@@ -61,16 +59,12 @@ public final class TestKillUnitUpdate extends ServerTestData
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "KillUnitUpdate")).thenReturn (unitDef);
 		
-		// Session description
-		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fowSettings);
-
 		// True map details on server
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 
 		// Unit to kill
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+
 		final MemoryUnit tu = new MemoryUnit ();
 		tu.setOwningPlayerID (1);
 		tu.setUnitURN (55);
@@ -94,7 +88,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player1, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
 		player1.setConnection (conn1);
@@ -111,7 +105,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player2, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
 		player2.setConnection (conn2);
@@ -128,7 +122,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player3, mom)).thenReturn (true);
 		
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
@@ -142,7 +136,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player4, mom)).thenReturn (false);
 		
 		final DummyServerToClientConnection conn4 = new DummyServerToClientConnection ();
 		player4.setConnection (conn4);
@@ -159,7 +153,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player5, mom)).thenReturn (false);
 
 		// List of players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -189,10 +183,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
@@ -259,16 +251,12 @@ public final class TestKillUnitUpdate extends ServerTestData
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN001", "KillUnitUpdate")).thenReturn (unitDef);
 		
-		// Session description
-		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fowSettings);
-
 		// True map details on server
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 
 		// Unit to kill
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+
 		final MemoryUnit tu = new MemoryUnit ();
 		tu.setOwningPlayerID (1);
 		tu.setUnitURN (55);
@@ -292,7 +280,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player1, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
 		player1.setConnection (conn1);
@@ -309,7 +297,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player2, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
 		player2.setConnection (conn2);
@@ -326,7 +314,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player3, mom)).thenReturn (true);
 		
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
@@ -340,7 +328,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player4, mom)).thenReturn (false);
 		
 		final DummyServerToClientConnection conn4 = new DummyServerToClientConnection ();
 		player4.setConnection (conn4);
@@ -357,7 +345,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player5, mom)).thenReturn (false);
 
 		// List of players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -395,10 +383,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
@@ -464,16 +450,12 @@ public final class TestKillUnitUpdate extends ServerTestData
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "KillUnitUpdate")).thenReturn (unitDef);
 		
-		// Session description
-		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fowSettings);
-
 		// True map details on server
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 
 		// Unit to kill
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+
 		final MemoryUnit tu = new MemoryUnit ();
 		tu.setOwningPlayerID (1);
 		tu.setUnitURN (55);
@@ -497,7 +479,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player1, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
 		player1.setConnection (conn1);
@@ -514,7 +496,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player2, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
 		player2.setConnection (conn2);
@@ -531,7 +513,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player3, mom)).thenReturn (true);
 		
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
@@ -545,7 +527,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player4, mom)).thenReturn (false);
 		
 		final DummyServerToClientConnection conn4 = new DummyServerToClientConnection ();
 		player4.setConnection (conn4);
@@ -562,7 +544,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player5, mom)).thenReturn (false);
 
 		// List of players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -592,10 +574,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
@@ -662,16 +642,12 @@ public final class TestKillUnitUpdate extends ServerTestData
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN001", "KillUnitUpdate")).thenReturn (unitDef);
 		
-		// Session description
-		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fowSettings);
-
 		// True map details on server
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 
 		// Unit to kill
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+
 		final MemoryUnit tu = new MemoryUnit ();
 		tu.setOwningPlayerID (1);
 		tu.setUnitURN (55);
@@ -695,7 +671,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player1, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
 		player1.setConnection (conn1);
@@ -712,7 +688,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player2, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
 		player2.setConnection (conn2);
@@ -729,7 +705,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player3, mom)).thenReturn (true);
 		
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
@@ -743,7 +719,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player4, mom)).thenReturn (false);
 		
 		final DummyServerToClientConnection conn4 = new DummyServerToClientConnection ();
 		player4.setConnection (conn4);
@@ -760,7 +736,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player5, mom)).thenReturn (false);
 
 		// List of players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -790,10 +766,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
@@ -859,16 +833,12 @@ public final class TestKillUnitUpdate extends ServerTestData
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "KillUnitUpdate")).thenReturn (unitDef);
 		
-		// Session description
-		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fowSettings);
-
 		// True map details on server
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 
 		// Unit to kill
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+
 		final MemoryUnit tu = new MemoryUnit ();
 		tu.setOwningPlayerID (1);
 		tu.setUnitURN (55);
@@ -892,7 +862,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player1, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
 		player1.setConnection (conn1);
@@ -909,7 +879,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player2, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
 		player2.setConnection (conn2);
@@ -926,7 +896,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player3, mom)).thenReturn (true);
 		
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
@@ -940,7 +910,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player4, mom)).thenReturn (false);
 		
 		final DummyServerToClientConnection conn4 = new DummyServerToClientConnection ();
 		player4.setConnection (conn4);
@@ -957,7 +927,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player5, mom)).thenReturn (false);
 
 		// List of players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -987,10 +957,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
@@ -1057,16 +1025,12 @@ public final class TestKillUnitUpdate extends ServerTestData
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN001", "KillUnitUpdate")).thenReturn (unitDef);
 		
-		// Session description
-		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fowSettings);
-
 		// True map details on server
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 
 		// Unit to kill
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+
 		final MemoryUnit tu = new MemoryUnit ();
 		tu.setOwningPlayerID (1);
 		tu.setUnitURN (55);
@@ -1090,7 +1054,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player1, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
 		player1.setConnection (conn1);
@@ -1107,7 +1071,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player2, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
 		player2.setConnection (conn2);
@@ -1124,7 +1088,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player3, mom)).thenReturn (true);
 		
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
@@ -1138,7 +1102,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player4, mom)).thenReturn (false);
 		
 		final DummyServerToClientConnection conn4 = new DummyServerToClientConnection ();
 		player4.setConnection (conn4);
@@ -1155,7 +1119,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player5, mom)).thenReturn (false);
 
 		// List of players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1185,10 +1149,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
@@ -1255,17 +1217,10 @@ public final class TestKillUnitUpdate extends ServerTestData
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "KillUnitUpdate")).thenReturn (unitDef);
 
-		// Session description
-		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fowSettings);
-		
-		final OverlandMapSize mapSize = createOverlandMapSize ();
-		sd.setOverlandMapSize (mapSize);
-
 		// True map details on server
+		final OverlandMapSize mapSize = createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (mapSize);
+		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setAttackingPlayerID (1);
 		gc.setDefendingPlayerID (2);
@@ -1274,6 +1229,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		trueMap.setMap (trueTerrain);
 
 		// Unit to kill
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+
 		final MemoryUnit tu = new MemoryUnit ();
 		tu.setOwningPlayerID (1);
 		tu.setUnitURN (55);
@@ -1298,7 +1255,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player1, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
 		player1.setConnection (conn1);
@@ -1315,7 +1272,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player2, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
 		player2.setConnection (conn2);
@@ -1332,7 +1289,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player3, mom)).thenReturn (false);
 		
 		final DummyServerToClientConnection conn3 = new DummyServerToClientConnection ();
 		player3.setConnection (conn3);
@@ -1349,7 +1306,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player4, mom)).thenReturn (false);
 
 		// A human player who is a 3rd party observer who can see the unit from outside of the combat
 		final PlayerDescription pd5 = new PlayerDescription ();
@@ -1363,7 +1320,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player5, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn5 = new DummyServerToClientConnection ();
 		player5.setConnection (conn5);
@@ -1380,7 +1337,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player6 = new PlayerServerDetails (pd6, null, priv6, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player6, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player6, mom)).thenReturn (true);
 		
 		// List of players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1426,10 +1383,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
@@ -1505,17 +1460,10 @@ public final class TestKillUnitUpdate extends ServerTestData
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN001", "KillUnitUpdate")).thenReturn (unitDef);
 
-		// Session description
-		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fowSettings);
-		
-		final OverlandMapSize mapSize = createOverlandMapSize ();
-		sd.setOverlandMapSize (mapSize);
-
 		// True map details on server
+		final OverlandMapSize mapSize = createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (mapSize);
+		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setAttackingPlayerID (1);
 		gc.setDefendingPlayerID (2);
@@ -1524,6 +1472,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		trueMap.setMap (trueTerrain);
 
 		// Unit to kill
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+
 		final MemoryUnit tu = new MemoryUnit ();
 		tu.setOwningPlayerID (1);
 		tu.setUnitURN (55);
@@ -1548,7 +1498,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player1, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
 		player1.setConnection (conn1);
@@ -1565,7 +1515,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player2, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
 		player2.setConnection (conn2);
@@ -1582,7 +1532,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player3, mom)).thenReturn (false);
 		
 		final DummyServerToClientConnection conn3 = new DummyServerToClientConnection ();
 		player3.setConnection (conn3);
@@ -1599,7 +1549,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		when (midTurn.canSeeUnitMidTurn (tu, player4, mom)).thenReturn (false);
 
 		// A human player who is a 3rd party observer who can see the unit from outside of the combat
 		final PlayerDescription pd5 = new PlayerDescription ();
@@ -1613,7 +1563,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player5, mom)).thenReturn (true);
 		
 		final DummyServerToClientConnection conn5 = new DummyServerToClientConnection ();
 		player5.setConnection (conn5);
@@ -1630,7 +1580,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerServerDetails player6 = new PlayerServerDetails (pd6, null, priv6, null, null);
 		
-		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player6, db, fowSettings)).thenReturn (true);
+		when (midTurn.canSeeUnitMidTurn (tu, player6, mom)).thenReturn (true);
 		
 		// List of players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1668,10 +1618,8 @@ public final class TestKillUnitUpdate extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test

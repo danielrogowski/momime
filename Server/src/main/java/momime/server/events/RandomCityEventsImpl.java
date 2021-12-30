@@ -330,8 +330,7 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 						if (unitDef.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL))
 						{
 							mu.setOwningPlayerID (newCityOwner.getPlayerDescription ().getPlayerID ());
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (mu, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (mu, mom, null);
 						}
 						else
 							mom.getWorldUpdates ().killUnit (mu.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);							

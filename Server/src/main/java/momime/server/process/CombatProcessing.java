@@ -2,7 +2,6 @@ package momime.server.process;
 
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystem;
@@ -11,9 +10,9 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
@@ -86,10 +85,7 @@ public interface CombatProcessing
 	 * 
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
 	 * @param winningPlayer The player who won the combat
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return The number of dead units that were brought back to life
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -97,8 +93,7 @@ public interface CombatProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public int regenerateUnits (final MapCoordinates3DEx combatLocation, final PlayerServerDetails winningPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+	public int regenerateUnits (final MapCoordinates3DEx combatLocation, final PlayerServerDetails winningPlayer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -109,10 +104,7 @@ public interface CombatProcessing
 	 * @param newLocation The location the undead should be moved to on the overland map
 	 * @param winningPlayer The player who won the combat
 	 * @param losingPlayer The player who lost the combat
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return The true units that were converted into undead
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
@@ -121,8 +113,7 @@ public interface CombatProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public List<MemoryUnit> createUndead (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
-		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**

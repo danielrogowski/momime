@@ -24,7 +24,6 @@ import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.MomDatabase;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.Plane;
@@ -34,7 +33,6 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPickCount;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
@@ -746,8 +744,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			
 			// Give units their full movement back again
 			// NB. Do this after our cities may have constructed new units above
-			getFogOfWarMidTurnMultiChanges ().resetUnitOverlandMovement (useOnlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-				mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+			getFogOfWarMidTurnMultiChanges ().resetUnitOverlandMovement (useOnlyOnePlayerID, mom);
 			
 			// Now need to do one final recalc to take into account
 			// 1) Cities producing more food/gold due to increased population
@@ -1090,8 +1087,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				getSpellQueueing ().progressOverlandCasting (player, mom);
 		
 		// Progress multi-turn special orders
-		progressMultiTurnSpecialOrders (mom.getGeneralServerKnowledge ().getTrueMap (), useOnlyOnePlayerID,
-			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+		progressMultiTurnSpecialOrders (useOnlyOnePlayerID, mom);
 
 		// Kick off the next turn
 		log.info ("Kicking off next turn...");
@@ -1113,26 +1109,22 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/**
 	 * Purifying corruption and building roads can take several turns
 	 *
-	 * @param trueMap True terrain and unit details
 	 * @param onlyOnePlayerID If zero, will process special orders for all players; if specified will process special orders only for the specified player
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	final void progressMultiTurnSpecialOrders (final FogOfWarMemory trueMap, final int onlyOnePlayerID,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	final void progressMultiTurnSpecialOrders (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		for (final MemoryUnit tu : trueMap.getUnit ())
+		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((tu.getStatus () == UnitStatusID.ALIVE) && ((tu.getSpecialOrder () == UnitSpecialOrder.PURIFY) || (tu.getSpecialOrder () == UnitSpecialOrder.BUILD_ROAD)) &&
 				((onlyOnePlayerID == 0) || (tu.getOwningPlayerID () == onlyOnePlayerID)))
 			{
-				final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
+				final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 					(tu.getUnitLocation ().getZ ()).getRow ().get (tu.getUnitLocation ().getY ()).getCell ().get (tu.getUnitLocation ().getX ());
 				
 				final OverlandMapTerrainData terrainData = gc.getTerrainData ();
@@ -1153,16 +1145,16 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						
 						// Send to anyone who can see it
 						if (!CompareUtils.safeIntegerCompare (oldValue, terrainData.getCorrupted ()))
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players,
-								(MapCoordinates3DEx) tu.getUnitLocation (), fogOfWarSettings.getTerrainAndNodeAuras ());
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+								(MapCoordinates3DEx) tu.getUnitLocation (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 						
 						// If corruption is all gone then cancel purify orders for all units here
 						if (terrainData.getCorrupted () == null)
-							for (final MemoryUnit tu2 : trueMap.getUnit ())
+							for (final MemoryUnit tu2 : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 								if ((tu2.getStatus () == UnitStatusID.ALIVE) && (tu2.getSpecialOrder () == UnitSpecialOrder.PURIFY) && (tu2.getUnitLocation ().equals (tu.getUnitLocation ())))
 								{
 									tu2.setSpecialOrder (null);
-									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings, null);
+									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, mom, null);
 								}
 						break;
 					}
@@ -1172,7 +1164,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						final int oldValue = (gc.getRoadProductionSoFar () == null) ? 0 : gc.getRoadProductionSoFar ();
 						
 						// Lay a little more pavement - dwarven engineers construct 2 points per turn instead of 1
-						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null, players, trueMap, db);
+						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						Integer skillValue = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD);
 						if ((skillValue == null) || (skillValue < 1))
 							skillValue = 1;
@@ -1180,35 +1173,35 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						gc.setRoadProductionSoFar (oldValue + skillValue);
 						
 						// Finished?
-						final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "progressMultiTurnSpecialOrders");
+						final TileType tileType = mom.getServerDB ().findTileType (terrainData.getTileTypeID (), "progressMultiTurnSpecialOrders");
 						if ((tileType.getProductionToBuildRoad () != null) && (gc.getRoadProductionSoFar () >= tileType.getProductionToBuildRoad ()))
 						{
 							gc.setRoadProductionSoFar (null);
 							
 							// If we're standing on a tower, then we build a road on both planes
 							final Integer singlePlane = getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData) ? null : tu.getUnitLocation ().getZ ();
-							for (final Plane plane : db.getPlane ())
+							for (final Plane plane : mom.getServerDB ().getPlane ())
 								if ((singlePlane == null) || (singlePlane == plane.getPlaneNumber ()))
 								{
-									final OverlandMapTerrainData roadTerrainData = trueMap.getMap ().getPlane ().get
+									final OverlandMapTerrainData roadTerrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 										(plane.getPlaneNumber ()).getRow ().get (tu.getUnitLocation ().getY ()).getCell ().get (tu.getUnitLocation ().getX ()).getTerrainData ();
 
 									final String roadTileTypeID = ((plane.isRoadsEnchanted () != null) && (plane.isRoadsEnchanted ())) ?
-											CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
+										CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
 									roadTerrainData.setRoadTileTypeID (roadTileTypeID);
 
 									// Send to anyone who can see it
-									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players,
+									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
 										new MapCoordinates3DEx (tu.getUnitLocation ().getX (), tu.getUnitLocation ().getY (), plane.getPlaneNumber ()),
-										fogOfWarSettings.getTerrainAndNodeAuras ());
+										mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 								}
 							
 							// Cancel road building orders for all units here
-							for (final MemoryUnit tu2 : trueMap.getUnit ())
+							for (final MemoryUnit tu2 : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 								if ((tu2.getStatus () == UnitStatusID.ALIVE) && (tu2.getSpecialOrder () == UnitSpecialOrder.BUILD_ROAD) && (tu2.getUnitLocation ().equals (tu.getUnitLocation ())))
 								{
 									tu2.setSpecialOrder (null);
-									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings, null);
+									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, mom, null);
 								}
 						}
 						

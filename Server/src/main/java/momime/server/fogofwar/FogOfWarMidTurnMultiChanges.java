@@ -10,11 +10,8 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.PendingMovementStep;
@@ -99,19 +96,14 @@ public interface FogOfWarMidTurnMultiChanges
 	 * 
 	 * @param combatLocation The location where the combat is taking place
 	 * @param combatSide Which side is to gain 1 exp
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void grantExperienceToUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public void grantExperienceToUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -214,18 +206,14 @@ public interface FogOfWarMidTurnMultiChanges
 	 * Gives all units full movement back again overland
 	 *
 	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
-	 * @param players Players list
-	 * @param trueMap True terrain, list of units and so on
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
-	public void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+	public void resetUnitOverlandMovement (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**

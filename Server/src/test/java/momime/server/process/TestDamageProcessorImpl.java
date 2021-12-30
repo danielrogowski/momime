@@ -227,8 +227,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, mom);
 
 		verify (midTurnSingle).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			null, null, false, players, trueTerrain, db, fogOfWarSettings);
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, false, mom);
 		
 		// Check initial message was sent
 		verify (calc).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer, null,
@@ -242,7 +241,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		verify (wu).killUnit (defender.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
 		verify (wu).process (mom);
 		
-		verify (midTurnMulti).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
+		verify (midTurnMulti).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, mom);
 		
 		verifyNoMoreInteractions (attackResolutionProc);
 		verifyNoMoreInteractions (wu);
@@ -412,8 +411,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 			steps, mom);
 
 		verify (midTurnSingle).sendDamageToClients (attacker, attackingPlayer, defendingPlayer, defenders,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			null, null, false, players, trueTerrain, db, fogOfWarSettings);
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, false, mom);
 		
 		// Check initial message was sent
 		verify (calc).sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer, null,
@@ -427,7 +425,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		verify (wu).killUnit (defender.getUnitURN (), KillUnitActionID.HEALABLE_COMBAT_DAMAGE);
 		verify (wu).process (mom);
 		
-		verify (midTurnMulti).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
+		verify (midTurnMulti).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, mom);
 		
 		// Defending player won
 		verify (combatStartAndEnd).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), isNull (), eq (mom));
@@ -479,17 +477,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		defender.getUnitDamage ().add (defenderDamageTaken);
 		
-		// Session description
-		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
-		final CombatMapSize combatMapSize = createCombatMapSize (); 
-		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
-
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fogOfWarSettings);
-		sd.setCombatMapSize (combatMapSize);
-		sd.setOverlandMapSize (overlandMapSize);
-		
 		// General server knowledge
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -501,7 +490,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 
@@ -560,8 +548,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		
 		verify (attackResolutionProc).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
 
-		verify (midTurnSingle).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
-			null, "SP001", null, null, false, players, trueTerrain, db, fogOfWarSettings);
+		verify (midTurnSingle).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders, null, "SP001", null, null, false, mom);
 		
 		// Check initial message was sent
 		verify (calc).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, null, spell, castingPlayer);
@@ -628,17 +615,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defender3.setOwningPlayerID (attackingPd.getPlayerID ());
 		defender3.getUnitDamage ().add (defender3DamageTaken);
 		
-		// Session description
-		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
-		final CombatMapSize combatMapSize = createCombatMapSize (); 
-		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
-
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fogOfWarSettings);
-		sd.setCombatMapSize (combatMapSize);
-		sd.setOverlandMapSize (overlandMapSize);
-		
 		// General server knowledge
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -662,7 +640,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		
@@ -727,8 +704,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		verify (attackResolutionProc).processAttackResolutionStep (null, defender2Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
 		verify (attackResolutionProc).processAttackResolutionStep (null, defender3Wrapper, attackingPlayer, defendingPlayer, combatLocation, steps, mom);
 
-		verify (midTurnSingle).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders,
-			null, "SP001", null, null, false, players, trueTerrain, db, fogOfWarSettings);
+		verify (midTurnSingle).sendDamageToClients (null, attackingPlayer, defendingPlayer, defenders, null, "SP001", null, null, false, mom);
 		
 		// Check initial message was sent
 		verify (calc).sendDamageHeader (null, defenderUnits, false, attackingPlayer, defendingPlayer, null, null, spell, castingPlayer);

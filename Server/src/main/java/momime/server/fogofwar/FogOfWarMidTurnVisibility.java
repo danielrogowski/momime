@@ -1,19 +1,15 @@
 package momime.server.fogofwar;
 
-import java.util.List;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
-import momime.common.database.CommonDatabase;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.server.MomSessionVariables;
 
 /**
  * Contains methods for whether each player can see certain game items during a turn;
@@ -25,32 +21,24 @@ public interface FogOfWarMidTurnVisibility
 {
 	/**
 	 * @param unit True unit to test
-	 * @param trueTerrain True terrain map
 	 * @param player The player we are testing whether they can see the unit
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if player can see this unit
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 */
-	public boolean canSeeUnitMidTurn (final MemoryUnit unit, final MapVolumeOfMemoryGridCells trueTerrain, final PlayerServerDetails player,
-		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public boolean canSeeUnitMidTurn (final MemoryUnit unit, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException;
 
 	/**
 	 * @param spell True spell to test
-	 * @param trueTerrain True terrain map
-	 * @param trueUnits True list of units
 	 * @param player The player we are testing whether they can see the spell
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if player can see this spell
 	 * @throws RecordNotFoundException If the unit that the spell is cast on, or tile type or map feature IDs cannot be found
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 */
-	public boolean canSeeSpellMidTurn (final MemoryMaintainedSpell spell,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final PlayerServerDetails player,
-		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public boolean canSeeSpellMidTurn (final MemoryMaintainedSpell spell, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException;
 
 	/**

@@ -458,13 +458,13 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Check results
 		verify (unitServerUtils).healDamage (unit1.getUnitDamage (), 2, false);		// 5% of 24 is 1.2, then round up
 		verify (direct).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit1), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit1), eq (mom), anyMap ());
 
 		verify (unitServerUtils).healDamage (unit2.getUnitDamage (), 1, false);		// 5% of 16 is 0.8, then round up
-		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit2), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit2), eq (mom), anyMap ());
 
 		verify (direct).setDirectSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit3), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit3), eq (mom), anyMap ());
 	
 		verifyNoMoreInteractions (direct);
 		verifyNoMoreInteractions (midTurn);
@@ -488,7 +488,12 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		
 		// Other lists and objects needed for mocks
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setFogOfWarSetting (fogOfWarSettings);
 		
 		// Server memory
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -564,6 +569,15 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (expand.expandUnitDetails (unit6, null, null, null, players, trueMap, db)).thenReturn (xu6);
 		when (xu6.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
@@ -577,16 +591,16 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setPlayerMessageProcessing (playerMessageProcessing);
 		
 		// Run method
-		multi.grantExperienceToUnitsInCombat (new MapCoordinates3DEx (20, 10, 1), UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
+		multi.grantExperienceToUnitsInCombat (new MapCoordinates3DEx (20, 10, 1), UnitCombatSideID.ATTACKER, mom);
 		
 		// Check results
 		verify (direct).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
 		verify (direct).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 13);
-		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit1), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit1), eq (mom), anyMap ());
 
 		verify (direct).setDirectSkillValue (unit6, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
 		verify (direct).setDirectSkillValue (unit6, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 13);
-		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit6), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
+		verify (midTurn).updatePlayerMemoryOfUnit (eq (unit6), eq (mom), anyMap ());
 		
 		verifyNoMoreInteractions (direct);
 		verifyNoMoreInteractions (midTurn);
@@ -1111,9 +1125,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Empty mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// Session description
-		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
-		
 		// Other lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -1138,6 +1149,15 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			when (expand.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
 			when (xuHellHounds.getMovementSpeed ()).thenReturn (2);
 		}
+		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -1147,7 +1167,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setFogOfWarMidTurnChanges (midTurn);
 		
 		// Run method
-		multi.resetUnitOverlandMovement (0, players, fow, fogOfWarSettings, db);
+		multi.resetUnitOverlandMovement (0, mom);
 
 		// Check results
 		assertEquals (2, fow.getUnit ().get (0).getDoubleOverlandMovesLeft ());
@@ -1167,9 +1187,6 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	{
 		// Empty mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Session description
-		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		
 		// Other lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1199,6 +1216,15 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			}
 		}
 
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (fow);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
@@ -1207,7 +1233,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setFogOfWarMidTurnChanges (midTurn);
 
 		// Run method
-		multi.resetUnitOverlandMovement (2, players, fow, fogOfWarSettings, db);
+		multi.resetUnitOverlandMovement (2, mom);
 
 		// Check results
 		assertEquals (0, fow.getUnit ().get (0).getDoubleOverlandMovesLeft ());

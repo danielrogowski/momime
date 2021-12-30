@@ -18,13 +18,11 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.database.CommonDatabase;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.DummyServerToClientConnection;
@@ -51,12 +49,6 @@ public final class TestSwitchOffSpellUpdate
 		final Spell spellDef = new Spell ();
 		when (db.findSpell ("SP001", "SwitchOffSpellUpdate")).thenReturn (spellDef);
 		
-		// Session description
-		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		
-		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setFogOfWarSetting (fowSettings);
-
 		// Server knowledge
 		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells (); 
 		
@@ -72,6 +64,17 @@ public final class TestSwitchOffSpellUpdate
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), trueMap.getMaintainedSpell (), "SwitchOffSpellUpdate")).thenReturn (trueSpell);
 
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final WorldUpdates wu = mock (WorldUpdates.class);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getWorldUpdates ()).thenReturn (wu);
+		
 		// Players can see the spell or not, and be human/AI, so create 4 players
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		final FogOfWarMidTurnVisibility vis = mock (FogOfWarMidTurnVisibility.class);
@@ -100,21 +103,10 @@ public final class TestSwitchOffSpellUpdate
 				players.add (player);
 
 				// Mock whether the player can see the spell
-				when (vis.canSeeSpellMidTurn (trueSpell, trueTerrain, trueMap.getUnit (), player, db, fowSettings)).thenReturn (canSee);
+				when (vis.canSeeSpellMidTurn (trueSpell, player, mom)).thenReturn (canSee);
 			}
 
-		// Session variables
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
-		final WorldUpdates wu = mock (WorldUpdates.class);
-		
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getWorldUpdates ()).thenReturn (wu);
 		
 		// Set up object to test
 		final SwitchOffSpellUpdate update = new SwitchOffSpellUpdate ();

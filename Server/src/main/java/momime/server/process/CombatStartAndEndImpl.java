@@ -496,8 +496,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				moveTo.setZ (0);
 			
 			// Units with regeneration come back from being dead and/or regain full health
-			msg.setRegeneratedCount (getCombatProcessing ().regenerateUnits (combatLocation, winningPlayer,
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ()));
+			msg.setRegeneratedCount (getCombatProcessing ().regenerateUnits (combatLocation, winningPlayer, mom));
 			
 			// Undead created from ghouls / life stealing?
 			// Note these are always moved to the "moveTo" i.e. defending location - if the attacker won, their main force will advance
@@ -508,8 +507,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			if (useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE)
 				undead = new ArrayList<MemoryUnit> ();
 			else
-				undead = getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer,
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+				undead = getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer, mom);
 			
 			msg.setUndeadCreated (undead.size ());
 

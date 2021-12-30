@@ -109,8 +109,7 @@ public final class MomAIImpl implements MomAI
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
-			getUnitAI ().reallocateHeroItems (player, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (),
-				mom.getSessionDescription ().getFogOfWarSetting ());
+			getUnitAI ().reallocateHeroItems (player, mom);
 		
 		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID ());
 		

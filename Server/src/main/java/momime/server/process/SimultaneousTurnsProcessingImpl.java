@@ -501,8 +501,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				planeShifters.remove (xu.getMemoryUnit ());
 				
 				xu.setSpecialOrder (null);
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xu.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xu.getMemoryUnit (), mom, null);
 			}
 		}
 		

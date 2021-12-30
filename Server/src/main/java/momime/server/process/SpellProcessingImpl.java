@@ -926,8 +926,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 						
 						getFogOfWarMidTurnChanges ().sendDamageToClients (null, attackingPlayer, defendingPlayer,
-							unitWrappers, null, spell.getSpellID (), null, null, skipAnimation, mom.getPlayers (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+							unitWrappers, null, spell.getSpellID (), null, null, skipAnimation, mom);
 					}
 					else if (kind == KindOfSpell.RECALL)
 					{
@@ -1048,8 +1047,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			xuCombatCastingUnit.getMemoryUnit ().getFixedSpellsRemaining ().set (combatCastingFixedSpellNumber,
 				xuCombatCastingUnit.getMemoryUnit ().getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) - 1);
 
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xuCombatCastingUnit.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xuCombatCastingUnit.getMemoryUnit (), mom, null);
 		}
 		else if (combatCastingSlotNumber != null)
 		{
@@ -1059,8 +1057,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			xuCombatCastingUnit.getMemoryUnit ().getHeroItemSpellChargesRemaining ().set (combatCastingSlotNumber,
 				xuCombatCastingUnit.getMemoryUnit ().getHeroItemSpellChargesRemaining ().get (combatCastingSlotNumber) - 1);
 
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xuCombatCastingUnit.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xuCombatCastingUnit.getMemoryUnit (), mom, null);
 		}
 		else
 		{
@@ -1068,8 +1065,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			xuCombatCastingUnit.setManaRemaining (xuCombatCastingUnit.getManaRemaining () - multipliedManaCost);
 			xuCombatCastingUnit.setDoubleCombatMovesLeft (0);
 			
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xuCombatCastingUnit.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xuCombatCastingUnit.getMemoryUnit (), mom, null);
 		}
 		
 		// Did casting the spell result in winning/losing the combat?
@@ -1164,8 +1160,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			
 			// Tell the client to stop asking about targeting the spell, and show an animation for it - need to send this to all players that can see it!
-			getFogOfWarMidTurnChanges ().sendTransientSpellToClients (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+			getFogOfWarMidTurnChanges ().sendTransientSpellToClients (maintainedSpell, mom);
 
 			if (kind == KindOfSpell.RECALL)
 			{
@@ -1202,8 +1197,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
 							getUnitServerUtils ().healDamage (tu.getUnitDamage (), dmg, false);
 							
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu, mom, null);
 						}
 					}
 			}
@@ -1466,8 +1460,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if (spell.getCombatCastAnimation () != null)
 			{
 				maintainedSpell.setCityLocation (targetLocation);
-				getFogOfWarMidTurnChanges ().sendTransientSpellToClients (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+				getFogOfWarMidTurnChanges ().sendTransientSpellToClients (maintainedSpell, mom);
 			}
 			
 			getSpellMultiCasting ().castCityAttackSpell (spell, castingPlayer, null, maintainedSpell.getVariableDamage (), targetLocation, mom);
@@ -1534,8 +1527,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							permanentEffect.setUnitSkillID (effect.getUnitSkillID ());
 							targetUnit.getUnitHasSkill ().add (permanentEffect);
 							
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (targetUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-								mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (targetUnit, mom, null);
 						}
 				}
 			
@@ -1881,8 +1873,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							
 							// Above method applies damage on the server, but doesn't send it to the client or check if the unit is now dead, so need to do that here
 							if (xu.calculateAliveFigureCount () > 0)
-								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xu.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xu.getMemoryUnit (), mom, null);
 							else
 								mom.getWorldUpdates ().killUnit (xu.getUnitURN (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE);
 						}

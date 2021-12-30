@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystemUtils;
@@ -16,19 +15,17 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.AttackSpellTargetID;
 import momime.common.database.CombatAreaEffect;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.ConfusionEffect;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -423,16 +420,14 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 							if (thisUnit.getManaRemaining () > 0)
 							{
 								thisUnit.setManaRemaining (Math.max (0, thisUnit.getManaRemaining () - 5));
-								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom, null);
 							}
 							
 							// Units with magical ranged attacks
 							else if ((thisUnit.getAmmoRemaining () > 0) && (xu.getRangedAttackType ().getMagicRealmID () != null))
 							{
 								thisUnit.setAmmoRemaining (thisUnit.getAmmoRemaining () - 1);
-								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-									mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom, null);
 							}
 						}
 					}
@@ -479,10 +474,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 * 
 	 * @param combatLocation The location the combat is taking place
 	 * @param playerID Which player just finished their combat turn
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If an expected data item cannot be found
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
@@ -490,19 +482,19 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void combatEndTurn (final MapCoordinates3DEx combatLocation, final int playerID,
-		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public final void combatEndTurn (final MapCoordinates3DEx combatLocation, final int playerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Note we don't check the unit can normally heal damage (is not undead) because regeneration works even on undead
 		final List<MemoryUnit> healedUnits = new ArrayList<MemoryUnit> ();
 
-		for (final MemoryUnit thisUnit : mem.getUnit ())
+		for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
 				(thisUnit.getUnitDamage ().size () > 0))
 			{
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				boolean regeneration = false;
 				for (final String regenerationSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_REGENERATION)
@@ -521,8 +513,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 		{
 			final List<ResolveAttackTarget> unitWrappers = healedUnits.stream ().map (u -> new ResolveAttackTarget (u)).collect (Collectors.toList ());
 			
-			getFogOfWarMidTurnChanges ().sendDamageToClients (null, null, null,
-				unitWrappers, null, null, null, null, false, players, mem.getMap (), db, fogOfWarSettings);
+			getFogOfWarMidTurnChanges ().sendDamageToClients (null, null, null, unitWrappers, null, null, null, null, false, mom);
 		}
 	}
 

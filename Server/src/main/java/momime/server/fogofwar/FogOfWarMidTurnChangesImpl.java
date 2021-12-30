@@ -254,8 +254,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 			
-			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), thisPlayer, mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ()))
+			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, thisPlayer, mom))
 			{
 				// Update player's memory on server
 				if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
@@ -414,29 +413,22 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Tell clients?
 		if (addOnClients)
-			updatePlayerMemoryOfUnit (trueUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
-				mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+			updatePlayerMemoryOfUnit (trueUnit, mom, null);
 	}
 
 	/**
 	 * Sends transient spell casts to human players who are in range to see it.  This is purely for purposes of them displaying the animation,
 	 * the spell is then discarded and no actual updates take place on the server or client as a result of this, other than that the client stops asking the caster to target it.
 	 * 
-	 * @param trueTerrain True terrain map
-	 * @param trueUnits True list of units
 	 * @param transientSpell The spell being cast
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void sendTransientSpellToClients (final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits,
-		final MemoryMaintainedSpell transientSpell, final List<PlayerServerDetails> players,
-		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public final void sendTransientSpellToClients (final MemoryMaintainedSpell transientSpell, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		// Build the message ready to send it to whoever can see the spell
@@ -446,9 +438,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		msg.setSpellTransient (true);
 
 		// Check which players can see the spell; force the caster to be able to see it for casting Earth Lore in black areas
-		for (final PlayerServerDetails player : players)
+		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((player.getPlayerDescription ().isHuman ()) && ((transientSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ()) ||
-				(getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (transientSpell, trueTerrain, trueUnits, player, db, fogOfWarSettings))))
+				(getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (transientSpell, player, mom))))
 				
 				player.getConnection ().sendMessageToClient (msg);
 	}
@@ -488,8 +480,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), player, mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ()))
+			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, player, mom))
 			{
 				// Update player's memory on server
 				if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
@@ -794,10 +785,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * Informs clients who can see this unit of any changes
 	 *
 	 * @param tu True unit details
-	 * @param trueTerrain True terrain map
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param fowMessages If null then any necessary client messgaes will be sent individually; if map is passed in then any necessary client messages are collated here ready to be sent in bulk
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
@@ -806,9 +794,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	@Override
-	public final void updatePlayerMemoryOfUnit (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings,
-		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages)
+	public final void updatePlayerMemoryOfUnit (final MemoryUnit tu, final MomSessionVariables mom, final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// First build the message
@@ -824,10 +810,10 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// Check which players can see the unit
 		// Note it isn't enough to say "Is the Unit URN in the player's memory" - maybe they've seen the unit before and are remembering
 		// what they saw, but cannot see it now - in that case they shouldn't receive any updates about the unit
-		for (final PlayerServerDetails thisPlayer : players)
+		for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
-			if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tu, trueTerrain, thisPlayer, db, fogOfWarSettings))
+			if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tu, thisPlayer, mom))
 				
 				// Update player's memory on server
 				if (getFogOfWarDuplication ().copyUnit (tu, priv.getFogOfWarMemory ().getUnit (), tu.getOwningPlayerID () == thisPlayer.getPlayerDescription ().getPlayerID ()))
@@ -867,10 +853,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param wreckTilePosition If the tile was attacked directly with Wall Crusher skill, the location of the tile that was attacked
 	 * @param wrecked If the tile was attacked directly with Wall Crusher skill, whether the attempt was successful or not
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
-	 * @param players List of players in the session
-	 * @param trueTerrain True terrain map
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or a player should know about one of the units but we can't find it in their memory
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -880,11 +863,10 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void sendDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<ResolveAttackTarget> tuDefenders, final String attackSkillID, final String attackSpellID,
 		final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked,
-		final boolean skipAnimation, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
-		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+		final boolean skipAnimation, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		for (final PlayerServerDetails thisPlayer : players)
+		for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 			
@@ -903,7 +885,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				msg = null;
 			
 			// Attacking unit
-			if ((tuAttacker != null) && (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tuAttacker, trueTerrain, thisPlayer, db, fogOfWarSettings)))
+			if ((tuAttacker != null) && (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tuAttacker, thisPlayer, mom)))
 			{
 				// Update player's memory of attacker on server
 				final MemoryUnit muAttacker = getUnitUtils ().findUnitURN (tuAttacker.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendDamageToClients-a");
@@ -931,7 +913,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			
 			// Defending unit(s)
 			for (final ResolveAttackTarget tuDefender : tuDefenders)
-				if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tuDefender.getDefender (), trueTerrain, thisPlayer, db, fogOfWarSettings))
+				if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (tuDefender.getDefender (), thisPlayer, mom))
 				{
 					// Update player's memory of defender on server
 					final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getDefender ().getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendDamageToClients-d");

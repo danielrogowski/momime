@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -22,6 +21,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
@@ -29,7 +29,6 @@ import momime.common.database.AiMovementCode;
 import momime.common.database.AiUnitCategory;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.HeroItemSlotType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -968,10 +967,7 @@ public final class UnitAIImpl implements UnitAI
 	
 	/**
 	 * @param player AI player whose hero items we want to reallocate
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param players Players list
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
@@ -979,8 +975,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	@Override
-	public final void reallocateHeroItems (final PlayerServerDetails player, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public final void reallocateHeroItems (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -988,7 +983,8 @@ public final class UnitAIImpl implements UnitAI
 		// Get a list of all hero items we own
 		final List<NumberedHeroItem> itemsList = new ArrayList<NumberedHeroItem> ();
 		
-		trueMap.getUnit ().stream ().filter (u -> (u.getStatus () == UnitStatusID.ALIVE) && (u.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())).forEach
+		mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
+			(u -> (u.getStatus () == UnitStatusID.ALIVE) && (u.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())).forEach
 			(u -> u.getHeroItemSlot ().stream ().filter (s -> s.getHeroItem () != null).forEach (s ->
 		{
 			itemsList.add (s.getHeroItem ());
@@ -1010,17 +1006,19 @@ public final class UnitAIImpl implements UnitAI
 					itemTypeList = new ArrayList<NumberedHeroItemAndRating> ();
 					itemsMap.put (item.getHeroItemTypeID (), itemTypeList);
 				}
-				itemTypeList.add (new NumberedHeroItemAndRating (item, getAiHeroItemRatingCalculations ().calculateHeroItemRating (item, db)));
+				itemTypeList.add (new NumberedHeroItemAndRating (item, getAiHeroItemRatingCalculations ().calculateHeroItemRating (item, mom.getServerDB ())));
 			}
 			
 			// Now list all heroes
 			List<ExpandedUnitDetailsAndRating> heroes = new ArrayList<ExpandedUnitDetailsAndRating> ();
-			for (final MemoryUnit tu : trueMap.getUnit ())
+			for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 				if ((tu.getStatus () == UnitStatusID.ALIVE) && (tu.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (tu.getHeroItemSlot ().size () > 0))
 				{
-					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null, players, trueMap, db);
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (tu, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					if (xu.isHero ())
-						heroes.add (new ExpandedUnitDetailsAndRating (xu, getAiUnitRatingCalculations ().calculateUnitCurrentRating (tu, xu, players, trueMap, db)));
+						heroes.add (new ExpandedUnitDetailsAndRating (xu, getAiUnitRatingCalculations ().calculateUnitCurrentRating (tu, xu,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ())));
 				}
 			
 			if (heroes.size () > 0)
@@ -1030,12 +1028,12 @@ public final class UnitAIImpl implements UnitAI
 					heroes.sort (null);
 
 				// Which item types give a bonus to range attacks?  (bow, wand, staff, misc)
-				final List<String> rangedItemTypeIDs = db.getHeroItemType ().stream ().filter
+				final List<String> rangedItemTypeIDs = mom.getServerDB ().getHeroItemType ().stream ().filter
 					(it -> it.getHeroItemTypeAttackType ().contains (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).map
 					(it -> it.getHeroItemTypeID ()).collect (Collectors.toList ());
 				
 				// So which item slot types can hold item types that give a bonus to range attacks? (bow/melee, mag/melee, mag, misc)
-				final List<String> rangedItemSlotTypeIDs = db.getHeroItemSlotType ().stream ().filter
+				final List<String> rangedItemSlotTypeIDs = mom.getServerDB ().getHeroItemSlotType ().stream ().filter
 					(ist -> ist.getHeroSlotAllowedItemType ().stream ().anyMatch (it -> rangedItemTypeIDs.contains (it))).map
 					(ist -> ist.getHeroItemSlotTypeID ()).collect (Collectors.toList ());
 				
@@ -1047,7 +1045,7 @@ public final class UnitAIImpl implements UnitAI
 					
 					for (int slotNumber = 0; slotNumber < mu.getHeroItemSlot ().size (); slotNumber++)
 					{
-						final HeroItemSlotType slotType = db.findHeroItemSlotType (xu.getUnitDefinition ().getHeroItemSlot ().get (slotNumber), "reallocateHeroItems");
+						final HeroItemSlotType slotType = mom.getServerDB ().findHeroItemSlotType (xu.getUnitDefinition ().getHeroItemSlot ().get (slotNumber), "reallocateHeroItems");
 						
 						// Get a list of all the items we could put in this slot
 						final List<NumberedHeroItemAndRating> potentialItems = new ArrayList<NumberedHeroItemAndRating> ();
@@ -1080,7 +1078,7 @@ public final class UnitAIImpl implements UnitAI
 					}
 					
 					// Let everyone see which items this hero now has
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (mu, trueMap.getMap (), players, db, fogOfWarSettings, null);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (mu, mom, null);
 				}
 			}
 			

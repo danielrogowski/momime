@@ -209,8 +209,7 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 					
 				case HERO:
 					fromHero.getHeroItemSlot ().get (getFromSlotNumber ()).setHeroItem (null);
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (fromHero, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (fromHero, mom, null);
 					break;
 					
 				default:
@@ -239,8 +238,7 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 
 				case HERO:
 					toHero.getHeroItemSlot ().get (getToSlotNumber ()).setHeroItem (item);
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (toHero, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (toHero, mom, null);
 					break;
 
 				default:

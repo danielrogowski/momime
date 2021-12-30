@@ -2,7 +2,6 @@ package momime.server.utils;
 
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystem;
@@ -12,9 +11,9 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.utils.Holder;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitSpecialOrder;
@@ -22,7 +21,6 @@ import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitDamage;
@@ -75,18 +73,14 @@ public interface UnitServerUtils
 	 * @param trueUnit Unit to give an order to
 	 * @param specialOrder Order to give to this unit
 	 * @param player Player who owns the unit
-	 * @param trueTerrain True terrain map
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find the unit in the player's memory (they don't know about their own unit?)
 	 * @throws JAXBException If there is a problem sending the message to the client
 	 * @throws XMLStreamException If there is a problem sending the message to the client
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException;
 
 	/**

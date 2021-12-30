@@ -130,8 +130,7 @@ public final class KillUnitUpdate implements WorldUpdate
 			// Check which players could see the unit
 			for (final PlayerServerDetails player : mom.getPlayers ())
 			{
-				if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (trueUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					player, mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ()))
+				if (getFogOfWarMidTurnVisibility ().canSeeUnitMidTurn (trueUnit, player, mom))
 				{
 					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 					

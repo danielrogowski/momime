@@ -24,13 +24,10 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.FogOfWarSetting;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -405,8 +402,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				// Inform any clients who know about this unit
 				if (sendMsg)
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), fowMessages);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom, fowMessages);
 			}
 		
 		// Send out client updates
@@ -422,10 +418,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * 
 	 * @param combatLocation The location where the combat is taking place
 	 * @param combatSide Which side is to gain 1 exp
-	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
@@ -433,20 +426,19 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	@Override
-	public final void grantExperienceToUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public final void grantExperienceToUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// If 9 units gain experience, don't send out 9 separate messages
 		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
 		
 		// Find the units who are in combat on the side that earned the kill
-		for (final MemoryUnit trueUnit : trueMap.getUnit ())
+		for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
 				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null) && (trueUnit.getCombatHeading () != null))
 			{
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (trueUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				final Pick magicRealm = xu.getModifiedUnitMagicRealmLifeformType ();
 
 				int exp = getUnitSkillDirectAccess ().getDirectSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
@@ -462,18 +454,18 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					}
 					
 					// This updates both the player memories on the server, and sends messages out to the clients, as needed
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, mom, fowMessages);
 				}				
 			}
 		
 		// Send out client updates
 		for (final Entry<Integer, FogOfWarVisibleAreaChangedMessage> entry : fowMessages.entrySet ())
 		{
-			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, entry.getKey (), "grantExperienceToUnitsInCombat");
+			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "grantExperienceToUnitsInCombat");
 			player.getConnection ().sendMessageToClient (entry.getValue ());
 		}
 		
-		getPlayerMessageProcessing ().sendNewTurnMessages (null, players, null);
+		getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null);
 	}
 	
 	/**
@@ -787,8 +779,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					// If entering a combat, ALL units have their movement zeroed, even ones sitting in transports; for regular movement only the transports' movementRemaining is updated
 					for (final ExpandedUnitDetails thisUnit : (combatInitiated ? allUnits : movingUnits))
 					{
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit.getMemoryUnit (), mom, null);
 	
 						if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 							doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
@@ -1004,10 +995,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * Gives all units full movement back again overland
 	 *
 	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
-	 * @param players Players list
-	 * @param trueMap True terrain, list of units and so on
-	 * @param fogOfWarSettings Fog of war settings from session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
@@ -1015,18 +1003,18 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	@Override
-	public final void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+	public final void resetUnitOverlandMovement (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// This can generate a lot of data - a unit update for every single one of our own units plus all units we can see - so collate the client messages
 		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
 
 		// Check every unit
-		for (final MemoryUnit thisUnit : trueMap.getUnit ())
+		for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 			{
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				boolean stasis = false;
 				for (final String stasisSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_STASIS)
@@ -1035,13 +1023,13 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				
 				thisUnit.setDoubleOverlandMovesLeft (stasis ? 0 : (2 * xu.getMovementSpeed ()));
 				
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, mom, fowMessages);
 			}
 		
 		// Send out client updates
 		for (final Entry<Integer, FogOfWarVisibleAreaChangedMessage> entry : fowMessages.entrySet ())
 		{
-			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, entry.getKey (), "resetUnitOverlandMovement");
+			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "resetUnitOverlandMovement");
 			player.getConnection ().sendMessageToClient (entry.getValue ());
 		}
 	}

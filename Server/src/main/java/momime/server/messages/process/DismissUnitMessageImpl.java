@@ -91,8 +91,7 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 			// Do immediately or at end of turn?
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
 			{
-				getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.DISMISS, sender,
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+				getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, UnitSpecialOrder.DISMISS, sender, mom);
 
 				// Unit probably had some maintenance (only need to do here - if actually killing unit by world updates then engine will already know it has to do this)
 				getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);

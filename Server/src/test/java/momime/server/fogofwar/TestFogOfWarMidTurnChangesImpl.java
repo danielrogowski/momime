@@ -24,7 +24,6 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
-import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.OverlandMapSize;
@@ -293,9 +292,6 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	@Test
 	public final void testAddExistingTrueMaintainedSpellToClients () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		
@@ -315,8 +311,13 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		final MemoryMaintainedSpell trueSpell = new MemoryMaintainedSpell ();
 		trueSpell.setCastingPlayerID (8);
 		
-		// Players can see the spell or not, and be human/AI, so create 8 players
+		// Session variables
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getPlayers ()).thenReturn (players);
+		
+		// Players can see the spell or not, and be human/AI, so create 8 players
 		final FogOfWarDuplication dup = mock (FogOfWarDuplication.class);
 		final FogOfWarMidTurnVisibility vis = mock (FogOfWarMidTurnVisibility.class);
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
@@ -350,19 +351,12 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 						when (multiplayerSessionServerUtils.findPlayerWithID (players, playerID, "addExistingTrueMaintainedSpellToClients")).thenReturn (player);
 					
 					// Mock whether the player can see the spell
-					when (vis.canSeeSpellMidTurn (trueSpell, trueTerrain, trueMap.getUnit (), player, db, fowSettings)).thenReturn (canSee);
+					when (vis.canSeeSpellMidTurn (trueSpell, player, mom)).thenReturn (canSee);
 					
 					// Mock whether the player has up to date info for this spell already or not
 					if (canSee)
 						when (dup.copyMaintainedSpell (trueSpell, fow.getMaintainedSpell ())).thenReturn (!upToDateInfo);
 				}
-		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
 		final FogOfWarProcessing proc = mock (FogOfWarProcessing.class);

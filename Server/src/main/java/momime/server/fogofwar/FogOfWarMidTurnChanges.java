@@ -145,20 +145,14 @@ public interface FogOfWarMidTurnChanges
 	 * Sends transient spell casts to human players who are in range to see it.  This is purely for purposes of them displaying the animation,
 	 * the spell is then discarded and no actual updates take place on the server or client as a result of this, other than that the client stops asking the caster to target it.
 	 * 
-	 * @param trueTerrain True terrain map
-	 * @param trueUnits True list of units
 	 * @param transientSpell The spell being cast
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void sendTransientSpellToClients (final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits,
-		final MemoryMaintainedSpell transientSpell, final List<PlayerServerDetails> players,
-		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+	public void sendTransientSpellToClients (final MemoryMaintainedSpell transientSpell, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
@@ -262,10 +256,7 @@ public interface FogOfWarMidTurnChanges
 	 * Informs clients who can see this unit of any changes
 	 *
 	 * @param tu True unit details
-	 * @param trueTerrain True terrain map
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param fowMessages If null then any necessary client messgaes will be sent individually; if map is passed in then any necessary client messages are collated here ready to be sent in bulk
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
@@ -273,9 +264,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
-	public void updatePlayerMemoryOfUnit (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings,
-		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages)
+	public void updatePlayerMemoryOfUnit (final MemoryUnit tu, final MomSessionVariables mom, final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -292,10 +281,7 @@ public interface FogOfWarMidTurnChanges
 	 * @param wreckTilePosition If the tile was attacked directly with Wall Crusher skill, the location of the tile that was attacked
 	 * @param wrecked If the tile was attacked directly with Wall Crusher skill, whether the attempt was successful or not
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
-	 * @param players List of players in the session
-	 * @param trueTerrain True terrain map
-	 * @param db Lookup lists built over the XML database
-	 * @param fogOfWarSettings Fog of War settings from session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or a player should know about one of the units but we can't find it in their memory
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 * @throws JAXBException If there is a problem converting the object into XML
@@ -304,8 +290,7 @@ public interface FogOfWarMidTurnChanges
 	public void sendDamageToClients (final MemoryUnit tuAttacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final List<ResolveAttackTarget> tuDefenders, final String attackSkillID, final String attackSpellID,
 		final MapCoordinates2DEx wreckTilePosition, final Boolean wrecked,
-		final boolean skipAnimation, final List<PlayerServerDetails> players, final MapVolumeOfMemoryGridCells trueTerrain,
-		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+		final boolean skipAnimation, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**

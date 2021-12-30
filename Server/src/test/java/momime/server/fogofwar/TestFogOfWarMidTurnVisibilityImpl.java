@@ -20,6 +20,8 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
+import momime.common.database.OverlandMapSize;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -27,10 +29,13 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the FogOfWarMidTurnVisibilityImpl class
@@ -52,8 +57,14 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setUnits (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setFogOfWarSetting (settings);
+		
 		// True terrain
 		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
 
 		// Player who is trying to see it
 		final PlayerDescription pd = new PlayerDescription ();
@@ -69,6 +80,15 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 		spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 		spearmen.setStatus (UnitStatusID.ALIVE);
 
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
 
@@ -77,15 +97,15 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 		
 		// Regular situation of a unit we can't see because we can't see that location
 		when (single.canSeeMidTurnOnAnyPlaneIfTower (new MapCoordinates3DEx (20, 10, 0), settings.getUnits (), trueTerrain, priv.getFogOfWar (), db)).thenReturn (false);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, trueTerrain, player, db, settings));
+		assertFalse (calc.canSeeUnitMidTurn (spearmen, player, mom));
 
 		// Regular situation of a unit we can see because we can see that location
 		when (single.canSeeMidTurnOnAnyPlaneIfTower (new MapCoordinates3DEx (20, 10, 0), settings.getUnits (), trueTerrain, priv.getFogOfWar (), db)).thenReturn (true);
-		assertTrue (calc.canSeeUnitMidTurn (spearmen, trueTerrain, player, db, settings));
+		assertTrue (calc.canSeeUnitMidTurn (spearmen, player, mom));
 
 		// Can't see dead units, even if we can see their location
 		spearmen.setStatus (UnitStatusID.DEAD);
-		assertFalse (calc.canSeeUnitMidTurn (spearmen, trueTerrain, player, db, settings));
+		assertFalse (calc.canSeeUnitMidTurn (spearmen, player, mom));
 	}
 	
 	/**
@@ -102,8 +122,14 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setUnits (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setFogOfWarSetting (settings);
+		
 		// True terrain
 		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
 
 		// Player who is trying to see it
 		final PlayerDescription pd = new PlayerDescription ();
@@ -128,6 +154,15 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
 		spell.setUnitURN (11);
 		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
 
@@ -137,11 +172,11 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 
 		// Regular situation of a unit we can't see because we can't see that location
 		when (single.canSeeMidTurnOnAnyPlaneIfTower (new MapCoordinates3DEx (20, 10, 0), settings.getUnits (), trueTerrain, priv.getFogOfWar (), db)).thenReturn (false);
-		assertFalse (calc.canSeeSpellMidTurn (spell, trueTerrain, trueUnits, player, db, settings));
+		assertFalse (calc.canSeeSpellMidTurn (spell, player, mom));
 
 		// Regular situation of a unit we can see because we can see that location
 		when (single.canSeeMidTurnOnAnyPlaneIfTower (new MapCoordinates3DEx (20, 10, 0), settings.getUnits (), trueTerrain, priv.getFogOfWar (), db)).thenReturn (true);
-		assertTrue (calc.canSeeSpellMidTurn (spell, trueTerrain, trueUnits, player, db, settings));
+		assertTrue (calc.canSeeSpellMidTurn (spell, player, mom));
 	}
 	
 	/**
@@ -151,14 +186,15 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 	@Test
 	public final void testCanSeeSpellMidTurn_CityEnchantment () throws Exception
 	{
-		// Mock server database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
 		
-		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final OverlandMapSize sys = createOverlandMapSize ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setOverlandMapSize (sys);
+		sd.setFogOfWarSetting (settings);
 
 		// Player who is trying to see it
 		final PlayerDescription pd = new PlayerDescription ();
@@ -174,6 +210,10 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 		spell.setSpellURN (1);
 		spell.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up object to test
 		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
 		when (single.canSeeMidTurn (FogOfWarStateID.NEVER_SEEN, FogOfWarValue.ALWAYS_SEE_ONCE_SEEN)).thenReturn (false);
@@ -183,10 +223,10 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 		calc.setFogOfWarCalculations (single);
 		
 		// Run test
-		assertFalse (calc.canSeeSpellMidTurn (spell, null, null, player, db, settings));
+		assertFalse (calc.canSeeSpellMidTurn (spell, player, mom));
 		
 		priv.getFogOfWar ().getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		assertTrue (calc.canSeeSpellMidTurn (spell, null, null, player, db, settings));
+		assertTrue (calc.canSeeSpellMidTurn (spell, player, mom));
 	}
 	
 	/**
@@ -206,11 +246,14 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
 		spell.setSpellURN (1);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		
 		// Set up object to test
 		final FogOfWarMidTurnVisibilityImpl calc = new FogOfWarMidTurnVisibilityImpl ();
 
 		// Run test
-		assertTrue (calc.canSeeSpellMidTurn (spell, null, null, player, null, null));
+		assertTrue (calc.canSeeSpellMidTurn (spell, player, mom));
 	}
 	
 	/**

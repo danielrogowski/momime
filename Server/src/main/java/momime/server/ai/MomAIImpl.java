@@ -185,9 +185,7 @@ public final class MomAIImpl implements MomAI
 					(player.getPlayerDescription ().getPlayerID (), mobileUnits, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
 				
 				// What's the best place we can put a new city on each plane?
-				desiredSpecialUnitLocations = getUnitAI ().determineDesiredSpecialUnitLocations
-					(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getSessionDescription (), mom.getServerDB ());
+				desiredSpecialUnitLocations = getUnitAI ().determineDesiredSpecialUnitLocations (player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), mom);
 			}
 			
 			if (!mobileUnits.isEmpty ())

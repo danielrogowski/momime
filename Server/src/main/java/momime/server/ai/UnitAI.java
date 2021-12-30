@@ -154,18 +154,15 @@ public interface UnitAI
 	
 	/**
 	 * @param playerID AI player whose turn it is
-	 * @param players List of players in this session
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
-	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Map listing all locations the AI wants to send specialised units of each type
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public Map<AIUnitType, List<MapCoordinates3DEx>> determineDesiredSpecialUnitLocations (final int playerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final CommonDatabase db)
+	public Map<AIUnitType, List<MapCoordinates3DEx>> determineDesiredSpecialUnitLocations (final int playerID,
+		final FogOfWarMemory fogOfWarMemory, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**

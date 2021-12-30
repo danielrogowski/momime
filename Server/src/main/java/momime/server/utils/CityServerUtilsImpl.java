@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -17,6 +16,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
@@ -38,7 +38,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.movement.OverlandMovementCell;
@@ -357,10 +356,9 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * @param firstCityLocation Location of first city
 	 * @param secondCityLocation Location of second city
 	 * @param playerID Player who owns the cities
-	 * @param players List of players in this session
 	 * @param fogOfWarMemory Known terrain, buildings, spells and so on
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * 	When called during map creation to create the initial roads between raider cities, this is the true map; when called for AI players using engineers, this is only what that player knows
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return List of map cells where we need to add road
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
@@ -368,17 +366,17 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 */
 	@Override
 	public final List<MapCoordinates3DEx> listMissingRoadCellsBetween (final MapCoordinates3DEx firstCityLocation, final MapCoordinates3DEx secondCityLocation, final int playerID,
-		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final CommonDatabase db)
+		final FogOfWarMemory fogOfWarMemory, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		// Don't just create a straight line - what's the shortest distance for a basic unit like a spearman to walk from one city to the other, going around mountains for example?
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
-		selectedUnits.add (getSampleUnitUtils ().createSampleUnit (CommonDatabaseConstants.UNIT_ID_EXAMPLE, 0, 0, players, fogOfWarMemory, db));
+		selectedUnits.add (getSampleUnitUtils ().createSampleUnit (CommonDatabaseConstants.UNIT_ID_EXAMPLE, 0, 0, mom.getPlayers (), fogOfWarMemory, mom.getServerDB ()));
 		
-		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, fogOfWarMemory, db);
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), fogOfWarMemory, mom.getServerDB ());
 		
 		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (firstCityLocation,
-			playerID, unitStack, 0, players, sd.getOverlandMapSize (), fogOfWarMemory, db);
+			playerID, unitStack, 0, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), fogOfWarMemory, mom.getServerDB ());
 		
 		final List<MapCoordinates3DEx> missingRoadCells = new ArrayList<MapCoordinates3DEx> ();
 		if (moves [secondCityLocation.getZ ()] [secondCityLocation.getY ()] [secondCityLocation.getX ()] != null)
@@ -387,10 +385,10 @@ public final class CityServerUtilsImpl implements CityServerUtils
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (secondCityLocation);
 			while (!coords.equals (firstCityLocation))
 			{
-				final int d = getCoordinateSystemUtils ().normalizeDirection (sd.getOverlandMapSize ().getCoordinateSystemType (),
+				final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (),
 					moves [coords.getZ ()] [coords.getY ()] [coords.getX ()].getDirection () + 4);
 				
-				if (!getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, d))
+				if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
 					throw new MomException ("listMissingRoadCellsBetween: Road tracing moved to a cell off the map");
 				
 				if (!coords.equals (firstCityLocation))

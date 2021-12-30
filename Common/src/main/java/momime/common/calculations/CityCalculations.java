@@ -25,6 +25,7 @@ import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.OutpostDeathChanceBreakdown;
 import momime.common.internal.OutpostGrowthChanceBreakdown;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -100,6 +101,7 @@ public interface CityCalculations
 	 * Death rate is on strategy guide p197
 	 *
 	 * @param players Players list
+	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param map Known terrain
 	 * @param buildings Known buildings
 	 * @param spells Known spells
@@ -111,8 +113,8 @@ public interface CityCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
-	public CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation,
+	public CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation,
 		final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 
@@ -309,7 +311,8 @@ public interface CityCalculations
 	 * After doubleProductionAmount has been filled in, this deals with halving the value according to the rounding
 	 * rules for the production type, adding on any % bonus, and dealing with any overall cap.
 	 * 
-	 * @param cityOwner Player who owns the city, which may be null if we're just evaluating a potential location for a new city
+	 * @param cityOwnerPlayer Player who owns the city, which may be null if we're just evaluating a potential location for a new city
+	 * @param cityOwnerWizard Wizard who owns the city, which may be null if we're just evaluating a potential location for a new city
 	 * @param thisProduction Production value to halve, add % bonus and cap
 	 * @param foodProductionFromTerrainTiles Amount of food (max city size) production collected up from terrain tiles around the city
 	 * @param difficultyLevel Difficulty level settings from session description
@@ -317,12 +320,13 @@ public interface CityCalculations
 	 * @throws RecordNotFoundException If we encounter a production type that can't be found in the DB
 	 * @throws MomException If we encounter a production value that the DB states should always be an exact multiple of 2, but isn't
 	 */
-	public void halveAddPercentageBonusAndCapProduction (final PlayerPublicDetails cityOwner, final CityProductionBreakdown thisProduction,
-		final int foodProductionFromTerrainTiles, final DifficultyLevel difficultyLevel, final CommonDatabase db)
+	public void halveAddPercentageBonusAndCapProduction (final PlayerPublicDetails cityOwnerPlayer, final KnownWizardDetails cityOwnerWizard,
+		final CityProductionBreakdown thisProduction, final int foodProductionFromTerrainTiles, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws RecordNotFoundException, MomException;
 	
 	/**
-	 * @param players Pre-locked players list
+	 * @param players Players list
+	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param map Known terrain
 	 * @param buildings List of known buildings
 	 * @param spells List of known spells
@@ -338,7 +342,7 @@ public interface CityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
+	public int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)

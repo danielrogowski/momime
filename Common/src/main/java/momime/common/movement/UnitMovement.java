@@ -13,6 +13,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.utils.ExpandedUnitDetails;
 
@@ -53,6 +54,7 @@ public interface UnitMovement
 	 * @param unitStack Unit stack to move
 	 * @param doubleMovementRemaining The lowest movement remaining for any of the units that are moving
 	 * @param players List of players in this session
+	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
 	 * @param mem The player who is trying to move here's knowledge
 	 * @param db Lookup lists built over the XML database
@@ -62,8 +64,8 @@ public interface UnitMovement
 	 * @throws MomException If there is a problem with any of the calculations
 	 */
 	public OverlandMovementCell [] [] [] calculateOverlandMovementDistances (final MapCoordinates3DEx start, final int movingPlayerID,
-		final UnitStack unitStack, final int doubleMovementRemaining,
-		final List<? extends PlayerPublicDetails> players, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db)
+		final UnitStack unitStack, final int doubleMovementRemaining, final List<? extends PlayerPublicDetails> players,
+		final List<KnownWizardDetails> knownWizards, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**

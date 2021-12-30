@@ -273,6 +273,7 @@
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="cityProductionUtils" ref="cityProductionUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="cityProductionCalculations" class="momime.common.calculations.CityProductionCalculationsImpl">
@@ -282,6 +283,7 @@
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="cityProductionUtils" ref="cityProductionUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="skillCalculations" class="momime.common.calculations.SkillCalculationsImpl" />
@@ -321,6 +323,7 @@
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="playerPickUtils" class="momime.common.utils.PlayerPickUtilsImpl" />
@@ -424,6 +427,7 @@
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 </beans>

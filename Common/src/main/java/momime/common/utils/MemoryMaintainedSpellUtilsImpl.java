@@ -28,6 +28,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -82,6 +83,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -806,12 +810,15 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param castingPriv Private info for the playing casting the spell
 	 * @param targetPlayer Player to cast the spell on
 	 * @param targetCastingInfo Info about what the player to cast the spell on is casting themselves
+	 * @param knownWizards Details we have learned about wizards we have met
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws MomException If we encounter a spell book section we don't know how to handle
+	 * @throws RecordNotFoundException If the detatils for the target wizard are missing
 	 */
 	@Override
 	public final TargetSpellResult isWizardValidTargetForSpell (final Spell spell, final int castingPlayerID, final MomPersistentPlayerPrivateKnowledge castingPriv,
-		final PlayerPublicDetails targetPlayer, final OverlandCastingInfo targetCastingInfo) throws MomException
+		final PlayerPublicDetails targetPlayer, final OverlandCastingInfo targetCastingInfo, final List<KnownWizardDetails> knownWizards)
+		throws MomException, RecordNotFoundException
 	{
     	final TargetSpellResult result;
     	if (castingPlayerID == targetPlayer.getPlayerDescription ().getPlayerID ())
@@ -820,10 +827,12 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else
     	{
     		final MomPersistentPlayerPublicKnowledge targetPub = (MomPersistentPlayerPublicKnowledge) targetPlayer.getPersistentPlayerPublicKnowledge ();
+    		final KnownWizardDetails targetWizard = getKnownWizardUtils ().findKnownWizardDetails (knownWizards, targetPlayer.getPlayerDescription ().getPlayerID (), "isWizardValidTargetForSpell");
+    		
     		if (targetPub.getWizardState () != WizardState.ACTIVE)
     			result = TargetSpellResult.WIZARD_BANISHED_OR_DEFEATED;
     		
-    		else if (!getPlayerKnowledgeUtils ().isWizard (targetPub.getWizardID ()))
+    		else if (!getPlayerKnowledgeUtils ().isWizard (targetWizard.getWizardID ()))
     			result = TargetSpellResult.NOT_A_WIZARD;
     		
     		// Above checks are only ones that apply if the spell is anything other than Spell Blast
@@ -1154,5 +1163,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

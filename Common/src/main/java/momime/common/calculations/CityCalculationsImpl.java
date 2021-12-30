@@ -68,6 +68,7 @@ import momime.common.internal.OutpostGrowthChanceBreakdown;
 import momime.common.internal.OutpostGrowthChanceBreakdownMapFeature;
 import momime.common.internal.OutpostGrowthChanceBreakdownSpell;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -83,6 +84,7 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.RenderCityData;
 import momime.common.utils.CityProductionUtils;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -119,6 +121,9 @@ public final class CityCalculationsImpl implements CityCalculations
 	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * A list of directions for traversing from a city's coordinates through all the map cells within that city's radius
@@ -447,6 +452,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * Death rate is on strategy guide p197
 	 *
 	 * @param players Players list
+	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param map Known terrain
 	 * @param buildings Known buildings
 	 * @param spells Known spells
@@ -459,8 +465,8 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
 	@Override
-	public final CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation,
+	public final CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation,
 		final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
@@ -559,12 +565,13 @@ public final class CityCalculationsImpl implements CityCalculations
 				growing.setTotalGrowthRateIncludingPopulationBoom (growing.getTotalGrowthRateIncludingPercentageModifiers ());
 			
 			// AI players get a special bonus
-			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");
-			final MomPersistentPlayerPublicKnowledge cityOwnerPub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
-			if ((cityOwner.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingPopulationBoom () <= 0))
+			final PlayerPublicDetails cityOwnerPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");
+			final KnownWizardDetails cityOwnerWizard = getKnownWizardUtils ().findKnownWizardDetails (knownWizards, cityData.getCityOwnerID (), "calculateCityGrowthRate");
+			
+			if ((cityOwnerPlayer.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingPopulationBoom () <= 0))
 				growing.setDifficultyLevelMultiplier (100);
 			else
-				growing.setDifficultyLevelMultiplier (getPlayerKnowledgeUtils ().isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier () :
+				growing.setDifficultyLevelMultiplier (getPlayerKnowledgeUtils ().isWizard (cityOwnerWizard.getWizardID ()) ? difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier () :
 					difficultyLevel.getAiRaidersPopulationGrowthRateMultiplier ());
 
 			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingPopulationBoom () * growing.getDifficultyLevelMultiplier ()) / 100);
@@ -1460,7 +1467,8 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * After doubleProductionAmount has been filled in, this deals with halving the value according to the rounding
 	 * rules for the production type, adding on any % bonus, and dealing with any overall cap.
 	 * 
-	 * @param cityOwner Player who owns the city, which may be null if we're just evaluating a potential location for a new city
+	 * @param cityOwnerPlayer Player who owns the city, which may be null if we're just evaluating a potential location for a new city
+	 * @param cityOwnerWizard Wizard who owns the city, which may be null if we're just evaluating a potential location for a new city
 	 * @param thisProduction Production value to halve, add % bonus and cap
 	 * @param foodProductionFromTerrainTiles Amount of food (max city size) production collected up from terrain tiles around the city
 	 * @param difficultyLevel Difficulty level settings from session description
@@ -1469,8 +1477,8 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @throws MomException If we encounter a production value that the DB states should always be an exact multiple of 2, but isn't
 	 */
 	@Override
-	public final void halveAddPercentageBonusAndCapProduction (final PlayerPublicDetails cityOwner, final CityProductionBreakdown thisProduction,
-		final int foodProductionFromTerrainTiles, final DifficultyLevel difficultyLevel, final CommonDatabase db)
+	public final void halveAddPercentageBonusAndCapProduction (final PlayerPublicDetails cityOwnerPlayer, final KnownWizardDetails cityOwnerWizard,
+		final CityProductionBreakdown thisProduction, final int foodProductionFromTerrainTiles, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
 		final ProductionType productionType = db.findProductionType (thisProduction.getProductionTypeID (), "halveAddPercentageBonusAndCapProduction");
@@ -1534,12 +1542,10 @@ public final class CityCalculationsImpl implements CityCalculations
 
 		// AI players get a special bonus
 		if ((thisProduction.getProductionAmountBaseTotal () > 0) &&
-			(cityOwner != null) && (!cityOwner.getPlayerDescription ().isHuman ()) && (productionType.isDifficultyLevelMultiplierApplies ()))
-		{
-			final MomPersistentPlayerPublicKnowledge cityOwnerPub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
-			thisProduction.setDifficultyLevelMultiplier (getPlayerKnowledgeUtils ().isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsProductionRateMultiplier () :
+			(cityOwnerPlayer != null) && (cityOwnerWizard != null) && (!cityOwnerPlayer.getPlayerDescription ().isHuman ()) && (productionType.isDifficultyLevelMultiplierApplies ()))
+			
+			thisProduction.setDifficultyLevelMultiplier (getPlayerKnowledgeUtils ().isWizard (cityOwnerWizard.getWizardID ()) ? difficultyLevel.getAiWizardsProductionRateMultiplier () :
 				difficultyLevel.getAiRaidersProductionRateMultiplier ());
-		}
 		else
 			thisProduction.setDifficultyLevelMultiplier (100);
 		
@@ -1551,7 +1557,8 @@ public final class CityCalculationsImpl implements CityCalculations
 	}
 
 	/**
-	 * @param players Pre-locked players list
+	 * @param players Players list
+	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param map Known terrain
 	 * @param buildings List of known buildings
 	 * @param spells List of known spells
@@ -1568,7 +1575,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players,
+	public final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
@@ -1578,7 +1585,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
 		// So just do this the long way and then throw away all the other results
 		final CityProductionBreakdownsEx productionValues = getCityProductionCalculations ().calculateAllCityProductions
-			(players, map, buildings, spells, cityLocation, taxRateID, sd, conjunctionEventID,
+			(players, knownWizards, map, buildings, spells, cityLocation, taxRateID, sd, conjunctionEventID,
 				includeProductionAndConsumptionFromPopulation, false, db);		// calculatePotential fixed at false
 
 		final CityProductionBreakdown singleProductionValue = productionValues.findProductionType (productionTypeID);
@@ -1889,5 +1896,21 @@ public final class CityCalculationsImpl implements CityCalculations
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

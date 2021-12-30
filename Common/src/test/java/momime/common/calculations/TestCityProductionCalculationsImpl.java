@@ -32,12 +32,14 @@ import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.RaceEx;
 import momime.common.internal.CityProductionBreakdown;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
@@ -91,10 +93,17 @@ public final class TestCityProductionCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (null, pub, null);
+		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (null, pub, null);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, 3, "calculateAllCityProductions")).thenReturn (cityOwner);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 3, "calculateAllCityProductions")).thenReturn (cityOwnerPlayer);
+		
+		// Wizards
+		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
+		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (knownWizards, 3, "calculateAllCityProductions")).thenReturn (cityOwnerWizard);
 		
 		// Picks
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -172,10 +181,11 @@ public final class TestCityProductionCalculationsImpl
 		calc.setMemoryBuildingUtils (memoryBuildingUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
 		final CityProductionBreakdownsEx productions = calc.calculateAllCityProductions
-			(players, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", sd, null, true, false, db);
+			(players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", sd, null, true, false, db);
 		
 		// Check results
 		assertEquals (4, productions.getProductionType ().size ());
@@ -201,10 +211,10 @@ public final class TestCityProductionCalculationsImpl
 		
 		verify (cityCalculations).addProductionFromMapFeatures (productions, map, new MapCoordinates3DEx (20, 10, 1), mapSize, db, 2, 0);
 		
-		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwner, rations, 0, difficultyLevel, db);
-		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwner, production, 0, difficultyLevel, db);
-		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwner, gold, 0, difficultyLevel, db);
-		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwner, food, 0, difficultyLevel, db);
+		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwnerPlayer, cityOwnerWizard, rations, 0, difficultyLevel, db);
+		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwnerPlayer, cityOwnerWizard, production, 0, difficultyLevel, db);
+		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwnerPlayer, cityOwnerWizard, gold, 0, difficultyLevel, db);
+		verify (cityCalculations).halveAddPercentageBonusAndCapProduction (cityOwnerPlayer, cityOwnerWizard, food, 0, difficultyLevel, db);
 		
 		verify (cityCalculations).calculateGoldTradeBonus (gold, map, new MapCoordinates3DEx (20, 10, 1), null, mapSize, db);
 		verifyNoMoreInteractions (cityCalculations);

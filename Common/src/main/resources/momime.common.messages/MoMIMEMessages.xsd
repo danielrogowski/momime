@@ -497,12 +497,6 @@ so must include the full details of the item here.</xsd:documentation>
 		<xsd:complexContent>
 			<xsd:extension base="mps:persistentPlayerPublicKnowledge">
 		        <xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="1" name="wizardID" type="momimecommon:wizardID">
-					    <xsd:annotation>
-    						<xsd:documentation>RAIDERS and MONSTERS are special values; other values indicate pre-defined wizards;
-    														null indicates a player who hasn't chosen a wizard yet; empty string represents a custom wizard</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="standardPhotoID" type="momimecommon:wizardID">
 					    <xsd:annotation>
     						<xsd:documentation>For pre-defined wizards or custom wizards choosing a standard photo, indicates the wizard ID of the photo;
@@ -540,6 +534,12 @@ Server has their own simple list of all the details of each player, so it can up
 		</xsd:annotation>
         <xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="wizardID" type="momimecommon:wizardID">
+			    <xsd:annotation>
+  						<xsd:documentation>RAIDERS and MONSTERS are special values; other values indicate pre-defined wizards;
+  														null indicates a player who hasn't chosen a wizard yet; empty string represents a custom wizard</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
         </xsd:sequence>
 	</xsd:complexType>
 

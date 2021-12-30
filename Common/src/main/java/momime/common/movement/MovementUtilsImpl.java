@@ -28,17 +28,18 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -81,6 +82,9 @@ public final class MovementUtilsImpl implements MovementUtils
 	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @param unitStack Which units are actually moving (may be more friendly units in the start tile that are choosing to stay where they are)
@@ -212,7 +216,7 @@ public final class MovementUtilsImpl implements MovementUtils
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
-	 * @param players List of players in this session
+	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param db Lookup lists built over the XML database
 	 * @return Set of all overland map locations this unit stack is blocked from entering for one of the above reasons
@@ -221,8 +225,8 @@ public final class MovementUtilsImpl implements MovementUtils
 	 */
 	@Override
 	public final Set<MapCoordinates3DEx> determineBlockedLocations (final UnitStack unitStack, final int movingPlayerID,
-		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db)
+		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem,
+		final List<KnownWizardDetails> knownWizards, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		// What magic realm(s) are the units in the stack?
@@ -260,9 +264,8 @@ public final class MovementUtilsImpl implements MovementUtils
 				(s -> (MapCoordinates3DEx) s.getCityLocation ()).forEach (l -> blockedLocations.add (l));
 		
 		// To rampaging monsters, all nodes, lairs and towers are blocked so they don't end up clearing or joining the lair
-		final PlayerPublicDetails movingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, movingPlayerID, "determineBlockedLocations");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) movingPlayer.getPersistentPlayerPublicKnowledge ();
-		if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+		final KnownWizardDetails movingWizard = getKnownWizardUtils ().findKnownWizardDetails (knownWizards, movingPlayerID, "determineBlockedLocations");		
+		if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (movingWizard.getWizardID ()))
 		{
 			for (int z = 0; z < overlandMapCoordinateSystem.getDepth (); z++)
 				for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
@@ -295,11 +298,11 @@ public final class MovementUtilsImpl implements MovementUtils
 		}
 		
 		// Raiders are impassable to Rampaging Monsters and vice versa
-		if (!getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+		if (!getPlayerKnowledgeUtils ().isWizard (movingWizard.getWizardID ()))
 		{
-			final Integer blockedPlayerID = players.stream ().filter (p -> (p.getPlayerDescription ().getPlayerID () != movingPlayerID) &&
-				(!getPlayerKnowledgeUtils ().isWizard (((MomPersistentPlayerPublicKnowledge) p.getPersistentPlayerPublicKnowledge ()).getWizardID ()))).map
-				(p -> p.getPlayerDescription ().getPlayerID ()).findAny ().orElse (null);
+			final Integer blockedPlayerID = knownWizards.stream ().filter (w -> (w.getPlayerID () != movingPlayerID) &&
+				(!getPlayerKnowledgeUtils ().isWizard (w.getWizardID ()))).map (w -> w.getPlayerID ()).findAny ().orElse (null);
+			
 			if (blockedPlayerID != null)
 				mem.getUnit ().stream ().filter (u -> (u.getStatus () == UnitStatusID.ALIVE) && (u.getOwningPlayerID () == blockedPlayerID) && (u.getUnitLocation () != null)).forEach
 					(u -> blockedLocations.add ((MapCoordinates3DEx) u.getUnitLocation ()));
@@ -806,5 +809,21 @@ public final class MovementUtilsImpl implements MovementUtils
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

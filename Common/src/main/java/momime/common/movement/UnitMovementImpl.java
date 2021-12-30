@@ -18,6 +18,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
@@ -155,6 +156,7 @@ public final class UnitMovementImpl implements UnitMovement
 	 * @param unitStack Unit stack to move
 	 * @param doubleMovementRemaining The lowest movement remaining for any of the units that are moving
 	 * @param players List of players in this session
+	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
 	 * @param mem The player who is trying to move here's knowledge
 	 * @param db Lookup lists built over the XML database
@@ -165,8 +167,8 @@ public final class UnitMovementImpl implements UnitMovement
 	 */
 	@Override
 	public final OverlandMovementCell [] [] [] calculateOverlandMovementDistances (final MapCoordinates3DEx start, final int movingPlayerID,
-		final UnitStack unitStack, final int doubleMovementRemaining,
-		final List<? extends PlayerPublicDetails> players, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db)
+		final UnitStack unitStack, final int doubleMovementRemaining, final List<? extends PlayerPublicDetails> players,
+		final List<KnownWizardDetails> knownWizards, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack.getUnits ());
@@ -188,7 +190,7 @@ public final class UnitMovementImpl implements UnitMovement
 		
 		// Determine all the places we are blocked from entering for all reasons other than impassable terrain
 		final Set<MapCoordinates3DEx> blockedLocations = getMovementUtils ().determineBlockedLocations
-			(unitStack, movingPlayerID, ourUnitCountAtLocation, overlandMapCoordinateSystem, players, mem, db);
+			(unitStack, movingPlayerID, ourUnitCountAtLocation, overlandMapCoordinateSystem, knownWizards, mem, db);
 	
 		// Find usable Earth Gates
 		final Set<MapCoordinates3DEx> earthGates = getMovementUtils ().findEarthGates (movingPlayerID, mem.getMaintainedSpell ());

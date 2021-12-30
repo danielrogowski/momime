@@ -19,6 +19,7 @@ import momime.common.database.PickType;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityProductionBreakdown;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
@@ -28,6 +29,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.CityProductionUtils;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
@@ -55,8 +57,12 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
-	 * @param players Pre-locked players list
+	 * @param players Players list
+	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param map Known terrain
 	 * @param buildings List of known buildings
 	 * @param spells List of known spells
@@ -75,7 +81,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players,
+	public final CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
 		final boolean includeProductionAndConsumptionFromPopulation, final boolean calculatePotential, final CommonDatabase db)
@@ -91,8 +97,9 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		final Race cityRace = (raceID != null) ? db.findRace (raceID, "calculateAllCityProductions") : null;
 
 		final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
-		final PlayerPublicDetails cityOwner = ((players != null) && (cityOwnerID != null)) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
-		final List<PlayerPick> cityOwnerPicks = (cityOwner != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick () : null;
+		final PlayerPublicDetails cityOwnerPlayer = ((players != null) && (cityOwnerID != null)) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
+		final KnownWizardDetails cityOwnerWizard = ((players != null) && (cityOwnerID != null)) ? getKnownWizardUtils ().findKnownWizardDetails (knownWizards, cityOwnerID, "calculateAllCityProductions") : null;
+		final List<PlayerPick> cityOwnerPicks = (cityOwnerPlayer != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwnerPlayer.getPersistentPlayerPublicKnowledge ()).getPick () : null;
 
 		// Food production from surrounding tiles
 		final CityProductionBreakdown food = getCityCalculations ().listCityFoodProductionFromTerrainTiles (map, cityLocation, sd.getOverlandMapSize (), db);
@@ -206,7 +213,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		// Halve and cap food (max city size) production first, because if calculatePotential=true then we need to know the potential max city size before
 		// we can calculate the gold trade % cap.
 		// Have to do this after map features are added in, since wild game increase max city size.
-		getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, food, 0, sd.getDifficultyLevel (), db);
+		getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwnerPlayer, cityOwnerWizard, food, 0, sd.getDifficultyLevel (), db);
 		
 		// Gold trade % from rivers and oceans
 		// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
@@ -217,7 +224,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
 		for (final CityProductionBreakdown thisProduction : productionValues.getProductionType ())
 			if (thisProduction != food)
-				getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwner, thisProduction, food.getProductionAmountPlusPercentageBonus (),
+				getCityCalculations ().halveAddPercentageBonusAndCapProduction (cityOwnerPlayer, cityOwnerWizard, thisProduction, food.getProductionAmountPlusPercentageBonus (),
 					sd.getDifficultyLevel (), db);
 		
 		// Convert production to gold, if set to trade goods
@@ -329,5 +336,21 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

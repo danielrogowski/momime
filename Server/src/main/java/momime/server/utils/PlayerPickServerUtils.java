@@ -12,6 +12,7 @@ import momime.common.database.WizardEx;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
+import momime.server.MomSessionVariables;
 
 /**
  * Server side only helper methods for dealing with picks
@@ -46,10 +47,10 @@ public interface PlayerPickServerUtils
 	 * @param player Player choosing custom picks
 	 * @param picks The custom picks they have requested
 	 * @param humanSpellPicks Number of picks that human players get at the start of the game, from the session description - difficulty level
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
-	public String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final CommonDatabase db);
+	public String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final MomSessionVariables mom);
 
 	/**
 	 * Checks each type of book this player has to see if it can find a type of book for which the player gets free spells, but has not yet chosen those free spells

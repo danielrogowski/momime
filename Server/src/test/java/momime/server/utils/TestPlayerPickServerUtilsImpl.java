@@ -42,6 +42,7 @@ import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
+import momime.server.MomSessionVariables;
 import momime.server.ai.SpellAI;
 
 /**
@@ -213,9 +214,6 @@ public final class TestPlayerPickServerUtilsImpl
 	@Test
 	public final void testValidateCustomPicks_DidntPickWizardYet () throws Exception
 	{
-		// Mock some types of pick
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
@@ -238,12 +236,15 @@ public final class TestPlayerPickServerUtilsImpl
 		pick2.setPickID ("MB03");
 		pick2.setQuantity (1);
 		picks.add (pick2);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
 
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 
 	/**
@@ -253,9 +254,6 @@ public final class TestPlayerPickServerUtilsImpl
 	@Test
 	public final void testValidateCustomPicks_PickedStandardWizard () throws Exception
 	{
-		// Mock some types of pick
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
@@ -281,11 +279,14 @@ public final class TestPlayerPickServerUtilsImpl
 		pick2.setQuantity (1);
 		picks.add (pick2);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 
 	/**
@@ -323,11 +324,15 @@ public final class TestPlayerPickServerUtilsImpl
 		pick1.setQuantity (4);
 		picks.add (pick1);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 	
 	/**
@@ -372,11 +377,15 @@ public final class TestPlayerPickServerUtilsImpl
 		pick2.setQuantity (2);
 		picks.add (pick2);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNotNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 	
 	/**
@@ -421,11 +430,15 @@ public final class TestPlayerPickServerUtilsImpl
 		pick2.setQuantity (1);
 		picks.add (pick2);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Check results
-		assertNull (utils.validateCustomPicks (player, picks, 11, db));
+		assertNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
 	
 	/**

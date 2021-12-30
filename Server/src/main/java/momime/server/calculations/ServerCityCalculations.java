@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
@@ -13,9 +12,8 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
+import momime.server.MomSessionVariables;
 
 /**
  * Server only calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
@@ -35,21 +33,13 @@ public interface ServerCityCalculations
 	 * This is called on the TrueMap to update the values there, then the calling routine checks each player's Fog of War to see
 	 * if they can see the city, and if so then sends them the updated values
 	 *
-	 * @param players Pre-locked list of players in the game
-	 * @param map True terrain
-	 * @param buildings True list of buildings
-	 * @param spells True list of spells
 	 * @param cityLocation Location of the city to update
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
-	 * @param conjunctionEventID Currently active conjunction, if there is one
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we can't find the player who owns the city
 	 * @throws MomException If any of a number of expected items aren't found in the database
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 */
-	public void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final MomSessionDescription sd, final CommonDatabase db, final String conjunctionEventID)
+	public void calculateCitySizeIDAndMinimumFarmers (final MapCoordinates3DEx cityLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**

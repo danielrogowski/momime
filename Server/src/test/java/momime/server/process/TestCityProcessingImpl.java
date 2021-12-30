@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -416,9 +415,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals (4, count);
 		
 		// Check calcs were done
-		verify (serverCityCalc, times (4)).calculateCitySizeIDAndMinimumFarmers (eq (players), eq (trueTerrain), eq (trueMap.getBuilding ()),
-			eq (trueMap.getMaintainedSpell ()), any (MapCoordinates3DEx.class), eq (sd), eq (db), isNull ());
-		
+		verify (serverCityCalc, times (4)).calculateCitySizeIDAndMinimumFarmers (any (MapCoordinates3DEx.class), eq (mom));		
 		verify (serverCityCalc, times (4)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
 		// Check units were added

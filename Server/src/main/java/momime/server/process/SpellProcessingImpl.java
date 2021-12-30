@@ -1556,9 +1556,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetOverlandSpell (C)");
 						final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 						
-						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							targetLocation, mom.getSessionDescription (), mom.getServerDB (), mom.getGeneralPublicKnowledge ().getConjunctionEventID ());
+						getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (targetLocation, mom);
 							
 						// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
 						cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels

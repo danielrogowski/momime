@@ -261,9 +261,7 @@ public final class CityProcessingImpl implements CityProcessing
 				cityCell.getTerrainData ().setRoadTileTypeID (roadTileTypeID);
 				
 				// Do initial calculations on the city
-				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation,
-					mom.getSessionDescription (), mom.getServerDB (), null);
+				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (cityLocation, mom);
 
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 

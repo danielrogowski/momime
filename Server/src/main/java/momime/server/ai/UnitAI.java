@@ -19,7 +19,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.common.movement.OverlandMovementCell;
 import momime.server.MomSessionVariables;
 
@@ -35,17 +34,13 @@ public interface UnitAI
 	 * (mana for summoned units; gold for units constructed in cities - will ignore rations since we can always allocate more farmers).
 	 * 
 	 * @param player AI player who is considering constructing a unit
-	 * @param players Players list
-	 * @param trueUnits List of true units
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return List of all possible units this AI player can construct or summon, sorted with the best first
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public List<AIConstructableUnit> listAllUnitsWeCanConstruct (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final List<MemoryUnit> trueUnits, final MomSessionDescription sd, final CommonDatabase db)
+	public List<AIConstructableUnit> listAllUnitsWeCanConstruct (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**

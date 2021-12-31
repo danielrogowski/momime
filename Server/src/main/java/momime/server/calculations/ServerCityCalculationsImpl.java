@@ -97,10 +97,10 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "calculateCitySizeIDAndMinimumFarmers");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
-		final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions
-			(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
-				mom.getGeneralPublicKnowledge ().getConjunctionEventID (), false, false, mom.getServerDB ());
+		final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
+			mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+			cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), false, false, mom.getServerDB ());
 		
 		// This is what the wiki calls "Base Food Level"
 		final CityProductionBreakdown food = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);

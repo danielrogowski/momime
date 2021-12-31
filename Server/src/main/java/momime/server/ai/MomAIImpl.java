@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -19,6 +18,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.AiUnitCategory;
@@ -27,6 +27,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellSetting;
 import momime.common.database.Wizard;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NewTurnMessageOffer;
@@ -34,6 +35,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.WizardState;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -91,6 +93,9 @@ public final class MomAIImpl implements MomAI
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * @param player AI player whose turn to take
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -107,8 +112,11 @@ public final class MomAIImpl implements MomAI
 	{
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "aiPlayerTurn");
 
-		if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+		if (getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ()))
 			getUnitAI ().reallocateHeroItems (player, mom);
 		
 		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID ());
@@ -125,17 +133,17 @@ public final class MomAIImpl implements MomAI
 		boolean combatStarted = false;
 		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane = new HashMap<Integer, List<AIUnitType>> ();
 		
-		if ((cityConstructableCombatUnits.isEmpty ()) && (!CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ())))
+		if ((cityConstructableCombatUnits.isEmpty ()) && (!CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (knownWizard.getWizardID ())))
 			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't make any combat units in cities at all");
 		else
 		{
 			// Raiders and Rampaging monsters have some special handling
-			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
-			final boolean isMonsters = CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ());
+			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (knownWizard.getWizardID ());
+			final boolean isMonsters = CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (knownWizard.getWizardID ());
 			
-			final PlayerServerDetails raidersPlayer = mom.getPlayers ().stream ().filter (p -> CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals
-				(((MomPersistentPlayerPublicKnowledge) p.getPersistentPlayerPublicKnowledge ()).getWizardID ())).findAny ().orElse (null);
-			final Integer ignorePlayerID = isMonsters ? raidersPlayer.getPlayerDescription ().getPlayerID () : null;
+			final KnownWizardDetails raidersWizard = mom.getGeneralServerKnowledge ().getTrueWizardDetails ().stream ().filter
+				(w -> CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (w.getWizardID ())).findAny ().orElse (null);
+			final Integer ignorePlayerID = isMonsters ? raidersWizard.getPlayerID () : null;
 
 			// Estimate the total strength of all the units we have at every point on the map for attack and defense purposes,
 			// as well as the strength of all enemy units for attack purposes.
@@ -153,7 +161,7 @@ public final class MomAIImpl implements MomAI
 			{
 				// Rampaging monsters won't go join a node/lair/tower to help defend it, but we do need to list here cities owned by wizards that have no defence
 				underdefendedLocations = getUnitAI ().listUndefendedWizardCities (enemyUnits, player.getPlayerDescription ().getPlayerID (),
-					raidersPlayer.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
+					raidersWizard.getPlayerID (), priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
 
 				// Rampaging monsters don't evaluate defence, just any unit not in a node/lair/tower is considered mobile
 				getUnitAI ().listUnitsNotInNodeLairTowers (ourUnits, mobileUnits, priv.getFogOfWarMemory ().getMap (),
@@ -304,7 +312,7 @@ public final class MomAIImpl implements MomAI
 					}
 					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnitsMod);
 				
-					final Wizard wizard = mom.getServerDB ().findWizard (pub.getWizardID (), "aiPlayerTurn");
+					final Wizard wizard = mom.getServerDB ().findWizard (knownWizard.getWizardID (), "aiPlayerTurn");
 					
 					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 					{
@@ -372,7 +380,7 @@ public final class MomAIImpl implements MomAI
 		{
 			// Only wizards can use alchemy (raiders don't need mana)
 			// Make sure we do this before rush buying projects in cities, as generating mana for Spell of Return is more important
-			if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 20))
+			if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 20))
 			{
 				considerAlchemy (player, mom.getPlayers (), mom.getServerDB ());
 				decideMagicPowerDistribution (player, mom.getPlayers (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
@@ -391,7 +399,7 @@ public final class MomAIImpl implements MomAI
 			}
 			
 			// Only wizards can do anything with spells
-			if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+			if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 			{
 				// Do we need to choose a spell to research?
 				if (priv.getSpellIDBeingResearched () == null)
@@ -753,5 +761,21 @@ public final class MomAIImpl implements MomAI
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

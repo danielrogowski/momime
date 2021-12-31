@@ -203,9 +203,9 @@ public final class CityAIImpl implements CityAI
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 
 						final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
-							mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ());
+							mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ());
 						final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 						
 						final AICityRationDetails cityDetails = new AICityRationDetails ();
@@ -246,9 +246,10 @@ public final class CityAIImpl implements CityAI
 				cityData.setOptionalFarmers (cityData.getOptionalFarmers () + 1);
 
 				final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityDetails.getCityLocation (), priv.getTaxRateID (), mom.getSessionDescription (),
-						mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ());
+					mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					cityDetails.getCityLocation (), priv.getTaxRateID (), mom.getSessionDescription (),
+					mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ());
 				final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 
 				final boolean nowOverfarming = (rations != null) && (rations.getProductionAmountAfterOverfarmingPenalty () != null);
@@ -648,8 +649,8 @@ public final class CityAIImpl implements CityAI
 								{
 									// Found something we could rush buy - now how much production does this city generate by itself?
 									final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
-									final int thisProductionPerTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), priv.getFogOfWarMemory ().getMap (),
-										priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMaintainedSpell (),
+									final int thisProductionPerTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
+										priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMaintainedSpell (),
 										cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
 										mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
 										CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);

@@ -23,6 +23,7 @@ import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.WizardEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
@@ -30,6 +31,7 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
@@ -58,6 +60,9 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @param picks Player's picks to count up
@@ -109,18 +114,21 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @param humanSpellPicks Number of picks that human players get at the start of the game, from the session description - difficulty level
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
+	 * @throws RecordNotFoundException If the wizard isn't found in the list
 	 */
 	@Override
 	public final String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final MomSessionVariables mom)
+		throws RecordNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "validateCustomPicks");
+		
 		String msg = null;
-		if (ppk.getWizardID () == null)
+		if (wizardDetails.getWizardID () == null)
 			msg = "You must choose a custom wizard or before trying to choose custom picks";
 
-		else if (!ppk.getWizardID ().equals (""))
+		else if (!wizardDetails.getWizardID ().equals (""))
 			msg = "You cannot choose custom picks when you have picked one of the pre-defined wizards";
 
 		else if ((priv.isCustomPicksChosen () != null) && (priv.isCustomPicksChosen ()))
@@ -382,17 +390,21 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 
 	/**
 	 * @param player Player to test
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if this player has made all their pre-game selections and are waiting to start
+	 * @throws RecordNotFoundException If the wizard isn't found in the list
 	 */
-	final boolean hasChosenAllDetails (final PlayerServerDetails player)
+	final boolean hasChosenAllDetails (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "hasChosenAllDetails");
 
 		final boolean isCustomPicksChosen = (priv.isCustomPicksChosen () == null) ? false : priv.isCustomPicksChosen ();
 
-		final boolean result = ((getPlayerKnowledgeUtils ().hasWizardBeenChosen (ppk.getWizardID ())) && (priv.getFirstCityRaceID () != null) &&
-			((!getPlayerKnowledgeUtils ().isCustomWizard (ppk.getWizardID ())) || (isCustomPicksChosen)));
+		final boolean result = ((getPlayerKnowledgeUtils ().hasWizardBeenChosen (wizardDetails.getWizardID ())) && (priv.getFirstCityRaceID () != null) &&
+			((!getPlayerKnowledgeUtils ().isCustomWizard (wizardDetails.getWizardID ())) || (isCustomPicksChosen)));
 
 		return result;
 	}
@@ -402,9 +414,11 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if all players have chosen all details to start game
+	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
 	 */
 	@Override
 	public final boolean allPlayersHaveChosenAllDetails (final MomSessionVariables mom)
+		throws RecordNotFoundException
 	{
 		// If not all players have joined, then not all have chosen
 		boolean result = (mom.getPlayers ().size () == mom.getSessionDescription ().getMaxPlayers () - mom.getSessionDescription ().getAiPlayerCount () - 2);	// -2 for raiders & monsters
@@ -412,7 +426,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		// Check each player
 		final Iterator<PlayerServerDetails> iter = mom.getPlayers ().iterator ();
 		while ((result) && (iter.hasNext ()))
-			if (!hasChosenAllDetails (iter.next ()))
+			if (!hasChosenAllDetails (iter.next (), mom))
 				result = false;
 
 		return result;
@@ -596,5 +610,21 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

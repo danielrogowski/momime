@@ -45,6 +45,7 @@ import momime.common.database.SpellSetting;
 import momime.common.database.TileTypeEx;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -65,6 +66,7 @@ import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -129,13 +131,16 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
@@ -146,14 +151,18 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
 		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), 2, "recalculateAmountsPerTurn")).thenReturn (wizardDetails);
+		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
 		// Session variables
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
@@ -173,6 +182,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.setCityProductionCalculations (cityCalc);
 		calc.setUnitServerUtils (mock (UnitServerUtils.class));
 		calc.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Use real resource value utils, so we don't have to mock every possible value of addToAmountPerTurn
 		final ResourceValueUtilsImpl resourceValueUtils = new ResourceValueUtilsImpl ();
@@ -303,7 +313,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		cityBreakdown.getProductionType ().add (cityRations);
 		cityBreakdown.getProductionType ().add (cityMaxSize);
 		
-		when (cityCalc.calculateAllCityProductions (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalc.calculateAllCityProductions (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (2, 2, 0), "TR04", sd, null, true, false, db)).thenReturn (cityBreakdown);
 
 		// Population will eat 5 rations, but produce 2x2 = 4 rations, and generate 3 x 1.5 = 4.5 gold from taxes and 2x.5 + 1x2 production

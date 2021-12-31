@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -15,16 +14,19 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Event;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
@@ -60,6 +62,9 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * Can only call this on events that are targeted at wizards
 	 * 
@@ -76,7 +81,10 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 		boolean valid = false;
 
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "isWizardValidTargetForEvent");
+		
+		if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 		{
 			// Do we need to find a target city owned by the wizard?  Great Meteor, Earthquake, Plague, Rebellion, Depletion, New Minerals, Population Boom
 			if ((event.isTargetCity () != null) && (event.isTargetCity ()))
@@ -104,13 +112,8 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 			// Do we need to find a target neutral city?  Diplomatic Marriage
 			else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_DIPLOMATIC_MARRIAGE))
 			{
-				PlayerServerDetails raiders = null;
-				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
-				{
-					final MomPersistentPlayerPublicKnowledge thisPub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-					if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (thisPub.getWizardID ()))
-						raiders = thisPlayer;
-				}
+				final KnownWizardDetails raiders = mom.getGeneralServerKnowledge ().getTrueWizardDetails ().stream ().filter
+					(w -> CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (w.getWizardID ())).findAny ().orElse (null);
 				
 				if (raiders != null)
 				{
@@ -123,7 +126,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 							int x = 0;
 							while ((!valid) && (x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()))
 							{
-								if (getRandomCityEvents ().isCityValidTargetForEvent (event, new MapCoordinates3DEx (x, y, z), raiders.getPlayerDescription ().getPlayerID (), mom))
+								if (getRandomCityEvents ().isCityValidTargetForEvent (event, new MapCoordinates3DEx (x, y, z), raiders.getPlayerID (), mom))
 									valid = true;
 								else
 									x++;
@@ -209,13 +212,8 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 		// Do we need to pick a target neutral city?  Diplomatic Marriage
 		else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_DIPLOMATIC_MARRIAGE))
 		{
-			PlayerServerDetails raiders = null;
-			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
-			{
-				final MomPersistentPlayerPublicKnowledge thisPub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-				if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (thisPub.getWizardID ()))
-					raiders = thisPlayer;
-			}
+			final KnownWizardDetails raiders = mom.getGeneralServerKnowledge ().getTrueWizardDetails ().stream ().filter
+				(w -> CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (w.getWizardID ())).findAny ().orElse (null);
 			
 			if (raiders == null)
 				throw new MomException ("Event " + event.getEventID () + " was picked for wizard " + targetWizard.getPlayerDescription ().getPlayerName () +
@@ -227,7 +225,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
-						if (getRandomCityEvents ().isCityValidTargetForEvent (event, cityLocation, raiders.getPlayerDescription ().getPlayerID (), mom))
+						if (getRandomCityEvents ().isCityValidTargetForEvent (event, cityLocation, raiders.getPlayerID (), mom))
 							cityLocations.add (cityLocation);
 					}
 			
@@ -300,7 +298,10 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				{
 					final MomPersistentPlayerPublicKnowledge thisPub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-					if ((getPlayerKnowledgeUtils ().isWizard (thisPub.getWizardID ())) && (thisPub.getWizardState () == WizardState.ACTIVE))
+					final KnownWizardDetails thisWizard = getKnownWizardUtils ().findKnownWizardDetails
+						(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "triggerWizardEvent");
+					
+					if ((getPlayerKnowledgeUtils ().isWizard (thisWizard.getWizardID ())) && (thisPub.getWizardState () == WizardState.ACTIVE))
 					{
 						final MomPersistentPlayerPrivateKnowledge thisPriv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 						final int gold = getResourceValueUtils ().findAmountStoredForProductionType (thisPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
@@ -433,5 +434,21 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

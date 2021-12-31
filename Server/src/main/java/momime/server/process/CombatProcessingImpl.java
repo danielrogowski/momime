@@ -30,11 +30,11 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
@@ -49,6 +49,7 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
@@ -148,6 +149,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Movement utils */
 	private MovementUtils movementUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
@@ -1088,8 +1092,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Is this someone attacking a node/lair/tower, and the combat is ending?
 		// If DefendingPlayer is nil (we wiped out the monsters), there'll be no monsters to remove, so in which case we don't care that we get this value wrong
-		final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
-		final boolean attackingNodeLairTower = (defPub != null) && (combatLocation == null) && (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defPub.getWizardID ())) &&
+		final KnownWizardDetails defWizard = (defendingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat");
+		
+		final boolean attackingNodeLairTower = (defWizard != null) && (combatLocation == null) && (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defWizard.getWizardID ())) &&
 			getMemoryGridCellUtils ().isNodeLairTower (tc.getTerrainData (), mom.getServerDB ());
 
 		// Update true unit on server
@@ -1784,5 +1790,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setMovementUtils (final MovementUtils u)
 	{
 		movementUtils = u;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

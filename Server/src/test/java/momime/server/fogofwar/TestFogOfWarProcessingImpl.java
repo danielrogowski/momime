@@ -30,6 +30,7 @@ import momime.common.database.Plane;
 import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -44,6 +45,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.movement.MovementUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -196,6 +198,9 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
@@ -206,6 +211,12 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player);
+		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), 2, "markVisibleArea")).thenReturn (wizardDetails);
 
 		// Our cities
 		final OverlandMapCityData ourCityOne = new OverlandMapCityData ();
@@ -334,9 +345,6 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		final MovementUtils movementUtils = mock (MovementUtils.class);
 
 		// Session variables
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
@@ -350,6 +358,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		proc.setServerUnitCalculations (unitCalc);
 		proc.setExpandUnitDetails (expand);
 		proc.setMovementUtils (movementUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		proc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 

@@ -98,7 +98,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 
 		final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
 		final PlayerPublicDetails cityOwnerPlayer = ((players != null) && (cityOwnerID != null)) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
-		final KnownWizardDetails cityOwnerWizard = ((players != null) && (cityOwnerID != null)) ? getKnownWizardUtils ().findKnownWizardDetails (knownWizards, cityOwnerID, "calculateAllCityProductions") : null;
+		final KnownWizardDetails cityOwnerWizard = ((knownWizards != null) && (cityOwnerID != null)) ? getKnownWizardUtils ().findKnownWizardDetails (knownWizards, cityOwnerID, "calculateAllCityProductions") : null;
 		final List<PlayerPick> cityOwnerPicks = (cityOwnerPlayer != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwnerPlayer.getPersistentPlayerPublicKnowledge ()).getPick () : null;
 
 		// Food production from surrounding tiles

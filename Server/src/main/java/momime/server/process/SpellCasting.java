@@ -46,9 +46,10 @@ public interface SpellCasting
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
 	 */
 	public void sendOverlandCastingInfo (final String ourSpellID, final int onlyOnePlayerID, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, RecordNotFoundException;
 	
 	/**
 	 * @param player Player to create casting info for

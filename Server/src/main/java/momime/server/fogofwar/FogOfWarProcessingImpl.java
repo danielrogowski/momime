@@ -27,6 +27,7 @@ import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -35,7 +36,6 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -46,6 +46,7 @@ import momime.common.messages.servertoclient.UpdateTerrainMessageData;
 import momime.common.movement.MovementUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
@@ -104,6 +105,9 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	
 	/** Movement utils */
 	private MovementUtils movementUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Marks that we can see a particular cell
@@ -201,11 +205,12 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	final void markVisibleArea (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "markVisibleArea");
 		
 		// Nature Awareness allows us to see the whole map, in which case no point checking each city or unit
-		if ((CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ())) ||
+		if ((CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (wizardDetails.getWizardID ())) ||
 			((mom.getSessionDescription ().isDisableFogOfWar () != null) && (mom.getSessionDescription ().isDisableFogOfWar ())) ||
 			(getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
 				ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null))
@@ -1035,5 +1040,21 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	public final void setMovementUtils (final MovementUtils u)
 	{
 		movementUtils = u;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

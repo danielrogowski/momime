@@ -27,6 +27,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellValidTileTypeTarget;
 import momime.common.database.UnitEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -41,6 +42,7 @@ import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.common.messages.servertoclient.OverlandCastingInfoMessage;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.TargetSpellResult;
@@ -87,6 +89,9 @@ public final class SpellCastingImpl implements SpellCasting
 	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Processes casting a summoning spell overland, finding where there is space for the unit to go and adding it
@@ -176,10 +181,11 @@ public final class SpellCastingImpl implements SpellCasting
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
 	 */
 	@Override
 	public final void sendOverlandCastingInfo (final String ourSpellID, final int onlyOnePlayerID, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		// Don't bother to build the message until we find at least one human player who needs it
 		OverlandCastingInfoMessage msg = null;
@@ -200,7 +206,10 @@ public final class SpellCastingImpl implements SpellCasting
 					for (final PlayerServerDetails player : mom.getPlayers ())
 					{
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-						if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+							(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "sendOverlandCastingInfo");
+						
+						if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 							msg.getOverlandCastingInfo ().add (createOverlandCastingInfo (player, ourSpellID));
 					}
 				}
@@ -589,5 +598,21 @@ public final class SpellCastingImpl implements SpellCasting
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

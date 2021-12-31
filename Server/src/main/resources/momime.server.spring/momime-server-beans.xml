@@ -369,6 +369,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellAI" ref="spellAI" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="overlandMapServerUtils" class="momime.server.utils.OverlandMapServerUtilsImpl">
@@ -483,6 +484,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="damageTypeCalculations" class="momime.server.calculations.DamageTypeCalculationsImpl">
@@ -552,6 +554,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="randomEvents" ref="randomEvents" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">
@@ -578,6 +581,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->
@@ -597,6 +601,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="spellMultiCasting" class="momime.server.process.SpellMultiCastingImpl">
@@ -646,6 +651,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="movementUtils" ref="movementUtils" />
 		<property name="spellMultiCasting" ref="spellMultiCasting" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -731,6 +737,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
@@ -754,6 +761,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="movementUtils" ref="movementUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="combatHandling" class="momime.server.process.CombatHandlingImpl">
@@ -825,6 +833,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="spellMultiCasting" ref="spellMultiCasting" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="randomWizardEvents" class="momime.server.events.RandomWizardEventsImpl">
@@ -835,6 +844,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="randomEventTargeting" class="momime.server.events.RandomEventTargetingImpl">
@@ -910,6 +920,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="offerGenerator" ref="offerGenerator" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">
@@ -921,6 +932,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="unitAI" class="momime.server.ai.UnitAIImpl">
@@ -945,6 +957,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">
@@ -1062,6 +1075,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="movementUtils" ref="movementUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<!-- Beans created each time a new session is started
@@ -1097,6 +1111,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="worldUpdates" class="momime.server.worldupdates.WorldUpdatesImpl" scope="prototype">

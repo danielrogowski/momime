@@ -76,7 +76,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Session variables
@@ -146,7 +146,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Session variables
@@ -201,7 +201,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Session variables
@@ -256,7 +256,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Session variables
@@ -311,7 +311,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Avoid nearby city

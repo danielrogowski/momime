@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystem;
@@ -16,12 +15,14 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -32,6 +33,7 @@ import momime.common.movement.CombatMovementType;
 import momime.common.movement.UnitMovement;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -75,6 +77,9 @@ public final class CombatAIImpl implements CombatAI
 	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
@@ -347,9 +352,12 @@ public final class CombatAIImpl implements CombatAI
 	{
 		// If AI Wizard (not raiders, not banished, not human player on auto) then maybe cast a spell before we move units
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) currentPlayer.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails knownDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), currentPlayer.getPlayerDescription ().getPlayerID (), "aiCombatTurn");
+		
 		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
 		
-		if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
+		if ((getPlayerKnowledgeUtils ().isWizard (knownDetails.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
 			(pub.getWizardState () == WizardState.ACTIVE))
 			
 			result = getSpellAI ().decideWhatToCastCombat (currentPlayer, null, combatLocation, mom);
@@ -550,5 +558,21 @@ public final class CombatAIImpl implements CombatAI
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

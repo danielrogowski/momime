@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -17,6 +16,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.Building;
@@ -32,6 +32,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -53,6 +54,7 @@ import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -116,6 +118,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * Recalculates all per turn production values
 	 * Note: Delphi version could either calculate the values for one player or all players and was named RecalcProductionValues
@@ -132,13 +137,15 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	{
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-
+		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "recalculateAmountsPerTurn");
+		
 		// If wizard is banished then they do not get several production types
 		final List<String> zeroedProductionTypes = new ArrayList<String> ();
 		final Event conjunctionEvent = (mom.getGeneralPublicKnowledge ().getConjunctionEventID () == null) ? null :
 			mom.getServerDB ().findEvent (mom.getGeneralPublicKnowledge ().getConjunctionEventID (), "recalculateAmountsPerTurn");
 		
-		if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.ACTIVE))
+		if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (pub.getWizardState () != WizardState.ACTIVE))
 		{
 			for (final ProductionTypeEx productionType : mom.getServerDB ().getProductionTypes ())
 				if ((productionType.isZeroWhenBanished () != null) && (productionType.isZeroWhenBanished ()))
@@ -202,7 +209,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		if (timeStop == null)
 		{
 			// Gold upkeep of troops is reduced by wizard's fame
-			if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+			if (getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ()))
 			{
 				final int goldConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				if (goldConsumption < 0)
@@ -236,9 +243,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 	
 							for (final CityProductionBreakdown cityProduction : getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
-								mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (),
-								mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (),
+								mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+								cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (),
 								true, false, mom.getServerDB ()).getProductionType ())
 							{
 								int cityProductionValue = 0;
@@ -750,10 +757,12 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final PlayerServerDetails player : playersToProcess)
 			if (mom.getPlayers ().size () > 0)
 			{
+				final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "recalculateGlobalProductionValues");
+				
 				// Don't calc production for the Rampaging Monsters player, or the routine spots that they have lots of units
 				// that take a lot of mana to maintain, and no buildings generating any mana to support them, and kills them all off
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if (!pub.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
+				if (!knownWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
 				{
 					log.debug ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () + " (" + player.getPlayerDescription ().getPlayerName () + ")");
 
@@ -1003,5 +1012,21 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

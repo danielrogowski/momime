@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -25,6 +24,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
@@ -47,6 +47,7 @@ import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -82,6 +83,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -239,6 +241,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -399,7 +404,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 						if (defeatedPlayer != player)
 						{
 							final MomPersistentPlayerPublicKnowledge defeatedPub = (MomPersistentPlayerPublicKnowledge) defeatedPlayer.getPersistentPlayerPublicKnowledge ();
-							if ((getPlayerKnowledgeUtils ().isWizard (defeatedPub.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
+							final KnownWizardDetails defeatedWizard = getKnownWizardUtils ().findKnownWizardDetails
+								(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), defeatedPlayer.getPlayerDescription ().getPlayerID (), "castOverlandNow");
+							
+							if ((getPlayerKnowledgeUtils ().isWizard (defeatedWizard.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
 							{
 								defeatedPub.setWizardState (WizardState.DEFEATED);
 								if (defeatedPlayer.getPlayerDescription ().isHuman ())
@@ -2700,5 +2708,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

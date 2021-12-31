@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -16,15 +15,16 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CitySize;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
@@ -34,6 +34,7 @@ import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -144,6 +145,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -329,7 +333,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		
 		CaptureCityDecisionID useCaptureCityDecision = captureCityDecision;
 
-		final MomPersistentPlayerPublicKnowledge atkPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails atkWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), attackingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
 		
 		// If we're walking into a city that we don't already own (its possible we're moving into our own city if this is a "walk in without a fight")
 		// then don't end the combat just yet - first ask the winner whether they want to capture or raze the city
@@ -355,7 +360,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			}
 			
 			// Rampaging monsters have their own special options for captured cities
-			else if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (atkPub.getWizardID ()))
+			else if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (atkWizard.getWizardID ()))
 			{
 				if (getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null)
 					useCaptureCityDecision = CaptureCityDecisionID.RAMPAGE;
@@ -553,9 +558,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				attackerFameChange = attackerFameChange - tc.getAttackerSpecialFameLost ();
 			
 			// Update fame
-			final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
+			final KnownWizardDetails defWizard = (defendingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
+				(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
 
-			if ((attackerFameChange != 0) && (getPlayerKnowledgeUtils ().isWizard (atkPub.getWizardID ())))
+			if ((attackerFameChange != 0) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())))
 			{
 				// Fame cannot go negative
 				int attackerFame = getResourceValueUtils ().findAmountStoredForProductionType (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
@@ -566,7 +572,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getResourceValueUtils ().addToAmountStored (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME, attackerFameChange);
 			}
 
-			if ((defenderFameChange != 0) && (defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (defPub.getWizardID ())))
+			if ((defenderFameChange != 0) && (defendingPlayer != null) && (getPlayerKnowledgeUtils ().isWizard (defWizard.getWizardID ())))
 			{
 				// Fame cannot go negative
 				int defenderFame = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
@@ -1115,5 +1121,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

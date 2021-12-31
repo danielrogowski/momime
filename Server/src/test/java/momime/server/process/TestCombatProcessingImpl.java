@@ -37,6 +37,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -58,6 +59,7 @@ import momime.common.movement.MovementUtils;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
@@ -1015,7 +1017,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1033,7 +1036,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID ("WZ02");
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID ("WZ02");
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1220,7 +1224,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1238,7 +1243,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1416,7 +1422,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1434,7 +1441,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1612,7 +1620,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1772,7 +1781,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1907,13 +1917,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1930,7 +1947,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID ("WZ02");
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1947,7 +1963,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1957,6 +1974,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
+		
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID ("WZ02");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -1989,18 +2013,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
@@ -2073,13 +2092,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2096,7 +2122,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2110,7 +2135,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2120,6 +2146,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
+		
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2152,18 +2185,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
@@ -2229,13 +2257,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2252,7 +2287,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2266,7 +2300,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2276,6 +2311,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
+		
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2308,18 +2350,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
@@ -2385,13 +2422,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2408,7 +2452,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2422,7 +2465,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2432,6 +2476,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
+		
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2464,18 +2515,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
@@ -2541,13 +2587,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2564,7 +2617,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2578,7 +2630,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2588,6 +2641,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
+		
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2622,18 +2682,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MapCoordinates2DEx combatPosition = new MapCoordinates2DEx (7, 12);
 		
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit,
@@ -2689,13 +2744,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2712,7 +2774,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID ("WZ02");
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2729,7 +2790,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2740,6 +2802,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID ("WZ02");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -2782,18 +2851,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		}
 		
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
@@ -2855,13 +2919,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2878,7 +2949,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2886,13 +2956,21 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2945,12 +3023,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		}
 
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
@@ -2958,6 +3030,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
@@ -3011,13 +3084,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3034,7 +3114,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3048,7 +3127,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3059,6 +3139,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -3101,12 +3188,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		}
 		
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
@@ -3114,6 +3195,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
@@ -3167,13 +3249,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3190,7 +3279,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3204,7 +3292,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3215,6 +3304,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -3258,12 +3354,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		}
 		
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
@@ -3271,6 +3361,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);
@@ -3324,13 +3415,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-		attackingPub.setWizardID ("WZ01");
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		attackingWizard.setWizardID ("WZ01");
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3347,7 +3445,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setHuman (false);
 
 		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		defendingPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3361,7 +3458,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
-		otherPub.setWizardID ("WZ03");
+		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
+		otherWizard.setWizardID ("WZ03");
 		
 		final MomPersistentPlayerPrivateKnowledge otherPriv = new MomPersistentPlayerPrivateKnowledge ();
 		otherPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3372,6 +3470,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 
+		// Wizard
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -3413,12 +3518,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		}
 		
 		// Session variables
-		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (trueTerrain);
-		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
-		gsk.setTrueMap (trueMap);
-		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
@@ -3426,6 +3525,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
 		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueUnit, combatLocation, null, null, null, null, null, mom);

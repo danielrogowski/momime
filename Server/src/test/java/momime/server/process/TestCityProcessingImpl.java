@@ -42,6 +42,7 @@ import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -63,6 +64,7 @@ import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -196,7 +198,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		myrran.setQuantity (1);
 		
 		final MomPersistentPlayerPublicKnowledge humanPpk = new MomPersistentPlayerPublicKnowledge ();
-		humanPpk.setWizardID ("");				// Custom wizard
+		final KnownWizardDetails humanWizard = new KnownWizardDetails ();
+		humanWizard.setWizardID ("");			// Custom wizard
 		humanPpk.getPick ().add (myrran);		// Have to put something in here so that .equals () doesn't consider the human and AI pick lists to be the same
 		
 		final MomTransientPlayerPrivateKnowledge humanTrans = new MomTransientPlayerPrivateKnowledge ();
@@ -218,7 +221,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		aiPriv.setTaxRateID ("TR02");
 		
 		final MomPersistentPlayerPublicKnowledge aiPpk = new MomPersistentPlayerPublicKnowledge ();
-		aiPpk.setWizardID ("WZ01");				// Standard wizard
+		final KnownWizardDetails aiWizard = new KnownWizardDetails ();
+		aiWizard.setWizardID ("WZ01");				// Standard wizard
 		final PlayerDescription aiPd = new PlayerDescription ();
 		aiPd.setHuman (false);
 		aiPd.setPlayerID (-1);
@@ -229,7 +233,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		raidersPriv.setTaxRateID ("TR03");
 		
 		final MomPersistentPlayerPublicKnowledge raidersPpk = new MomPersistentPlayerPublicKnowledge ();
-		raidersPpk.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
+		final KnownWizardDetails raidersWizard = new KnownWizardDetails ();
+		raidersWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
 		final PlayerDescription raidersPd = new PlayerDescription ();
 		raidersPd.setHuman (false);
 		raidersPd.setPlayerID (-2);
@@ -237,7 +242,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final PlayerServerDetails raidersPlayer = new PlayerServerDetails (raidersPd, raidersPpk, raidersPriv, null, null);
 
 		final MomPersistentPlayerPublicKnowledge monstersPpk = new MomPersistentPlayerPublicKnowledge ();
-		monstersPpk.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		final KnownWizardDetails monstersWizard = new KnownWizardDetails ();
+		monstersWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		final PlayerDescription monstersPd = new PlayerDescription ();
 		monstersPd.setHuman (false);
 		monstersPd.setPlayerID (-3);
@@ -249,6 +255,13 @@ public final class TestCityProcessingImpl extends ServerTestData
 		players.add (aiPlayer);
 		players.add (raidersPlayer);
 		players.add (monstersPlayer);
+		
+		// Wizard		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), humanPd.getPlayerID (), "createStartingCities")).thenReturn (humanWizard);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), aiPd.getPlayerID (), "createStartingCities")).thenReturn (aiWizard);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), raidersPd.getPlayerID (), "createStartingCities")).thenReturn (raidersWizard);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), monstersPd.getPlayerID (), "createStartingCities")).thenReturn (monstersWizard);
 		
 		// Who are wizards, raiders, monsters
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
@@ -345,6 +358,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		proc.setRandomUtils (random);
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		proc.createStartingCities (mom);
@@ -491,7 +505,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// No event
@@ -576,7 +590,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// No event
@@ -665,7 +679,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// No event
@@ -781,7 +795,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// Where the unit will appear
@@ -855,16 +869,23 @@ public final class TestCityProcessingImpl extends ServerTestData
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setHuman (true);
+		pd.setPlayerID (1);
 		
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setTaxRateID ("TR01");
 		
-		final PlayerServerDetails cityOwner = new PlayerServerDetails (pd, null, priv, null, trans);
+		final PlayerServerDetails cityOwnerPlayer = new PlayerServerDetails (pd, null, priv, null, trans);
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
-		when (multiplayerSessionServerUtils.findPlayerWithID (players, 1, "growCities")).thenReturn (cityOwner);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd.getPlayerID (), "growCities")).thenReturn (cityOwnerPlayer);
+		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "growCities")).thenReturn (wizardDetails);
 		
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
@@ -875,14 +896,14 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Max city size
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)).thenReturn (9000);
 		
 		// Growth rate
 		final CityGrowthRateBreakdown growthRate = new CityGrowthRateBreakdown ();
 		growthRate.setCappedTotal (100);
 		
-		when (cityCalculations.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateCityGrowthRate (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), 9000, difficultyLevel, db)).thenReturn (growthRate);
 		
 		// No event
@@ -903,6 +924,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final CityProcessingImpl proc = new CityProcessingImpl ();
 		proc.setCityCalculations (cityCalculations);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		proc.growCities (1, mom);

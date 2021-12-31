@@ -376,7 +376,8 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), fogOfWarMemory, mom.getServerDB ());
 		
 		final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (firstCityLocation,
-			playerID, unitStack, 0, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), fogOfWarMemory, mom.getServerDB ());
+			playerID, unitStack, 0, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
+			mom.getSessionDescription ().getOverlandMapSize (), fogOfWarMemory, mom.getServerDB ());
 		
 		final List<MapCoordinates3DEx> missingRoadCells = new ArrayList<MapCoordinates3DEx> ();
 		if (moves [secondCityLocation.getZ ()] [secondCityLocation.getY ()] [secondCityLocation.getX ()] != null)

@@ -32,6 +32,7 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPickCount;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
@@ -76,6 +77,7 @@ import momime.common.messages.servertoclient.UpdateTurnPhaseMessage;
 import momime.common.utils.CompareUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -188,6 +190,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/** Number of save points to keep for each session */
 	private int savePointKeepCount;
 	
@@ -251,7 +256,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		{
 			// Successful - Remember choice on the server
 			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			ppk.setWizardID (wizardID);
+			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+			wizardDetails.setWizardID (wizardID);
+			
+			mom.getGeneralServerKnowledge ().getTrueWizardDetails ().add (wizardDetails);
 
 			if (wizard != null)
 			{
@@ -331,26 +339,24 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 
 			// Tell everyone about the wizard this player has chosen
-			broadcastWizardChoice (mom.getPlayers (), player);
+			broadcastWizardChoice (mom.getPlayers (), player.getPlayerDescription ().getPlayerID (), wizardID);
 		}
 	}
 
 	/**
 	 * Sends the wizard choice of the specified player to all human players in the specified session players list
 	 * @param players List of players in the session
-	 * @param player Player whose wizard choice we are sending
+	 * @param playerID Player whose wizard choice we are sending
+	 * @param wizardID Chosen wizard
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	private final void broadcastWizardChoice (final List<PlayerServerDetails> players, final PlayerServerDetails player)
+	private final void broadcastWizardChoice (final List<PlayerServerDetails> players, final int playerID, final String wizardID)
 		throws JAXBException, XMLStreamException
 	{
-		// Convert empty string (custom wizard) to a null
-		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-
 		final ChosenWizardMessage msg = new ChosenWizardMessage ();
-		msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-		msg.setWizardID (ppk.getWizardID ());
+		msg.setPlayerID (playerID);
+		msg.setWizardID (wizardID);
 
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 	}
@@ -381,18 +387,19 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	private final void createHeroes (final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
+		final KnownWizardDetails monstersWizard = mom.getGeneralServerKnowledge ().getTrueWizardDetails ().stream ().filter
+			(w -> CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (w.getWizardID ())).findAny ().orElse (null);
+		
 		for (final UnitEx thisUnit : mom.getServerDB ().getUnits ())
 			if (thisUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 
 				// Add this hero for all players, even raiders, just not the monsters
 				// We won't end up sending these to the client since we're setting status as 'not generated'
 				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
-				{
-					final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-					if (!ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
+					if (thisPlayer.getPlayerDescription ().getPlayerID () != monstersWizard.getPlayerID ())
+						
 						getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (thisUnit.getUnitID (), null, null, null, null,
 							thisPlayer, UnitStatusID.NOT_GENERATED, false, mom);
-				}
 	}
 
 
@@ -553,8 +560,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			{
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
-
-				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
+				final KnownWizardDetails thisWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame"); 
+				
+				if (getPlayerKnowledgeUtils ().isWizard (thisWizard.getWizardID ()))
 				{
 					// Calculate each wizard's initial starting casting skills
 					// This effectively gives each wizard some starting stored skill in RE10, which will then be sent to the client by RecalculateGlobalProductionValues below
@@ -705,11 +714,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		// Generate more rampaging monsters
 		if (timeStop == null)
-			for (final PlayerServerDetails player : mom.getPlayers ())
-				if ((useOnlyOnePlayerID == 0) || (useOnlyOnePlayerID == player.getPlayerDescription ().getPlayerID ()))
+			for (final KnownWizardDetails thisWizard : mom.getGeneralServerKnowledge ().getTrueWizardDetails ())
+				if ((useOnlyOnePlayerID == 0) || (useOnlyOnePlayerID == thisWizard.getPlayerID ()))
 				{
-					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-					if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+					if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (thisWizard.getWizardID ()))
 					{
 						final int accumulator = getRandomUtils ().nextInt (mom.getSessionDescription ().getDifficultyLevel ().getRampagingMonstersAccumulatorMaximum ()) + 1;
 						mom.getGeneralServerKnowledge ().setRampagingMonstersAccumulator (mom.getGeneralServerKnowledge ().getRampagingMonstersAccumulator () + accumulator);
@@ -735,7 +743,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// 2) Cities eating more food due to increased population
 			// 3) Completed buildings (both bonuses and increased maintenance)
 			getServerResourceCalculations ().recalculateGlobalProductionValues (useOnlyOnePlayerID, false, mom);
-			storePowerBaseHistory (useOnlyOnePlayerID, mom.getGeneralPublicKnowledge ().getTurnNumber (), mom.getPlayers ());
+			storePowerBaseHistory (useOnlyOnePlayerID, mom);
 		}
 		
 		// Generate offers for heroes, mercenaries and items to hire or buy
@@ -745,8 +753,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 				
+				final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
+					player.getPlayerDescription ().getPlayerID (), "startPhase");
+				
 				// Don't let raiders buy units or hire heroes
-				if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+				if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 				{
 					final NewTurnMessageOfferHero heroOffer = getOfferGenerator ().generateHeroOffer
 						(player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
@@ -1331,29 +1342,31 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * During the start phase, when resources are recalculated, this stores the power base of each wizard, which is public info to every player via the Historian screen.
 	 * 
 	 * @param onlyOnePlayerID If zero, will record power base for all players; if specified will record power base only for the specified player
-	 * @param turnNumber Current turn number, so we can check that the right number of entries have been logged to the power base history
-	 * @param players List of players in the session
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
 	 */
-	final void storePowerBaseHistory (final int onlyOnePlayerID, final int turnNumber, final List<PlayerServerDetails> players)
-		throws JAXBException, XMLStreamException
+	final void storePowerBaseHistory (final int onlyOnePlayerID, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		final AddPowerBaseHistoryMessage msg = new AddPowerBaseHistoryMessage ();
 		
-		for (final PlayerServerDetails player : players)
+		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
 			{
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+					(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "storePowerBaseHistory"); 
 				
 				// Ignore raiders and rampaging monsters
-				if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 				{
 					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();					
 					final int powerBase = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 					
 					// Its possible some tries were missed if the player missed turns due to Time Stop
-					final int zeroCount = turnNumber - pub.getPowerBaseHistory ().size () - 1;
+					final int zeroCount = mom.getGeneralPublicKnowledge ().getTurnNumber () - pub.getPowerBaseHistory ().size () - 1;
 					
 					// Store on server
 					for (int n = 0; n < zeroCount; n++)
@@ -1371,7 +1384,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}		
 		
 		if (msg.getPlayer ().size () > 0)
-			getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
+			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 	}
 	
 	/**
@@ -1379,11 +1392,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws PlayerNotFoundException If the requested playerID cannot be found
+	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void checkIfWonGame (final MomSessionVariables mom) throws PlayerNotFoundException, JAXBException, XMLStreamException
+	public final void checkIfWonGame (final MomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		int aliveCount = 0;
 		PlayerServerDetails aliveWizard = null;
@@ -1391,7 +1406,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if ((getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.DEFEATED))
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+				(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "checkIfWonGame"); 
+			
+			if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (pub.getWizardState () != WizardState.DEFEATED))
 			{
 				aliveCount++;
 				aliveWizard = player;
@@ -1872,5 +1890,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

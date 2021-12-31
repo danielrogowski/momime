@@ -35,6 +35,7 @@ import momime.common.database.Unit;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
@@ -59,6 +60,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -157,6 +159,9 @@ public final class CityProcessingImpl implements CityProcessing
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
 	 *
@@ -182,13 +187,15 @@ public final class CityProcessingImpl implements CityProcessing
 		for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+				(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "createStartingCities");
+			
 			// How many cities?
 			final int numberOfCities;
-			if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
+			if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 				numberOfCities = 1;
 
-			else if (ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))
+			else if (wizardDetails.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))
 				numberOfCities = mom.getSessionDescription ().getOverlandMapSize ().getRaiderCityCount ();
 
 			else
@@ -197,7 +204,7 @@ public final class CityProcessingImpl implements CityProcessing
 			for (int cityNo = 0; cityNo < numberOfCities; cityNo++)
 			{
 				final int plane;
-				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 					plane = getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), mom.getServerDB ());
 				else
 					// Raiders just pick a random plane
@@ -218,7 +225,7 @@ public final class CityProcessingImpl implements CityProcessing
 				city.setCityOwnerID (thisPlayer.getPlayerDescription ().getPlayerID ());
 				city.setOptionalFarmers (0);
 
-				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 				{
 					final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) thisPlayer.getTransientPlayerPrivateKnowledge ();
 
@@ -274,7 +281,7 @@ public final class CityProcessingImpl implements CityProcessing
 				city.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 
 				// Add starting buildings
-				if (getPlayerKnowledgeUtils ().isWizard (ppk.getWizardID ()))
+				if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 				{
 					// Wizards always get the same buildings (this also adds their Fortress & Summoning Circle)
 					for (final Building thisBuilding : mom.getServerDB ().getBuilding ())
@@ -446,7 +453,8 @@ public final class CityProcessingImpl implements CityProcessing
 
 							if (productionCost != null)
 							{
-								final int productionThisTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								final int productionThisTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (),
+									mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 									mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 									cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true,
 									mom.getServerDB (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
@@ -571,26 +579,25 @@ public final class CityProcessingImpl implements CityProcessing
 					final OverlandMapCityData cityData = mc.getCityData ();
 					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())))
 					{
-						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "growCities");
-						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
-						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
+						final PlayerServerDetails cityOwnerPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "growCities");
+						final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwnerPlayer.getPersistentPlayerPrivateKnowledge ();
 
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 						
 						// Use calculated values to determine population growth
-						final int maxCitySize = getCityCalculations ().calculateSingleCityProduction
-							(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (),
-								mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
-								CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
+						final int maxCitySize = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (),
+							mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							cityLocation, cityOwnerPriv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
+							CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 
 						if (cityData.getCityPopulation () >= 1000)
 						{
 							// Normal city growth rate calculation
-							final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate
-								(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-									mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, maxCitySize,
-									mom.getSessionDescription ().getDifficultyLevel (), mom.getServerDB ()).getCappedTotal ();
+							final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, maxCitySize,
+								mom.getSessionDescription ().getDifficultyLevel (), mom.getServerDB ()).getCappedTotal ();
 	
 							if (cityGrowthRate != 0)
 							{
@@ -598,8 +605,11 @@ public final class CityProcessingImpl implements CityProcessing
 								int newPopulation = oldPopulation + cityGrowthRate;
 	
 								// Special raiders cap?
+								final KnownWizardDetails cityOwnerWizard =  getKnownWizardUtils ().findKnownWizardDetails
+									(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), cityData.getCityOwnerID (), "growCities");
+								
 								if ((mc.getRaiderCityAdditionalPopulationCap () != null) && (mc.getRaiderCityAdditionalPopulationCap () > 0) &&
-									(pub.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
+									(cityOwnerWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
 									(newPopulation > mc.getRaiderCityAdditionalPopulationCap ()))
 								{
 									newPopulation = mc.getRaiderCityAdditionalPopulationCap ();
@@ -609,7 +619,7 @@ public final class CityProcessingImpl implements CityProcessing
 								cityData.setCityPopulation (newPopulation);
 	
 								// Show on new turn messages?
-								if ((cityOwner.getPlayerDescription ().isHuman ()) && ((oldPopulation / 1000) != (newPopulation / 1000)))
+								if ((cityOwnerPlayer.getPlayerDescription ().isHuman ()) && ((oldPopulation / 1000) != (newPopulation / 1000)))
 								{
 									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
 									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
@@ -617,7 +627,7 @@ public final class CityProcessingImpl implements CityProcessing
 									populationChange.setCityName (cityData.getCityName ());
 									populationChange.setOldPopulation (oldPopulation);
 									populationChange.setNewPopulation (newPopulation);
-									((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
+									((MomTransientPlayerPrivateKnowledge) cityOwnerPlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
 								}
 	
 								// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change; if not we still need to update player memory about the city
@@ -652,7 +662,7 @@ public final class CityProcessingImpl implements CityProcessing
 									razeCity (cityLocation, mom);		// Outposts can die off completely
 								
 								// Show on new turn messages?
-								if ((cityOwner.getPlayerDescription ().isHuman ()) && ((newPopulation >= 1000) || (newPopulation <= 0)))
+								if ((cityOwnerPlayer.getPlayerDescription ().isHuman ()) && ((newPopulation >= 1000) || (newPopulation <= 0)))
 								{
 									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
 									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
@@ -660,7 +670,7 @@ public final class CityProcessingImpl implements CityProcessing
 									populationChange.setCityName (cityData.getCityName ());
 									populationChange.setOldPopulation (oldPopulation);
 									populationChange.setNewPopulation (newPopulation);
-									((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
+									((MomTransientPlayerPrivateKnowledge) cityOwnerPlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (populationChange);
 								}
 	
 								// If we go over a 1,000 boundary the city size ID or number of farmers or rebels may change; if not we still need to update player memory about the city
@@ -1054,8 +1064,12 @@ public final class CityProcessingImpl implements CityProcessing
 	{
 		final MomPersistentPlayerPublicKnowledge defenderPub = (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge attackerPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		final KnownWizardDetails defenderWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "banishWizard");
+		final KnownWizardDetails attackerWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "banishWizard");
 		
 		// Do they have another city to try to return to?  Record it on server
 		final WizardState wizardState = (getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
@@ -1070,7 +1084,7 @@ public final class CityProcessingImpl implements CityProcessing
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 
 		// Things that only apply if two wizards
-		if ((getPlayerKnowledgeUtils ().isWizard (defenderPub.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (attackerPub.getWizardID ())))
+		if ((getPlayerKnowledgeUtils ().isWizard (defenderWizard.getWizardID ())) && (getPlayerKnowledgeUtils ().isWizard (attackerWizard.getWizardID ())))
 		{
 			// Does the attacker get to steal any spells?
 			final List<String> stolenSpellIDs = getSpellProcessing ().stealSpells (defendingPlayer, attackingPlayer,
@@ -1652,5 +1666,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

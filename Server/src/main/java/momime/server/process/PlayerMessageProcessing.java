@@ -132,8 +132,10 @@ public interface PlayerMessageProcessing
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws PlayerNotFoundException If the requested playerID cannot be found
+	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public void checkIfWonGame (final MomSessionVariables mom) throws PlayerNotFoundException, JAXBException, XMLStreamException;
+	public void checkIfWonGame (final MomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException;
 }

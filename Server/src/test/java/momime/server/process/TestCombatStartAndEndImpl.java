@@ -38,6 +38,7 @@ import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -54,6 +55,7 @@ import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -509,6 +511,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Have to put *something* in here to make the two lists different, so the mocks work
 		attackingPriv.getResourceValue ().add (null);
 		
+		// Wizards
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (attackingPlayer);
@@ -577,6 +585,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCombatProcessing (combatProcessing);
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, null, null, mom);
@@ -646,6 +655,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final PlayerServerDetails winningPlayer = attackingPlayer;
 
+		// Wizards
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -662,6 +677,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Set up object to test
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl (); 
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -719,6 +735,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
 		
+		// Wizards
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
@@ -759,6 +781,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -841,6 +864,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
 		
+		// Wizards
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
@@ -903,6 +932,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -992,6 +1022,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
 		
+		// Wizards
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
@@ -1054,6 +1090,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -1154,6 +1191,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
 
+		// Wizards
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
@@ -1257,6 +1300,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCityProcessing (cityProcessing);
 		cse.setMemoryBuildingUtils (memoryBuildingUtils);
 		cse.setCityServerUtils (cityServerUtils);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		cse.setRandomUtils (mock (RandomUtils.class));
 		cse.setSpellCasting (mock (SpellCasting.class));
 		
@@ -1368,6 +1412,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
 		
+		// Wizards
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
 		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
@@ -1474,6 +1524,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setCityProcessing (cityProcessing);
 		cse.setMemoryBuildingUtils (memoryBuildingUtils);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
@@ -1567,6 +1618,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 
+		// Wizards
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
 		// Session variables
 		final WorldUpdates wu = mock (WorldUpdates.class);
 		
@@ -1625,6 +1682,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setSimultaneousTurnsProcessing (simultaneousTurnsProcessing);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Regular combat, so only the attacker has a pending movement
 		final PendingMovement attackerPendingMovement = new PendingMovement ();
@@ -1718,6 +1776,12 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		players.add (attackingPlayer);
 		players.add (defendingPlayer);
 
+		// Wizards
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -1773,6 +1837,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setSimultaneousTurnsProcessing (simultaneousTurnsProcessing);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Border conflict, so we have two pending movements
 		final PendingMovement attackerPendingMovement = new PendingMovement ();

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -18,6 +17,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
@@ -25,6 +25,7 @@ import momime.common.database.Event;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
@@ -33,6 +34,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AttackCitySpellResult;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -78,6 +80,9 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	
 	/** Main FOW update routine */
 	private FogOfWarProcessing fogOfWarProcessing;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Can only call this on events that are targeted at cities
@@ -284,8 +289,9 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 				PlayerServerDetails raiders = null;
 				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				{
-					final MomPersistentPlayerPublicKnowledge thisPub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-					if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (thisPub.getWizardID ()))
+					final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
+						(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "triggerCityEvent");
+					if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (knownWizard.getWizardID ()))
 						raiders = thisPlayer;
 				}
 				
@@ -527,5 +533,21 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	public final void setFogOfWarProcessing (final FogOfWarProcessing obj)
 	{
 		fogOfWarProcessing = obj;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

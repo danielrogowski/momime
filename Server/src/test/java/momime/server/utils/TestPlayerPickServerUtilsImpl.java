@@ -31,6 +31,7 @@ import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.WizardEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -39,11 +40,13 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.SpellAI;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the PlayerPickServerUtilsImpl class
@@ -175,6 +178,14 @@ public final class TestPlayerPickServerUtilsImpl
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
@@ -190,9 +201,11 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Check results
 		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
@@ -210,13 +223,19 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		ppk.setWizardID ("WZ01");
-		
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
@@ -232,9 +251,11 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Check results
 		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
@@ -259,14 +280,20 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		pd.setHuman (true);
-
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		ppk.setWizardID ("");
 		
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
@@ -277,10 +304,12 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Check results
 		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
@@ -308,13 +337,19 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		ppk.setWizardID ("");
-		
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
@@ -330,10 +365,12 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Check results
 		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
@@ -361,13 +398,19 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		ppk.setWizardID ("");
-		
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
 		
@@ -383,10 +426,12 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Check results
 		assertNull (utils.validateCustomPicks (player, picks, 11, mom));
@@ -1360,9 +1405,10 @@ public final class TestPlayerPickServerUtilsImpl
 
 	/**
 	 * Tests the hasChosenAllDetails method where we've chosen a standard wizard
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testHasChosenAllDetails_Standard ()
+	public final void testHasChosenAllDetails_Standard () throws Exception
 	{
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1374,27 +1420,41 @@ public final class TestPlayerPickServerUtilsImpl
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		
 		// Make selections
-		ppk.setWizardID ("WZ01");
 		priv.setFirstCityRaceID ("RC01");
 
 		// Has wizard been chosen?
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
 				
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertTrue (utils.hasChosenAllDetails (player));
+		assertTrue (utils.hasChosenAllDetails (player, mom));
 	}
 
 	/**
 	 * Tests the hasChosenAllDetails method where we've chosen a custom wizard
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testHasChosenAllDetails_Custom ()
+	public final void testHasChosenAllDetails_Custom () throws Exception
 	{
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1406,8 +1466,16 @@ public final class TestPlayerPickServerUtilsImpl
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		
 		// Make selections
-		ppk.setWizardID ("");
 		priv.setFirstCityRaceID ("RC01");
 		priv.setCustomPicksChosen (true);
 
@@ -1416,19 +1484,25 @@ public final class TestPlayerPickServerUtilsImpl
 		when (playerKnowledgeUtils.hasWizardBeenChosen ("")).thenReturn (true);
 		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertTrue (utils.hasChosenAllDetails (player));
+		assertTrue (utils.hasChosenAllDetails (player, mom));
 	}
 
 	/**
 	 * Tests the hasChosenAllDetails method where we've chosen a custom wizard but didn't make custom picks yet
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testHasChosenAllDetails_CustomNotChosen ()
+	public final void testHasChosenAllDetails_CustomNotChosen () throws Exception
 	{
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1440,28 +1514,42 @@ public final class TestPlayerPickServerUtilsImpl
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		
 		// Make selections
-		ppk.setWizardID ("");
 		priv.setFirstCityRaceID ("RC01");
 
 		// Has wizard been chosen?
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		when (playerKnowledgeUtils.hasWizardBeenChosen ("")).thenReturn (true);
 		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
-				
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertFalse (utils.hasChosenAllDetails (player));
+		assertFalse (utils.hasChosenAllDetails (player, mom));
 	}
 
 	/**
 	 * Tests the hasChosenAllDetails method where we've not chosen a wizard
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testHasChosenAllDetails_NoWizard ()
+	public final void testHasChosenAllDetails_NoWizard () throws Exception
 	{
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1473,6 +1561,14 @@ public final class TestPlayerPickServerUtilsImpl
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
 
@@ -1480,19 +1576,25 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		when (playerKnowledgeUtils.hasWizardBeenChosen (null)).thenReturn (false);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertFalse (utils.hasChosenAllDetails (player));
+		assertFalse (utils.hasChosenAllDetails (player, mom));
 	}
 	
 	/**
 	 * Tests the hasChosenAllDetails method where we've not chosen a race
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testHasChosenAllDetails_NoRace ()
+	public final void testHasChosenAllDetails_NoRace () throws Exception
 	{
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1504,26 +1606,39 @@ public final class TestPlayerPickServerUtilsImpl
 
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		
-		// Make selections
-		ppk.setWizardID ("WZ01");
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
 
 		// Has wizard been chosen?
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertFalse (utils.hasChosenAllDetails (player));
+		assertFalse (utils.hasChosenAllDetails (player, mom));
 	}
 	
 	/**
 	 * Tests the allPlayersHaveChosenAllDetails method
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testAllPlayersHaveChosenAllDetails ()
+	public final void testAllPlayersHaveChosenAllDetails () throws Exception
 	{
 		// Delphi client sets maxplayers = human opponents + AI opponents + 3, so follow that here
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -1539,13 +1654,18 @@ public final class TestPlayerPickServerUtilsImpl
 		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ02")).thenReturn (true);
 		
 		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Single player game just against raiders, and nothing chosen yet
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1558,10 +1678,14 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		players.add (player);
 
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		
 		assertFalse (utils.allPlayersHaveChosenAllDetails (mom));
 
 		// Fill in details
-		ppk.setWizardID ("WZ01");
+		wizardDetails.setWizardID ("WZ01");
 		priv.setFirstCityRaceID ("RC01");
 		assertTrue (utils.allPlayersHaveChosenAllDetails (mom));
 
@@ -1585,10 +1709,13 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, ppk2, null, null, priv2);
 		players.add (player2);
 
+		final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd2.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails2);
+		
 		assertFalse (utils.allPlayersHaveChosenAllDetails (mom));
 
 		// Fill in second player details
-		ppk2.setWizardID ("WZ02");
+		wizardDetails2.setWizardID ("WZ02");
 		priv2.setFirstCityRaceID ("RC02");
 		assertTrue (utils.allPlayersHaveChosenAllDetails (mom));
 	}

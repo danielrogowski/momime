@@ -44,14 +44,15 @@ import momime.common.database.TileTypeEx;
 import momime.common.database.TileTypeFeatureChance;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -86,6 +87,9 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Blobs expand out only in north/south/east/west directions - no diagonals */
 	private final static int [] BLOB_EXPANSION_DIRECTIONS = new int [] {1, 3, 5, 7};
@@ -1944,10 +1948,11 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			PlayerServerDetails monsterPlayer = null;
 			for (final PlayerServerDetails player : mom.getPlayers ())
 			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ()))
+				final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "generateRampagingMonsters");
+				if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (knownWizard.getWizardID ()))
 					raidersPlayer = player;
-				else if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+				else if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (knownWizard.getWizardID ()))
 					monsterPlayer = player;
 			}
 			
@@ -2139,5 +2144,21 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

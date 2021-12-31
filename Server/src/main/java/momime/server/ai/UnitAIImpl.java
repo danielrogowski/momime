@@ -36,12 +36,12 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileType;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -53,6 +53,7 @@ import momime.common.movement.UnitMovement;
 import momime.common.movement.UnitStack;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -141,6 +142,9 @@ public final class UnitAIImpl implements UnitAI
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * Lists every unit this AI player can build at every city they own, as well as any units they can summon, sorted with the best units first.
 	 * This won't list heroes, since if we cast Summon Hero/Champion, we never know which one we're going to get.
@@ -159,7 +163,8 @@ public final class UnitAIImpl implements UnitAI
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "listAllUnitsWeCanConstruct");
 
 		final List<AIConstructableUnit> results = new ArrayList<AIConstructableUnit> ();
 		
@@ -192,7 +197,7 @@ public final class UnitAIImpl implements UnitAI
 				}
 		
 		// Summonining spells we know
-		if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+		if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 			for (final Spell spell : mom.getServerDB ().getSpell ())
 				if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getOverlandCastingCost () != null) &&
 					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
@@ -804,8 +809,10 @@ public final class UnitAIImpl implements UnitAI
 		final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "decideAndExecuteUnitMovement");
 		
 		// Create a stack for the units (so transports pick up any units stacked with them)
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
@@ -834,11 +841,12 @@ public final class UnitAIImpl implements UnitAI
 		{
 			final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom,
 				player.getPlayerDescription ().getPlayerID (), unitStack, doubleMovementRemaining,
-				mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getSessionDescription ().getOverlandMapSize (),
+				priv.getFogOfWarMemory (), mom.getServerDB ());
 			
 			// Use list of movement codes from the unit stack's category
-			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
-			final boolean isMonsters = CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ());
+			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (wizardDetails.getWizardID ());
+			final boolean isMonsters = CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (wizardDetails.getWizardID ());
 	
 			final AIMovementDecision destination = decideUnitMovement (units, category.getMovementCode (), moves, underdefendedLocations,
 				ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredSpecialUnitLocations, isRaiders, isMonsters,
@@ -1416,5 +1424,21 @@ public final class UnitAIImpl implements UnitAI
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

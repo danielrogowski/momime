@@ -41,8 +41,10 @@ public interface PlayerPickServerUtils
 	 * @param humanSpellPicks Number of picks that human players get at the start of the game, from the session description - difficulty level
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
+	 * @throws RecordNotFoundException If the wizard isn't found in the list
 	 */
-	public String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final MomSessionVariables mom);
+	public String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final MomSessionVariables mom)
+		throws RecordNotFoundException;
 
 	/**
 	 * Checks each type of book this player has to see if it can find a type of book for which the player gets free spells, but has not yet chosen those free spells
@@ -91,8 +93,10 @@ public interface PlayerPickServerUtils
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if all players have chosen all details to start game
+	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
 	 */
-	public boolean allPlayersHaveChosenAllDetails (final MomSessionVariables mom);
+	public boolean allPlayersHaveChosenAllDetails (final MomSessionVariables mom)
+		throws RecordNotFoundException;
 
 	/**
 	 * Used when reloading multiplayer games to test whether all necessary players have joined back into the session and it can continue

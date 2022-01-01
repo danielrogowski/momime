@@ -57,6 +57,7 @@ import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.PlayerMessageProcessing;
+import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.UnitServerUtils;
 import momime.server.utils.UnitSkillDirectAccess;
 import momime.server.worldupdates.WorldUpdates;
@@ -783,12 +784,14 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Set up object to test
 		final FogOfWarProcessing fowProc = mock (FogOfWarProcessing.class);
 		final FogOfWarMidTurnChanges single = mock (FogOfWarMidTurnChanges.class);
+		final KnownWizardServerUtils knownWizardServerUtils = mock (KnownWizardServerUtils.class);
 		
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
 		multi.setFogOfWarCalculations (fowCalc);
 		multi.setFogOfWarProcessing (fowProc);
 		multi.setFogOfWarMidTurnChanges (single);
 		multi.setUnitUtils (unitUtils);
+		multi.setKnownWizardServerUtils (knownWizardServerUtils);
 
 		// Run method
 		multi.moveUnitStackOneCellOnServerAndClients (unitStack, player1, moveFrom, moveTo, mom);

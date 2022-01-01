@@ -177,6 +177,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="historyUI" ref="historyUI" />
 	</bean>
 
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype">

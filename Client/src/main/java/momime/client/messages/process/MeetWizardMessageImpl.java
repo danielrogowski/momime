@@ -8,7 +8,9 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
+import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.NewGameUI;
+import momime.client.ui.frames.WizardsUI;
 import momime.common.MomException;
 import momime.common.messages.servertoclient.MeetWizardMessage;
 import momime.common.utils.KnownWizardUtils;
@@ -33,6 +35,12 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
+	
+	/** UI for screen showing power base history for each wizard */
+	private HistoryUI historyUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -54,8 +62,9 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 		if ((getKnownWizardDetails ().getPlayerID () == getClient ().getOurPlayerID ()) && (getPlayerKnowledgeUtils ().isCustomWizard (getKnownWizardDetails ().getWizardID ())))
 			getNewGameUI ().showPortraitPanel ();
 		
-		// Show chosen wizard on wait for players list
-		getNewGameUI ().updateWaitPanelPlayersList ();
+		// Update screens to show opponent wizards as we meet them
+		getWizardsUI ().updateWizards (false);
+		getHistoryUI ().redrawChart ();
 	}
 	
 	/**
@@ -120,5 +129,37 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
+	}
+
+	/**
+	 * @return UI for screen showing power base history for each wizard
+	 */
+	public final HistoryUI getHistoryUI ()
+	{
+		return historyUI;
+	}
+
+	/**
+	 * @param h UI for screen showing power base history for each wizard
+	 */
+	public final void setHistoryUI (final HistoryUI h)
+	{
+		historyUI = h;
 	}
 }

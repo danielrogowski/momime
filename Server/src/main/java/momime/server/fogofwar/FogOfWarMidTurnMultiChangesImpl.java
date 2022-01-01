@@ -60,6 +60,7 @@ import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.OneCellPendingMovement;
 import momime.server.process.PlayerMessageProcessing;
+import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.TreasureUtils;
 import momime.server.utils.UnitServerUtils;
 import momime.server.utils.UnitSkillDirectAccess;
@@ -130,6 +131,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
 	
 	/**
 	 * @param combatLocation Location of combat that just ended
@@ -530,6 +534,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				if ((!couldSeeBeforeMove) && (canSeeAfterMove))
 				{
 					// The unit stack doesn't exist yet in the player's memory or on the client, so before they can move, we have to send all the unit details
+					getKnownWizardServerUtils ().meetWizard (unitStackOwner.getPlayerDescription ().getPlayerID (), thisPlayer.getPlayerDescription ().getPlayerID (), true, mom);
 					getFogOfWarMidTurnChanges ().addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient
 						(unitStack, mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), thisPlayer);
 					thisPlayerCanSee = true;
@@ -1524,5 +1529,21 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

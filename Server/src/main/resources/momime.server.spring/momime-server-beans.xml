@@ -449,6 +449,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 	
+	<bean id="knownWizardServerUtils" class="momime.server.utils.KnownWizardServerUtilsImpl">
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+	</bean>
+	
 	<!-- Calculations -->
 	
 	<bean id="serverSpellCalculations" class="momime.server.calculations.ServerSpellCalculationsImpl">
@@ -1060,6 +1064,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">
@@ -1076,6 +1081,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="movementUtils" ref="movementUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 
 	<!-- Beans created each time a new session is started

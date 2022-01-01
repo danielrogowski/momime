@@ -79,6 +79,7 @@ Other wizards' records we are only sent when we learn who they are.</xsd:documen
 				<xsd:extension base="mp:serverToClientMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="knownWizardDetails" type="momimemsgs:knownWizardDetails" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="showAnimation" type="xsd:boolean" />
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

@@ -56,6 +56,7 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.utils.KnownWizardServerUtils;
 
 /**
  * This contains the methods that recheck what areas of the map a specific player can see, and depending which areas
@@ -108,6 +109,9 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
 	
 	/**
 	 * Marks that we can see a particular cell
@@ -450,8 +454,11 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 						case FOG_OF_WAR_ACTION_UPDATE:
 						{
 							// Careful, may not even be a city here and hence tc.getCityData () may be null
+							if (tc.getCityData () != null)
+								getKnownWizardServerUtils ().meetWizard (tc.getCityData ().getCityOwnerID (), player.getPlayerDescription ().getPlayerID (), true, mom);
+							
 							final int cityOwnerID = (tc.getCityData () == null) ? 0 : tc.getCityData ().getCityOwnerID ();
-
+							
 							if (getFogOfWarDuplication ().copyCityData (tc, mc,
 								(cityOwnerID == player.getPlayerDescription ().getPlayerID ()) || (mom.getSessionDescription ().getFogOfWarSetting ().isSeeEnemyCityConstruction ()),
 								cityOwnerID == player.getPlayerDescription ().getPlayerID ()))
@@ -583,6 +590,8 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if ((actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_UPDATE)) &&
 					(!actions.contains (FogOfWarUpdateAction.FOG_OF_WAR_ACTION_NEVER_LOST_SIGHT_OF)))
 				{
+					getKnownWizardServerUtils ().meetWizard (thisUnit.getOwningPlayerID (), player.getPlayerDescription ().getPlayerID (), true, mom);
+					
 					final boolean unitChanged = getFogOfWarDuplication ().copyUnit (thisUnit, priv.getFogOfWarMemory ().getUnit (),
 						thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ());
 					updatedUnitURNs.add (thisUnit.getUnitURN ());
@@ -1056,5 +1065,21 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

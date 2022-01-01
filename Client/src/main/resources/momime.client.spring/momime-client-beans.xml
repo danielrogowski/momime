@@ -1792,7 +1792,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
-		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<!-- Prototype UI components -->

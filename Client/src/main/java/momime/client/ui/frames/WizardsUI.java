@@ -362,9 +362,9 @@ public final class WizardsUI extends MomClientFrameUI
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				
 				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "updateWizards");
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 				
-				if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
+				if ((wizardDetails == null) || (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())))
 				{
 					final Action wizardAction = new LoggingAction ((ev) ->
 					{
@@ -406,17 +406,28 @@ public final class WizardsUI extends MomClientFrameUI
 						}
 					});
 					
-					final String gemNormalImageName = (pub.getWizardState () == WizardState.ACTIVE) ? "/momime.client.graphics/ui/backgrounds/gem.png" :
+					final String gemNormalImageName = ((wizardDetails == null) || (pub.getWizardState () == WizardState.ACTIVE)) ? "/momime.client.graphics/ui/backgrounds/gem.png" :
 						"/momime.client.graphics/ui/backgrounds/gemCracked.png";
 					final String gemPressedImageName = "/momime.client.graphics/ui/backgrounds/gemPressed.png";
 
-					BufferedImage wizardNormalImage = getPlayerColourImageGenerator ().getModifiedImage
-						(gemNormalImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
-					BufferedImage wizardPressedImage = getPlayerColourImageGenerator ().getModifiedImage
-						(gemPressedImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
+					BufferedImage wizardNormalImage;
+					BufferedImage wizardPressedImage;
+					if (wizardDetails == null)
+					{
+						// Don't know what colour to make the gem if we've never met them
+						wizardNormalImage = getUtils ().loadImage (gemNormalImageName);
+						wizardPressedImage = getUtils ().loadImage (gemPressedImageName);
+					}
+					else
+					{
+						wizardNormalImage = getPlayerColourImageGenerator ().getModifiedImage
+							(gemNormalImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
+						wizardPressedImage = getPlayerColourImageGenerator ().getModifiedImage
+							(gemPressedImageName, true, null, null, null, player.getPlayerDescription ().getPlayerID (), null);
+					}
 					
 					// Find the wizard's photo
-					if (pub.getWizardState () == WizardState.ACTIVE)
+					if ((wizardDetails != null) && (pub.getWizardState () == WizardState.ACTIVE))
 					{
 						final BufferedImage unscaledPortrait;
 						if (pub.getCustomPhoto () != null)
@@ -463,7 +474,7 @@ public final class WizardsUI extends MomClientFrameUI
 					}
 					
 					// Show what the wizard is casting?
-					if ((detectMagic) && (pub.getWizardState () == WizardState.ACTIVE))
+					if ((detectMagic) && (wizardDetails != null) && (pub.getWizardState () == WizardState.ACTIVE))
 					{
 						currentlyCasting.get (n).setVisible (true);
 						currentlyCastingLabels.get (n).setVisible (true);
@@ -476,7 +487,7 @@ public final class WizardsUI extends MomClientFrameUI
 						currentlyCastingLabels.get (n).setVisible (false);
 					}
 					
-					if ((spellBlast) && (pub.getWizardState () == WizardState.ACTIVE))
+					if ((spellBlast) && (wizardDetails != null) && (pub.getWizardState () == WizardState.ACTIVE))
 					{
 						currentlyCastingMana.get (n).setVisible (true);
 						currentlyCastingManaLabels.get (n).setVisible (true);
@@ -492,7 +503,7 @@ public final class WizardsUI extends MomClientFrameUI
 					// Finally create the button
 					n++;
 					final JButton wizardButton = getUtils ().createImageButton (wizardAction, null, null, null, wizardNormalImage, wizardPressedImage, wizardNormalImage);
-					wizardButton.setEnabled (pub.getWizardState () == WizardState.ACTIVE);
+					wizardButton.setEnabled ((wizardDetails != null) && (pub.getWizardState () == WizardState.ACTIVE));
 					
 					contentPane.add (wizardButton, "frmWizardsGem" + n);
 					wizardButtons.add (wizardButton);
@@ -706,12 +717,12 @@ public final class WizardsUI extends MomClientFrameUI
 			{
 				int n = 0;
 				for (final PlayerPublicDetails player : getClient ().getPlayers ())
-					try
-					{
-						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "WizardsUI");
-						
-						if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
+				{
+					final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
+					
+					if ((wizardDetails != null) && (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())))
+						try
 						{
 							final OverlandCastingInfo info = getOverlandCastingInfo ().get (player.getPlayerDescription ().getPlayerID ());
 							
@@ -744,11 +755,11 @@ public final class WizardsUI extends MomClientFrameUI
 							
 							n++;
 						}
-					}
-					catch (final IOException e)
-					{
-						log.error (e, e);
-					}
+						catch (final IOException e)
+						{
+							log.error (e, e);
+						}
+				}
 			}
 		}
 	}

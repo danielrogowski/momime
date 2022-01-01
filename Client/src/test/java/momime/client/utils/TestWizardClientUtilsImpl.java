@@ -64,7 +64,7 @@ public final class TestWizardClientUtilsImpl extends ClientTestData
 		when (playerKnowledgeUtils.isCustomWizard ("WZ01")).thenReturn (false);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd.getPlayerID (), "getPlayerName")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		// Set up object to test
 		final WizardClientUtilsImpl utils = new WizardClientUtilsImpl ();

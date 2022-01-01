@@ -55,7 +55,6 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.TurnSystem;
-import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -200,11 +199,9 @@ public final class TestOverlandMapUI extends ClientTestData
 		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
 		
 		// Wizard
-		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("WZ01");
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "OverlandMapUI")).thenReturn (wizardDetails);
+		priv.getKnownWizardDetails ().add (wizardDetails);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -268,7 +265,6 @@ public final class TestOverlandMapUI extends ClientTestData
 		map.setClient (client);
 		map.setClientConfig (config);
 		map.setPlayerKnowledgeUtils (playerKnowledgeUtils);
-		map.setKnownWizardUtils (knownWizardUtils);
 		map.setOverlandMapRightHandPanel (rhp);
 		map.setSmallFont (CreateFontsForTests.getSmallFont ());
 

@@ -2224,7 +2224,7 @@ public final class TestNewGameUI extends ClientTestData
 			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
 			when (playerKnowledgeUtils.isCustomWizard (wizardID)).thenReturn (false);
 		}	
-		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard (null)).thenReturn (true);
 		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
@@ -2455,7 +2455,7 @@ public final class TestNewGameUI extends ClientTestData
 			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
 			when (playerKnowledgeUtils.isCustomWizard (wizardID)).thenReturn (false);
 		}	
-		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard (null)).thenReturn (true);
 		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
@@ -2839,7 +2839,7 @@ public final class TestNewGameUI extends ClientTestData
 			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
 			when (playerKnowledgeUtils.isCustomWizard (wizardID)).thenReturn (false);
 		}	
-		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard (null)).thenReturn (true);
 		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
@@ -3277,7 +3277,7 @@ public final class TestNewGameUI extends ClientTestData
 			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
 			when (playerKnowledgeUtils.isCustomWizard (wizardID)).thenReturn (false);
 		}	
-		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard (null)).thenReturn (true);
 		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();

@@ -92,7 +92,8 @@ public final class TestWizardsUI extends ClientTestData
 			wizard.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
 			wizard.setPortraitImageFile ("/momime.client.graphics/wizards/" + wizard.getWizardID () + ".png");
 			
-			when (db.findWizard (wizard.getWizardID (), "WizardsUI")).thenReturn (wizard);
+			if (n != 6)
+				when (db.findWizard (wizard.getWizardID (), "WizardsUI")).thenReturn (wizard);
 		}
 		
 		for (int n = 1; n <= 6; n++)
@@ -166,12 +167,14 @@ public final class TestWizardsUI extends ClientTestData
 			
 			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
-			priv.getKnownWizardDetails ().add (wizardDetails);
 			
-			if (n <= 14)
+			if ((n <= 14) && (n != 6))
+			{
 				when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
+				when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (wizardDetails);
+			}
 			
-			when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (wizardDetails);
+			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd.getPlayerID ())).thenReturn ((n == 6) ? null : wizardDetails);
 		}
 		
 		final MomClient client = mock (MomClient.class);
@@ -211,7 +214,8 @@ public final class TestWizardsUI extends ClientTestData
 		for (int n = 1; n <= 14; n++)
 		{
 			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
-			when (playerKnowledgeUtils.isWizard (wizardID)).thenReturn (true);
+			if (n != 6)
+				when (playerKnowledgeUtils.isWizard (wizardID)).thenReturn (true);
 		}
 		
 		// Image generator

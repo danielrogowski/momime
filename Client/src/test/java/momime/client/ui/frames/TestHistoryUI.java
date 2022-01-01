@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
@@ -34,7 +35,6 @@ import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -90,7 +90,7 @@ public final class TestHistoryUI extends ClientTestData
 		// Players
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 
 		int wizardNo = 0;
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -121,7 +121,7 @@ public final class TestHistoryUI extends ClientTestData
 			priv.getKnownWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
-			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), wizardNo, "HistoryUI")).thenReturn (wizardDetails);
+			when (multiplayerSessionUtils.findPlayerWithID (players, wizardNo, "HistoryUI")).thenReturn (player);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
@@ -148,7 +148,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
-		history.setKnownWizardUtils (knownWizardUtils);
+		history.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
 		history.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
@@ -206,7 +206,7 @@ public final class TestHistoryUI extends ClientTestData
 		// Players
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 
 		int wizardNo = 0;
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -237,7 +237,7 @@ public final class TestHistoryUI extends ClientTestData
 			priv.getKnownWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
-			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), wizardNo, "HistoryUI")).thenReturn (wizardDetails);
+			when (multiplayerSessionUtils.findPlayerWithID (players, wizardNo, "HistoryUI")).thenReturn (player);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
@@ -264,7 +264,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
-		history.setKnownWizardUtils (knownWizardUtils);
+		history.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
 		history.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
@@ -322,7 +322,7 @@ public final class TestHistoryUI extends ClientTestData
 		// Players
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		
 		int wizardNo = 0;
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -353,7 +353,7 @@ public final class TestHistoryUI extends ClientTestData
 			priv.getKnownWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
-			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), wizardNo, "HistoryUI")).thenReturn (wizardDetails);
+			when (multiplayerSessionUtils.findPlayerWithID (players, wizardNo, "HistoryUI")).thenReturn (player);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
@@ -380,7 +380,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
-		history.setKnownWizardUtils (knownWizardUtils);
+		history.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
 		history.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
@@ -438,7 +438,7 @@ public final class TestHistoryUI extends ClientTestData
 		// Players
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 
 		int wizardNo = 0;
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -469,7 +469,7 @@ public final class TestHistoryUI extends ClientTestData
 			priv.getKnownWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
-			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), wizardNo, "HistoryUI")).thenReturn (wizardDetails);
+			when (multiplayerSessionUtils.findPlayerWithID (players, wizardNo, "HistoryUI")).thenReturn (player);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
@@ -496,7 +496,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
-		history.setKnownWizardUtils (knownWizardUtils);
+		history.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
 		history.setSmallFont (CreateFontsForTests.getSmallFont ());
 		

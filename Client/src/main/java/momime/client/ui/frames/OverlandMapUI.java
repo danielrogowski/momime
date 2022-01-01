@@ -42,7 +42,6 @@ import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 

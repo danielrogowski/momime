@@ -32,6 +32,7 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
 import momime.common.database.LanguageText;
 import momime.common.database.WizardEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerKnowledgeUtils;
 
@@ -72,6 +73,9 @@ public final class WizardBanishedUI extends MomClientDialogUI
 
 	/** The wizard (or raiders) who is banishing them */
 	private PlayerPublicDetails banishingWizard;
+	
+	/** The wizard (or raiders) who is banishing them */
+	private KnownWizardDetails banishingWizardDetails;
 	
 	/** If false, the wizard still has at least 1 more city so they can try to cast Spell of Return.  If true, the wizard has no cities left and they are out of the game. */
 	private boolean defeated;
@@ -317,10 +321,8 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		final MomPersistentPlayerPublicKnowledge banishingWizardPub = (MomPersistentPlayerPublicKnowledge) getBanishingWizard ().getPersistentPlayerPublicKnowledge ();
-		
 		final List<LanguageText> languageText;
-		if (getPlayerKnowledgeUtils ().isWizard (banishingWizardPub.getWizardID ()))
+		if (getPlayerKnowledgeUtils ().isWizard (getBanishingWizardDetails ().getWizardID ()))
 			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
 		else
 			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
@@ -459,6 +461,22 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	public final void setBanishingWizard (final PlayerPublicDetails w)
 	{
 		banishingWizard = w;
+	}
+
+	/**
+	 * @return The wizard (or raiders) who is banishing them
+	 */
+	public final KnownWizardDetails getBanishingWizardDetails ()
+	{
+		return banishingWizardDetails;
+	}
+
+	/**
+	 * @param w The wizard (or raiders) who is banishing them
+	 */
+	public final void setBanishingWizardDetails (final KnownWizardDetails w)
+	{
+		banishingWizardDetails = w;
 	}
 
 	/**

@@ -2,17 +2,16 @@ package momime.client.messages.process;
 
 import java.io.IOException;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.ui.frames.NewGameUI;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.servertoclient.ChosenWizardMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -26,11 +25,11 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	/** New Game UI */
 	private NewGameUI newGameUI;
 	
-	/** Session utils */
-	private MultiplayerSessionUtils multiplayerSessionUtils;
-	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -41,9 +40,10 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
 		// Set the Wizard ID
-		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ChosenWizardMessageImpl");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		pub.setWizardID (getWizardID ());
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getPlayerID (), "ChosenWizardMessageImpl");
+		
+		wizardDetails.setWizardID (getWizardID ());
 		
 		// If it is us, and we chose Custom, then we need to go to the Choose Portrait screen
 		// If it is us and we picked a pre-defined Wizard then do nothing - the server will have already sent us either mmChooseInitialSpells or
@@ -88,22 +88,6 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	}
 
 	/**
-	 * @return Session utils
-	 */
-	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
-	{
-		return multiplayerSessionUtils;
-	}
-
-	/**
-	 * @param util Session utils
-	 */
-	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
-	{
-		multiplayerSessionUtils = util;
-	}
-
-	/**
 	 * @return Methods for working with wizardIDs
 	 */
 	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
@@ -117,5 +101,21 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

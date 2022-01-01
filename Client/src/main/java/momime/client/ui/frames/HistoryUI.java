@@ -14,6 +14,9 @@ import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
@@ -24,8 +27,11 @@ import momime.client.MomClient;
 import momime.client.languages.database.Month;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -33,6 +39,9 @@ import momime.common.utils.PlayerKnowledgeUtils;
  */
 public final class HistoryUI extends MomClientFrameUI
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (HistoryUI.class);
+	
 	/** How spaced apart to draw score ticks */
 	private final static int SCORE_TICK = 100;
 
@@ -59,6 +68,9 @@ public final class HistoryUI extends MomClientFrameUI
 
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Turn label */
 	private JLabel turnLabel;
@@ -104,14 +116,23 @@ public final class HistoryUI extends MomClientFrameUI
 					int maxScore = 0;
 					int maxTurns = 0;
 					for (final PlayerPublicDetails player : getClient ().getPlayers ())
-					{
-						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-						if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+						try
 						{
-							maxScore = Math.max (maxScore, pub.getPowerBaseHistory ().stream ().mapToInt (v -> v).max ().orElse (0));
-							maxTurns = Math.max (maxTurns, pub.getPowerBaseHistory ().size ());
+							final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+							
+							final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+								(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "HistoryUI");
+							
+							if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
+							{
+								maxScore = Math.max (maxScore, pub.getPowerBaseHistory ().stream ().mapToInt (v -> v).max ().orElse (0));
+								maxTurns = Math.max (maxTurns, pub.getPowerBaseHistory ().size ());
+							}
 						}
-					}
+						catch (final RecordNotFoundException e)
+						{
+							log.error (e, e);
+						}
 					
 					// Work out scaling
 					int xScaling = 1;
@@ -131,29 +152,38 @@ public final class HistoryUI extends MomClientFrameUI
 
 					int wizardNo = 0;
 					for (final PlayerPublicDetails player : getClient ().getPlayers ())
-					{
-						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-						if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+						try
 						{
-							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
-							g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
+							final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+	
+							final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+								(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "HistoryUI");
 							
-							// Output name
-							g.drawString (getWizardClientUtils ().getPlayerName (player), 56, 66 + (wizardNo * 10));
-							
-							// Draw line
-							final int x [] = new int [pub.getPowerBaseHistory ().size ()];
-							final int y [] = new int [pub.getPowerBaseHistory ().size ()];
-							for (int n = 0; n < pub.getPowerBaseHistory ().size () / xScaling; n++)
+							if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 							{
-								x [n] = getChartX (chart, n);
-								y [n] = getChartY (chart, pub.getPowerBaseHistory ().get (n * xScaling) / yScaling);
+								final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+								g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
+								
+								// Output name
+								g.drawString (getWizardClientUtils ().getPlayerName (player), 56, 66 + (wizardNo * 10));
+								
+								// Draw line
+								final int x [] = new int [pub.getPowerBaseHistory ().size ()];
+								final int y [] = new int [pub.getPowerBaseHistory ().size ()];
+								for (int n = 0; n < pub.getPowerBaseHistory ().size () / xScaling; n++)
+								{
+									x [n] = getChartX (chart, n);
+									y [n] = getChartY (chart, pub.getPowerBaseHistory ().get (n * xScaling) / yScaling);
+								}
+								g.drawPolyline (x, y, pub.getPowerBaseHistory ().size () / xScaling);
+								
+								wizardNo++;
 							}
-							g.drawPolyline (x, y, pub.getPowerBaseHistory ().size () / xScaling);
-							
-							wizardNo++;
 						}
-					}
+						catch (final RecordNotFoundException e)
+						{
+							log.error (e, e);
+						}
 					
 					// Draw axes
 					g.setColor (MomUIConstants.GOLD);
@@ -365,5 +395,21 @@ public final class HistoryUI extends MomClientFrameUI
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

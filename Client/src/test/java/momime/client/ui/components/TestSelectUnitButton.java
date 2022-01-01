@@ -32,10 +32,12 @@ import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 
 /**
  * Tests the SelectUnitButton class
@@ -113,19 +115,27 @@ public final class TestSelectUnitButton
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
 		
+		// Player knowledge
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (fow);
+		
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
+		
+		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "getModifiedImage")).thenReturn (player1);
-		
-		// Player knowledge
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
-		final MomPersistentPlayerPrivateKnowledge ppk = new MomPersistentPlayerPrivateKnowledge ();
-		ppk.setFogOfWarMemory (fow);
 		
 		// Set up unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -137,6 +147,7 @@ public final class TestSelectUnitButton
 		gen.setClient (client);
 		gen.setUtils (utils);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		gen.setKnownWizardUtils (knownWizardUtils);
 		
 		// Set up button
 		final SelectUnitButton button = new SelectUnitButton ();
@@ -211,20 +222,28 @@ public final class TestSelectUnitButton
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
-		
-		final MomClient client = mock (MomClient.class);
-		when (client.getPlayers ()).thenReturn (players);
-		when (client.getClientDB ()).thenReturn (db);
 
-		// Session utils
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "getModifiedImage")).thenReturn (player1);
-		
 		// Player knowledge
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomPersistentPlayerPrivateKnowledge ppk = new MomPersistentPlayerPrivateKnowledge ();
-		ppk.setFogOfWarMemory (fow);
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (fow);
+		
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
+
+		// Client
+		final MomClient client = mock (MomClient.class);
+		when (client.getPlayers ()).thenReturn (players);
+		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "getModifiedImage")).thenReturn (player1);
 		
 		// Set up unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -249,6 +268,7 @@ public final class TestSelectUnitButton
 		gen.setClient (client);
 		gen.setUtils (utils);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		gen.setKnownWizardUtils (knownWizardUtils);
 		
 		// Set up button
 		final SelectUnitButton button = new SelectUnitButton ();

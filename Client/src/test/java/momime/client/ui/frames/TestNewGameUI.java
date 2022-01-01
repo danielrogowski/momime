@@ -70,10 +70,12 @@ import momime.common.database.SpellRank;
 import momime.common.database.SpellSetting;
 import momime.common.database.UnitSetting;
 import momime.common.database.WizardEx;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtilsImpl;
 
@@ -160,14 +162,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -307,14 +309,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -465,14 +467,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -619,14 +621,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -762,14 +764,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -919,14 +921,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -1067,14 +1069,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -1211,14 +1213,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -1353,14 +1355,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -1495,14 +1497,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -1638,14 +1640,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 
 		// Mock entries from the language XML
@@ -1791,14 +1793,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 
 		// Mock entries from the language XML
@@ -1930,14 +1932,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -2143,14 +2145,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -2394,14 +2396,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -2549,14 +2551,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -2765,14 +2767,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -2970,14 +2972,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		// Mock entries from the language XML
@@ -3191,14 +3193,14 @@ public final class TestNewGameUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -3376,18 +3378,24 @@ public final class TestNewGameUI extends ClientTestData
 		
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
-		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("WZ01");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, pub, trans);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
+		
+		// Wizard
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd.getPlayerID (), "PlayerListTableModel")).thenReturn (wizardDetails);
 		
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
@@ -3425,6 +3433,7 @@ public final class TestNewGameUI extends ClientTestData
 		// Mock list of available databases
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 
 		final NewGameDatabase dbs = createNewGameDatabase ();
 		when (client.getNewGameDatabase ()).thenReturn (dbs);
@@ -3479,6 +3488,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setClient (client);
 		game.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		game.setWizardClientUtils (wizardClientUtils);
+		game.setKnownWizardUtils (knownWizardUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		game.setRandomUtils (new RandomUtilsImpl ());
 		game.setTextUtils (new TextUtilsImpl ());

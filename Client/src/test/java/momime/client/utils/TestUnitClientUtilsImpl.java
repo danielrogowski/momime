@@ -65,10 +65,12 @@ import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -512,22 +514,30 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 			"/momime.client.graphics/flags/combatBoatFlag-d4-1.png", 14, 11,
 			"/momime.client.graphics/flags/combatBoatFlag-d4-3.png", 14, 11));
 		
+		// Client
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Owner of the units
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("WZ01");
-		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 		trans.setFlagColour ("FF4040");
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, trans);
+		final PlayerPublicDetails player = new PlayerPublicDetails (null, null, trans);
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (client.getPlayers ()).thenReturn (players);
 		when (multiplayerSessionUtils.findPlayerWithID (players, 1, "getModifiedImage")).thenReturn (player);
+		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
 		
 		// This is dependant on way too many values to mock them all - so use the real graphics DB
 		final GraphicsDatabaseEx gfx = loadGraphicsDatabase (utils, null);
@@ -543,6 +553,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		gen.setKnownWizardUtils (knownWizardUtils);
 		
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();

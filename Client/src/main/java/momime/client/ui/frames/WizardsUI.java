@@ -54,10 +54,12 @@ import momime.common.database.Pick;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -126,6 +128,9 @@ public final class WizardsUI extends MomClientFrameUI
 
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** List of gem buttons for each wizard */
 	final List<JButton> wizardButtons = new ArrayList<JButton> ();
@@ -355,7 +360,11 @@ public final class WizardsUI extends MomClientFrameUI
 			for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			{
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+				
+				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "updateWizards");
+				
+				if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 				{
 					final Action wizardAction = new LoggingAction ((ev) ->
 					{
@@ -371,7 +380,7 @@ public final class WizardsUI extends MomClientFrameUI
 							
 							final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (getTargetingSpell (),
 								getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge (),
-								player, targetOverlandCastingInfo);
+								player, targetOverlandCastingInfo, getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ());
 							
 							if (validTarget == TargetSpellResult.VALID_TARGET)
 							{
@@ -697,15 +706,16 @@ public final class WizardsUI extends MomClientFrameUI
 			{
 				int n = 0;
 				for (final PlayerPublicDetails player : getClient ().getPlayers ())
-				{
-					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-					if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+					try
 					{
-						final OverlandCastingInfo info = getOverlandCastingInfo ().get (player.getPlayerDescription ().getPlayerID ());
+						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "WizardsUI");
 						
-						// Spell name
-						try
+						if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 						{
+							final OverlandCastingInfo info = getOverlandCastingInfo ().get (player.getPlayerDescription ().getPlayerID ());
+							
+							// Spell name
 							final List<LanguageText> text;
 							if ((info == null) || (info.getSpellID () == null))
 								text = getLanguages ().getWizardsScreen ().getCastingNothing ();
@@ -713,33 +723,32 @@ public final class WizardsUI extends MomClientFrameUI
 								text = getClient ().getClientDB ().findSpell (info.getSpellID (), "WizardsUI").getSpellName ();
 						
 							currentlyCastingLabels.get (n).setText (getLanguageHolder ().findDescription (text));
+							
+							// Mana spent
+							if (spellBlast)
+							{
+								if ((info == null) || (info.getManaSpentOnCasting () == null))
+									currentlyCastingManaLabels.get (n).setText (null);
+								else
+									try
+									{
+										currentlyCastingManaLabels.get (n).setText (getTextUtils ().intToStrCommas (info.getManaSpentOnCasting ()) + " " +
+											getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
+												(CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "WizardsUI").getProductionTypeSuffix ()));
+									}
+									catch (final IOException e)
+									{
+										log.error ("Can't find mana production type to display mana spent for Spell Blast", e);
+									}
+							}
+							
+							n++;
 						}
-						catch (final IOException e)
-						{
-							log.error ("Can't find name of spell to display from Detect Magic for \"" + info.getSpellID () + "\"", e);
-						}
-						
-						// Mana spent
-						if (spellBlast)
-						{
-							if ((info == null) || (info.getManaSpentOnCasting () == null))
-								currentlyCastingManaLabels.get (n).setText (null);
-							else
-								try
-								{
-									currentlyCastingManaLabels.get (n).setText (getTextUtils ().intToStrCommas (info.getManaSpentOnCasting ()) + " " +
-										getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
-											(CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "WizardsUI").getProductionTypeSuffix ()));
-								}
-								catch (final IOException e)
-								{
-									log.error ("Can't find mana production type to display mana spent for Spell Blast", e);
-								}
-						}
-						
-						n++;
 					}
-				}
+					catch (final IOException e)
+					{
+						log.error (e, e);
+					}
 			}
 		}
 	}
@@ -752,13 +761,12 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setWizardCastAnimationPlayerID (final int playerID)
 	{
 		int n = 0;
-		for (final PlayerPublicDetails player : getClient ().getPlayers ())
-		{
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+		for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ())
+			
+			if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 			{
 				n++;
-				if (player.getPlayerDescription ().getPlayerID () == playerID)
+				if (wizardDetails.getPlayerID () == playerID)
 				{
 					// Look up the location of this wizard's gem in the XML layout
 					final XmlLayoutComponent gemLocation = getWizardsLayout ().findComponent ("frmWizardsGem" + n);
@@ -769,7 +777,6 @@ public final class WizardsUI extends MomClientFrameUI
 					}
 				}
 			}
-		}
 	}
 	
 	/**
@@ -1018,6 +1025,22 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 	
 	/**

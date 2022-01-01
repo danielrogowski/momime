@@ -28,6 +28,7 @@ import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerKnowledgeUtils;
 
@@ -129,13 +130,15 @@ public final class TestWizardBanishedUI extends ClientTestData
 		
 		final PlayerPublicDetails banishedWizard = new PlayerPublicDetails (null, banishedWizardPub, null);
 		when (wizardClientUtils.getPlayerName (banishedWizard)).thenReturn ("Merlin");
-
+		
 		final MomPersistentPlayerPublicKnowledge banishingWizardPub = new MomPersistentPlayerPublicKnowledge ();
 		if (isEnemyWizard)
 			banishingWizardPub.setStandardPhotoID ("WZ03");
 		
 		final PlayerPublicDetails banishingWizard = new PlayerPublicDetails (null, banishingWizardPub, null);
 		when (wizardClientUtils.getPlayerName (banishingWizard)).thenReturn (isEnemyWizard ? "Kali" : "Raiders");
+		
+		final KnownWizardDetails banishingWizardDetails = new KnownWizardDetails ();
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/WizardBanishedUI.xml"));
@@ -154,6 +157,7 @@ public final class TestWizardBanishedUI extends ClientTestData
 		wizardBanished.setLargeFont (CreateFontsForTests.getLargeFont ());		
 		wizardBanished.setBanishedWizard (banishedWizard);
 		wizardBanished.setBanishingWizard (banishingWizard);
+		wizardBanished.setBanishingWizardDetails (banishingWizardDetails);
 		wizardBanished.setMusicPlayer (mock (AudioPlayer.class));
 		wizardBanished.setSoundPlayer (mock (AudioPlayer.class));
 		

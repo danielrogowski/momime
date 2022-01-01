@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.Unmarshaller;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,6 +22,7 @@ import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
+import jakarta.xml.bind.Unmarshaller;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
@@ -58,6 +57,7 @@ import momime.common.database.UnitSkillEx;
 import momime.common.database.WizardEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -72,6 +72,7 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 
@@ -194,8 +195,10 @@ public final class TestCombatUI extends ClientTestData
 		atkPd.setPlayerName ("Mr. Attacker");
 		
 		final MomPersistentPlayerPublicKnowledge atkPub = new MomPersistentPlayerPublicKnowledge ();
-		atkPub.setWizardID ("WZ01");
 		atkPub.setStandardPhotoID ("WZ01");
+
+		final KnownWizardDetails atkWizard = new KnownWizardDetails ();
+		atkWizard.setWizardID ("WZ01");
 		
 		final MomTransientPlayerPublicKnowledge atkTrans = new MomTransientPlayerPublicKnowledge ();
 		atkTrans.setFlagColour ("FF0000");
@@ -209,7 +212,6 @@ public final class TestCombatUI extends ClientTestData
 		defPd.setPlayerName ("Mr. Defender");
 		
 		final MomPersistentPlayerPublicKnowledge defPub = new MomPersistentPlayerPublicKnowledge ();
-		defPub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		defPub.setStandardPhotoID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 
 		final MomTransientPlayerPublicKnowledge defTrans = new MomTransientPlayerPublicKnowledge ();
@@ -222,7 +224,14 @@ public final class TestCombatUI extends ClientTestData
 		players.add (defendingPlayer);
 		
 		when (client.getPlayers ()).thenReturn (players);
+		
+		// Wizards
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 
+		final KnownWizardDetails defWizard = new KnownWizardDetails ();
+		defWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), defPd.getPlayerID (), "CombatUI")).thenReturn (defWizard);
+		
 		// We're the attacker
 		when (client.getOurPlayerID ()).thenReturn (atkPd.getPlayerID ());
 		
@@ -368,6 +377,7 @@ public final class TestCombatUI extends ClientTestData
 		combat.setCombatLayoutBottom (bottomLayout);
 		combat.setCombatTerrain (combatMap);
 		combat.setPlayerColourImageGenerator (generator);
+		combat.setKnownWizardUtils (knownWizardUtils);
 
 		// Display form
 		combat.initNewCombat ();

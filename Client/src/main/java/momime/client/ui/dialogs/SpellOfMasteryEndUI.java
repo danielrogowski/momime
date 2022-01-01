@@ -31,8 +31,10 @@ import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
 import momime.common.database.WizardEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -76,6 +78,9 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/** Line of text */
 	private JLabel lineLabel;
 	
@@ -107,7 +112,10 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 			if (player != getCastingWizard ())
 			{
 				final MomPersistentPlayerPublicKnowledge banishedWizardPub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				if ((getPlayerKnowledgeUtils ().isWizard (banishedWizardPub.getWizardID ())) && (banishedWizardPub.getWizardState () != WizardState.DEFEATED) &&
+				final KnownWizardDetails banishedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "SpellOfMasteryEndUI");
+				
+				if ((getPlayerKnowledgeUtils ().isWizard (banishedWizardDetails.getWizardID ())) && (banishedWizardPub.getWizardState () != WizardState.DEFEATED) &&
 					(banishedWizardPub.getStandardPhotoID () != null))
 				{
 					final WizardEx banishedWizardDef = getClient ().getClientDB ().findWizard (banishedWizardPub.getStandardPhotoID (), "SpellOfMasteryEndUI (B)");
@@ -415,5 +423,21 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

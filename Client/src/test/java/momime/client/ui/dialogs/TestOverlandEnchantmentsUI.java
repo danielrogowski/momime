@@ -40,10 +40,12 @@ import momime.common.database.Language;
 import momime.common.database.Spell;
 import momime.common.database.WizardEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 
 /**
@@ -104,6 +106,12 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+
+		// FOW (just to add the spell into)
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (fow);
 		
 		// Player
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
@@ -136,11 +144,6 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		players.add (player1);
 		players.add (player2);
 		
-		final MomClient client = mock (MomClient.class);
-		when (client.getPlayers ()).thenReturn (players);
-		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
-		when (client.getClientDB ()).thenReturn (db);
-		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		
 		if (!anotherWizard)
@@ -152,12 +155,25 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 			when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd2.getPlayerID ()))).thenReturn (player2);
 		}
 		
-		// FOW (just to add the spell into)
-		final FogOfWarMemory fow = new FogOfWarMemory ();
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		priv.setFogOfWarMemory (fow);
+		if (!anotherWizard)
+		{
+			final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
+			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
+		}
+		else
+		{
+			final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();
+			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd2.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails2);
+		}
 		
+		// Client
+		final MomClient client = mock (MomClient.class);
+		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
+		when (client.getClientDB ()).thenReturn (db);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Spell being shown
@@ -174,6 +190,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		gen.setKnownWizardUtils (knownWizardUtils);
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/OverlandEnchantmentsUI.xml"));

@@ -20,9 +20,11 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.WizardsUI;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.LanguageText;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -51,6 +53,9 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -63,9 +68,12 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 		final PlayerPublicDetails banishedWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) banishedWizard.getPersistentPlayerPublicKnowledge ();
 		pub.setWizardState (getWizardState ());
+		
+		final KnownWizardDetails banishedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
 
 		// Don't show anything when raiders have been defeated
-		if (!getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+		if (!getPlayerKnowledgeUtils ().isWizard (banishedWizardDetails.getWizardID ()))
 			getClient ().finishCustomDurationMessage (this);
 		else
 		{
@@ -87,14 +95,17 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 				// Animation of wizard getting zapped
 				final boolean isDefeated = (getWizardState () == WizardState.DEFEATED);
 				final PlayerPublicDetails banishingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
-				final MomPersistentPlayerPublicKnowledge banishingPub = (MomPersistentPlayerPublicKnowledge) banishingWizard.getPersistentPlayerPublicKnowledge ();
 				
 				// Show animation
 				if (pub.getStandardPhotoID () != null)
 				{
+					final KnownWizardDetails banishingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
+					
 					final WizardBanishedUI wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
 					wizardBanishedUI.setBanishedWizard (banishedWizard);
 					wizardBanishedUI.setBanishingWizard (banishingWizard);
+					wizardBanishedUI.setBanishingWizardDetails (banishingWizardDetails);
 					wizardBanishedUI.setDefeated (isDefeated);
 					wizardBanishedUI.setUpdateWizardStateMessage (this);
 					wizardBanishedUI.setVisible (true);
@@ -102,8 +113,11 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 				else
 				{
 					// Custom portrait, so cannot show animation, just a message box
+					final KnownWizardDetails banishingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
+					
 					final List<LanguageText> languageText;
-					if (getPlayerKnowledgeUtils ().isWizard (banishingPub.getWizardID ()))
+					if (getPlayerKnowledgeUtils ().isWizard (banishingWizardDetails.getWizardID ()))
 						languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
 					else
 						languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
@@ -250,5 +264,21 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

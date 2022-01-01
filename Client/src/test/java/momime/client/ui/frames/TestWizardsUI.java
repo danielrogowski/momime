@@ -38,11 +38,13 @@ import momime.common.database.Language;
 import momime.common.database.Pick;
 import momime.common.database.WizardEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
@@ -132,6 +134,8 @@ public final class TestWizardsUI extends ClientTestData
 		
 		// Players
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		for (int n = 1; n <= 16; n++)
@@ -143,15 +147,17 @@ public final class TestWizardsUI extends ClientTestData
 			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 			pub.setWizardState ((n == 14) ? WizardState.BANISHED : WizardState.ACTIVE);
 			
+			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+			
 			MomTransientPlayerPublicKnowledge trans = null;
 			if (n == 16)
-				pub.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
+				wizardDetails.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
 			else if (n == 15)
-				pub.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+				wizardDetails.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 			else
 			{
-				pub.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
-				pub.setStandardPhotoID (pub.getWizardID ());
+				wizardDetails.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
+				pub.setStandardPhotoID (wizardDetails.getWizardID ());
 				
 				final String hex = Integer.toHexString (pd.getPlayerID ());
 				trans = new MomTransientPlayerPublicKnowledge ();
@@ -160,14 +166,18 @@ public final class TestWizardsUI extends ClientTestData
 			
 			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
+			priv.getKnownWizardDetails ().add (wizardDetails);
 			
 			if (n <= 14)
 				when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
+			
+			when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (wizardDetails);
 		}
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// First wizard
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
@@ -192,10 +202,7 @@ public final class TestWizardsUI extends ClientTestData
 		
 		// Memory
 		final FogOfWarMemory mem = new FogOfWarMemory ();
-		
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setFogOfWarMemory (mem);
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 
@@ -212,6 +219,7 @@ public final class TestWizardsUI extends ClientTestData
 		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		gen.setKnownWizardUtils (knownWizardUtils);
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/WizardsUI.xml"));
@@ -240,6 +248,7 @@ public final class TestWizardsUI extends ClientTestData
 		wizards.setLargeFont (CreateFontsForTests.getLargeFont ());
 		wizards.setTextUtils (textUtils);
 		wizards.setPlayerPickClientUtils (playerPickClientUtils);
+		wizards.setKnownWizardUtils (knownWizardUtils);
 
 		// Display form		
 		wizards.setVisible (true);

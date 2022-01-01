@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -47,6 +46,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.MomImeClientConfig;
@@ -76,9 +76,9 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileSetEx;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.PendingMovementStep;
@@ -90,6 +90,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -193,6 +194,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Unit stack that's in the middle of moving from one cell to another */
 	private MoveUnitStackOverlandMessageImpl unitStackMoving;
@@ -402,18 +406,19 @@ public final class OverlandMapUI extends MomClientFrameUI
 				
 				// Draw any borders?
 				for (final PlayerPublicDetails thisPlayer : getClient ().getPlayers ())
-				{
-					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-					if (getPlayerKnowledgeUtils ().isWizard (pub.getWizardID ()))
+					try
 					{
-						if (((thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowOurBorder ())) ||
-							((!thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowEnemyBorders ())))
-							
-							try
+						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "OverlandMapUI");
+						
+						if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
+						{
+							if (((thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowOurBorder ())) ||
+								((!thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowEnemyBorders ())))
 							{
 								final int borderZoomedWidth = (overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
 								final int borderZoomedHeight = (overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
-
+	
 								// Generate border
 								final MapArea3D<Boolean> friendlyZone = getZoneAI ().calculateFriendlyZone (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 									getClient ().getSessionDescription ().getOverlandMapSize (), thisPlayer.getPlayerDescription ().getPlayerID (),
@@ -430,12 +435,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 										{
 											final int borderX = (x * overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
 											final int borderY = (y * overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
-
+	
 											for (final SquareMapDirection d : directions)
 											{
 												final BufferedImage borderImage = getPlayerColourImageGenerator ().getFriendlyZoneBorderImage
 													(d.getDirectionID (), thisPlayer.getPlayerDescription ().getPlayerID ());
-
+	
 												for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
 													for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
 														
@@ -445,13 +450,13 @@ public final class OverlandMapUI extends MomClientFrameUI
 											}
 										}
 									}
-							}
-							catch (final IOException e)
-							{
-								log.error ("Error trying to calculate and draw friendly zone for player ID " + thisPlayer.getPlayerDescription ().getPlayerID (), e);
-							}
+								}
+						}
 					}
-				}
+					catch (final IOException e)
+					{
+						log.error ("Error trying to calculate and draw friendly zone for player ID " + thisPlayer.getPlayerDescription ().getPlayerID (), e);
+					}
 				
 				// Draw units dynamically, over the bitmap.
 				
@@ -2026,6 +2031,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 	
 	/**

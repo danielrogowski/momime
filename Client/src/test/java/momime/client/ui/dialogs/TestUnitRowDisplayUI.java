@@ -43,12 +43,14 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 
 /**
  * Tests the UnitRowDisplayUI class
@@ -101,8 +103,12 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		section.getSpellTargetPrompt ().add (createLanguageText (Language.ENGLISH, "Select a friendly unit as the target for your SPELL_NAME spell."));
 		when (db.findSpellBookSection (SpellBookSectionID.UNIT_ENCHANTMENTS, "UnitRowDisplayUI")).thenReturn (section);
 		
+		// Client
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Unit attributes
 		final List<UnitSkillEx> unitSkills = new ArrayList<UnitSkillEx> ();
@@ -132,6 +138,12 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		players.add (player1);
 		
 		when (client.getPlayers ()).thenReturn (players);
+		
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
 		
 		// FOW memory
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -193,6 +205,7 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		gen.setUtils (utils);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		gen.setClient (client);
+		gen.setKnownWizardUtils (knownWizardUtils);
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);

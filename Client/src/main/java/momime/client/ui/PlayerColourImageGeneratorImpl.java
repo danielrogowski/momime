@@ -17,8 +17,9 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitEx;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.KnownWizardUtils;
 
 /**
  * Various items like unit backgrounds and city flags are displayed in the player's colour.
@@ -48,6 +49,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @param unitDef Unit to get the image for
@@ -124,8 +128,11 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 		if ((colourEntireImageApplies) || (flagApplies))
 		{
 			player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), playerID, "getModifiedImage");
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+			
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), playerID, "getModifiedImage");
+			
+			if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (wizardDetails.getWizardID ()))
 			{
 				colourEntireImageApplies = false;
 				flagApplies = false;
@@ -274,5 +281,21 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	public final void setGraphicsDB (final GraphicsDatabaseEx db)
 	{
 		graphicsDB = db;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

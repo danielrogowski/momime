@@ -1,7 +1,7 @@
 package momime.client.ui;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -19,8 +19,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.KnownWizardUtils;
 
 /**
  * Tests the PlayerColourImageGeneratorImpl class
@@ -62,19 +64,27 @@ public final class TestPlayerColourImageGeneratorImpl
 		// Player's colour
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("WZ01");
-		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 		trans.setFlagColour ("C");
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, trans);
+		final PlayerPublicDetails player = new PlayerPublicDetails (null, null, trans);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, 1, "getModifiedImage")).thenReturn (player);
 		
+		// Wizard
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
+
+		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Base image
 		final BufferedImage src = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
@@ -91,6 +101,7 @@ public final class TestPlayerColourImageGeneratorImpl
 		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		gen.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
 		final BufferedImage image = gen.getModifiedImage ("test.png", true, null, null, null, 1, null);
@@ -109,20 +120,28 @@ public final class TestPlayerColourImageGeneratorImpl
 		// Player's colour
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("WZ01");
-		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 		trans.setFlagColour ("C");
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, trans);
+		final PlayerPublicDetails player = new PlayerPublicDetails (null, null, trans);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, 1, "getModifiedImage")).thenReturn (player);
 		
+		// Wizard
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
+		
+		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
-		
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+				
 		// Base image
 		final BufferedImage src = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
 		
@@ -144,6 +163,7 @@ public final class TestPlayerColourImageGeneratorImpl
 		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		gen.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
 		final BufferedImage image = gen.getModifiedImage ("test.png", true, null, null, null, 1, Arrays.asList ("D", "E"));
@@ -162,19 +182,27 @@ public final class TestPlayerColourImageGeneratorImpl
 		// Player's colour
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("WZ01");
-		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 		trans.setFlagColour ("C");
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, trans);
+		final PlayerPublicDetails player = new PlayerPublicDetails (null, null, trans);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, 1, "getModifiedImage")).thenReturn (player);
 		
+		// Wizard
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
+		
+		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Base image
 		final BufferedImage src = new BufferedImage (2, 1, BufferedImage.TYPE_INT_ARGB);
@@ -197,6 +225,7 @@ public final class TestPlayerColourImageGeneratorImpl
 		gen.setUtils (utils);
 		gen.setClient (client);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		gen.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
 		final BufferedImage image = gen.getModifiedImage ("test.png", false, "flag.png", 1, 0, 1, null);

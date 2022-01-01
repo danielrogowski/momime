@@ -48,12 +48,14 @@ import momime.common.database.OverlandMapSize;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.TileSetEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.TurnSystem;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -161,10 +163,10 @@ public final class TestOverlandMapUI extends ClientTestData
 		// Set up FOW memory
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomPersistentPlayerPrivateKnowledge ppk = new MomPersistentPlayerPrivateKnowledge ();
-		ppk.setFogOfWarMemory (fow);
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (fow);
 		
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// General public knowledge
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -180,13 +182,12 @@ public final class TestOverlandMapUI extends ClientTestData
 		pd1.setPlayerID (3);
 		pd1.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("WZ01");
+		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
 		
-		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
-		trans.setFlagColour ("800000");
+		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
+		trans1.setFlagColour ("800000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub, trans);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
 		when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Mr. Blah");
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -197,6 +198,13 @@ public final class TestOverlandMapUI extends ClientTestData
 		
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
+		
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "OverlandMapUI")).thenReturn (wizardDetails);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -260,6 +268,7 @@ public final class TestOverlandMapUI extends ClientTestData
 		map.setClient (client);
 		map.setClientConfig (config);
 		map.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		map.setKnownWizardUtils (knownWizardUtils);
 		map.setOverlandMapRightHandPanel (rhp);
 		map.setSmallFont (CreateFontsForTests.getSmallFont ());
 

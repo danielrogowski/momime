@@ -26,9 +26,12 @@ import momime.client.MomClient;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.CommonDatabase;
 import momime.common.database.UnitEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.KnownWizardUtils;
 
 /**
  * Tests the UnitRowDisplayButton class
@@ -68,9 +71,18 @@ public final class TestUnitRowDisplayButton
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
 		
+		// Wizard
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails);
+				
+		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -86,6 +98,7 @@ public final class TestUnitRowDisplayButton
 		gen.setUtils (utils);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		gen.setClient (client);
+		gen.setKnownWizardUtils (knownWizardUtils);
 		
 		final UnitRowDisplayButton button = new UnitRowDisplayButton ();
 		button.setUtils (utils);

@@ -111,6 +111,7 @@ import momime.common.database.UnitSetting;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPickCount;
 import momime.common.messages.CombatMapSize;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -124,6 +125,7 @@ import momime.common.messages.clienttoserver.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.ChooseWizardMessage;
 import momime.common.messages.clienttoserver.UploadCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 
@@ -229,6 +231,9 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -4894,6 +4899,22 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
+	}
+	
+	/**
 	 * @return XML layout of the main form
 	 */
 	public final XmlLayoutContainerEx getNewGameLayoutMain ()
@@ -5254,7 +5275,6 @@ public final class NewGameUI extends MomClientFrameUI
 		public final Object getValueAt (final int rowIndex, final int columnIndex)
 		{
 			final PlayerPublicDetails ppd = getClient ().getPlayers ().get (rowIndex);
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ppd.getPersistentPlayerPublicKnowledge ();
 			
 			String value = "";
 			switch (columnIndex)
@@ -5264,21 +5284,24 @@ public final class NewGameUI extends MomClientFrameUI
 					break;
 
 				case 1:
-					if (!getPlayerKnowledgeUtils ().hasWizardBeenChosen (pub.getWizardID ()))
-						value = "";
-					
-					else if (getPlayerKnowledgeUtils ().isCustomWizard (pub.getWizardID ()))
-						value = getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ());
-					
-					else
-						try
-						{
-							value = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (pub.getWizardID (), "PlayerListTableModel").getWizardName ());
-						}
-						catch (final RecordNotFoundException e)
-						{
-							log.error (e, e);
-						}
+					try
+					{
+						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), ppd.getPlayerDescription ().getPlayerID (), "PlayerListTableModel");
+	
+						if (!getPlayerKnowledgeUtils ().hasWizardBeenChosen (wizardDetails.getWizardID ()))
+							value = "";
+						
+						else if (getPlayerKnowledgeUtils ().isCustomWizard (wizardDetails.getWizardID ()))
+							value = getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ());
+						
+						else
+							value = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (wizardDetails.getWizardID (), "PlayerListTableModel").getWizardName ());
+					}
+					catch (final RecordNotFoundException e)
+					{
+						log.error (e, e);
+					}
 					break;
 
 				case 2:

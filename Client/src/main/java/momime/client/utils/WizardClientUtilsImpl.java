@@ -8,7 +8,8 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -28,6 +29,9 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * Human players display as whatever name they've chosen, i.e. the account name associated with their playerID.
 	 * AI players pull their wizard name from the language XML file and will only default to the playerName from the
@@ -43,18 +47,18 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 		
 		// Now see if we can find a better name for AI players
 		if (!player.getPlayerDescription ().isHuman ())
-		{
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if ((pub.getWizardID () != null) && (!getPlayerKnowledgeUtils ().isCustomWizard (pub.getWizardID ())))
-				try
-				{
-					playerName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (pub.getWizardID (), "getPlayerName").getWizardName ());
-				}
-				catch (final RecordNotFoundException e)
-				{
-					log.error (e, e);
-				}
-		}
+			try
+			{
+				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "getPlayerName");
+				
+				if ((wizardDetails.getWizardID () != null) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardDetails.getWizardID ())))
+					playerName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (wizardDetails.getWizardID (), "getPlayerName").getWizardName ());
+			}
+			catch (final RecordNotFoundException e)
+			{
+				log.error (e, e);
+			}
 	
 		return playerName;
 	}
@@ -105,5 +109,21 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

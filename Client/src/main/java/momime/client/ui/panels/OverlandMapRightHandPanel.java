@@ -1226,7 +1226,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				final CityProductionBreakdown food = getCityCalculations ().listCityFoodProductionFromTerrainTiles
 					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
 						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
-				getCityCalculations ().halveAddPercentageBonusAndCapProduction (null, food, 0,
+				getCityCalculations ().halveAddPercentageBonusAndCapProduction (null, null, food, 0,
 					getClient ().getSessionDescription ().getDifficultyLevel (), getClient ().getClientDB ());
 				
 				cityInfo = getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCanBuildCity ()).replaceAll

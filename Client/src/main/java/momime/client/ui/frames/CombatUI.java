@@ -78,6 +78,7 @@ import momime.common.database.Unit;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.WizardEx;
 import momime.common.messages.CombatMapSize;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
@@ -96,6 +97,7 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -225,6 +227,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Methods dealing with unit movement */
 	private UnitMovement unitMovement;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Spell book action */
 	private Action spellAction;
@@ -1496,14 +1501,16 @@ public final class CombatUI extends MomClientFrameUI
 			
 			String defPlayerName = getWizardClientUtils ().getPlayerName (players.getDefendingPlayer ());
 			if (!players.getDefendingPlayer ().getPlayerDescription ().isHuman ())
-			{
-				final MomPersistentPlayerPublicKnowledge defPub = (MomPersistentPlayerPublicKnowledge) players.getDefendingPlayer ().getPersistentPlayerPublicKnowledge ();
-				if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defPub.getWizardID ()))
+				try
 				{
-					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-						(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
-					if ((mc != null) && (mc.getTerrainData () != null))
-						try
+					final KnownWizardDetails defendingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), players.getDefendingPlayer ().getPlayerDescription ().getPlayerID (), "CombatUI");
+	
+					if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defendingWizardDetails.getWizardID ()))
+					{
+						final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+							(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
+						if ((mc != null) && (mc.getTerrainData () != null))
 						{
 							// Tile types (nodes)
 							final TileType tileTypeDef = (mc.getTerrainData ().getTileTypeID () == null) ? null :
@@ -1518,12 +1525,12 @@ public final class CombatUI extends MomClientFrameUI
 							else if ((mapFeatureDef != null) && (mapFeatureDef.getMapFeatureMagicRealm ().size () > 0))
 								defPlayerName = getLanguageHolder ().findDescription (mapFeatureDef.getMapFeatureDescription ()); 
 						}
-						catch (final RecordNotFoundException e)
-						{
-							log.error (e, e);
-						}
+					}
 				}
-			}
+				catch (final RecordNotFoundException e)
+				{
+					log.error (e, e);
+				}
 			
 			defendingPlayerName.setText (defPlayerName);
 		}
@@ -2444,5 +2451,21 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setUnitMovement (final UnitMovement u)
 	{
 		unitMovement = u;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

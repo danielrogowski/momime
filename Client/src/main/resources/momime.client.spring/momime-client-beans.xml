@@ -175,8 +175,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="chosenWizardMessage" class="momime.client.messages.process.ChosenWizardMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="newGameUI" ref="newGameUI" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype">
@@ -590,6 +590,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="addPowerBaseHistoryMessage" class="momime.client.messages.process.AddPowerBaseHistoryMessageImpl" scope="prototype">
@@ -1019,6 +1020,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="newTurnMessageProcessing" class="momime.client.newturnmessages.NewTurnMessageProcessingImpl">
@@ -1032,6 +1034,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="spellClientUtils" class="momime.client.utils.SpellClientUtilsImpl">
@@ -1308,6 +1311,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="joinGameLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1404,6 +1408,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="chooseCitySpellEffectUI" ref="chooseCitySpellEffectUI" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="magicSlidersLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1529,6 +1534,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="combatSpellClientUtils" ref="combatSpellClientUtils" />
 		<property name="unitMovement" ref="unitMovement" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="castCombatSpellFromUI" class="momime.client.ui.dialogs.CastCombatSpellFromUI">
@@ -1631,6 +1637,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="optionsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1786,6 +1793,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<!-- Prototype UI components -->
@@ -2277,6 +2285,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="armyListLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -28,9 +29,12 @@ import momime.client.languages.database.OverlandMapScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.Language;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomGeneralPublicKnowledge;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -85,7 +89,9 @@ public final class TestHistoryUI extends ClientTestData
 		
 		// Players
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
-		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+
 		int wizardNo = 0;
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		for (final String flagColour : new String [] {"B2AAA6", "545D10", "A86E4E", "3C398C", "65483D", "D0CA7D", "571D56", "436243", "520101", "FBE270", "D48F1C", "E9BEA2", "900000", "042444"})
@@ -93,24 +99,33 @@ public final class TestHistoryUI extends ClientTestData
 			wizardNo++;
 			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 			final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
+			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 			
 			String wizardID = Integer.valueOf (wizardNo).toString ();
 			while (wizardID.length () < 2)
 				wizardID = "0" + wizardID;
 			
-			pub.setWizardID ("WZ" + wizardID);
+			wizardDetails.setPlayerID (wizardNo);
+			wizardDetails.setWizardID ("WZ" + wizardID);
+			
 			trans.setFlagColour (flagColour);
 			
 			for (int turnNumber = 0; turnNumber < 230; turnNumber++)
 				pub.getPowerBaseHistory ().add (turnNumber + (wizardNo * 5));
 			
-			final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, trans);
+			final PlayerDescription pd = new PlayerDescription ();
+			pd.setPlayerID (wizardNo);
+			
+			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
+			priv.getKnownWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
+			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), wizardNo, "HistoryUI")).thenReturn (wizardDetails);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Wizards
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
@@ -133,6 +148,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
+		history.setKnownWizardUtils (knownWizardUtils);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
 		history.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
@@ -189,7 +205,9 @@ public final class TestHistoryUI extends ClientTestData
 		
 		// Players
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
-		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+
 		int wizardNo = 0;
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		for (final String flagColour : new String [] {"B2AAA6", "545D10", "A86E4E", "3C398C", "65483D", "D0CA7D", "571D56", "436243", "520101", "FBE270", "D48F1C", "E9BEA2", "900000", "042444"})
@@ -197,25 +215,34 @@ public final class TestHistoryUI extends ClientTestData
 			wizardNo++;
 			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 			final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
-			
+			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+
 			String wizardID = Integer.valueOf (wizardNo).toString ();
 			while (wizardID.length () < 2)
 				wizardID = "0" + wizardID;
 			
-			pub.setWizardID ("WZ" + wizardID);
+			wizardDetails.setPlayerID (wizardNo);
+			wizardDetails.setWizardID ("WZ" + wizardID);
+			
 			trans.setFlagColour (flagColour);
 			
 			for (int turnNumber = 0; turnNumber < 250; turnNumber++)
 				pub.getPowerBaseHistory ().add (turnNumber + (wizardNo * 5));
 			
-			final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, trans);
+			final PlayerDescription pd = new PlayerDescription ();
+			pd.setPlayerID (wizardNo);
+			
+			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
+			priv.getKnownWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
+			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), wizardNo, "HistoryUI")).thenReturn (wizardDetails);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
-		
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+
 		// Wizards
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		for (int n = 1; n <= 14; n++)
@@ -237,6 +264,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
+		history.setKnownWizardUtils (knownWizardUtils);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
 		history.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
@@ -293,6 +321,8 @@ public final class TestHistoryUI extends ClientTestData
 		
 		// Players
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
 		int wizardNo = 0;
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -301,24 +331,33 @@ public final class TestHistoryUI extends ClientTestData
 			wizardNo++;
 			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 			final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
+			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 			
 			String wizardID = Integer.valueOf (wizardNo).toString ();
 			while (wizardID.length () < 2)
 				wizardID = "0" + wizardID;
 			
-			pub.setWizardID ("WZ" + wizardID);
+			wizardDetails.setPlayerID (wizardNo);
+			wizardDetails.setWizardID ("WZ" + wizardID);
+			
 			trans.setFlagColour (flagColour);
 			
 			for (int turnNumber = 0; turnNumber < 300; turnNumber++)
 				pub.getPowerBaseHistory ().add ((turnNumber / 2) + (wizardNo * 5));
 			
-			final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, trans);
+			final PlayerDescription pd = new PlayerDescription ();
+			pd.setPlayerID (wizardNo);
+			
+			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
+			priv.getKnownWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
+			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), wizardNo, "HistoryUI")).thenReturn (wizardDetails);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 
 		// Wizards
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
@@ -341,6 +380,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
+		history.setKnownWizardUtils (knownWizardUtils);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
 		history.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
@@ -397,7 +437,9 @@ public final class TestHistoryUI extends ClientTestData
 		
 		// Players
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
-		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+
 		int wizardNo = 0;
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		for (final String flagColour : new String [] {"B2AAA6", "545D10", "A86E4E", "3C398C", "65483D", "D0CA7D", "571D56", "436243", "520101", "FBE270", "D48F1C", "E9BEA2", "900000", "042444"})
@@ -405,25 +447,34 @@ public final class TestHistoryUI extends ClientTestData
 			wizardNo++;
 			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 			final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
-			
+			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+
 			String wizardID = Integer.valueOf (wizardNo).toString ();
 			while (wizardID.length () < 2)
 				wizardID = "0" + wizardID;
 			
-			pub.setWizardID ("WZ" + wizardID);
+			wizardDetails.setPlayerID (wizardNo);
+			wizardDetails.setWizardID ("WZ" + wizardID);
+			
 			trans.setFlagColour (flagColour);
 			
 			for (int turnNumber = 0; turnNumber < 300; turnNumber++)
 				pub.getPowerBaseHistory ().add (turnNumber + (wizardNo * 5));
 			
-			final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, trans);
+			final PlayerDescription pd = new PlayerDescription ();
+			pd.setPlayerID (wizardNo);
+			
+			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
+			priv.getKnownWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
+			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), wizardNo, "HistoryUI")).thenReturn (wizardDetails);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
-		
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+
 		// Wizards
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		for (int n = 1; n <= 14; n++)
@@ -445,6 +496,7 @@ public final class TestHistoryUI extends ClientTestData
 		history.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		history.setLanguageHolder (langHolder);
 		history.setLanguageChangeMaster (langMaster);
+		history.setKnownWizardUtils (knownWizardUtils);
 		history.setLargeFont (CreateFontsForTests.getLargeFont ());
 		history.setSmallFont (CreateFontsForTests.getSmallFont ());
 		

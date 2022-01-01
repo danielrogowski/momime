@@ -17,7 +17,9 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -40,27 +42,36 @@ public final class TestWizardClientUtilsImpl extends ClientTestData
 		wizardDef.getWizardName ().add (createLanguageText (Language.ENGLISH, "Merlin"));
 		when (db.findWizard ("WZ01", "getPlayerName")).thenReturn (wizardDef);
 		
+		// Client
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
 		pd.setPlayerName ("Mr. Blah");
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardID ("WZ01");
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardID ("WZ01");
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null); 
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null); 
 		
 		// Wizards
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
 		when (playerKnowledgeUtils.isCustomWizard ("WZ01")).thenReturn (false);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd.getPlayerID (), "getPlayerName")).thenReturn (wizardDetails);
 		
 		// Set up object to test
 		final WizardClientUtilsImpl utils = new WizardClientUtilsImpl ();
 		utils.setLanguageHolder (new LanguageDatabaseHolder ());
 		utils.setClient (client);
 		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Try with a human player
 		pd.setHuman (true);

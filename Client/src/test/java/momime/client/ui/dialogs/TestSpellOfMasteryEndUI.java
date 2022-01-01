@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -33,8 +34,11 @@ import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -103,8 +107,11 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		}
 		
 		// Client
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -147,6 +154,8 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		when (wizardClientUtils.getPlayerName (castingWizard)).thenReturn ("Bob");
 		
 		// Banished wizards
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (castingWizard);
 		
@@ -159,8 +168,14 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 			
 			banishedWizardPub.setWizardState ((n == 4) ? WizardState.DEFEATED : WizardState.ACTIVE);
 			
-			final PlayerPublicDetails banishedWizard = new PlayerPublicDetails (null, banishedWizardPub, null);
+			final PlayerDescription pd = new PlayerDescription ();
+			pd.setPlayerID (n);
+			
+			final PlayerPublicDetails banishedWizard = new PlayerPublicDetails (pd, banishedWizardPub, null);
 			players.add (banishedWizard);
+			
+			final KnownWizardDetails banishedWizardDetails = new KnownWizardDetails ();
+			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), n, "SpellOfMasteryEndUI")).thenReturn (banishedWizardDetails);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);
@@ -184,6 +199,7 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		spellOfMasteryEnd.setLargeFont (CreateFontsForTests.getLargeFont ());
 		spellOfMasteryEnd.setCastingWizard (castingWizard);
 		spellOfMasteryEnd.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+		spellOfMasteryEnd.setKnownWizardUtils (knownWizardUtils);
 		spellOfMasteryEnd.setMusicPlayer (mock (AudioPlayer.class));
 		spellOfMasteryEnd.setWizardClientUtils (wizardClientUtils);
 		

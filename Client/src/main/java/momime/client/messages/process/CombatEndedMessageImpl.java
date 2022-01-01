@@ -29,7 +29,7 @@ import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 public final class CombatEndedMessageImpl extends CombatEndedMessage implements CustomDurationServerToClientMessage
 {
 	/** Class logger */
-	private final static Log log = LogFactory.getLog (ChosenWizardMessageImpl.class);
+	private final static Log log = LogFactory.getLog (CombatEndedMessageImpl.class);
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;

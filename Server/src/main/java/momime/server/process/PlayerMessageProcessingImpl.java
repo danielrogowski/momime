@@ -2,6 +2,7 @@ package momime.server.process;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -61,10 +62,10 @@ import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
 import momime.common.messages.servertoclient.ChosenCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
-import momime.common.messages.servertoclient.ChosenWizardMessage;
 import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FullSpellListMessage;
+import momime.common.messages.servertoclient.MeetWizardMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
 import momime.common.messages.servertoclient.PlayAnimationMessage;
 import momime.common.messages.servertoclient.PowerBaseHistoryPlayer;
@@ -212,58 +213,72 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void chooseWizard (final String wizardID, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
-		// Check if not specified
-		boolean valid;
+		// Check if already picked wizard, can't do so again
+		String error = null;
 		WizardEx wizard = null;
-		if (!getPlayerKnowledgeUtils ().hasWizardBeenChosen (wizardID))
-			valid = false;
+		if (getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID ()) != null)
+			error = "Wizard already chosen, you can't make another choice";
 		
 		// Check if custom
 		else if (getPlayerKnowledgeUtils ().isCustomWizard (wizardID))
-			valid = mom.getSessionDescription ().getDifficultyLevel ().isCustomWizards ();
+		{
+			if (!mom.getSessionDescription ().getDifficultyLevel ().isCustomWizards ())
+				error = "Custom wizards have been disallowed in this game";
+		}
 
 		// Check if Raiders
 		else if ((player.getPlayerDescription ().isHuman ()) &&
 			((wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) || (wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))))
 
-			valid = false;
+			error = "You cannot choose to play as Raiders or Rampaging Monsters";
 
 		// Check if found
 		else
 		{
-			try
-			{
-				wizard = mom.getServerDB ().findWizard (wizardID, "chooseWizard");
-				valid = true;
-			}
-			catch (final RecordNotFoundException e)
-			{
-				valid = false;
-			}
+			wizard = mom.getServerDB ().getWizards ().stream ().filter (w -> w.getWizardID ().equals (wizardID)).findAny ().orElse (null);
+			if (wizard == null)
+				error = "Wizard choice invalid";
 		}
 
 		// Send back appropriate message
-		if (!valid)
+		if (error != null)
 		{
 			// Tell the sender that their choice is invalid
-			log.warn (player.getPlayerDescription ().getPlayerName () + " tried to choose invalid wizard ID \"" + wizardID + "\"");
+			log.warn (player.getPlayerDescription ().getPlayerName () + " tried to choose invalid wizard ID \"" + wizardID + "\": " + error);
 
 			final TextPopupMessage reply = new TextPopupMessage ();
-			reply.setText ("Wizard choice invalid, please try again");
+			reply.setText (error);
 			player.getConnection ().sendMessageToClient (reply);
 		}
 		else
 		{
 			// Successful - Remember choice on the server
-			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-			wizardDetails.setWizardID (wizardID);
+			final KnownWizardDetails trueWizardDetails = new KnownWizardDetails ();
+			trueWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+			trueWizardDetails.setWizardID (wizardID);
 			
-			mom.getGeneralServerKnowledge ().getTrueWizardDetails ().add (wizardDetails);
+			mom.getGeneralServerKnowledge ().getTrueWizardDetails ().add (trueWizardDetails);
+
+			// On the server, remember that this wizard has met themselves; make a separate copy of the object
+			final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
+			knownWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+			knownWizardDetails.setWizardID (wizardID);
+
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			priv.getKnownWizardDetails ().add (knownWizardDetails);
+			
+			// Tell the player the wizard they chose was OK; in that way they get their copy of their own KnownWizardDetails record
+			if (player.getPlayerDescription ().isHuman ())
+			{
+				final MeetWizardMessage meet = new MeetWizardMessage ();
+				meet.setKnownWizardDetails (knownWizardDetails);
+				player.getConnection ().sendMessageToClient (meet);
+			}
 
 			if (wizard != null)
 			{
 				// Set photo for pre-defined wizard, including raiders and monsters since sending this causes the client to look up their flag colour
+				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				ppk.setStandardPhotoID (wizardID);
 
 				if ((!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
@@ -337,39 +352,23 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					}
 				}
 			}
-
-			// Tell everyone about the wizard this player has chosen
-			broadcastWizardChoice (mom.getPlayers (), player.getPlayerDescription ().getPlayerID (), wizardID);
 		}
 	}
 
 	/**
-	 * Sends the wizard choice of the specified player to all human players in the specified session players list
-	 * @param players List of players in the session
-	 * @param playerID Player whose wizard choice we are sending
-	 * @param wizardID Chosen wizard
-	 * @throws JAXBException If there is a problem converting the object into XML
-	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 */
-	private final void broadcastWizardChoice (final List<PlayerServerDetails> players, final int playerID, final String wizardID)
-		throws JAXBException, XMLStreamException
-	{
-		final ChosenWizardMessage msg = new ChosenWizardMessage ();
-		msg.setPlayerID (playerID);
-		msg.setWizardID (wizardID);
-
-		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
-	}
-
-	/**
 	 * @param wizard Wizard this AI player is playing
+	 * @param aiPlayerNo Which player number this is; AI wizards are numbered starting from 1.  Raiders and rampaging monsters have this passed as 0.
 	 * @return Player description created for this AI player
 	 */
-	private final PlayerDescription createAiPlayerDescription (final WizardEx wizard)
+	private final PlayerDescription createAiPlayerDescription (final WizardEx wizard, final int aiPlayerNo)
 	{
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerName (wizard.getWizardID () + "-" + wizard.getWizardName ().get (0).getText ());
 		pd.setHuman (false);
+		
+		if (aiPlayerNo > 0)
+			pd.setPlayerName ("Player " + aiPlayerNo);
+		else
+			pd.setPlayerName (wizard.getWizardName ().get (0).getText ());
 
 		return pd;
 	}
@@ -434,7 +433,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					availableWizards.remove (chosenWizard);
 
 					// Add AI player
-					final PlayerServerDetails aiPlayer = mom.addPlayer (createAiPlayerDescription (chosenWizard), null, null, true, null);
+					final PlayerServerDetails aiPlayer = mom.addPlayer (createAiPlayerDescription (chosenWizard, aiPlayerNo + 1), null, null, true, null);
 
 					// Choose wizard
 					chooseWizard (chosenWizard.getWizardID (), aiPlayer, mom);
@@ -450,7 +449,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			// Add raiders
 			final PlayerServerDetails raidersPlayer = mom.addPlayer (createAiPlayerDescription
-				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, "checkIfCanStartGame")), null, null, true, null);
+				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, "checkIfCanStartGame"), 0), null, null, true, null);
 
 			final MomPersistentPlayerPrivateKnowledge raidersPriv = (MomPersistentPlayerPrivateKnowledge) raidersPlayer.getPersistentPlayerPrivateKnowledge ();
 			raidersPriv.getSpellResearchStatus ().forEach (r -> r.setStatus (SpellResearchStatusID.UNAVAILABLE));
@@ -459,12 +458,36 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			// Add monsters
 			final PlayerServerDetails monstersPlayer = mom.addPlayer (createAiPlayerDescription
-				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "checkIfCanStartGame")), null, null, true, null);
+				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "checkIfCanStartGame"), 0), null, null, true, null);
 
 			final MomPersistentPlayerPrivateKnowledge monstersPriv = (MomPersistentPlayerPrivateKnowledge) monstersPlayer.getPersistentPlayerPrivateKnowledge ();
 			monstersPriv.getSpellResearchStatus ().forEach (r -> r.setStatus (SpellResearchStatusID.UNAVAILABLE));
 			
 			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom);
+			
+			// Everyone automatically "meets" the raiders and monsters "wizards"
+			final List<KnownWizardDetails> automaticallyMeetWizards = Arrays.asList
+				(getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), raidersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (R)"),
+				 getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), monstersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (M)"));
+			
+			for (final PlayerServerDetails sendToPlayer : mom.getPlayers ())
+				for (final KnownWizardDetails automaticallyMeetWizard : automaticallyMeetWizards)
+					if (automaticallyMeetWizard.getPlayerID () != sendToPlayer.getPlayerDescription ().getPlayerID ())
+					{
+						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sendToPlayer.getPersistentPlayerPrivateKnowledge ();
+						
+						final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
+						knownWizardDetails.setPlayerID (automaticallyMeetWizard.getPlayerID ());
+						knownWizardDetails.setWizardID (automaticallyMeetWizard.getWizardID ());
+						priv.getKnownWizardDetails ().add (knownWizardDetails);
+						
+						if (sendToPlayer.getPlayerDescription ().isHuman ())
+						{
+							final MeetWizardMessage meet = new MeetWizardMessage ();
+							meet.setKnownWizardDetails (knownWizardDetails);
+							sendToPlayer.getConnection ().sendMessageToClient (meet);
+						}
+					}
 
 			// Broadcast player data
 			log.debug ("checkIfCanStartGame: Broadcasting player picks and determining which spells not chosen for free will be researchable");

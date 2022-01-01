@@ -234,7 +234,7 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public ChosenWizardMessageImpl createChosenWizardMessage ();
+	public MeetWizardMessageImpl createMeetWizardMessage ();
 
 	/**
 	 * @return Newly created message

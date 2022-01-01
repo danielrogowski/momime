@@ -392,25 +392,23 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @param player Player to test
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if this player has made all their pre-game selections and are waiting to start
-	 * @throws RecordNotFoundException If the wizard isn't found in the list
 	 */
 	final boolean hasChosenAllDetails (final PlayerServerDetails player, final MomSessionVariables mom)
-		throws RecordNotFoundException
 	{
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "hasChosenAllDetails");
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 
 		final boolean isCustomPicksChosen = (priv.isCustomPicksChosen () == null) ? false : priv.isCustomPicksChosen ();
 
-		final boolean result = ((getPlayerKnowledgeUtils ().hasWizardBeenChosen (wizardDetails.getWizardID ())) && (priv.getFirstCityRaceID () != null) &&
+		final boolean result = ((wizardDetails != null) && (priv.getFirstCityRaceID () != null) &&
 			((!getPlayerKnowledgeUtils ().isCustomWizard (wizardDetails.getWizardID ())) || (isCustomPicksChosen)));
 
 		return result;
 	}
 
 	/**
-	 * Tests whether everyone has finished pre-game selections and is ready to start
+	 * Tests whether everyone has finished pre-game selections and is ready to start.  There are only human players in the session at this point.
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if all players have chosen all details to start game

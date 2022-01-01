@@ -530,14 +530,16 @@ so must include the full details of the item here.</xsd:documentation>
 themselves, raiders and rampaging monsters.  Each time they "meet" a new wizard (or an unknown wizard announces themselves to the world by casting an
 overland enchantment or banishing/being banished) they will be added to the list.
 
-Server has their own simple list of all the details of each player, so it can update them in one place and then copy it to each player's PPK who knows that wizard (including themselves).</xsd:documentation>
+Server has their own simple list of all the details of each player.  A player gets their wizard record created when they choose which wizard they want to be (or custom).
+Updates made (like choosing or gaining picks, or power history values) get written to the one place on the server and then copied to each player's PPK who knows
+that wizard (including themselves).</xsd:documentation>
 		</xsd:annotation>
         <xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="wizardID" type="momimecommon:wizardID">
 			    <xsd:annotation>
-  						<xsd:documentation>RAIDERS and MONSTERS are special values; other values indicate pre-defined wizards;
-  														null indicates a player who hasn't chosen a wizard yet; empty string represents a custom wizard</xsd:documentation>
+  						<xsd:documentation>RAIDERS and MONSTERS are special values; other values indicate pre-defined wizards; null represents a custom wizard.
+A player who has not yet chosen which wizard to be will not have a knownWizardDetails record.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
         </xsd:sequence>

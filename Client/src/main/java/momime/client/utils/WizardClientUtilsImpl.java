@@ -50,9 +50,9 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 			try
 			{
 				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "getPlayerName");
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 				
-				if ((wizardDetails.getWizardID () != null) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardDetails.getWizardID ())))
+				if ((wizardDetails != null) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardDetails.getWizardID ())))
 					playerName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (wizardDetails.getWizardID (), "getPlayerName").getWizardName ());
 			}
 			catch (final RecordNotFoundException e)

@@ -9,15 +9,17 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.ui.frames.NewGameUI;
-import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.servertoclient.ChosenWizardMessage;
+import momime.common.MomException;
+import momime.common.messages.servertoclient.MeetWizardMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
- * Message server sends to players to tell them which wizards players have chosen
+ * Message server sends when we meet a wizard for the first time.
+ * We get sent our own wizard record when we pick which wizard we want to be.  We get sent the raiders/monsters records when the game starts.
+ * Other wizards' records we are only sent when we learn who they are.
  */
-public final class ChosenWizardMessageImpl extends ChosenWizardMessage implements BaseServerToClientMessage
+public final class MeetWizardMessageImpl extends MeetWizardMessage implements BaseServerToClientMessage
 {
 	/** Multiplayer client */
 	private MomClient client;
@@ -39,16 +41,17 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		// Set the Wizard ID
-		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getPlayerID (), "ChosenWizardMessageImpl");
+		// We should never receive this twice for the same player
+		if (getKnownWizardUtils ().findKnownWizardDetails (getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getKnownWizardDetails ().getPlayerID ()) != null)
+			throw new MomException ("Server sent us KnownWizardDetails for player ID " + getKnownWizardDetails ().getPlayerID () + " when we already had them");
 		
-		wizardDetails.setWizardID (getWizardID ());
+		// Add it
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ().add (getKnownWizardDetails ());
 		
 		// If it is us, and we chose Custom, then we need to go to the Choose Portrait screen
 		// If it is us and we picked a pre-defined Wizard then do nothing - the server will have already sent us either mmChooseInitialSpells or
 		// mmChooseYourRaceNow to tell us what to do next before it sent this mmChosenWizard message
-		if ((getPlayerID () == getClient ().getOurPlayerID ()) && (getPlayerKnowledgeUtils ().isCustomWizard (getWizardID ())))
+		if ((getKnownWizardDetails ().getPlayerID () == getClient ().getOurPlayerID ()) && (getPlayerKnowledgeUtils ().isCustomWizard (getKnownWizardDetails ().getWizardID ())))
 			getNewGameUI ().showPortraitPanel ();
 		
 		// Show chosen wizard on wait for players list

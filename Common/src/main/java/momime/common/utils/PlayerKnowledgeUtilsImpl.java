@@ -3,21 +3,12 @@ package momime.common.utils;
 import momime.common.database.CommonDatabaseConstants;
 
 /**
- * Methods for working with wizardIDs
+ * Methods for working with wizardIDs.  A wizardID of null means a human player chose a custom wizard.
+ * A player who has not yet chosen which wizard to be will not have a knownWizardDetails record so that is N/A for all the methods here, as they all take
+ * a wizardID input which already means the knownWizardDetails record must exist.
  */
 public final class PlayerKnowledgeUtilsImpl implements PlayerKnowledgeUtils
 {
-	/**
-	 * This is derived from getWizardID, and just avoids external reliance on the constants used for certain special values
-	 * @param wizardID Wizard ID of player to check
-	 * @return True if this player has picked a wizard (or Custom), false if we're still waiting for them too
-	 */
-	@Override
-	public final boolean hasWizardBeenChosen (final String wizardID)
-	{
-		return (wizardID != null);
-	}
-
 	/**
 	 * This is derived from getWizardID, and just avoids external reliance on the constants used for certain special values
 	 * @param wizardID Wizard ID of player to check
@@ -29,7 +20,7 @@ public final class PlayerKnowledgeUtilsImpl implements PlayerKnowledgeUtils
 		boolean result;
 
 		if (wizardID == null)
-			result = true;		// Player who just hasn't chosen which wizard to be yet
+			result = true;		// Custom wizard
 		else
 			result = ((!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
 						(!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)));
@@ -45,6 +36,6 @@ public final class PlayerKnowledgeUtilsImpl implements PlayerKnowledgeUtils
 	@Override
 	public final boolean isCustomWizard (final String wizardID)
 	{
-		return ((wizardID != null) && (wizardID.equals ("")));
+		return (wizardID == null);
 	}
 }

@@ -42,7 +42,7 @@
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="0" maxOccurs="1" name="wizardID" type="momimecommon:wizardID" />		<!-- blank or missing = custom wizard -->
+						<xsd:element minOccurs="0" maxOccurs="1" name="wizardID" type="momimecommon:wizardID" />		<!-- null = custom wizard -->
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

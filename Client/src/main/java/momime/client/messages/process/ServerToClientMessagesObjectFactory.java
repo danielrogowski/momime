@@ -1,7 +1,6 @@
 package momime.client.messages.process;
 
 import jakarta.xml.bind.annotation.XmlRegistry;
-
 import momime.common.messages.servertoclient.AddBuildingMessage;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.AddOrUpdateCombatAreaEffectMessage;
@@ -17,7 +16,6 @@ import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
 import momime.common.messages.servertoclient.ChosenCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
-import momime.common.messages.servertoclient.ChosenWizardMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.CounterMagicResultsMessage;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
@@ -33,6 +31,7 @@ import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.KillUnitMessage;
+import momime.common.messages.servertoclient.MeetWizardMessage;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
@@ -484,9 +483,9 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final ChosenWizardMessage createChosenWizardMessage ()
+	public final MeetWizardMessage createMeetWizardMessage ()
 	{
-		return getFactory ().createChosenWizardMessage ();
+		return getFactory ().createMeetWizardMessage ();
 	}
 
 	/**

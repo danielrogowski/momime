@@ -3620,15 +3620,6 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<listColumnName language="pl">
 			<text>Imię</text>
 		</listColumnName>
-		<listColumnWizard language="en">
-			<text>Wizard</text>
-		</listColumnWizard>
-		<listColumnWizard language="fr">
-			<text>Sorcier</text>
-		</listColumnWizard>
-		<listColumnWizard language="pl">
-			<text>Czarodziej</text>
-		</listColumnWizard>
 		<listColumnHumanOrAI language="en">
 			<text>Human or AI?</text>
 		</listColumnHumanOrAI>

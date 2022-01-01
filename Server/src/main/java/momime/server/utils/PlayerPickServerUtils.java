@@ -89,7 +89,7 @@ public interface PlayerPickServerUtils
 		throws RecordNotFoundException;
 
 	/**
-	 * Tests whether everyone has finished pre-game selections and is ready to start
+	 * Tests whether everyone has finished pre-game selections and is ready to start.  There are only human players in the session at this point.
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if all players have chosen all details to start game

@@ -1665,10 +1665,6 @@
 						<xsd:selector xpath="listColumnName" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="waitForPlayersToJoinScreenListColumnWizardPK">
-						<xsd:selector xpath="listColumnWizard" />
-						<xsd:field xpath="@language" />
-					</xsd:key>
 					<xsd:key name="waitForPlayersToJoinScreenListColumnHumanOrAIPK">
 						<xsd:selector xpath="listColumnHumanOrAI" />
 						<xsd:field xpath="@language" />
@@ -4210,7 +4206,6 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveGame" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="listColumnName" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="listColumnWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="listColumnHumanOrAI" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="human" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ai" />

@@ -50,7 +50,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.io.IOUtils;
@@ -71,6 +70,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.database.AvailableDatabase;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
@@ -111,7 +111,6 @@ import momime.common.database.UnitSetting;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPickCount;
 import momime.common.messages.CombatMapSize;
-import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -125,7 +124,6 @@ import momime.common.messages.clienttoserver.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.ChooseWizardMessage;
 import momime.common.messages.clienttoserver.UploadCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
-import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 
@@ -231,9 +229,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
 
-	/** Methods for finding KnownWizardDetails from the list */
-	private KnownWizardUtils knownWizardUtils;
-	
 	/** Content pane */
 	private JPanel contentPane;
 	
@@ -2871,7 +2866,7 @@ public final class NewGameUI extends MomClientFrameUI
 				if ((rowNo < rowCount - 1) || (wizardNo + (rowCount * (colCount - 1 - colNo)) < wizards.size ()))
 				{
 					final WizardEx wizard = wizards.get (wizardNo);
-					final String wizardID = (wizard == null) ? "" : wizard.getWizardID ();
+					final String wizardID = (wizard == null) ? null : wizard.getWizardID ();
 					
 					// Choose wizard button
 					final Action wizardButtonAction = new LoggingAction ((ev) ->
@@ -4899,22 +4894,6 @@ public final class NewGameUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @return Methods for finding KnownWizardDetails from the list
-	 */
-	public final KnownWizardUtils getKnownWizardUtils ()
-	{
-		return knownWizardUtils;
-	}
-
-	/**
-	 * @param k Methods for finding KnownWizardDetails from the list
-	 */
-	public final void setKnownWizardUtils (final KnownWizardUtils k)
-	{
-		knownWizardUtils = k;
-	}
-	
-	/**
 	 * @return XML layout of the main form
 	 */
 	public final XmlLayoutContainerEx getNewGameLayoutMain ()
@@ -5225,7 +5204,7 @@ public final class NewGameUI extends MomClientFrameUI
 		@Override
 		public final int getColumnCount ()
 		{
-			return 3;
+			return 2;
 		}
 		
 		/**
@@ -5245,10 +5224,6 @@ public final class NewGameUI extends MomClientFrameUI
 						break;
 						
 					case 1:
-						languageText = getLanguages ().getWaitForPlayersToJoinScreen ().getListColumnWizard ();
-						break;
-						
-					case 2:
 						languageText = getLanguages ().getWaitForPlayersToJoinScreen ().getListColumnHumanOrAI ();
 						break;
 						
@@ -5284,27 +5259,6 @@ public final class NewGameUI extends MomClientFrameUI
 					break;
 
 				case 1:
-					try
-					{
-						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), ppd.getPlayerDescription ().getPlayerID (), "PlayerListTableModel");
-	
-						if (!getPlayerKnowledgeUtils ().hasWizardBeenChosen (wizardDetails.getWizardID ()))
-							value = "";
-						
-						else if (getPlayerKnowledgeUtils ().isCustomWizard (wizardDetails.getWizardID ()))
-							value = getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ());
-						
-						else
-							value = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (wizardDetails.getWizardID (), "PlayerListTableModel").getWizardName ());
-					}
-					catch (final RecordNotFoundException e)
-					{
-						log.error (e, e);
-					}
-					break;
-
-				case 2:
 					final List<LanguageText> languageText = ppd.getPlayerDescription ().isHuman () ?
 						getLanguages ().getWaitForPlayersToJoinScreen ().getHuman () : getLanguages ().getWaitForPlayersToJoinScreen ().getAi ();
 						

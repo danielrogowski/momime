@@ -71,11 +71,9 @@ import momime.common.database.SpellSetting;
 import momime.common.database.UnitSetting;
 import momime.common.database.WizardEx;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
-import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtilsImpl;
 
@@ -3369,13 +3367,6 @@ public final class TestNewGameUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-	
-		final WizardEx wizardDef = new WizardEx ();
-		wizardDef.getWizardName ().add (createLanguageText (Language.ENGLISH, "Merlin"));
-		when (db.findWizard ("WZ01", "PlayerListTableModel")).thenReturn (wizardDef);
-		
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
@@ -3388,14 +3379,6 @@ public final class TestNewGameUI extends ClientTestData
 		
 		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (pd, null, trans);
 		players.add (ourPlayer);
-		
-		// Wizard
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-
-		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		wizardDetails.setWizardID ("WZ01");
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd.getPlayerID (), "PlayerListTableModel")).thenReturn (wizardDetails);
 		
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
@@ -3410,7 +3393,6 @@ public final class TestNewGameUI extends ClientTestData
 		final WaitForPlayersToJoinScreen waitForPlayersToJoinScreenLang = new WaitForPlayersToJoinScreen ();
 		waitForPlayersToJoinScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Waiting for other Players to Join"));
 		waitForPlayersToJoinScreenLang.getListColumnName ().add (createLanguageText (Language.ENGLISH, "Name"));
-		waitForPlayersToJoinScreenLang.getListColumnWizard ().add (createLanguageText (Language.ENGLISH, "Wizard"));
 		waitForPlayersToJoinScreenLang.getListColumnHumanOrAI ().add (createLanguageText (Language.ENGLISH, "Human or AI?"));
 		waitForPlayersToJoinScreenLang.getHuman ().add (createLanguageText (Language.ENGLISH, "Human"));
 		waitForPlayersToJoinScreenLang.getAi ().add (createLanguageText (Language.ENGLISH, "AI"));
@@ -3432,16 +3414,10 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Mock list of available databases
 		final MomClient client = mock (MomClient.class);
-		when (client.getClientDB ()).thenReturn (db);
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 
 		final NewGameDatabase dbs = createNewGameDatabase ();
 		when (client.getNewGameDatabase ()).thenReturn (dbs);
 		when (client.getPlayers ()).thenReturn (players);
-		
-		// Wizards
-		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
 		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
@@ -3486,9 +3462,7 @@ public final class TestNewGameUI extends ClientTestData
 		game.setLanguageHolder (langHolder);
 		game.setLanguageChangeMaster (langMaster);
 		game.setClient (client);
-		game.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		game.setWizardClientUtils (wizardClientUtils);
-		game.setKnownWizardUtils (knownWizardUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());
 		game.setRandomUtils (new RandomUtilsImpl ());
 		game.setTextUtils (new TextUtilsImpl ());

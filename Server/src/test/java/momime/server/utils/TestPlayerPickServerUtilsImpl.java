@@ -1427,14 +1427,14 @@ public final class TestPlayerPickServerUtilsImpl
 		wizardDetails.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
 
 		// Has wizard been chosen?
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard ("WZ01")).thenReturn (false);
 				
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -1470,10 +1470,10 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		wizardDetails.setWizardID ("");
+		wizardDetails.setWizardID (null);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
@@ -1481,8 +1481,7 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Has wizard been chosen?
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.hasWizardBeenChosen ("")).thenReturn (true);
-		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard (null)).thenReturn (true);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -1518,18 +1517,17 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		wizardDetails.setWizardID ("");
+		wizardDetails.setWizardID (null);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
 
 		// Has wizard been chosen?
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.hasWizardBeenChosen ("")).thenReturn (true);
-		when (playerKnowledgeUtils.isCustomWizard ("")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard (null)).thenReturn (true);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -1564,25 +1562,19 @@ public final class TestPlayerPickServerUtilsImpl
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		
-		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (null);
 		
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
 
 		// Has wizard been chosen?
-		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.hasWizardBeenChosen (null)).thenReturn (false);
-		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
-		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
@@ -1614,19 +1606,14 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Wizard
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 
-		// Has wizard been chosen?
-		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
-		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
-		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
@@ -1649,9 +1636,8 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Has wizard been chosen?
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.hasWizardBeenChosen (null)).thenReturn (false);
-		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ01")).thenReturn (true);
-		when (playerKnowledgeUtils.hasWizardBeenChosen ("WZ02")).thenReturn (true);
+		when (playerKnowledgeUtils.isCustomWizard ("WZ01")).thenReturn (false);
+		when (playerKnowledgeUtils.isCustomWizard ("WZ02")).thenReturn (false);
 		
 		// Session variables
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -1680,7 +1666,7 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		assertFalse (utils.allPlayersHaveChosenAllDetails (mom));
 
@@ -1710,7 +1696,7 @@ public final class TestPlayerPickServerUtilsImpl
 		players.add (player2);
 
 		final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd2.getPlayerID (), "hasChosenAllDetails")).thenReturn (wizardDetails2);
+		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd2.getPlayerID ())).thenReturn (wizardDetails2);
 		
 		assertFalse (utils.allPlayersHaveChosenAllDetails (mom));
 

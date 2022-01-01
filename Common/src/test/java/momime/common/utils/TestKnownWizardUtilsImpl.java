@@ -1,6 +1,7 @@
 package momime.common.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public final class TestKnownWizardUtilsImpl
 		final KnownWizardUtilsImpl utils = new KnownWizardUtilsImpl ();
 		
 		// Run method
+		assertEquals (2, utils.findKnownWizardDetails (list, 2).getPlayerID ());
 		assertEquals (2, utils.findKnownWizardDetails (list, 2, "Unit test").getPlayerID ());
 	}
 
@@ -62,6 +64,7 @@ public final class TestKnownWizardUtilsImpl
 		final KnownWizardUtilsImpl utils = new KnownWizardUtilsImpl ();
 		
 		// Run method
+		assertNull (utils.findKnownWizardDetails (list, 4));
 		assertThrows (RecordNotFoundException.class, () ->
 		{
 			utils.findKnownWizardDetails (list, 4, "Unit test");

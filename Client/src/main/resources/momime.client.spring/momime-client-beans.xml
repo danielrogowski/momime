@@ -172,7 +172,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="connectToServerUI" ref="connectToServerUI" />
 	</bean>
 
-	<bean id="chosenWizardMessage" class="momime.client.messages.process.ChosenWizardMessageImpl" scope="prototype">
+	<bean id="meetWizardMessage" class="momime.client.messages.process.MeetWizardMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
@@ -1311,7 +1311,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
-		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="joinGameLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

@@ -405,58 +405,51 @@ public final class OverlandMapUI extends MomClientFrameUI
 					}
 				
 				// Draw any borders?
-				for (final PlayerPublicDetails thisPlayer : getClient ().getPlayers ())
+				for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ()) 
+					if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) &&
+						(((wizardDetails.getPlayerID () == getClient ().getOurPlayerID ()) && (getClientConfig ().isOverlandShowOurBorder ())) ||
+							((wizardDetails.getPlayerID () != getClient ().getOurPlayerID ()) && (getClientConfig ().isOverlandShowEnemyBorders ()))))
 					try
 					{
-						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "OverlandMapUI");
+						final int borderZoomedWidth = (overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
+						final int borderZoomedHeight = (overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
+
+						// Generate border
+						final MapArea3D<Boolean> friendlyZone = getZoneAI ().calculateFriendlyZone (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+							getClient ().getSessionDescription ().getOverlandMapSize (), wizardDetails.getPlayerID (),
+							getClient ().getSessionDescription ().getOverlandMapSize ().getCitySeparation () + 3, getClient ().getClientDB ());
 						
-						if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
-						{
-							if (((thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowOurBorder ())) ||
-								((!thisPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) && (getClientConfig ().isOverlandShowEnemyBorders ())))
+						final MapArea<List<SquareMapDirection>, MapCoordinates3DEx> friendlyZoneBorders = getBooleanMapAreaOperations3D ().traceBorders (friendlyZone);
+						
+						// Draw border
+						for (int x = 0; x < getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+							for (int y = 0; y < getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 							{
-								final int borderZoomedWidth = (overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
-								final int borderZoomedHeight = (overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
-	
-								// Generate border
-								final MapArea3D<Boolean> friendlyZone = getZoneAI ().calculateFriendlyZone (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-									getClient ().getSessionDescription ().getOverlandMapSize (), thisPlayer.getPlayerDescription ().getPlayerID (),
-									getClient ().getSessionDescription ().getOverlandMapSize ().getCitySeparation () + 3, getClient ().getClientDB ());
-								
-								final MapArea<List<SquareMapDirection>, MapCoordinates3DEx> friendlyZoneBorders = getBooleanMapAreaOperations3D ().traceBorders (friendlyZone);
-								
-								// Draw border
-								for (int x = 0; x < getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
-									for (int y = 0; y < getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+								final List<SquareMapDirection> directions = friendlyZoneBorders.get (new MapCoordinates3DEx (x, y, mapViewPlane));
+								if (directions != null)
+								{
+									final int borderX = (x * overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
+									final int borderY = (y * overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
+
+									for (final SquareMapDirection d : directions)
 									{
-										final List<SquareMapDirection> directions = friendlyZoneBorders.get (new MapCoordinates3DEx (x, y, mapViewPlane));
-										if (directions != null)
-										{
-											final int borderX = (x * overlandMapTileSet.getTileWidth () * mapViewZoom) / 10;
-											final int borderY = (y * overlandMapTileSet.getTileHeight () * mapViewZoom) / 10;
-	
-											for (final SquareMapDirection d : directions)
-											{
-												final BufferedImage borderImage = getPlayerColourImageGenerator ().getFriendlyZoneBorderImage
-													(d.getDirectionID (), thisPlayer.getPlayerDescription ().getPlayerID ());
-	
-												for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
-													for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
-														
-														g.drawImage (borderImage,
-															(mapZoomedWidth * xRepeat) - mapViewX + borderX, (mapZoomedHeight * yRepeat) - mapViewY + borderY,
-															borderZoomedWidth, borderZoomedHeight, null);
-											}
-										}
+										final BufferedImage borderImage = getPlayerColourImageGenerator ().getFriendlyZoneBorderImage
+											(d.getDirectionID (), wizardDetails.getPlayerID ());
+
+										for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+											for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+												
+												g.drawImage (borderImage,
+													(mapZoomedWidth * xRepeat) - mapViewX + borderX, (mapZoomedHeight * yRepeat) - mapViewY + borderY,
+													borderZoomedWidth, borderZoomedHeight, null);
 									}
 								}
+							}
 						}
-					}
-					catch (final IOException e)
-					{
-						log.error ("Error trying to calculate and draw friendly zone for player ID " + thisPlayer.getPlayerDescription ().getPlayerID (), e);
-					}
+						catch (final IOException e)
+						{
+							log.error ("Error trying to calculate and draw friendly zone for player ID " + wizardDetails.getPlayerID (), e);
+						}
 				
 				// Draw units dynamically, over the bitmap.
 				

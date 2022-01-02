@@ -110,6 +110,7 @@ import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapArea;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.HeroItemServerUtils;
+import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
@@ -245,6 +246,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -310,6 +314,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// If they do, they can't have it twice so nothing to do, they just lose the cast
 				if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
 				{
+					getKnownWizardServerUtils ().meetWizard (player.getPlayerDescription ().getPlayerID (), null, false, mom);
+					
 					// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
 					getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
 						(player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, false, null, null, variableDamage, false, true, mom);
@@ -391,6 +397,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// Special spells (Spell of Mastery and a few other unique spells that you don't even pick a target for)
 			else if (sectionID == SpellBookSectionID.SPECIAL_SPELLS)
 			{
+				getKnownWizardServerUtils ().meetWizard (player.getPlayerDescription ().getPlayerID (), null, false, mom);
+				
 				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY))
 				{
 					final PlayAnimationMessage msg = new PlayAnimationMessage ();
@@ -1162,6 +1170,28 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 			}
 			
+			// Conditions under which the targeted wizard needs to learn the identity of the wizard casting something at them
+			if (targetPlayerID != null)		// For Spell Blast or other enemy wizard spells like Drain Power
+				getKnownWizardServerUtils ().meetWizard (maintainedSpell.getCastingPlayerID (), targetPlayerID, false, mom);
+			
+			else if (targetUnit != null)
+				getKnownWizardServerUtils ().meetWizard (maintainedSpell.getCastingPlayerID (), targetUnit.getOwningPlayerID (), false, mom);
+
+			else if (targetSpell != null)
+				getKnownWizardServerUtils ().meetWizard (maintainedSpell.getCastingPlayerID (), targetSpell.getCastingPlayerID (), false, mom);
+			
+			else if (targetLocation != null)
+			{
+				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
+				if (cityData != null)
+					getKnownWizardServerUtils ().meetWizard (maintainedSpell.getCastingPlayerID (), cityData.getCityOwnerID (), false, mom);
+				
+				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+					if ((tu.getStatus () == UnitStatusID.ALIVE) && (targetLocation.equals (tu.getUnitLocation ())))
+						getKnownWizardServerUtils ().meetWizard (maintainedSpell.getCastingPlayerID (), tu.getOwningPlayerID (), false, mom);
+			}
+			
 			// Tell the client to stop asking about targeting the spell, and show an animation for it - need to send this to all players that can see it!
 			getFogOfWarMidTurnChanges ().sendTransientSpellToClients (maintainedSpell, mom);
 
@@ -1317,6 +1347,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				if (targetPriv.getQueuedSpell ().size () > 0)
 				{
+					getKnownWizardServerUtils ().meetWizard (maintainedSpell.getCastingPlayerID (), targetPlayerID, false, mom);
+					
 					final int blastingCost = targetPriv.getManaSpentOnCastingCurrentSpell ();
 
 					// Remove on client
@@ -1458,6 +1490,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else if (kind == KindOfSpell.ATTACK_UNITS_AND_BUILDINGS)
 		{
 			// Earthquake or Call the Void attacking both units and buildings
+			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
+			getKnownWizardServerUtils ().meetWizard (maintainedSpell.getCastingPlayerID (), cityData.getCityOwnerID (), false, mom);
+			
 			// If it has a separate animation then show it
 			if (spell.getCombatCastAnimation () != null)
 			{
@@ -1489,6 +1525,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 							priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						{
 							// For the first unit, reuse the spell that already exists on the server; for subsequent units we need to create a new spell
+							getKnownWizardServerUtils ().meetWizard (maintainedSpell.getCastingPlayerID (), tu.getOwningPlayerID (), false, mom);
+							
 							if (maintainedSpell.getUnitURN () == null)
 							{
 								maintainedSpell.setUnitURN (tu.getUnitURN ());
@@ -1505,6 +1543,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 			else
 			{
 				// Single target, so reuse the spell that already exists on the server
+				if (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)
+				{
+					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
+					getKnownWizardServerUtils ().meetWizard (maintainedSpell.getCastingPlayerID (), cityData.getCityOwnerID (), false, mom);
+				}
+				
 				// Set values on server
 				if (targetUnit != null)
 					maintainedSpell.setUnitURN (targetUnit.getUnitURN ());
@@ -2724,5 +2769,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

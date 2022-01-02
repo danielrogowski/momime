@@ -249,6 +249,10 @@ public final class SpellTargetingEx extends SpellTargeting
 				languageText = getWizardBanishedOrDefeated ();
 				break;
 				
+			case WIZARD_NOT_MET:
+				languageText = getWizardNotMet ();
+				break;
+				
 			case NO_SPELL_BEING_CAST:
 				languageText = getNoSpellBeingCast ();
 				break;

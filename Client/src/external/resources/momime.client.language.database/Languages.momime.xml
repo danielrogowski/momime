@@ -1130,6 +1130,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<wizardBanishedOrDefeated language="en">
 			<text>You cannot cast spells at wizards who are banished or defeated.</text>
 		</wizardBanishedOrDefeated>
+		<wizardNotMet language="en">
+			<text>You cannot cast spells at wizards you have not yet met.</text>
+		</wizardNotMet>
 		<noSpellBeingCast language="en">
 			<text>PLAYER_NAME is not casting any overland spell to blast.</text>
 		</noSpellBeingCast>

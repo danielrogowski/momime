@@ -456,6 +456,10 @@
 						<xsd:selector xpath="wizardBanishedOrDefeated" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellTargetingWizardNotMetPK">
+						<xsd:selector xpath="wizardNotMet" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="spellTargetingNoSpellBeingCastPK">
 						<xsd:selector xpath="noSpellBeingCast" />
 						<xsd:field xpath="@language" />
@@ -3070,6 +3074,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackingOwnWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notAWizard" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wizardBanishedOrDefeated" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wizardNotMet" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noSpellBeingCast" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="insufficientMana" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planeShiftTower" />

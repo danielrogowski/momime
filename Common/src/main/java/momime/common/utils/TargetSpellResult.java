@@ -113,6 +113,9 @@ public enum TargetSpellResult
 	/** Trying to target a spell at raiders or rampaging monsters */
 	NOT_A_WIZARD,
 
+	/** Trying to target a spell at a wizard we have not met */
+	WIZARD_NOT_MET,
+	
 	/** Trying to target a spell at a wizard who is banished or defeated */
 	WIZARD_BANISHED_OR_DEFEATED,
 	

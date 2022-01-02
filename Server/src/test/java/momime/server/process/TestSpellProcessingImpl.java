@@ -58,6 +58,7 @@ import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
 
@@ -187,6 +188,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		final KnownWizardServerUtils knownWizardServerUtils = mock (KnownWizardServerUtils.class);
 		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setFogOfWarMidTurnChanges (midTurn);
@@ -194,6 +196,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setRandomUtils (randomUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
+		proc.setKnownWizardServerUtils (knownWizardServerUtils);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, null, mom);

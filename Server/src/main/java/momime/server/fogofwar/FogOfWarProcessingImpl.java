@@ -409,6 +409,9 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 						// Couldn't see this cell before (either we'd never seen it before, or we'd seen it earlier and have been remembering it) - now we can see it
 						case FOG_OF_WAR_ACTION_UPDATE:
 						{
+							if (tc.getTerrainData ().getNodeOwnerID () != null)
+								getKnownWizardServerUtils ().meetWizard (tc.getTerrainData ().getNodeOwnerID (), player.getPlayerDescription ().getPlayerID (), true, mom);
+							
 							if (getFogOfWarDuplication ().copyTerrainAndNodeAura (tc, mc))
 								if (msg != null)
 								{

@@ -200,16 +200,19 @@ public final class SpellCastingImpl implements SpellCasting
 				// Need to build message or already done?
 				if (msg == null)
 				{
+					final MomPersistentPlayerPrivateKnowledge sendToPriv = (MomPersistentPlayerPrivateKnowledge) sendToPlayer.getPersistentPlayerPrivateKnowledge ();
+
 					msg = new OverlandCastingInfoMessage ();
 					msg.setOurSpellID (ourSpellID);
 					
 					for (final PlayerServerDetails player : mom.getPlayers ())
 					{
 						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-							(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "sendOverlandCastingInfo");
 						
-						if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+							(sendToPriv.getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
+						
+						if ((wizardDetails != null) && (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 							msg.getOverlandCastingInfo ().add (createOverlandCastingInfo (player, ourSpellID));
 					}
 				}

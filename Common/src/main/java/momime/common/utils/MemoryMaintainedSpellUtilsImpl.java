@@ -827,9 +827,12 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else
     	{
     		final MomPersistentPlayerPublicKnowledge targetPub = (MomPersistentPlayerPublicKnowledge) targetPlayer.getPersistentPlayerPublicKnowledge ();
-    		final KnownWizardDetails targetWizard = getKnownWizardUtils ().findKnownWizardDetails (knownWizards, targetPlayer.getPlayerDescription ().getPlayerID (), "isWizardValidTargetForSpell");
+    		final KnownWizardDetails targetWizard = getKnownWizardUtils ().findKnownWizardDetails (knownWizards, targetPlayer.getPlayerDescription ().getPlayerID ());
     		
-    		if (targetPub.getWizardState () != WizardState.ACTIVE)
+    		if (targetWizard == null)
+    			result = TargetSpellResult.WIZARD_NOT_MET;
+    			
+    		else if (targetPub.getWizardState () != WizardState.ACTIVE)
     			result = TargetSpellResult.WIZARD_BANISHED_OR_DEFEATED;
     		
     		else if (!getPlayerKnowledgeUtils ().isWizard (targetWizard.getWizardID ()))

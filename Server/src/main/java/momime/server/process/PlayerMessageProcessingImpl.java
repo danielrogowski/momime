@@ -255,6 +255,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			trueWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
 			trueWizardDetails.setWizardID (wizardID);
 			trueWizardDetails.setStandardPhotoID (wizardID);  // Set photo for pre-defined wizard, including raiders and monsters since sending this causes the client to look up their flag colour
+			trueWizardDetails.setWizardState (WizardState.ACTIVE);
 
 			mom.getGeneralServerKnowledge ().getTrueWizardDetails ().add (trueWizardDetails);
 
@@ -264,6 +265,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			knownWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
 			knownWizardDetails.setWizardID (wizardID);
 			knownWizardDetails.setStandardPhotoID (wizardID);
+			knownWizardDetails.setWizardState (WizardState.ACTIVE);
 
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 			priv.getKnownWizardDetails ().add (knownWizardDetails);
@@ -475,6 +477,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						knownWizardDetails.setPlayerID (automaticallyMeetWizard.getPlayerID ());
 						knownWizardDetails.setWizardID (automaticallyMeetWizard.getWizardID ());
 						knownWizardDetails.setStandardPhotoID (automaticallyMeetWizard.getStandardPhotoID ());
+						knownWizardDetails.setWizardState (automaticallyMeetWizard.getWizardState ());
 						priv.getKnownWizardDetails ().add (knownWizardDetails);
 						
 						if (sendToPlayer.getPlayerDescription ().isHuman ())
@@ -749,14 +752,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((useOnlyOnePlayerID == 0) || (useOnlyOnePlayerID == player.getPlayerDescription ().getPlayerID ()))
 			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 				
 				final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
 					player.getPlayerDescription ().getPlayerID (), "startPhase");
 				
 				// Don't let raiders buy units or hire heroes
-				if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+				if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (knownWizard.getWizardState () == WizardState.ACTIVE))
 				{
 					final NewTurnMessageOfferHero heroOffer = getOfferGenerator ().generateHeroOffer
 						(player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
@@ -1404,11 +1406,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 				(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "checkIfWonGame"); 
 			
-			if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (pub.getWizardState () != WizardState.DEFEATED))
+			if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (wizardDetails.getWizardState () != WizardState.DEFEATED))
 			{
 				aliveCount++;
 				aliveWizard = player;

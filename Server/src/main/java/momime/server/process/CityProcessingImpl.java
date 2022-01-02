@@ -1069,7 +1069,6 @@ public final class CityProcessingImpl implements CityProcessing
 		getKnownWizardServerUtils ().meetWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
 		getKnownWizardServerUtils ().meetWizard (defendingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
 		
-		final MomPersistentPlayerPublicKnowledge defenderPub = (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
@@ -1081,7 +1080,8 @@ public final class CityProcessingImpl implements CityProcessing
 		// Do they have another city to try to return to?  Record it on server
 		final WizardState wizardState = (getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 			defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0) ? WizardState.DEFEATED : WizardState.BANISHED;
-		defenderPub.setWizardState (wizardState);
+		
+		getKnownWizardServerUtils ().updateWizardState (defendingPlayer.getPlayerDescription ().getPlayerID (), wizardState, mom);
 		
 		// Update wizardState on client, and this triggers showing the banish animation as well
 		final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();

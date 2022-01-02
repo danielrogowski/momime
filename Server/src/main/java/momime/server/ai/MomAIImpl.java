@@ -110,7 +110,6 @@ public final class MomAIImpl implements MomAI
 	public final boolean aiPlayerTurn (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
@@ -399,7 +398,7 @@ public final class MomAIImpl implements MomAI
 			}
 			
 			// Only wizards can do anything with spells
-			if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+			if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (knownWizard.getWizardState () == WizardState.ACTIVE))
 			{
 				// Do we need to choose a spell to research?
 				if (priv.getSpellIDBeingResearched () == null)

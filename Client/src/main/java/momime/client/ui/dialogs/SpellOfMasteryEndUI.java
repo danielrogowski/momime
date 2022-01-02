@@ -32,7 +32,6 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
 import momime.common.database.WizardEx;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -113,11 +112,10 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 		for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			if (player != getCastingWizard ())
 			{
-				final MomPersistentPlayerPublicKnowledge banishedWizardPub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				final KnownWizardDetails banishedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "SpellOfMasteryEndUI (B)");
 				
-				if ((getPlayerKnowledgeUtils ().isWizard (banishedWizardDetails.getWizardID ())) && (banishedWizardPub.getWizardState () != WizardState.DEFEATED) &&
+				if ((getPlayerKnowledgeUtils ().isWizard (banishedWizardDetails.getWizardID ())) && (banishedWizardDetails.getWizardState () != WizardState.DEFEATED) &&
 					(banishedWizardDetails.getStandardPhotoID () != null))
 				{
 					final WizardEx banishedWizardDef = getClient ().getClientDB ().findWizard (banishedWizardDetails.getStandardPhotoID (), "SpellOfMasteryEndUI (B)");

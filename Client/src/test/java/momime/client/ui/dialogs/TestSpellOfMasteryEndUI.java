@@ -148,7 +148,6 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		castingWizardPd.setPlayerID (1);
 		
 		final MomPersistentPlayerPublicKnowledge castingWizardPub = new MomPersistentPlayerPublicKnowledge ();
-		castingWizardPub.setWizardState (WizardState.ACTIVE);
 		
 		final PlayerPublicDetails castingWizard = new PlayerPublicDetails (castingWizardPd, castingWizardPub, null);
 		
@@ -159,6 +158,7 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		
 		final KnownWizardDetails castingWizardDetails = new KnownWizardDetails ();
 		castingWizardDetails.setStandardPhotoID ("WZ01");
+		castingWizardDetails.setWizardState (WizardState.ACTIVE);
 		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), castingWizardPd.getPlayerID (), "SpellOfMasteryEndUI (C)")).thenReturn (castingWizardDetails);
 		
 		// Banished wizards
@@ -168,7 +168,6 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		for (int n = 2; n <= 5; n++)
 		{
 			final MomPersistentPlayerPublicKnowledge banishedWizardPub = new MomPersistentPlayerPublicKnowledge ();
-			banishedWizardPub.setWizardState ((n == 4) ? WizardState.DEFEATED : WizardState.ACTIVE);
 			
 			final PlayerDescription pd = new PlayerDescription ();
 			pd.setPlayerID (n);
@@ -177,6 +176,7 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 			players.add (banishedWizard);
 			
 			final KnownWizardDetails banishedWizardDetails = new KnownWizardDetails ();
+			banishedWizardDetails.setWizardState ((n == 4) ? WizardState.DEFEATED : WizardState.ACTIVE);
 			if (n != 3)
 				banishedWizardDetails.setStandardPhotoID ("WZ0" + n);
 			

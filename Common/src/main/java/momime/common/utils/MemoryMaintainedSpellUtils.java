@@ -218,7 +218,7 @@ public interface MemoryMaintainedSpellUtils
 	 * @param spell Spell being cast
 	 * @param castingPlayerID Player casting the spell
 	 * @param castingPriv Private info for the playing casting the spell
-	 * @param targetPlayer Player to cast the spell on
+	 * @param targetPlayerID Player to cast the spell on
 	 * @param targetCastingInfo Info about what the player to cast the spell on is casting themselves
 	 * @param knownWizards Details we have learned about wizards we have met
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
@@ -226,7 +226,7 @@ public interface MemoryMaintainedSpellUtils
 	 * @throws RecordNotFoundException If the detatils for the target wizard are missing
 	 */
 	public TargetSpellResult isWizardValidTargetForSpell (final Spell spell, final int castingPlayerID, final MomPersistentPlayerPrivateKnowledge castingPriv,
-		final PlayerPublicDetails targetPlayer, final OverlandCastingInfo targetCastingInfo, final List<KnownWizardDetails> knownWizards)
+		final int targetPlayerID, final OverlandCastingInfo targetCastingInfo, final List<KnownWizardDetails> knownWizards)
 		throws MomException, RecordNotFoundException;
 	
 	/**

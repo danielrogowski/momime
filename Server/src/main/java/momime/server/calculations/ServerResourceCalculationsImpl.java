@@ -145,7 +145,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		final Event conjunctionEvent = (mom.getGeneralPublicKnowledge ().getConjunctionEventID () == null) ? null :
 			mom.getServerDB ().findEvent (mom.getGeneralPublicKnowledge ().getConjunctionEventID (), "recalculateAmountsPerTurn");
 		
-		if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (pub.getWizardState () != WizardState.ACTIVE))
+		if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (knownWizard.getWizardState () != WizardState.ACTIVE))
 		{
 			for (final ProductionTypeEx productionType : mom.getServerDB ().getProductionTypes ())
 				if ((productionType.isZeroWhenBanished () != null) && (productionType.isZeroWhenBanished ()))

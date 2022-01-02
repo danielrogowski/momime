@@ -178,6 +178,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="requestResearchSpellMessage" class="momime.server.messages.process.RequestResearchSpellMessageImpl" scope="prototype">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="spellServerUtils" ref="spellServerUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="requestCastSpellMessage" class="momime.server.messages.process.RequestCastSpellMessageImpl" scope="prototype">
@@ -686,6 +687,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 		<property name="movementUtils" ref="movementUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">
@@ -847,6 +849,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellMultiCasting" ref="spellMultiCasting" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 	
 	<bean id="randomWizardEvents" class="momime.server.events.RandomWizardEventsImpl">

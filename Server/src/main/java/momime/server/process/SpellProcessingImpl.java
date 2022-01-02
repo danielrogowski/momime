@@ -411,13 +411,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 					for (final PlayerServerDetails defeatedPlayer : mom.getPlayers ())
 						if (defeatedPlayer != player)
 						{
-							final MomPersistentPlayerPublicKnowledge defeatedPub = (MomPersistentPlayerPublicKnowledge) defeatedPlayer.getPersistentPlayerPublicKnowledge ();
 							final KnownWizardDetails defeatedWizard = getKnownWizardUtils ().findKnownWizardDetails
 								(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), defeatedPlayer.getPlayerDescription ().getPlayerID (), "castOverlandNow");
 							
-							if ((getPlayerKnowledgeUtils ().isWizard (defeatedWizard.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
+							if ((getPlayerKnowledgeUtils ().isWizard (defeatedWizard.getWizardID ())) && (defeatedWizard.getWizardState () != WizardState.DEFEATED))
 							{
-								defeatedPub.setWizardState (WizardState.DEFEATED);
+								getKnownWizardServerUtils ().updateWizardState (defeatedPlayer.getPlayerDescription ().getPlayerID (), WizardState.DEFEATED, mom);
+
 								if (defeatedPlayer.getPlayerDescription ().isHuman ())
 									mom.updateHumanPlayerToAI (defeatedPlayer.getPlayerDescription ().getPlayerID ());
 							}
@@ -1685,8 +1685,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
 			{
 				// Update on server
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ();
-				pub.setWizardState (WizardState.ACTIVE);
+				getKnownWizardServerUtils ().updateWizardState (castingPlayer.getPlayerDescription ().getPlayerID (), WizardState.ACTIVE, mom);
 				
 				// Update wizardState on client, and this triggers showing the returning animation as well
 				final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();

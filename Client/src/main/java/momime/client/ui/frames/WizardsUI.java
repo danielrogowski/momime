@@ -359,8 +359,6 @@ public final class WizardsUI extends MomClientFrameUI
 			int n = 0;
 			for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				
 				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 				
@@ -380,7 +378,7 @@ public final class WizardsUI extends MomClientFrameUI
 							
 							final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (getTargetingSpell (),
 								getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge (),
-								player, targetOverlandCastingInfo, getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ());
+								player.getPlayerDescription ().getPlayerID (), targetOverlandCastingInfo, getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ());
 							
 							if (validTarget == TargetSpellResult.VALID_TARGET)
 							{
@@ -406,8 +404,8 @@ public final class WizardsUI extends MomClientFrameUI
 						}
 					});
 					
-					final String gemNormalImageName = ((wizardDetails == null) || (pub.getWizardState () == WizardState.ACTIVE)) ? "/momime.client.graphics/ui/backgrounds/gem.png" :
-						"/momime.client.graphics/ui/backgrounds/gemCracked.png";
+					final String gemNormalImageName = ((wizardDetails == null) || (wizardDetails.getWizardState () == WizardState.ACTIVE)) ?
+						"/momime.client.graphics/ui/backgrounds/gem.png" : "/momime.client.graphics/ui/backgrounds/gemCracked.png";
 					final String gemPressedImageName = "/momime.client.graphics/ui/backgrounds/gemPressed.png";
 
 					BufferedImage wizardNormalImage;
@@ -427,7 +425,7 @@ public final class WizardsUI extends MomClientFrameUI
 					}
 					
 					// Find the wizard's photo
-					if ((wizardDetails != null) && (pub.getWizardState () == WizardState.ACTIVE))
+					if ((wizardDetails != null) && (wizardDetails.getWizardState () == WizardState.ACTIVE))
 					{
 						final BufferedImage unscaledPortrait;
 						if (wizardDetails.getCustomPhoto () != null)
@@ -474,7 +472,7 @@ public final class WizardsUI extends MomClientFrameUI
 					}
 					
 					// Show what the wizard is casting?
-					if ((detectMagic) && (wizardDetails != null) && (pub.getWizardState () == WizardState.ACTIVE))
+					if ((detectMagic) && (wizardDetails != null) && (wizardDetails.getWizardState () == WizardState.ACTIVE))
 					{
 						currentlyCasting.get (n).setVisible (true);
 						currentlyCastingLabels.get (n).setVisible (true);
@@ -487,7 +485,7 @@ public final class WizardsUI extends MomClientFrameUI
 						currentlyCastingLabels.get (n).setVisible (false);
 					}
 					
-					if ((spellBlast) && (wizardDetails != null) && (pub.getWizardState () == WizardState.ACTIVE))
+					if ((spellBlast) && (wizardDetails != null) && (wizardDetails.getWizardState () == WizardState.ACTIVE))
 					{
 						currentlyCastingMana.get (n).setVisible (true);
 						currentlyCastingManaLabels.get (n).setVisible (true);
@@ -503,7 +501,7 @@ public final class WizardsUI extends MomClientFrameUI
 					// Finally create the button
 					n++;
 					final JButton wizardButton = getUtils ().createImageButton (wizardAction, null, null, null, wizardNormalImage, wizardPressedImage, wizardNormalImage);
-					wizardButton.setEnabled ((wizardDetails != null) && (pub.getWizardState () == WizardState.ACTIVE));
+					wizardButton.setEnabled ((wizardDetails != null) && (wizardDetails.getWizardState () == WizardState.ACTIVE));
 					
 					contentPane.add (wizardButton, "frmWizardsGem" + n);
 					wizardButtons.add (wizardButton);

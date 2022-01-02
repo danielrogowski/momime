@@ -3,13 +3,13 @@ package momime.client.messages.process;
 import java.io.IOException;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -21,7 +21,6 @@ import momime.client.ui.frames.WizardsUI;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.LanguageText;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.KnownWizardUtils;
@@ -66,11 +65,10 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	{
 		// Update player details
 		final PlayerPublicDetails banishedWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
-		final MomPersistentPlayerPublicKnowledge banishedPub = (MomPersistentPlayerPublicKnowledge) banishedWizard.getPersistentPlayerPublicKnowledge ();
-		banishedPub.setWizardState (getWizardState ());
 		
 		final KnownWizardDetails banishedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
+		banishedWizardDetails.setWizardState (getWizardState ());
 
 		// Don't show anything when raiders have been defeated
 		if (!getPlayerKnowledgeUtils ().isWizard (banishedWizardDetails.getWizardID ()))

@@ -808,7 +808,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param spell Spell being cast
 	 * @param castingPlayerID Player casting the spell
 	 * @param castingPriv Private info for the playing casting the spell
-	 * @param targetPlayer Player to cast the spell on
+	 * @param targetPlayerID Player to cast the spell on
 	 * @param targetCastingInfo Info about what the player to cast the spell on is casting themselves
 	 * @param knownWizards Details we have learned about wizards we have met
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
@@ -817,22 +817,21 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 */
 	@Override
 	public final TargetSpellResult isWizardValidTargetForSpell (final Spell spell, final int castingPlayerID, final MomPersistentPlayerPrivateKnowledge castingPriv,
-		final PlayerPublicDetails targetPlayer, final OverlandCastingInfo targetCastingInfo, final List<KnownWizardDetails> knownWizards)
+		final int targetPlayerID, final OverlandCastingInfo targetCastingInfo, final List<KnownWizardDetails> knownWizards)
 		throws MomException, RecordNotFoundException
 	{
     	final TargetSpellResult result;
-    	if (castingPlayerID == targetPlayer.getPlayerDescription ().getPlayerID ())
+    	if (castingPlayerID == targetPlayerID)
     		result = TargetSpellResult.ATTACKING_OWN_WIZARD;
     	
     	else
     	{
-    		final MomPersistentPlayerPublicKnowledge targetPub = (MomPersistentPlayerPublicKnowledge) targetPlayer.getPersistentPlayerPublicKnowledge ();
-    		final KnownWizardDetails targetWizard = getKnownWizardUtils ().findKnownWizardDetails (knownWizards, targetPlayer.getPlayerDescription ().getPlayerID ());
+    		final KnownWizardDetails targetWizard = getKnownWizardUtils ().findKnownWizardDetails (knownWizards, targetPlayerID);
     		
     		if (targetWizard == null)
     			result = TargetSpellResult.WIZARD_NOT_MET;
     			
-    		else if (targetPub.getWizardState () != WizardState.ACTIVE)
+    		else if (targetWizard.getWizardState () != WizardState.ACTIVE)
     			result = TargetSpellResult.WIZARD_BANISHED_OR_DEFEATED;
     		
     		else if (!getPlayerKnowledgeUtils ().isWizard (targetWizard.getWizardID ()))

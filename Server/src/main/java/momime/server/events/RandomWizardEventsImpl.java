@@ -84,7 +84,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
 			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "isWizardValidTargetForEvent");
 		
-		if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+		if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (knownWizard.getWizardState () == WizardState.ACTIVE))
 		{
 			// Do we need to find a target city owned by the wizard?  Great Meteor, Earthquake, Plague, Rebellion, Depletion, New Minerals, Population Boom
 			if ((event.isTargetCity () != null) && (event.isTargetCity ()))
@@ -297,11 +297,10 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				int maxGold = 1000;
 				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				{
-					final MomPersistentPlayerPublicKnowledge thisPub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 					final KnownWizardDetails thisWizard = getKnownWizardUtils ().findKnownWizardDetails
 						(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "triggerWizardEvent");
 					
-					if ((getPlayerKnowledgeUtils ().isWizard (thisWizard.getWizardID ())) && (thisPub.getWizardState () == WizardState.ACTIVE))
+					if ((getPlayerKnowledgeUtils ().isWizard (thisWizard.getWizardID ())) && (thisWizard.getWizardState () == WizardState.ACTIVE))
 					{
 						final MomPersistentPlayerPrivateKnowledge thisPriv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 						final int gold = getResourceValueUtils ().findAmountStoredForProductionType (thisPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);

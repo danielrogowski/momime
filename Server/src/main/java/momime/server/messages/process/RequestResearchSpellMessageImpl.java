@@ -1,6 +1,5 @@
 package momime.server.messages.process;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -10,17 +9,19 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SwitchResearch;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.messages.servertoclient.SpellResearchChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.utils.SpellServerUtils;
@@ -39,6 +40,9 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 	/** Server-side only spell utils */
 	private SpellServerUtils spellServerUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -51,12 +55,13 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
+			sender.getPlayerDescription ().getPlayerID (), "RequestResearchSpellMessageImpl");
 
 		// Validate the requested picks
 		final String error;
-		if (pub.getWizardState () != WizardState.ACTIVE)
+		if (wizardDetails.getWizardState () != WizardState.ACTIVE)
 			error = "You cannot research spells while you are banished.";
 		else
 			error = getSpellServerUtils ().validateResearch (sender, spellID, mom.getSessionDescription ().getSpellSetting ().getSwitchResearch (), mom.getServerDB ());
@@ -128,5 +133,21 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 	public final void setSpellServerUtils (final SpellServerUtils utils)
 	{
 		spellServerUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

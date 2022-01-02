@@ -31,7 +31,6 @@ import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -207,12 +206,10 @@ public final class SpellCastingImpl implements SpellCasting
 					
 					for (final PlayerServerDetails player : mom.getPlayers ())
 					{
-						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-						
 						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 							(sendToPriv.getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 						
-						if ((wizardDetails != null) && (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
+						if ((wizardDetails != null) && (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (wizardDetails.getWizardState () == WizardState.ACTIVE))
 							msg.getOverlandCastingInfo ().add (createOverlandCastingInfo (player, ourSpellID));
 					}
 				}

@@ -497,7 +497,6 @@ so must include the full details of the item here.</xsd:documentation>
 		<xsd:complexContent>
 			<xsd:extension base="mps:persistentPlayerPublicKnowledge">
 		        <xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
 		        </xsd:sequence>
@@ -542,6 +541,7 @@ used, the resulting value is written into momTransientPlayerPublicKnowledge so t
 standardPhotoIDs over and over again</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
         </xsd:sequence>
 	</xsd:complexType>
 

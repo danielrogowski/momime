@@ -8,6 +8,7 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.MeetWizardMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.server.MomSessionVariables;
@@ -67,6 +68,31 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					}
 				}
 			}
+	}
+	
+	/**
+	 * Updates all copies of a wizard state on the server.  Does not notify clients of the change.
+	 * 
+	 * @param playerID Player whose state changed
+	 * @param newState New state
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we can't find the player in the server's true wizard details
+	 */
+	@Override
+	public final void updateWizardState (final int playerID, final WizardState newState, final MomSessionVariables mom)
+		throws RecordNotFoundException
+	{
+		// True memory
+		getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), playerID, "updateWizardState").setWizardState (newState);
+		
+		// Each player who knows them
+		for (final PlayerServerDetails player : mom.getPlayers ())
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getKnownWizardDetails (), playerID);
+			if (wizardDetails != null)
+				wizardDetails.setWizardState (newState);
+		}
 	}
 
 	/**

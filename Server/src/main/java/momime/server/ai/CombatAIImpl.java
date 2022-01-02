@@ -25,7 +25,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.MoveUnitInCombatReason;
@@ -351,14 +350,13 @@ public final class CombatAIImpl implements CombatAI
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		// If AI Wizard (not raiders, not banished, not human player on auto) then maybe cast a spell before we move units
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) currentPlayer.getPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails knownDetails = getKnownWizardUtils ().findKnownWizardDetails
 			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), currentPlayer.getPlayerDescription ().getPlayerID (), "aiCombatTurn");
 		
 		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
 		
 		if ((getPlayerKnowledgeUtils ().isWizard (knownDetails.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
-			(pub.getWizardState () == WizardState.ACTIVE))
+			(knownDetails.getWizardState () == WizardState.ACTIVE))
 			
 			result = getSpellAI ().decideWhatToCastCombat (currentPlayer, null, combatLocation, mom);
 		

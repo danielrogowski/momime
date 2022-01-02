@@ -4,6 +4,7 @@ import javax.xml.stream.XMLStreamException;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.WizardState;
 import momime.server.MomSessionVariables;
 
 /**
@@ -22,4 +23,15 @@ public interface KnownWizardServerUtils
 	 */
 	public void meetWizard (final int metWizardID, final Integer meetingWizardID, final boolean showAnimation, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Updates all copies of a wizard state on the server.  Does not notify clients of the change.
+	 * 
+	 * @param playerID Player whose state changed
+	 * @param newState New state
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we can't find the player in the server's true wizard details
+	 */
+	public void updateWizardState (final int playerID, final WizardState newState, final MomSessionVariables mom)
+		throws RecordNotFoundException;
 }

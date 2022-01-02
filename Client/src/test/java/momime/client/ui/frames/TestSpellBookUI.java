@@ -36,11 +36,13 @@ import momime.common.database.SpellBookSection;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 
@@ -185,6 +187,11 @@ public final class TestSpellBookUI extends ClientTestData
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, 2, "languageOrPageChanged")).thenReturn (ourPlayer);
 		
+		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 2, "languageOrPageChanged")).thenReturn (ourWizard);
+		
 		// Mock client
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -202,6 +209,7 @@ public final class TestSpellBookUI extends ClientTestData
 		book.setClient (client);
 		book.setSpellUtils (spellUtils);
 		book.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		book.setKnownWizardUtils (knownWizardUtils);
 		book.setTextUtils (new TextUtilsImpl ());
 		book.setSmallFont (CreateFontsForTests.getSmallFont ());
 		book.setMediumFont (CreateFontsForTests.getMediumFont ());

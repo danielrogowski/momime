@@ -20,7 +20,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -38,6 +37,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.zorder.ZOrderGraphicsImpl;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
@@ -84,7 +84,6 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
@@ -1279,13 +1278,13 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	private final List<CastCombatSpellFrom> listCastingSources () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "listCastingSources");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getClient ().getOurPlayerID (), "listCastingSources");
 
 		final List<CastCombatSpellFrom> sources = new ArrayList<CastCombatSpellFrom> ();
 		
 		// Wizard casting
-		if ((!spellCastThisCombatTurn) && (pub.getWizardState () == WizardState.ACTIVE))
+		if ((!spellCastThisCombatTurn) && (ourWizard.getWizardState () == WizardState.ACTIVE))
 			sources.add (new CastCombatSpellFrom (null, null, null));
 		
 		if ((getSelectedUnitInCombat () != null) && (getSelectedUnitInCombat ().getDoubleCombatMovesLeft () != null) &&

@@ -28,7 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -40,6 +39,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
@@ -62,6 +62,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SwitchResearch;
 import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
@@ -73,6 +74,7 @@ import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
@@ -139,6 +141,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	
 	/** Methods for working with spells that are only needed on the client */
 	private MemoryMaintainedSpellClientUtils memoryMaintainedSpellClientUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** How many spells we show on each page (this is sneakily set to half the number of spells we can choose from for research, so we get 2 research pages) */
 	private final static int SPELLS_PER_PAGE = 4;
@@ -534,9 +539,10 @@ public final class SpellBookUI extends MomClientFrameUI
 									}
 									else if (sectionID == SpellBookSectionID.RESEARCHABLE_NOW)
 									{
-										final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
-										final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-										if (pub.getWizardState () == WizardState.ACTIVE)
+										final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+											(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getClient ().getOurPlayerID (), "clickSpell");
+										
+										if (ourWizard.getWizardState () == WizardState.ACTIVE)
 										{
 											// Clicking on a spell to research it
 											// Whether we're allowed to depends on what spell settings are, and what's currently selected to research
@@ -689,8 +695,10 @@ public final class SpellBookUI extends MomClientFrameUI
 	{
 		final SpellBookSectionID sectionID = spell.getSpellBookSectionID ();
 
-		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
+		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "castSpell");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getClient ().getOurPlayerID (), "castSpell");
 
 		final ExpandedUnitDetails castingUnit;
 		final boolean castingFixedSpell;
@@ -712,7 +720,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		final boolean proceed;
 		final List<MemoryUnit> deadUnits = new ArrayList<MemoryUnit> ();
 		if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN)) ||
-			((pub.getWizardState () != WizardState.ACTIVE) && (castingUnit == null)))
+			((ourWizard.getWizardState () != WizardState.ACTIVE) && (castingUnit == null)))
 			
 			proceed = false;
 		else if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
@@ -1168,6 +1176,9 @@ public final class SpellBookUI extends MomClientFrameUI
 				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "languageOrPageChanged");
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 				
+				final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getClient ().getOurPlayerID (), "languageOrPageChanged");
+				
 				final boolean unitCasting = (getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
 					(getCombatUI ().getCastingSource ().getCastingUnit () != null);
 
@@ -1208,7 +1219,7 @@ public final class SpellBookUI extends MomClientFrameUI
 								
 								// If we're banished, then grey out (light brown out) the entire spell book, as long as its the wizard casting spells
 								if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN)) ||
-									((pub.getWizardState () != WizardState.ACTIVE) && (!unitCasting)))
+									((ourWizard.getWizardState () != WizardState.ACTIVE) && (!unitCasting)))
 								{
 									spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
 									spellCombatCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
@@ -1720,6 +1731,22 @@ public final class SpellBookUI extends MomClientFrameUI
 	public final void setMemoryMaintainedSpellClientUtils (final MemoryMaintainedSpellClientUtils u)
 	{
 		memoryMaintainedSpellClientUtils = u;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 	
 	/**

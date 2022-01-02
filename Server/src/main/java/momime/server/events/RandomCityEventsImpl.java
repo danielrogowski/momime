@@ -27,7 +27,6 @@ import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -43,6 +42,7 @@ import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CityProcessing;
 import momime.server.process.SpellMultiCasting;
+import momime.server.utils.KnownWizardServerUtils;
 
 /**
  * Deals with random events which pick a city target:
@@ -83,6 +83,9 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
 	
 	/**
 	 * Can only call this on events that are targeted at cities
@@ -287,16 +290,23 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 
 				// Who are the old and new owners?
 				PlayerServerDetails raiders = null;
+				KnownWizardDetails raidersWizard = null;
 				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				{
 					final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
 						(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "triggerCityEvent");
 					if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (knownWizard.getWizardID ()))
+					{
 						raiders = thisPlayer;
+						raidersWizard = knownWizard;
+					}
 				}
 				
 				if (raiders == null)
 					throw new MomException ("Trying to process Rebellion event, but can't find rebel player to give city to");
+
+				if (raidersWizard == null)
+					throw new MomException ("Trying to process Rebellion event, but can't find rebel wizard to give city to");
 				
 				final PlayerServerDetails oldCityOwner;
 				final PlayerServerDetails newCityOwner;
@@ -312,10 +322,9 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 					newCityOwner = raiders;
 					
 					// If raiders were defeated then re-activate them
-					final MomPersistentPlayerPublicKnowledge raidersPub = (MomPersistentPlayerPublicKnowledge) raiders.getPersistentPlayerPublicKnowledge ();
-					if (raidersPub.getWizardState () != WizardState.ACTIVE)
+					if (raidersWizard.getWizardState () != WizardState.ACTIVE)
 					{
-						raidersPub.setWizardState (WizardState.ACTIVE);
+						getKnownWizardServerUtils ().updateWizardState (raidersWizard.getPlayerID (), WizardState.ACTIVE, mom);
 						
 						final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();
 						msg.setBanishedPlayerID (raiders.getPlayerDescription ().getPlayerID ());
@@ -549,5 +558,21 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

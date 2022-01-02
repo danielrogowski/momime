@@ -3,7 +3,6 @@ package momime.server.process;
 import java.util.Iterator;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -15,6 +14,7 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.AttackSpellTargetID;
@@ -24,6 +24,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitCanCast;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -46,6 +47,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -125,6 +127,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 	/** Movement utils */
 	private MovementUtils movementUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * Client wants to cast a spell, either overland or in combat
 	 * We may not actually be able to cast it yet - big overland spells take a number of turns to channel, so this
@@ -158,6 +163,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+		final KnownWizardDetails castingWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "requestCastSpell");
 		
 		// Find the spell in the player's search list
 		final Spell spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");
@@ -220,7 +227,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			if (combatCastingUnitURN == null)
 			{
 				// Wizard casting
-				if (pub.getWizardState () != WizardState.ACTIVE)
+				if (castingWizard.getWizardState () != WizardState.ACTIVE)
 					msg = "You cannot cast spells while you are banished.";
 				
 				else if (researchStatus != SpellResearchStatusID.AVAILABLE)
@@ -992,5 +999,21 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void setMovementUtils (final MovementUtils u)
 	{
 		movementUtils = u;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

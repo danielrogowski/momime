@@ -43,7 +43,6 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
-import momime.common.messages.WizardState;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseValues;
@@ -236,10 +235,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	protected final PersistentPlayerPublicKnowledge createPersistentPlayerPublicKnowledge (final SessionDescription sd, final PlayerDescription pd)
 	{
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		pub.setWizardState (WizardState.ACTIVE);
-		
-		return pub;
+		return new MomPersistentPlayerPublicKnowledge ();
 	}
 
 	/**

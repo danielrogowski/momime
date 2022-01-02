@@ -146,9 +146,9 @@ public final class TestWizardsUI extends ClientTestData
 			pd.setPlayerID ((n <= 14) ? n : -n);
 			
 			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-			pub.setWizardState ((n == 14) ? WizardState.BANISHED : WizardState.ACTIVE);
 			
 			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+			wizardDetails.setWizardState ((n == 14) ? WizardState.BANISHED : WizardState.ACTIVE);
 			
 			MomTransientPlayerPublicKnowledge trans = null;
 			if (n == 16)

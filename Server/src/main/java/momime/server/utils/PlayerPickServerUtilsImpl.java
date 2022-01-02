@@ -85,22 +85,21 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	}
 
 	/**
-	 * @param players List of players
+	 * @param wizards List of wizards
 	 * @param standardPhotoID Standard photo ID we want to pick
 	 * @return Player with the specified Standard photo ID, or null if none are found
 	 */
 	@Override
-	public final PlayerServerDetails findPlayerUsingStandardPhoto (final List<PlayerServerDetails> players, final String standardPhotoID)
+	public final KnownWizardDetails findWizardUsingStandardPhoto (final List<KnownWizardDetails> wizards, final String standardPhotoID)
 	{
-		PlayerServerDetails result = null;
-		final Iterator<PlayerServerDetails> iter = players.iterator ();
+		KnownWizardDetails result = null;
+		final Iterator<KnownWizardDetails> iter = wizards.iterator ();
 		while ((result == null) && (iter.hasNext ()))
 		{
-			final PlayerServerDetails player = iter.next ();
-			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			final KnownWizardDetails wizardDetails = iter.next ();
 
-			if ((ppk.getStandardPhotoID () != null) && (ppk.getStandardPhotoID ().equals (standardPhotoID)))
-				result = player;
+			if ((wizardDetails.getStandardPhotoID () != null) && (wizardDetails.getStandardPhotoID ().equals (standardPhotoID)))
+				result = wizardDetails;
 		}
 
 		return result;
@@ -452,19 +451,19 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	}
 	
 	/**
-	 * @param players List of players
+	 * @param wizards List of wizards
 	 * @param db Lookup lists built over the XML database
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list
 	 */
 	@Override
-	public final List<WizardEx> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final CommonDatabase db)
+	public final List<WizardEx> listWizardsForAIPlayers (final List<KnownWizardDetails> wizards, final CommonDatabase db)
 	{
 		// First get a list of all the available wizards
 		final List<WizardEx> availableWizards = new ArrayList<WizardEx> ();
 		for (final WizardEx thisWizard : db.getWizards ())
 			if ((!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
 				(!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
-				(findPlayerUsingStandardPhoto (players, thisWizard.getWizardID ()) == null))
+				(findWizardUsingStandardPhoto (wizards, thisWizard.getWizardID ()) == null))
 
 				availableWizards.add (thisWizard);
 

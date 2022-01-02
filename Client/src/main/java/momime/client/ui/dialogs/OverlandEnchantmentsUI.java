@@ -41,9 +41,10 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 
 /**
@@ -94,6 +95,9 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/** Wizards UI */
 	private WizardsUI wizardsUI;
 	
@@ -137,17 +141,19 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 			true, null, null, null, castingPlayerID, null);
 		
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), castingPlayerID, "OverlandEnchantmentsUI");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
 		// Wizard portraits are stored exactly from the original LBXes (109x104) but stretched to compensate for original MoM using non-square 320x200 mode pixels (218x250).
 		// Note the original MoM doesn't use the main wizard portraits (WIZARDS.LBX) here, it uses a frame of the talking animations (DIPLOMAC.LBX), which fades out
 		// the edges of the pic so that it looks more like its in a mirror.  While it would have been easier to do that here, that would have meant no pic for overland
 		// enchantments would be available for custom wizard portraits.  So this has to work just from the main wizard portrait.
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), castingPlayerID, "OverlandEnchantmentsUI");
+		
 		final BufferedImage unscaledPortrait;
-		if (pub.getCustomPhoto () != null)
-			unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
-		else if (pub.getStandardPhotoID () != null)
-			unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (pub.getStandardPhotoID (), "OverlandEnchantmentsUI").getPortraitImageFile ());
+		if (wizardDetails.getCustomPhoto () != null)
+			unscaledPortrait = ImageIO.read (new ByteArrayInputStream (wizardDetails.getCustomPhoto ()));
+		else if (wizardDetails.getStandardPhotoID () != null)
+			unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (wizardDetails.getStandardPhotoID (), "OverlandEnchantmentsUI").getPortraitImageFile ());
 		else
 			throw new MomException ("Player ID " + castingPlayerID + " has neither a custom or standard photo");
 		
@@ -591,6 +597,22 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
 	{
 		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 
 	/**

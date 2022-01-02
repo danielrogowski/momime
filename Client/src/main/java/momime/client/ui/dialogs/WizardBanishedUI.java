@@ -33,7 +33,6 @@ import momime.common.database.AnimationEx;
 import momime.common.database.LanguageText;
 import momime.common.database.WizardEx;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -71,6 +70,9 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	/** The wizard who was banished */
 	private PlayerPublicDetails banishedWizard;
 
+	/** The wizard who was banished */
+	private KnownWizardDetails banishedWizardDetails;
+	
 	/** The wizard (or raiders) who is banishing them */
 	private PlayerPublicDetails banishingWizard;
 	
@@ -120,12 +122,10 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		// Find details about the 2 wizards involved
 		// Having a pic and sound effect for the banished wizard is mandatory or we cannot draw anything sensible.
 		// Having a pic for the banishing wizard is optional, as there's some mobs shown too so can just show them like raiders if nothing else.
-		final MomPersistentPlayerPublicKnowledge banishedWizardPub = (MomPersistentPlayerPublicKnowledge) getBanishedWizard ().getPersistentPlayerPublicKnowledge ();
-		banishedWizardDef = getClient ().getClientDB ().findWizard (banishedWizardPub.getStandardPhotoID (), "WizardBanishedUI (A)");
+		banishedWizardDef = getClient ().getClientDB ().findWizard (getBanishedWizardDetails ().getStandardPhotoID (), "WizardBanishedUI (A)");
 		
-		final MomPersistentPlayerPublicKnowledge banishingWizardPub = (MomPersistentPlayerPublicKnowledge) getBanishingWizard ().getPersistentPlayerPublicKnowledge ();
-		banishingWizardDef = (banishingWizardPub.getStandardPhotoID () == null) ? null :
-			getClient ().getClientDB ().findWizard (banishingWizardPub.getStandardPhotoID (), "WizardBanishedUI (B)");
+		banishingWizardDef = (getBanishingWizardDetails ().getStandardPhotoID () == null) ? null :
+			getClient ().getClientDB ().findWizard (getBanishingWizardDetails ().getStandardPhotoID (), "WizardBanishedUI (B)");
 		
 		// Raiders do have a standardPhotoID, but no images
 		if ((banishingWizardDef != null) && (banishingWizardDef.getBanishingImageFile () == null))
@@ -328,8 +328,8 @@ public final class WizardBanishedUI extends MomClientDialogUI
 			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
 		
 		final String title = getLanguageHolder ().findDescription (languageText).replaceAll
-			("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
-			("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
+			("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (getBanishedWizard ())).replaceAll
+			("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (getBanishingWizard ()));
 		
 		getDialog ().setTitle (title);
 		titleLabel.setText (title);
@@ -447,6 +447,22 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		banishedWizard = w;
 	}
 
+	/**
+	 * @return The wizard who was banished
+	 */
+	public final KnownWizardDetails getBanishedWizardDetails ()
+	{
+		return banishedWizardDetails;
+	}
+
+	/**
+	 * @param w The wizard who was banished
+	 */
+	public final void setBanishedWizardDetails (final KnownWizardDetails w)
+	{
+		banishedWizardDetails = w;
+	}
+	
 	/**
 	 * @return The wizard (or raiders) who is banishing them
 	 */

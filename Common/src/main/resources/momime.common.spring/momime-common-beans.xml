@@ -107,8 +107,6 @@
     			<value>momime.common.messages.servertoclient.BroadcastChatMessage</value>
     			<value>momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage</value>
     			<value>momime.common.messages.servertoclient.ChooseYourRaceNowMessage</value>
-    			<value>momime.common.messages.servertoclient.ChosenCustomPhotoMessage</value>
-    			<value>momime.common.messages.servertoclient.ChosenStandardPhotoMessage</value>
     			<value>momime.common.messages.servertoclient.MeetWizardMessage</value>
     			<value>momime.common.messages.servertoclient.CombatEndedMessage</value>
     			<value>momime.common.messages.servertoclient.DamageCalculationMessage</value>

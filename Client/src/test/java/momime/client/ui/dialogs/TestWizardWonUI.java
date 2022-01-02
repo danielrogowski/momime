@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -27,7 +26,7 @@ import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 
 /**
  * Tests the WizardWonUI class
@@ -130,10 +129,8 @@ public final class TestWizardWonUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Players
-		final MomPersistentPlayerPublicKnowledge winningWizardPub = new MomPersistentPlayerPublicKnowledge ();
-		winningWizardPub.setStandardPhotoID (standardPhotoID);
-		
-		final PlayerPublicDetails winningWizard = new PlayerPublicDetails (null, winningWizardPub, null);
+		final KnownWizardDetails winningWizard = new KnownWizardDetails ();
+		winningWizard.setStandardPhotoID (standardPhotoID);
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/WizardWonUI.xml"));

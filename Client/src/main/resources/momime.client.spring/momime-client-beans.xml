@@ -177,6 +177,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="historyUI" ref="historyUI" />
 	</bean>
@@ -204,16 +205,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameUI" ref="newGameUI" />
 	</bean>
 	
-	<bean id="chosenStandardPhotoMessage" class="momime.client.messages.process.ChosenStandardPhotoMessageImpl" scope="prototype">
-		<property name="client" ref="client" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
-	</bean>
-
-	<bean id="chosenCustomPhotoMessage" class="momime.client.messages.process.ChosenCustomPhotoMessageImpl" scope="prototype">
-		<property name="client" ref="client" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
-	</bean>
-
 	<bean id="fullSpellListMessage" class="momime.client.messages.process.FullSpellListMessageImpl" scope="prototype" >
 		<property name="client" ref="client" />
 		<property name="spellUtils" ref="spellUtils" />
@@ -605,6 +596,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="client" ref="client" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="offerAcceptedMessage" class="momime.client.messages.process.OfferAcceptedMessageImpl" scope="prototype">
@@ -887,6 +879,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="musicPlayer" ref="musicPlayer" />
 	</bean>
 	
@@ -2122,6 +2115,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 	

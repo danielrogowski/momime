@@ -158,7 +158,7 @@ public final class TestWizardsUI extends ClientTestData
 			else
 			{
 				wizardDetails.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
-				pub.setStandardPhotoID (wizardDetails.getWizardID ());
+				wizardDetails.setStandardPhotoID (wizardDetails.getWizardID ());
 				
 				final String hex = Integer.toHexString (pd.getPlayerID ());
 				trans = new MomTransientPlayerPublicKnowledge ();

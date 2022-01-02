@@ -29,7 +29,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -125,20 +124,19 @@ public final class TestWizardBanishedUI extends ClientTestData
 		// Players
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		
-		final MomPersistentPlayerPublicKnowledge banishedWizardPub = new MomPersistentPlayerPublicKnowledge ();
-		banishedWizardPub.setStandardPhotoID ("WZ01");
+		final KnownWizardDetails banishedWizardDetails = new KnownWizardDetails ();
+		banishedWizardDetails.setStandardPhotoID ("WZ01");
 		
-		final PlayerPublicDetails banishedWizard = new PlayerPublicDetails (null, banishedWizardPub, null);
+		final PlayerPublicDetails banishedWizard = new PlayerPublicDetails (null, null, null);
 		when (wizardClientUtils.getPlayerName (banishedWizard)).thenReturn ("Merlin");
 		
-		final MomPersistentPlayerPublicKnowledge banishingWizardPub = new MomPersistentPlayerPublicKnowledge ();
-		if (isEnemyWizard)
-			banishingWizardPub.setStandardPhotoID ("WZ03");
-		
-		final PlayerPublicDetails banishingWizard = new PlayerPublicDetails (null, banishingWizardPub, null);
+		final PlayerPublicDetails banishingWizard = new PlayerPublicDetails (null, null, null);
+
 		when (wizardClientUtils.getPlayerName (banishingWizard)).thenReturn (isEnemyWizard ? "Kali" : "Raiders");
 		
 		final KnownWizardDetails banishingWizardDetails = new KnownWizardDetails ();
+		if (isEnemyWizard)
+			banishingWizardDetails.setStandardPhotoID ("WZ03");
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/WizardBanishedUI.xml"));
@@ -156,6 +154,7 @@ public final class TestWizardBanishedUI extends ClientTestData
 		wizardBanished.setLanguageChangeMaster (langMaster);
 		wizardBanished.setLargeFont (CreateFontsForTests.getLargeFont ());		
 		wizardBanished.setBanishedWizard (banishedWizard);
+		wizardBanished.setBanishedWizardDetails (banishedWizardDetails);
 		wizardBanished.setBanishingWizard (banishingWizard);
 		wizardBanished.setBanishingWizardDetails (banishingWizardDetails);
 		wizardBanished.setMusicPlayer (mock (AudioPlayer.class));

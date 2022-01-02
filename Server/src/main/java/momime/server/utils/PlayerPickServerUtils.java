@@ -9,6 +9,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.WizardEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.server.MomSessionVariables;
@@ -27,11 +28,11 @@ public interface PlayerPickServerUtils
 	public int getTotalInitialSkill (final List<PlayerPick> picks, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
-	 * @param players List of players
+	 * @param wizards List of wizards
 	 * @param standardPhotoID Standard photo ID we want to pick
 	 * @return Player with the specified Standard photo ID, or null if none are found
 	 */
-	public PlayerServerDetails findPlayerUsingStandardPhoto (final List<PlayerServerDetails> players, final String standardPhotoID);
+	public KnownWizardDetails findWizardUsingStandardPhoto (final List<KnownWizardDetails> wizards, final String standardPhotoID);
 
 	/**
 	 * Checks whether a player's custom pick selection is valid
@@ -106,11 +107,11 @@ public interface PlayerPickServerUtils
 	public boolean allPlayersAreConnected (final List<PlayerServerDetails> players);
 	
 	/**
-	 * @param players List of players
+	 * @param wizards List of wizards
 	 * @param db Lookup lists built over the XML database
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list
 	 */
-	public List<WizardEx> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final CommonDatabase db);
+	public List<WizardEx> listWizardsForAIPlayers (final List<KnownWizardDetails> wizards, final CommonDatabase db);
 
 	/**
 	 * Checks which plane a wizard with a certain selection of picks should start on

@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipException;
 
 import javax.swing.SwingUtilities;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -17,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.base.exception.XMLUnexpectedElement;
 import com.ndg.multiplayer.client.MultiplayerSessionClient;
 import com.ndg.multiplayer.client.MultiplayerSessionClientEvent;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.BrowseSavePointsFailedReason;
 import com.ndg.multiplayer.sessionbase.BrowseSavedGames;
@@ -35,6 +35,7 @@ import com.ndg.multiplayer.sessionbase.SavedGameSession;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.swing.NdgUIUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.OverlandMapBitmapGenerator;
@@ -74,9 +75,9 @@ import momime.client.ui.frames.WizardsUI;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.LanguageText;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -182,6 +183,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/** List of all city views currently open, keyed by coordinates.toString () */
 	private Map<String, CityViewUI> cityViews = new HashMap<String, CityViewUI> (); 
@@ -316,16 +320,15 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 				
 				// If making or joining a new game, we won't yet know the photos and flag colours all the players are using
 				// but if reloading a game, we'll already have this info, and have to use it to populate the flag colour in the player's transient data
-				for (final PlayerPublicDetails player : getPlayers ())
+				for (final KnownWizardDetails wizardDetails : getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ())
 				{
-					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+					final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getPlayers (), wizardDetails.getPlayerID (), "joinedSession");
 					final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
 					
-					if (pub.getCustomFlagColour () != null)
-						trans.setFlagColour (pub.getCustomFlagColour ());
-					
-					else if (pub.getStandardPhotoID () != null)
-						trans.setFlagColour (getClientDB ().findWizard (pub.getStandardPhotoID (), "joinedSession").getFlagColour ());
+					if (wizardDetails.getStandardPhotoID () != null)
+						trans.setFlagColour (getClientDB ().findWizard (wizardDetails.getStandardPhotoID (), "joinedSession").getFlagColour ());
+					else
+						trans.setFlagColour (wizardDetails.getCustomFlagColour ());
 				}
 				
 				// Also if reloading a game, or joining a game being reloaded, show the wait for players screen
@@ -1374,6 +1377,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final MomLanguagesEx getLanguages ()
 	{
 		return languageHolder.getLanguages ();
+	}
+	
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 	
 	/**

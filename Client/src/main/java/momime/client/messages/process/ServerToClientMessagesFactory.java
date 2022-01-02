@@ -134,11 +134,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public ChosenStandardPhotoMessageImpl createChosenStandardPhotoMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public ReplacePicksMessageImpl createReplacePicksMessage ();
 
 	/**
@@ -150,11 +145,6 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public KillUnitMessageImpl createKillUnitMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
-	public ChosenCustomPhotoMessageImpl createChosenCustomPhotoMessage ();
 
 	/**
 	 * @return Newly created message

@@ -60,8 +60,6 @@ import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
 import momime.common.messages.servertoclient.AnimationID;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
-import momime.common.messages.servertoclient.ChosenCustomPhotoMessage;
-import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
 import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FullSpellListMessage;
@@ -256,13 +254,16 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			final KnownWizardDetails trueWizardDetails = new KnownWizardDetails ();
 			trueWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
 			trueWizardDetails.setWizardID (wizardID);
-			
+			trueWizardDetails.setStandardPhotoID (wizardID);  // Set photo for pre-defined wizard, including raiders and monsters since sending this causes the client to look up their flag colour
+
 			mom.getGeneralServerKnowledge ().getTrueWizardDetails ().add (trueWizardDetails);
 
 			// On the server, remember that this wizard has met themselves; make a separate copy of the object
+			// Remaining field values (photo choice, flag colour, picks) are not yet known yet
 			final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
 			knownWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
 			knownWizardDetails.setWizardID (wizardID);
+			knownWizardDetails.setStandardPhotoID (wizardID);
 
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 			priv.getKnownWizardDetails ().add (knownWizardDetails);
@@ -275,81 +276,75 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				player.getConnection ().sendMessageToClient (meet);
 			}
 
-			if (wizard != null)
+			if ((wizard != null) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
 			{
-				// Set photo for pre-defined wizard, including raiders and monsters since sending this causes the client to look up their flag colour
+				// Find the correct node in the database for the number of player human players have
+				final int desiredPickCount;
+				if (player.getPlayerDescription ().isHuman ())
+					desiredPickCount = mom.getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ();
+				else
+					desiredPickCount = mom.getSessionDescription ().getDifficultyLevel ().getAiSpellPicks ();
+
+				final Optional<WizardPickCount> pickCount = wizard.getWizardPickCount ().stream ().filter (pc -> pc.getPickCount () == desiredPickCount).findAny ();
+				if (pickCount.isEmpty ())
+					throw new RecordNotFoundException (WizardPickCount.class, wizardID + "-" + desiredPickCount, "chooseWizard");
+
+				// Read pre-defined wizard's list of picks from the DB and send them to the player
+				// We'll send them to everyone else when the game starts
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				ppk.setStandardPhotoID (wizardID);
-
-				if ((!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
+				for (final PickAndQuantity srcPick : pickCount.get ().getWizardPick ())
 				{
-					// Find the correct node in the database for the number of player human players have
-					final int desiredPickCount;
-					if (player.getPlayerDescription ().isHuman ())
-						desiredPickCount = mom.getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ();
-					else
-						desiredPickCount = mom.getSessionDescription ().getDifficultyLevel ().getAiSpellPicks ();
+					final PlayerPick destPick = new PlayerPick ();
+					destPick.setPickID (srcPick.getPickID ());
+					destPick.setQuantity (srcPick.getQuantity ());
+					destPick.setOriginalQuantity (srcPick.getQuantity ());
+					ppk.getPick ().add (destPick);
+				}
 
-					final Optional<WizardPickCount> pickCount = wizard.getWizardPickCount ().stream ().filter (pc -> pc.getPickCount () == desiredPickCount).findAny ();
-					if (pickCount.isEmpty ())
-						throw new RecordNotFoundException (WizardPickCount.class, wizardID + "-" + desiredPickCount, "chooseWizard");
+				// Debug picks to server log file
+				if (log.isDebugEnabled ())
+				{
+					String picksDebugDescription = null;
 
-					// Read pre-defined wizard's list of picks from the DB and send them to the player
-					// We'll send them to everyone else when the game starts
-					for (final PickAndQuantity srcPick : pickCount.get ().getWizardPick ())
+					for (final PlayerPick pick : ppk.getPick ())
 					{
-						final PlayerPick destPick = new PlayerPick ();
-						destPick.setPickID (srcPick.getPickID ());
-						destPick.setQuantity (srcPick.getQuantity ());
-						destPick.setOriginalQuantity (srcPick.getQuantity ());
-						ppk.getPick ().add (destPick);
-					}
-
-					// Debug picks to server log file
-					if (log.isDebugEnabled ())
-					{
-						String picksDebugDescription = null;
-
-						for (final PlayerPick pick : ppk.getPick ())
-						{
-							if (picksDebugDescription == null)
-								picksDebugDescription = pick.getQuantity () + "x" + pick.getPickID ();
-							else
-								picksDebugDescription = picksDebugDescription + ", " + pick.getQuantity () + "x" + pick.getPickID ();
-						}
-
-						log.debug ("chooseWizard: Read picks for player '" + player.getPlayerDescription ().getPlayerName () + "' who has chosen pre-defined wizard \"" + wizardID + "\":  " + picksDebugDescription);
-					}
-
-					// Send picks to the player - they need to know their own picks so they know whether they're allowed to pick a Myrran race not
-					// We don't send picks to other players until the game is starting up
-					if (player.getPlayerDescription ().isHuman ())
-					{
-						final ReplacePicksMessage picksMsg = new ReplacePicksMessage ();
-						picksMsg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-						picksMsg.getPick ().addAll (ppk.getPick ());
-						player.getConnection ().sendMessageToClient (picksMsg);
-					}
-
-					// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
-					// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
-					if (player.getPlayerDescription ().isHuman ())
-					{
-						// This will tell the client to either pick free spells for the first magic realm that they have earned free spells in, or pick their race, depending on what picks they've chosen
-						log.debug ("chooseWizard: About to search for first realm (if any) where human player " + player.getPlayerDescription ().getPlayerName () + " gets free spells");
-						final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom.getServerDB ());
-						if (chooseSpellsMsg != null)
-							player.getConnection ().sendMessageToClient (chooseSpellsMsg);
+						if (picksDebugDescription == null)
+							picksDebugDescription = pick.getQuantity () + "x" + pick.getPickID ();
 						else
-							player.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
+							picksDebugDescription = picksDebugDescription + ", " + pick.getQuantity () + "x" + pick.getPickID ();
 					}
-					else
-					{
-						// For AI players, we call this repeatedly until all free spells have been chosen
-						log.debug ("chooseWizard: About to choose all free spells for AI player " + player.getPlayerDescription ().getPlayerName ());
 
-						while (getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom.getServerDB ()) != null);
-					}
+					log.debug ("chooseWizard: Read picks for player '" + player.getPlayerDescription ().getPlayerName () + "' who has chosen pre-defined wizard \"" + wizardID + "\":  " + picksDebugDescription);
+				}
+
+				// Send picks to the player - they need to know their own picks so they know whether they're allowed to pick a Myrran race not
+				// We don't send picks to other players until the game is starting up
+				if (player.getPlayerDescription ().isHuman ())
+				{
+					final ReplacePicksMessage picksMsg = new ReplacePicksMessage ();
+					picksMsg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+					picksMsg.getPick ().addAll (ppk.getPick ());
+					player.getConnection ().sendMessageToClient (picksMsg);
+				}
+
+				// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
+				// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
+				if (player.getPlayerDescription ().isHuman ())
+				{
+					// This will tell the client to either pick free spells for the first magic realm that they have earned free spells in, or pick their race, depending on what picks they've chosen
+					log.debug ("chooseWizard: About to search for first realm (if any) where human player " + player.getPlayerDescription ().getPlayerName () + " gets free spells");
+					final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom.getServerDB ());
+					if (chooseSpellsMsg != null)
+						player.getConnection ().sendMessageToClient (chooseSpellsMsg);
+					else
+						player.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
+				}
+				else
+				{
+					// For AI players, we call this repeatedly until all free spells have been chosen
+					log.debug ("chooseWizard: About to choose all free spells for AI player " + player.getPlayerDescription ().getPlayerName ());
+
+					while (getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom.getServerDB ()) != null);
 				}
 			}
 		}
@@ -422,7 +417,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			if (mom.getSessionDescription ().getAiPlayerCount () > 0)
 			{
 				// Get list of wizard IDs for AI players to choose from
-				final List<WizardEx> availableWizards = getPlayerPickServerUtils ().listWizardsForAIPlayers (mom.getPlayers (), mom.getServerDB ());
+				final List<WizardEx> availableWizards = getPlayerPickServerUtils ().listWizardsForAIPlayers (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getServerDB ());
 				for (int aiPlayerNo = 0; aiPlayerNo < mom.getSessionDescription ().getAiPlayerCount (); aiPlayerNo++)
 				{
 					// Pick a random wizard for this AI player
@@ -479,6 +474,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
 						knownWizardDetails.setPlayerID (automaticallyMeetWizard.getPlayerID ());
 						knownWizardDetails.setWizardID (automaticallyMeetWizard.getWizardID ());
+						knownWizardDetails.setStandardPhotoID (automaticallyMeetWizard.getStandardPhotoID ());
 						priv.getKnownWizardDetails ().add (knownWizardDetails);
 						
 						if (sendToPlayer.getPlayerDescription ().isHuman ())
@@ -497,26 +493,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			{
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
-
-				// Send photo, including for Raiders since this sends their flag colour
-				if (ppk.getStandardPhotoID () != null)
-				{
-					final ChosenStandardPhotoMessage msg = new ChosenStandardPhotoMessage ();
-					msg.setPlayerID (thisPlayer.getPlayerDescription ().getPlayerID ());
-					msg.setPhotoID (ppk.getStandardPhotoID ());
-
-					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
-				}
-
-				else if (ppk.getCustomPhoto () != null)
-				{
-					final ChosenCustomPhotoMessage msg = new ChosenCustomPhotoMessage ();
-					msg.setPlayerID (thisPlayer.getPlayerDescription ().getPlayerID ());
-					msg.setFlagColour (ppk.getCustomFlagColour ());
-					msg.setNdgBmpImage (ppk.getCustomPhoto ());
-
-					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
-				}
 
 				// Send picks to everyone - note we don't know if they've already received them, if e.g. player
 				// 1 joins and makes their picks then these get stored into public info on the server, then

@@ -66,8 +66,8 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	{
 		// Update player details
 		final PlayerPublicDetails banishedWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) banishedWizard.getPersistentPlayerPublicKnowledge ();
-		pub.setWizardState (getWizardState ());
+		final MomPersistentPlayerPublicKnowledge banishedPub = (MomPersistentPlayerPublicKnowledge) banishedWizard.getPersistentPlayerPublicKnowledge ();
+		banishedPub.setWizardState (getWizardState ());
 		
 		final KnownWizardDetails banishedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
@@ -97,13 +97,14 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 				final PlayerPublicDetails banishingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
 				
 				// Show animation
-				if (pub.getStandardPhotoID () != null)
+				if (banishedWizardDetails.getStandardPhotoID () != null)
 				{
 					final KnownWizardDetails banishingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
 					
 					final WizardBanishedUI wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
 					wizardBanishedUI.setBanishedWizard (banishedWizard);
+					wizardBanishedUI.setBanishedWizardDetails (banishedWizardDetails);
 					wizardBanishedUI.setBanishingWizard (banishingWizard);
 					wizardBanishedUI.setBanishingWizardDetails (banishingWizardDetails);
 					wizardBanishedUI.setDefeated (isDefeated);

@@ -430,10 +430,10 @@ public final class WizardsUI extends MomClientFrameUI
 					if ((wizardDetails != null) && (pub.getWizardState () == WizardState.ACTIVE))
 					{
 						final BufferedImage unscaledPortrait;
-						if (pub.getCustomPhoto () != null)
-							unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
-						else if (pub.getStandardPhotoID () != null)
-							unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
+						if (wizardDetails.getCustomPhoto () != null)
+							unscaledPortrait = ImageIO.read (new ByteArrayInputStream (wizardDetails.getCustomPhoto ()));
+						else if (wizardDetails.getStandardPhotoID () != null)
+							unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (wizardDetails.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
 						else
 							throw new MomException ("Player ID " + player.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
 		
@@ -622,12 +622,14 @@ public final class WizardsUI extends MomClientFrameUI
 			
 			try
 			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) selectedWizard.getPersistentPlayerPublicKnowledge ();
+				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), selectedWizard.getPlayerDescription ().getPlayerID ());
+				
 				final BufferedImage unscaledPortrait;
-				if (pub.getCustomPhoto () != null)
-					unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
-				else if (pub.getStandardPhotoID () != null)
-					unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
+				if (wizardDetails.getCustomPhoto () != null)
+					unscaledPortrait = ImageIO.read (new ByteArrayInputStream (wizardDetails.getCustomPhoto ()));
+				else if (wizardDetails.getStandardPhotoID () != null)
+					unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (wizardDetails.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
 				else
 					throw new MomException ("Player ID " + selectedWizard.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
 				

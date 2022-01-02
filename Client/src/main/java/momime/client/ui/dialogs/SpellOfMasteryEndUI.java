@@ -104,21 +104,23 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 		// Total up the number of "ball" frames while we're at it
 		int totalFrameCount = 6 + 6;  // 6 of portal opening, 6 of portal closing
 		
-		final MomPersistentPlayerPublicKnowledge castingWizardPub = (MomPersistentPlayerPublicKnowledge) getCastingWizard ().getPersistentPlayerPublicKnowledge ();
-		final WizardEx castingWizardDef = (castingWizardPub.getStandardPhotoID () == null) ? null :
-			getClient ().getClientDB ().findWizard (castingWizardPub.getStandardPhotoID (), "SpellOfMasteryEndUI (C)");
+		final KnownWizardDetails castingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getCastingWizard ().getPlayerDescription ().getPlayerID (), "SpellOfMasteryEndUI (C)");
+
+		final WizardEx castingWizardDef = (castingWizardDetails.getStandardPhotoID () == null) ? null :
+			getClient ().getClientDB ().findWizard (castingWizardDetails.getStandardPhotoID (), "SpellOfMasteryEndUI (C)");
 
 		for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			if (player != getCastingWizard ())
 			{
 				final MomPersistentPlayerPublicKnowledge banishedWizardPub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				final KnownWizardDetails banishedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "SpellOfMasteryEndUI");
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "SpellOfMasteryEndUI (B)");
 				
 				if ((getPlayerKnowledgeUtils ().isWizard (banishedWizardDetails.getWizardID ())) && (banishedWizardPub.getWizardState () != WizardState.DEFEATED) &&
-					(banishedWizardPub.getStandardPhotoID () != null))
+					(banishedWizardDetails.getStandardPhotoID () != null))
 				{
-					final WizardEx banishedWizardDef = getClient ().getClientDB ().findWizard (banishedWizardPub.getStandardPhotoID (), "SpellOfMasteryEndUI (B)");
+					final WizardEx banishedWizardDef = getClient ().getClientDB ().findWizard (banishedWizardDetails.getStandardPhotoID (), "SpellOfMasteryEndUI (B)");
 					final AnimationEx banishedWizardAnim = getClient ().getClientDB ().findAnimation (banishedWizardDef.getBallAnimation (), "SpellOfMasteryEndUI (B)");
 					banishedWizardAnims.add (banishedWizardAnim);
 					

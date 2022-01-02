@@ -144,28 +144,30 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Casting wizard
+		final PlayerDescription castingWizardPd = new PlayerDescription ();
+		castingWizardPd.setPlayerID (1);
+		
 		final MomPersistentPlayerPublicKnowledge castingWizardPub = new MomPersistentPlayerPublicKnowledge ();
-		castingWizardPub.setStandardPhotoID ("WZ01");
 		castingWizardPub.setWizardState (WizardState.ACTIVE);
 		
-		final PlayerPublicDetails castingWizard = new PlayerPublicDetails (null, castingWizardPub, null);
+		final PlayerPublicDetails castingWizard = new PlayerPublicDetails (castingWizardPd, castingWizardPub, null);
 		
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		when (wizardClientUtils.getPlayerName (castingWizard)).thenReturn ("Bob");
 		
-		// Banished wizards
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-
+		
+		final KnownWizardDetails castingWizardDetails = new KnownWizardDetails ();
+		castingWizardDetails.setStandardPhotoID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), castingWizardPd.getPlayerID (), "SpellOfMasteryEndUI (C)")).thenReturn (castingWizardDetails);
+		
+		// Banished wizards
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (castingWizard);
 		
 		for (int n = 2; n <= 5; n++)
 		{
 			final MomPersistentPlayerPublicKnowledge banishedWizardPub = new MomPersistentPlayerPublicKnowledge ();
-			
-			if (n != 3)
-				banishedWizardPub.setStandardPhotoID ("WZ0" + n);
-			
 			banishedWizardPub.setWizardState ((n == 4) ? WizardState.DEFEATED : WizardState.ACTIVE);
 			
 			final PlayerDescription pd = new PlayerDescription ();
@@ -175,7 +177,10 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 			players.add (banishedWizard);
 			
 			final KnownWizardDetails banishedWizardDetails = new KnownWizardDetails ();
-			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), n, "SpellOfMasteryEndUI")).thenReturn (banishedWizardDetails);
+			if (n != 3)
+				banishedWizardDetails.setStandardPhotoID ("WZ0" + n);
+			
+			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), n, "SpellOfMasteryEndUI (B)")).thenReturn (banishedWizardDetails);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);

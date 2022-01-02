@@ -43,7 +43,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -119,24 +118,18 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
-		pub1.setStandardPhotoID ("WZ01");
-		
 		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
 		trans1.setFlagColour ("FF0000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, null, trans1);
 
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 
-		final MomPersistentPlayerPublicKnowledge pub2 = new MomPersistentPlayerPublicKnowledge ();
-		pub2.setCustomPhoto (Files.readAllBytes (Paths.get (getClass ().getResource ("/CustomWizardPhoto.png").toURI ())));
-		
 		final MomTransientPlayerPublicKnowledge trans2 = new MomTransientPlayerPublicKnowledge ();
 		trans2.setFlagColour ("FF0000");
 		
-		final PlayerPublicDetails player2 = new PlayerPublicDetails (pd2, pub2, trans2);
+		final PlayerPublicDetails player2 = new PlayerPublicDetails (pd2, null, trans2);
 		if (anotherWizard)
 			when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Someone");
 		
@@ -161,12 +154,14 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		if (!anotherWizard)
 		{
 			final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
-			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
+			wizardDetails1.setStandardPhotoID ("WZ01");
+			when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (pd1.getPlayerID ()), anyString ())).thenReturn (wizardDetails1);
 		}
 		else
 		{
 			final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();
-			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd2.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails2);
+			wizardDetails2.setCustomPhoto (Files.readAllBytes (Paths.get (getClass ().getResource ("/CustomWizardPhoto.png").toURI ())));
+			when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (pd2.getPlayerID ()), anyString ())).thenReturn (wizardDetails2);
 		}
 		
 		// Client
@@ -209,6 +204,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		ench.setOverlandEnchantmentsLayout (layout);
 		ench.setAddSpellMessage (spellMessage);
 		ench.setWizardClientUtils (wizardClientUtils);
+		ench.setKnownWizardUtils (knownWizardUtils);
 		ench.setMagicSlidersUI (new MagicSlidersUI ());
 		ench.setMemoryMaintainedSpellUtils (mock (MemoryMaintainedSpellUtils.class));
 		

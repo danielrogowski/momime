@@ -15,7 +15,6 @@ import javax.swing.WindowConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -28,7 +27,7 @@ import momime.client.messages.process.PlayAnimationMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.common.database.AnimationEx;
 import momime.common.database.WizardEx;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 
 /**
  * Animation when you win the game
@@ -54,7 +53,7 @@ public final class WizardWonUI extends MomClientDialogUI
 	private AudioPlayer musicPlayer;
 	
 	/** The wizard who won */
-	private PlayerPublicDetails winningWizard;
+	private KnownWizardDetails winningWizard;
 	
 	/** Play animation message */
 	private PlayAnimationMessageImpl playAnimationMessage;
@@ -88,9 +87,8 @@ public final class WizardWonUI extends MomClientDialogUI
 	protected final void init () throws IOException
 	{
 		// Find details about the wizard
-		final MomPersistentPlayerPublicKnowledge winningWizardPub = (MomPersistentPlayerPublicKnowledge) getWinningWizard ().getPersistentPlayerPublicKnowledge ();
-		final WizardEx winningWizardDef = (winningWizardPub.getStandardPhotoID () == null) ? null :
-			getClient ().getClientDB ().findWizard (winningWizardPub.getStandardPhotoID (), "WizardWonUI");
+		final WizardEx winningWizardDef = (getWinningWizard ().getStandardPhotoID () == null) ? null :
+			getClient ().getClientDB ().findWizard (getWinningWizard ().getStandardPhotoID (), "WizardWonUI");
 		
 		final XmlLayoutComponent handsLayout = getWizardWonLayout ().findComponent ("frmWizardWonHands");
 		final Image handsImage = (winningWizardDef == null) ? null : getUtils ().loadImage (winningWizardDef.getWorldHandsImageFile ()).getScaledInstance
@@ -323,7 +321,7 @@ public final class WizardWonUI extends MomClientDialogUI
 	/**
 	 * @return The wizard who won
 	 */
-	public final PlayerPublicDetails getWinningWizard ()
+	public final KnownWizardDetails getWinningWizard ()
 	{
 		return winningWizard;
 	}
@@ -331,7 +329,7 @@ public final class WizardWonUI extends MomClientDialogUI
 	/**
 	 * @param w The wizard who won
 	 */
-	public final void setWinningWizard (final PlayerPublicDetails w)
+	public final void setWinningWizard (final KnownWizardDetails w)
 	{
 		winningWizard = w;
 	}

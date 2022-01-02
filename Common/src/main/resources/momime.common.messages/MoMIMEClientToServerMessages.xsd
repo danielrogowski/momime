@@ -72,7 +72,7 @@
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="ndgBmpImage" type="xsd:base64Binary" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="customPhoto" type="xsd:base64Binary" />
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

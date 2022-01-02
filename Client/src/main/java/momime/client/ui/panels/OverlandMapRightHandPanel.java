@@ -105,6 +105,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 	/** Width of the colour patch for one player */
 	private final static int COLOUR_PATCH_WIDTH = 8;
+	
+	/** Colour to use in colour patches when we haven't met a wizard yet */
+	private final static Color DEFAULT_PATCH_COLOUR = new Color (0x77, 0x77, 0x77);
 
 	/** XML layout for the overall panel */
 	private XmlLayoutContainerEx overlandMapRightHandPanelLayout;
@@ -469,7 +472,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 							// Draw colour patch for next player
 							final PlayerPublicDetails player = getClient ().getPlayers ().get (playerIndex);
 							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
-							g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
+							if (trans.getFlagColour () != null)
+								g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
+							else
+								g.setColor (DEFAULT_PATCH_COLOUR);
 							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.getHeight ());
 							
 							// Draw icon for AI or human player
@@ -497,7 +503,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 						for (final PlayerPublicDetails player : getClient ().getPlayers ())
 						{
 							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
-							g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
+							if (trans.getFlagColour () != null)
+								g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
+							else
+								g.setColor (DEFAULT_PATCH_COLOUR);
 							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.getHeight ());
 							
 							// Draw icon for AI or human player

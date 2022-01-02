@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
@@ -12,6 +14,7 @@ import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.WizardsUI;
 import momime.common.MomException;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.MeetWizardMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -35,6 +38,9 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/** Wizards UI */
 	private WizardsUI wizardsUI;
 	
@@ -55,6 +61,15 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 		
 		// Add it
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ().add (getKnownWizardDetails ());
+		
+		// Set flag colour (if this is us receiving our own wizard details during game setup and we chose custom wizard, we may not know this yet)
+		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getKnownWizardDetails ().getPlayerID (), "MeetWizardMessageImpl");
+		final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+		
+		if (getKnownWizardDetails ().getStandardPhotoID () != null)
+			trans.setFlagColour (getClient ().getClientDB ().findWizard (getKnownWizardDetails ().getStandardPhotoID (), "MeetWizardMessageImpl").getFlagColour ());
+		else
+			trans.setFlagColour (getKnownWizardDetails ().getCustomFlagColour ());
 		
 		// If it is us, and we chose Custom, then we need to go to the Choose Portrait screen
 		// If it is us and we picked a pre-defined Wizard then do nothing - the server will have already sent us either mmChooseInitialSpells or
@@ -131,6 +146,22 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 		knownWizardUtils = k;
 	}
 
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
+	
 	/**
 	 * @return Wizards UI
 	 */

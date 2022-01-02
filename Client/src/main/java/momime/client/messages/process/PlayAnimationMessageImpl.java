@@ -18,6 +18,7 @@ import momime.client.ui.dialogs.SpellOfMasteryStartUI;
 import momime.client.ui.dialogs.WizardWonUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.messages.servertoclient.PlayAnimationMessage;
+import momime.common.utils.KnownWizardUtils;
 
 /**
  * Server telling the client to play an animation about a significant game event, like casting Spell of Mastery.
@@ -37,6 +38,9 @@ public final class PlayAnimationMessageImpl extends PlayAnimationMessage impleme
 	/** Multiplayer client */
 	private MomClient client;
 
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -51,7 +55,8 @@ public final class PlayAnimationMessageImpl extends PlayAnimationMessage impleme
 		{
 			case WON:
 				final WizardWonUI wizardWonUI = getPrototypeFrameCreator ().createWizardWon ();
-				wizardWonUI.setWinningWizard (player);
+				wizardWonUI.setWinningWizard (getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getPlayerID (), "PlayAnimationMessageImpl"));
 				wizardWonUI.setPlayAnimationMessage (this);
 				wizardWonUI.setVisible (true);
 				break;
@@ -131,5 +136,21 @@ public final class PlayAnimationMessageImpl extends PlayAnimationMessage impleme
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

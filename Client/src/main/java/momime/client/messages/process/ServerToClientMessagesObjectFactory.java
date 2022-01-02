@@ -14,8 +14,6 @@ import momime.common.messages.servertoclient.BroadcastChatMessage;
 import momime.common.messages.servertoclient.CancelCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
-import momime.common.messages.servertoclient.ChosenCustomPhotoMessage;
-import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.CounterMagicResultsMessage;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
@@ -303,15 +301,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final ChosenStandardPhotoMessage createChosenStandardPhotoMessage ()
-	{
-		return getFactory ().createChosenStandardPhotoMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
 	public final ReplacePicksMessage createReplacePicksMessage ()
 	{
 		return getFactory ().createReplacePicksMessage ();
@@ -333,15 +322,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final KillUnitMessage createKillUnitMessage ()
 	{
 		return getFactory ().createKillUnitMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final ChosenCustomPhotoMessage createChosenCustomPhotoMessage ()
-	{
-		return getFactory ().createChosenCustomPhotoMessage ();
 	}
 
 	/**

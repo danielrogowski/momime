@@ -1141,10 +1141,11 @@ public final class CombatUI extends MomClientFrameUI
 			// Which one of the players isn't us?
 			final PlayerPublicDetails otherPlayer = (players.getAttackingPlayer ().getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) ?
 				players.getDefendingPlayer () : players.getAttackingPlayer ();
+			final KnownWizardDetails otherWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), otherPlayer.getPlayerDescription ().getPlayerID (), "initNewCombat");
 				
 			// Now we can start the right music; if they've got a custom photo then default to the standard (raiders) music
-			final MomPersistentPlayerPublicKnowledge otherPub = (MomPersistentPlayerPublicKnowledge) otherPlayer.getPersistentPlayerPublicKnowledge ();
-			final String otherPhotoID = (otherPub.getStandardPhotoID () != null) ? otherPub.getStandardPhotoID () : CommonDatabaseConstants.WIZARD_ID_RAIDERS;
+			final String otherPhotoID = (otherWizard.getStandardPhotoID () != null) ? otherWizard.getStandardPhotoID () : CommonDatabaseConstants.WIZARD_ID_RAIDERS;
 			final WizardEx wizardDef = getClient ().getClientDB ().findWizard (otherPhotoID, "initNewCombat");
 			
 			// Pick a music track at random

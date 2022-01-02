@@ -69,7 +69,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
 	</bean>
 	
-	<bean id="chooseCustomFlagColourMessage" class="momime.server.messages.process.ChooseCustomFlagColourMessageImpl" scope="prototype" />
+	<bean id="chooseCustomFlagColourMessage" class="momime.server.messages.process.ChooseCustomFlagColourMessageImpl" scope="prototype">
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+	</bean>
 	
 	<bean id="chooseCustomPicksMessage" class="momime.server.messages.process.ChooseCustomPicksMessageImpl" scope="prototype">
 		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
@@ -80,8 +82,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 	
-	<bean id="uploadCustomPhotoMessage" class="momime.server.messages.process.UploadCustomPhotoMessageImpl" scope="prototype" />
-	<bean id="chooseStandardPhotoMessage" class="momime.server.messages.process.ChooseStandardPhotoMessageImpl" scope="prototype" />
+	<bean id="uploadCustomPhotoMessage" class="momime.server.messages.process.UploadCustomPhotoMessageImpl" scope="prototype">
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+	</bean>
+	
+	<bean id="chooseStandardPhotoMessage" class="momime.server.messages.process.ChooseStandardPhotoMessageImpl" scope="prototype">
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+	</bean>
 	
 	<bean id="nextTurnButtonMessage" class="momime.server.messages.process.NextTurnButtonMessageImpl" scope="prototype">
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />

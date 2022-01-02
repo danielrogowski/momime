@@ -1,5 +1,7 @@
 package momime.client.ui.frames;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -63,7 +65,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
@@ -194,16 +195,10 @@ public final class TestCombatUI extends ClientTestData
 		atkPd.setHuman (true);
 		atkPd.setPlayerName ("Mr. Attacker");
 		
-		final MomPersistentPlayerPublicKnowledge atkPub = new MomPersistentPlayerPublicKnowledge ();
-		atkPub.setStandardPhotoID ("WZ01");
-
-		final KnownWizardDetails atkWizard = new KnownWizardDetails ();
-		atkWizard.setWizardID ("WZ01");
-		
 		final MomTransientPlayerPublicKnowledge atkTrans = new MomTransientPlayerPublicKnowledge ();
 		atkTrans.setFlagColour ("FF0000");
 
-		final PlayerPublicDetails attackingPlayer = new PlayerPublicDetails (atkPd, atkPub, atkTrans);
+		final PlayerPublicDetails attackingPlayer = new PlayerPublicDetails (atkPd, null, atkTrans);
 		
 		// Defender
 		final PlayerDescription defPd = new PlayerDescription ();
@@ -211,13 +206,10 @@ public final class TestCombatUI extends ClientTestData
 		defPd.setHuman (false);
 		defPd.setPlayerName ("Mr. Defender");
 		
-		final MomPersistentPlayerPublicKnowledge defPub = new MomPersistentPlayerPublicKnowledge ();
-		defPub.setStandardPhotoID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
-
 		final MomTransientPlayerPublicKnowledge defTrans = new MomTransientPlayerPublicKnowledge ();
 		defTrans.setFlagColour ("0000FF");
 		
-		final PlayerPublicDetails defendingPlayer = new PlayerPublicDetails (defPd, defPub, defTrans);
+		final PlayerPublicDetails defendingPlayer = new PlayerPublicDetails (defPd, null, defTrans);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (attackingPlayer);
@@ -228,9 +220,14 @@ public final class TestCombatUI extends ClientTestData
 		// Wizards
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 
+		final KnownWizardDetails atkWizard = new KnownWizardDetails ();
+		atkWizard.setWizardID ("WZ01");
+		atkWizard.setStandardPhotoID ("WZ01");
+		
 		final KnownWizardDetails defWizard = new KnownWizardDetails ();
 		defWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), defPd.getPlayerID (), "CombatUI")).thenReturn (defWizard);
+		defWizard.setStandardPhotoID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
+		when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (defPd.getPlayerID ()), anyString ())).thenReturn (defWizard);
 		
 		// We're the attacker
 		when (client.getOurPlayerID ()).thenReturn (atkPd.getPlayerID ());

@@ -113,52 +113,48 @@ public final class TestPlayerPickServerUtilsImpl
 	}
 
 	/**
-	 * Tests the findPlayerUsingStandardPhoto method on a standard photo that is in the list
+	 * Tests the findWizardUsingStandardPhoto method on a standard photo that is in the list
 	 */
 	@Test
-	public final void testFindPlayerUsingStandardPhoto_Exists ()
+	public final void testFindWizardUsingStandardPhoto_Exists ()
 	{
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<KnownWizardDetails> wizards = new ArrayList<KnownWizardDetails> ();
 		for (int n = 1; n <= 9; n++)
 		{
-			final PlayerDescription pd = new PlayerDescription ();
-			pd.setPlayerID (n);
+			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+			wizardDetails.setStandardPhotoID ("WZ0" + n);
 
-			final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-			ppk.setStandardPhotoID ("WZ0" + n);
-
-			players.add (new PlayerServerDetails (pd, ppk, null, null, null));
+			wizards.add (wizardDetails);
 		}
 
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Run test
-		final PlayerServerDetails player = utils.findPlayerUsingStandardPhoto (players, "WZ04");
-		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		assertEquals ("WZ04", ppk.getStandardPhotoID ());
+		final KnownWizardDetails wizard = utils.findWizardUsingStandardPhoto (wizards, "WZ04");
+		assertEquals ("WZ04", wizard.getStandardPhotoID ());
 	}
 
 	/**
-	 * Tests the findPlayerUsingStandardPhoto method on a standard photo that isn't in the list
+	 * Tests the findWizardUsingStandardPhoto method on a standard photo that isn't in the list
 	 */
 	@Test
-	public final void testFindPlayerUsingStandardPhoto_NotExists ()
+	public final void testFindWizardUsingStandardPhoto_NotExists ()
 	{
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<KnownWizardDetails> wizards = new ArrayList<KnownWizardDetails> ();
 		for (int n = 1; n <= 9; n++)
 		{
-			final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-			ppk.setStandardPhotoID ("WZ0" + n);
+			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+			wizardDetails.setStandardPhotoID ("WZ0" + n);
 
-			players.add (new PlayerServerDetails (null, ppk, null, null, null));
+			wizards.add (wizardDetails);
 		}
 
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Run test
-		assertNull (utils.findPlayerUsingStandardPhoto (players, "WZ10"));
+		assertNull (utils.findWizardUsingStandardPhoto (wizards, "WZ10"));
 	}
 
 	/**
@@ -1762,25 +1758,21 @@ public final class TestPlayerPickServerUtilsImpl
 		when (db.getWizards ()).thenReturn (availableWizards);
 
 		// Create human players using 2 wizards
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final List<KnownWizardDetails> wizards = new ArrayList<KnownWizardDetails> ();
 
-		final PlayerDescription pd1 = new PlayerDescription ();
-		pd1.setPlayerID (1);
-		final MomPersistentPlayerPublicKnowledge ppk1 = new MomPersistentPlayerPublicKnowledge ();
-		ppk1.setStandardPhotoID ("WZ02");
-		players.add (new PlayerServerDetails (pd1, ppk1, null, null, null));
+		final KnownWizardDetails wizard1 = new KnownWizardDetails ();
+		wizard1.setStandardPhotoID ("WZ02");
+		wizards.add (wizard1);
 
-		final PlayerDescription pd2 = new PlayerDescription ();
-		pd2.setPlayerID (2);
-		final MomPersistentPlayerPublicKnowledge ppk2 = new MomPersistentPlayerPublicKnowledge ();
-		ppk2.setStandardPhotoID ("WZ08");
-		players.add (new PlayerServerDetails (pd2, ppk2, null, null, null));
+		final KnownWizardDetails wizard2 = new KnownWizardDetails ();
+		wizard2.setStandardPhotoID ("WZ08");
+		wizards.add (wizard2);
 
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Run test
-		final List<WizardEx> wizardIDs = utils.listWizardsForAIPlayers (players, db);
+		final List<WizardEx> wizardIDs = utils.listWizardsForAIPlayers (wizards, db);
 		assertEquals (7, wizardIDs.size ());
 		assertEquals ("WZ01", wizardIDs.get (0).getWizardID ());
 		assertEquals ("WZ03", wizardIDs.get (1).getWizardID ());

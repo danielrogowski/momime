@@ -1389,7 +1389,7 @@ public final class NewGameUI extends MomClientFrameUI
 							IOUtils.copy (in, out);
 							
 							final UploadCustomPhotoMessage msg = new UploadCustomPhotoMessage ();
-							msg.setNdgBmpImage (out.toByteArray ());
+							msg.setCustomPhoto (out.toByteArray ());
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 						}
 					}

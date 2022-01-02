@@ -48,6 +48,9 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
 					knownWizardDetails.setPlayerID (metWizardID);
 					knownWizardDetails.setWizardID (metWizard.getWizardID ());
+					knownWizardDetails.setStandardPhotoID (metWizard.getStandardPhotoID ());
+					knownWizardDetails.setCustomPhoto (metWizard.getCustomPhoto ());
+					knownWizardDetails.setCustomFlagColour (metWizard.getCustomFlagColour ());
 
 					priv.getKnownWizardDetails ().add (knownWizardDetails);
 					

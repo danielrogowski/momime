@@ -215,7 +215,7 @@ public final class CityProcessingImpl implements CityProcessing
 					plane = mom.getServerDB ().getPlane ().get (getRandomUtils ().nextInt (mom.getServerDB ().getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
-				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (mom.getGeneralServerKnowledge ().getTrueMap (),
 					plane, true, mom, "Starter city for \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 				if (cityLocation == null)
 					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\" on plane " + plane);
@@ -457,9 +457,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 							if (productionCost != null)
 							{
-								final int productionThisTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (),
-									mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-									mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+								final int productionThisTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
 									cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true,
 									mom.getServerDB (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 								
@@ -589,19 +587,15 @@ public final class CityProcessingImpl implements CityProcessing
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 						
 						// Use calculated values to determine population growth
-						final int maxCitySize = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						final int maxCitySize = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
 							cityLocation, cityOwnerPriv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
 							CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 
 						if (cityData.getCityPopulation () >= 1000)
 						{
 							// Normal city growth rate calculation
-							final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
-								mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-								mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, maxCitySize,
-								mom.getSessionDescription ().getDifficultyLevel (), mom.getServerDB ()).getCappedTotal ();
+							final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+								cityLocation, maxCitySize, mom.getSessionDescription ().getDifficultyLevel (), mom.getServerDB ()).getCappedTotal ();
 	
 							if (cityGrowthRate != 0)
 							{

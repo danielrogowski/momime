@@ -19,6 +19,7 @@ import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityProductionBreakdown;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -49,7 +50,7 @@ public final class AICityCalculationsImpl implements AICityCalculations
 	 * @param cityLocation Where to consider putting a city
 	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
 	 * @param enforceMinimumQuality Whether to avoid returning data about cities that are too small to be useful; so usually true, but false if we want to evalulate even terrible cities
-	 * @param knownMap Known terrain
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * 	When called during map creation to place initial cities, this is the true map; when called for AI players using settlers, this is only what that player knows
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if enforceMinimumQuality = true and a city here is too small to be useful; otherwise an estimate of how good a city here is/will be
@@ -59,13 +60,13 @@ public final class AICityCalculationsImpl implements AICityCalculations
 	 */
 	@Override
 	public final Integer evaluateCityQuality (final MapCoordinates3DEx cityLocation, final boolean avoidOtherCities, final boolean enforceMinimumQuality,
-		final MapVolumeOfMemoryGridCells knownMap, final MomSessionVariables mom)
+		final FogOfWarMemory mem, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		Integer thisCityQuality;
 		
 		final CityProductionBreakdownsEx productions = getCityProductionCalculations ().calculateAllCityProductions
-			(null, null, knownMap, null, null, cityLocation, null, mom.getSessionDescription (), null, false, true, mom.getServerDB ());
+			(null, mem, cityLocation, null, mom.getSessionDescription (), null, false, true, mom.getServerDB ());
 		final CityProductionBreakdown foodProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		final int maxCitySize = (foodProduction != null) ? foodProduction.getCappedProductionAmount () : 0;
 		
@@ -91,7 +92,8 @@ public final class AICityCalculationsImpl implements AICityCalculations
 			for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 				if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
 				{
-					final OverlandMapTerrainData checkFeatureData = knownMap.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+					final OverlandMapTerrainData checkFeatureData = mem.getMap ().getPlane ().get (coords.getZ ()).getRow ().get
+						(coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 					if ((checkFeatureData != null) && (checkFeatureData.getMapFeatureID () != null))
 					{
 						final Integer featureCityQualityEstimate = mom.getServerDB ().findMapFeature (checkFeatureData.getMapFeatureID (), "chooseCityLocation").getCityQualityEstimate ();
@@ -104,7 +106,7 @@ public final class AICityCalculationsImpl implements AICityCalculations
 			if (avoidOtherCities)
 			{
 				// What's the closest existing city to these coordinates?
-				Integer closestDistance = getCityServerUtils ().findClosestCityTo (cityLocation, knownMap, mom.getSessionDescription ().getOverlandMapSize ());
+				Integer closestDistance = getCityServerUtils ().findClosestCityTo (cityLocation, mem.getMap (), mom.getSessionDescription ().getOverlandMapSize ());
 				if (closestDistance != null)
 					thisCityQuality = thisCityQuality + (closestDistance * 2);		// Maximum would be 40 apart (north-south of map) x2 = 80
 			}

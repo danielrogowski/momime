@@ -216,7 +216,6 @@ public final class MovementUtilsImpl implements MovementUtils
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
-	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param db Lookup lists built over the XML database
 	 * @return Set of all overland map locations this unit stack is blocked from entering for one of the above reasons
@@ -225,8 +224,7 @@ public final class MovementUtilsImpl implements MovementUtils
 	 */
 	@Override
 	public final Set<MapCoordinates3DEx> determineBlockedLocations (final UnitStack unitStack, final int movingPlayerID,
-		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem,
-		final List<KnownWizardDetails> knownWizards, final FogOfWarMemory mem, final CommonDatabase db)
+		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		// What magic realm(s) are the units in the stack?
@@ -264,7 +262,7 @@ public final class MovementUtilsImpl implements MovementUtils
 				(s -> (MapCoordinates3DEx) s.getCityLocation ()).forEach (l -> blockedLocations.add (l));
 		
 		// To rampaging monsters, all nodes, lairs and towers are blocked so they don't end up clearing or joining the lair
-		final KnownWizardDetails movingWizard = getKnownWizardUtils ().findKnownWizardDetails (knownWizards, movingPlayerID, "determineBlockedLocations");		
+		final KnownWizardDetails movingWizard = getKnownWizardUtils ().findKnownWizardDetails (mem.getWizardDetails (), movingPlayerID, "determineBlockedLocations");		
 		if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (movingWizard.getWizardID ()))
 		{
 			for (int z = 0; z < overlandMapCoordinateSystem.getDepth (); z++)
@@ -300,7 +298,7 @@ public final class MovementUtilsImpl implements MovementUtils
 		// Raiders are impassable to Rampaging Monsters and vice versa
 		if (!getPlayerKnowledgeUtils ().isWizard (movingWizard.getWizardID ()))
 		{
-			final Integer blockedPlayerID = knownWizards.stream ().filter (w -> (w.getPlayerID () != movingPlayerID) &&
+			final Integer blockedPlayerID = mem.getWizardDetails ().stream ().filter (w -> (w.getPlayerID () != movingPlayerID) &&
 				(!getPlayerKnowledgeUtils ().isWizard (w.getWizardID ()))).map (w -> w.getPlayerID ()).findAny ().orElse (null);
 			
 			if (blockedPlayerID != null)

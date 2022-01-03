@@ -452,10 +452,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * Death rate is on strategy guide p197
 	 *
 	 * @param players Players list
-	 * @param knownWizards Details we have learned about wizards we have met
-	 * @param map Known terrain
-	 * @param buildings Known buildings
-	 * @param spells Known spells
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param cityLocation Location of the city to calculate for
 	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
 	 * @param difficultyLevel Chosen difficulty level, from session description
@@ -465,12 +462,11 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
 	@Override
-	public final CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation,
-		final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
+	public final CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem,
+		final MapCoordinates3DEx cityLocation, final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
-		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		final OverlandMapCityData cityData = mem.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		// Start off calculation
 		final int currentPopulation = cityData.getCityPopulation ();
@@ -493,7 +489,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			growing.setTotalGrowthRate (growing.getBaseGrowthRate () + growing.getRacialGrowthModifier ());
 
 			// Bonuses from buildings
-			for (final MemoryBuilding thisBuilding : buildings)
+			for (final MemoryBuilding thisBuilding : mem.getBuilding ())
 				if (thisBuilding.getCityLocation ().equals (cityLocation))
 				{
 					final Integer buildingGrowthRateBonus = db.findBuilding (thisBuilding.getBuildingID (), "calculateCityGrowthRate").getGrowthRateBonus ();
@@ -509,7 +505,7 @@ public final class CityCalculationsImpl implements CityCalculations
 				}
 
 			// Stream of Life is a separate step here and not lumped in with the % from Housing (or Dark Rituals, not that you can ever have both)
-			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_STREAM_OF_LIFE,
+			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mem.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_STREAM_OF_LIFE,
 				null, null, cityLocation, null) != null)
 				
 				growing.setTotalGrowthRateAfterStreamOfLife (growing.getTotalGrowthRate () * 2);
@@ -530,7 +526,7 @@ public final class CityCalculationsImpl implements CityCalculations
 					housingPercentage = (workers * 100) / (currentPopulation / 1000);
 				}
 				
-				for (final MemoryBuilding thisBuilding : buildings)
+				for (final MemoryBuilding thisBuilding : mem.getBuilding ())
 					if (thisBuilding.getCityLocation ().equals (cityLocation))
 					{
 						final Integer housingPercentageBonus = db.findBuilding (thisBuilding.getBuildingID (), "calculateCityGrowthRate").getHousingPercentageBonus ();
@@ -542,7 +538,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 			
 			// Dark rituals
-			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, null, CommonDatabaseConstants.SPELL_ID_DARK_RITUALS,
+			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mem.getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_DARK_RITUALS,
 				null, null, cityLocation, null) != null)
 				
 				growing.setDarkRitualsPercentagLoss (25);
@@ -566,7 +562,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			
 			// AI players get a special bonus
 			final PlayerPublicDetails cityOwnerPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");
-			final KnownWizardDetails cityOwnerWizard = getKnownWizardUtils ().findKnownWizardDetails (knownWizards, cityData.getCityOwnerID (), "calculateCityGrowthRate");
+			final KnownWizardDetails cityOwnerWizard = getKnownWizardUtils ().findKnownWizardDetails (mem.getWizardDetails (), cityData.getCityOwnerID (), "calculateCityGrowthRate");
 			
 			if ((cityOwnerPlayer.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingPopulationBoom () <= 0))
 				growing.setDifficultyLevelMultiplier (100);
@@ -1558,10 +1554,7 @@ public final class CityCalculationsImpl implements CityCalculations
 
 	/**
 	 * @param players Players list
-	 * @param knownWizards Details we have learned about wizards we have met
-	 * @param map Known terrain
-	 * @param buildings List of known buildings
-	 * @param spells List of known spells
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
@@ -1575,8 +1568,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
+	public final int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
@@ -1585,7 +1577,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
 		// So just do this the long way and then throw away all the other results
 		final CityProductionBreakdownsEx productionValues = getCityProductionCalculations ().calculateAllCityProductions
-			(players, knownWizards, map, buildings, spells, cityLocation, taxRateID, sd, conjunctionEventID,
+			(players, mem, cityLocation, taxRateID, sd, conjunctionEventID,
 				includeProductionAndConsumptionFromPopulation, false, db);		// calculatePotential fixed at false
 
 		final CityProductionBreakdown singleProductionValue = productionValues.findProductionType (productionTypeID);

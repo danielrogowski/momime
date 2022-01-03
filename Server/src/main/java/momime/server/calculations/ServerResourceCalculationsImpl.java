@@ -243,10 +243,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 	
 							for (final CityProductionBreakdown cityProduction : getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
-								mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-								mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-								cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (),
-								true, false, mom.getServerDB ()).getProductionType ())
+								mom.getGeneralServerKnowledge ().getTrueMap (), cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
+								mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ()).getProductionType ())
 							{
 								int cityProductionValue = 0;
 								

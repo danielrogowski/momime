@@ -378,7 +378,7 @@ public final class WizardsUI extends MomClientFrameUI
 							
 							final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (getTargetingSpell (),
 								getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge (),
-								player.getPlayerDescription ().getPlayerID (), targetOverlandCastingInfo, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ());
+								player.getPlayerDescription ().getPlayerID (), targetOverlandCastingInfo);
 							
 							if (validTarget == TargetSpellResult.VALID_TARGET)
 							{

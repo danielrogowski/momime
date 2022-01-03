@@ -32,6 +32,7 @@ import momime.common.database.PickType;
 import momime.common.database.Plane;
 import momime.common.database.RaceEx;
 import momime.common.internal.CityProductionBreakdown;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -89,6 +90,12 @@ public final class TestCityProductionCalculationsImpl
 		sd.setOverlandMapSize (mapSize);
 		sd.setDifficultyLevel (difficultyLevel);
 		
+		// Map
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (mapSize);
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Players
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
@@ -99,18 +106,14 @@ public final class TestCityProductionCalculationsImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, 3, "calculateAllCityProductions")).thenReturn (cityOwnerPlayer);
 		
 		// Wizards
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (knownWizards, 3, "calculateAllCityProductions")).thenReturn (cityOwnerWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 3, "calculateAllCityProductions")).thenReturn (cityOwnerWizard);
 		
 		// Picks
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		when (playerPickUtils.countPicksOfType (pub.getPick (), "X", true, db)).thenReturn (5);
-		
-		// Map
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (mapSize);
 		
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
@@ -123,15 +126,13 @@ public final class TestCityProductionCalculationsImpl
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-		
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
 		
-		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL01")).thenReturn (new MemoryBuilding ());
-		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL02")).thenReturn (null);
-		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL03")).thenReturn (new MemoryBuilding ());
-		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), "BL04")).thenReturn (new MemoryBuilding ());
-		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (20, 10, 1), CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (new MemoryBuilding ());
+		when (memoryBuildingUtils.findBuilding (mem.getBuilding (), new MapCoordinates3DEx (20, 10, 1), "BL01")).thenReturn (new MemoryBuilding ());
+		when (memoryBuildingUtils.findBuilding (mem.getBuilding (), new MapCoordinates3DEx (20, 10, 1), "BL02")).thenReturn (null);
+		when (memoryBuildingUtils.findBuilding (mem.getBuilding (), new MapCoordinates3DEx (20, 10, 1), "BL03")).thenReturn (new MemoryBuilding ());
+		when (memoryBuildingUtils.findBuilding (mem.getBuilding (), new MapCoordinates3DEx (20, 10, 1), "BL04")).thenReturn (new MemoryBuilding ());
+		when (memoryBuildingUtils.findBuilding (mem.getBuilding (), new MapCoordinates3DEx (20, 10, 1), CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (new MemoryBuilding ());
 		
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setBuildingIdSoldThisTurn ("BL04");
 
@@ -142,8 +143,6 @@ public final class TestCityProductionCalculationsImpl
 			eq (buildingDefs.get (2)), isNull (), eq (pub.getPick ()), eq (db))).thenReturn (3);
 		
 		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		for (int n = 1; n <= 3; n++)
 		{
 			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
@@ -152,7 +151,7 @@ public final class TestCityProductionCalculationsImpl
 			if (n <= 2)
 				spell.setCityLocation (new MapCoordinates3DEx (18 + n, 10, 1));
 			
-			spells.add (spell);
+			mem.getMaintainedSpell ().add (spell);
 		}
 		
 		// Components of calculation done in other methods
@@ -162,7 +161,8 @@ public final class TestCityProductionCalculationsImpl
 
 		final CityProductionBreakdown production = new CityProductionBreakdown ();
 		production.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		when (cityCalculations.listCityProductionPercentageBonusesFromTerrainTiles (map, spells, new MapCoordinates3DEx (20, 10, 1), mapSize, db)).thenReturn (production);
+		when (cityCalculations.listCityProductionPercentageBonusesFromTerrainTiles (map, mem.getMaintainedSpell (),
+			new MapCoordinates3DEx (20, 10, 1), mapSize, db)).thenReturn (production);
 
 		final CityProductionBreakdown gold = new CityProductionBreakdown ();
 		gold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
@@ -185,7 +185,7 @@ public final class TestCityProductionCalculationsImpl
 		
 		// Call method
 		final CityProductionBreakdownsEx productions = calc.calculateAllCityProductions
-			(players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", sd, null, true, false, db);
+			(players, mem, new MapCoordinates3DEx (20, 10, 1), "TR02", sd, null, true, false, db);
 		
 		// Check results
 		assertEquals (4, productions.getProductionType ().size ());
@@ -195,11 +195,11 @@ public final class TestCityProductionCalculationsImpl
 		assertSame (food, productions.getProductionType ().get (3));
 		
 		verify (cityCalculations).addProductionFromPopulation (productions, race,
-			CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, 5, new MapCoordinates3DEx (20, 10, 1), buildings, db);
+			CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, 5, new MapCoordinates3DEx (20, 10, 1), mem.getBuilding (), db);
 		verify (cityCalculations).addProductionFromPopulation (productions, race,
-			CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, 7, new MapCoordinates3DEx (20, 10, 1), buildings, db);
+			CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, 7, new MapCoordinates3DEx (20, 10, 1), mem.getBuilding (), db);
 		verify (cityCalculations).addProductionFromPopulation (productions, race,
-			CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, 3, new MapCoordinates3DEx (20, 10, 1), buildings, db);
+			CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, 3, new MapCoordinates3DEx (20, 10, 1), mem.getBuilding (), db);
 		
 		verify (cityCalculations).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (0), null, pub.getPick (), db);
 		verify (cityCalculations).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (2), null, pub.getPick (), db);
@@ -207,7 +207,7 @@ public final class TestCityProductionCalculationsImpl
 		verify (cityCalculations).addProductionFromFortressPickType (productions, pickType, 5, db);
 		verify (cityCalculations).addProductionFromFortressPlane (productions, plane, db);
 		
-		verify (cityCalculations).addProductionFromSpell (productions, spells.get (1), 4, db);
+		verify (cityCalculations).addProductionFromSpell (productions, mem.getMaintainedSpell ().get (1), 4, db);
 		
 		verify (cityCalculations).addProductionFromMapFeatures (productions, map, new MapCoordinates3DEx (20, 10, 1), mapSize, db, 2, 0);
 		

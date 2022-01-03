@@ -101,10 +101,7 @@ public interface CityCalculations
 	 * Death rate is on strategy guide p197
 	 *
 	 * @param players Players list
-	 * @param knownWizards Details we have learned about wizards we have met
-	 * @param map Known terrain
-	 * @param buildings Known buildings
-	 * @param spells Known spells
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param cityLocation Location of the city to calculate for
 	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
 	 * @param difficultyLevel Chosen difficulty level, from session description
@@ -113,9 +110,8 @@ public interface CityCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
-	public CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells, final MapCoordinates3DEx cityLocation,
-		final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
+	public CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem,
+		final MapCoordinates3DEx cityLocation, final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 
 	/**
@@ -326,10 +322,7 @@ public interface CityCalculations
 	
 	/**
 	 * @param players Players list
-	 * @param knownWizards Details we have learned about wizards we have met
-	 * @param map Known terrain
-	 * @param buildings List of known buildings
-	 * @param spells List of known spells
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
@@ -342,8 +335,7 @@ public interface CityCalculations
 	 * @throws RecordNotFoundException If we encounter a tile type, map feature, production type or so on that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
+	public int calculateSingleCityProduction (final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;

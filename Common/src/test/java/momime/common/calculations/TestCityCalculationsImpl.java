@@ -804,24 +804,19 @@ public final class TestCityCalculationsImpl
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC01");
 		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (10000);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
-		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -831,7 +826,7 @@ public final class TestCityCalculationsImpl
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 10, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 10, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdown.class.getName (), breakdown.getClass ().getName ());
@@ -857,6 +852,13 @@ public final class TestCityCalculationsImpl
 		final RaceEx standardRace = new RaceEx ();
 		when (db.findRace ("RC01", "calculateCityGrowthRate")).thenReturn (standardRace);
 		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -874,29 +876,18 @@ public final class TestCityCalculationsImpl
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (knownWizards, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC01");
 		cityData.setCityOwnerID (pd.getPlayerID ());
 		cityData.setCityPopulation (12000);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
-		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -909,7 +900,7 @@ public final class TestCityCalculationsImpl
 		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
@@ -940,6 +931,13 @@ public final class TestCityCalculationsImpl
 		final RaceEx standardRace = new RaceEx ();
 		when (db.findRace ("RC01", "calculateCityGrowthRate")).thenReturn (standardRace);
 		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -957,29 +955,18 @@ public final class TestCityCalculationsImpl
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (knownWizards, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC01");
 		cityData.setCityOwnerID (pd.getPlayerID ());
 		cityData.setCityPopulation (12000);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
-		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -992,7 +979,7 @@ public final class TestCityCalculationsImpl
 		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 23, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 23, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
@@ -1024,6 +1011,13 @@ public final class TestCityCalculationsImpl
 		raceWithBonus.setGrowthRateModifier (20);
 		when (db.findRace ("RC02", "calculateCityGrowthRate")).thenReturn (raceWithBonus);
 		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -1041,29 +1035,18 @@ public final class TestCityCalculationsImpl
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (knownWizards, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC02");
 		cityData.setCityOwnerID (pd.getPlayerID ());
 		cityData.setCityPopulation (12000);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
-		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -1076,7 +1059,7 @@ public final class TestCityCalculationsImpl
 		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
@@ -1108,6 +1091,13 @@ public final class TestCityCalculationsImpl
 		raceWithPenalty.setGrowthRateModifier (-20);
 		when (db.findRace ("RC03", "calculateCityGrowthRate")).thenReturn (raceWithPenalty);
 		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -1125,29 +1115,18 @@ public final class TestCityCalculationsImpl
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (knownWizards, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC03");
 		cityData.setCityOwnerID (pd.getPlayerID ());
 		cityData.setCityPopulation (12000);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
-		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -1160,7 +1139,7 @@ public final class TestCityCalculationsImpl
 		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
@@ -1203,6 +1182,13 @@ public final class TestCityCalculationsImpl
 		final Building sagesGuildDef = new Building ();
 		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
 		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -1220,20 +1206,12 @@ public final class TestCityCalculationsImpl
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (knownWizards, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC03");
@@ -1242,22 +1220,20 @@ public final class TestCityCalculationsImpl
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID ("BL01");
 		granary.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (granary);
+		mem.getBuilding ().add (granary);
 
 		final MemoryBuilding farmersMarket = new MemoryBuilding ();
 		farmersMarket.setBuildingID ("BL02");
 		farmersMarket.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (farmersMarket);
+		mem.getBuilding ().add (farmersMarket);
 
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
 		sagesGuild.setBuildingID ("BL03");
 		sagesGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (sagesGuild);
+		mem.getBuilding ().add (sagesGuild);
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -1270,7 +1246,7 @@ public final class TestCityCalculationsImpl
 		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
@@ -1317,6 +1293,13 @@ public final class TestCityCalculationsImpl
 		final Building sagesGuildDef = new Building ();
 		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
 		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -1337,20 +1320,12 @@ public final class TestCityCalculationsImpl
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (knownWizards, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC03");
@@ -1359,22 +1334,20 @@ public final class TestCityCalculationsImpl
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID ("BL01");
 		granary.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (granary);
+		mem.getBuilding ().add (granary);
 
 		final MemoryBuilding farmersMarket = new MemoryBuilding ();
 		farmersMarket.setBuildingID ("BL02");
 		farmersMarket.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (farmersMarket);
+		mem.getBuilding ().add (farmersMarket);
 
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
 		sagesGuild.setBuildingID ("BL03");
 		sagesGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (sagesGuild);
+		mem.getBuilding ().add (sagesGuild);
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -1388,7 +1361,7 @@ public final class TestCityCalculationsImpl
 		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
@@ -1435,6 +1408,13 @@ public final class TestCityCalculationsImpl
 		final Building sagesGuildDef = new Building ();
 		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
 		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -1452,20 +1432,12 @@ public final class TestCityCalculationsImpl
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (knownWizards, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC03");
@@ -1474,22 +1446,20 @@ public final class TestCityCalculationsImpl
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID ("BL01");
 		granary.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (granary);
+		mem.getBuilding ().add (granary);
 
 		final MemoryBuilding farmersMarket = new MemoryBuilding ();
 		farmersMarket.setBuildingID ("BL02");
 		farmersMarket.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (farmersMarket);
+		mem.getBuilding ().add (farmersMarket);
 
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
 		sagesGuild.setBuildingID ("BL03");
 		sagesGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (sagesGuild);
+		mem.getBuilding ().add (sagesGuild);
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -1502,7 +1472,7 @@ public final class TestCityCalculationsImpl
 		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
@@ -1549,6 +1519,13 @@ public final class TestCityCalculationsImpl
 		final Building sagesGuildDef = new Building ();
 		when (db.findBuilding ("BL03", "calculateCityGrowthRate")).thenReturn (sagesGuildDef);
 		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -1566,20 +1543,12 @@ public final class TestCityCalculationsImpl
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (knownWizards, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (cityOwnerWizard);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Map
-		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC03");
@@ -1588,22 +1557,20 @@ public final class TestCityCalculationsImpl
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-
 		final MemoryBuilding granary = new MemoryBuilding ();
 		granary.setBuildingID ("BL01");
 		granary.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (granary);
+		mem.getBuilding ().add (granary);
 
 		final MemoryBuilding farmersMarket = new MemoryBuilding ();
 		farmersMarket.setBuildingID ("BL02");
 		farmersMarket.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (farmersMarket);
+		mem.getBuilding ().add (farmersMarket);
 
 		final MemoryBuilding sagesGuild = new MemoryBuilding ();		// Irrelevant building, to prove it doesn't get included in the list
 		sagesGuild.setBuildingID ("BL03");
 		sagesGuild.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (sagesGuild);
+		mem.getBuilding ().add (sagesGuild);
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -1616,7 +1583,7 @@ public final class TestCityCalculationsImpl
 		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 22, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), breakdown.getClass ().getName ());
@@ -1650,24 +1617,19 @@ public final class TestCityCalculationsImpl
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC01");
 		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (21980);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
-		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -1677,7 +1639,7 @@ public final class TestCityCalculationsImpl
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 18, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 18, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownDying.class.getName (), breakdown.getClass ().getName ());
@@ -1703,24 +1665,19 @@ public final class TestCityCalculationsImpl
 		// Owner
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
 
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+		
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC01");
 		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (1020);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
-		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -1730,7 +1687,7 @@ public final class TestCityCalculationsImpl
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
 		// Call method
-		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), 0, difficultyLevel, db);
+		final CityGrowthRateBreakdown breakdown = calc.calculateCityGrowthRate (players, mem, new MapCoordinates3DEx (20, 10, 1), 0, difficultyLevel, db);
 		
 		// Check results
 		assertEquals (CityGrowthRateBreakdownDying.class.getName (), breakdown.getClass ().getName ());
@@ -4801,23 +4758,15 @@ public final class TestCityCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// Map
-		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
-
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Players
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
 
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		// Mock "calculate all" method
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
 		for (int n = 1; n <= 3; n++)
@@ -4832,16 +4781,14 @@ public final class TestCityCalculationsImpl
 		}
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01",
-			sd, null, true, false, db)).thenReturn (productionValues);
+		when (prod.calculateAllCityProductions (players, mem, new MapCoordinates3DEx (20, 10, 1), "TR01", sd, null, true, false, db)).thenReturn (productionValues);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCityProductionCalculations (prod);
 		
 		// Check results
-		assertEquals (20 - 4 + 3, calc.calculateSingleCityProduction (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01",
-			sd, null, true, db, "RE02"));
+		assertEquals (20 - 4 + 3, calc.calculateSingleCityProduction (players, mem, new MapCoordinates3DEx (20, 10, 1), "TR01", sd, null, true, db, "RE02"));
 	}
 
 	/**
@@ -4854,22 +4801,14 @@ public final class TestCityCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// Map
-		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
-
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
-
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
 		// Players
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 
-		final List<KnownWizardDetails> knownWizards = new ArrayList<KnownWizardDetails> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
 		
 		// Mock "calculate all" method
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
@@ -4885,16 +4824,14 @@ public final class TestCityCalculationsImpl
 		}
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01",
-			sd, null, true, false, db)).thenReturn (productionValues);
+		when (prod.calculateAllCityProductions (players, mem, new MapCoordinates3DEx (20, 10, 1), "TR01", sd, null, true, false, db)).thenReturn (productionValues);
 		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setCityProductionCalculations (prod);
 		
 		// Check results
-		assertEquals (0, calc.calculateSingleCityProduction (players, knownWizards, map, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01",
-			sd, null, true, db, "RE04"));
+		assertEquals (0, calc.calculateSingleCityProduction (players, mem, new MapCoordinates3DEx (20, 10, 1), "TR01", sd, null, true, db, "RE04"));
 	}
 
 	/**

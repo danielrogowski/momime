@@ -24,6 +24,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
 import momime.common.internal.CityProductionBreakdown;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -57,6 +58,9 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		// Map
 		final MapVolumeOfMemoryGridCells knownMap = createOverlandMap (mapSize);
 		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (knownMap);
+		
 		// City production
 		final CityProductionBreakdown food = new CityProductionBreakdown ();
 		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -76,7 +80,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, mem, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Session variables
@@ -90,7 +94,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (150 + 40 + 10, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, true, knownMap, mom).intValue ());
+		assertEquals (150 + 40 + 10, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, true, mem, mom).intValue ());
 	}
 
 	/**
@@ -127,6 +131,9 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 				knownMap.getPlane ().get (1).getRow ().get (7 + y).getCell ().get (19 + x).setTerrainData (terrain);		// So one of the MF03's is off the corner of the city area
 			}
 		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (knownMap);
+		
 		// City production
 		final CityProductionBreakdown food = new CityProductionBreakdown ();
 		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -146,7 +153,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, mem, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Session variables
@@ -160,7 +167,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (150 + 40 + 10 + (9 * 7), calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, false, knownMap, mom).intValue ());
+		assertEquals (150 + 40 + 10 + (9 * 7), calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, false, mem, mom).intValue ());
 	}
 
 	/**
@@ -182,6 +189,9 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		// Map
 		final MapVolumeOfMemoryGridCells knownMap = createOverlandMap (mapSize);
 		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (knownMap);
+		
 		// City production
 		final CityProductionBreakdown food = new CityProductionBreakdown ();
 		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -201,7 +211,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, mem, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Session variables
@@ -215,7 +225,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (30 + 40 + 10, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, false, knownMap, mom).intValue ());
+		assertEquals (30 + 40 + 10, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, false, mem, mom).intValue ());
 	}
 
 	/**
@@ -237,6 +247,9 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		// Map
 		final MapVolumeOfMemoryGridCells knownMap = createOverlandMap (mapSize);
 		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (knownMap);
+		
 		// City production
 		final CityProductionBreakdown food = new CityProductionBreakdown ();
 		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -256,7 +269,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, mem, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Session variables
@@ -270,7 +283,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertNull (calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, true, knownMap, mom));
+		assertNull (calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), false, true, mem, mom));
 	}
 
 	/**
@@ -292,6 +305,9 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		// Map
 		final MapVolumeOfMemoryGridCells knownMap = createOverlandMap (mapSize);
 		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (knownMap);
+		
 		// City production
 		final CityProductionBreakdown food = new CityProductionBreakdown ();
 		food.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -311,7 +327,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		productions.getProductionType ().add (gold);
 		
 		final CityProductionCalculations prodCalc = mock (CityProductionCalculations.class);
-		when (prodCalc.calculateAllCityProductions (null, null, knownMap, null, null, new MapCoordinates3DEx (20, 10, 1), null,
+		when (prodCalc.calculateAllCityProductions (null, mem, new MapCoordinates3DEx (20, 10, 1), null,
 			sd, null, false, true, db)).thenReturn (productions);
 		
 		// Avoid nearby city
@@ -330,7 +346,7 @@ public final class TestAICityCalculationsImpl extends ServerTestData
 		calc.setCityServerUtils (cityServerUtils);
 		
 		// Run method
-		assertEquals (150 + 40 + 10 + 28, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), true, true, knownMap, mom).intValue ());
+		assertEquals (150 + 40 + 10 + 28, calc.evaluateCityQuality (new MapCoordinates3DEx (20, 10, 1), true, true, mem, mom).intValue ());
 	}
 	
 	/**

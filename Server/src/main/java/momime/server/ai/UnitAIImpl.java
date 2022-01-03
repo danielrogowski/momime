@@ -636,7 +636,7 @@ public final class UnitAIImpl implements UnitAI
 		for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 		{
 			// Best place on each plane to put a new city
-			final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (fogOfWarMemory.getMap (), plane, false, mom, "considering building/moving settler");
+			final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (fogOfWarMemory, plane, false, mom, "considering building/moving settler");
 			if (desiredCityLocation != null)
 			{
 				log.debug ("AI Player ID " + playerID + " can put a city at " + desiredCityLocation);
@@ -841,8 +841,7 @@ public final class UnitAIImpl implements UnitAI
 		{
 			final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom,
 				player.getPlayerDescription ().getPlayerID (), unitStack, doubleMovementRemaining,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getSessionDescription ().getOverlandMapSize (),
-				priv.getFogOfWarMemory (), mom.getServerDB ());
+				mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), priv.getFogOfWarMemory (), mom.getServerDB ());
 			
 			// Use list of movement codes from the unit stack's category
 			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (wizardDetails.getWizardID ());

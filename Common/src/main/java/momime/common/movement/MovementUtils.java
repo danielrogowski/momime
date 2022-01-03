@@ -14,7 +14,6 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -77,7 +76,6 @@ public interface MovementUtils
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
 	 * @param overlandMapCoordinateSystem Overland map coordinate system
-	 * @param knownWizards Details we have learned about wizards we have met
 	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param db Lookup lists built over the XML database
 	 * @return Set of all overland map locations this unit stack is blocked from entering for one of the above reasons
@@ -85,8 +83,7 @@ public interface MovementUtils
 	 * @throws PlayerNotFoundException If we can't find the player who is moving
 	 */
 	public Set<MapCoordinates3DEx> determineBlockedLocations (final UnitStack unitStack, final int movingPlayerID,
-		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem,
-		final List<KnownWizardDetails> knownWizards, final FogOfWarMemory mem, final CommonDatabase db)
+		final int [] [] [] ourUnitCountAtLocation, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException;
 
 	/**

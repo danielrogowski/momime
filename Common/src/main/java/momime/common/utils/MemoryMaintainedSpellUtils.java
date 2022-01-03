@@ -15,7 +15,6 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -220,13 +219,12 @@ public interface MemoryMaintainedSpellUtils
 	 * @param castingPriv Private info for the playing casting the spell
 	 * @param targetPlayerID Player to cast the spell on
 	 * @param targetCastingInfo Info about what the player to cast the spell on is casting themselves
-	 * @param knownWizards Details we have learned about wizards we have met
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws MomException If we encounter a spell book section we don't know how to handle
 	 * @throws RecordNotFoundException If the detatils for the target wizard are missing
 	 */
 	public TargetSpellResult isWizardValidTargetForSpell (final Spell spell, final int castingPlayerID, final MomPersistentPlayerPrivateKnowledge castingPriv,
-		final int targetPlayerID, final OverlandCastingInfo targetCastingInfo, final List<KnownWizardDetails> knownWizards)
+		final int targetPlayerID, final OverlandCastingInfo targetCastingInfo)
 		throws MomException, RecordNotFoundException;
 	
 	/**

@@ -252,7 +252,7 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 		getAnim ().registerRepaintTrigger (oldBuilding.getCityViewAnimation (), newTurnMessagesList, AnimationContainer.COMMON_XML);
 
 		// Look up the image for the new construction, if it is a building
-		if (cityData.getCurrentlyConstructingBuildingID () != null)
+		if ((cityData != null) && (cityData.getCurrentlyConstructingBuildingID () != null))
 		{
 			final CityViewElement newBuilding = getClient ().getClientDB ().findCityViewElementBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
 			getAnim ().registerRepaintTrigger (newBuilding.getCityViewAnimation (), newTurnMessagesList, AnimationContainer.COMMON_XML);

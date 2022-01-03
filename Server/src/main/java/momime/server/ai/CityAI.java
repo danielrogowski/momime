@@ -16,6 +16,7 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Wizard;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
@@ -31,7 +32,7 @@ public interface CityAI
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
 	 * race will most likely be the race chosen for the continent we decide to put the city on, i.e. we have to pick position first, race second
 	 *
-	 * @param knownMap Known terrain
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * 	When called during map creation to place initial cities, this is the true map; when called for AI players using settlers, this is only what that player knows
 	 * @param plane Plane to place a city on
 	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
@@ -42,7 +43,7 @@ public interface CityAI
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells knownMap,
+	public MapCoordinates3DEx chooseCityLocation (final FogOfWarMemory mem,
 		final int plane, final boolean avoidOtherCities, final MomSessionVariables mom, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 

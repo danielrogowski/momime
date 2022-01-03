@@ -313,8 +313,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		cityBreakdown.getProductionType ().add (cityRations);
 		cityBreakdown.getProductionType ().add (cityMaxSize);
 		
-		when (cityCalc.calculateAllCityProductions (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			new MapCoordinates3DEx (2, 2, 0), "TR04", sd, null, true, false, db)).thenReturn (cityBreakdown);
+		when (cityCalc.calculateAllCityProductions (players, trueMap, new MapCoordinates3DEx (2, 2, 0), "TR04", sd, null, true, false, db)).thenReturn (cityBreakdown);
 
 		// Population will eat 5 rations, but produce 2x2 = 4 rations, and generate 3 x 1.5 = 4.5 gold from taxes and 2x.5 + 1x2 production
 		calc.recalculateAmountsPerTurn (player, mom);

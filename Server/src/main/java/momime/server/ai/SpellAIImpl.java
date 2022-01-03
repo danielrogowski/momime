@@ -494,7 +494,7 @@ public final class SpellAIImpl implements SpellAI
 									player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
 									priv.getFogOfWarMemory ().getBuilding (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 								{
-									final int thisCityQuality = getAiCityCalculations ().evaluateCityQuality (cityLocation, false, false, priv.getFogOfWarMemory ().getMap (), mom);
+									final int thisCityQuality = getAiCityCalculations ().evaluateCityQuality (cityLocation, false, false, priv.getFogOfWarMemory (), mom);
 									if ((targetLocation == null) || (thisCityQuality > bestCityQuality))
 									{
 										targetLocation = cityLocation;

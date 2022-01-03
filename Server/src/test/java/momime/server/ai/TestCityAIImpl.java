@@ -87,6 +87,9 @@ public final class TestCityAIImpl extends ServerTestData
 			knownTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20 + x).setTerrainData (terrainData);
 		}
 		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (knownTerrain);
+		
 		// Area too close to other cities
 		final MapArea2D<Boolean> withinExistingCityRadius = new MapArea2DArrayListImpl<Boolean> ();
 		withinExistingCityRadius.setCoordinateSystem (mapSize);
@@ -112,7 +115,7 @@ public final class TestCityAIImpl extends ServerTestData
 		// Quality evaluations
 		final AICityCalculations aiCityCalc = mock (AICityCalculations.class);
 		for (int x = 1; x <= 2; x++)
-			when (aiCityCalc.evaluateCityQuality (new MapCoordinates3DEx (20 + x, 10, 1), true, true, knownTerrain, mom)).thenReturn (x * 100);
+			when (aiCityCalc.evaluateCityQuality (new MapCoordinates3DEx (20 + x, 10, 1), true, true, mem, mom)).thenReturn (x * 100);
 		
 		// Set up object to test
 		final CityAIImpl ai = new CityAIImpl ();
@@ -120,7 +123,7 @@ public final class TestCityAIImpl extends ServerTestData
 		ai.setAiCityCalculations (aiCityCalc);
 		
 		// Call method
-		final MapCoordinates3DEx location = ai.chooseCityLocation (knownTerrain, 1, true, mom, "Unit test");
+		final MapCoordinates3DEx location = ai.chooseCityLocation (mem, 1, true, mom, "Unit test");
 		
 		// Check results
 		assertEquals (22, location.getX ());

@@ -19,9 +19,8 @@ import momime.common.database.PickType;
 import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityProductionBreakdown;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -62,10 +61,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	
 	/**
 	 * @param players Players list
-	 * @param knownWizards Details we have learned about wizards we have met
-	 * @param map Known terrain
-	 * @param buildings List of known buildings
-	 * @param spells List of known spells
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param cityLocation Location of the city to calculate for; NB. It must be possible to call this on a map location which is not yet a city, so the AI can consider potential sites
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param sd Session description
@@ -81,8 +77,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players, final List<KnownWizardDetails> knownWizards,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
+	public final CityProductionBreakdownsEx calculateAllCityProductions (final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final MomSessionDescription sd, final String conjunctionEventID,
 		final boolean includeProductionAndConsumptionFromPopulation, final boolean calculatePotential, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
@@ -90,7 +85,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		// Set up results object
 		final CityProductionBreakdownsEx productionValues = new CityProductionBreakdownsEx ();
 
-		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final MemoryGridCell mc = mem.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
 		
 		final String raceID = (cityData != null) ? cityData.getCityRaceID () : null;
@@ -98,16 +93,16 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 
 		final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
 		final PlayerPublicDetails cityOwnerPlayer = ((players != null) && (cityOwnerID != null)) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
-		final KnownWizardDetails cityOwnerWizard = ((knownWizards != null) && (cityOwnerID != null)) ? getKnownWizardUtils ().findKnownWizardDetails (knownWizards, cityOwnerID, "calculateAllCityProductions") : null;
+		final KnownWizardDetails cityOwnerWizard = (cityOwnerID != null) ? getKnownWizardUtils ().findKnownWizardDetails (mem.getWizardDetails (), cityOwnerID, "calculateAllCityProductions") : null;
 		final List<PlayerPick> cityOwnerPicks = (cityOwnerPlayer != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwnerPlayer.getPersistentPlayerPublicKnowledge ()).getPick () : null;
 
 		// Food production from surrounding tiles
-		final CityProductionBreakdown food = getCityCalculations ().listCityFoodProductionFromTerrainTiles (map, cityLocation, sd.getOverlandMapSize (), db);
+		final CityProductionBreakdown food = getCityCalculations ().listCityFoodProductionFromTerrainTiles (mem.getMap (), cityLocation, sd.getOverlandMapSize (), db);
 		productionValues.getProductionType ().add (food);
 
 		// Production % increase from surrounding tiles
 		final CityProductionBreakdown production = getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
-			(map, spells, cityLocation, sd.getOverlandMapSize (), db);
+			(mem.getMap (), mem.getMaintainedSpell (), cityLocation, sd.getOverlandMapSize (), db);
 		productionValues.getProductionType ().add (production);
 	
 		// If its still an outpost, it produces and consumes nothing (especially that it doesn't get bonuses from map features like Gold mines)
@@ -129,19 +124,19 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	
 				// Production from population
 				getCityCalculations ().addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.POPULATION_TASK_ID_FARMER,
-					cityData.getMinimumFarmers () + cityData.getOptionalFarmers (), cityLocation, buildings, db);
+					cityData.getMinimumFarmers () + cityData.getOptionalFarmers (), cityLocation, mem.getBuilding (), db);
 	
 				getCityCalculations ().addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.POPULATION_TASK_ID_WORKER,
-					(cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getOptionalFarmers () - cityData.getNumberOfRebels (), cityLocation, buildings, db);
+					(cityData.getCityPopulation () / 1000) - cityData.getMinimumFarmers () - cityData.getOptionalFarmers () - cityData.getNumberOfRebels (), cityLocation, mem.getBuilding (), db);
 	
 				// With magical races, even the rebels produce power
 				getCityCalculations ().addProductionFromPopulation (productionValues, cityRace, CommonDatabaseConstants.POPULATION_TASK_ID_REBEL,
-					cityData.getNumberOfRebels (), cityLocation, buildings, db);
+					cityData.getNumberOfRebels (), cityLocation, mem.getBuilding (), db);
 			}
 	
 			// See if they get any benefit from religious buildings or if it is nullified
-			final MemoryMaintainedSpell evilPresence = (spells == null) ? null : getMemoryMaintainedSpellUtils ().findMaintainedSpell
-				(spells, null, null, null, null, cityLocation, CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE);
+			final MemoryMaintainedSpell evilPresence = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+				(mem.getMaintainedSpell (), null, null, null, null, cityLocation, CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE);
 			final String religiousBuildingsNegatedBySpellID = ((evilPresence != null) && (cityOwnerPicks != null) &&
 				(getPlayerPickUtils ().getQuantityOfPick (cityOwnerPicks, CommonDatabaseConstants.PICK_ID_DEATH_BOOK) == 0)) ? evilPresence.getSpellID () : null;
 			
@@ -152,7 +147,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 				// If calculatePotential is true, assume we've built everything
 				// We only really need to count the granary and farmers' market, but easier just to include everything than to specifically discount these
 				if (((calculatePotential) && (!thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS))) ||
-					((!calculatePotential) && (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, thisBuilding.getBuildingID ()) != null)))
+					((!calculatePotential) && (getMemoryBuildingUtils ().findBuilding (mem.getBuilding (), cityLocation, thisBuilding.getBuildingID ()) != null)))
 				{
 					if (thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS))
 					{
@@ -186,19 +181,16 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 			}
 			
 			// Bonuses from spells like Dark Rituals or Prosperity
-			if (spells != null)
-			{
-				// Don't process the same spell twice - for example if two different enemy wizards both cast Famine on our city, we don't get -100% food, just the normal -50%
-				final List<String> citySpellEffectApplied = new ArrayList<String> ();
-				
-				for (final MemoryMaintainedSpell spell : spells)
-					if ((spell.getCitySpellEffectID () != null) && (cityLocation.equals (spell.getCityLocation ())) &&
-						(!citySpellEffectApplied.contains (spell.getCitySpellEffectID ())))
-					{
-						getCityCalculations ().addProductionFromSpell (productionValues, spell, doubleTotalFromReligiousBuildings, db);
-						citySpellEffectApplied.add (spell.getCitySpellEffectID ());
-					}
-			}
+			// Don't process the same spell twice - for example if two different enemy wizards both cast Famine on our city, we don't get -100% food, just the normal -50%
+			final List<String> citySpellEffectApplied = new ArrayList<String> ();
+			
+			for (final MemoryMaintainedSpell spell : mem.getMaintainedSpell ())
+				if ((spell.getCitySpellEffectID () != null) && (cityLocation.equals (spell.getCityLocation ())) &&
+					(!citySpellEffectApplied.contains (spell.getCitySpellEffectID ())))
+				{
+					getCityCalculations ().addProductionFromSpell (productionValues, spell, doubleTotalFromReligiousBuildings, db);
+					citySpellEffectApplied.add (spell.getCitySpellEffectID ());
+				}
 	
 			// See if we've got a miners' guild to boost the income from map features
 			final CityProductionBreakdown mineralPercentageResult = productionValues.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAP_FEATURE_MODIFIER);
@@ -207,7 +199,8 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 	
 			// Production from nearby map features
 			// Have to do this after buildings, so we can have discovered if we have the miners' guild bonus to map features
-			getCityCalculations ().addProductionFromMapFeatures (productionValues, map, cityLocation, sd.getOverlandMapSize (), db, raceMineralBonusMultipler, buildingMineralPercentageBonus);
+			getCityCalculations ().addProductionFromMapFeatures (productionValues, mem.getMap (), cityLocation, sd.getOverlandMapSize (),
+				db, raceMineralBonusMultipler, buildingMineralPercentageBonus);
 		}
 		
 		// Halve and cap food (max city size) production first, because if calculatePotential=true then we need to know the potential max city size before
@@ -219,7 +212,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
 		// into considering the potential maximum size this city will reach and cap the gold trade % accordingly
 		final CityProductionBreakdown gold = productionValues.findOrAddProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		getCityCalculations ().calculateGoldTradeBonus (gold, map, cityLocation, (calculatePotential ? food.getCappedProductionAmount () : null), sd.getOverlandMapSize (), db);
+		getCityCalculations ().calculateGoldTradeBonus (gold, mem.getMap (), cityLocation, (calculatePotential ? food.getCappedProductionAmount () : null), sd.getOverlandMapSize (), db);
 
 		// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
 		for (final CityProductionBreakdown thisProduction : productionValues.getProductionType ())

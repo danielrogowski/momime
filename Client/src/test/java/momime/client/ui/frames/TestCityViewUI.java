@@ -246,15 +246,13 @@ public final class TestCityViewUI extends ClientTestData
 		productions.getProductionType ().add (rationsProd);
 		productions.getProductionType ().add (goldProd);
 		
-		when (prod.calculateAllCityProductions (client.getPlayers (), fow.getWizardDetails (), terrain, fow.getBuilding (), fow.getMaintainedSpell (),
-			new MapCoordinates3DEx (20, 10, 0), "TR01", sd, null, true, false, db)).thenReturn (productions);
+		when (prod.calculateAllCityProductions (client.getPlayers (), fow, new MapCoordinates3DEx (20, 10, 0), "TR01", sd, null, true, false, db)).thenReturn (productions);
 
 		// City calculations
 		final CityCalculations calc = mock (CityCalculations.class);
 		final CityGrowthRateBreakdown cityGrowthBreakdown = new CityGrowthRateBreakdown ();
 		cityGrowthBreakdown.setCappedTotal (70);
-		when (calc.calculateCityGrowthRate (players, fow.getWizardDetails (), terrain, fow.getBuilding (), fow.getMaintainedSpell (),
-			new MapCoordinates3DEx (20, 10, 0), maxCitySize, difficultyLevel, db)).thenReturn (cityGrowthBreakdown);
+		when (calc.calculateCityGrowthRate (players, fow, new MapCoordinates3DEx (20, 10, 0), maxCitySize, difficultyLevel, db)).thenReturn (cityGrowthBreakdown);
 		
 		// Display at least some landscape
 		final CityViewElement landscape = new CityViewElement ();

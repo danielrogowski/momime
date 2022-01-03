@@ -86,12 +86,6 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setTaxRateID ("TR01");
@@ -129,12 +123,12 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityProductions.getProductionType ().add (food);
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, trueMap.getWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
+		when (prod.calculateAllCityProductions (players, trueMap, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
 			sd, null, false, false, db)).thenReturn (cityProductions);
 	
 		// Rations produced per farmer
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
-		when (cityServerUtils.calculateDoubleFarmingRate (terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db)).thenReturn (4);
+		when (cityServerUtils.calculateDoubleFarmingRate (terrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (), new MapCoordinates3DEx (20, 10, 1), db)).thenReturn (4);
 
 		// Session variables
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -196,12 +190,6 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setTaxRateID ("TR01");
@@ -239,12 +227,12 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityProductions.getProductionType ().add (food);
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, trueMap.getWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
+		when (prod.calculateAllCityProductions (players, trueMap, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
 			sd, null, false, false, db)).thenReturn (cityProductions);
 		
 		// Rations produced per farmer
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
-		when (cityServerUtils.calculateDoubleFarmingRate (terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db)).thenReturn (4);
+		when (cityServerUtils.calculateDoubleFarmingRate (terrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (), new MapCoordinates3DEx (20, 10, 1), db)).thenReturn (4);
 
 		// Session variables
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -301,12 +289,6 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setTaxRateID ("TR01");
@@ -349,12 +331,12 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityProductions.getProductionType ().add (rations);
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, trueMap.getWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
+		when (prod.calculateAllCityProductions (players, trueMap, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
 			sd, null, false, false, db)).thenReturn (cityProductions);
 		
 		// Rations produced per farmer
 		final CityServerUtils cityServerUtils = mock (CityServerUtils.class);
-		when (cityServerUtils.calculateDoubleFarmingRate (terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), db)).thenReturn (4);
+		when (cityServerUtils.calculateDoubleFarmingRate (terrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (), new MapCoordinates3DEx (20, 10, 1), db)).thenReturn (4);
 
 		// Session variables
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -458,7 +440,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityProductions.getProductionType ().add (food);
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, trueMap.getWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
+		when (prod.calculateAllCityProductions (players, trueMap, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
 			sd, null, false, false, db)).thenReturn (cityProductions);
 	
 		// Rations produced per farmer

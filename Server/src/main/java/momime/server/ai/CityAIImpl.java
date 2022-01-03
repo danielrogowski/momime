@@ -34,6 +34,7 @@ import momime.common.database.TaxRate;
 import momime.common.database.Unit;
 import momime.common.database.Wizard;
 import momime.common.internal.CityProductionBreakdown;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
@@ -100,7 +101,7 @@ public final class CityAIImpl implements CityAI
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
 	 * race will most likely be the race chosen for the continent we decide to put the city on, i.e. we have to pick position first, race second
 	 *
-	 * @param knownMap Known terrain
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * 	When called during map creation to place initial cities, this is the true map; when called for AI players using settlers, this is only what that player knows
 	 * @param plane Plane to place a city on
 	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
@@ -112,13 +113,13 @@ public final class CityAIImpl implements CityAI
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells knownMap,
+	public final MapCoordinates3DEx chooseCityLocation (final FogOfWarMemory mem,
 		final int plane, final boolean avoidOtherCities, final MomSessionVariables mom, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		// Mark off all places within 3 squares of an existing city, i.e. those spaces we can't put a new city
 		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius
-			(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), knownMap, plane, mom.getSessionDescription ().getOverlandMapSize ());
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mem.getMap (), plane, mom.getSessionDescription ().getOverlandMapSize ());
 
 		// Now consider every map location as a possible location for a new city
 		MapCoordinates3DEx bestLocation = null;
@@ -128,7 +129,7 @@ public final class CityAIImpl implements CityAI
 			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 			{
 				// Can we build a city here?
-				final OverlandMapTerrainData terrainData = knownMap.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
+				final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
 
 				if ((terrainData != null) && (!withinExistingCityRadius.get (x, y)))
 				{
@@ -141,7 +142,7 @@ public final class CityAIImpl implements CityAI
 					{
 						// How good will this city be?
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
-						final Integer thisCityQuality = getAiCityCalculations ().evaluateCityQuality (cityLocation, avoidOtherCities, true, knownMap, mom); 
+						final Integer thisCityQuality = getAiCityCalculations ().evaluateCityQuality (cityLocation, avoidOtherCities, true, mem, mom); 
 
 						// Is it the best so far?
 						if ((thisCityQuality != null) && ((bestLocation == null) || (thisCityQuality > bestCityQuality)))
@@ -203,9 +204,8 @@ public final class CityAIImpl implements CityAI
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 
 						final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ());
+							mom.getGeneralServerKnowledge ().getTrueMap (), cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
+							mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ());
 						final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 						
 						final AICityRationDetails cityDetails = new AICityRationDetails ();
@@ -246,9 +246,7 @@ public final class CityAIImpl implements CityAI
 				cityData.setOptionalFarmers (cityData.getOptionalFarmers () + 1);
 
 				final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					cityDetails.getCityLocation (), priv.getTaxRateID (), mom.getSessionDescription (),
+					mom.getGeneralServerKnowledge ().getTrueMap (), cityDetails.getCityLocation (), priv.getTaxRateID (), mom.getSessionDescription (),
 					mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, false, mom.getServerDB ());
 				final CityProductionBreakdown rations = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 
@@ -649,8 +647,7 @@ public final class CityAIImpl implements CityAI
 								{
 									// Found something we could rush buy - now how much production does this city generate by itself?
 									final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
-									final int thisProductionPerTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
-										priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMaintainedSpell (),
+									final int thisProductionPerTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
 										cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
 										mom.getGeneralPublicKnowledge ().getConjunctionEventID (), true, mom.getServerDB (),
 										CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);

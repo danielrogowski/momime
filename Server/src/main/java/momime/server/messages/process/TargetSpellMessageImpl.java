@@ -421,7 +421,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				else
 				{
 					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (spell, sender.getPlayerDescription ().getPlayerID (), priv,
-						getOverlandTargetPlayerID (), getSpellCasting ().createOverlandCastingInfo (targetPlayer, spell.getSpellID ()), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ());
+						getOverlandTargetPlayerID (), getSpellCasting ().createOverlandCastingInfo (targetPlayer, spell.getSpellID ()));
 
 					if (reason == TargetSpellResult.VALID_TARGET)
 						error = null;

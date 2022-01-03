@@ -98,9 +98,8 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
 		final CityProductionBreakdownsEx cityProductions = getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-			cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (), false, false, mom.getServerDB ());
+			mom.getGeneralServerKnowledge ().getTrueMap (), cityLocation, priv.getTaxRateID (), mom.getSessionDescription (),
+			mom.getGeneralPublicKnowledge ().getConjunctionEventID (), false, false, mom.getServerDB ());
 		
 		// This is what the wiki calls "Base Food Level"
 		final CityProductionBreakdown food = cityProductions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);

@@ -297,10 +297,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final MapCoordinates3DEx raidersArcanusLocation = new MapCoordinates3DEx (7, 27, 0);
 		
 		final CityAI cityAI = mock (CityAI.class);
-		when (cityAI.chooseCityLocation (trueTerrain, 1, true, mom, "Starter city for \"Human player\"")).thenReturn (humanLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, 1, true, mom, "Starter city for \"Raiders\"")).thenReturn (raidersMyrrorLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, 0, true, mom, "Starter city for \"AI player\"")).thenReturn (aiLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, 0, true, mom, "Starter city for \"Raiders\"")).thenReturn (raidersArcanusLocation);
+		when (cityAI.chooseCityLocation (trueMap, 1, true, mom, "Starter city for \"Human player\"")).thenReturn (humanLocation);
+		when (cityAI.chooseCityLocation (trueMap, 1, true, mom, "Starter city for \"Raiders\"")).thenReturn (raidersMyrrorLocation);
+		when (cityAI.chooseCityLocation (trueMap, 0, true, mom, "Starter city for \"AI player\"")).thenReturn (aiLocation);
+		when (cityAI.chooseCityLocation (trueMap, 0, true, mom, "Starter city for \"Raiders\"")).thenReturn (raidersArcanusLocation);
 		
 		// Race for each starter city - set these ALL to be the same race; then can test the % choice for this
 		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();
@@ -505,7 +505,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// No event
@@ -590,7 +590,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// No event
@@ -679,7 +679,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// No event
@@ -795,7 +795,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// Where the unit will appear
@@ -896,14 +896,14 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Max city size
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)).thenReturn (9000);
 		
 		// Growth rate
 		final CityGrowthRateBreakdown growthRate = new CityGrowthRateBreakdown ();
 		growthRate.setCappedTotal (100);
 		
-		when (cityCalculations.calculateCityGrowthRate (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateCityGrowthRate (players, trueMap,
 			new MapCoordinates3DEx (25, 15, 1), 9000, difficultyLevel, db)).thenReturn (growthRate);
 		
 		// No event

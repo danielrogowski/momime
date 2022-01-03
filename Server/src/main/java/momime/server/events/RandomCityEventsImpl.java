@@ -294,7 +294,7 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				{
 					final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
-						(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "triggerCityEvent");
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "triggerCityEvent");
 					if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (knownWizard.getWizardID ()))
 					{
 						raiders = thisPlayer;

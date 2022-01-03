@@ -17,6 +17,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.KnownWizardUtils;
@@ -44,6 +45,9 @@ public final class TestWizardClientUtilsImpl extends ClientTestData
 		
 		// Client
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		priv.setFogOfWarMemory (mem);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -64,7 +68,7 @@ public final class TestWizardClientUtilsImpl extends ClientTestData
 		when (playerKnowledgeUtils.isCustomWizard ("WZ01")).thenReturn (false);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		// Set up object to test
 		final WizardClientUtilsImpl utils = new WizardClientUtilsImpl ();

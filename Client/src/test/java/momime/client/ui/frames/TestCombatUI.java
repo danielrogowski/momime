@@ -227,7 +227,7 @@ public final class TestCombatUI extends ClientTestData
 		final KnownWizardDetails defWizard = new KnownWizardDetails ();
 		defWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		defWizard.setStandardPhotoID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
-		when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (defPd.getPlayerID ()), anyString ())).thenReturn (defWizard);
+		when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (defPd.getPlayerID ()), anyString ())).thenReturn (defWizard);
 		
 		// We're the attacker
 		when (client.getOurPlayerID ()).thenReturn (atkPd.getPlayerID ());

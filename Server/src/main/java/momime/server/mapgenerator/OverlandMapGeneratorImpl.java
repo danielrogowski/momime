@@ -1949,7 +1949,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			for (final PlayerServerDetails player : mom.getPlayers ())
 			{
 				final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
-					(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "generateRampagingMonsters");
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "generateRampagingMonsters");
 				if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (knownWizard.getWizardID ()))
 					raidersPlayer = player;
 				else if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (knownWizard.getWizardID ()))

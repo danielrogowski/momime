@@ -51,12 +51,6 @@ or offered for sale from merchants.</xsd:documentation>
     						<xsd:documentation>Secondary copy of offer NTMs, as NTMs are routinely generated, sent to the client and then cleared out.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="trueWizardDetails" type="momimemsgs:knownWizardDetails">
-					    <xsd:annotation>
-    						<xsd:documentation>Calling this "true" is possibly a bit misleading as no players ever know "incorrect" or "out of date" info about a wizard,
-they simply either know about that wizard or they don't.  But named it like this just to differentiate it from the player's knowledge about each wizard.</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
 		        </xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

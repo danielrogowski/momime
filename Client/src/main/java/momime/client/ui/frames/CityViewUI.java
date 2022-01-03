@@ -357,7 +357,7 @@ public final class CityViewUI extends MomClientFrameUI
 		maximumPopulationAction = new LoggingAction ((ev) ->
 		{
 			final CityProductionBreakdown breakdown = getCityProductionCalculations ().calculateAllCityProductions (getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
@@ -382,7 +382,7 @@ public final class CityViewUI extends MomClientFrameUI
 			final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
 			
 			final int maxCitySize = getCityCalculations ().calculateSingleCityProduction (getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
@@ -396,7 +396,7 @@ public final class CityViewUI extends MomClientFrameUI
 			{
 				// Normal city growth/death rate calculation
 				final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate (getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), maxCitySize,
@@ -1075,7 +1075,7 @@ public final class CityViewUI extends MomClientFrameUI
 		// Display all productions which have graphics, i.e. Rations / Production / Gold / Power / Research
 		int ypos = 0;
 		for (final CityProductionBreakdown thisProduction : getCityProductionCalculations ().calculateAllCityProductions (getClient ().getPlayers (),
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
@@ -1091,7 +1091,7 @@ public final class CityViewUI extends MomClientFrameUI
 				final Action productionAction = new LoggingAction ((ev) ->
 				{
 					final CityProductionBreakdown breakdown = getCityProductionCalculations ().calculateAllCityProductions (getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
@@ -1197,7 +1197,7 @@ public final class CityViewUI extends MomClientFrameUI
 			
 				// Max city size
 				final CityProductionBreakdownsEx productions = getCityProductionCalculations ().calculateAllCityProductions (getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
@@ -1222,7 +1222,7 @@ public final class CityViewUI extends MomClientFrameUI
 				else
 				{
 					final CityGrowthRateBreakdown cityGrowthBreakdown = getCityCalculations ().calculateCityGrowthRate (getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (), maxCitySize,

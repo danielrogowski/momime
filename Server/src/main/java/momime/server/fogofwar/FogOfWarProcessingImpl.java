@@ -211,7 +211,7 @@ public final class FogOfWarProcessingImpl implements FogOfWarProcessing
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "markVisibleArea");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "markVisibleArea");
 		
 		// Nature Awareness allows us to see the whole map, in which case no point checking each city or unit
 		if ((CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (wizardDetails.getWizardID ())) ||

@@ -258,10 +258,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Wizard		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), humanPd.getPlayerID (), "createStartingCities")).thenReturn (humanWizard);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), aiPd.getPlayerID (), "createStartingCities")).thenReturn (aiWizard);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), raidersPd.getPlayerID (), "createStartingCities")).thenReturn (raidersWizard);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), monstersPd.getPlayerID (), "createStartingCities")).thenReturn (monstersWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), humanPd.getPlayerID (), "createStartingCities")).thenReturn (humanWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), aiPd.getPlayerID (), "createStartingCities")).thenReturn (aiWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), raidersPd.getPlayerID (), "createStartingCities")).thenReturn (raidersWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), monstersPd.getPlayerID (), "createStartingCities")).thenReturn (monstersWizard);
 		
 		// Who are wizards, raiders, monsters
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
@@ -505,7 +505,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// No event
@@ -590,7 +590,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// No event
@@ -679,7 +679,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// No event
@@ -795,7 +795,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Production each turn
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (100);
 		
 		// Where the unit will appear
@@ -885,7 +885,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "growCities")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), pd.getPlayerID (), "growCities")).thenReturn (wizardDetails);
 		
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
@@ -896,14 +896,14 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Max city size
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateSingleCityProduction (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateSingleCityProduction (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), "TR01", sd, null, true, db, CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)).thenReturn (9000);
 		
 		// Growth rate
 		final CityGrowthRateBreakdown growthRate = new CityGrowthRateBreakdown ();
 		growthRate.setCappedTotal (100);
 		
-		when (cityCalculations.calculateCityGrowthRate (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalculations.calculateCityGrowthRate (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (25, 15, 1), 9000, difficultyLevel, db)).thenReturn (growthRate);
 		
 		// No event

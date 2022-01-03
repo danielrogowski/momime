@@ -105,6 +105,9 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		
 		// Client
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		priv.setFogOfWarMemory (fow);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -143,15 +146,10 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
 		final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
+		when (knownWizardUtils.findKnownWizardDetails (fow.getWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
 		
 		// FOW memory
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
-		final MomPersistentPlayerPrivateKnowledge ppk = new MomPersistentPlayerPrivateKnowledge ();
-		ppk.setFogOfWarMemory (fow);
-		
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 
 		// Unit
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);

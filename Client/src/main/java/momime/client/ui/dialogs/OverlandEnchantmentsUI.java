@@ -147,7 +147,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		// the edges of the pic so that it looks more like its in a mirror.  While it would have been easier to do that here, that would have meant no pic for overland
 		// enchantments would be available for custom wizard portraits.  So this has to work just from the main wizard portrait.
 		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), castingPlayerID, "OverlandEnchantmentsUI");
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), castingPlayerID, "OverlandEnchantmentsUI");
 		
 		final BufferedImage unscaledPortrait;
 		if (wizardDetails.getCustomPhoto () != null)

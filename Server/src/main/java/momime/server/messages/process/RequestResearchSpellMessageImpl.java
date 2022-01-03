@@ -56,7 +56,7 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
-		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 			sender.getPlayerDescription ().getPlayerID (), "RequestResearchSpellMessageImpl");
 
 		// Validate the requested picks

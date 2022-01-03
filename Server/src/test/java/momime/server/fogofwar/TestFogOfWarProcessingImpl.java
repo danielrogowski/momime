@@ -216,7 +216,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), 2, "markVisibleArea")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), 2, "markVisibleArea")).thenReturn (wizardDetails);
 
 		// Our cities
 		final OverlandMapCityData ourCityOne = new OverlandMapCityData ();

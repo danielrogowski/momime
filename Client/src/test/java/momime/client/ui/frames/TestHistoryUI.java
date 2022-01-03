@@ -30,6 +30,7 @@ import momime.client.languages.database.OverlandMapScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.Language;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -88,8 +89,12 @@ public final class TestHistoryUI extends ClientTestData
 		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		
 		// Players
-		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 
 		int wizardNo = 0;
@@ -118,7 +123,7 @@ public final class TestHistoryUI extends ClientTestData
 			
 			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
-			priv.getKnownWizardDetails ().add (wizardDetails);
+			mem.getWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
 			when (multiplayerSessionUtils.findPlayerWithID (players, wizardNo, "HistoryUI")).thenReturn (player);
@@ -204,8 +209,12 @@ public final class TestHistoryUI extends ClientTestData
 		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		
 		// Players
-		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 
 		int wizardNo = 0;
@@ -234,7 +243,7 @@ public final class TestHistoryUI extends ClientTestData
 			
 			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
-			priv.getKnownWizardDetails ().add (wizardDetails);
+			mem.getWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
 			when (multiplayerSessionUtils.findPlayerWithID (players, wizardNo, "HistoryUI")).thenReturn (player);
@@ -320,8 +329,12 @@ public final class TestHistoryUI extends ClientTestData
 		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		
 		// Players
-		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		
 		int wizardNo = 0;
@@ -350,7 +363,7 @@ public final class TestHistoryUI extends ClientTestData
 			
 			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
-			priv.getKnownWizardDetails ().add (wizardDetails);
+			mem.getWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
 			when (multiplayerSessionUtils.findPlayerWithID (players, wizardNo, "HistoryUI")).thenReturn (player);
@@ -436,8 +449,12 @@ public final class TestHistoryUI extends ClientTestData
 		when (client.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		
 		// Players
-		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 
 		int wizardNo = 0;
@@ -466,7 +483,7 @@ public final class TestHistoryUI extends ClientTestData
 			
 			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
-			priv.getKnownWizardDetails ().add (wizardDetails);
+			mem.getWizardDetails ().add (wizardDetails);
 			
 			when (wizardClientUtils.getPlayerName (player)).thenReturn ("Wizard " + wizardID);
 			when (multiplayerSessionUtils.findPlayerWithID (players, wizardNo, "HistoryUI")).thenReturn (player);

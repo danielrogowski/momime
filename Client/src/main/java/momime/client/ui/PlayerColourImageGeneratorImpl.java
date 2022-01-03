@@ -130,7 +130,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 			player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), playerID, "getModifiedImage");
 			
 			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), playerID, "getModifiedImage");
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), playerID, "getModifiedImage");
 			
 			if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (wizardDetails.getWizardID ()))
 			{

@@ -201,7 +201,7 @@ public final class TestOverlandMapUI extends ClientTestData
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("WZ01");
-		priv.getKnownWizardDetails ().add (wizardDetails);
+		fow.getWizardDetails ().add (wizardDetails);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);

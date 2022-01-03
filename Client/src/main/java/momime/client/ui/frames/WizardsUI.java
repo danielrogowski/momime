@@ -360,7 +360,7 @@ public final class WizardsUI extends MomClientFrameUI
 			for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			{
 				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 				
 				if ((wizardDetails == null) || (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())))
 				{
@@ -378,7 +378,7 @@ public final class WizardsUI extends MomClientFrameUI
 							
 							final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (getTargetingSpell (),
 								getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge (),
-								player.getPlayerDescription ().getPlayerID (), targetOverlandCastingInfo, getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ());
+								player.getPlayerDescription ().getPlayerID (), targetOverlandCastingInfo, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ());
 							
 							if (validTarget == TargetSpellResult.VALID_TARGET)
 							{
@@ -621,7 +621,7 @@ public final class WizardsUI extends MomClientFrameUI
 			try
 			{
 				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), selectedWizard.getPlayerDescription ().getPlayerID ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), selectedWizard.getPlayerDescription ().getPlayerID ());
 				
 				final BufferedImage unscaledPortrait;
 				if (wizardDetails.getCustomPhoto () != null)
@@ -719,7 +719,7 @@ public final class WizardsUI extends MomClientFrameUI
 				for (final PlayerPublicDetails player : getClient ().getPlayers ())
 				{
 					final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 					
 					if ((wizardDetails != null) && (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())))
 						try
@@ -772,7 +772,7 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setWizardCastAnimationPlayerID (final int playerID)
 	{
 		int n = 0;
-		for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ())
+		for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ())
 			
 			if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 			{

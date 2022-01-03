@@ -404,7 +404,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 					}
 				
 				// Draw any borders?
-				for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ()) 
+				for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ()) 
 					if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) &&
 						(((wizardDetails.getPlayerID () == getClient ().getOurPlayerID ()) && (getClientConfig ().isOverlandShowOurBorder ())) ||
 							((wizardDetails.getPlayerID () != getClient ().getOurPlayerID ()) && (getClientConfig ().isOverlandShowEnemyBorders ()))))

@@ -91,7 +91,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// General server knowledge
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -115,7 +118,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		player.setConnection (msgs3);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd3.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd3.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Isn't researched yet
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -160,7 +163,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// General server knowledge
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -223,7 +229,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// General server knowledge
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -289,7 +298,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// General server knowledge
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -363,7 +375,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// General server knowledge
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -430,7 +445,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 
 		// General server knowledge
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -501,7 +519,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		sd.setSpellSetting (settings);
 		
 		// Session variables
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -527,7 +548,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		player.setConnection (msgs3);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd3.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd3.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -544,9 +565,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
 		
 		// We've got loads of MP, but not enough casting skill
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		gsk.setTrueMap (mem);
-		
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		
 		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (20);
@@ -591,7 +609,10 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		sd.setSpellSetting (settings);
 		
 		// Session variables
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -617,7 +638,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		player.setConnection (msgs3);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd3.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd3.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -639,9 +660,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (spellUtils.spellCanBeCastIn (spell, SpellCastType.OVERLAND)).thenReturn (true);
 		
 		// We've got enough MP and skill
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		gsk.setTrueMap (mem);
-		
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		
 		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (20);
@@ -730,7 +748,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (msgs3);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd3.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), pd3.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -832,7 +850,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -947,7 +965,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1060,7 +1078,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1183,7 +1201,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1309,7 +1327,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1436,7 +1454,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1575,7 +1593,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1708,7 +1726,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -1853,7 +1871,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -2003,7 +2021,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -2143,7 +2161,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -2287,7 +2305,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -2444,7 +2462,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "requestCastSpell")).thenReturn (attackingWizardDetails);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();

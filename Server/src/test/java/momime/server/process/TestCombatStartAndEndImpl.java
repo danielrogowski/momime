@@ -515,7 +515,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -659,7 +659,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -739,7 +739,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -868,7 +868,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -1026,7 +1026,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -1195,7 +1195,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -1416,7 +1416,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
 		// Current player whose turn it is to resume afterwards
 		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
@@ -1622,7 +1622,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
 		// Session variables
 		final WorldUpdates wu = mock (WorldUpdates.class);
@@ -1780,7 +1780,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "combatEnded")).thenReturn (attackingWizard);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);

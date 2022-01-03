@@ -134,8 +134,12 @@ public final class TestWizardsUI extends ClientTestData
 		}
 		
 		// Players
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -171,10 +175,10 @@ public final class TestWizardsUI extends ClientTestData
 			if ((n <= 14) && (n != 6))
 			{
 				when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
-				when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (wizardDetails);
+				when (knownWizardUtils.findKnownWizardDetails (eq (mem.getWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (wizardDetails);
 			}
 			
-			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd.getPlayerID ())).thenReturn ((n == 6) ? null : wizardDetails);
+			when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn ((n == 6) ? null : wizardDetails);
 		}
 		
 		final MomClient client = mock (MomClient.class);
@@ -204,9 +208,6 @@ public final class TestWizardsUI extends ClientTestData
 		}
 		
 		// Memory
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		priv.setFogOfWarMemory (mem);
-		
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 
 		// Wizards

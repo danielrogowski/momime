@@ -1141,7 +1141,7 @@ public final class CombatUI extends MomClientFrameUI
 			final PlayerPublicDetails otherPlayer = (players.getAttackingPlayer ().getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())) ?
 				players.getDefendingPlayer () : players.getAttackingPlayer ();
 			final KnownWizardDetails otherWizard = getKnownWizardUtils ().findKnownWizardDetails
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), otherPlayer.getPlayerDescription ().getPlayerID (), "initNewCombat");
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), otherPlayer.getPlayerDescription ().getPlayerID (), "initNewCombat");
 				
 			// Now we can start the right music; if they've got a custom photo then default to the standard (raiders) music
 			final String otherPhotoID = (otherWizard.getStandardPhotoID () != null) ? otherWizard.getStandardPhotoID () : CommonDatabaseConstants.WIZARD_ID_RAIDERS;
@@ -1279,7 +1279,7 @@ public final class CombatUI extends MomClientFrameUI
 	private final List<CastCombatSpellFrom> listCastingSources () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getClient ().getOurPlayerID (), "listCastingSources");
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "listCastingSources");
 
 		final List<CastCombatSpellFrom> sources = new ArrayList<CastCombatSpellFrom> ();
 		
@@ -1504,7 +1504,7 @@ public final class CombatUI extends MomClientFrameUI
 				try
 				{
 					final KnownWizardDetails defendingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), players.getDefendingPlayer ().getPlayerDescription ().getPlayerID (), "CombatUI");
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), players.getDefendingPlayer ().getPlayerDescription ().getPlayerID (), "CombatUI");
 	
 					if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defendingWizardDetails.getWizardID ()))
 					{

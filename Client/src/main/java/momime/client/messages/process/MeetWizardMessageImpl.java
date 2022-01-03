@@ -56,11 +56,11 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
 		// We should never receive this twice for the same player
-		if (getKnownWizardUtils ().findKnownWizardDetails (getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getKnownWizardDetails ().getPlayerID ()) != null)
+		if (getKnownWizardUtils ().findKnownWizardDetails (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getKnownWizardDetails ().getPlayerID ()) != null)
 			throw new MomException ("Server sent us KnownWizardDetails for player ID " + getKnownWizardDetails ().getPlayerID () + " when we already had them");
 		
 		// Add it
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ().add (getKnownWizardDetails ());
+		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ().add (getKnownWizardDetails ());
 		
 		// Set flag colour (if this is us receiving our own wizard details during game setup and we chose custom wizard, we may not know this yet)
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getKnownWizardDetails ().getPlayerID (), "MeetWizardMessageImpl");

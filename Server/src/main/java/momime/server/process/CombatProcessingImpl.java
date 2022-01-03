@@ -1093,7 +1093,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// Is this someone attacking a node/lair/tower, and the combat is ending?
 		// If DefendingPlayer is nil (we wiped out the monsters), there'll be no monsters to remove, so in which case we don't care that we get this value wrong
 		final KnownWizardDetails defWizard = (defendingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat");
 		
 		final boolean attackingNodeLairTower = (defWizard != null) && (combatLocation == null) && (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defWizard.getWizardID ())) &&
 			getMemoryGridCellUtils ().isNodeLairTower (tc.getTerrainData (), mom.getServerDB ());

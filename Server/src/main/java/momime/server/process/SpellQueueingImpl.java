@@ -164,7 +164,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		final KnownWizardDetails castingWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "requestCastSpell");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "requestCastSpell");
 		
 		// Find the spell in the player's search list
 		final Spell spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");

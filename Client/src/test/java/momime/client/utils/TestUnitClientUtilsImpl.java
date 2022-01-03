@@ -65,6 +65,7 @@ import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -515,7 +516,10 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 			"/momime.client.graphics/flags/combatBoatFlag-d4-3.png", 14, 11));
 		
 		// Client
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -537,7 +541,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		wizardDetails.setWizardID ("WZ01");
 
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
 		
 		// This is dependant on way too many values to mock them all - so use the real graphics DB
 		final GraphicsDatabaseEx gfx = loadGraphicsDatabase (utils, null);

@@ -138,7 +138,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "recalculateAmountsPerTurn");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "recalculateAmountsPerTurn");
 		
 		// If wizard is banished then they do not get several production types
 		final List<String> zeroedProductionTypes = new ArrayList<String> ();
@@ -243,7 +243,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 	
 							for (final CityProductionBreakdown cityProduction : getCityProductionCalculations ().calculateAllCityProductions (mom.getPlayers (),
-								mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 								mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 								cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), mom.getGeneralPublicKnowledge ().getConjunctionEventID (),
 								true, false, mom.getServerDB ()).getProductionType ())
@@ -758,7 +758,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			if (mom.getPlayers ().size () > 0)
 			{
 				final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
-					(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "recalculateGlobalProductionValues");
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "recalculateGlobalProductionValues");
 				
 				// Don't calc production for the Rampaging Monsters player, or the routine spots that they have lots of units
 				// that take a lot of mana to maintain, and no buildings generating any mana to support them, and kills them all off

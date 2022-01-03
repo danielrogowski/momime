@@ -164,7 +164,7 @@ public final class UnitAIImpl implements UnitAI
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "listAllUnitsWeCanConstruct");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "listAllUnitsWeCanConstruct");
 
 		final List<AIConstructableUnit> results = new ArrayList<AIConstructableUnit> ();
 		
@@ -812,7 +812,7 @@ public final class UnitAIImpl implements UnitAI
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "decideAndExecuteUnitMovement");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "decideAndExecuteUnitMovement");
 		
 		// Create a stack for the units (so transports pick up any units stacked with them)
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
@@ -841,7 +841,7 @@ public final class UnitAIImpl implements UnitAI
 		{
 			final OverlandMovementCell [] [] [] moves = getUnitMovement ().calculateOverlandMovementDistances (moveFrom,
 				player.getPlayerDescription ().getPlayerID (), unitStack, doubleMovementRemaining,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getSessionDescription ().getOverlandMapSize (),
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getSessionDescription ().getOverlandMapSize (),
 				priv.getFogOfWarMemory (), mom.getServerDB ());
 			
 			// Use list of movement codes from the unit stack's category

@@ -19,6 +19,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -73,13 +74,16 @@ public final class TestPlayerColourImageGeneratorImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, 1, "getModifiedImage")).thenReturn (player);
 		
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-
+		priv.setFogOfWarMemory (mem);
+		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
 
 		// Client
 		final MomClient client = mock (MomClient.class);
@@ -129,13 +133,16 @@ public final class TestPlayerColourImageGeneratorImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, 1, "getModifiedImage")).thenReturn (player);
 		
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
 
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
 		
 		// Client
 		final MomClient client = mock (MomClient.class);
@@ -191,13 +198,16 @@ public final class TestPlayerColourImageGeneratorImpl
 		when (multiplayerSessionUtils.findPlayerWithID (players, 1, "getModifiedImage")).thenReturn (player);
 		
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
 
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "getModifiedImage")).thenReturn (wizardDetails);
 		
 		// Client
 		final MomClient client = mock (MomClient.class);

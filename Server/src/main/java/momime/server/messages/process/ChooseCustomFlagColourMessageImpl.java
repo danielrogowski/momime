@@ -31,12 +31,12 @@ public final class ChooseCustomFlagColourMessageImpl extends ChooseCustomFlagCol
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// Remember choice in true wizard details
-		getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
+		getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 			sender.getPlayerDescription ().getPlayerID (), "ChooseCustomFlagColourMessageImpl (T)").setCustomFlagColour (getFlagColour ());
 		
 		// Remember choice in player's knowledge of themselves (nobody else knows about them at this point during game setup)
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
-		getKnownWizardUtils ().findKnownWizardDetails (priv.getKnownWizardDetails (),
+		getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (),
 			sender.getPlayerDescription ().getPlayerID (), "ChooseCustomFlagColourMessageImpl (K)").setCustomFlagColour (getFlagColour ());
 	}
 

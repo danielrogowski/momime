@@ -351,7 +351,7 @@ public final class CombatAIImpl implements CombatAI
 	{
 		// If AI Wizard (not raiders, not banished, not human player on auto) then maybe cast a spell before we move units
 		final KnownWizardDetails knownDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), currentPlayer.getPlayerDescription ().getPlayerID (), "aiCombatTurn");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), currentPlayer.getPlayerDescription ().getPlayerID (), "aiCombatTurn");
 		
 		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
 		

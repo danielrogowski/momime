@@ -214,7 +214,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// Check if already picked wizard, can't do so again
 		String error = null;
 		WizardEx wizard = null;
-		if (getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID ()) != null)
+		if (getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ()) != null)
 			error = "Wizard already chosen, you can't make another choice";
 		
 		// Check if custom
@@ -257,7 +257,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			trueWizardDetails.setStandardPhotoID (wizardID);  // Set photo for pre-defined wizard, including raiders and monsters since sending this causes the client to look up their flag colour
 			trueWizardDetails.setWizardState (WizardState.ACTIVE);
 
-			mom.getGeneralServerKnowledge ().getTrueWizardDetails ().add (trueWizardDetails);
+			mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ().add (trueWizardDetails);
 
 			// On the server, remember that this wizard has met themselves; make a separate copy of the object
 			// Remaining field values (photo choice, flag colour, picks) are not yet known yet
@@ -268,7 +268,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			knownWizardDetails.setWizardState (WizardState.ACTIVE);
 
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			priv.getKnownWizardDetails ().add (knownWizardDetails);
+			priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 			
 			// Tell the player the wizard they chose was OK; in that way they get their copy of their own KnownWizardDetails record
 			if (player.getPlayerDescription ().isHuman ())
@@ -383,7 +383,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	private final void createHeroes (final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		final KnownWizardDetails monstersWizard = mom.getGeneralServerKnowledge ().getTrueWizardDetails ().stream ().filter
+		final KnownWizardDetails monstersWizard = mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ().stream ().filter
 			(w -> CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (w.getWizardID ())).findAny ().orElse (null);
 		
 		for (final UnitEx thisUnit : mom.getServerDB ().getUnits ())
@@ -419,7 +419,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			if (mom.getSessionDescription ().getAiPlayerCount () > 0)
 			{
 				// Get list of wizard IDs for AI players to choose from
-				final List<WizardEx> availableWizards = getPlayerPickServerUtils ().listWizardsForAIPlayers (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), mom.getServerDB ());
+				final List<WizardEx> availableWizards = getPlayerPickServerUtils ().listWizardsForAIPlayers (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getServerDB ());
 				for (int aiPlayerNo = 0; aiPlayerNo < mom.getSessionDescription ().getAiPlayerCount (); aiPlayerNo++)
 				{
 					// Pick a random wizard for this AI player
@@ -464,8 +464,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			
 			// Everyone automatically "meets" the raiders and monsters "wizards"
 			final List<KnownWizardDetails> automaticallyMeetWizards = Arrays.asList
-				(getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), raidersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (R)"),
-				 getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), monstersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (M)"));
+				(getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), raidersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (R)"),
+				 getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), monstersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (M)"));
 			
 			for (final PlayerServerDetails sendToPlayer : mom.getPlayers ())
 				for (final KnownWizardDetails automaticallyMeetWizard : automaticallyMeetWizards)
@@ -478,7 +478,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						knownWizardDetails.setWizardID (automaticallyMeetWizard.getWizardID ());
 						knownWizardDetails.setStandardPhotoID (automaticallyMeetWizard.getStandardPhotoID ());
 						knownWizardDetails.setWizardState (automaticallyMeetWizard.getWizardState ());
-						priv.getKnownWizardDetails ().add (knownWizardDetails);
+						priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 						
 						if (sendToPlayer.getPlayerDescription ().isHuman ())
 						{
@@ -563,7 +563,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 				final KnownWizardDetails thisWizard = getKnownWizardUtils ().findKnownWizardDetails
-					(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame"); 
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame"); 
 				
 				if (getPlayerKnowledgeUtils ().isWizard (thisWizard.getWizardID ()))
 				{
@@ -716,7 +716,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		// Generate more rampaging monsters
 		if (timeStop == null)
-			for (final KnownWizardDetails thisWizard : mom.getGeneralServerKnowledge ().getTrueWizardDetails ())
+			for (final KnownWizardDetails thisWizard : mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ())
 				if ((useOnlyOnePlayerID == 0) || (useOnlyOnePlayerID == thisWizard.getPlayerID ()))
 				{
 					if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (thisWizard.getWizardID ()))
@@ -754,7 +754,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			{
 				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 				
-				final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
+				final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 					player.getPlayerDescription ().getPlayerID (), "startPhase");
 				
 				// Don't let raiders buy units or hire heroes
@@ -1358,7 +1358,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			{
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "storePowerBaseHistory"); 
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "storePowerBaseHistory"); 
 				
 				// Ignore raiders and rampaging monsters
 				if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
@@ -1407,7 +1407,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
 			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-				(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "checkIfWonGame"); 
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "checkIfWonGame"); 
 			
 			if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (wizardDetails.getWizardState () != WizardState.DEFEATED))
 			{

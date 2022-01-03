@@ -540,7 +540,7 @@ public final class SpellBookUI extends MomClientFrameUI
 									else if (sectionID == SpellBookSectionID.RESEARCHABLE_NOW)
 									{
 										final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
-											(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getClient ().getOurPlayerID (), "clickSpell");
+											(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "clickSpell");
 										
 										if (ourWizard.getWizardState () == WizardState.ACTIVE)
 										{
@@ -698,7 +698,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "castSpell");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getClient ().getOurPlayerID (), "castSpell");
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "castSpell");
 
 		final ExpandedUnitDetails castingUnit;
 		final boolean castingFixedSpell;
@@ -1177,7 +1177,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 				
 				final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getClient ().getOurPlayerID (), "languageOrPageChanged");
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "languageOrPageChanged");
 				
 				final boolean unitCasting = (getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
 					(getCombatUI ().getCastingSource ().getCastingUnit () != null);

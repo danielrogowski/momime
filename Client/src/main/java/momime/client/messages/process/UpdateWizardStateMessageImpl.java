@@ -67,7 +67,7 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 		final PlayerPublicDetails banishedWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
 		
 		final KnownWizardDetails banishedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
 		banishedWizardDetails.setWizardState (getWizardState ());
 
 		// Don't show anything when raiders have been defeated
@@ -98,7 +98,7 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 				if (banishedWizardDetails.getStandardPhotoID () != null)
 				{
 					final KnownWizardDetails banishingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
 					
 					final WizardBanishedUI wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
 					wizardBanishedUI.setBanishedWizard (banishedWizard);
@@ -113,7 +113,7 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 				{
 					// Custom portrait, so cannot show animation, just a message box
 					final KnownWizardDetails banishingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
 					
 					final List<LanguageText> languageText;
 					if (getPlayerKnowledgeUtils ().isWizard (banishingWizardDetails.getWizardID ()))

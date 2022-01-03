@@ -104,7 +104,7 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 		int totalFrameCount = 6 + 6;  // 6 of portal opening, 6 of portal closing
 		
 		final KnownWizardDetails castingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getCastingWizard ().getPlayerDescription ().getPlayerID (), "SpellOfMasteryEndUI (C)");
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getCastingWizard ().getPlayerDescription ().getPlayerID (), "SpellOfMasteryEndUI (C)");
 
 		final WizardEx castingWizardDef = (castingWizardDetails.getStandardPhotoID () == null) ? null :
 			getClient ().getClientDB ().findWizard (castingWizardDetails.getStandardPhotoID (), "SpellOfMasteryEndUI (C)");
@@ -113,7 +113,7 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 			if (player != getCastingWizard ())
 			{
 				final KnownWizardDetails banishedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID (), "SpellOfMasteryEndUI (B)");
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "SpellOfMasteryEndUI (B)");
 				
 				if ((getPlayerKnowledgeUtils ().isWizard (banishedWizardDetails.getWizardID ())) && (banishedWizardDetails.getWizardState () != WizardState.DEFEATED) &&
 					(banishedWizardDetails.getStandardPhotoID () != null))

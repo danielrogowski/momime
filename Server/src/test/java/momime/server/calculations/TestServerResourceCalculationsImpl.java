@@ -156,7 +156,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		wizardDetails.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), 2, "recalculateAmountsPerTurn")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), 2, "recalculateAmountsPerTurn")).thenReturn (wizardDetails);
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
@@ -313,7 +313,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		cityBreakdown.getProductionType ().add (cityRations);
 		cityBreakdown.getProductionType ().add (cityMaxSize);
 		
-		when (cityCalc.calculateAllCityProductions (players, gsk.getTrueWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+		when (cityCalc.calculateAllCityProductions (players, trueMap.getWizardDetails (), trueTerrain, trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			new MapCoordinates3DEx (2, 2, 0), "TR04", sd, null, true, false, db)).thenReturn (cityBreakdown);
 
 		// Population will eat 5 rations, but produce 2x2 = 4 rations, and generate 3 x 1.5 = 4.5 gold from taxes and 2x.5 + 1x2 production

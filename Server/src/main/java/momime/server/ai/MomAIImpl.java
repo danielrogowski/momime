@@ -113,7 +113,7 @@ public final class MomAIImpl implements MomAI
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "aiPlayerTurn");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "aiPlayerTurn");
 
 		if (getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ()))
 			getUnitAI ().reallocateHeroItems (player, mom);
@@ -140,7 +140,7 @@ public final class MomAIImpl implements MomAI
 			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (knownWizard.getWizardID ());
 			final boolean isMonsters = CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (knownWizard.getWizardID ());
 			
-			final KnownWizardDetails raidersWizard = mom.getGeneralServerKnowledge ().getTrueWizardDetails ().stream ().filter
+			final KnownWizardDetails raidersWizard = mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ().stream ().filter
 				(w -> CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (w.getWizardID ())).findAny ().orElse (null);
 			final Integer ignorePlayerID = isMonsters ? raidersWizard.getPlayerID () : null;
 

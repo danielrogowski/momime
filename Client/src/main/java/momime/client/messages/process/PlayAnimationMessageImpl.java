@@ -56,7 +56,7 @@ public final class PlayAnimationMessageImpl extends PlayAnimationMessage impleme
 			case WON:
 				final WizardWonUI wizardWonUI = getPrototypeFrameCreator ().createWizardWon ();
 				wizardWonUI.setWinningWizard (getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), getPlayerID (), "PlayAnimationMessageImpl"));
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getPlayerID (), "PlayAnimationMessageImpl"));
 				wizardWonUI.setPlayAnimationMessage (this);
 				wizardWonUI.setVisible (true);
 				break;

@@ -320,7 +320,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 				
 				// If making or joining a new game, we won't yet know the photos and flag colours all the players are using
 				// but if reloading a game, we'll already have this info, and have to use it to populate the flag colour in the player's transient data
-				for (final KnownWizardDetails wizardDetails : getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ())
+				for (final KnownWizardDetails wizardDetails : getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ())
 				{
 					final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getPlayers (), wizardDetails.getPlayerID (), "joinedSession");
 					final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();

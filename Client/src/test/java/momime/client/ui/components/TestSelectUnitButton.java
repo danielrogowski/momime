@@ -125,7 +125,7 @@ public final class TestSelectUnitButton
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
 		final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
+		when (knownWizardUtils.findKnownWizardDetails (fow.getWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
 		
 		// Client
 		final MomClient client = mock (MomClient.class);
@@ -233,7 +233,7 @@ public final class TestSelectUnitButton
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
 		final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
+		when (knownWizardUtils.findKnownWizardDetails (fow.getWizardDetails (), pd1.getPlayerID (), "getModifiedImage")).thenReturn (wizardDetails1);
 
 		// Client
 		final MomClient client = mock (MomClient.class);

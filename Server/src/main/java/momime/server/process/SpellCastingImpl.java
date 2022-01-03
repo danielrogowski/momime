@@ -207,7 +207,7 @@ public final class SpellCastingImpl implements SpellCasting
 					for (final PlayerServerDetails player : mom.getPlayers ())
 					{
 						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-							(sendToPriv.getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
+							(sendToPriv.getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 						
 						if ((wizardDetails != null) && (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (wizardDetails.getWizardState () == WizardState.ACTIVE))
 							msg.getOverlandCastingInfo ().add (createOverlandCastingInfo (player, ourSpellID));

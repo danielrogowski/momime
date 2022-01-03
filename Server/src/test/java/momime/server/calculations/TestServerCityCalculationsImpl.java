@@ -129,7 +129,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityProductions.getProductionType ().add (food);
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, gsk.getTrueWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
+		when (prod.calculateAllCityProductions (players, trueMap.getWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
 			sd, null, false, false, db)).thenReturn (cityProductions);
 	
 		// Rations produced per farmer
@@ -239,7 +239,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityProductions.getProductionType ().add (food);
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, gsk.getTrueWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
+		when (prod.calculateAllCityProductions (players, trueMap.getWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
 			sd, null, false, false, db)).thenReturn (cityProductions);
 		
 		// Rations produced per farmer
@@ -349,7 +349,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityProductions.getProductionType ().add (rations);
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, gsk.getTrueWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
+		when (prod.calculateAllCityProductions (players, trueMap.getWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
 			sd, null, false, false, db)).thenReturn (cityProductions);
 		
 		// Rations produced per farmer
@@ -458,7 +458,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		cityProductions.getProductionType ().add (food);
 		
 		final CityProductionCalculations prod = mock (CityProductionCalculations.class);
-		when (prod.calculateAllCityProductions (players, gsk.getTrueWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
+		when (prod.calculateAllCityProductions (players, trueMap.getWizardDetails (), terrain, buildings, spells, new MapCoordinates3DEx (20, 10, 1), priv.getTaxRateID (),
 			sd, null, false, false, db)).thenReturn (cityProductions);
 	
 		// Rations produced per farmer

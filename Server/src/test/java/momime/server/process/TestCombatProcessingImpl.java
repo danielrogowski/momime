@@ -1980,7 +1980,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID ("WZ02");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2152,7 +2152,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2317,7 +2317,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2482,7 +2482,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2647,7 +2647,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// True unit being summoned
 		final MemoryUnit trueUnit = new MemoryUnit ();
@@ -2807,7 +2807,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID ("WZ02");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -2961,7 +2961,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
@@ -3144,7 +3144,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -3309,7 +3309,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -3475,7 +3475,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPD.getPlayerID (), "setUnitIntoOrTakeUnitOutOfCombat")).thenReturn (defendingWizard);
 		
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);

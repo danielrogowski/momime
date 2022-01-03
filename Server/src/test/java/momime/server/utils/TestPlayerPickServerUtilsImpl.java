@@ -31,6 +31,7 @@ import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.WizardEx;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -175,12 +176,15 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -224,13 +228,16 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -282,13 +289,16 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -338,13 +348,16 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -399,13 +412,16 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -1417,13 +1433,16 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
@@ -1463,13 +1482,16 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID (null);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
@@ -1510,13 +1532,16 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID (null);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
@@ -1556,10 +1581,13 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (null);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (null);
 		
 		// Make selections
 		priv.setFirstCityRaceID ("RC01");
@@ -1595,14 +1623,17 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
 		
 		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		wizardDetails.setWizardID ("WZ01");
 
 		// Wizard
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -1636,7 +1667,10 @@ public final class TestPlayerPickServerUtilsImpl
 		when (playerKnowledgeUtils.isCustomWizard ("WZ02")).thenReturn (false);
 		
 		// Session variables
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getPlayers ()).thenReturn (players);
@@ -1662,7 +1696,7 @@ public final class TestPlayerPickServerUtilsImpl
 
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
 		
 		assertFalse (utils.allPlayersHaveChosenAllDetails (mom));
 
@@ -1692,7 +1726,7 @@ public final class TestPlayerPickServerUtilsImpl
 		players.add (player2);
 
 		final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();
-		when (knownWizardUtils.findKnownWizardDetails (gsk.getTrueWizardDetails (), pd2.getPlayerID ())).thenReturn (wizardDetails2);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd2.getPlayerID ())).thenReturn (wizardDetails2);
 		
 		assertFalse (utils.allPlayersHaveChosenAllDetails (mom));
 

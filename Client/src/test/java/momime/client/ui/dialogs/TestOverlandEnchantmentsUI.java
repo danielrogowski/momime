@@ -155,13 +155,13 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		{
 			final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
 			wizardDetails1.setStandardPhotoID ("WZ01");
-			when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (pd1.getPlayerID ()), anyString ())).thenReturn (wizardDetails1);
+			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (pd1.getPlayerID ()), anyString ())).thenReturn (wizardDetails1);
 		}
 		else
 		{
 			final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();
 			wizardDetails2.setCustomPhoto (Files.readAllBytes (Paths.get (getClass ().getResource ("/CustomWizardPhoto.png").toURI ())));
-			when (knownWizardUtils.findKnownWizardDetails (eq (priv.getKnownWizardDetails ()), eq (pd2.getPlayerID ()), anyString ())).thenReturn (wizardDetails2);
+			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (pd2.getPlayerID ()), anyString ())).thenReturn (wizardDetails2);
 		}
 		
 		// Client

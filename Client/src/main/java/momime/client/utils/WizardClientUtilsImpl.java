@@ -50,7 +50,7 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 			try
 			{
 				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails (), player.getPlayerDescription ().getPlayerID ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 				
 				if ((wizardDetails != null) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardDetails.getWizardID ())))
 					playerName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (wizardDetails.getWizardID (), "getPlayerName").getWizardName ());

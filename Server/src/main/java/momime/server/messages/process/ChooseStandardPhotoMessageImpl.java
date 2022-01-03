@@ -46,12 +46,12 @@ public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMes
 		if (mom.getServerDB ().getWizards ().stream ().anyMatch (w -> w.getWizardID ().equals (getPhotoID ())))
 		{
 			// Remember choice in true wizard details
-			getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (),
+			getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 				sender.getPlayerDescription ().getPlayerID (), "ChooseStandardPhotoMessageImpl (T)").setStandardPhotoID (getPhotoID ());
 			
 			// Remember choice in player's knowledge of themselves (nobody else knows about them at this point during game setup)
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
-			getKnownWizardUtils ().findKnownWizardDetails (priv.getKnownWizardDetails (),
+			getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (),
 				sender.getPlayerDescription ().getPlayerID (), "ChooseStandardPhotoMessageImpl (K)").setStandardPhotoID (getPhotoID ());
 
 			// Tell client choice was OK

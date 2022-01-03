@@ -87,6 +87,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="building" type="momimemsgs:memoryBuilding" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimemsgs:memoryCombatAreaEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="maintainedSpell" type="momimemsgs:memoryMaintainedSpell" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardDetails" type="momimemsgs:knownWizardDetails" />
         </xsd:sequence>
 	</xsd:complexType>
 
@@ -144,7 +145,6 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWar" type="momimemsgs:mapVolumeOfFogOfWarStates" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="fogOfWarMemory" type="momimemsgs:fogOfWarMemory" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pendingMovement" type="momimemsgs:pendingMovement" />
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="knownWizardDetails" type="momimemsgs:knownWizardDetails" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

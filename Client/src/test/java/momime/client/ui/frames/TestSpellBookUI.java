@@ -190,7 +190,7 @@ public final class TestSpellBookUI extends ClientTestData
 		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), 2, "languageOrPageChanged")).thenReturn (ourWizard);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2, "languageOrPageChanged")).thenReturn (ourWizard);
 		
 		// Mock client
 		final MomClient client = mock (MomClient.class);

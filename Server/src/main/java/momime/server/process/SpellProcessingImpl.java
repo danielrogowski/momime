@@ -412,7 +412,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						if (defeatedPlayer != player)
 						{
 							final KnownWizardDetails defeatedWizard = getKnownWizardUtils ().findKnownWizardDetails
-								(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), defeatedPlayer.getPlayerDescription ().getPlayerID (), "castOverlandNow");
+								(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defeatedPlayer.getPlayerDescription ().getPlayerID (), "castOverlandNow");
 							
 							if ((getPlayerKnowledgeUtils ().isWizard (defeatedWizard.getWizardID ())) && (defeatedWizard.getWizardState () != WizardState.DEFEATED))
 							{

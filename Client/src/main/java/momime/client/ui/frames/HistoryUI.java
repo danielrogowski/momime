@@ -115,7 +115,7 @@ public final class HistoryUI extends MomClientFrameUI
 					// Find the highest values
 					int maxScore = 0;
 					int maxTurns = 0;
-					for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ())
+					for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ())
 						if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 						try
 						{
@@ -147,7 +147,7 @@ public final class HistoryUI extends MomClientFrameUI
 					g.setStroke (new BasicStroke (2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f));
 
 					int wizardNo = 0;
-					for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getKnownWizardDetails ())
+					for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ())
 						if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 						try
 						{

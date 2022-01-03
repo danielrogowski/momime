@@ -82,7 +82,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "isWizardValidTargetForEvent");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "isWizardValidTargetForEvent");
 		
 		if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (knownWizard.getWizardState () == WizardState.ACTIVE))
 		{
@@ -112,7 +112,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 			// Do we need to find a target neutral city?  Diplomatic Marriage
 			else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_DIPLOMATIC_MARRIAGE))
 			{
-				final KnownWizardDetails raiders = mom.getGeneralServerKnowledge ().getTrueWizardDetails ().stream ().filter
+				final KnownWizardDetails raiders = mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ().stream ().filter
 					(w -> CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (w.getWizardID ())).findAny ().orElse (null);
 				
 				if (raiders != null)
@@ -212,7 +212,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 		// Do we need to pick a target neutral city?  Diplomatic Marriage
 		else if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_DIPLOMATIC_MARRIAGE))
 		{
-			final KnownWizardDetails raiders = mom.getGeneralServerKnowledge ().getTrueWizardDetails ().stream ().filter
+			final KnownWizardDetails raiders = mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ().stream ().filter
 				(w -> CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (w.getWizardID ())).findAny ().orElse (null);
 			
 			if (raiders == null)
@@ -298,7 +298,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				{
 					final KnownWizardDetails thisWizard = getKnownWizardUtils ().findKnownWizardDetails
-						(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "triggerWizardEvent");
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "triggerWizardEvent");
 					
 					if ((getPlayerKnowledgeUtils ().isWizard (thisWizard.getWizardID ())) && (thisWizard.getWizardState () == WizardState.ACTIVE))
 					{

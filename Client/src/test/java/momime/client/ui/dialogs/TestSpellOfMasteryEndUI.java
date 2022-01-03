@@ -34,6 +34,7 @@ import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -107,7 +108,10 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		}
 		
 		// Client
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -159,7 +163,7 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		final KnownWizardDetails castingWizardDetails = new KnownWizardDetails ();
 		castingWizardDetails.setStandardPhotoID ("WZ01");
 		castingWizardDetails.setWizardState (WizardState.ACTIVE);
-		when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), castingWizardPd.getPlayerID (), "SpellOfMasteryEndUI (C)")).thenReturn (castingWizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), castingWizardPd.getPlayerID (), "SpellOfMasteryEndUI (C)")).thenReturn (castingWizardDetails);
 		
 		// Banished wizards
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -180,7 +184,7 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 			if (n != 3)
 				banishedWizardDetails.setStandardPhotoID ("WZ0" + n);
 			
-			when (knownWizardUtils.findKnownWizardDetails (priv.getKnownWizardDetails (), n, "SpellOfMasteryEndUI (B)")).thenReturn (banishedWizardDetails);
+			when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), n, "SpellOfMasteryEndUI (B)")).thenReturn (banishedWizardDetails);
 		}
 		
 		when (client.getPlayers ()).thenReturn (players);

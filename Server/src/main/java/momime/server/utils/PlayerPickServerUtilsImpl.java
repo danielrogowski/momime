@@ -121,7 +121,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	{
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID (), "validateCustomPicks");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "validateCustomPicks");
 		
 		String msg = null;
 		if (wizardDetails.getWizardID () == null)
@@ -396,7 +396,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	{
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), player.getPlayerDescription ().getPlayerID ());
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 
 		final boolean isCustomPicksChosen = (priv.isCustomPicksChosen () == null) ? false : priv.isCustomPicksChosen ();
 

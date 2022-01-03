@@ -334,7 +334,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		CaptureCityDecisionID useCaptureCityDecision = captureCityDecision;
 
 		final KnownWizardDetails atkWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), attackingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), attackingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
 		
 		// If we're walking into a city that we don't already own (its possible we're moving into our own city if this is a "walk in without a fight")
 		// then don't end the combat just yet - first ask the winner whether they want to capture or raze the city
@@ -559,7 +559,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			
 			// Update fame
 			final KnownWizardDetails defWizard = (defendingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
-				(mom.getGeneralServerKnowledge ().getTrueWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), defendingPlayer.getPlayerDescription ().getPlayerID (), "combatEnded");
 
 			if ((attackerFameChange != 0) && (getPlayerKnowledgeUtils ().isWizard (atkWizard.getWizardID ())))
 			{

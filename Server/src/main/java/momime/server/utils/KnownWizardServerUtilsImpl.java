@@ -34,7 +34,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 	public final void meetWizard (final int metWizardID, final Integer meetingWizardID, final boolean showAnimation, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		final KnownWizardDetails metWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), metWizardID, "meetWizard");		
+		final KnownWizardDetails metWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), metWizardID, "meetWizard");		
 		
 		// Go through each player who gets to meet them
 		for (final PlayerServerDetails player : mom.getPlayers ())
@@ -43,7 +43,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 				
 				// Do they already know them?
-				if (getKnownWizardUtils ().findKnownWizardDetails (priv.getKnownWizardDetails (), metWizardID) == null)
+				if (getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), metWizardID) == null)
 				{
 					// On the server, remember these wizard have now met; make a separate copy of the object
 					final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
@@ -53,7 +53,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					knownWizardDetails.setCustomPhoto (metWizard.getCustomPhoto ());
 					knownWizardDetails.setCustomFlagColour (metWizard.getCustomFlagColour ());
 
-					priv.getKnownWizardDetails ().add (knownWizardDetails);
+					priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 					
 					// Tell the player the wizard they chose was OK; in that way they get their copy of their own KnownWizardDetails record
 					if (player.getPlayerDescription ().isHuman ())
@@ -83,13 +83,13 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 		throws RecordNotFoundException
 	{
 		// True memory
-		getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueWizardDetails (), playerID, "updateWizardState").setWizardState (newState);
+		getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), playerID, "updateWizardState").setWizardState (newState);
 		
 		// Each player who knows them
 		for (final PlayerServerDetails player : mom.getPlayers ())
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getKnownWizardDetails (), playerID);
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), playerID);
 			if (wizardDetails != null)
 				wizardDetails.setWizardState (newState);
 		}

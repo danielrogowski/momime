@@ -43,7 +43,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -1016,7 +1015,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -1026,7 +1024,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -1035,7 +1033,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
 		defendingWizard.setWizardID ("WZ02");
 
@@ -1045,7 +1042,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection defendingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		defendingPlayer.setConnection (defendingPlayerConnection);
 		players.add (defendingPlayer);
 
@@ -1223,7 +1220,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 
@@ -1233,7 +1229,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -1242,7 +1238,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 
@@ -1250,7 +1245,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		defendingPriv.getFogOfWarMemory ().getUnit ().add (new MemoryUnit ());		// Put some dummy unit in the list just to make the lists unique
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Some other player not involved in the combat
@@ -1421,7 +1416,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -1431,7 +1425,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -1440,7 +1434,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 
@@ -1448,7 +1441,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		defendingPriv.getFogOfWarMemory ().getUnit ().add (new MemoryUnit ());		// Put some dummy unit in the list just to make the lists unique
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Some other player not involved in the combat
@@ -1619,7 +1612,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -1629,7 +1621,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -1780,7 +1772,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -1790,7 +1781,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -1928,7 +1919,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -1937,7 +1927,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -1946,14 +1936,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
 		final DummyServerToClientConnection defendingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		defendingPlayer.setConnection (defendingPlayerConnection);
 		players.add (defendingPlayer);
 
@@ -1962,7 +1950,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -1971,7 +1958,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 		
@@ -2103,7 +2090,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -2112,7 +2098,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -2121,12 +2107,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Some other player not involved in the combat
@@ -2134,7 +2118,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -2143,7 +2126,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 		
@@ -2268,7 +2251,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -2277,7 +2259,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -2286,12 +2268,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Some other player not involved in the combat
@@ -2299,7 +2279,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -2308,7 +2287,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 		
@@ -2433,7 +2412,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -2442,7 +2420,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -2451,12 +2429,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Some other player not involved in the combat
@@ -2464,7 +2440,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -2473,7 +2448,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 		
@@ -2598,7 +2573,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -2607,7 +2581,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -2616,12 +2590,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Some other player not involved in the combat
@@ -2629,7 +2601,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -2638,7 +2609,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 		
@@ -2755,7 +2726,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -2764,7 +2734,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -2773,14 +2743,12 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
 		final DummyServerToClientConnection defendingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		defendingPlayer.setConnection (defendingPlayerConnection);
 		players.add (defendingPlayer);
 
@@ -2789,7 +2757,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -2798,7 +2765,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 
@@ -2930,7 +2897,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -2939,7 +2905,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -2948,12 +2914,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Wizard
@@ -2968,7 +2932,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -2977,7 +2940,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 
@@ -3095,7 +3058,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -3104,7 +3066,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -3113,12 +3075,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Some other player not involved in the combat
@@ -3126,7 +3086,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -3135,7 +3094,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 
@@ -3260,7 +3219,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -3269,7 +3227,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -3278,12 +3236,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Some other player not involved in the combat
@@ -3291,7 +3247,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -3300,7 +3255,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 
@@ -3426,7 +3381,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		attackingPD.setPlayerID (3);
 		attackingPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
 		
@@ -3435,7 +3389,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final DummyServerToClientConnection attackingPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, attackingPriv, null, null);
 		attackingPlayer.setConnection (attackingPlayerConnection);
 		players.add (attackingPlayer);
 
@@ -3444,12 +3398,10 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		defendingPD.setPlayerID (4);
 		defendingPD.setHuman (false);
 
-		final MomPersistentPlayerPublicKnowledge defendingPub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
 		
-		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, defendingPub, defendingPriv, null, null);
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, defendingPriv, null, null);
 		players.add (defendingPlayer);
 
 		// Some other player not involved in the combat
@@ -3457,7 +3409,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		otherPD.setPlayerID (5);
 		otherPD.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge otherPub = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
 		
@@ -3466,7 +3417,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		final DummyServerToClientConnection otherPlayerConnection = new DummyServerToClientConnection ();
 		
-		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, otherPub, otherPriv, null, null);
+		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, otherPriv, null, null);
 		otherPlayer.setConnection (otherPlayerConnection);
 		players.add (otherPlayer);
 

@@ -38,7 +38,6 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.NewTurnMessageData;
@@ -56,7 +55,6 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
-import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
 import momime.common.messages.servertoclient.AnimationID;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
@@ -66,7 +64,6 @@ import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.MeetWizardMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
 import momime.common.messages.servertoclient.PlayAnimationMessage;
-import momime.common.messages.servertoclient.PowerBaseHistoryPlayer;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
@@ -734,7 +731,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// 2) Cities eating more food due to increased population
 			// 3) Completed buildings (both bonuses and increased maintenance)
 			getServerResourceCalculations ().recalculateGlobalProductionValues (useOnlyOnePlayerID, false, mom);
-			storePowerBaseHistory (useOnlyOnePlayerID, mom);
+			getKnownWizardServerUtils ().storePowerBaseHistory (useOnlyOnePlayerID, mom);
 		}
 		
 		// Generate offers for heroes, mercenaries and items to hire or buy
@@ -1325,55 +1322,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 	}
 
-	/**
-	 * During the start phase, when resources are recalculated, this stores the power base of each wizard, which is public info to every player via the Historian screen.
-	 * 
-	 * @param onlyOnePlayerID If zero, will record power base for all players; if specified will record power base only for the specified player
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
-	 */
-	final void storePowerBaseHistory (final int onlyOnePlayerID, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException
-	{
-		final AddPowerBaseHistoryMessage msg = new AddPowerBaseHistoryMessage ();
-		
-		for (final PlayerServerDetails player : mom.getPlayers ())
-			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
-			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "storePowerBaseHistory"); 
-				
-				// Ignore raiders and rampaging monsters
-				if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
-				{
-					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();					
-					final int powerBase = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
-					
-					// Its possible some tries were missed if the player missed turns due to Time Stop
-					final int zeroCount = mom.getGeneralPublicKnowledge ().getTurnNumber () - pub.getPowerBaseHistory ().size () - 1;
-					
-					// Store on server
-					for (int n = 0; n < zeroCount; n++)
-						pub.getPowerBaseHistory ().add (0);
-
-					pub.getPowerBaseHistory ().add (powerBase);
-					
-					// Send to clients
-					final PowerBaseHistoryPlayer item = new PowerBaseHistoryPlayer ();
-					item.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-					item.setPowerBase (powerBase);
-					item.setZeroCount (zeroCount);
-					msg.getPlayer ().add (item);
-				}
-			}		
-		
-		if (msg.getPlayer ().size () > 0)
-			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
-	}
-	
 	/**
 	 * Checks to see if anyone has won the game, by every other wizard being defeated
 	 * 

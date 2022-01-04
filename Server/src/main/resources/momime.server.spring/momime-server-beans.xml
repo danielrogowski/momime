@@ -465,6 +465,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="knownWizardServerUtils" class="momime.server.utils.KnownWizardServerUtilsImpl">
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 	
 	<!-- Calculations -->

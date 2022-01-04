@@ -37,7 +37,6 @@ import momime.common.database.WizardEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -151,9 +150,7 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		final PlayerDescription castingWizardPd = new PlayerDescription ();
 		castingWizardPd.setPlayerID (1);
 		
-		final MomPersistentPlayerPublicKnowledge castingWizardPub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails castingWizard = new PlayerPublicDetails (castingWizardPd, castingWizardPub, null);
+		final PlayerPublicDetails castingWizard = new PlayerPublicDetails (castingWizardPd, null, null);
 		
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		when (wizardClientUtils.getPlayerName (castingWizard)).thenReturn ("Bob");
@@ -171,12 +168,10 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 		
 		for (int n = 2; n <= 5; n++)
 		{
-			final MomPersistentPlayerPublicKnowledge banishedWizardPub = new MomPersistentPlayerPublicKnowledge ();
-			
 			final PlayerDescription pd = new PlayerDescription ();
 			pd.setPlayerID (n);
 			
-			final PlayerPublicDetails banishedWizard = new PlayerPublicDetails (pd, banishedWizardPub, null);
+			final PlayerPublicDetails banishedWizard = new PlayerPublicDetails (pd, null, null);
 			players.add (banishedWizard);
 			
 			final KnownWizardDetails banishedWizardDetails = new KnownWizardDetails ();

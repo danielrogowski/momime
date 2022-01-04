@@ -35,7 +35,6 @@ import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.QueuedSpell;
@@ -107,12 +106,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		pd3.setHuman (true);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd3, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd3, null, priv, null, null);
 
 		final DummyServerToClientConnection msgs3 = new DummyServerToClientConnection ();
 		player.setConnection (msgs3);
@@ -534,15 +532,13 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		pd3.setPlayerID (7);
 		pd3.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd3, pub, priv, null, trans);
+		final PlayerServerDetails player = new PlayerServerDetails (pd3, null, priv, null, trans);
 
 		final DummyServerToClientConnection msgs3 = new DummyServerToClientConnection ();
 		player.setConnection (msgs3);
@@ -624,15 +620,13 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		pd3.setPlayerID (7);
 		pd3.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd3, pub, priv, null, trans);
+		final PlayerServerDetails player = new PlayerServerDetails (pd3, null, priv, null, trans);
 
 		final DummyServerToClientConnection msgs3 = new DummyServerToClientConnection ();
 		player.setConnection (msgs3);
@@ -737,12 +731,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		pd3.setHuman (true);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (pd3, pub, priv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (pd3, null, priv, null, null);
 
 		final DummyServerToClientConnection msgs3 = new DummyServerToClientConnection ();
 		attackingPlayer.setConnection (msgs3);
@@ -839,12 +832,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setHuman (true);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
 		
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
 		attackingPlayer.setConnection (attackingMsgs);
@@ -953,13 +945,11 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
-
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final DummyServerToClientConnection attackingMsgs = new DummyServerToClientConnection ();
 		attackingPlayer.setConnection (attackingMsgs);
@@ -1066,9 +1056,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		// Being sneaky here, allowing the easy check to pass so it has to be trapped by the more in depth check
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
@@ -1190,9 +1179,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -1316,9 +1304,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -1443,9 +1430,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -1582,9 +1568,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -1715,9 +1700,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -1860,9 +1844,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -2010,9 +1993,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -2150,9 +2132,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -2294,9 +2275,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -2451,9 +2431,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		attackingPd.setPlayerID (7);
 		attackingPd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -2634,10 +2613,9 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		pd.setPlayerID (7);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge (); 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, trans);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
 
 		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
 		player.setConnection (msgs);
@@ -2726,10 +2704,9 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		pd.setPlayerID (7);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge (); 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, trans);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
 
 		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
 		player.setConnection (msgs);
@@ -2827,10 +2804,9 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		pd.setPlayerID (7);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge (); 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, trans);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
 
 		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
 		player.setConnection (msgs);

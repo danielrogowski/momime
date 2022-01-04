@@ -50,7 +50,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageConstructBuilding;
@@ -197,7 +196,6 @@ public final class TestCityProcessingImpl extends ServerTestData
 		myrran.setPickID ("RT01");
 		myrran.setQuantity (1);
 		
-		final MomPersistentPlayerPublicKnowledge humanPpk = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails humanWizard = new KnownWizardDetails ();
 		humanWizard.setWizardID (null);			// Custom wizard
 		humanWizard.getPick ().add (myrran);		// Have to put something in here so that .equals () doesn't consider the human and AI pick lists to be the same
@@ -212,7 +210,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		humanPd.setHuman (true);
 		humanPd.setPlayerID (5);
 		humanPd.setPlayerName ("Human player");
-		final PlayerServerDetails humanPlayer = new PlayerServerDetails (humanPd, humanPpk, humanPriv, null, humanTrans);
+		final PlayerServerDetails humanPlayer = new PlayerServerDetails (humanPd, null, humanPriv, null, humanTrans);
 
 		final MomTransientPlayerPrivateKnowledge aiTrans = new MomTransientPlayerPrivateKnowledge ();
 		aiTrans.setFirstCityRaceID ("RC02");
@@ -220,35 +218,32 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final MomPersistentPlayerPrivateKnowledge aiPriv = new MomPersistentPlayerPrivateKnowledge ();
 		aiPriv.setTaxRateID ("TR02");
 		
-		final MomPersistentPlayerPublicKnowledge aiPpk = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails aiWizard = new KnownWizardDetails ();
 		aiWizard.setWizardID ("WZ01");				// Standard wizard
 		final PlayerDescription aiPd = new PlayerDescription ();
 		aiPd.setHuman (false);
 		aiPd.setPlayerID (-1);
 		aiPd.setPlayerName ("AI player");
-		final PlayerServerDetails aiPlayer = new PlayerServerDetails (aiPd, aiPpk, aiPriv, null, aiTrans);
+		final PlayerServerDetails aiPlayer = new PlayerServerDetails (aiPd, null, aiPriv, null, aiTrans);
 
 		final MomPersistentPlayerPrivateKnowledge raidersPriv = new MomPersistentPlayerPrivateKnowledge ();
 		raidersPriv.setTaxRateID ("TR03");
 		
-		final MomPersistentPlayerPublicKnowledge raidersPpk = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails raidersWizard = new KnownWizardDetails ();
 		raidersWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
 		final PlayerDescription raidersPd = new PlayerDescription ();
 		raidersPd.setHuman (false);
 		raidersPd.setPlayerID (-2);
 		raidersPd.setPlayerName ("Raiders");
-		final PlayerServerDetails raidersPlayer = new PlayerServerDetails (raidersPd, raidersPpk, raidersPriv, null, null);
+		final PlayerServerDetails raidersPlayer = new PlayerServerDetails (raidersPd, null, raidersPriv, null, null);
 
-		final MomPersistentPlayerPublicKnowledge monstersPpk = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails monstersWizard = new KnownWizardDetails ();
 		monstersWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		final PlayerDescription monstersPd = new PlayerDescription ();
 		monstersPd.setHuman (false);
 		monstersPd.setPlayerID (-3);
 		monstersPd.setPlayerName ("Monsters");
-		final PlayerServerDetails monstersPlayer = new PlayerServerDetails (monstersPd, monstersPpk, null, null, null);
+		final PlayerServerDetails monstersPlayer = new PlayerServerDetails (monstersPd, null, null, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (humanPlayer);

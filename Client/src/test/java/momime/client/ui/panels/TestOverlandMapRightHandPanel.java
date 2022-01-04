@@ -56,7 +56,6 @@ import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
@@ -231,22 +230,20 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		pd1.setPlayerID (3);
 		pd1.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
 		trans1.setFlagColour ("FF8000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, null, trans1);
 		when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Mr. Blah");
 
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (-1);
 		pd2.setHuman (false);
 		
-		final MomPersistentPlayerPublicKnowledge pub2 = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPublicKnowledge trans2 = new MomTransientPlayerPublicKnowledge ();
 		trans2.setFlagColour ("FF0080");
 		
-		final PlayerPublicDetails player2 = new PlayerPublicDetails (pd2, pub2, trans2);
+		final PlayerPublicDetails player2 = new PlayerPublicDetails (pd2, null, trans2);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);

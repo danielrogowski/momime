@@ -1,20 +1,30 @@
 package momime.server.utils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import jakarta.xml.bind.JAXBException;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
 import momime.common.messages.servertoclient.MeetWizardMessage;
+import momime.common.messages.servertoclient.PowerBaseHistoryPlayer;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 
 /**
@@ -24,6 +34,15 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 {
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
 	/**
 	 * @param metWizardID The wizard who has become known
@@ -57,6 +76,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					knownWizardDetails.setCustomPhoto (metWizard.getCustomPhoto ());
 					knownWizardDetails.setCustomFlagColour (metWizard.getCustomFlagColour ());
 					knownWizardDetails.setWizardState (metWizard.getWizardState ());
+					knownWizardDetails.getPowerBaseHistory ().addAll (metWizard.getPowerBaseHistory ());
 					copyPickList (metWizard.getPick (), knownWizardDetails.getPick ());
 
 					priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
@@ -155,6 +175,85 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 	}
 
 	/**
+	 * During the start phase, when resources are recalculated, this stores the power base of each wizard, which is public info to every player via the Historian screen.
+	 * 
+	 * @param onlyOnePlayerID If zero, will record power base for all players; if specified will record power base only for the specified player
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
+	 * @throws PlayerNotFoundException If we can't find one of the players to send the messages out to
+	 */
+	@Override
+	public final void storePowerBaseHistory (final int onlyOnePlayerID, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException
+	{
+		// Each player knows different wizards, so build up a different message for each player
+		final Map<Integer, AddPowerBaseHistoryMessage> msgs = new HashMap<Integer, AddPowerBaseHistoryMessage> ();
+
+		for (final PlayerServerDetails historyPlayer : mom.getPlayers ())
+			if ((onlyOnePlayerID == 0) || (historyPlayer.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
+			{
+				final KnownWizardDetails trueWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), historyPlayer.getPlayerDescription ().getPlayerID (), "storePowerBaseHistory"); 
+				
+				// Ignore raiders and rampaging monsters
+				if (getPlayerKnowledgeUtils ().isWizard (trueWizard.getWizardID ()))
+				{
+					final MomPersistentPlayerPrivateKnowledge historyPriv = (MomPersistentPlayerPrivateKnowledge) historyPlayer.getPersistentPlayerPrivateKnowledge ();					
+					final int powerBase = getResourceValueUtils ().findAmountPerTurnForProductionType (historyPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+					
+					// Its possible some tries were missed if the player missed turns due to Time Stop
+					final int zeroCount = mom.getGeneralPublicKnowledge ().getTurnNumber () - trueWizard.getPowerBaseHistory ().size () - 1;
+					
+					// Store in true wizard details
+					for (int n = 0; n < zeroCount; n++)
+						trueWizard.getPowerBaseHistory ().add (0);
+
+					trueWizard.getPowerBaseHistory ().add (powerBase);
+			
+					// Build message					
+					final PowerBaseHistoryPlayer item = new PowerBaseHistoryPlayer ();
+					item.setPlayerID (historyPlayer.getPlayerDescription ().getPlayerID ());
+					item.setPowerBase (powerBase);
+					item.setZeroCount (zeroCount);
+					
+					// Each player who knows them
+					for (final PlayerServerDetails player : mom.getPlayers ())
+					{
+						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+						final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), historyPlayer.getPlayerDescription ().getPlayerID ());
+						if (wizardDetails != null)
+						{
+							for (int n = 0; n < zeroCount; n++)
+								wizardDetails.getPowerBaseHistory ().add (0);
+
+							wizardDetails.getPowerBaseHistory ().add (powerBase);
+							
+							if (player.getPlayerDescription ().isHuman ())
+							{
+								AddPowerBaseHistoryMessage msg = msgs.get (player.getPlayerDescription ().getPlayerID ());
+								if (msg == null)
+								{
+									msg = new AddPowerBaseHistoryMessage ();
+									msgs.put (player.getPlayerDescription ().getPlayerID (), msg);
+								}
+								msg.getPlayer ().add (item);
+							}
+						}
+					}
+				}
+			}
+		
+		// Send out all generated messages
+		for (final Entry<Integer, AddPowerBaseHistoryMessage> msg : msgs.entrySet ())
+		{
+			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), msg.getKey (), "storePowerBaseHistory");
+			player.getConnection ().sendMessageToClient (msg.getValue ());
+		}
+	}	
+	
+	/**
 	 * @return Methods for finding KnownWizardDetails from the list
 	 */
 	public final KnownWizardUtils getKnownWizardUtils ()
@@ -168,5 +267,53 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
+	}
+	
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param utils Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
+	{
+		resourceValueUtils = utils;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

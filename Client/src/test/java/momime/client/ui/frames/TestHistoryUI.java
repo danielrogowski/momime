@@ -34,7 +34,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.PlayerKnowledgeUtils;
 
@@ -102,7 +101,6 @@ public final class TestHistoryUI extends ClientTestData
 		for (final String flagColour : new String [] {"B2AAA6", "545D10", "A86E4E", "3C398C", "65483D", "D0CA7D", "571D56", "436243", "520101", "FBE270", "D48F1C", "E9BEA2", "900000", "042444"})
 		{
 			wizardNo++;
-			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 			final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 			
@@ -116,12 +114,12 @@ public final class TestHistoryUI extends ClientTestData
 			trans.setFlagColour (flagColour);
 			
 			for (int turnNumber = 0; turnNumber < 230; turnNumber++)
-				pub.getPowerBaseHistory ().add (turnNumber + (wizardNo * 5));
+				wizardDetails.getPowerBaseHistory ().add (turnNumber + (wizardNo * 5));
 			
 			final PlayerDescription pd = new PlayerDescription ();
 			pd.setPlayerID (wizardNo);
 			
-			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
+			final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, trans);
 			players.add (player);
 			mem.getWizardDetails ().add (wizardDetails);
 			
@@ -222,7 +220,6 @@ public final class TestHistoryUI extends ClientTestData
 		for (final String flagColour : new String [] {"B2AAA6", "545D10", "A86E4E", "3C398C", "65483D", "D0CA7D", "571D56", "436243", "520101", "FBE270", "D48F1C", "E9BEA2", "900000", "042444"})
 		{
 			wizardNo++;
-			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 			final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 
@@ -236,12 +233,12 @@ public final class TestHistoryUI extends ClientTestData
 			trans.setFlagColour (flagColour);
 			
 			for (int turnNumber = 0; turnNumber < 250; turnNumber++)
-				pub.getPowerBaseHistory ().add (turnNumber + (wizardNo * 5));
+				wizardDetails.getPowerBaseHistory ().add (turnNumber + (wizardNo * 5));
 			
 			final PlayerDescription pd = new PlayerDescription ();
 			pd.setPlayerID (wizardNo);
 			
-			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
+			final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, trans);
 			players.add (player);
 			mem.getWizardDetails ().add (wizardDetails);
 			
@@ -342,7 +339,6 @@ public final class TestHistoryUI extends ClientTestData
 		for (final String flagColour : new String [] {"B2AAA6", "545D10", "A86E4E", "3C398C", "65483D", "D0CA7D", "571D56", "436243", "520101", "FBE270", "D48F1C", "E9BEA2", "900000", "042444"})
 		{
 			wizardNo++;
-			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 			final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 			
@@ -356,12 +352,12 @@ public final class TestHistoryUI extends ClientTestData
 			trans.setFlagColour (flagColour);
 			
 			for (int turnNumber = 0; turnNumber < 300; turnNumber++)
-				pub.getPowerBaseHistory ().add ((turnNumber / 2) + (wizardNo * 5));
+				wizardDetails.getPowerBaseHistory ().add ((turnNumber / 2) + (wizardNo * 5));
 			
 			final PlayerDescription pd = new PlayerDescription ();
 			pd.setPlayerID (wizardNo);
 			
-			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
+			final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, trans);
 			players.add (player);
 			mem.getWizardDetails ().add (wizardDetails);
 			
@@ -462,7 +458,6 @@ public final class TestHistoryUI extends ClientTestData
 		for (final String flagColour : new String [] {"B2AAA6", "545D10", "A86E4E", "3C398C", "65483D", "D0CA7D", "571D56", "436243", "520101", "FBE270", "D48F1C", "E9BEA2", "900000", "042444"})
 		{
 			wizardNo++;
-			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 			final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
 			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 
@@ -476,12 +471,12 @@ public final class TestHistoryUI extends ClientTestData
 			trans.setFlagColour (flagColour);
 			
 			for (int turnNumber = 0; turnNumber < 300; turnNumber++)
-				pub.getPowerBaseHistory ().add (turnNumber + (wizardNo * 5));
+				wizardDetails.getPowerBaseHistory ().add (turnNumber + (wizardNo * 5));
 			
 			final PlayerDescription pd = new PlayerDescription ();
 			pd.setPlayerID (wizardNo);
 			
-			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
+			final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, trans);
 			players.add (player);
 			mem.getWizardDetails ().add (wizardDetails);
 			

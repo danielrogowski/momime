@@ -96,7 +96,6 @@
     			<value>momime.common.messages.MomSessionDescription</value>
     			<value>momime.common.messages.MomGeneralPublicKnowledge</value>
     			<value>momime.common.messages.MomPersistentPlayerPrivateKnowledge</value>
-    			<value>momime.common.messages.MomPersistentPlayerPublicKnowledge</value>
     			<value>momime.common.messages.MomTransientPlayerPrivateKnowledge</value>
     			<value>momime.common.messages.MomTransientPlayerPublicKnowledge</value>
 

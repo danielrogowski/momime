@@ -23,7 +23,6 @@ import momime.common.database.UnitSetting;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -443,9 +442,7 @@ public final class TestHeroItemServerUtilsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, null, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
 		// Casting wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();

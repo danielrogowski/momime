@@ -45,7 +45,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
@@ -122,9 +121,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerID (3);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails unitOwner = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails unitOwner = new PlayerPublicDetails (pd, null, null);
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (unitOwner);
 		
@@ -271,9 +268,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerID (3);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails unitOwner = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails unitOwner = new PlayerPublicDetails (pd, null, null);
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (unitOwner);
 		

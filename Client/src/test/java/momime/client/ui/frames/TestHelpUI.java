@@ -55,7 +55,6 @@ import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KnownWizardUtils;
@@ -625,8 +624,7 @@ public final class TestHelpUI extends ClientTestData
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
 
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerPublicDetails castingPlayer = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails castingPlayer = new PlayerPublicDetails (pd, null, null);
 
 		help.showCitySpellEffectID ("SE110", "SP110", castingPlayer);
 		Thread.sleep (5000);

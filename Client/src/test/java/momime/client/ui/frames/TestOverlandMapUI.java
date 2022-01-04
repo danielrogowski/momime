@@ -51,7 +51,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.TurnSystem;
@@ -182,12 +181,10 @@ public final class TestOverlandMapUI extends ClientTestData
 		pd1.setPlayerID (3);
 		pd1.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
 		trans1.setFlagColour ("800000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, null, trans1);
 		when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Mr. Blah");
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();

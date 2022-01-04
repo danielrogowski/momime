@@ -2,18 +2,17 @@ package momime.client.messages.process;
 
 import java.io.IOException;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.ui.frames.HistoryUI;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
 import momime.common.messages.servertoclient.PowerBaseHistoryPlayer;
+import momime.common.utils.KnownWizardUtils;
 
 /**
  * Server broadcasts history of all wizards' power base each turn to show on the Historian screen
@@ -26,8 +25,8 @@ public final class AddPowerBaseHistoryMessageImpl extends AddPowerBaseHistoryMes
 	/** UI for screen showing power base history for each wizard */
 	private HistoryUI historyUI;
 
-	/** Session utils */
-	private MultiplayerSessionUtils multiplayerSessionUtils;
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -39,15 +38,13 @@ public final class AddPowerBaseHistoryMessageImpl extends AddPowerBaseHistoryMes
 	{
 		for (final PowerBaseHistoryPlayer value : getPlayer ())
 		{
-			final PlayerPublicDetails thisPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), value.getPlayerID ());
-			if (thisPlayer != null)
-			{
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-				for (int n = 0; n < value.getZeroCount (); n++)
-					pub.getPowerBaseHistory ().add (0);
-				
-				pub.getPowerBaseHistory ().add (value.getPowerBase ());
-			}
+			final KnownWizardDetails thisWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), value.getPlayerID (), "AddPowerBaseHistoryMessageImpl");
+			
+			for (int n = 0; n < value.getZeroCount (); n++)
+				thisWizard.getPowerBaseHistory ().add (0);
+			
+			thisWizard.getPowerBaseHistory ().add (value.getPowerBase ());
 		}
 		
 		getHistoryUI ().redrawChart ();
@@ -86,18 +83,18 @@ public final class AddPowerBaseHistoryMessageImpl extends AddPowerBaseHistoryMes
 	}
 
 	/**
-	 * @return Session utils
+	 * @return Methods for finding KnownWizardDetails from the list
 	 */
-	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	public final KnownWizardUtils getKnownWizardUtils ()
 	{
-		return multiplayerSessionUtils;
+		return knownWizardUtils;
 	}
 
 	/**
-	 * @param util Session utils
+	 * @param k Methods for finding KnownWizardDetails from the list
 	 */
-	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
-		multiplayerSessionUtils = util;
+		knownWizardUtils = k;
 	}
 }

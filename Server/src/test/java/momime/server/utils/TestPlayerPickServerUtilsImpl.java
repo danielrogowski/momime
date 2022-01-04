@@ -35,7 +35,6 @@ import momime.common.database.WizardEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.PlayerPick;
@@ -171,10 +170,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
 		// Wizard
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -605,10 +603,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -697,10 +694,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -788,10 +784,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setHuman (false);
 		pd.setPlayerName ("Name");
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -896,9 +891,8 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -966,9 +960,8 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -1030,9 +1023,8 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -1110,9 +1102,8 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -1198,9 +1189,8 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -1281,9 +1271,8 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -1364,9 +1353,8 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -1422,8 +1410,7 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Session variables	
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -1461,8 +1448,7 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -1518,8 +1504,7 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
 		// Wizard
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
@@ -1575,8 +1560,7 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
 		// Picks we have
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -1619,8 +1603,7 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
 		// Picks we have
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -1649,10 +1632,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 		
 		// Wizard
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -1698,10 +1680,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 		
 		// Wizard
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -1748,10 +1729,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 		
 		// Wizard
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -1797,10 +1777,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 
 		// Wizard
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -1839,10 +1818,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 		
 		// Wizard
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -1910,10 +1888,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, priv);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, priv);
 		players.add (player);
 
 		// Wizard
@@ -1941,10 +1918,9 @@ public final class TestPlayerPickServerUtilsImpl
 		pd2.setPlayerID (3);
 		pd2.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge ppk2 = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge priv2 = new MomTransientPlayerPrivateKnowledge ();
 
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, ppk2, null, null, priv2);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, priv2);
 		players.add (player2);
 
 		final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();

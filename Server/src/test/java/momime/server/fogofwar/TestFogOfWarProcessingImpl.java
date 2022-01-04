@@ -37,7 +37,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -205,9 +204,8 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player);

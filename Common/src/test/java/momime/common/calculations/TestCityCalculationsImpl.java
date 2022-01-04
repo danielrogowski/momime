@@ -70,7 +70,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -867,9 +866,7 @@ public final class TestCityCalculationsImpl
 		pd.setPlayerID (1);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 
@@ -946,9 +943,7 @@ public final class TestCityCalculationsImpl
 		pd.setPlayerID (1);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 
@@ -1026,9 +1021,7 @@ public final class TestCityCalculationsImpl
 		pd.setPlayerID (1);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 
@@ -1106,9 +1099,7 @@ public final class TestCityCalculationsImpl
 		pd.setPlayerID (1);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 
@@ -1197,9 +1188,7 @@ public final class TestCityCalculationsImpl
 		pd.setPlayerID (1);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 
@@ -1308,9 +1297,7 @@ public final class TestCityCalculationsImpl
 		pd.setPlayerID (1);
 		pd.setHuman (false);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 		
@@ -1423,9 +1410,7 @@ public final class TestCityCalculationsImpl
 		pd.setPlayerID (1);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 
@@ -1534,9 +1519,7 @@ public final class TestCityCalculationsImpl
 		pd.setPlayerID (1);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 
@@ -1734,9 +1717,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -1822,9 +1803,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -1911,9 +1890,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -2013,9 +1990,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -2126,9 +2101,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -2248,9 +2221,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -2385,9 +2356,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -2536,9 +2505,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -2711,9 +2678,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -2870,9 +2835,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -3031,9 +2994,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -3188,9 +3149,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -3353,9 +3312,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -3475,9 +3432,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
@@ -4553,9 +4508,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setHuman (false);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
@@ -4615,9 +4568,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setHuman (false);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
@@ -4677,9 +4628,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setHuman (false);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID ("WZ01");
@@ -4735,9 +4684,7 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setHuman (false);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, pub, null);
+		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 
 		final KnownWizardDetails cityOwnerWizard = new KnownWizardDetails ();
 		cityOwnerWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);

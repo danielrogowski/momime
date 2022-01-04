@@ -40,7 +40,6 @@ import momime.common.database.WizardEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
@@ -150,8 +149,6 @@ public final class TestWizardsUI extends ClientTestData
 			pd.setHuman (n <= 14);
 			pd.setPlayerID ((n <= 14) ? n : -n);
 			
-			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-			
 			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 			wizardDetails.setWizardState ((n == 14) ? WizardState.BANISHED : WizardState.ACTIVE);
 			
@@ -172,7 +169,7 @@ public final class TestWizardsUI extends ClientTestData
 			
 			wizardsList.add (wizardDetails);
 			
-			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
+			final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, trans);
 			players.add (player);
 			
 			if ((n <= 14) && (n != 6))

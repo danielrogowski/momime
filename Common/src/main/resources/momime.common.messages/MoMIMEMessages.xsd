@@ -489,20 +489,6 @@ so must include the full details of the item here.</xsd:documentation>
         </xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:complexType name="momPersistentPlayerPublicKnowledge">
-	    <xsd:annotation>
-    		<xsd:documentation>Holds all knowledge about a player in the game that is freely known to all players once they have joined the game,
-    										and is persisted to save game files.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="mps:persistentPlayerPublicKnowledge">
-		        <xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
-		        </xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-
 	<xsd:complexType name="knownWizardDetails">
 	    <xsd:annotation>
     		<xsd:documentation>Holds all knowledge about a player we have met or know about in game.  Each player has a list of these that initially only contains
@@ -542,6 +528,7 @@ standardPhotoIDs over and over again</xsd:documentation>
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
         </xsd:sequence>
 	</xsd:complexType>
 

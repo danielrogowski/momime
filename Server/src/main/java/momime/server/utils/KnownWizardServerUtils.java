@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.PlayerPick;
@@ -55,4 +57,17 @@ public interface KnownWizardServerUtils
 	 */
 	public void copyAndSendUpdatedPicks (final int playerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException,XMLStreamException;
+
+	/**
+	 * During the start phase, when resources are recalculated, this stores the power base of each wizard, which is public info to every player via the Historian screen.
+	 * 
+	 * @param onlyOnePlayerID If zero, will record power base for all players; if specified will record power base only for the specified player
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
+	 * @throws PlayerNotFoundException If we can't find one of the players to send the messages out to
+	 */
+	public void storePowerBaseHistory (final int onlyOnePlayerID, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException;
 }

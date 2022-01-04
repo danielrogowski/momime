@@ -12,7 +12,6 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
-import com.ndg.multiplayer.sessionbase.PersistentPlayerPublicKnowledge;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.SessionDescription;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPrivateKnowledge;
@@ -37,7 +36,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -224,18 +222,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final void setGeneralPublicKnowledge (final MomGeneralPublicKnowledge gpk)
 	{
 		super.setGeneralPublicKnowledge (gpk);
-	}
-	
-	/**
-	 * @param sd Session description, in case any info here is needed to populate the player knowledge structure
-	 * @param pd Player description, in case any info here is needed to populate the player knowledge structure
-	 * @return Descendant of PersistentPlayerPublicKnowledge, or can be left as null if not required
-	 */
-	@SuppressWarnings ("unused")
-	@Override
-	protected final PersistentPlayerPublicKnowledge createPersistentPlayerPublicKnowledge (final SessionDescription sd, final PlayerDescription pd)
-	{
-		return new MomPersistentPlayerPublicKnowledge ();
 	}
 
 	/**

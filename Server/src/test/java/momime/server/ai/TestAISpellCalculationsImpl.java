@@ -29,7 +29,6 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -56,9 +55,8 @@ public final class TestAISpellCalculationsImpl
 		pd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -114,9 +112,8 @@ public final class TestAISpellCalculationsImpl
 		pd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();

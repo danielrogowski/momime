@@ -34,7 +34,6 @@ import momime.common.database.WeaponGrade;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KnownWizardUtils;
@@ -105,12 +104,10 @@ public final class TestSelectUnitButton
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
 		
-		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
-
 		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
 		trans1.setFlagColour ("900000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, null, trans1);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);
@@ -213,12 +210,10 @@ public final class TestSelectUnitButton
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
 
-		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
 		trans1.setFlagColour ("900000");
 		
-		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, null, trans1);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player1);

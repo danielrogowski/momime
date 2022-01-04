@@ -46,7 +46,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.KnownWizardUtils;
@@ -145,9 +144,7 @@ public final class TestCitiesListUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Player
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (null, pub, null);
+		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (null, null, null);
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);

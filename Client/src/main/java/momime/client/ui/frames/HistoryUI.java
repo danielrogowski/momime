@@ -30,7 +30,6 @@ import momime.client.languages.database.Month;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.PlayerKnowledgeUtils;
 
@@ -117,17 +116,9 @@ public final class HistoryUI extends MomClientFrameUI
 					int maxTurns = 0;
 					for (final KnownWizardDetails wizardDetails : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails ())
 						if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
-						try
 						{
-							final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), wizardDetails.getPlayerID (), "HistoryUI");
-							final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-							
-							maxScore = Math.max (maxScore, pub.getPowerBaseHistory ().stream ().mapToInt (v -> v).max ().orElse (0));
-							maxTurns = Math.max (maxTurns, pub.getPowerBaseHistory ().size ());
-						}
-						catch (final PlayerNotFoundException e)
-						{
-							log.error (e, e);
+							maxScore = Math.max (maxScore, wizardDetails.getPowerBaseHistory ().stream ().mapToInt (v -> v).max ().orElse (0));
+							maxTurns = Math.max (maxTurns, wizardDetails.getPowerBaseHistory ().size ());
 						}
 					
 					// Work out scaling
@@ -152,7 +143,6 @@ public final class HistoryUI extends MomClientFrameUI
 						try
 						{
 							final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), wizardDetails.getPlayerID (), "HistoryUI");
-							final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
 							
 							g.setColor (new Color (Integer.parseInt (trans.getFlagColour (), 16)));
@@ -161,14 +151,14 @@ public final class HistoryUI extends MomClientFrameUI
 							g.drawString (getWizardClientUtils ().getPlayerName (player), 56, 66 + (wizardNo * 10));
 							
 							// Draw line
-							final int x [] = new int [pub.getPowerBaseHistory ().size ()];
-							final int y [] = new int [pub.getPowerBaseHistory ().size ()];
-							for (int n = 0; n < pub.getPowerBaseHistory ().size () / xScaling; n++)
+							final int x [] = new int [wizardDetails.getPowerBaseHistory ().size ()];
+							final int y [] = new int [wizardDetails.getPowerBaseHistory ().size ()];
+							for (int n = 0; n < wizardDetails.getPowerBaseHistory ().size () / xScaling; n++)
 							{
 								x [n] = getChartX (chart, n);
-								y [n] = getChartY (chart, pub.getPowerBaseHistory ().get (n * xScaling) / yScaling);
+								y [n] = getChartY (chart, wizardDetails.getPowerBaseHistory ().get (n * xScaling) / yScaling);
 							}
-							g.drawPolyline (x, y, pub.getPowerBaseHistory ().size () / xScaling);
+							g.drawPolyline (x, y, wizardDetails.getPowerBaseHistory ().size () / xScaling);
 							
 							wizardNo++;
 						}

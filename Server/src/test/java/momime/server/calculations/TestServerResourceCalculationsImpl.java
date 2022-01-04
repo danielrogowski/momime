@@ -52,7 +52,6 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
@@ -140,12 +139,10 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		pd.setPlayerID (2);
 		pd.setHuman (true);
 
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		players.add (player);
 		
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
@@ -470,10 +467,8 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, null, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		players.add (player);
 
 		// Cities used below
@@ -639,8 +634,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
 		
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -684,8 +678,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
 
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -729,8 +722,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
 
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -774,8 +766,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
 
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -819,8 +810,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (null, null, priv, null, null);
 
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -864,14 +854,13 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		pd.setHuman (isHuman);
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, trans);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
@@ -1056,8 +1045,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, trans);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		

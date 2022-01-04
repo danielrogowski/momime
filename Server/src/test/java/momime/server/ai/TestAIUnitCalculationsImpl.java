@@ -26,7 +26,6 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
@@ -64,10 +63,9 @@ public final class TestAIUnitCalculationsImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		priv.setFogOfWarMemory (fow);
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -126,10 +124,9 @@ public final class TestAIUnitCalculationsImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		priv.setFogOfWarMemory (fow);
 		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
+		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 		
 		// Wizard
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();

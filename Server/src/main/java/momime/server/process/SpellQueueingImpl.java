@@ -27,7 +27,6 @@ import momime.common.database.UnitCanCast;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatusID;
@@ -135,7 +134,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * We may not actually be able to cast it yet - big overland spells take a number of turns to channel, so this
 	 * routine does all the checks to see if it can be instantly cast or needs to be queued up and cast over multiple turns
 	 * 
-	 * @param player Player who is casting the spell
+	 * @param castingPlayer Player who is casting the spell
 	 * @param combatCastingUnitURN Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param combatCastingFixedSpellNumber For casting fixed spells the unit knows (e.g. Giant Spiders casting web), indicates the spell number; for other types of casting this is null
 	 * @param combatCastingSlotNumber For casting spells imbued into hero items, this is the number of the slot (0, 1 or 2); for other types of casting this is null
@@ -154,17 +153,16 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final boolean requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final Integer combatCastingFixedSpellNumber,
+	public final boolean requestCastSpell (final PlayerServerDetails castingPlayer, final Integer combatCastingUnitURN, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final String spellID, final HeroItem heroItem,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final Integer variableDamage, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) castingPlayer.getTransientPlayerPrivateKnowledge ();
 		final KnownWizardDetails castingWizard = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "requestCastSpell");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), castingPlayer.getPlayerDescription ().getPlayerID (), "requestCastSpell");
 		
 		// Find the spell in the player's search list
 		final Spell spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");
@@ -213,7 +211,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		// Can't cast combat spells when blocked by Spell Ward of that realm
 		else if ((combatLocation != null) && (spell.getSpellRealm () != null) &&
 			(getMemoryMaintainedSpellUtils ().isBlockedCastingCombatSpellsOfRealm (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-				player.getPlayerDescription ().getPlayerID (), combatLocation, spell.getSpellRealm (), mom.getServerDB ())))
+				castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation, spell.getSpellRealm (), mom.getServerDB ())))
 			msg = "You are blocked from casting spells of that magic realm here.";
 		
 		else
@@ -256,7 +254,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					xuCombatCastingUnit = getExpandUnitDetails ().expandUnitDetails (combatCastingUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-					if (xuCombatCastingUnit.getControllingPlayerID () != player.getPlayerDescription ().getPlayerID ())
+					if (xuCombatCastingUnit.getControllingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ())
 						msg = "The unit you are trying to cast a spell from is controlled by somebody else.";
 					
 					else if (combatCastingFixedSpellNumber != null)
@@ -342,7 +340,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			if (!combatPlayers.bothFound ())
 				msg = "You cannot cast combat spells if one side has been wiped out in the combat.";
 			
-			else if (!player.getPlayerDescription ().getPlayerID ().equals (gc.getCombatCurrentPlayerID ()))
+			else if (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (gc.getCombatCurrentPlayerID ()))
 				msg = "You cannot cast combat spells when it isn't your turn.";
 			
 			else if (xuCombatCastingUnit == null)
@@ -354,14 +352,14 @@ public final class SpellQueueingImpl implements SpellQueueing
 				{
 					// Apply books/retorts that make spell cheaper to cast
 					reducedCombatCastingCost = getSpellUtils ().getReducedCombatCastingCost
-						(spell, variableDamage, pub.getPick (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						(spell, variableDamage, castingWizard.getPick (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 							mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 					
 					// What our remaining skill?
 					final int ourSkill;
-					if (player == combatPlayers.getAttackingPlayer ())
+					if (castingPlayer == combatPlayers.getAttackingPlayer ())
 						ourSkill = gc.getCombatAttackerCastingSkillRemaining ();
-					else if (player == combatPlayers.getDefendingPlayer ())
+					else if (castingPlayer == combatPlayers.getDefendingPlayer ())
 						ourSkill = gc.getCombatDefenderCastingSkillRemaining ();
 					else
 					{
@@ -372,7 +370,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					// Check range penalty
 					if (msg == null)
 					{
-						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (player, combatLocation,
+						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (castingWizard, combatLocation,
 							getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
 							mom.getSessionDescription ().getOverlandMapSize ());
@@ -398,7 +396,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			{
 				// Validate unit or hero casting
 				// Reductions for number of spell books, or certain retorts, only apply when the wizard is casting, but on the plus side, the range penalty doesn't apply
-				reducedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, pub.getPick ());
+				reducedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, castingWizard.getPick ());
 				multipliedManaCost = reducedCombatCastingCost;
 				
 				if (multipliedManaCost > xuCombatCastingUnit.getManaRemaining ())
@@ -426,7 +424,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, null, combatLocation, gc.getCombatMap (), player.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xuCombatTargetUnit,
+						(spell, null, combatLocation, gc.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xuCombatTargetUnit,
 							true, mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ());
 					
 					if (validTarget != TargetSpellResult.VALID_TARGET)
@@ -449,9 +447,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 				// Verify that the city the combat is being played at is a valid target for city enchantments/curses
 				final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					spell, player.getPlayerDescription ().getPlayerID (), combatLocation,
+					spell, castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation,
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getPlayers (), mom.getServerDB ());
+					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getServerDB ());
 				
 				if (validTarget != TargetSpellResult.VALID_TARGET)
 				{
@@ -463,12 +461,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 			{
 				// Verify for summoning spells that there isn't a unit in that location... one we know about anyway
-				if (getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, combatTargetLocation, player.getPlayerDescription ().getPlayerID (), mom.getPlayers (),
+				if (getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, combatTargetLocation, castingPlayer.getPlayerDescription ().getPlayerID (), mom.getPlayers (),
 					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize (), true) != null)
 					msg = "There is already a unit in the chosen location so you cannot summon there.";
 				
 				else if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&
-					(getCombatMapServerUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
+					(getCombatMapServerUtils ().countPlayersAliveUnitsAtCombatLocation (castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
 					
 					msg = "You already have the maximum number of units in combat so cannot summon any more.";
@@ -480,7 +478,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					if (kind == KindOfSpell.RAISE_DEAD)
 						summonedUnit = xuCombatTargetUnit;
 					else
-						summonedUnit = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), player.getPlayerDescription ().getPlayerID (), null,
+						summonedUnit = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), castingPlayer.getPlayerDescription ().getPlayerID (), null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					if (getMovementUtils ().calculateDoubleMovementToEnterCombatTile
@@ -493,7 +491,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			{
 				// Check we haven't already cast this enchantment already
 				final List<String> combatAreaEffectIDs = getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (),
-					spell, player.getPlayerDescription ().getPlayerID (), combatLocation);
+					spell, castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation);
 				if (combatAreaEffectIDs == null)
 					msg = "This combat enchantment spell has no possible combat area effect IDs defined";
 				else if (combatAreaEffectIDs.size () == 0)
@@ -511,24 +509,24 @@ public final class SpellQueueingImpl implements SpellQueueing
 		
 		// Separate routine to validate hero items we're trying to craft
 		if ((msg == null) && (heroItem != null))
-			msg = getHeroItemServerUtils ().validateHeroItem (player, spell, heroItem, mom.getSessionDescription ().getUnitSetting (), mom.getServerDB ());
+			msg = getHeroItemServerUtils ().validateHeroItem (castingPlayer, spell, heroItem, mom);
 		
 		// Ok to go ahead and cast (or queue) it?
 		boolean combatEnded = false;
 		if (msg != null)
 		{
-			log.warn (player.getPlayerDescription ().getPlayerName () + " disallowed from casting spell " + spellID + ": " + msg);
+			log.warn (castingPlayer.getPlayerDescription ().getPlayerName () + " disallowed from casting spell " + spellID + ": " + msg);
 			
 			final TextPopupMessage reply = new TextPopupMessage ();
 			reply.setText (msg);
-			player.getConnection ().sendMessageToClient (reply);
+			castingPlayer.getConnection ().sendMessageToClient (reply);
 		}
 		else if (combatLocation != null)
 		{
 			// Cast combat spell
 			// Always cast instantly
 			// If its a spell where we need to choose a target and/or additional mana, the client will already have done so
-			combatEnded = getSpellProcessing ().castCombatNow (player, xuCombatCastingUnit, combatCastingFixedSpellNumber, combatCastingSlotNumber, spell,
+			combatEnded = getSpellProcessing ().castCombatNow (castingPlayer, xuCombatCastingUnit, combatCastingFixedSpellNumber, combatCastingSlotNumber, spell,
 				reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				combatTargetUnit, combatTargetLocation, false, mom);
@@ -539,14 +537,14 @@ public final class SpellQueueingImpl implements SpellQueueing
 			final boolean castInstantly;
 			final int reducedCastingCost;
 			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME) &&
-				(!mom.getGeneralPublicKnowledge ().getCurrentPlayerID ().equals (player.getPlayerDescription ().getPlayerID ())))
+				(!mom.getGeneralPublicKnowledge ().getCurrentPlayerID ().equals (castingPlayer.getPlayerDescription ().getPlayerID ())))
 			{
 				castInstantly = false;
 				reducedCastingCost = 0;
 			}
 			else
 			{
-				reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, heroItem, variableDamage, pub.getPick (),
+				reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, heroItem, variableDamage, castingWizard.getPick (),
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 					mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 				
@@ -558,7 +556,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			if (castInstantly)
 			{
 				// Cast instantly, and show the casting message instantly too
-				getSpellProcessing ().castOverlandNow (player, spell, variableDamage, heroItem, mom);
+				getSpellProcessing ().castOverlandNow (castingPlayer, spell, variableDamage, heroItem, mom);
 				getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null);
 				
 				// Charge player the skill/mana
@@ -568,10 +566,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 				
 				// Recalc their production values, to send them their reduced skill/mana, but also the spell just cast might have had some maintenance
 				getServerResourceCalculations ().recalculateGlobalProductionValues
-					(player.getPlayerDescription ().getPlayerID (), false, mom);
+					(castingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 			}
 			else
-				queueSpell (player, mom.getPlayers (), spellID, heroItem, variableDamage);
+				queueSpell (castingPlayer, mom.getPlayers (), spellID, heroItem, variableDamage);
 		}
 		
 		return combatEnded;
@@ -641,10 +639,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final boolean progressOverlandCasting (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 
+		final KnownWizardDetails castingWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "progressOverlandCasting");
+		
 		// Keep going while this player has spells queued, free mana and free skill
 		boolean anySpellsCast = false;
 		int manaRemaining = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
@@ -654,7 +654,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// How much to put towards this spell?
 			final QueuedSpell queued = priv.getQueuedSpell ().get (0);
 			final Spell spell = mom.getServerDB ().findSpell (queued.getQueuedSpellID (), "progressOverlandCasting");
-			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), queued.getVariableDamage (), pub.getPick (),
+			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), queued.getVariableDamage (), castingWizard.getPick (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 			final int leftToCast = Math.max (0, reducedCastingCost - priv.getManaSpentOnCastingCurrentSpell ());
 			final int manaAmount = Math.min (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (), manaRemaining), leftToCast);

@@ -28,7 +28,7 @@ public interface SpellProcessing
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
-	 * @param player Player who is casting the spell
+	 * @param castingPlayer Player who is casting the spell
 	 * @param spell Which spell is being cast
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
@@ -39,7 +39,7 @@ public interface SpellProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void castOverlandNow (final PlayerServerDetails player, final Spell spell, final Integer variableDamage, final HeroItem heroItem, final MomSessionVariables mom)
+	public void castOverlandNow (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage, final HeroItem heroItem, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**

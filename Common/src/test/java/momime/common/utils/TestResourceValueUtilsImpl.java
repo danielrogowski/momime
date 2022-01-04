@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.calculations.SpellCalculations;
@@ -25,12 +24,12 @@ import momime.common.database.Pick;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
@@ -365,14 +364,9 @@ public final class TestResourceValueUtilsImpl
 		resourceValues.add (skillImprovement);
 		
 		// Player picks
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (2);
-		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails playerDetails = new PlayerPublicDetails (pd, pub, null);
-		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		
 		// Units
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -389,7 +383,7 @@ public final class TestResourceValueUtilsImpl
 		utils.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		// Run method
-		assertEquals (3, utils.calculateModifiedCastingSkill (resourceValues, playerDetails, players, mem, db, true));
+		assertEquals (3, utils.calculateModifiedCastingSkill (resourceValues, wizardDetails, players, mem, db, true));
 	}
 	
 	/**
@@ -421,21 +415,17 @@ public final class TestResourceValueUtilsImpl
 		resourceValues.add (skillImprovement);
 		
 		// Player picks
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (2);
-		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails playerDetails = new PlayerPublicDetails (pd, pub, null);
-		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setPlayerID (2);
 		
 		for (int n = 1; n <= 3; n++)
 		{
 			final PlayerPick pick = new PlayerPick ();
 			pick.setPickID ("RT0" + n);
 			pick.setQuantity (1);
-			pub.getPick ().add (pick);
+			wizardDetails.getPick ().add (pick);
 		}
 		
 		// Units
@@ -469,7 +459,7 @@ public final class TestResourceValueUtilsImpl
 		utils.setExpandUnitDetails (expand);
 		
 		// Run method
-		assertEquals (3 + 10 + 7, utils.calculateModifiedCastingSkill (resourceValues, playerDetails, players, mem, db, true));
+		assertEquals (3 + 10 + 7, utils.calculateModifiedCastingSkill (resourceValues, wizardDetails, players, mem, db, true));
 	}
 	
 	/**
@@ -554,14 +544,9 @@ public final class TestResourceValueUtilsImpl
 		resourceValues.add (fame);
 
 		// Player picks
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (2);
-		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails playerDetails = new PlayerPublicDetails (pd, pub, null);
-		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 		
 		// Spells
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
@@ -574,7 +559,7 @@ public final class TestResourceValueUtilsImpl
 		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		
 		// Run method
-		assertEquals (3, utils.calculateModifiedFame (resourceValues, playerDetails, players, mem, db));
+		assertEquals (3, utils.calculateModifiedFame (resourceValues, wizardDetails, players, mem, db));
 	}
 	
 	/**
@@ -606,21 +591,17 @@ public final class TestResourceValueUtilsImpl
 		resourceValues.add (fame);
 
 		// Player picks
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (2);
-		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails playerDetails = new PlayerPublicDetails (pd, pub, null);
-		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setPlayerID (2);
 		
 		for (int n = 1; n <= 3; n++)
 		{
 			final PlayerPick pick = new PlayerPick ();
 			pick.setPickID ("RT0" + n);
 			pick.setQuantity (1);
-			pub.getPick ().add (pick);
+			wizardDetails.getPick ().add (pick);
 		}
 
 		// Units
@@ -655,7 +636,7 @@ public final class TestResourceValueUtilsImpl
 		utils.setExpandUnitDetails (expand);
 		
 		// Run method
-		assertEquals (3 + 10 + 10 + 13, utils.calculateModifiedFame (resourceValues, playerDetails, players, mem, db));
+		assertEquals (3 + 10 + 10 + 13, utils.calculateModifiedFame (resourceValues, wizardDetails, players, mem, db));
 	}
 	
 	/**

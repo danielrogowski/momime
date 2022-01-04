@@ -39,13 +39,14 @@ import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtilsImpl;
@@ -116,20 +117,23 @@ public final class TestMagicSlidersUI extends ClientTestData
 		pd.setHuman (true);
 		pd.setPlayerID (3);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
-		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		players.add (player);
 		
+		// Wizard
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (ourWizard);
+
+		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "updatePerTurnLabels")).thenReturn (player);
 		
 		// Spell
 		final Spell spell1 = new Spell ();
@@ -148,8 +152,6 @@ public final class TestMagicSlidersUI extends ClientTestData
 		dist.setManaRatio		(CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX / 3);
 		dist.setResearchRatio	(CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX / 3);
 		dist.setSkillRatio			(CommonDatabaseConstants.MAGIC_POWER_DISTRIBUTION_MAX / 3);
-		
-		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setFogOfWarMemory (fow);
@@ -183,8 +185,8 @@ public final class TestMagicSlidersUI extends ClientTestData
 		
 		// Lets say we have Archmage, giving +50% bonus to magic power spent on skill improvement
 		final PlayerPickUtils pickUtils = mock (PlayerPickUtils.class);
-		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, pub.getPick (), db)).thenReturn (50);
-		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, null, pub.getPick (), db)).thenReturn (0);
+		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, null, ourWizard.getPick (), db)).thenReturn (50);
+		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, null, ourWizard.getPick (), db)).thenReturn (0);
 		
 		// Spell research
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -200,7 +202,7 @@ public final class TestMagicSlidersUI extends ClientTestData
 		priv.getQueuedSpell ().add (queued);
 		priv.setManaSpentOnCastingCurrentSpell (70);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell2, null, null, pub.getPick (), fow.getMaintainedSpell (), spellSettings, db)).thenReturn (80);
+		when (spellUtils.getReducedOverlandCastingCost (spell2, null, null, ourWizard.getPick (), fow.getMaintainedSpell (), spellSettings, db)).thenReturn (80);
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
@@ -239,6 +241,7 @@ public final class TestMagicSlidersUI extends ClientTestData
 		sliders.setResourceValueUtils (resourceValueUtils);
 		sliders.setSkillCalculations (skillCalc);
 		sliders.setSpellUtils (spellUtils);
+		sliders.setKnownWizardUtils (knownWizardUtils);
 		sliders.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		sliders.setTextUtils (new TextUtilsImpl ());
 		sliders.setLargeFont (CreateFontsForTests.getLargeFont ());

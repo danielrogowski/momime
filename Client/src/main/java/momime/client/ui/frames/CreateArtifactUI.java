@@ -27,8 +27,6 @@ import javax.swing.SwingConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -47,8 +45,9 @@ import momime.common.database.HeroItemType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 
@@ -81,9 +80,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	/** Client-side hero item utils */
 	private HeroItemClientUtils heroItemClientUtils;
 	
-	/** Session utils */
-	private MultiplayerSessionUtils multiplayerSessionUtils;
-	
 	/** Text utils */
 	private TextUtils textUtils;
 	
@@ -93,6 +89,9 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	/** Spell book */
 	private SpellBookUI spellBookUI;
 
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/** OK action */
 	private Action okAction;
 	
@@ -337,14 +336,14 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			updateItemImage (0);
 			
 			// Find what bonuses are applicable to this item type and the picks we have
-			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "selectItemType");
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+			final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "selectItemType");
 			
 			final List<HeroItemBonus> attributeBonuses = new ArrayList<HeroItemBonus> ();
 			final List<HeroItemBonus> spellEffectBonuses = new ArrayList<HeroItemBonus> ();
 			
 			for (final String allowedBonusID : heroItemType.getHeroItemTypeAllowedBonus ())
-				if (getHeroItemCalculations ().haveRequiredBooksForBonus (allowedBonusID, pub.getPick (), getClient ().getClientDB ()))
+				if (getHeroItemCalculations ().haveRequiredBooksForBonus (allowedBonusID, ourWizard.getPick (), getClient ().getClientDB ()))
 				{
 					final HeroItemBonus bonus = getClient ().getClientDB ().findHeroItemBonus (allowedBonusID, "selectItemType");
 					
@@ -593,11 +592,11 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		String text = getTextUtils ().intToStrCommas (baseCost) + " " + mpSuffix;
 		
 		// Do we have artificer or runemaster?
-		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateCraftingCost");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "updateCraftingCost");
 		
 		final int reducedCost = getSpellUtils ().getReducedOverlandCastingCost
-			(getSpell (), heroItem, null, pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+			(getSpell (), heroItem, null, ourWizard.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 				getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 		
 		if (reducedCost < baseCost)
@@ -747,22 +746,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @return Session utils
-	 */
-	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
-	{
-		return multiplayerSessionUtils;
-	}
-
-	/**
-	 * @param util Session utils
-	 */
-	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
-	{
-		multiplayerSessionUtils = util;
-	}
-
-	/**
 	 * @return Text utils
 	 */
 	public final TextUtils getTextUtils ()
@@ -808,5 +791,21 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	public final void setSpellBookUI (final SpellBookUI ui)
 	{
 		spellBookUI = ui;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

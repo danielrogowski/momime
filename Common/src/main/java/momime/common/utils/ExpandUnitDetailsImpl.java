@@ -178,8 +178,8 @@ public final class ExpandUnitDetailsImpl implements ExpandUnitDetails
 		// STEP 24 - Finally can build the unit object
 		final RangedAttackTypeEx rangedAttackType = (mu.getUnitDefinition ().getRangedAttackType () == null) ? null : db.findRangedAttackType (mu.getUnitDefinition ().getRangedAttackType (), "expandUnitDetails");
 
-		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, mu.getUnitDefinition (), mu.getUnitType (), mu.getOwningPlayer (), magicRealmLifeformType,
-			weaponGrade, rangedAttackType, mu.getBasicExperienceLevel (), mu.getModifiedExperienceLevel (), controllingPlayerID,
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, mu.getUnitDefinition (), mu.getUnitType (), mu.getOwningPlayer (), mu.getOwningWizard (),
+			magicRealmLifeformType, weaponGrade, rangedAttackType, mu.getBasicExperienceLevel (), mu.getModifiedExperienceLevel (), controllingPlayerID,
 			basicSkillValues, modifiedSkillValues, basicUpkeepValues, modifiedUpkeepValues, getUnitUtils ());
 		return xu;
 	}

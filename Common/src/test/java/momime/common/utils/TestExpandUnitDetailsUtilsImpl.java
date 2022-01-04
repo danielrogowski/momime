@@ -44,11 +44,11 @@ import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.ConfusionEffect;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitStatusID;
 
@@ -1814,13 +1814,12 @@ public final class TestExpandUnitDetailsUtilsImpl
 		when (mu.getUnitType ()).thenReturn (unitType);
 		
 		// Unit owner
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final PlayerPublicDetails unitOwner = new PlayerPublicDetails (null, pub, null);
-		when (mu.getOwningPlayer ()).thenReturn (unitOwner);
+		final KnownWizardDetails unitOwner = new KnownWizardDetails ();
+		when (mu.getOwningWizard ()).thenReturn (unitOwner);
 		
 		// Reduction from retort
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, "X", pub.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, "X", unitOwner.getPick (), db)).thenReturn (50);
 
 		// Skill breakdowns
 		final Map<String, UnitSkillValueBreakdown> modifiedSkillValues = new HashMap<String, UnitSkillValueBreakdown> ();

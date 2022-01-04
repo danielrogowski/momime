@@ -20,13 +20,19 @@ import momime.common.database.HeroItemBonusStat;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.Spell;
 import momime.common.database.UnitSetting;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
+import momime.server.MomSessionVariables;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the HeroItemServerUtilsImpl class
@@ -41,12 +47,12 @@ public final class TestHeroItemServerUtilsImpl
 	@Test
 	public final void testValidateHeroItem_Trivial () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
@@ -57,14 +63,31 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();		 
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNull (utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertNull (utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -84,9 +107,12 @@ public final class TestHeroItemServerUtilsImpl
 			when (db.findHeroItemBonus ("IB0" + n, "validateHeroItem")).thenReturn (bonus);
 		}
 		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
@@ -97,16 +123,34 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01"})
 			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNull (utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertNull (utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -116,17 +160,19 @@ public final class TestHeroItemServerUtilsImpl
 	@Test
 	public final void testValidateHeroItem_ExceedBonusCount () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		for (int n = 1; n <= 2; n++)
 		{
 			final HeroItemBonus bonus = new HeroItemBonus ();
 			bonus.setBonusCraftingCost (100 * n);
 		}
 		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
+		// Item settings
 		unitSettings.setMaxHeroItemBonuses (1);
 
 		// Crafting spell
@@ -139,16 +185,33 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB02"})
 			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Hero items may be imbued with a maximum of 1 bonuses", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Hero items may be imbued with a maximum of 1 bonuses", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -169,9 +232,12 @@ public final class TestHeroItemServerUtilsImpl
 			when (db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem")).thenReturn (bonus);
 		}
 		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
@@ -182,16 +248,34 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB01"})
 			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Bonus IB01 was chosen more than once", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Bonus IB01 was chosen more than once", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -212,9 +296,12 @@ public final class TestHeroItemServerUtilsImpl
 			when (db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem")).thenReturn (bonus);
 		}
 		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (100);
@@ -225,16 +312,34 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB02"})
 			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Bonus IB02 exceeds the maximum cost of 100 per bonus", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Bonus IB02 exceeds the maximum cost of 100 per bonus", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -254,9 +359,12 @@ public final class TestHeroItemServerUtilsImpl
 			when (db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem")).thenReturn (bonus);
 		}
 		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (100);
@@ -267,16 +375,34 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01"})
 			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Bonus IB01 exceeds the maximum cost of 100 per bonus", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Bonus IB01 exceeds the maximum cost of 100 per bonus", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -303,9 +429,12 @@ public final class TestHeroItemServerUtilsImpl
 			when (db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem")).thenReturn (bonus);
 		}
 		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
@@ -318,20 +447,41 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, null, null, null);
 		
+		// Casting wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.getQuantityOfPick (pub.getPick (), "MB01")).thenReturn (1);
+		when (playerPickUtils.getQuantityOfPick (wizardDetails.getPick (), "MB01")).thenReturn (1);
+		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
 		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB02"})
 			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Bonus IB02 requires at least 2 picks in magic realm MB01", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Bonus IB02 requires at least 2 picks in magic realm MB01", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -357,9 +507,12 @@ public final class TestHeroItemServerUtilsImpl
 			when (db.findHeroItemBonus ("IB0" + n, "validateHeroItem")).thenReturn (bonus);
 		}
 		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
@@ -370,16 +523,34 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB02"})
 			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("More than one bonus was selected that gives a bonus to stat UA01", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("More than one bonus was selected that gives a bonus to stat UA01", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -389,12 +560,12 @@ public final class TestHeroItemServerUtilsImpl
 	@Test
 	public final void testValidateHeroItem_SpellButDidntPick () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		
@@ -404,15 +575,32 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		heroItem.setSpellID ("SP001");
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Hero items shouldn't specify a spell if the spell charges bonus was not picked", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Hero items shouldn't specify a spell if the spell charges bonus was not picked", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -422,12 +610,12 @@ public final class TestHeroItemServerUtilsImpl
 	@Test
 	public final void testValidateHeroItem_SpellCountButDidntPick () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		
@@ -437,15 +625,32 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		heroItem.setSpellChargeCount (4);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Hero items shouldn't specify a number of spells if the spell charges bonus was not picked", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Hero items shouldn't specify a number of spells if the spell charges bonus was not picked", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -461,9 +666,12 @@ public final class TestHeroItemServerUtilsImpl
 		final HeroItemBonus scDef = new HeroItemBonus ();
 		when (db.findHeroItemBonus (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES, "validateHeroItem")).thenReturn (scDef);
 		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
@@ -474,16 +682,34 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		
 		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Hero items must specify a spell if the spell charges bonus was picked", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Hero items must specify a spell if the spell charges bonus was picked", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -499,9 +725,12 @@ public final class TestHeroItemServerUtilsImpl
 		final HeroItemBonus scDef = new HeroItemBonus ();
 		when (db.findHeroItemBonus (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES, "validateHeroItem")).thenReturn (scDef);
 		
-		// Item settings
+		// Session description
 		final UnitSetting unitSettings = new UnitSetting ();
-
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
@@ -512,17 +741,35 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		heroItem.setSpellID ("SP001");
 		
 		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Hero items must specify a number of spells if the spell charges bonus was picked", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Hero items must specify a number of spells if the spell charges bonus was picked", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -542,6 +789,10 @@ public final class TestHeroItemServerUtilsImpl
 		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setMaxHeroItemSpellCharges (3);
 
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
@@ -552,6 +803,17 @@ public final class TestHeroItemServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		heroItem.setSpellID ("SP001");
@@ -559,11 +821,18 @@ public final class TestHeroItemServerUtilsImpl
 		
 		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("Number of spell charges on the item was over the allowed maximum", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Number of spell charges on the item was over the allowed maximum", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -586,6 +855,10 @@ public final class TestHeroItemServerUtilsImpl
 		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setMaxHeroItemSpellCharges (4);
 
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
@@ -605,6 +878,17 @@ public final class TestHeroItemServerUtilsImpl
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		heroItem.setSpellID ("SP001");
@@ -612,12 +896,19 @@ public final class TestHeroItemServerUtilsImpl
 		
 		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("You tried to imbue a spell that you haven't yet researched into a hero item", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("You tried to imbue a spell that you haven't yet researched into a hero item", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -640,6 +931,10 @@ public final class TestHeroItemServerUtilsImpl
 		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setMaxHeroItemSpellCharges (4);
 
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
@@ -661,6 +956,17 @@ public final class TestHeroItemServerUtilsImpl
 		
 		when (spellUtils.spellCanBeCastIn (spellChargeDef, SpellCastType.COMBAT)).thenReturn (false);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		heroItem.setSpellID ("SP001");
@@ -668,12 +974,19 @@ public final class TestHeroItemServerUtilsImpl
 		
 		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertEquals ("You can only imbue combat spells into hero items", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("You can only imbue combat spells into hero items", utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 
 	/**
@@ -696,6 +1009,10 @@ public final class TestHeroItemServerUtilsImpl
 		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setMaxHeroItemSpellCharges (4);
 
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setUnitSetting (unitSettings);
+		
 		// Crafting spell
 		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
@@ -717,6 +1034,17 @@ public final class TestHeroItemServerUtilsImpl
 		
 		when (spellUtils.spellCanBeCastIn (spellChargeDef, SpellCastType.COMBAT)).thenReturn (true);
 		
+		// Casting wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails knownWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateHeroItem")).thenReturn (knownWizard);
+		
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		heroItem.setSpellID ("SP001");
@@ -724,11 +1052,18 @@ public final class TestHeroItemServerUtilsImpl
 		
 		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
-		
+		utils.setKnownWizardUtils (knownWizardUtils);
+
 		// Run method
-		assertNull (utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertNull (utils.validateHeroItem (player, spell, heroItem, mom));
 	}
 }

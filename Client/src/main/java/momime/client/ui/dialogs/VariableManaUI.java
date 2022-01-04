@@ -14,19 +14,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.WindowConstants;
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.CombatUI;
@@ -39,9 +37,9 @@ import momime.common.database.LanguageText;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.PlayerPick;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -69,9 +67,6 @@ public final class VariableManaUI extends MomClientDialogUI
 	/** Multiplayer client */
 	private MomClient client;
 
-	/** Session utils */
-	private MultiplayerSessionUtils multiplayerSessionUtils;
-
 	/** Combat UI */
 	private CombatUI combatUI;
 	
@@ -80,6 +75,9 @@ public final class VariableManaUI extends MomClientDialogUI
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** OK action */
 	private Action okAction;
@@ -242,11 +240,11 @@ public final class VariableManaUI extends MomClientDialogUI
 				}
 				
 				// Work out the modified MP cost, reduced if we have a lot of spell books
-				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-	
+				final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "sliderPositionChanged");
+				
 				final int modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargeted (), unmodifiedCost,
-					pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+					ourWizard.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 					getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 				
 				// Show modified cost or not?
@@ -280,8 +278,8 @@ public final class VariableManaUI extends MomClientDialogUI
 	 */
 	public final void setSpellBeingTargeted (final Spell spell) throws IOException
 	{
-		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "setSpellBeingTargeted");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "setSpellBeingTargeted");
 		
 		// This has to work and be able to calculate the minimum+maximum damage even if the form has never been displayed
 		// so that we can handle the situation where the first variable damage spell cast is one that we don't have enough skill/MP
@@ -339,7 +337,7 @@ public final class VariableManaUI extends MomClientDialogUI
 				final int modifiedCost;
 				if ((getCombatUI ().getCastingSource () == null) || (getCombatUI ().getCastingSource ().getCastingUnit () == null))
 					modifiedCost = getSpellUtils ().getReducedCastingCost (getSpellBeingTargeted (), unmodifiedCost,
-						pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+						ourWizard.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 						getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 				else
 					modifiedCost = unmodifiedCost;
@@ -448,9 +446,9 @@ public final class VariableManaUI extends MomClientDialogUI
 	/**
 	 * @return Reads off the slider value
 	 * @throws MomException If the variable settings on the spell definition are inconsistent
-	 * @throws PlayerNotFoundException If we can't find our player details in the list
+	 * @throws RecordNotFoundException If we can't our our wizard details in the list
 	 */
-	public final int getVariableDamage () throws MomException, PlayerNotFoundException
+	public final int getVariableDamage () throws MomException, RecordNotFoundException
 	{
 		// The only time we may get here when the form hasn't been displayed is if the first variable MP spell we cast
 		// we had insufficient MP to make any choice at all, and so the form was never set up properly or displayed.
@@ -473,13 +471,13 @@ public final class VariableManaUI extends MomClientDialogUI
 							((slider.getValue () - getSpellBeingTargeted ().getOverlandCastingCost ()) * getSpellBeingTargeted ().getOverlandAdditionalDamagePointsPerMana ());
 					
 					// Dispel strength doubled if wizard is a Runemaster
-					final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
-					final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+					final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "getVariableDamage");
 					
 					final SpellBookSectionID sectionID = getSpellBeingTargeted ().getSpellBookSectionID ();
 					
 					if ((sectionID == SpellBookSectionID.DISPEL_SPELLS) &&
-						(getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_NODE_RUNEMASTER) > 0))
+						(getPlayerPickUtils ().getQuantityOfPick (ourWizard.getPick (), CommonDatabaseConstants.RETORT_NODE_RUNEMASTER) > 0))
 						
 						dmg = dmg * 2;
 					
@@ -573,22 +571,6 @@ public final class VariableManaUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return Session utils
-	 */
-	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
-	{
-		return multiplayerSessionUtils;
-	}
-
-	/**
-	 * @param util Session utils
-	 */
-	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
-	{
-		multiplayerSessionUtils = util;
-	}
-
-	/**
 	 * @return Combat UI
 	 */
 	public final CombatUI getCombatUI ()
@@ -634,5 +616,21 @@ public final class VariableManaUI extends MomClientDialogUI
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

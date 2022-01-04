@@ -2,14 +2,13 @@ package momime.server.calculations;
 
 import java.util.List;
 
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
 
@@ -45,22 +44,22 @@ public interface ServerUnitCalculations
 	 * hired once and if killed are never available to summon again.  Plus some heroes are restricted depending on what our spell book picks are.
 	 * 
 	 * @param spell Summoning spell
-	 * @param player Player casting the spell
+	 * @param wizardDetails Wizard casting the spell
 	 * @param trueUnits List of true units
 	 * @param db Lookup lists built over the XML database
 	 * @return List of units this spell might summon if we cast it; list can be empty if we're already summoned and killed all heroes for example
 	 * @throws RecordNotFoundException If one of the summoned unit IDs can't be found in the DB
 	 */
-	public List<UnitEx> listUnitsSpellMightSummon (final Spell spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db)
+	public List<UnitEx> listUnitsSpellMightSummon (final Spell spell, final KnownWizardDetails wizardDetails, final List<MemoryUnit> trueUnits, final CommonDatabase db)
 		throws RecordNotFoundException;
 	
 	/**
 	 * Similar to listUnitsSpellMightSummon, except lists all heroes who haven't been killed, and who we have the necessary spell book picks for. 
 	 * 
-	 * @param player Player recruiting heroes
+	 * @param wizardDetails Wizard recruiting heroes
 	 * @param trueUnits List of true units
 	 * @param db Lookup lists built over the XML database
 	 * @return List of heroes available to us
 	 */
-	public List<UnitEx> listHeroesForHire (final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db);
+	public List<UnitEx> listHeroesForHire (final KnownWizardDetails wizardDetails, final List<MemoryUnit> trueUnits, final CommonDatabase db);
 }

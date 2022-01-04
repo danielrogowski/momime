@@ -25,7 +25,6 @@ import javax.swing.ScrollPaneConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsHorizontalFill;
 import com.ndg.swing.GridBagConstraintsNoFill;
@@ -52,11 +51,12 @@ import momime.common.database.Pick;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSkill;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -96,9 +96,6 @@ public final class HelpUI extends MomClientFrameUI
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
-	/** Session utils */
-	private MultiplayerSessionUtils multiplayerSessionUtils;
-	
 	/** Text utils */
 	private TextUtils textUtils;
 	
@@ -107,6 +104,9 @@ public final class HelpUI extends MomClientFrameUI
 	
 	/** Replacer for evaluating EL expressions in help text */
 	private SpringExpressionReplacer springExpressionReplacer;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Title */
 	private JLabel title;
@@ -335,9 +335,10 @@ public final class HelpUI extends MomClientFrameUI
 							text = indentedText.getText ();
 							
 							final Spell spellDef = getClient ().getClientDB ().findSpell (spell.getSpellID (), "HelpUI");
-							final PlayerPublicDetails thisPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID (), "HelpUI");
-							final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
-							indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, pub.getPick ()));
+							final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+								(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), spell.getCastingPlayerID (), "HelpUI");
+
+							indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, wizardDetails.getPick ()));
 						}
 					}
 				}
@@ -352,8 +353,11 @@ public final class HelpUI extends MomClientFrameUI
 				
 				// City spell effects *must* be the result of a spell, so we should already know the spellID and who cast it
 				final Spell spellDef = getClient ().getClientDB ().findSpell (spellID, "HelpUI");
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ();
-				indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, pub.getPick ()));
+
+				final KnownWizardDetails castingWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), castingPlayer.getPlayerDescription ().getPlayerID (), "HelpUI");
+				
+				indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, castingWizard.getPick ()));
 			}
 			else if (combatAreaEffectID != null)
 			{
@@ -431,9 +435,9 @@ public final class HelpUI extends MomClientFrameUI
 				}
 				
 				// Overland casting cost
-				final MomPersistentPlayerPublicKnowledge castingPub = (castingPlayer == null) ? null :
-					(MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ();
-
+				final KnownWizardDetails castingWizard = (castingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), castingPlayer.getPlayerDescription ().getPlayerID (), "HelpUI");
+				
 				final String manaSuffix = getLanguageHolder ().findDescription
 					(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "HelpUI").getProductionTypeSuffix ());
 								
@@ -441,10 +445,10 @@ public final class HelpUI extends MomClientFrameUI
 				if (spellDef.getOverlandCastingCost () != null)
 				{
 					final int reducedCastingCost;
-					if (castingPub == null)
+					if (castingWizard == null)
 						reducedCastingCost = spellDef.getOverlandCastingCost ();		// No info on caster's picks, so just assume no reduction
 					else
-						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, null, null, castingPub.getPick (),
+						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, null, null, castingWizard.getPick (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 							getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
@@ -466,10 +470,10 @@ public final class HelpUI extends MomClientFrameUI
 				if (getSpellUtils ().spellCanBeCastIn (spellDef, SpellCastType.COMBAT))
 				{
 					final int reducedCastingCost;
-					if (castingPub == null)
+					if (castingWizard == null)
 						reducedCastingCost = spellDef.getCombatCastingCost ();		// No info on caster's picks, so just assume no reduction
 					else
-						reducedCastingCost = getSpellUtils ().getReducedCombatCastingCost (spellDef, null, castingPub.getPick (),
+						reducedCastingCost = getSpellUtils ().getReducedCombatCastingCost (spellDef, null, castingWizard.getPick (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 							getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
@@ -492,7 +496,7 @@ public final class HelpUI extends MomClientFrameUI
 					spellStats.append (System.lineSeparator () + getSpellClientUtils ().listSavingThrowsOfSpell (spellDef));
 				
 				// Upkeep
-				final String upkeep = getSpellClientUtils ().listUpkeepsOfSpell (spellDef, (castingPub == null) ? null : castingPub.getPick ());
+				final String upkeep = getSpellClientUtils ().listUpkeepsOfSpell (spellDef, (castingWizard == null) ? null : castingWizard.getPick ());
 				if (upkeep != null)
 					spellStats.append (System.lineSeparator () + upkeep);
 				
@@ -851,22 +855,6 @@ public final class HelpUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Session utils
-	 */
-	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
-	{
-		return multiplayerSessionUtils;
-	}
-
-	/**
-	 * @param util Session utils
-	 */
-	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
-	{
-		multiplayerSessionUtils = util;
-	}
-
-	/**
 	 * @return Text utils
 	 */
 	public final TextUtils getTextUtils ()
@@ -912,5 +900,21 @@ public final class HelpUI extends MomClientFrameUI
 	public final void setSpringExpressionReplacer (final SpringExpressionReplacer replacer)
 	{
 		springExpressionReplacer = replacer;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

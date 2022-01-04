@@ -76,7 +76,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -737,11 +736,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * This is called on the TrueMap to update the values there, then the calling routine checks each player's Fog of War to see
 	 * if they can see the city, and if so then sends them the updated values
 	 *
-	 * @param players Players list
-	 * @param map Known terrain
-	 * @param units Known units
-	 * @param buildings Known buildings
-	 * @param spells Known spells
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param db Lookup lists built over the XML database
@@ -750,12 +745,10 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @throws RecordNotFoundException If any of a number of items cannot be found in the cache
 	 */
 	@Override
-	public final CityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
+	public final CityUnrestBreakdown calculateCityRebels (final FogOfWarMemory mem, final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
-		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		final MemoryGridCell mc = mem.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
 
 		// Create breakdown object to write all the values into
@@ -767,12 +760,12 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Add on racial unrest percentage
 		// To do this, need to find the player's capital race, i.e. the race inhabiting the city where their fortress is
 		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
-			(cityData.getCityOwnerID (), CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings);
+			(cityData.getCityOwnerID (), CommonDatabaseConstants.BUILDING_FORTRESS, mem.getMap (), mem.getBuilding ());
 
 		if (fortressLocation != null)
 		{
 			// Find the capital race's unrest value listed under this city's race
-			final OverlandMapCityData fortressCityData = map.getPlane ().get (fortressLocation.getCityLocation ().getZ ()).getRow ().get
+			final OverlandMapCityData fortressCityData = mem.getMap ().getPlane ().get (fortressLocation.getCityLocation ().getZ ()).getRow ().get
 				(fortressLocation.getCityLocation ().getY ()).getCell ().get (fortressLocation.getCityLocation ().getX ()).getCityData ();
 
 			RaceUnrest raceUnrest = null;
@@ -793,12 +786,12 @@ public final class CityCalculationsImpl implements CityCalculations
 		}
 
 		// Find the picks of the player who owns this city
-		final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityRebels");
-		final List<PlayerPick> cityOwnerPicks = ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
+		final KnownWizardDetails cityOwner = getKnownWizardUtils ().findKnownWizardDetails (mem.getWizardDetails (), cityData.getCityOwnerID (), "calculateCityRebels");
+		final List<PlayerPick> cityOwnerPicks = cityOwner.getPick ();
 		
 		// See if they get any benefit from religious buildings or if it is nullified
 		final MemoryMaintainedSpell evilPresence = getMemoryMaintainedSpellUtils ().findMaintainedSpell
-			(spells, null, null, null, null, cityLocation, CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE);
+			(mem.getMaintainedSpell (), null, null, null, null, cityLocation, CommonDatabaseConstants.CITY_SPELL_EFFECT_ID_EVIL_PRESENCE);
 		final String religiousBuildingsNegatedBySpellID = ((evilPresence != null) &&
 			(getPlayerPickUtils ().getQuantityOfPick (cityOwnerPicks, CommonDatabaseConstants.PICK_ID_DEATH_BOOK) == 0)) ? evilPresence.getSpellID () : null;
 		
@@ -807,7 +800,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// but they do not improve the unrest reduction of the Animists' Guild or the Oracle
 		int religiousUnrestReduction = 0;
 		int nonReligiousUnrestReduction = 0;
-		for (final MemoryBuilding thisBuilding : buildings)
+		for (final MemoryBuilding thisBuilding : mem.getBuilding ())
 
 			// Make sure its in the right location, and don't count buildings being sold this turn
 			if ((thisBuilding.getCityLocation ().equals (cityLocation)) && (!thisBuilding.getBuildingID ().equals (mc.getBuildingIdSoldThisTurn ())))
@@ -851,29 +844,26 @@ public final class CityCalculationsImpl implements CityCalculations
 		}
 		
 		// Unrest reduction / increase from spells
-		if (spells != null)
-		{
-			// Don't process the same spell twice - for example if two different enemy wizards both cast Famine on our city, we don't get -50% unrest, just the normal -25%
-			final List<String> spellsApplied = new ArrayList<String> ();
-			
-			for (final MemoryMaintainedSpell spell : spells)
-				if ((!spellsApplied.contains (spell.getSpellID ())) &&
-					(((spell.getCityLocation () == null) && (spell.getCitySpellEffectID () == null)) || 	// To allow overland enchantments like Just Cause or Great Wasting
-					((cityLocation.equals (spell.getCityLocation ())) && (spell.getCitySpellEffectID () != null))))
+		// Don't process the same spell twice - for example if two different enemy wizards both cast Famine on our city, we don't get -50% unrest, just the normal -25%
+		final List<String> spellsApplied = new ArrayList<String> ();
+		
+		for (final MemoryMaintainedSpell spell : mem.getMaintainedSpell ())
+			if ((!spellsApplied.contains (spell.getSpellID ())) &&
+				(((spell.getCityLocation () == null) && (spell.getCitySpellEffectID () == null)) || 	// To allow overland enchantments like Just Cause or Great Wasting
+				((cityLocation.equals (spell.getCityLocation ())) && (spell.getCitySpellEffectID () != null))))
+			{
+				final CityUnrestBreakdownSpell spellBreakdown = createUnrestReductionFromSpell (spell, cityData.getCityOwnerID (), db);
+				if (spellBreakdown != null)
 				{
-					final CityUnrestBreakdownSpell spellBreakdown = createUnrestReductionFromSpell (spell, cityData.getCityOwnerID (), db);
-					if (spellBreakdown != null)
-					{
-						breakdown.getSpellReducingUnrest ().add (spellBreakdown);
-						
-						// Only added it to the applied list if it actually applied, otherwise our Great Wasting would stop someone else's Great Wasting from affecting us
-						spellsApplied.add (spell.getSpellID ());
-					}
+					breakdown.getSpellReducingUnrest ().add (spellBreakdown);
+					
+					// Only added it to the applied list if it actually applied, otherwise our Great Wasting would stop someone else's Great Wasting from affecting us
+					spellsApplied.add (spell.getSpellID ());
 				}
-		}
+			}
 
 		// Subtract pacifying effects of non-summoned units
-		for (final MemoryUnit thisUnit : units)
+		for (final MemoryUnit thisUnit : mem.getUnit ())
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (cityLocation.equals (thisUnit.getUnitLocation ())))
 			{
 				final String unitMagicRealmID = db.findUnit (thisUnit.getUnitID (), "calculateCityRebels").getUnitMagicRealm ();

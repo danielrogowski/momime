@@ -199,8 +199,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final MomPersistentPlayerPublicKnowledge humanPpk = new MomPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails humanWizard = new KnownWizardDetails ();
-		humanWizard.setWizardID ("");			// Custom wizard
-		humanPpk.getPick ().add (myrran);		// Have to put something in here so that .equals () doesn't consider the human and AI pick lists to be the same
+		humanWizard.setWizardID (null);			// Custom wizard
+		humanWizard.getPick ().add (myrran);		// Have to put something in here so that .equals () doesn't consider the human and AI pick lists to be the same
 		
 		final MomTransientPlayerPrivateKnowledge humanTrans = new MomTransientPlayerPrivateKnowledge ();
 		humanTrans.setFirstCityRaceID ("RC01");
@@ -265,17 +265,15 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Who are wizards, raiders, monsters
 		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
-		when (playerKnowledgeUtils.isWizard ("")).thenReturn (true);		// custom wizard
+		when (playerKnowledgeUtils.isWizard (null)).thenReturn (true);		// custom wizard
 		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
 		when (playerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS)).thenReturn (false);
 		when (playerKnowledgeUtils.isWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS)).thenReturn (false);
 		
 		// Human player chose Myrran retort; AI player did not
 		final PlayerPickServerUtils playerPickServerUtils = mock (PlayerPickServerUtils.class);
-		when (playerPickServerUtils.startingPlaneForWizard (humanPpk.getPick (), db)).thenReturn (1);
-		when (playerPickServerUtils.startingPlaneForWizard (aiPpk.getPick (), db)).thenReturn (0);
-		
-		humanPpk.getPick ().equals (aiPpk.getPick ());
+		when (playerPickServerUtils.startingPlaneForWizard (humanWizard.getPick (), db)).thenReturn (1);
+		when (playerPickServerUtils.startingPlaneForWizard (aiWizard.getPick (), db)).thenReturn (0);
 		
 		// Raider cities go on random planes, so put 1 on each
 		final RandomUtils random = mock (RandomUtils.class);
@@ -324,14 +322,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 		raidersMyrrorRebels.setFinalTotal (4);
 		
 		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			humanLocation, "TR01", db)).thenReturn (humanRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			aiLocation, "TR02", db)).thenReturn (aiRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			raidersArcanusLocation, "TR03", db)).thenReturn (raidersArcanusRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			raidersMyrrorLocation, "TR03", db)).thenReturn (raidersMyrrorRebels);
+		when (cityCalc.calculateCityRebels (trueMap, humanLocation, "TR01", db)).thenReturn (humanRebels);
+		when (cityCalc.calculateCityRebels (trueMap, aiLocation, "TR02", db)).thenReturn (aiRebels);
+		when (cityCalc.calculateCityRebels (trueMap, raidersArcanusLocation, "TR03", db)).thenReturn (raidersArcanusRebels);
+		when (cityCalc.calculateCityRebels (trueMap, raidersMyrrorLocation, "TR03", db)).thenReturn (raidersMyrrorRebels);
 		
 		// City names
 		when (overlandMapServerUtils.generateCityName (gsk, race1)).thenReturn ("Human city");
@@ -1367,7 +1361,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (db.getPlane ()).thenReturn (planes);
 		
 		final TaxRate taxRate = new TaxRate ();
-		when (db.findTaxRate ("TR03", "changeTaxRate")).thenReturn (taxRate);
+		taxRate.setTaxRateID ("TR03");
+		
+		when (db.getTaxRate ()).thenReturn (Arrays.asList (taxRate));
 		
 		// Session description
 		final OverlandMapSize sys = createOverlandMapSize ();
@@ -1441,10 +1437,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		// Have to use anyObject () for location since .equals () doesn't give correct result
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			cityLocation1, "TR03", db)).thenReturn (breakdown1);
-		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
-			cityLocation2, "TR03", db)).thenReturn (breakdown2);
+		when (cityCalculations.calculateCityRebels (trueMap, cityLocation1, "TR03", db)).thenReturn (breakdown1);
+		when (cityCalculations.calculateCityRebels (trueMap, cityLocation2, "TR03", db)).thenReturn (breakdown2);
 		
 		final ServerCityCalculations serverCityCalculations = mock (ServerCityCalculations.class);
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);

@@ -5,7 +5,6 @@ import java.util.List;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -14,9 +13,9 @@ import momime.common.database.PickProductionBonus;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
@@ -244,7 +243,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 	 * Spells cast into combat cost more MP to cast the further away they are from the wizard's fortess (though the casting skill used remains the same).
 	 * Table is on p323 in the strategy guide. 
 	 * 
-	 * @param player Player casting the spell
+	 * @param wizardDetails Wizard casting the spell
 	 * @param combatLocation Combat location they are casting a spell at
 	 * @param allowEitherPlane For combats in Towers of Wizardry, where we can always consider ourselves to be on the same plane as the wizard's fortress
 	 * @param map Known terrain
@@ -253,13 +252,13 @@ public final class SpellCalculationsImpl implements SpellCalculations
 	 * @return Double the range penalty for casting spells in combat; or null if the player simply can't cast any spells at all right now because they're banished
 	 */
 	@Override
-	public final Integer calculateDoubleCombatCastingRangePenalty (final PlayerPublicDetails player, final MapCoordinates3DEx combatLocation,
+	public final Integer calculateDoubleCombatCastingRangePenalty (final KnownWizardDetails wizardDetails, final MapCoordinates3DEx combatLocation,
 		final boolean allowEitherPlane, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CoordinateSystem overlandMapCoordinateSystem)
 	{
 		// First need to find where the wizard's fortress is
 		Integer penalty;
 		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
-			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings);
+			(wizardDetails.getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings);
 		if (fortressLocation == null)
 			penalty = null;
 		else
@@ -282,8 +281,7 @@ public final class SpellCalculationsImpl implements SpellCalculations
 			// Channeler retort limits range penalty to 1x
 			// Tested this in the original MoM to prove it really does cap it at 1x, because that's not really "as if at the wizard's fortress"
 			// like the description says, which would be capping it at ½x, so the description is a bit ambigious
-			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if ((penalty > 2) && (getPlayerPickUtils ().getQuantityOfPick (ppk.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
+			if ((penalty > 2) && (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
 				penalty = 2;
 		}
 

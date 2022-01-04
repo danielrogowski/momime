@@ -59,6 +59,7 @@ import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -278,6 +279,9 @@ public final class TestUnitInfoPanel extends ClientTestData
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 		when (client.getPlayers ()).thenReturn (players);
+		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 
 		// FOW memory
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -308,7 +312,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 		when (xu.getUnit ()).thenReturn (unit);
 		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
-		when (xu.getOwningPlayer ()).thenReturn (player);
+		when (xu.getOwningWizard ()).thenReturn (wizardDetails);
 		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Skills

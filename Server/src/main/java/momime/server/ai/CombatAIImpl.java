@@ -350,15 +350,15 @@ public final class CombatAIImpl implements CombatAI
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		// If AI Wizard (not raiders, not banished, not human player on auto) then maybe cast a spell before we move units
-		final KnownWizardDetails knownDetails = getKnownWizardUtils ().findKnownWizardDetails
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), currentPlayer.getPlayerDescription ().getPlayerID (), "aiCombatTurn");
 		
 		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
 		
-		if ((getPlayerKnowledgeUtils ().isWizard (knownDetails.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
-			(knownDetails.getWizardState () == WizardState.ACTIVE))
+		if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
+			(wizardDetails.getWizardState () == WizardState.ACTIVE))
 			
-			result = getSpellAI ().decideWhatToCastCombat (currentPlayer, null, combatLocation, mom);
+			result = getSpellAI ().decideWhatToCastCombat (currentPlayer, wizardDetails, null, combatLocation, mom);
 		
 		if (result != CombatAIMovementResult.ENDED_COMBAT)
 		{
@@ -412,7 +412,7 @@ public final class CombatAIImpl implements CombatAI
 							if ((thisResult == CombatAIMovementResult.NOTHING) &&
 								(tu.getUnit ().getManaRemaining () > 0) && (tu.getUnit ().canCastSpells ()) && (!getUnitCalculations ().canMakeRangedAttack (tu.getUnit ())))
 								
-								thisResult = getSpellAI ().decideWhatToCastCombat (currentPlayer, tu.getUnit (), combatLocation, mom);
+								thisResult = getSpellAI ().decideWhatToCastCombat (currentPlayer, wizardDetails, tu.getUnit (), combatLocation, mom);
 							
 							if (thisResult == CombatAIMovementResult.NOTHING)
 								thisResult = moveOneUnit (tu.getUnit (), combatLocation, combatMap, mom);

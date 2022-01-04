@@ -42,6 +42,7 @@ import momime.common.database.Language;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -136,6 +137,9 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID ())).thenReturn (unitOwner);
 		when (wizardClientUtils.getPlayerName (unitOwner)).thenReturn ("Nigel");
 		
+		// Wizard
+		final KnownWizardDetails owningWizard = new KnownWizardDetails ();
+		
 		// Set up unit to display
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("UN001");
@@ -146,7 +150,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (xu.getUnit ()).thenReturn (unit);
 		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
-		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
+		when (xu.getOwningWizard ()).thenReturn (owningWizard);
 		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Movement
@@ -282,6 +286,9 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID ())).thenReturn (unitOwner);
 		when (wizardClientUtils.getPlayerName (unitOwner)).thenReturn ("Nigel");
 		
+		// Wizard
+		final KnownWizardDetails owningWizard = new KnownWizardDetails ();
+		
 		// Set up unit to display
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("UN001");
@@ -292,7 +299,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (xu.getUnit ()).thenReturn (unit);
 		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
-		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
+		when (xu.getOwningWizard ()).thenReturn (owningWizard);
 		when (expand.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Movement

@@ -16,8 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -27,8 +25,8 @@ import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.messages.CombatMapSize;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
@@ -250,9 +248,9 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		// Units
 		final List<MemoryUnit> trueUnits = new ArrayList<MemoryUnit> ();
 
-		// Player
-		final PlayerServerDetails player = new PlayerServerDetails (null, null, null, null, null);
-
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		// Spell
 		final Spell spell = new Spell ();
 		spell.getSummonedUnit ().add ("UN001");
@@ -261,7 +259,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		
 		// Run method
-		final List<UnitEx> list = calc.listUnitsSpellMightSummon (spell, player, trueUnits, db);
+		final List<UnitEx> list = calc.listUnitsSpellMightSummon (spell, wizardDetails, trueUnits, db);
 		
 		// Check results
 		assertEquals (1, list.size ());
@@ -312,18 +310,14 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 			when (unitServerUtils.findUnitWithPlayerAndID (trueUnits, 3, "UN00" + n)).thenReturn (mu);
 		}		
 
-		// Player
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (3);
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setPlayerID (3);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
-		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, null, null, null);
-
 		// We don't have a MB07, but we do have a MB08
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.getQuantityOfPick (pub.getPick (), "MB07")).thenReturn (0);
-		when (playerPickUtils.getQuantityOfPick (pub.getPick (), "MB08")).thenReturn (1);
+		when (playerPickUtils.getQuantityOfPick (wizardDetails.getPick (), "MB07")).thenReturn (0);
+		when (playerPickUtils.getQuantityOfPick (wizardDetails.getPick (), "MB08")).thenReturn (1);
 		
 		// Spell
 		final Spell spell = new Spell ();
@@ -336,7 +330,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		calc.setPlayerPickUtils (playerPickUtils);
 		
 		// Run method
-		final List<UnitEx> list = calc.listUnitsSpellMightSummon (spell, player, trueUnits, db);
+		final List<UnitEx> list = calc.listUnitsSpellMightSummon (spell, wizardDetails, trueUnits, db);
 		
 		// Check results
 		assertEquals (6, list.size ());

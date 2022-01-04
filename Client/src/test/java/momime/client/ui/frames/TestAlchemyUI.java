@@ -5,15 +5,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -30,8 +25,10 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
 import momime.common.database.ProductionTypeEx;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 
@@ -105,31 +102,30 @@ public final class TestAlchemyUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Player
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		priv.setFogOfWarMemory (mem);
 		
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
 		pd.setHuman (true);
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		// Wizard
+		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
 		
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		players.add (player);
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (eq (mem.getWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (ourWizard); 
 		
+		// Client
 		final MomClient client = mock (MomClient.class);
-		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getClientDB ()).thenReturn (db);
 		
-		// Session utils
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
-		
 		// Picks
 		final PlayerPickUtils pickUtils = mock (PlayerPickUtils.class);
-		when (pickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY)).thenReturn (retortValue);
+		when (pickUtils.getQuantityOfPick (ourWizard.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY)).thenReturn (retortValue);
 		
 		// Resources we have
 		final ResourceValueUtils resourceUtils = mock (ResourceValueUtils.class);
@@ -143,7 +139,7 @@ public final class TestAlchemyUI extends ClientTestData
 		alchemy.setClient (client);
 		alchemy.setPlayerPickUtils (pickUtils);
 		alchemy.setResourceValueUtils (resourceUtils);
-		alchemy.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		alchemy.setKnownWizardUtils (knownWizardUtils);
 		alchemy.setLargeFont (CreateFontsForTests.getLargeFont ());
 		alchemy.setSmallFont (CreateFontsForTests.getSmallFont ());
 

@@ -58,12 +58,12 @@ public interface PlayerPickServerUtils
 	 * if all free spells have been chosen, returns null and does nothing
 	 *
 	 * @param player Player we want to check to see if they need to pick free spells
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Message containing magic realm and counts of how many spells we need to pick of each rank; or null if there are no more free spells we need to choose
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 * @throws RecordNotFoundException If the player has picks which we can't find in the cache, or the AI player chooses a spell which we can't then find in their list
 	 */
-	public ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final CommonDatabase db)
+	public ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -72,21 +72,21 @@ public interface PlayerPickServerUtils
 	 * @param player Player who is trying to choose free spells
 	 * @param pickID The magic realm of the spells they want to choose
 	 * @param spellIDs Which spells they want to choose
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
-	public String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final CommonDatabase db)
+	public String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final MomSessionVariables mom)
 		throws RecordNotFoundException;
 
 	/**
 	 * @param player Player who wants to choose a race
 	 * @param raceID Race they wish to choose
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if choice is acceptable; message to send back to client if choice isn't acceptable
 	 * @throws RecordNotFoundException If we choose a race whose native plane can't be found
 	 */
-	public String validateRaceChoice (final PlayerServerDetails player, final String raceID, final CommonDatabase db)
+	public String validateRaceChoice (final PlayerServerDetails player, final String raceID, final MomSessionVariables mom)
 		throws RecordNotFoundException;
 
 	/**

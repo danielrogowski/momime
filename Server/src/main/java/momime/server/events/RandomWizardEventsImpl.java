@@ -22,7 +22,6 @@ import momime.common.database.Event;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
@@ -80,7 +79,6 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 	{
 		boolean valid = false;
 
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "isWizardValidTargetForEvent");
 		
@@ -150,7 +148,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 					while ((!valid) && (iter.hasNext ()))
 					{
 						final NumberedHeroItem heroItem = iter.next ();
-						if (getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, pub.getPick (), mom.getServerDB ()))
+						if (getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, knownWizard.getPick (), mom.getServerDB ()))
 							valid = true;
 					}
 				}
@@ -242,8 +240,10 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 		
 		else
 		{
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) targetWizard.getPersistentPlayerPublicKnowledge ();
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) targetWizard.getPersistentPlayerPrivateKnowledge ();
+			
+			final KnownWizardDetails targetWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), targetWizard.getPlayerDescription ().getPlayerID (), "triggerWizardEvent");
 			
 			// Do we need to pick a target hero item?  The Gift
 			if (event.getEventID ().equals (CommonDatabaseConstants.EVENT_ID_GIFT))
@@ -251,7 +251,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				final List<NumberedHeroItem> heroItems = new ArrayList<NumberedHeroItem> ();
 				for (final NumberedHeroItem heroItem : mom.getGeneralServerKnowledge ().getAvailableHeroItem ())
 					if ((!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForGiftEvent ()) ||
-						(getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, pub.getPick (), mom.getServerDB ())))
+						(getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, targetWizardDetails.getPick (), mom.getServerDB ())))
 						
 						heroItems.add (heroItem);
 				

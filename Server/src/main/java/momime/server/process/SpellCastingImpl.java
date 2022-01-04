@@ -113,8 +113,12 @@ public final class SpellCastingImpl implements SpellCasting
 	{
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "castOverlandSummoningSpell");
+		
 		// List out all the Unit IDs that this spell can summon
-		final List<UnitEx> possibleUnits = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ());
+		final List<UnitEx> possibleUnits = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, wizardDetails,
+			mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ());
 
 		// Pick one at random
 		if (possibleUnits.size () > 0)

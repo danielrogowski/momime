@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -16,6 +15,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabaseConstants;
@@ -24,13 +24,13 @@ import momime.common.database.Spell;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.CounterMagicResult;
 import momime.common.messages.servertoclient.CounterMagicResultsMessage;
 import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
@@ -64,6 +64,9 @@ public final class SpellDispellingImpl implements SpellDispelling
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Makes dispel rolls against a list of target spells and CAEs
@@ -112,7 +115,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 			// If caster has Runemaster and specified variableDamage then this was already included in the specified dispelling power.
 			// But if they just passed in null (like the AI does) then we need to double the base damage.
 			int multiplier = 1;
-			final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+			final List<PlayerPick> picks = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+				castingPlayer.getPlayerDescription ().getPlayerID (), "processDispelling (C)").getPick ();
 			if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_NODE_RUNEMASTER) > 0)
 				multiplier++;
 			
@@ -167,7 +171,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 				int multiplier = 1;
 				
 				final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spellToDispel.getCastingPlayerID (), "processDispelling (D1)");
-				final List<PlayerPick> spellOwnerPicks = ((MomPersistentPlayerPublicKnowledge) spellOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
+				final List<PlayerPick> spellOwnerPicks = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+					spellToDispel.getCastingPlayerID (), "processDispelling (D1)").getPick ();
 				
 				if (getPlayerPickUtils ().getQuantityOfPick (spellOwnerPicks, CommonDatabaseConstants.RETORT_ID_ARCHMAGE) > 0)
 					multiplier++;
@@ -254,7 +259,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 					int multiplier = 1;
 					
 					final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cae.getCastingPlayerID (), "processDispelling (D2)");
-					final List<PlayerPick> spellOwnerPicks = ((MomPersistentPlayerPublicKnowledge) spellOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
+					final List<PlayerPick> spellOwnerPicks = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+						cae.getCastingPlayerID (), "processDispelling (D2)").getPick ();
 					
 					if (getPlayerPickUtils ().getQuantityOfPick (spellOwnerPicks, CommonDatabaseConstants.RETORT_ID_ARCHMAGE) > 0)
 						multiplier++;
@@ -363,7 +369,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 					int multiplier = 1;
 					
 					final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), vortex.getOwningPlayerID (), "processDispelling (V1)");
-					final List<PlayerPick> spellOwnerPicks = ((MomPersistentPlayerPublicKnowledge) spellOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
+					final List<PlayerPick> spellOwnerPicks = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+						vortex.getOwningPlayerID (), "processDispelling (V1)").getPick ();
 					
 					if (getPlayerPickUtils ().getQuantityOfPick (spellOwnerPicks, CommonDatabaseConstants.RETORT_ID_ARCHMAGE) > 0)
 						multiplier++;
@@ -451,7 +458,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 		// Retorts that make spells more difficult to dispel
 		int multiplier = 1;
 		
-		final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+		final List<PlayerPick> picks = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+			castingPlayer.getPlayerDescription ().getPlayerID (), "processCountering (C)").getPick ();
 
 		if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_ARCHMAGE) > 0)
 			multiplier++;
@@ -655,5 +663,21 @@ public final class SpellDispellingImpl implements SpellDispelling
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

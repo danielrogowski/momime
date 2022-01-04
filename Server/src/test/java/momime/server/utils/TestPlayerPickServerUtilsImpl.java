@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -609,13 +610,24 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "findRealmIDWhereWeNeedToChooseFreeSpells")).thenReturn (wizardDetails);
+		
 		// We've got 6 of both types of book
 		for (int n = 1; n <= 2; n++)
 		{
 			final PlayerPick playerPick = new PlayerPick ();
 			playerPick.setPickID ("MB0" + n);
 			playerPick.setQuantity (6);
-			ppk.getPick ().add (playerPick);
+			wizardDetails.getPick ().add (playerPick);
 		}
 
 		// We already picked all 4 of the MB01 free spells, and 1 of the MB02 free spells
@@ -630,12 +642,18 @@ public final class TestPlayerPickServerUtilsImpl
 		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB01", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (firstsAlreadyChosen);
 		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB02", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (secondsAlreadyChosen);
 		
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		final ChooseInitialSpellsNowMessage msg = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
+		final ChooseInitialSpellsNowMessage msg = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, mom);
 		
 		// Check results
 		assertEquals ("MB02", msg.getMagicRealmID ());
@@ -684,13 +702,24 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "findRealmIDWhereWeNeedToChooseFreeSpells")).thenReturn (wizardDetails);
+		
 		// We've got 6 of both types of book
 		for (int n = 1; n <= 2; n++)
 		{
 			final PlayerPick playerPick = new PlayerPick ();
 			playerPick.setPickID ("MB0" + n);
 			playerPick.setQuantity (6);
-			ppk.getPick ().add (playerPick);
+			wizardDetails.getPick ().add (playerPick);
 		}
 
 		// We already picked all 4 of both types of spells
@@ -706,12 +735,18 @@ public final class TestPlayerPickServerUtilsImpl
 		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB01", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (firstsAlreadyChosen);
 		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB02", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (secondsAlreadyChosen);
 		
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		final ChooseInitialSpellsNowMessage msg = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
+		final ChooseInitialSpellsNowMessage msg = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, mom);
 		
 		// Check results
 		assertNull (msg);
@@ -758,13 +793,24 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "findRealmIDWhereWeNeedToChooseFreeSpells")).thenReturn (wizardDetails);
+		
 		// We've got 6 of both types of book
 		for (int n = 1; n <= 2; n++)
 		{
 			final PlayerPick playerPick = new PlayerPick ();
 			playerPick.setPickID ("MB0" + n);
 			playerPick.setQuantity (6);
-			ppk.getPick ().add (playerPick);
+			wizardDetails.getPick ().add (playerPick);
 		}
 
 		// We already picked all 4 of the MB01 free spells, and 1 of the MB02 free spells
@@ -779,6 +825,11 @@ public final class TestPlayerPickServerUtilsImpl
 		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB01", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (firstsAlreadyChosen);
 		when (spellUtils.getSpellsForRealmRankStatus (priv.getSpellResearchStatus (), "MB02", "SR01", SpellResearchStatusID.AVAILABLE, db)).thenReturn (secondsAlreadyChosen);
 		
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final SpellAI spellAI = mock (SpellAI.class);
 		final SpellResearchStatus spell1 = new SpellResearchStatus ();
@@ -789,9 +840,10 @@ public final class TestPlayerPickServerUtilsImpl
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
 		utils.setSpellAI (spellAI);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		final ChooseInitialSpellsNowMessage msg = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, db);
+		final ChooseInitialSpellsNowMessage msg = utils.findRealmIDWhereWeNeedToChooseFreeSpells (player, mom);
 		
 		// Check results - it *does* still return the "message" for AI players, so the calling routine knows whether it chose spells or had nothing to do
 		assertEquals ("MB02", msg.getMagicRealmID ());
@@ -848,11 +900,22 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateInitialSpellSelection")).thenReturn (wizardDetails);
+		
 		// Picks we have
 		final PlayerPick playerPick = new PlayerPick ();
 		playerPick.setPickID ("MB01");
 		playerPick.setQuantity (6);
-		ppk.getPick ().add (playerPick);
+		wizardDetails.getPick ().add (playerPick);
 		
 		// Spells we have
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -862,12 +925,18 @@ public final class TestPlayerPickServerUtilsImpl
 		for (int n = 1; n <= 3; n++)
 			spellIDs.add ("SP00" + n);
 
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+		assertNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, mom));
 	}
 
 	/**
@@ -892,8 +961,6 @@ public final class TestPlayerPickServerUtilsImpl
 		common.setSpellsFreeAtStart (4);
 		sixPicks.getSpellCount ().add (common);
 		
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
@@ -903,11 +970,22 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateInitialSpellSelection")).thenReturn (wizardDetails);
+		
 		// Picks we have
 		final PlayerPick playerPick = new PlayerPick ();
 		playerPick.setPickID ("MB01");
 		playerPick.setQuantity (6);
-		ppk.getPick ().add (playerPick);
+		wizardDetails.getPick ().add (playerPick);
 		
 		// Spells we have
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -917,12 +995,17 @@ public final class TestPlayerPickServerUtilsImpl
 		for (int n = 1; n <= 3; n++)
 			spellIDs.add ("SP00" + n);
 
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB02", spellIDs, db));		// <--
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB02", spellIDs, mom));		// <--
 	}
 
 	/**
@@ -951,11 +1034,22 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateInitialSpellSelection")).thenReturn (wizardDetails);
+		
 		// Picks we have
 		final PlayerPick playerPick = new PlayerPick ();
 		playerPick.setPickID ("MB01");
 		playerPick.setQuantity (6);
-		ppk.getPick ().add (playerPick);
+		wizardDetails.getPick ().add (playerPick);
 		
 		// Spells we have
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -965,12 +1059,18 @@ public final class TestPlayerPickServerUtilsImpl
 		for (int n = 1; n <= 3; n++)
 			spellIDs.add ("SP00" + n);
 
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, mom));
 	}
 
 	/**
@@ -1014,11 +1114,22 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateInitialSpellSelection")).thenReturn (wizardDetails);
+		
 		// Picks we have
 		final PlayerPick playerPick = new PlayerPick ();
 		playerPick.setPickID ("MB01");
 		playerPick.setQuantity (6);
-		ppk.getPick ().add (playerPick);
+		wizardDetails.getPick ().add (playerPick);
 		
 		// Spells we have
 		final List<momime.common.database.Spell> alreadyChosen = new ArrayList<momime.common.database.Spell> ();
@@ -1033,12 +1144,18 @@ public final class TestPlayerPickServerUtilsImpl
 		for (int n = 1; n <= 3; n++)
 			spellIDs.add ("SP00" + n);
 
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, mom));
 	}
 
 	/**
@@ -1085,11 +1202,22 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateInitialSpellSelection")).thenReturn (wizardDetails);
+		
 		// Picks we have
 		final PlayerPick playerPick = new PlayerPick ();
 		playerPick.setPickID ("MB01");
 		playerPick.setQuantity (6);
-		ppk.getPick ().add (playerPick);
+		wizardDetails.getPick ().add (playerPick);
 		
 		// Spells we have
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -1099,12 +1227,18 @@ public final class TestPlayerPickServerUtilsImpl
 		for (int n = 1; n <= 3; n++)
 			spellIDs.add ("SP00" + n);
 
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, mom));
 	}
 
 	/**
@@ -1151,11 +1285,22 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateInitialSpellSelection")).thenReturn (wizardDetails);
+		
 		// Picks we have
 		final PlayerPick playerPick = new PlayerPick ();
 		playerPick.setPickID ("MB01");
 		playerPick.setQuantity (6);
-		ppk.getPick ().add (playerPick);
+		wizardDetails.getPick ().add (playerPick);
 		
 		// Spells we have
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -1165,12 +1310,18 @@ public final class TestPlayerPickServerUtilsImpl
 		for (int n = 1; n <= 3; n++)
 			spellIDs.add ("SP00" + n);
 
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, mom));
 	}
 
 	/**
@@ -1217,11 +1368,22 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, priv, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateInitialSpellSelection")).thenReturn (wizardDetails);
+		
 		// Picks we have
 		final PlayerPick playerPick = new PlayerPick ();
 		playerPick.setPickID ("MB01");
 		playerPick.setQuantity (6);
-		ppk.getPick ().add (playerPick);
+		wizardDetails.getPick ().add (playerPick);
 		
 		// Spells we have
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -1231,12 +1393,18 @@ public final class TestPlayerPickServerUtilsImpl
 		for (int n = 1; n <= 3; n++)
 			spellIDs.add ("SP00" + n);
 
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, db));
+		assertNotNull (utils.validateInitialSpellSelection (player, "MB01", spellIDs, mom));
 	}
 	
 	/**
@@ -1256,12 +1424,16 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		
 		// Run method
-		assertNotNull (utils.validateRaceChoice (player, "X", db));
+		assertNotNull (utils.validateRaceChoice (player, "X", mom));
 	}
 
 	/**
@@ -1273,13 +1445,15 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Mock race details
 		final RaceEx race = new RaceEx ();
+		race.setRaceID ("RC01");
 		race.setNativePlane (1);
 		
 		final Plane myrror = new Plane ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
+		when (db.getRaces ()).thenReturn (Arrays.asList (race));
+		
 		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
 
 		// Set up player
@@ -1290,16 +1464,33 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
 		
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateRaceChoice")).thenReturn (wizardDetails);
+		
 		// Picks we have
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.getQuantityOfPick (ppk.getPick (), "RT08")).thenReturn (1);
+		when (playerPickUtils.getQuantityOfPick (wizardDetails.getPick (), "RT08")).thenReturn (1);
+
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNull (utils.validateRaceChoice (player, "RC01", db));
+		assertNull (utils.validateRaceChoice (player, "RC01", mom));
 	}
 
 	/**
@@ -1311,13 +1502,15 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Mock race details
 		final RaceEx race = new RaceEx ();
+		race.setRaceID ("RC01");
 		race.setNativePlane (1);
 		
 		final Plane myrror = new Plane ();
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
+		when (db.getRaces ()).thenReturn (Arrays.asList (race));
+		
 		when (db.findPlane (1, "validateRaceChoice")).thenReturn (myrror);
 
 		// Set up player
@@ -1327,16 +1520,33 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, ppk, null, null, null);
+
+		// Wizard
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		gsk.setTrueMap (mem);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateRaceChoice")).thenReturn (wizardDetails);
 		
 		// Picks we have
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		assertNotNull (utils.validateRaceChoice (player, "RC01", db));
+		assertNotNull (utils.validateRaceChoice (player, "RC01", mom));
 	}
 
 	/**
@@ -1348,6 +1558,7 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Mock race details
 		final RaceEx race = new RaceEx ();
+		race.setRaceID ("RC01");
 		race.setNativePlane (0);
 		
 		final Plane arcanus = new Plane ();
@@ -1355,7 +1566,8 @@ public final class TestPlayerPickServerUtilsImpl
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
+		when (db.getRaces ()).thenReturn (Arrays.asList (race));
+		
 		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
 
 		// Set up player
@@ -1368,13 +1580,17 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		// Picks we have
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
 		
 		// Run method
-		assertNull (utils.validateRaceChoice (player, "RC01", db));
+		assertNull (utils.validateRaceChoice (player, "RC01", mom));
 	}
 
 	/**
@@ -1386,6 +1602,7 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Mock race details
 		final RaceEx race = new RaceEx ();
+		race.setRaceID ("RC01");
 		race.setNativePlane (0);
 		
 		final Plane arcanus = new Plane ();
@@ -1393,7 +1610,8 @@ public final class TestPlayerPickServerUtilsImpl
 		myrror.setPrerequisitePickToChooseNativeRace ("RT08");
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
-		when (db.findRace ("RC01", "validateRaceChoice")).thenReturn (race);
+		when (db.getRaces ()).thenReturn (Arrays.asList (race));
+		
 		when (db.findPlane (0, "validateRaceChoice")).thenReturn (arcanus);
 
 		// Set up player
@@ -1406,13 +1624,17 @@ public final class TestPlayerPickServerUtilsImpl
 		
 		// Picks we have
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+
+		// Session variables	
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
 		
 		// Run method
-		assertNull (utils.validateRaceChoice (player, "RC01", db));
+		assertNull (utils.validateRaceChoice (player, "RC01", mom));
 	}
 
 	/**

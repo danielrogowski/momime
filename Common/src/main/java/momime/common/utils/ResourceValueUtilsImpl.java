@@ -16,10 +16,10 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
@@ -189,7 +189,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 
     /**
 	 * @param resourceList List of resources to search through
-	 * @param playerDetails Details about the player whose casting skill we want
+	 * @param wizardDetails Details about the wizard whose casting skill we want
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -200,15 +200,14 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
      */
 	@Override
-	public int calculateModifiedCastingSkill (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails,
+	public final int calculateModifiedCastingSkill (final List<MomResourceValue> resourceList, final KnownWizardDetails wizardDetails,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db, final boolean includeBonusFromHeroesAtFortress)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		int total = calculateBasicCastingSkill (resourceList);
 		
 		// Archmage
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) playerDetails.getPersistentPlayerPublicKnowledge ();
-		for (final PlayerPick pick : pub.getPick ())
+		for (final PlayerPick pick : wizardDetails.getPick ())
 		{
 			final Pick pickDef = db.findPick (pick.getPickID (), "calculateModifiedCastingSkill");
 			if (pickDef.getDynamicSkillBonus () != null)
@@ -219,13 +218,13 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		if (includeBonusFromHeroesAtFortress)
 		{
 			final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
-				(playerDetails.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, mem.getMap (), mem.getBuilding ());
+				(wizardDetails.getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, mem.getMap (), mem.getBuilding ());
 			if (fortressLocation != null)
 			{
 				int heroesTotalMana = 0;
 				
 				for (final MemoryUnit unit : mem.getUnit ())
-					if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerDetails.getPlayerDescription ().getPlayerID ()) &&
+					if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == wizardDetails.getPlayerID ()) &&
 						(fortressLocation.getCityLocation ().equals (unit.getUnitLocation ())))
 					{
 						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db);
@@ -287,7 +286,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	
     /**
 	 * @param resourceList List of resources to search through
-	 * @param playerDetails Details about the player whose fame we want
+	 * @param wizardDetails Details about the wizard whose fame we want
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -297,15 +296,14 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
      */
 	@Override
-	public final int calculateModifiedFame (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails,
+	public final int calculateModifiedFame (final List<MomResourceValue> resourceList, final KnownWizardDetails wizardDetails,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		int total = calculateBasicFame (resourceList);
 
 		// Famous
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) playerDetails.getPersistentPlayerPublicKnowledge ();
-		for (final PlayerPick pick : pub.getPick ())
+		for (final PlayerPick pick : wizardDetails.getPick ())
 		{
 			final Pick pickDef = db.findPick (pick.getPickID (), "calculateModifiedFame");
 			if (pickDef.getDynamicFameBonus () != null)
@@ -313,14 +311,14 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		}
 		
 		// Just Cause
-		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mem.getMaintainedSpell (), playerDetails.getPlayerDescription ().getPlayerID (),
+		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mem.getMaintainedSpell (), wizardDetails.getPlayerID (),
 			CommonDatabaseConstants.SPELL_ID_JUST_CAUSE, null, null, null, null) != null)
 			
 			total = total + 10;
 		
 		// Legendary heroes
 		for (final MemoryUnit unit : mem.getUnit ())
-			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerDetails.getPlayerDescription ().getPlayerID ()))
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == wizardDetails.getPlayerID ()))
 			{
 				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, mem, db);
 				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY))

@@ -68,7 +68,6 @@ import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
@@ -681,10 +680,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		}).collect (Collectors.toList ());
 
 		// Generate an image from the upkeeps
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) getUnit ().getOwningPlayer ().getPersistentPlayerPublicKnowledge ();
-
 		final BufferedImage upkeepImage = getResourceValueClientUtils ().generateUpkeepImage (upkeeps,
-			getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) >= 1);
+			getPlayerPickUtils ().getQuantityOfPick (getUnit ().getOwningWizard ().getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) >= 1);
 		currentlyConstructingUpkeep.setIcon ((upkeepImage == null) ? null : new ImageIcon (upkeepImage));
 		upkeepLabel.setVisible (upkeepImage != null);
 		

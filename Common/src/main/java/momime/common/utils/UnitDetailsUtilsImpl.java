@@ -22,9 +22,9 @@ import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 
 /**
@@ -40,6 +40,9 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Calculates minimal unit details that can be derived quickly without examining the whole unit stack.
@@ -67,7 +70,8 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 		// Need the player picks to look for Crusade, and need the unit type to get their experience levels
 		final UnitEx unitDef = db.findUnit (unit.getUnitID (), "expandMinimalUnitDetails");
 		final PlayerPublicDetails owningPlayer = (unit.getOwningPlayerID () == 0) ? null : getMultiplayerSessionUtils ().findPlayerWithID (players, unit.getOwningPlayerID (), "expandMinimalUnitDetails");
-		final List<PlayerPick> picks = (owningPlayer == null) ? null : ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+		final KnownWizardDetails owningWizard = (unit.getOwningPlayerID () == 0) ? null : getKnownWizardUtils ().findKnownWizardDetails (mem.getWizardDetails (), unit.getOwningPlayerID (), "expandMinimalUnitDetails");
+		final List<PlayerPick> picks = (owningWizard == null) ? null : owningWizard.getPick ();
 		
 		final String unitTypeID = db.findPick (unitDef.getUnitMagicRealm (), "expandMinimalUnitDetails").getUnitTypeID ();
 		final UnitTypeEx unitType = db.findUnitType (unitTypeID, "expandMinimalUnitDetails");
@@ -150,7 +154,7 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 		}
 		
 		// Finally can build the unit object
-		final MinimalUnitDetailsImpl container = new MinimalUnitDetailsImpl (unit, unitDef, unitType, owningPlayer, basicExpLvl, modifiedExpLvl, basicSkillValues);
+		final MinimalUnitDetailsImpl container = new MinimalUnitDetailsImpl (unit, unitDef, unitType, owningPlayer, owningWizard, basicExpLvl, modifiedExpLvl, basicSkillValues);
 		return container;
 	}
 	
@@ -521,5 +525,21 @@ public final class UnitDetailsUtilsImpl implements UnitDetailsUtils
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

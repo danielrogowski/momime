@@ -19,9 +19,9 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
 import momime.common.database.UnitEx;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -52,6 +52,7 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 	
 	/**
 	 * @param player Player who wants to cast a spell
+	 * @param wizardDetails Wizard who wants to cast a spell
 	 * @param players Players list
 	 * @param spell Spell they want to cast
 	 * @param trueUnits List of true units
@@ -63,11 +64,10 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final Spell spell,
+	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<PlayerServerDetails> players, final Spell spell,
 		final List<MemoryUnit> trueUnits, final SpellSetting spellSettings, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		boolean ok = true;
@@ -84,14 +84,14 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 			{
 				// Don't bother to take into account here that AI players get cheaper upkeep - but do take into account channeler retort halfing upkeep
 				if ((consumption > 1) && (upkeep.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) &&
-					(getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
+					(getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
 					
 					consumption = consumption - (consumption / 2);
 				
 				// Are we generating enough spare mana?
-				final int manaPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), upkeep.getProductionTypeID (), spellSettings, db);
-				final int goldPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db);
-				final int combinedPerTurn = manaPerTurn + ((getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0) ?
+				final int manaPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), upkeep.getProductionTypeID (), spellSettings, db);
+				final int goldPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db);
+				final int combinedPerTurn = manaPerTurn + ((getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0) ?
 					goldPerTurn : (goldPerTurn/2));
 				
 				if (consumption > combinedPerTurn)
@@ -108,7 +108,7 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 		// Use proper method for this that will ignore heroes we already have.
 		if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 		{
-			final Iterator<UnitEx> summonedIter = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, trueUnits, db).iterator ();
+			final Iterator<UnitEx> summonedIter = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, wizardDetails, trueUnits, db).iterator ();
 			while ((ok) && (summonedIter.hasNext ()))
 			{
 				final UnitEx unitDef = summonedIter.next ();
@@ -119,7 +119,7 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 				
 				getUnitUtils ().initializeUnitSkills (unit, 0, db);
 				
-				if (!getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, spellSettings, db))
+				if (!getAiUnitCalculations ().canAffordUnitMaintenance (player, wizardDetails, players, unit, spellSettings, db))
 				{
 					ok = false;
 					log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " can't afford upkeep of " +

@@ -12,6 +12,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 
 /**
  * Lots of places in the code need to create a properly initialized test unit, so better to have a common method for this rather than
@@ -51,7 +52,7 @@ public interface SampleUnitUtils
 	 * and experience (from e.g. War College or Altar of Battle spell) all set correctly.
 	 * 
 	 * @param unitID Type of unit to create
-	 * @param owningPlayer Player who owns the unit
+	 * @param owningWizard Wizard who owns the unit
 	 * @param cityLocation City where the unit is being constructed
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
@@ -59,7 +60,7 @@ public interface SampleUnitUtils
 	 * @return Sample unit, if we only need the AvailableUnit basic object
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 */
-	public AvailableUnit createSampleAvailableUnitFromCity (final String unitID, final PlayerPublicDetails owningPlayer, final MapCoordinates3DEx cityLocation,
+	public AvailableUnit createSampleAvailableUnitFromCity (final String unitID, final KnownWizardDetails owningWizard, final MapCoordinates3DEx cityLocation,
 		final FogOfWarMemory mem, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException;
 	
@@ -68,7 +69,7 @@ public interface SampleUnitUtils
 	 * and experience (from e.g. War College or Altar of Battle spell) all set correctly.
 	 * 
 	 * @param unitID Type of unit to create
-	 * @param owningPlayer Player who owns the unit
+	 * @param owningWizard Wizard who owns the unit
 	 * @param cityLocation City where the unit is being constructed
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
@@ -79,7 +80,7 @@ public interface SampleUnitUtils
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public ExpandedUnitDetails createSampleUnitFromCity (final String unitID, final PlayerPublicDetails owningPlayer, final MapCoordinates3DEx cityLocation,
+	public ExpandedUnitDetails createSampleUnitFromCity (final String unitID, final KnownWizardDetails owningWizard, final MapCoordinates3DEx cityLocation,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem,
 		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;

@@ -1726,14 +1726,9 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-		
-		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -1746,9 +1741,14 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 		
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -1760,10 +1760,10 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		final CityUnrestBreakdown zeroPercent = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01", db);
+		final CityUnrestBreakdown zeroPercent = calc.calculateCityRebels (mem, new MapCoordinates3DEx (20, 10, 1), "TR01", db);
 		
 		// Check results
 		assertEquals (17, zeroPercent.getPopulation ());
@@ -1814,15 +1814,10 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
-		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -1833,10 +1828,15 @@ public final class TestCityCalculationsImpl
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
+
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -1848,10 +1848,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown highPercent = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 		
 		// Check results
 		assertEquals (17, highPercent.getPopulation ());
@@ -1902,15 +1903,10 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
-		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -1922,9 +1918,14 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 		
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Retorts, to prove this value does not get included in the output, as we have no religious buildings
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -1938,10 +1939,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 
 		// Run method
 		final CityUnrestBreakdown maxPercent = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR03", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR03", db);
 		
 		// Check results
 		assertEquals (17, maxPercent.getPopulation ());
@@ -1997,20 +1999,16 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
+
 		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-		
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
-		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -2022,9 +2020,14 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 		
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -2036,10 +2039,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown shrine = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 		
 		// Check results
 		assertEquals (17, shrine.getPopulation ());
@@ -2103,24 +2107,20 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Buildings
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL02");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (secondBuilding);
-
-		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		mem.getBuilding ().add (secondBuilding);
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2132,18 +2132,23 @@ public final class TestCityCalculationsImpl
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
+		
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
 
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
-		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		when (playerPickUtils.totalReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (religiousRetortsList);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -2154,10 +2159,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown animistsGuild = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 
 		// Check results
 		assertEquals (17, animistsGuild.getPopulation ());
@@ -2223,24 +2229,20 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Buildings
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL03");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (secondBuilding);
-
-		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		mem.getBuilding ().add (secondBuilding);
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2253,17 +2255,22 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+		
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
-		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		when (playerPickUtils.totalReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (religiousRetortsList);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -2274,10 +2281,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown temple = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 
 		// Check results
 		assertEquals (17, temple.getPopulation ());
@@ -2351,31 +2359,28 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Buildings
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL03");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (secondBuilding);
+		mem.getBuilding ().add (secondBuilding);
 
 		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID ("UN001");
 		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (normalUnit);
+		mem.getUnit ().add (normalUnit);
 		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -2387,17 +2392,22 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
-		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		when (playerPickUtils.totalReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (religiousRetortsList);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -2408,10 +2418,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown firstUnit = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 
 		// Check results
 		assertEquals (17, firstUnit.getPopulation ());
@@ -2493,37 +2504,34 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Buildings
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL03");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (secondBuilding);
+		mem.getBuilding ().add (secondBuilding);
 
 		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID ("UN001");
 		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (normalUnit);
+		mem.getUnit ().add (normalUnit);
 
 		final MemoryUnit heroUnit = new MemoryUnit ();
 		heroUnit.setUnitID ("UN003");
 		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		heroUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (heroUnit);
+		mem.getUnit ().add (heroUnit);
 		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -2535,17 +2543,22 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
-		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		when (playerPickUtils.totalReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (religiousRetortsList);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -2556,10 +2569,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown secondUnit = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 
 		// Check results
 		assertEquals (17, secondUnit.getPopulation ());
@@ -2649,33 +2663,33 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Buildings
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL03");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (secondBuilding);
+		mem.getBuilding ().add (secondBuilding);
 
 		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID ("UN001");
 		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (normalUnit);
+		mem.getUnit ().add (normalUnit);
 
 		final MemoryUnit heroUnit = new MemoryUnit ();
 		heroUnit.setUnitID ("UN003");
 		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		heroUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (heroUnit);
+		mem.getUnit ().add (heroUnit);
 
 		// summoned units or dead units don't help (unitCount still = 2)
 		for (int n = 0; n < 2; n++)
@@ -2684,18 +2698,15 @@ public final class TestCityCalculationsImpl
 			deadUnit.setUnitID ("UN001");
 			deadUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 			deadUnit.setStatus (UnitStatusID.DEAD);
-			units.add (deadUnit);
+			mem.getUnit ().add (deadUnit);
 
 			final MemoryUnit summonedUnit = new MemoryUnit ();
 			summonedUnit.setUnitID ("UN002");
 			summonedUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 			summonedUnit.setStatus (UnitStatusID.ALIVE);
-			units.add (summonedUnit);
+			mem.getUnit ().add (summonedUnit);
 		}
 		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -2707,17 +2718,22 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
-		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		when (playerPickUtils.totalReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (religiousRetortsList);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -2728,10 +2744,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown extraUnits = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 
 		// Check results
 		assertEquals (17, extraUnits.getPopulation ());
@@ -2821,37 +2838,34 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Buildings
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL03");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (secondBuilding);
+		mem.getBuilding ().add (secondBuilding);
 
 		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID ("UN001");
 		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (normalUnit);
+		mem.getUnit ().add (normalUnit);
 
 		final MemoryUnit heroUnit = new MemoryUnit ();
 		heroUnit.setUnitID ("UN003");
 		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		heroUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (heroUnit);
+		mem.getUnit ().add (heroUnit);
 		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -2863,17 +2877,22 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
-		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		when (playerPickUtils.totalReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (religiousRetortsList);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Capital race
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -2881,7 +2900,7 @@ public final class TestCityCalculationsImpl
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		fortressBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 
-		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
+		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, mem.getBuilding ())).thenReturn (fortressBuilding);
 		
 		// Set up object to test
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
@@ -2891,10 +2910,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown klackons = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 
 		// Check results
 		assertEquals (17, klackons.getPopulation ());
@@ -2979,37 +2999,34 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Buildings
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL03");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (secondBuilding);
+		mem.getBuilding ().add (secondBuilding);
 
 		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID ("UN001");
 		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (normalUnit);
+		mem.getUnit ().add (normalUnit);
 
 		final MemoryUnit heroUnit = new MemoryUnit ();
 		heroUnit.setUnitID ("UN003");
 		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		heroUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (heroUnit);
+		mem.getUnit ().add (heroUnit);
 		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -3021,13 +3038,19 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
-		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		when (playerPickUtils.totalReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (religiousRetortsList);
 		
 		// Capital race
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -3035,11 +3058,10 @@ public final class TestCityCalculationsImpl
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		fortressBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
 
-		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
+		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, mem.getBuilding ())).thenReturn (fortressBuilding);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
@@ -3049,10 +3071,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown highElves = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 
 		// Check results
 		assertEquals (17, highElves.getPopulation ());
@@ -3133,37 +3156,34 @@ public final class TestCityCalculationsImpl
 		cityData.setMinimumFarmers (6);	// 6x2 = 12 food, +2 granary +3 farmers market = 17
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Buildings
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL03");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (secondBuilding);
+		mem.getBuilding ().add (secondBuilding);
 
 		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID ("UN001");
 		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (normalUnit);
+		mem.getUnit ().add (normalUnit);
 
 		final MemoryUnit heroUnit = new MemoryUnit ();
 		heroUnit.setUnitID ("UN003");
 		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		heroUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (heroUnit);
+		mem.getUnit ().add (heroUnit);
 		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -3175,17 +3195,22 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
-		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		when (playerPickUtils.totalReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (religiousRetortsList);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -3196,10 +3221,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown forcePositive = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR01", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR01", db);
 
 		// Check results
 		assertEquals (17, forcePositive.getPopulation ());
@@ -3295,37 +3321,34 @@ public final class TestCityCalculationsImpl
 		capitalCityData.setCityPopulation (1000);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (30).setCityData (capitalCityData);
 		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
+		// Buildings
 		final MemoryBuilding shrineBuilding = new MemoryBuilding ();
 		shrineBuilding.setBuildingID ("BL01");
 		shrineBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (shrineBuilding);
+		mem.getBuilding ().add (shrineBuilding);
 		
 		final MemoryBuilding secondBuilding = new MemoryBuilding ();
 		secondBuilding.setBuildingID ("BL03");
 		secondBuilding.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
-		buildings.add (secondBuilding);
+		mem.getBuilding ().add (secondBuilding);
 
 		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-
 		final MemoryUnit normalUnit = new MemoryUnit ();
 		normalUnit.setUnitID ("UN001");
 		normalUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		normalUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (normalUnit);
+		mem.getUnit ().add (normalUnit);
 
 		final MemoryUnit heroUnit = new MemoryUnit ();
 		heroUnit.setUnitID ("UN003");
 		heroUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
 		heroUnit.setStatus (UnitStatusID.ALIVE);
-		units.add (heroUnit);
+		mem.getUnit ().add (heroUnit);
 		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -3337,13 +3360,19 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+
 		// Divine power doesn't work on non-religious building
 		final List<String> religiousRetortsList = new ArrayList<String> ();
 		religiousRetortsList.add ("RT01");
 		
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
-		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (religiousRetortsList);
+		when (playerPickUtils.totalReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (50);
+		when (playerPickUtils.pickIdsContributingToReligiousBuildingBonus (wizardDetails.getPick (), db)).thenReturn (religiousRetortsList);
 		
 		// Capital race
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -3351,11 +3380,10 @@ public final class TestCityCalculationsImpl
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		fortressBuilding.setCityLocation (new MapCoordinates3DEx (30, 10, 1));
 
-		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
+		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, mem.getBuilding ())).thenReturn (fortressBuilding);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
@@ -3365,10 +3393,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown racialUnrest = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR02", db);
 
 		// Check results
 		assertEquals (17, racialUnrest.getPopulation ());
@@ -3438,15 +3467,10 @@ public final class TestCityCalculationsImpl
 		capitalCityData.setCityPopulation (1000);
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (30).setCityData (capitalCityData);
 		
-		// Buildings
-		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-
-		// Units
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		// Player memory
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		mem.setMap (map);
 		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
@@ -3458,6 +3482,12 @@ public final class TestCityCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (player);
 
+		// Wizard
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 1, "calculateCityRebels")).thenReturn (wizardDetails);
+		
 		// Divine power doesn't work on non-religious building
 		// Capital race
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
@@ -3465,11 +3495,10 @@ public final class TestCityCalculationsImpl
 		fortressBuilding.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 		fortressBuilding.setCityLocation (new MapCoordinates3DEx (30, 10, 1));
 
-		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
+		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, mem.getBuilding ())).thenReturn (fortressBuilding);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityRebels")).thenReturn (player);
 
 		// Set up object to test
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
@@ -3480,10 +3509,11 @@ public final class TestCityCalculationsImpl
 		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		calc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final CityUnrestBreakdown forceAll = calc.calculateCityRebels
-			(players, map, units, buildings, spells, new MapCoordinates3DEx (20, 10, 1), "TR03", db);
+			(mem, new MapCoordinates3DEx (20, 10, 1), "TR03", db);
 
 		// Check results
 		assertEquals (24, forceAll.getPopulation ());

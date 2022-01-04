@@ -75,6 +75,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="chooseCustomPicksMessage" class="momime.server.messages.process.ChooseCustomPicksMessageImpl" scope="prototype">
 		<property name="playerPickServerUtils" ref="playerPickServerUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 	
 	<bean id="chooseRaceMessage" class="momime.server.messages.process.ChooseRaceMessageImpl" scope="prototype">
@@ -142,6 +144,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="playerServerUtils" ref="playerServerUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="updateMagicPowerDistributionMessage" class="momime.server.messages.process.UpdateMagicPowerDistributionMessageImpl" scope="prototype" />
@@ -434,6 +437,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="heroItemServerUtils" class="momime.server.utils.HeroItemServerUtilsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="treasureUtils" class="momime.server.utils.TreasureUtilsImpl">
@@ -449,6 +453,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 
 	<bean id="unitSkillDirectAccess" class="momime.server.utils.UnitSkillDirectAccessImpl" />
@@ -567,6 +573,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomEvents" ref="randomEvents" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 
 	<bean id="cityProcessing" class="momime.server.process.CityProcessingImpl">
@@ -698,6 +705,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="spellTriggers" class="momime.server.process.SpellTriggersImpl">
@@ -836,6 +844,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="heroItemUtils" ref="heroItemUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="randomCityEvents" class="momime.server.events.RandomCityEventsImpl">
@@ -1054,6 +1063,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="fogOfWarMidTurnMultiChanges" class="momime.server.fogofwar.FogOfWarMidTurnMultiChangesImpl">

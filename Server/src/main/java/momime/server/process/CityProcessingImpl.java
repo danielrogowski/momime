@@ -42,7 +42,6 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageConstructUnit;
@@ -190,7 +189,6 @@ public final class CityProcessingImpl implements CityProcessing
 		// Now create cities for each player
 		for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 		{
-			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "createStartingCities");
 			
@@ -209,7 +207,7 @@ public final class CityProcessingImpl implements CityProcessing
 			{
 				final int plane;
 				if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
-					plane = getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), mom.getServerDB ());
+					plane = getPlayerPickServerUtils ().startingPlaneForWizard (wizardDetails.getPick (), mom.getServerDB ());
 				else
 					// Raiders just pick a random plane
 					plane = mom.getServerDB ().getPlane ().get (getRandomUtils ().nextInt (mom.getServerDB ().getPlane ().size ())).getPlaneNumber ();
@@ -275,9 +273,8 @@ public final class CityProcessingImpl implements CityProcessing
 
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 
-				city.setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
+				city.setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getGeneralServerKnowledge ().getTrueMap (),
+					cityLocation, priv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
 
 				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (city);
 
@@ -870,15 +867,7 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		TaxRate newTaxRate = null;
-		try
-		{
-			newTaxRate = mom.getServerDB ().findTaxRate (taxRateID, "changeTaxRate");
-		}
-		catch (final RecordNotFoundException e)
-		{
-			// Handled below
-		}
+		final TaxRate newTaxRate = mom.getServerDB ().getTaxRate ().stream ().filter (t -> t.getTaxRateID ().equals (taxRateID)).findAny ().orElse (null);
 		
 		if (newTaxRate == null)
 		{
@@ -914,8 +903,7 @@ public final class CityProcessingImpl implements CityProcessing
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 							
-							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), trueMap.getMap (),
-								trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, taxRateID, mom.getServerDB ()).getFinalTotal ());
+							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (trueMap, cityLocation, taxRateID, mom.getServerDB ()).getFinalTotal ());
 
 							getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 

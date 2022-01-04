@@ -111,7 +111,7 @@ import momime.common.database.UnitSetting;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPickCount;
 import momime.common.messages.CombatMapSize;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
@@ -124,6 +124,7 @@ import momime.common.messages.clienttoserver.ChooseStandardPhotoMessage;
 import momime.common.messages.clienttoserver.ChooseWizardMessage;
 import momime.common.messages.clienttoserver.UploadCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 
@@ -228,6 +229,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Methods for working with wizardIDs */
 	private PlayerKnowledgeUtils playerKnowledgeUtils;
+
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 
 	/** Content pane */
 	private JPanel contentPane;
@@ -3386,15 +3390,15 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void showRacePanel () throws PlayerNotFoundException, RecordNotFoundException
 	{
 		// Enable/disable Myrran buttons, now we know what picks we chose
-		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "NewGameUI.showRacePanel");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "NewGameUI.showRacePanel");
 		
 		for (final Entry<RaceEx, Action> race : raceButtonActions.entrySet ())
 		{
 			final Plane plane = getClient ().getClientDB ().findPlane (race.getKey ().getNativePlane (), "NewGameUI.showRacePanel");
 			
 			race.getValue ().setEnabled ((plane.getPrerequisitePickToChooseNativeRace () == null) ? true :
-				(getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), plane.getPrerequisitePickToChooseNativeRace ()) > 0));
+				(getPlayerPickUtils ().getQuantityOfPick (ourWizard.getPick (), plane.getPrerequisitePickToChooseNativeRace ()) > 0));
 		}		
 		
 		// Now can show it
@@ -4891,6 +4895,22 @@ public final class NewGameUI extends MomClientFrameUI
 	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
 	{
 		playerKnowledgeUtils = k;
+	}
+	
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 	
 	/**

@@ -11,16 +11,14 @@ import javax.swing.ListCellRenderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.QueuedSpell;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellUtils;
 
 /**
@@ -40,8 +38,8 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Session utils */
-	private MultiplayerSessionUtils multiplayerSessionUtils;
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Label containing the left portion*/
 	private JLabel leftLabel;
@@ -90,11 +88,11 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 				leftLabel.setText (getLanguageHolder ().findDescription (spell.getSpellName ()));
 
 			// Work out text
-			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "QueuedSpellListCellRenderer");
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+			final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "QueuedSpellListCellRenderer");
 			
 			final int castingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), queued.getVariableDamage (),
-				pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				ourWizard.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 				getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
 			final String suffix = " " + getLanguageHolder ().findDescription
@@ -173,18 +171,18 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 	}
 
 	/**
-	 * @return Session utils
+	 * @return Methods for finding KnownWizardDetails from the list
 	 */
-	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	public final KnownWizardUtils getKnownWizardUtils ()
 	{
-		return multiplayerSessionUtils;
+		return knownWizardUtils;
 	}
 
 	/**
-	 * @param util Session utils
+	 * @param k Methods for finding KnownWizardDetails from the list
 	 */
-	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
-		multiplayerSessionUtils = util;
+		knownWizardUtils = k;
 	}
 }

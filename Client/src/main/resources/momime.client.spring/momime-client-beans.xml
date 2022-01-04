@@ -191,6 +191,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="chooseInitialSpellsNowMessage" class="momime.client.messages.process.ChooseInitialSpellsNowMessageImpl" scope="prototype">
@@ -1306,6 +1307,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="joinGameLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1370,6 +1372,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">
@@ -1430,6 +1433,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="helpUI" ref="helpUI" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="alchemyUI" class="momime.client.ui.frames.AlchemyUI">
@@ -1441,8 +1445,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="newTurnMessageRenderer" class="momime.client.ui.renderer.NewTurnMessageRenderer">
@@ -1517,7 +1521,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="spellCalculations" ref="spellCalculations" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="spellBookUI" ref="spellBookUI" />
@@ -1670,10 +1673,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="client" ref="client" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="springExpressionReplacer" ref="springExpressionReplacer" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="damageCalculationsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1702,10 +1705,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="client" ref="client" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="spellBookUI" ref="spellBookUI" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="createArtifactLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1722,10 +1725,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 		<property name="heroItemClientUtils" ref="heroItemClientUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="citiesListLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1747,6 +1750,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityProductionCalculations" ref="cityProductionCalculations" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="citiesListCellRenderer" ref="citiesListCellRenderer" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 	<bean id="heroItemsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1834,8 +1838,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="queuedSpellListCellRenderer" class="momime.client.ui.renderer.QueuedSpellListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="armyListCellRenderer" class="momime.client.ui.renderer.ArmyListCellRenderer" scope="prototype">
@@ -2069,6 +2073,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="buildingListCellRenderer" ref="buildingListCellRenderer" />		<!-- So Spring will create and inject a new building list renderer for each change construction UI -->
 		<property name="unitListCellRenderer" ref="unitListCellRenderer" />					<!-- So Spring will create and inject a new unit list renderer for each change construction UI -->
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each changeConstructionUI -->
@@ -2306,6 +2311,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="armyListCellRenderer" ref="armyListCellRenderer" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 	
 </beans>

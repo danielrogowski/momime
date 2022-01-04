@@ -225,7 +225,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 
 		// Wizard has Channeler, halfing spell maintenance (half of 17 is 8.5, proves that maintenance is rounded up)
-		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
+		when (playerPickUtils.getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
 
 		calc.recalculateAmountsPerTurn (player, mom);
 		assertEquals (1, priv.getResourceValue ().size ());
@@ -641,17 +641,20 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
+		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
 
 		// Amount of resource
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (9);
+		when (utils.calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), "RE01", spellSettings, db)).thenReturn (9);
 		
 		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
 		
 		// Run method
-		calc.accumulateGlobalProductionValues (player, spellSettings, db);
+		calc.accumulateGlobalProductionValues (player, wizardDetails, spellSettings, db);
 
 		// Check results
 		verify (utils).addToAmountStored (priv.getResourceValue (), "RE02", 9);
@@ -684,16 +687,19 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		// Amount of resource
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (9);
+		when (utils.calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), "RE01", spellSettings, db)).thenReturn (9);
 		
 		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
 		
 		// Run method
-		calc.accumulateGlobalProductionValues (player, spellSettings, db);
+		calc.accumulateGlobalProductionValues (player, wizardDetails, spellSettings, db);
 
 		// Check results
 		verify (utils).addToAmountStored (priv.getResourceValue (), "RE02", 4);
@@ -726,16 +732,19 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		// Amount of resource
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (9);
+		when (utils.calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), "RE01", spellSettings, db)).thenReturn (9);
 		
 		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
 		
 		// Run method
-		calc.accumulateGlobalProductionValues (player, spellSettings, db);
+		calc.accumulateGlobalProductionValues (player, wizardDetails, spellSettings, db);
 
 		// Check results
 		verify (utils).addToAmountStored (priv.getResourceValue (), "RE02", 5);
@@ -768,16 +777,19 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		// Amount of resource
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (8);
+		when (utils.calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), "RE01", spellSettings, db)).thenReturn (8);
 		
 		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (utils);
 		
 		// Run method
-		calc.accumulateGlobalProductionValues (player, spellSettings, db);
+		calc.accumulateGlobalProductionValues (player, wizardDetails, spellSettings, db);
 
 		// Check results
 		verify (utils).addToAmountStored (priv.getResourceValue (), "RE02", 4);
@@ -810,9 +822,12 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (null, pub, priv, null, null);
 
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		// Amount of resource
 		final ResourceValueUtils utils = mock (ResourceValueUtils.class); 
-		when (utils.calculateAmountPerTurnForProductionType (priv, pub.getPick (), "RE01", spellSettings, db)).thenReturn (9);
+		when (utils.calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), "RE01", spellSettings, db)).thenReturn (9);
 		
 		// Set up object to test
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
@@ -821,7 +836,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Run method
 		final MomException e = assertThrows (MomException.class, () ->
 		{
-			calc.accumulateGlobalProductionValues (player, spellSettings, db);
+			calc.accumulateGlobalProductionValues (player, wizardDetails, spellSettings, db);
 		});
 		
 		assertEquals ("accumulateGlobalProductionValues: Expect value for RE01 being accumulated into RE02 to be exact multiple of 2 but was 9", e.getMessage ());
@@ -860,6 +875,9 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		// Connection
 		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
 		player.setConnection (msgs);
@@ -889,10 +907,10 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		
 		// Generate 40 research each turn; AI players get +10% so they get 44 
 		when (resourceValueUtils.calculateAmountPerTurnForProductionType
-			(priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (40);
+			(priv, wizardDetails.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (40);
 		
 		// No spell being researched
-		calc.progressResearch (player, players, sd, db);
+		calc.progressResearch (player, wizardDetails, players, sd, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -911,7 +929,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Spend 40 research - 60 left
 		priv.setSpellIDBeingResearched ("SP002");
 
-		calc.progressResearch (player, players, sd, db);
+		calc.progressResearch (player, wizardDetails, players, sd, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -936,7 +954,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		// Spend 40 research - 20 left
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, players, sd, db);
+		calc.progressResearch (player, wizardDetails, players, sd, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -961,7 +979,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		
 		// Finish research
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, players, sd, db);
+		calc.progressResearch (player, wizardDetails, players, sd, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -1043,6 +1061,9 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		// Set amount of casting skill
 		final MomResourceValue skillImprovement = new MomResourceValue ();
 		skillImprovement.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
@@ -1061,7 +1082,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.setResourceValueUtils (resourceValueUtils);
 		
 		// Run test
-		calc.resetCastingSkillRemainingThisTurnToFull (player, players, db);
+		calc.resetCastingSkillRemainingThisTurnToFull (player, wizardDetails, players, db);
 		assertEquals (3, trans.getOverlandCastingSkillRemainingThisTurn ());
 	}
 }

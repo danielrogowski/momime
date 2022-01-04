@@ -113,7 +113,7 @@ public final class TestCityProductionCalculationsImpl
 		
 		// Picks
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-		when (playerPickUtils.countPicksOfType (pub.getPick (), "X", true, db)).thenReturn (5);
+		when (playerPickUtils.countPicksOfType (cityOwnerWizard.getPick (), "X", true, db)).thenReturn (5);
 		
 		// City
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
@@ -138,9 +138,9 @@ public final class TestCityProductionCalculationsImpl
 
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (0)), isNull (), eq (pub.getPick ()), eq (db))).thenReturn (1);
+			eq (buildingDefs.get (0)), isNull (), eq (cityOwnerWizard.getPick ()), eq (db))).thenReturn (1);
 		when (cityCalculations.addProductionAndConsumptionFromBuilding (any (CityProductionBreakdownsEx.class),
-			eq (buildingDefs.get (2)), isNull (), eq (pub.getPick ()), eq (db))).thenReturn (3);
+			eq (buildingDefs.get (2)), isNull (), eq (cityOwnerWizard.getPick ()), eq (db))).thenReturn (3);
 		
 		// Spells
 		for (int n = 1; n <= 3; n++)
@@ -201,8 +201,8 @@ public final class TestCityProductionCalculationsImpl
 		verify (cityCalculations).addProductionFromPopulation (productions, race,
 			CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, 3, new MapCoordinates3DEx (20, 10, 1), mem.getBuilding (), db);
 		
-		verify (cityCalculations).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (0), null, pub.getPick (), db);
-		verify (cityCalculations).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (2), null, pub.getPick (), db);
+		verify (cityCalculations).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (0), null, cityOwnerWizard.getPick (), db);
+		verify (cityCalculations).addProductionAndConsumptionFromBuilding (productions, buildingDefs.get (2), null, cityOwnerWizard.getPick (), db);
 		
 		verify (cityCalculations).addProductionFromFortressPickType (productions, pickType, 5, db);
 		verify (cityCalculations).addProductionFromFortressPlane (productions, plane, db);

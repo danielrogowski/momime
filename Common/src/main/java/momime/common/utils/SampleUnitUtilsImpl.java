@@ -13,7 +13,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 
 /**
  * Lots of places in the code need to create a properly initialized test unit, so better to have a common method for this rather than
@@ -80,7 +80,7 @@ public final class SampleUnitUtilsImpl implements SampleUnitUtils
 	 * and experience (from e.g. War College or Altar of Battle spell) all set correctly.
 	 * 
 	 * @param unitID Type of unit to create
-	 * @param owningPlayer Player who owns the unit
+	 * @param owningWizard Wizard who owns the unit
 	 * @param cityLocation City where the unit is being constructed
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
@@ -89,22 +89,20 @@ public final class SampleUnitUtilsImpl implements SampleUnitUtils
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
 	 */
 	@Override
-	public final AvailableUnit createSampleAvailableUnitFromCity (final String unitID, final PlayerPublicDetails owningPlayer, final MapCoordinates3DEx cityLocation,
+	public final AvailableUnit createSampleAvailableUnitFromCity (final String unitID, final KnownWizardDetails owningWizard, final MapCoordinates3DEx cityLocation,
 		final FogOfWarMemory mem, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ();
-		
 		final AvailableUnit sample = new AvailableUnit ();
 		sample.setUnitID (unitID);
-		sample.setOwningPlayerID (owningPlayer.getPlayerDescription ().getPlayerID ());
+		sample.setOwningPlayerID (owningWizard.getPlayerID ());
 		sample.setUnitLocation (cityLocation);
 
 		final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings
 			(mem.getBuilding (), mem.getMaintainedSpell (), cityLocation, db);
 		
 		sample.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-			(mem.getBuilding (), mem.getMap (), cityLocation, pub.getPick (), overlandMapCoordinateSystem, db));
+			(mem.getBuilding (), mem.getMap (), cityLocation, owningWizard.getPick (), overlandMapCoordinateSystem, db));
 
 		getUnitUtils ().initializeUnitSkills (sample, startingExperience, db);
 		
@@ -116,7 +114,7 @@ public final class SampleUnitUtilsImpl implements SampleUnitUtils
 	 * and experience (from e.g. War College or Altar of Battle spell) all set correctly.
 	 * 
 	 * @param unitID Type of unit to create
-	 * @param owningPlayer Player who owns the unit
+	 * @param owningWizard Wizard who owns the unit
 	 * @param cityLocation City where the unit is being constructed
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
@@ -128,12 +126,12 @@ public final class SampleUnitUtilsImpl implements SampleUnitUtils
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final ExpandedUnitDetails createSampleUnitFromCity (final String unitID, final PlayerPublicDetails owningPlayer, final MapCoordinates3DEx cityLocation,
+	public final ExpandedUnitDetails createSampleUnitFromCity (final String unitID, final KnownWizardDetails owningWizard, final MapCoordinates3DEx cityLocation,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem,
 		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final AvailableUnit sample = createSampleAvailableUnitFromCity (unitID, owningPlayer, cityLocation, mem, overlandMapCoordinateSystem, db);
+		final AvailableUnit sample = createSampleAvailableUnitFromCity (unitID, owningWizard, cityLocation, mem, overlandMapCoordinateSystem, db);
 		return getExpandUnitDetails ().expandUnitDetails (sample, null, null, null, players, mem, db);
 	}
 	

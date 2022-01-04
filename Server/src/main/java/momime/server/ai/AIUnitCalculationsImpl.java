@@ -17,8 +17,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
@@ -95,6 +95,7 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	
 	/**
 	 * @param player AI player who is considering constructing the specified unit
+	 * @param wizardDetails AI wizard who is considering constructing the specified unit
 	 * @param players Players list
 	 * @param unit Unit they want to construct
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
@@ -105,11 +106,10 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final boolean canAffordUnitMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final AvailableUnit unit,
+	public final boolean canAffordUnitMaintenance (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<PlayerServerDetails> players, final AvailableUnit unit,
 		final SpellSetting spellSettings, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
 		final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
 		
@@ -127,19 +127,19 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 				
 				// Halve mana upkeep if we have channeler retort
 				if ((upkeep > 1) && (productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) &&
-					(getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
+					(getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
 					
 					upkeep = upkeep - (upkeep / 2);
 				
-				final int productionPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionTypeID, spellSettings, db);
+				final int productionPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), productionTypeID, spellSettings, db);
 				int combinedPerTurn = productionPerTurn;
 				
 				// If the unit has mana upkeep, then also consider how much gold we're generating
 				int goldPerTurn = 0;
 				if (productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA))
 				{
-					goldPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db);
-					combinedPerTurn = combinedPerTurn + ((getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0) ?
+					goldPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db);
+					combinedPerTurn = combinedPerTurn + ((getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0) ?
 						goldPerTurn : (goldPerTurn/2));
 				}
 				

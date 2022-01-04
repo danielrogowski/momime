@@ -29,7 +29,6 @@ import momime.common.database.SpellSetting;
 import momime.common.database.Wizard;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NewTurnMessageOffer;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.SpellResearchStatusID;
@@ -112,10 +111,10 @@ public final class MomAIImpl implements MomAI
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
-		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "aiPlayerTurn");
 
-		if (getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ()))
+		if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 			getUnitAI ().reallocateHeroItems (player, mom);
 		
 		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID ());
@@ -132,13 +131,13 @@ public final class MomAIImpl implements MomAI
 		boolean combatStarted = false;
 		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane = new HashMap<Integer, List<AIUnitType>> ();
 		
-		if ((cityConstructableCombatUnits.isEmpty ()) && (!CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (knownWizard.getWizardID ())))
+		if ((cityConstructableCombatUnits.isEmpty ()) && (!CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (wizardDetails.getWizardID ())))
 			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't make any combat units in cities at all");
 		else
 		{
 			// Raiders and Rampaging monsters have some special handling
-			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (knownWizard.getWizardID ());
-			final boolean isMonsters = CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (knownWizard.getWizardID ());
+			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (wizardDetails.getWizardID ());
+			final boolean isMonsters = CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (wizardDetails.getWizardID ());
 			
 			final KnownWizardDetails raidersWizard = mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ().stream ().filter
 				(w -> CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (w.getWizardID ())).findAny ().orElse (null);
@@ -311,7 +310,7 @@ public final class MomAIImpl implements MomAI
 					}
 					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnitsMod);
 				
-					final Wizard wizard = mom.getServerDB ().findWizard (knownWizard.getWizardID (), "aiPlayerTurn");
+					final Wizard wizard = mom.getServerDB ().findWizard (wizardDetails.getWizardID (), "aiPlayerTurn");
 					
 					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 					{
@@ -379,10 +378,10 @@ public final class MomAIImpl implements MomAI
 		{
 			// Only wizards can use alchemy (raiders don't need mana)
 			// Make sure we do this before rush buying projects in cities, as generating mana for Spell of Return is more important
-			if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 20))
+			if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 20))
 			{
-				considerAlchemy (player, mom.getPlayers (), mom.getServerDB ());
-				decideMagicPowerDistribution (player, mom.getPlayers (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+				considerAlchemy (player, wizardDetails, mom.getPlayers (), mom.getServerDB ());
+				decideMagicPowerDistribution (player, wizardDetails, mom.getPlayers (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 			}
 			
 			if (numberOfCities > 0)
@@ -398,14 +397,14 @@ public final class MomAIImpl implements MomAI
 			}
 			
 			// Only wizards can do anything with spells
-			if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (knownWizard.getWizardState () == WizardState.ACTIVE))
+			if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (wizardDetails.getWizardState () == WizardState.ACTIVE))
 			{
 				// Do we need to choose a spell to research?
 				if (priv.getSpellIDBeingResearched () == null)
 					getSpellAI ().decideWhatToResearch (player, mom.getServerDB ());
 				
 				// Pick spells to cast overland
-				getSpellAI ().decideWhatToCastOverland (player, constructableUnits, wantedUnitTypesOnEachPlane, mom);
+				getSpellAI ().decideWhatToCastOverland (player, wizardDetails, constructableUnits, wantedUnitTypesOnEachPlane, mom);
 			}
 		}
 
@@ -415,26 +414,26 @@ public final class MomAIImpl implements MomAI
 	
 	/**
 	 * @param player AI player to consider converting gold into mana for
+	 * @param wizardDetails AI wizard to consider converting gold into mana for
 	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	final void considerAlchemy (final PlayerServerDetails player, final List<PlayerServerDetails> players, final CommonDatabase db)
+	final void considerAlchemy (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<PlayerServerDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		// Want 10x casting skill in MP
-		final int desiredMana = getResourceValueUtils ().calculateModifiedCastingSkill (priv.getResourceValue (), player, players, priv.getFogOfWarMemory (), db, true) * 10;
+		final int desiredMana = getResourceValueUtils ().calculateModifiedCastingSkill (priv.getResourceValue (), wizardDetails, players, priv.getFogOfWarMemory (), db, true) * 10;
 		final int currentMana = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has " + currentMana + " MP and wants minimum " + desiredMana + " MP from Alchemy");
 		
 		if (desiredMana > currentMana)
 		{
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			final boolean alchemyRetort = (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0);
+			final boolean alchemyRetort = (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0);
 			
 			int manaToConvert = desiredMana - currentMana;
 			int goldToConvert = alchemyRetort ? manaToConvert : (manaToConvert * 2);
@@ -465,6 +464,7 @@ public final class MomAIImpl implements MomAI
 	
 	/**
 	 * @param player AI player to decide magic power distribution for
+	 * @param wizardDetails AI wizard to decide magic power distribution for
 	 * @param players Players list
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
@@ -472,15 +472,14 @@ public final class MomAIImpl implements MomAI
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	final void decideMagicPowerDistribution (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+	final void decideMagicPowerDistribution (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<PlayerServerDetails> players,
 		final SpellSetting spellSettings, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
 		// Want 10x casting skill in MP
-		final int desiredMana = getResourceValueUtils ().calculateModifiedCastingSkill (priv.getResourceValue (), player, players, priv.getFogOfWarMemory (), db, true) * 10;
+		final int desiredMana = getResourceValueUtils ().calculateModifiedCastingSkill (priv.getResourceValue (), wizardDetails, players, priv.getFogOfWarMemory (), db, true) * 10;
 		final int currentMana = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has " + currentMana + " MP and wants minimum " + desiredMana + " MP from magic power");
 		
@@ -494,7 +493,7 @@ public final class MomAIImpl implements MomAI
 		
 			// This method calculates MP split from magic power, and takes Archmage 25% bonus into account
 			manaFromMagicPower = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-				(priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db);
+				(priv, wizardDetails.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db);
 		}
 
 		log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " set MP from magic power at " + priv.getMagicPowerDistribution ().getManaRatio () +

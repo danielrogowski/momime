@@ -11,6 +11,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.utils.ExpandedUnitDetails;
 
 /**
@@ -40,6 +41,7 @@ public interface AIUnitCalculations
 
 	/**
 	 * @param player AI player who is considering constructing the specified unit
+	 * @param wizardDetails AI wizard who is considering constructing the specified unit
 	 * @param players Players list
 	 * @param unit Unit they want to construct
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
@@ -49,6 +51,6 @@ public interface AIUnitCalculations
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public boolean canAffordUnitMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final AvailableUnit unit,
+	public boolean canAffordUnitMaintenance (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<PlayerServerDetails> players, final AvailableUnit unit,
 		final SpellSetting spellSettings, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

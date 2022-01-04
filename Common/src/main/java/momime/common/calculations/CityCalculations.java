@@ -29,7 +29,6 @@ import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PlayerPick;
@@ -156,11 +155,7 @@ public interface CityCalculations
 	 * This is called on the TrueMap to update the values there, then the calling routine checks each player's Fog of War to see
 	 * if they can see the city, and if so then sends them the updated values
 	 *
-	 * @param players Players list
-	 * @param map Known terrain
-	 * @param units Known units
-	 * @param buildings Known buildings
-	 * @param spells Known spells
+	 * @param mem Player's knowledge about the city and surrounding terrain
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param db Lookup lists built over the XML database
@@ -168,9 +163,7 @@ public interface CityCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If any of a number of items cannot be found in the cache
 	 */
-	public CityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
-		final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
+	public CityUnrestBreakdown calculateCityRebels (final FogOfWarMemory mem, final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 
 	/**

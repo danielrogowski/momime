@@ -55,6 +55,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.TurnSystem;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -199,9 +200,12 @@ public final class TestOverlandMapUI extends ClientTestData
 		when (playerKnowledgeUtils.isWizard ("WZ01")).thenReturn (true);
 		
 		// Wizard
-		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		wizardDetails.setWizardID ("WZ01");
-		fow.getWizardDetails ().add (wizardDetails);
+		final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
+		wizardDetails1.setWizardID ("WZ01");
+		fow.getWizardDetails ().add (wizardDetails1);
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (pd1.getPlayerID ()), anyString ())).thenReturn (wizardDetails1);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -247,6 +251,7 @@ public final class TestOverlandMapUI extends ClientTestData
 		rhp.setSurveyorLayout (surveyorLayout);
 		rhp.setEconomyLayout (economyLayout);
 		rhp.setWizardClientUtils (wizardClientUtils);
+		rhp.setKnownWizardUtils (knownWizardUtils);
 
 		// Give it some dummy images for the terrain
 		final BufferedImage [] overlandMapBitmaps = new BufferedImage [overlandMapTileSet.getAnimationFrameCount ()];

@@ -24,6 +24,7 @@ import momime.common.database.ProductionTypeEx;
 import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.ExpandUnitDetails;
@@ -68,6 +69,9 @@ public final class TestAIUnitCalculationsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		// Test unit
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
@@ -88,7 +92,7 @@ public final class TestAIUnitCalculationsImpl
 		final SpellSetting spellSettings = new SpellSetting ();
 
 		final ResourceValueUtils resources = mock (ResourceValueUtils.class);
-		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (6);
+		when (resources.calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (6);
 		
 		// Set up object to test
 		final AIUnitCalculationsImpl ai = new AIUnitCalculationsImpl ();
@@ -96,11 +100,11 @@ public final class TestAIUnitCalculationsImpl
 		ai.setResourceValueUtils (resources);
 		
 		// Run method
-		assertTrue (ai.canAffordUnitMaintenance (player, players, unit, spellSettings, db));
+		assertTrue (ai.canAffordUnitMaintenance (player, wizardDetails, players, unit, spellSettings, db));
 
 		// Now we produce less, so no longer enough
-		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (4);
-		assertFalse (ai.canAffordUnitMaintenance (player, players, unit, spellSettings, db));
+		when (resources.calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (4);
+		assertFalse (ai.canAffordUnitMaintenance (player, wizardDetails, players, unit, spellSettings, db));
 	}
 
 	/**
@@ -127,6 +131,9 @@ public final class TestAIUnitCalculationsImpl
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
 		// Test unit
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
@@ -146,7 +153,7 @@ public final class TestAIUnitCalculationsImpl
 		final SpellSetting spellSettings = new SpellSetting ();
 		
 		final ResourceValueUtils resources = mock (ResourceValueUtils.class);
-		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (5);
+		when (resources.calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (5);
 		
 		// Set up object to test
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -157,13 +164,13 @@ public final class TestAIUnitCalculationsImpl
 		ai.setPlayerPickUtils (playerPickUtils);
 		
 		// Run method
-		assertFalse (ai.canAffordUnitMaintenance (player, players, unit, spellSettings, db));
+		assertFalse (ai.canAffordUnitMaintenance (player, wizardDetails, players, unit, spellSettings, db));
 		
 		// Now we have channeler retort, so upkeep reduced to 4
-		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
+		when (playerPickUtils.getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
 
 		// Now we produce less, so no longer enough
-		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (3);
-		assertFalse (ai.canAffordUnitMaintenance (player, players, unit, spellSettings, db));
+		when (resources.calculateAmountPerTurnForProductionType (priv, wizardDetails.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (3);
+		assertFalse (ai.canAffordUnitMaintenance (player, wizardDetails, players, unit, spellSettings, db));
 	}
 }

@@ -37,7 +37,7 @@ public final class TestMinimalUnitDetailsImpl
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, null);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, null, null);
 		
 		// Call method
 		assertTrue (mu.isHero ());
@@ -54,7 +54,7 @@ public final class TestMinimalUnitDetailsImpl
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, null);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, null, null);
 		
 		// Call method
 		assertFalse (mu.isHero ());
@@ -71,7 +71,7 @@ public final class TestMinimalUnitDetailsImpl
 		unitTypeDef.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, null, unitTypeDef, null, null, null, null);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, null, unitTypeDef, null, null, null, null, null);
 		
 		// Call method
 		assertTrue (mu.isSummoned ());
@@ -88,7 +88,7 @@ public final class TestMinimalUnitDetailsImpl
 		unitTypeDef.setUnitTypeID ("N");
 		
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, null, unitTypeDef, null, null, null, null);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, null, unitTypeDef, null, null, null, null, null);
 		
 		// Call method
 		assertFalse (mu.isSummoned ());
@@ -113,7 +113,7 @@ public final class TestMinimalUnitDetailsImpl
 		basicSkillValues.put ("A", 2);
 		
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, expLevel, basicSkillValues);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, expLevel, basicSkillValues);
 		
 		// Call method
 		// Value is doubled so 6, which can check on e.g. Might page of wiki for level 3 hero with Super Might
@@ -139,7 +139,7 @@ public final class TestMinimalUnitDetailsImpl
 		basicSkillValues.put ("A", 2);
 		
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, expLevel, basicSkillValues);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, expLevel, basicSkillValues);
 		
 		// Call method
 		assertEquals (2, mu.getBasicOrHeroSkillValue ("A").intValue ());
@@ -155,7 +155,7 @@ public final class TestMinimalUnitDetailsImpl
 		final UnitEx unitDef = new UnitEx ();
 		
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, null);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, null, null);
 
 		// Run method
 		unitDef.setFigureCount (4);
@@ -185,7 +185,7 @@ public final class TestMinimalUnitDetailsImpl
 		basicSkillValues.put ("B", null);
 
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, null, null, null, null, null, basicSkillValues);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, null, null, null, null, null, null, basicSkillValues);
 		
 		// Call method
 		assertFalse (mu.unitIgnoresCombatTerrain (db));
@@ -214,7 +214,7 @@ public final class TestMinimalUnitDetailsImpl
 		basicSkillValues.put ("C", null);
 
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, null, null, null, null, null, basicSkillValues);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, null, null, null, null, null, null, basicSkillValues);
 		
 		// Call method
 		assertTrue (mu.unitIgnoresCombatTerrain (db));
@@ -234,7 +234,7 @@ public final class TestMinimalUnitDetailsImpl
 		expLevel.setLevelNumber (3);
 		
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, expLevel, null);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, expLevel, null);
 		
 		// Call method
 		assertEquals (2, mu.calculateFameLostForUnitDying ());
@@ -254,7 +254,7 @@ public final class TestMinimalUnitDetailsImpl
 		expLevel.setLevelNumber (3);
 		
 		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, expLevel, null);
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, expLevel, null);
 		
 		// Call method
 		assertEquals (0, mu.calculateFameLostForUnitDying ());

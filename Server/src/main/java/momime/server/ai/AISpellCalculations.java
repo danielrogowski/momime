@@ -10,6 +10,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 
 /**
@@ -19,6 +20,7 @@ public interface AISpellCalculations
 {
 	/**
 	 * @param player Player who wants to cast a spell
+	 * @param wizardDetails Wizard who wants to cast a spell
 	 * @param players Players list
 	 * @param spell Spell they want to cast
 	 * @param trueUnits List of true units
@@ -29,7 +31,7 @@ public interface AISpellCalculations
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final Spell spell,
+	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<PlayerServerDetails> players, final Spell spell,
 		final List<MemoryUnit> trueUnits, final SpellSetting spellSettings, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

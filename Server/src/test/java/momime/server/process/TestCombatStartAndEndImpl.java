@@ -240,10 +240,16 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
 		// Casting skill of each player
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "startCombat-A")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPd.getPlayerID (), "startCombat-D")).thenReturn (defendingWizard);
+		
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.calculateModifiedCastingSkill (attackingPriv.getResourceValue (), attackingPlayer, players,
+		when (resourceValueUtils.calculateModifiedCastingSkill (attackingPriv.getResourceValue (), attackingWizard, players,
 			attackingPriv.getFogOfWarMemory (), db, false)).thenReturn (28);
-		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingPlayer, players,
+		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingWizard, players,
 			defendingPriv.getFogOfWarMemory (), db, false)).thenReturn (22);
 		
 		// Session variables
@@ -262,6 +268,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCombatProcessing (combatProcessing);
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, null, null, mom);
@@ -403,10 +410,16 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		when (mapGen.generateCombatMap (combatMapCoordinateSystem, db, trueMap, defendingLocation)).thenReturn (new MapAreaOfCombatTiles ());
 		
 		// Casting skill of each player
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "startCombat-A")).thenReturn (attackingWizard);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), defendingPd.getPlayerID (), "startCombat-D")).thenReturn (defendingWizard);
+		
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.calculateModifiedCastingSkill (attackingPriv.getResourceValue (), attackingPlayer, players,
+		when (resourceValueUtils.calculateModifiedCastingSkill (attackingPriv.getResourceValue (), attackingWizard, players,
 			attackingPriv.getFogOfWarMemory (), db, false)).thenReturn (28);
-		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingPlayer, players,
+		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingWizard, players,
 			defendingPriv.getFogOfWarMemory (), db, false)).thenReturn (22);
 		
 		// Session variables
@@ -425,6 +438,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCombatProcessing (combatProcessing);
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		final PendingMovement combatAttackerPendingMovement = new PendingMovement ();

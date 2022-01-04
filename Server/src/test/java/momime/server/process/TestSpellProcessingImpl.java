@@ -31,6 +31,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -48,6 +49,7 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -471,7 +473,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		players.add (defendingPlayer);
 		
 		final PlayerServerDetails castingPlayer = attackingPlayer;
+		
+		// Wizard
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "castCombatNow")).thenReturn (attackingWizard);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -484,7 +492,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// Counter magic
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingPub.getPick ())).thenReturn (15);
+		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingWizard.getPick ())).thenReturn (15);
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
@@ -504,6 +512,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellUtils (spellUtils);
 		proc.setSpellDispelling (spellDispelling);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, false, mom);
@@ -600,6 +609,12 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final PlayerServerDetails castingPlayer = attackingPlayer;
 
+		// Wizard
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "castCombatNow")).thenReturn (attackingWizard);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -612,7 +627,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// Counter magic
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingPub.getPick ())).thenReturn (15);
+		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingWizard.getPick ())).thenReturn (15);
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
@@ -637,6 +652,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setExpandUnitDetails (expand);
 		proc.setMovementUtils (movementUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, false, mom);
@@ -722,6 +738,12 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final PlayerServerDetails castingPlayer = attackingPlayer;
 
+		// Wizard
+		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
+
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "castCombatNow")).thenReturn (attackingWizard);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -766,7 +788,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// Counter magic
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingPub.getPick ())).thenReturn (15);
+		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingWizard.getPick ())).thenReturn (15);
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer,
@@ -789,6 +811,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellDispelling (spellDispelling);
 		proc.setUnitServerUtils (unitServerUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, false, mom);

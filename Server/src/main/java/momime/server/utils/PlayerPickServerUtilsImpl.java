@@ -25,7 +25,6 @@ import momime.common.database.Spell;
 import momime.common.database.WizardEx;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatusID;
@@ -229,28 +228,30 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * if all free spells have been chosen, returns null and does nothing
 	 *
 	 * @param player Player we want to check to see if they need to pick free spells
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Message containing magic realm and counts of how many spells we need to pick of each rank; or null if there are no more free spells we need to choose
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 * @throws RecordNotFoundException If the player has picks which we can't find in the cache, or the AI player chooses a spell which we can't then find in their list
 	 */
 	@Override
-	public final ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final CommonDatabase db)
+	public final ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "findRealmIDWhereWeNeedToChooseFreeSpells");
+		
 		// Search through the types of book that this player has
 		ChooseInitialSpellsNowMessage msg = null;
 
-		final Iterator<PlayerPick> picksIterator  = ppk.getPick ().iterator ();
+		final Iterator<PlayerPick> picksIterator  = wizardDetails.getPick ().iterator ();
 		while ((msg == null) && (picksIterator.hasNext ()))
 		{
 			final PlayerPick pick = picksIterator.next ();
 
 			// Make a list of how many spells of each rank we still need to pick
-			msg = countFreeSpellsLeftToChoose (player, pick, db);
+			msg = countFreeSpellsLeftToChoose (player, pick, mom.getServerDB ());
 
 			// If we found a type of book that we have enough of to get some free spells, but we've already chosen them, then wipe out the message and continue looking
 			if ((msg != null) && (msg.getSpellRank ().size () == 0))
@@ -267,7 +268,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 					thisSpellRank.getFreeSpellCount () + " free spells of realm " + msg.getMagicRealmID () + " rank " + thisSpellRank.getSpellRankID ());
 
 				for (int aiSpellChoices = 0; aiSpellChoices < thisSpellRank.getFreeSpellCount (); aiSpellChoices++)
-					getSpellAI ().chooseFreeSpellAI (priv.getSpellResearchStatus (), msg.getMagicRealmID (), thisSpellRank.getSpellRankID (), db).setStatus
+					getSpellAI ().chooseFreeSpellAI (priv.getSpellResearchStatus (), msg.getMagicRealmID (), thisSpellRank.getSpellRankID (), mom.getServerDB ()).setStatus
 						(SpellResearchStatusID.AVAILABLE);
 			}
 
@@ -280,19 +281,20 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @param player Player who is trying to choose free spells
 	 * @param pickID The magic realm of the spells they want to choose
 	 * @param spellIDs Which spells they want to choose
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
 	@Override
-	public final String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final CommonDatabase db)
+	public final String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final MomSessionVariables mom)
 		throws RecordNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "validateInitialSpellSelection");
+		
 		// Find how many of this pick the player has
 		PlayerPick pick = null;
-		final Iterator<PlayerPick> picksIterator  = ppk.getPick ().iterator ();
+		final Iterator<PlayerPick> picksIterator  = wizardDetails.getPick ().iterator ();
 		while ((pick == null) && (picksIterator.hasNext ()))
 		{
 			final PlayerPick thisPick = picksIterator.next ();
@@ -306,7 +308,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		else
 		{
 			// First get a list of how many spells of each rank the player has left to choose in this magic realm
-			final ChooseInitialSpellsNowMessage rankCounts = countFreeSpellsLeftToChoose (player, pick, db);
+			final ChooseInitialSpellsNowMessage rankCounts = countFreeSpellsLeftToChoose (player, pick, mom.getServerDB ());
 			if (rankCounts == null)
 				msg = "Having " + pick.getQuantity () + " books doesn't grant any free spells";
 			else
@@ -316,7 +318,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 				final Iterator<String> spellsIterator = spellIDs.iterator ();
 				while ((msg == null) && (spellsIterator.hasNext ()))
 				{
-					final Spell thisSpell = db.findSpell (spellsIterator.next (), "validateInitialSpellSelection");
+					final Spell thisSpell = mom.getServerDB ().findSpell (spellsIterator.next (), "validateInitialSpellSelection");
 					if (!pickID.equals (thisSpell.getSpellRealm ()))
 						msg = "You are trying to choose free spells that don't match the magic realm specified";
 
@@ -346,25 +348,15 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	/**
 	 * @param player Player who wants to choose a race
 	 * @param raceID Race they wish to choose
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return null if choice is acceptable; message to send back to client if choice isn't acceptable
 	 * @throws RecordNotFoundException If we choose a race whose native plane can't be found
 	 */
 	@Override
-	public final String validateRaceChoice (final PlayerServerDetails player, final String raceID, final CommonDatabase db)
+	public final String validateRaceChoice (final PlayerServerDetails player, final String raceID, final MomSessionVariables mom)
 		throws RecordNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-
-		RaceEx race = null;
-		try
-		{
-			race = db.findRace (raceID, "validateRaceChoice");
-		}
-		catch (final RecordNotFoundException e)
-		{
-			// Ignore it, trap this just by the fact that race is still null
-		}
+		final RaceEx race = mom.getServerDB ().getRaces ().stream ().filter (r -> r.getRaceID ().equals (raceID)).findAny ().orElse (null);
 
 		final String msg;
 		if (race == null)
@@ -372,12 +364,13 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		else
 		{
 			// Check pre-requisites, i.e. if we've picked a Myrran race we have to have the Myrran retort
-			final String pickID = db.findPlane (race.getNativePlane (), "validateRaceChoice").getPrerequisitePickToChooseNativeRace ();
+			final String pickID = mom.getServerDB ().findPlane (race.getNativePlane (), "validateRaceChoice").getPrerequisitePickToChooseNativeRace ();
 			if (pickID == null)
 				msg = null;
 
 			// Check if we have the pick
-			else if (getPlayerPickUtils ().getQuantityOfPick (ppk.getPick (), pickID) > 0)
+			else if (getPlayerPickUtils ().getQuantityOfPick (getKnownWizardUtils ().findKnownWizardDetails
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "validateRaceChoice").getPick (), pickID) > 0)
 				msg = null;
 
 			else

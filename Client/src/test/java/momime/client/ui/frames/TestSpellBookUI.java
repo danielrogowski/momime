@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
@@ -38,7 +37,6 @@ import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -112,6 +110,17 @@ public final class TestSpellBookUI extends ClientTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (spellSettings);
 		
+		// Player
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+
+		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2, "languageOrPageChanged")).thenReturn (ourWizard);
+		
 		// Mock 100 dummy spells
 		// SP000 - SP009 are in section SC00
 		// SP001 - SP019 are in section SC01
@@ -119,8 +128,6 @@ public final class TestSpellBookUI extends ClientTestData
 		// SP080 - SP089 are in section SC98 (researchable now)
 		// SP090 - SP099 are in section SC99 (in book, can research in future)
 		final List<Spell> spells = new ArrayList<Spell> ();
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		final FogOfWarMemory mem = new FogOfWarMemory ();
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		
 		for (int n = 0; n < 100; n++)
@@ -146,8 +153,8 @@ public final class TestSpellBookUI extends ClientTestData
 			
 			if ((n == 10) || (n == 20) || (n == 21))
 			{
-				when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 5);
-				when (spellUtils.getReducedCombatCastingCost (spell, null, pub.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 2);
+				when (spellUtils.getReducedOverlandCastingCost (spell, null, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 5);
+				when (spellUtils.getReducedCombatCastingCost (spell, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 2);
 			}
 		}
 		doReturn (spells).when (db).getSpell ();
@@ -179,24 +186,10 @@ public final class TestSpellBookUI extends ClientTestData
 			}
 		}
 		
-		// Player
-		final PlayerPublicDetails ourPlayer = new PlayerPublicDetails (null, pub, null);
-		
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, 2, "languageOrPageChanged")).thenReturn (ourPlayer);
-		
-		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
-		
-		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 2, "languageOrPageChanged")).thenReturn (ourWizard);
-		
 		// Mock client
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
-		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (2);
 		when (client.getSessionDescription ()).thenReturn (sd);
 		

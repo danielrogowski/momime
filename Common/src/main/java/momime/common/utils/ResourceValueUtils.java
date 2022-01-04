@@ -10,6 +10,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.PlayerPick;
@@ -76,7 +77,7 @@ public interface ResourceValueUtils
 
     /**
 	 * @param resourceList List of resources to search through
-	 * @param playerDetails Details about the player whose casting skill we want
+	 * @param wizardDetails Details about the wizard whose casting skill we want
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -86,7 +87,7 @@ public interface ResourceValueUtils
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
      */
-	public int calculateModifiedCastingSkill (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails,
+	public int calculateModifiedCastingSkill (final List<MomResourceValue> resourceList, final KnownWizardDetails wizardDetails,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db, final boolean includeBonusFromHeroesAtFortress)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
@@ -115,7 +116,7 @@ public interface ResourceValueUtils
 	
     /**
 	 * @param resourceList List of resources to search through
-	 * @param playerDetails Details about the player whose fame we want
+	 * @param wizardDetails Details about the wizard whose fame we want
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -124,7 +125,7 @@ public interface ResourceValueUtils
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
      */
-	public int calculateModifiedFame (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails,
+	public int calculateModifiedFame (final List<MomResourceValue> resourceList, final KnownWizardDetails wizardDetails,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	

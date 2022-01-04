@@ -104,7 +104,8 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 			case CITY_ENCHANTMENTS:
 				valid = (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 					spell, player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET);
+					priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET);
 				break;
 				
 			// Can't summon (including raise dead-type spells) if already max number of units

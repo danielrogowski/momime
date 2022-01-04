@@ -47,7 +47,7 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		final String error = getPlayerPickServerUtils ().validateRaceChoice (sender, getRaceID (), mom.getServerDB ());
+		final String error = getPlayerPickServerUtils ().validateRaceChoice (sender, getRaceID (), mom);
 		if (error != null)
 		{
 			// Return error

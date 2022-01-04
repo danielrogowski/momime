@@ -67,7 +67,6 @@ import momime.common.messages.servertoclient.MeetWizardMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
 import momime.common.messages.servertoclient.PlayAnimationMessage;
 import momime.common.messages.servertoclient.PowerBaseHistoryPlayer;
-import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
@@ -92,6 +91,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.PlayerServerUtils;
@@ -192,6 +192,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
+	
 	/** Number of save points to keep for each session */
 	private int savePointKeepCount;
 	
@@ -259,25 +262,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ().add (trueWizardDetails);
 
-			// On the server, remember that this wizard has met themselves; make a separate copy of the object
-			// Remaining field values (photo choice, flag colour, picks) are not yet known yet
-			final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
-			knownWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-			knownWizardDetails.setWizardID (wizardID);
-			knownWizardDetails.setStandardPhotoID (wizardID);
-			knownWizardDetails.setWizardState (WizardState.ACTIVE);
-
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
-			
-			// Tell the player the wizard they chose was OK; in that way they get their copy of their own KnownWizardDetails record
-			if (player.getPlayerDescription ().isHuman ())
-			{
-				final MeetWizardMessage meet = new MeetWizardMessage ();
-				meet.setKnownWizardDetails (knownWizardDetails);
-				player.getConnection ().sendMessageToClient (meet);
-			}
-
 			if ((wizard != null) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
 			{
 				// Find the correct node in the database for the number of player human players have
@@ -292,15 +276,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					throw new RecordNotFoundException (WizardPickCount.class, wizardID + "-" + desiredPickCount, "chooseWizard");
 
 				// Read pre-defined wizard's list of picks from the DB and send them to the player
-				// We'll send them to everyone else when the game starts
-				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				for (final PickAndQuantity srcPick : pickCount.get ().getWizardPick ())
 				{
 					final PlayerPick destPick = new PlayerPick ();
 					destPick.setPickID (srcPick.getPickID ());
 					destPick.setQuantity (srcPick.getQuantity ());
 					destPick.setOriginalQuantity (srcPick.getQuantity ());
-					ppk.getPick ().add (destPick);
+					trueWizardDetails.getPick ().add (destPick);
 				}
 
 				// Debug picks to server log file
@@ -308,7 +290,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				{
 					String picksDebugDescription = null;
 
-					for (final PlayerPick pick : ppk.getPick ())
+					for (final PlayerPick pick : trueWizardDetails.getPick ())
 					{
 						if (picksDebugDescription == null)
 							picksDebugDescription = pick.getQuantity () + "x" + pick.getPickID ();
@@ -318,24 +300,37 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 					log.debug ("chooseWizard: Read picks for player '" + player.getPlayerDescription ().getPlayerName () + "' who has chosen pre-defined wizard \"" + wizardID + "\":  " + picksDebugDescription);
 				}
+			}
+			
+			// On the server, remember that this wizard has met themselves; make a separate copy of the object
+			// Remaining field values (photo choice, flag colour, picks) are not yet known yet
+			final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
+			knownWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+			knownWizardDetails.setWizardID (wizardID);
+			knownWizardDetails.setStandardPhotoID (wizardID);
+			knownWizardDetails.setWizardState (WizardState.ACTIVE);
+			getKnownWizardServerUtils ().copyPickList (trueWizardDetails.getPick (), knownWizardDetails.getPick ()); 
 
-				// Send picks to the player - they need to know their own picks so they know whether they're allowed to pick a Myrran race not
-				// We don't send picks to other players until the game is starting up
-				if (player.getPlayerDescription ().isHuman ())
-				{
-					final ReplacePicksMessage picksMsg = new ReplacePicksMessage ();
-					picksMsg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-					picksMsg.getPick ().addAll (ppk.getPick ());
-					player.getConnection ().sendMessageToClient (picksMsg);
-				}
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
+			
+			// Tell the player the wizard they chose was OK; in that way they get their copy of their own KnownWizardDetails record
+			if (player.getPlayerDescription ().isHuman ())
+			{
+				final MeetWizardMessage meet = new MeetWizardMessage ();
+				meet.setKnownWizardDetails (knownWizardDetails);
+				player.getConnection ().sendMessageToClient (meet);
+			}
 
+			if ((wizard != null) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
+			{
 				// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 				// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
 				if (player.getPlayerDescription ().isHuman ())
 				{
 					// This will tell the client to either pick free spells for the first magic realm that they have earned free spells in, or pick their race, depending on what picks they've chosen
 					log.debug ("chooseWizard: About to search for first realm (if any) where human player " + player.getPlayerDescription ().getPlayerName () + " gets free spells");
-					final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom.getServerDB ());
+					final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom);
 					if (chooseSpellsMsg != null)
 						player.getConnection ().sendMessageToClient (chooseSpellsMsg);
 					else
@@ -346,7 +341,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					// For AI players, we call this repeatedly until all free spells have been chosen
 					log.debug ("chooseWizard: About to choose all free spells for AI player " + player.getPlayerDescription ().getPlayerName ());
 
-					while (getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom.getServerDB ()) != null);
+					while (getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom) != null);
 				}
 			}
 		}
@@ -437,10 +432,12 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 					// Choose race
 					final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) aiPlayer.getTransientPlayerPrivateKnowledge ();
-					final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) aiPlayer.getPersistentPlayerPublicKnowledge ();
 
+					final KnownWizardDetails aiWizard = getKnownWizardUtils ().findKnownWizardDetails
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), aiPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (AI)");
+					
 					priv.setFirstCityRaceID (getPlayerPickServerUtils ().chooseRandomRaceForPlane
-						(getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), mom.getServerDB ()), mom.getServerDB ()));
+						(getPlayerPickServerUtils ().startingPlaneForWizard (aiWizard.getPick (), mom.getServerDB ()), mom.getServerDB ()));
 				}
 			}
 
@@ -494,20 +491,14 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 			{
-				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 
-				// Send picks to everyone - note we don't know if they've already received them, if e.g. player
-				// 1 joins and makes their picks then these get stored into public info on the server, then
-				// player 2 joins and will be sent to them
-				final ReplacePicksMessage picksMsg = new ReplacePicksMessage ();
-				picksMsg.setPlayerID (thisPlayer.getPlayerDescription ().getPlayerID ());
-				picksMsg.getPick ().addAll (ppk.getPick ());
-				getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), picksMsg);
-
+				final KnownWizardDetails thisWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (B)");
+				
 				// Grant any free spells the player gets from the picks they've chosen (i.e. Enchant Item & Create Artifact from Artificer)
 				final List<String> freeSpellIDs = new ArrayList<String> ();
-				for (final PlayerPick pick : ppk.getPick ())
+				for (final PlayerPick pick : thisWizard.getPick ())
 					for (final String freeSpellID : mom.getServerDB ().findPick (pick.getPickID (), "checkIfCanStartGame").getPickFreeSpell ())
 						freeSpellIDs.add (freeSpellID);
 
@@ -517,7 +508,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 							thisSpell.setStatus (SpellResearchStatusID.AVAILABLE);
 
 				// For all the spells that we did NOT get for free at the start of the game, decides whether or not they are in our spell book to be available to be researched
-				getServerSpellCalculations ().randomizeResearchableSpells (priv.getSpellResearchStatus (), ppk.getPick (), mom.getServerDB ());
+				getServerSpellCalculations ().randomizeResearchableSpells (priv.getSpellResearchStatus (), thisWizard.getPick (), mom.getServerDB ());
 
 				// Give player 8 spells to pick from, out of all those we'll eventually be able to research
 				getServerSpellCalculations ().randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), mom.getServerDB ());
@@ -560,18 +551,16 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			log.info ("Setting wizards' initial skill and gold, and optional farmers in all cities");
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 			{
-				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 				final KnownWizardDetails thisWizard = getKnownWizardUtils ().findKnownWizardDetails
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame"); 
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), thisPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (I)"); 
 				
 				if (getPlayerKnowledgeUtils ().isWizard (thisWizard.getWizardID ()))
 				{
 					// Calculate each wizard's initial starting casting skills
 					// This effectively gives each wizard some starting stored skill in RE10, which will then be sent to the client by RecalculateGlobalProductionValues below
 					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT,
-						getSkillCalculations ().getSkillPointsRequiredForCastingSkill (getPlayerPickServerUtils ().getTotalInitialSkill
-							(ppk.getPick (), mom.getServerDB ())));
+						getSkillCalculations ().getSkillPointsRequiredForCastingSkill (getPlayerPickServerUtils ().getTotalInitialSkill (thisWizard.getPick (), mom.getServerDB ())));
 
 					// Give each wizard their starting gold
 					final int startingGold;
@@ -760,18 +749,15 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// Don't let raiders buy units or hire heroes
 				if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (knownWizard.getWizardState () == WizardState.ACTIVE))
 				{
-					final NewTurnMessageOfferHero heroOffer = getOfferGenerator ().generateHeroOffer
-						(player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					final NewTurnMessageOfferHero heroOffer = getOfferGenerator ().generateHeroOffer (player, mom);
 					if ((heroOffer != null) && (!player.getPlayerDescription ().isHuman ()))
 						getMomAI ().decideOffer (player, heroOffer, mom);
 					
-					final NewTurnMessageOfferUnits unitsOffer = getOfferGenerator ().generateUnitsOffer
-						(player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					final NewTurnMessageOfferUnits unitsOffer = getOfferGenerator ().generateUnitsOffer (player, mom);
 					if ((unitsOffer != null) && (!player.getPlayerDescription ().isHuman ()))
 						getMomAI ().decideOffer (player, unitsOffer, mom);
 					
-					final NewTurnMessageOfferItem itemOffer = getOfferGenerator ().generateItemOffer (player, mom.getPlayers (),
-						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getGeneralServerKnowledge (), mom.getSessionDescription ());
+					final NewTurnMessageOfferItem itemOffer = getOfferGenerator ().generateItemOffer (player, mom);
 					if ((itemOffer != null) && (!player.getPlayerDescription ().isHuman ()))
 						getMomAI ().decideOffer (player, itemOffer, mom);
 					
@@ -1906,5 +1892,21 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

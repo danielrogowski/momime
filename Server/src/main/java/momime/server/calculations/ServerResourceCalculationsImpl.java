@@ -37,7 +37,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
@@ -135,7 +134,6 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final KnownWizardDetails knownWizard = getKnownWizardUtils ().findKnownWizardDetails
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "recalculateAmountsPerTurn");
@@ -203,7 +201,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		// At this point, the only Mana recorded is consumption - so we can halve consumption if the wizard has Channeler
 		// Round up, so 1 still = 1
 		final int manaConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		if ((manaConsumption < -1) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
+		if ((manaConsumption < -1) && (getPlayerPickUtils ().getQuantityOfPick (knownWizard.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
 			getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, (-manaConsumption) / 2);
 		
 		if (timeStop == null)
@@ -214,7 +212,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 				final int goldConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				if (goldConsumption < 0)
 				{
-					int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player,
+					int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), knownWizard,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					if (fame > 0)
 					{
@@ -271,7 +269,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			{
 				// Find all the nodes we own where we have the corresponding mastery, e.g. find chaos nodes we own if we have chaos mastery
 				final List<String> doubledNodeMagicRealmIDs = mom.getServerDB ().getPick ().stream ().filter
-					(p -> (p.getNodeAndDispelBonus () != null) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), p.getPickID ()) > 0)).map
+					(p -> (p.getNodeAndDispelBonus () != null) && (getPlayerPickUtils ().getQuantityOfPick (knownWizard.getPick (), p.getPickID ()) > 0)).map
 					(p -> p.getNodeAndDispelBonus ()).collect (Collectors.toList ());
 				
 				final List<String> doubledNodeTileTypeIDs = mom.getServerDB ().getTileTypes ().stream ().filter
@@ -339,7 +337,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 				if (doubledNodeAuraSquares > 0)
 				{
 					// Node mastery gives 2x magic power
-					if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_NODE_MASTERY) > 0)
+					if (getPlayerPickUtils ().getQuantityOfPick (knownWizard.getPick (), CommonDatabaseConstants.RETORT_NODE_MASTERY) > 0)
 						doubledNodeAuraSquares = doubledNodeAuraSquares * 2;
 			
 					// How much magic power does each square generate?
@@ -494,6 +492,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * Searches through the production amounts to see if any which aren't allowed to go below zero are - if they are, we have to kill/sell something
 	 * 
 	 * @param player Player whose productions we need to check
+	 * @param wizardDetails Wizard whose productions we need to check
 	 * @param enforceType Type of production enforcement to check
 	 * @param addOnStoredAmount True if OK for the per turn production amount to be negative as long as we have some in reserve (e.g. ok to make -5 gold per turn if we have 1000 gold already); False if per turn must be positive
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -504,11 +503,10 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	private final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final EnforceProductionID enforceType,
+	private final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final EnforceProductionID enforceType,
 		final boolean addOnStoredAmount, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// Search through different types of production looking for ones matching the required enforce type
@@ -520,7 +518,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			if (enforceType.equals (productionType.getEnforceProduction ()))
 			{
 				// Check how much of this type of production the player has
-				int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionType.getProductionTypeID (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+				int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType
+					(priv, wizardDetails.getPick (), productionType.getProductionTypeID (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 
 				log.debug ("findInsufficientProductionAndSellSomething: PlayerID " + player.getPlayerDescription ().getPlayerID () + " is generating " + valueToCheck + " per turn of productionType " + productionType.getProductionTypeID () + " which has enforceType " + enforceType);
 
@@ -573,12 +572,13 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * Adds production generated this turn to the permanent values
 	 * 
 	 * @param player Player that production amounts are being accumulated for
+	 * @param wizardDetails Wizard that production amounts are being accumulated for
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
 	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
 	 */
-	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSetting spellSettings, final CommonDatabase db)
+	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final SpellSetting spellSettings, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
 		// Note that we can't simply go down the list of production types in the resource list because of the way Magic Power splits into
@@ -588,9 +588,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			if (productionType.getAccumulatesInto () != null)
 			{
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 
-				final int amountPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionType.getProductionTypeID (), spellSettings, db);
+				final int amountPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType
+					(priv, wizardDetails.getPick (), productionType.getProductionTypeID (), spellSettings, db);
 				if (amountPerTurn != 0)
 				{
 					// See if need to halve it
@@ -627,6 +627,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * Checks how much research we generate this turn and puts it towards the current spell
 	 * 
 	 * @param player Player to progress research for
+	 * @param wizardDetails Wizard to progress research for
 	 * @param players Player list
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
@@ -636,17 +637,17 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 * @throws MomException If we find an invalid casting reduction type
 	 */
-	final void progressResearch (final PlayerServerDetails player, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+	final void progressResearch (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<PlayerServerDetails> players,
+		final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 
 		if (priv.getSpellIDBeingResearched () != null)
 		{
 			int researchAmount = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-				(priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, sd.getSpellSetting (), db) +
+				(priv, wizardDetails.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, sd.getSpellSetting (), db) +
 				getResourceValueUtils ().calculateResearchFromUnits (player.getPlayerDescription ().getPlayerID (), players, priv.getFogOfWarMemory (), db);				
 
 			log.debug ("Player ID " + player.getPlayerDescription ().getPlayerID () + " generated " + researchAmount + " RPs this turn in spell research");
@@ -713,20 +714,22 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * Resets the casting skill the wizard(s) have left to spend this turn back to their full skill
 	 * 
 	 * @param player Player who's overlandCastingSkillRemainingThisTurn to set
+	 * @param wizardDetails Wizard who's overlandCastingSkillRemainingThisTurn to set
 	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	final void resetCastingSkillRemainingThisTurnToFull (final PlayerServerDetails player, final List<PlayerServerDetails> players, final CommonDatabase db)
+	final void resetCastingSkillRemainingThisTurnToFull (final PlayerServerDetails player, final KnownWizardDetails wizardDetails,
+		final List<PlayerServerDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 
 		trans.setOverlandCastingSkillRemainingThisTurn (getResourceValueUtils ().calculateModifiedCastingSkill (priv.getResourceValue (),
-			player, players, priv.getFogOfWarMemory (), db, true));
+			wizardDetails, players, priv.getFogOfWarMemory (), db, true));
 	}
 
 	/**
@@ -774,20 +777,20 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 						// However (and to keep this consistent with how we handle insufficient stored Gold) there are too many interdependencies with what
 						// may happen when we sell buildings, e.g. if we sell a Bank we don't only save its maintenance cost, the population then produces less gold
 						// So the only safe way to do this is to recalculate ALL the productions, from scratch, every time we sell something!
-						while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO, false, mom))
+						while (findInsufficientProductionAndSellSomething (player, knownWizard, EnforceProductionID.PER_TURN_AMOUNT_CANNOT_GO_BELOW_ZERO, false, mom))
 							recalculateAmountsPerTurn (player, mom);
 
 						// Now do the same for stored production
-						while (findInsufficientProductionAndSellSomething (player, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO, true, mom))
+						while (findInsufficientProductionAndSellSomething (player, knownWizard, EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO, true, mom))
 							recalculateAmountsPerTurn (player, mom);
 
 						// Per turn production amounts are now fine, so do the accumulation and effect calculations
-						accumulateGlobalProductionValues (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+						accumulateGlobalProductionValues (player, knownWizard, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 						
 						// Research is zeroed out when Time Stop is in effect anyway, so no need to avoid calling this
-						progressResearch (player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						progressResearch (player, knownWizard, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						
-						resetCastingSkillRemainingThisTurnToFull (player, mom.getPlayers (), mom.getServerDB ());
+						resetCastingSkillRemainingThisTurnToFull (player, knownWizard, mom.getPlayers (), mom.getServerDB ());
 
 						// Continue casting spells
 						// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used

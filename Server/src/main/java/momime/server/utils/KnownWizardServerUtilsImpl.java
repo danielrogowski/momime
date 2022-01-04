@@ -1,5 +1,7 @@
 package momime.server.utils;
 
+import java.util.List;
+
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -8,8 +10,10 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.MeetWizardMessage;
+import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.server.MomSessionVariables;
 
@@ -52,6 +56,8 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					knownWizardDetails.setStandardPhotoID (metWizard.getStandardPhotoID ());
 					knownWizardDetails.setCustomPhoto (metWizard.getCustomPhoto ());
 					knownWizardDetails.setCustomFlagColour (metWizard.getCustomFlagColour ());
+					knownWizardDetails.setWizardState (metWizard.getWizardState ());
+					copyPickList (metWizard.getPick (), knownWizardDetails.getPick ());
 
 					priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 					
@@ -68,6 +74,24 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					}
 				}
 			}
+	}
+
+	/**
+	 * @param src List of picks to copy from
+	 * @param dest List of picks to copy to
+	 */
+	@Override
+	public final void copyPickList (final List<PlayerPick> src, final List<PlayerPick> dest)
+	{
+		dest.clear ();
+		for (final PlayerPick srcPick : src)
+		{
+			final PlayerPick destPick = new PlayerPick ();
+			destPick.setPickID (srcPick.getPickID ());
+			destPick.setQuantity (srcPick.getQuantity ());
+			destPick.setOriginalQuantity (srcPick.getOriginalQuantity ());
+			dest.add (destPick);
+		}					
 	}
 	
 	/**
@@ -92,6 +116,41 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), playerID);
 			if (wizardDetails != null)
 				wizardDetails.setWizardState (newState);
+		}
+	}
+	
+	/**
+	 * Picks have been updated in server's true memory.  Now they need copying to the player memory of each player who knows that wizard, and sending to the clients.
+	 * 
+	 * @param playerID Player whose picks changed.
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we can't find the player in the server's true wizard details
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	@Override
+	public final void copyAndSendUpdatedPicks (final int playerID, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException,XMLStreamException
+	{
+		// True memory
+		final KnownWizardDetails trueWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), playerID, "copyAndSendUpdatedPicks");
+		
+		// Build message - resend all of them, not just the new ones
+		final ReplacePicksMessage msg = new ReplacePicksMessage ();
+		msg.setPlayerID (playerID);
+		msg.getPick ().addAll (trueWizard.getPick ());
+		
+		// Each player who knows them
+		for (final PlayerServerDetails player : mom.getPlayers ())
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), playerID);
+			if (wizardDetails != null)
+			{
+				copyPickList (trueWizard.getPick (), wizardDetails.getPick ());
+				if (player.getPlayerDescription ().isHuman ())
+					player.getConnection ().sendMessageToClient (msg);
+			}
 		}
 	}
 

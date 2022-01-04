@@ -97,9 +97,8 @@ public final class RecalculateCityUpdate implements WorldUpdate
 			
 			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (getCityLocation (), mom);
 	
-			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), getCityLocation (), priv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
+			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getGeneralServerKnowledge ().getTrueMap (),
+				getCityLocation (), priv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
 	
 			getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
 		}

@@ -53,12 +53,13 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.Spell;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 
@@ -108,6 +109,9 @@ public final class ArmyListUI extends MomClientDialogUI
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Title */
 	private JLabel title;
@@ -409,10 +413,10 @@ public final class ArmyListUI extends MomClientDialogUI
 			if ((manaUpkeep != null) && (manaUpkeep > 1))
 			{
 				// Do we have channeler, to halve all upkeep?
-				final PlayerPublicDetails unitOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "refreshArmyList");
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
-
-				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) >= 1)
+				final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "refreshArmyList");
+				
+				if (getPlayerPickUtils ().getQuantityOfPick (ourWizard.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) >= 1)
 					manaUpkeep = manaUpkeep - (manaUpkeep / 2);
 			}			
 			manaUpkeepLabel.setText ((manaUpkeep == null) ? "" : getTextUtils ().intToStrCommas (manaUpkeep));
@@ -700,5 +704,21 @@ public final class ArmyListUI extends MomClientDialogUI
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

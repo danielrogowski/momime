@@ -185,13 +185,14 @@ public final class UnitAIImpl implements UnitAI
 						{
 							// Need real example of the unit so that we property take into account if we have
 							// e.g. retorts that make it cheaper to maintained summoned creatures, or so on 
-							final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnitFromCity (unitDef.getUnitID (), player, cityLocation,
+							final ExpandedUnitDetails xu = getSampleUnitUtils ().createSampleUnitFromCity (unitDef.getUnitID (), wizardDetails, cityLocation,
 								mom.getPlayers (), priv.getFogOfWarMemory (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 							
 							results.add (new AIConstructableUnit (unitDef, cityLocation, null,
 								getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()),
 								getAiUnitCalculations ().determineAIUnitType (xu),
-								getAiUnitCalculations ().canAffordUnitMaintenance (player, mom.getPlayers (), xu.getUnit (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())));
+								getAiUnitCalculations ().canAffordUnitMaintenance (player, wizardDetails, mom.getPlayers (),
+									xu.getUnit (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())));
 						}									
 					}
 				}
@@ -202,7 +203,7 @@ public final class UnitAIImpl implements UnitAI
 				if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getOverlandCastingCost () != null) &&
 					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
 				{
-					final List<UnitEx> unitDefs = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player,
+					final List<UnitEx> unitDefs = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, wizardDetails,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ());
 					for (final UnitEx unitDef : unitDefs)
 						if (!unitDef.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
@@ -213,7 +214,8 @@ public final class UnitAIImpl implements UnitAI
 							results.add (new AIConstructableUnit (unitDef, null, spell,
 								getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()),
 								getAiUnitCalculations ().determineAIUnitType (xu),
-								getAiUnitCalculations ().canAffordUnitMaintenance (player, mom.getPlayers (), xu.getUnit (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())));
+								getAiUnitCalculations ().canAffordUnitMaintenance (player, wizardDetails, mom.getPlayers (),
+									xu.getUnit (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())));
 						}
 				}
 		

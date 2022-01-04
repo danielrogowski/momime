@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -15,8 +14,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
@@ -101,18 +100,16 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * hired once and if killed are never available to summon again.  Plus some heroes are restricted depending on what our spell book picks are.
 	 * 
 	 * @param spell Summoning spell
-	 * @param player Player casting the spell
+	 * @param wizardDetails Wizard casting the spell
 	 * @param trueUnits List of true units
 	 * @param db Lookup lists built over the XML database
 	 * @return List of units this spell might summon if we cast it; list can be empty if we're already summoned and killed all heroes for example
 	 * @throws RecordNotFoundException If one of the summoned unit IDs can't be found in the DB
 	 */
 	@Override
-	public final List<UnitEx> listUnitsSpellMightSummon (final Spell spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db)
+	public final List<UnitEx> listUnitsSpellMightSummon (final Spell spell, final KnownWizardDetails wizardDetails, final List<MemoryUnit> trueUnits, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		
 		final List<UnitEx> possibleUnits = new ArrayList<UnitEx> ();
 		for (final String possibleSummonedUnitID : spell.getSummonedUnit ())
 		{
@@ -121,8 +118,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			boolean addToList;
 			if (possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 			{
-				final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (trueUnits,
-					player.getPlayerDescription ().getPlayerID (), possibleSummonedUnitID);
+				final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (trueUnits, wizardDetails.getPlayerID (), possibleSummonedUnitID);
 
 				if (hero == null)
 					addToList = false;
@@ -137,7 +133,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			while ((addToList) && (iter.hasNext ()))
 			{
 				final PickAndQuantity prereq = iter.next ();
-				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
+				if (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
 					addToList = false;
 			}
 
@@ -151,23 +147,20 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	/**
 	 * Similar to listUnitsSpellMightSummon, except lists all heroes who haven't been killed, and who we have the necessary spell book picks for. 
 	 * 
-	 * @param player Player recruiting heroes
+	 * @param wizardDetails Wizard recruiting heroes
 	 * @param trueUnits List of true units
 	 * @param db Lookup lists built over the XML database
 	 * @return List of heroes available to us
 	 */
 	@Override
-	public final List<UnitEx> listHeroesForHire (final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db)
+	public final List<UnitEx> listHeroesForHire (final KnownWizardDetails wizardDetails, final List<MemoryUnit> trueUnits, final CommonDatabase db)
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		
 		final List<UnitEx> possibleUnits = new ArrayList<UnitEx> ();
 		for (final UnitEx possibleUnit : db.getUnits ())
 			if ((possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)) &&
 				(possibleUnit.getHiringFame () != null) && (possibleUnit.getProductionCost () != null))
 			{
-				final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (trueUnits,
-					player.getPlayerDescription ().getPlayerID (), possibleUnit.getUnitID ());
+				final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (trueUnits, wizardDetails.getPlayerID (), possibleUnit.getUnitID ());
 
 				boolean addToList;
 				if (hero == null)
@@ -180,7 +173,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				while ((addToList) && (iter.hasNext ()))
 				{
 					final PickAndQuantity prereq = iter.next ();
-					if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
+					if (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
 						addToList = false;
 				}
 	

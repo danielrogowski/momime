@@ -283,14 +283,20 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			tc.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
 			tc.getLastCombatMoveDirection ().clear ();
 			
-			// Set casting skill allocation for this combat 
+			// Set casting skill allocation for this combat
+			final KnownWizardDetails attackingWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+				attackingPlayer.getPlayerDescription ().getPlayerID (), "startCombat-A");
+			
+			final KnownWizardDetails defendingWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+				defendingPlayer.getPlayerDescription ().getPlayerID (), "startCombat-D");
+			
 			final MomPersistentPlayerPrivateKnowledge attackingPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 			tc.setCombatAttackerCastingSkillRemaining (getResourceValueUtils ().calculateModifiedCastingSkill (attackingPriv.getResourceValue (),
-				attackingPlayer, mom.getPlayers (), attackingPriv.getFogOfWarMemory (), mom.getServerDB (), false)); 
+				attackingWizard, mom.getPlayers (), attackingPriv.getFogOfWarMemory (), mom.getServerDB (), false)); 
 			
 			final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
 			tc.setCombatDefenderCastingSkillRemaining (getResourceValueUtils ().calculateModifiedCastingSkill (defendingPriv.getResourceValue (),
-				defendingPlayer, mom.getPlayers (), defendingPriv.getFogOfWarMemory (), mom.getServerDB (), false)); 
+				defendingWizard, mom.getPlayers (), defendingPriv.getFogOfWarMemory (), mom.getServerDB (), false)); 
 			
 			// Finally send the message, containing all the unit positions, units (if monsters in a node/lair/tower) and combat scenery
 			if (attackingPlayer.getPlayerDescription ().isHuman ())

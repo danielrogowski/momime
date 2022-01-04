@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +20,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 import com.ndg.random.WeightedChoicesImpl;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
@@ -29,12 +29,12 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSpellEffect;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.CombatMapUtils;
@@ -213,6 +213,7 @@ public final class SpellAIImpl implements SpellAI
 	 * If AI player is not currently casting any spells overland, then look through all of them and consider if we should cast any.
 	 * 
 	 * @param player AI player who needs to choose what to cast
+	 * @param wizardDetails AI wizard who needs to choose what to cast
 	 * @param constructableUnits List of everything we can construct everywhere or summon
 	 * @param wantedUnitTypesOnEachPlane Map of which unit types we need to construct or summon on each plane
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -223,7 +224,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void decideWhatToCastOverland (final PlayerServerDetails player, final List<AIConstructableUnit> constructableUnits,
+	public final void decideWhatToCastOverland (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<AIConstructableUnit> constructableUnits,
 		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -301,7 +302,7 @@ public final class SpellAIImpl implements SpellAI
 					if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
 						(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
 					{
-						if (!getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+						if (!getAiSpellCalculations ().canAffordSpellMaintenance (player, wizardDetails, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 							mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ()))
 							
 							log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " won't try to cast " + spell.getSpellID () + " because it can't afford the maintenance"); 
@@ -349,7 +350,8 @@ public final class SpellAIImpl implements SpellAI
 													// Routine checks everything, even down to whether there is even a city there or not, or whether the city already has that spell cast on it, so just let it handle it
 													if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
 														player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
-														priv.getFogOfWarMemory ().getBuilding (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+														priv.getFogOfWarMemory ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+														mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 														
 														validTargetFound = true;
 			
@@ -492,7 +494,8 @@ public final class SpellAIImpl implements SpellAI
 								// Routine checks everything, even down to whether there is even a city there or not, so just let it handle it
 								if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
 									player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
-									priv.getFogOfWarMemory ().getBuilding (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+									priv.getFogOfWarMemory ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+									mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 								{
 									final int thisCityQuality = getAiCityCalculations ().evaluateCityQuality (cityLocation, false, false, priv.getFogOfWarMemory (), mom);
 									if ((targetLocation == null) || (thisCityQuality > bestCityQuality))
@@ -571,6 +574,7 @@ public final class SpellAIImpl implements SpellAI
 	 * AI player decides whether to cast a spell in combat
 	 * 
 	 * @param player AI player who needs to choose what to cast
+	 * @param wizardDetails AI wizard who needs to choose what to cast
 	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param combatLocation Location of the combat where this spell is being cast
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -582,11 +586,10 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
-		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+	public final CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final KnownWizardDetails wizardDetails,
+		final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -646,10 +649,10 @@ public final class SpellAIImpl implements SpellAI
 					{
 						// Wizards get range penalty depending where the combat is in relation to their Fortress; units participating in the combat don't get this
 						final int reducedCombatCastingCost = getSpellUtils ().getReducedCombatCastingCost
-							(spell, variableDamage, pub.getPick (), priv.getFogOfWarMemory ().getMaintainedSpell (),
+							(spell, variableDamage, wizardDetails.getPick (), priv.getFogOfWarMemory ().getMaintainedSpell (),
 								mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 
-						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (player, combatLocation,
+						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (wizardDetails, combatLocation,
 							getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
 							mom.getSessionDescription ().getOverlandMapSize ());
@@ -675,7 +678,7 @@ public final class SpellAIImpl implements SpellAI
 					else
 					{
 						// Validation for units casting is much simpler, as reductions for number of spell books or certain retorts and the range penalty all don't apply
-						final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, pub.getPick ());
+						final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, wizardDetails.getPick ());
 						canAffordSpell = (unmodifiedCombatCastingCost <= combatCastingUnit.getManaRemaining ());
 					}
 

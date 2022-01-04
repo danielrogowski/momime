@@ -22,8 +22,6 @@ import javax.swing.SwingConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 
@@ -31,8 +29,9 @@ import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.clienttoserver.AlchemyMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 
@@ -68,11 +67,11 @@ public final class AlchemyUI extends MomClientFrameUI
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Session utils */
-	private MultiplayerSessionUtils multiplayerSessionUtils;
-	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** OK action */
 	private Action okAction;
@@ -159,10 +158,10 @@ public final class AlchemyUI extends MomClientFrameUI
 				// If we do not have alchemy retort, then the actual slider value represents half, so it is only possible to select even numbers
 				int fromValue = slider.getValue ();
 			
-				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "AlchemyUI");
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-	
-				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
+				final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "AlchemyUI");
+				
+				if (getPlayerPickUtils ().getQuantityOfPick (ourWizard.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
 					fromValue = fromValue * 2;
 	
 				// Send message to the server
@@ -339,10 +338,10 @@ public final class AlchemyUI extends MomClientFrameUI
 				int fromValue = getResourceValueUtils ().findAmountStoredForProductionType
 					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), fromProductionTypeID);
 
-				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateSliderMaximum");
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-			
-				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0)
+				final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "updateSliderMaximum");
+				
+				if (getPlayerPickUtils ().getQuantityOfPick (ourWizard.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0)
 					fromValue = Math.min (fromValue, 999);
 				else
 					fromValue = Math.min (fromValue, 998) / 2;
@@ -374,10 +373,10 @@ public final class AlchemyUI extends MomClientFrameUI
 			okAction.setEnabled (fromValue > 0);
 			
 			// If we do not have alchemy retort, then the actual slider value represents half, so it is only possible to select even numbers
-			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-
-			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
+			final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "sliderPositionChanged");
+			
+			if (getPlayerPickUtils ().getQuantityOfPick (ourWizard.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) == 0) 
 				fromValue = fromValue * 2;
 		
 			// Then figure out which represents which resource
@@ -494,22 +493,6 @@ public final class AlchemyUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Session utils
-	 */
-	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
-	{
-		return multiplayerSessionUtils;
-	}
-
-	/**
-	 * @param util Session utils
-	 */
-	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
-	{
-		multiplayerSessionUtils = util;
-	}
-
-	/**
 	 * @return Prototype frame creator
 	 */
 	public final PrototypeFrameCreator getPrototypeFrameCreator ()
@@ -523,5 +506,21 @@ public final class AlchemyUI extends MomClientFrameUI
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

@@ -52,6 +52,7 @@ import momime.common.database.SpellBookSection;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -61,6 +62,7 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.TurnPhase;
 import momime.common.messages.TurnSystem;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.ResourceValueUtils;
 
@@ -252,6 +254,12 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		
 		when (client.getPlayers ()).thenReturn (players);
 		
+		// Wizard
+		final KnownWizardDetails wizard1 = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (pd1.getPlayerID ()), anyString ())).thenReturn (wizard1);
+		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd1.getPlayerID ()), anyString ())).thenReturn (player1);
@@ -318,6 +326,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		panel.setSurveyorLayout (surveyorLayout);
 		panel.setEconomyLayout (economyLayout);
 		panel.setWizardClientUtils (wizardClientUtils);
+		panel.setKnownWizardUtils (knownWizardUtils);
 		
 		// Set up a dummy frame to display the panel
 		final JFrame frame = new JFrame ("testOverlandMapRightHandPanel");

@@ -52,9 +52,13 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillWeaponGrade;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellUtils;
 
 /**
@@ -572,6 +576,18 @@ public final class TestHelpUI extends ClientTestData
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
+		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
+		final KnownWizardDetails castingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 3, "HelpUI")).thenReturn (castingWizard);
+		
 		// Spells
 		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
 		when (spellClientUtils.listUpkeepsOfSpell (spellDef2, new ArrayList<PlayerPick> ())).thenReturn ("Upkeep: 5 Mana per turn");
@@ -600,6 +616,7 @@ public final class TestHelpUI extends ClientTestData
 		help.setSpellClientUtils (spellClientUtils);
 		help.setSpellUtils (spellUtils);
 		help.setClient (client);
+		help.setKnownWizardUtils (knownWizardUtils);
 		help.setLargeFont (CreateFontsForTests.getLargeFont ());
 		help.setSmallFont (CreateFontsForTests.getSmallFont ());
 		help.setTextUtils (new TextUtilsImpl ());
@@ -677,14 +694,6 @@ public final class TestHelpUI extends ClientTestData
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		// Spells
-		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
-		when (spellClientUtils.findImageForSpell ("SP048", 3)).thenReturn (utils.loadImage ("/momime.client.graphics/combat/effects/CSE048.png"));
-		
-		when (spellClientUtils.listUpkeepsOfSpell (spellDef1, null)).thenReturn ("Upkeep: 5 Mana per turn");
-		
-		final SpellUtils spellUtils = mock (SpellUtils.class);
-		
 		// EL replacer
 		final StandardEvaluationContext context = new StandardEvaluationContext ();
 		context.setRootObject (new SpringEvaluationContextRoot (gfx, client));
@@ -694,6 +703,26 @@ public final class TestHelpUI extends ClientTestData
 		replacer.setClasspathResource (true);
 		replacer.setHtmlImage (true);
 
+		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
+		final KnownWizardDetails castingWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), 3, "HelpUI")).thenReturn (castingWizard);
+		
+		// Spells
+		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
+		when (spellClientUtils.findImageForSpell ("SP048", 3)).thenReturn (utils.loadImage ("/momime.client.graphics/combat/effects/CSE048.png"));
+		
+		when (spellClientUtils.listUpkeepsOfSpell (spellDef1, castingWizard.getPick ())).thenReturn ("Upkeep: 5 Mana per turn");
+		
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
 		layout.buildMaps ();
@@ -707,6 +736,7 @@ public final class TestHelpUI extends ClientTestData
 		help.setSpellClientUtils (spellClientUtils);
 		help.setSpellUtils (spellUtils);
 		help.setClient (client);
+		help.setKnownWizardUtils (knownWizardUtils);
 		help.setLargeFont (CreateFontsForTests.getLargeFont ());
 		help.setSmallFont (CreateFontsForTests.getSmallFont ());
 		help.setTextUtils (new TextUtilsImpl ());

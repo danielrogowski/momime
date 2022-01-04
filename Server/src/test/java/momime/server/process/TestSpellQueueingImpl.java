@@ -567,7 +567,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// We've got loads of MP, but not enough casting skill
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, attackingWizardDetails.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (20);
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		trans.setOverlandCastingSkillRemainingThisTurn (15);
 		
@@ -662,7 +662,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// We've got enough MP and skill
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, attackingWizardDetails.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (20);
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		trans.setOverlandCastingSkillRemainingThisTurn (25);	// <---
 		
@@ -1000,7 +1000,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1113,7 +1113,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (15);
 		
 		// Isn't a tower
@@ -1122,7 +1122,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (null);	// <--- banished
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (null);	// <--- banished
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1236,7 +1236,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (15);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1247,7 +1247,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1362,7 +1362,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1374,7 +1374,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1489,7 +1489,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1501,7 +1501,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Possible effects
 		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);
@@ -1628,7 +1628,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1640,7 +1640,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Unit doesn't exist
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1761,7 +1761,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1773,7 +1773,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Target unit
 		final MemoryUnit targetUnit = new MemoryUnit ();
@@ -1906,7 +1906,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1918,7 +1918,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
 		// Target unit
 		final MemoryUnit targetUnit = new MemoryUnit ();
@@ -2056,7 +2056,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -2068,7 +2068,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
 		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (9, 7);
@@ -2196,7 +2196,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -2208,7 +2208,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
 		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (9, 7);
@@ -2342,7 +2342,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -2354,7 +2354,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
 		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (9, 7);
@@ -2499,7 +2499,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Casting cost
 		spell.setCombatCastingCost (20);
-		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingPub.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
 		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -2511,7 +2511,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingPlayer, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
+		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 
 		// Cell to target in combat
 		final MapCoordinates2DEx combatTargetLocation = new MapCoordinates2DEx (9, 7);
@@ -2581,7 +2581,18 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player);
+
+		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (mem);
 		
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "progressOverlandCasting")).thenReturn (wizardDetails);
+
 		// How much spare MP we have
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (30);
@@ -2589,10 +2600,12 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setResourceValueUtils (resourceValueUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		assertFalse (proc.progressOverlandCasting (player, mom));
@@ -2632,12 +2645,18 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player);
 		
+		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "progressOverlandCasting")).thenReturn (wizardDetails);
+		
 		// How much spare MP we have
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Queued spell
-		final FogOfWarMemory mem = new FogOfWarMemory ();
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (mem);
 
@@ -2652,7 +2671,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		priv.getQueuedSpell ().add (queued);
 		trans.setOverlandCastingSkillRemainingThisTurn (12);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (100);
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, wizardDetails.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (100);
 		priv.setManaSpentOnCastingCurrentSpell (15);		
 		
 		// Session variables
@@ -2666,6 +2685,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setSpellUtils (spellUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		assertFalse (proc.progressOverlandCasting (player, mom));
@@ -2717,12 +2737,18 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player);
 		
+		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "progressOverlandCasting")).thenReturn (wizardDetails);
+		
 		// How much spare MP we have
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Queued spell
-		final FogOfWarMemory mem = new FogOfWarMemory ();
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (mem);
 
@@ -2737,7 +2763,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		priv.getQueuedSpell ().add (queued);
 		trans.setOverlandCastingSkillRemainingThisTurn (12);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (25);		// <---
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, wizardDetails.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (25);		// <---
 		priv.setManaSpentOnCastingCurrentSpell (15);		
 		
 		// Session variables
@@ -2754,6 +2780,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setSpellUtils (spellUtils);
 		proc.setSpellProcessing (spellProcessing);
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		assertTrue (proc.progressOverlandCasting (player, mom));
@@ -2811,12 +2838,18 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player);
 		
+		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "progressOverlandCasting")).thenReturn (wizardDetails);
+		
 		// How much spare MP we have
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (1000);
 		
 		// Queued spell
-		final FogOfWarMemory mem = new FogOfWarMemory ();
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (mem);
 
@@ -2834,7 +2867,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		trans.setOverlandCastingSkillRemainingThisTurn (14);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (5);		// <---
+		when (spellUtils.getReducedOverlandCastingCost (spell, null, null, wizardDetails.getPick (), mem.getMaintainedSpell (), settings, db)).thenReturn (5);		// <---
 		priv.setManaSpentOnCastingCurrentSpell (2);		// So we should finish this one, fully cast 2 more, and spend 1 point toward casting the 4th
 		
 		// Session variables
@@ -2851,6 +2884,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setSpellUtils (spellUtils);
 		proc.setSpellProcessing (spellProcessing);
+		proc.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
 		assertTrue (proc.progressOverlandCasting (player, mom));

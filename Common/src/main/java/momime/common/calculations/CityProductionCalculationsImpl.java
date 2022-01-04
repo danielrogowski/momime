@@ -23,7 +23,6 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PlayerPick;
@@ -94,7 +93,7 @@ public final class CityProductionCalculationsImpl implements CityProductionCalcu
 		final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
 		final PlayerPublicDetails cityOwnerPlayer = ((players != null) && (cityOwnerID != null)) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
 		final KnownWizardDetails cityOwnerWizard = (cityOwnerID != null) ? getKnownWizardUtils ().findKnownWizardDetails (mem.getWizardDetails (), cityOwnerID, "calculateAllCityProductions") : null;
-		final List<PlayerPick> cityOwnerPicks = (cityOwnerPlayer != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwnerPlayer.getPersistentPlayerPublicKnowledge ()).getPick () : null;
+		final List<PlayerPick> cityOwnerPicks = (cityOwnerWizard != null) ? cityOwnerWizard.getPick () : null;
 
 		// Food production from surrounding tiles
 		final CityProductionBreakdown food = getCityCalculations ().listCityFoodProductionFromTerrainTiles (mem.getMap (), cityLocation, sd.getOverlandMapSize (), db);

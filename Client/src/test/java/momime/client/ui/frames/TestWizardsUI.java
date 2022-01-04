@@ -143,6 +143,7 @@ public final class TestWizardsUI extends ClientTestData
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final List<KnownWizardDetails> wizardsList = new ArrayList<KnownWizardDetails> ();
 		for (int n = 1; n <= 16; n++)
 		{
 			final PlayerDescription pd = new PlayerDescription ();
@@ -169,6 +170,8 @@ public final class TestWizardsUI extends ClientTestData
 				trans.setFlagColour ("FF" + hex + "0" + hex + "0");
 			}
 			
+			wizardsList.add (wizardDetails);
+			
 			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
 			
@@ -190,13 +193,12 @@ public final class TestWizardsUI extends ClientTestData
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		when (wizardClientUtils.getPlayerName (players.get (0))).thenReturn ("Merlin");
 		
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) players.get (0).getPersistentPlayerPublicKnowledge ();
 		for (int n = 1; n <= 6; n++)
 		{
 			final PlayerPick pick = new PlayerPick ();
 			pick.setPickID ("RT0" + n);
 			pick.setQuantity (1);
-			pub.getPick ().add (pick);
+			wizardsList.get (0).getPick ().add (pick);
 		}
 
 		for (int n = 1; n <= 5; n++)
@@ -204,7 +206,7 @@ public final class TestWizardsUI extends ClientTestData
 			final PlayerPick pick = new PlayerPick ();
 			pick.setPickID ("MB0" + n);
 			pick.setQuantity (7);
-			pub.getPick ().add (pick);
+			wizardsList.get (0).getPick ().add (pick);
 		}
 		
 		// Memory

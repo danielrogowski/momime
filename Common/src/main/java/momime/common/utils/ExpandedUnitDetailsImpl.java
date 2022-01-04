@@ -18,6 +18,7 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitTypeEx;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.KnownWizardDetails;
 
 /**
  * Stores all derived skill, upkeep and other values for a particular unit and stores them for easy and quick lookup.  
@@ -54,6 +55,7 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	 * @param aUnitDefinition Definition for this unit from the XML database
 	 * @param aUnitType Unit type (normal, hero or summoned)
 	 * @param anOwningPlayer Details about the player who owns the unit
+	 * @param anOwningWizard Details about the wizard who owns the unit
 	 * @param aModifiedUnitMagicRealmLifeformType True magic realm/lifeform type of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
 	 * @param aWeaponGrade Weapon grade this unit has, or null for summoned units and heroes
 	 * @param aRangedAttackType Ranged attack type this unit has, or null if it has none
@@ -67,12 +69,12 @@ public final class ExpandedUnitDetailsImpl extends MinimalUnitDetailsImpl implem
 	 * @param aUnitUtils Unit utils
 	 */
 	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final UnitEx aUnitDefinition, final UnitTypeEx aUnitType, final PlayerPublicDetails anOwningPlayer,
-		final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackTypeEx aRangedAttackType,
+		final KnownWizardDetails anOwningWizard, final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackTypeEx aRangedAttackType,
 		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl, final int aControllingPlayerID,
 		final Map<String, Integer> aBasicSkillValues, final Map<String, UnitSkillValueBreakdown> aModifiedSkillValues,
 		final Map<String, Integer> aBasicUpkeepValues, final Map<String, Integer> aModifiedUpkeepValues, final UnitUtils aUnitUtils)
 	{
-		super (aUnit, aUnitDefinition, aUnitType, anOwningPlayer, aBasicExpLvl, aModifiedExpLvl, aBasicSkillValues);
+		super (aUnit, aUnitDefinition, aUnitType, anOwningPlayer, anOwningWizard, aBasicExpLvl, aModifiedExpLvl, aBasicSkillValues);
 		
 		controllingPlayerID = aControllingPlayerID;
 		modifiedUnitMagicRealmLifeformType = aModifiedUnitMagicRealmLifeformType;

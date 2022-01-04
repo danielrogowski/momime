@@ -605,9 +605,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "moveUnitStackOneCellOnServerAndClients");
 				final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
-				cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), cityLocation, cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
+				cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getGeneralServerKnowledge ().getTrueMap (),
+					cityLocation, cityOwnerPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
 
 				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
@@ -657,14 +656,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		{
 			getTreasureUtils ().sendTreasureReward
 				(getTreasureUtils ().rollTreasureReward (tc.getTreasureValue (), unitStackOwner, moveTo, tileTypeID, mapFeatureID, mom),
-					unitStackOwner, mom.getPlayers (), mom.getServerDB ());
+					unitStackOwner, mom);
 			tc.setTreasureValue (null);
 		}
 		
 		else if (tc.getGoldInRuin () != null)
 		{
 			getTreasureUtils ().sendTreasureReward (getTreasureUtils ().giveGoldInRuin (tc.getGoldInRuin (), unitStackOwner, moveTo, tileTypeID, mapFeatureID),
-				unitStackOwner, mom.getPlayers (), mom.getServerDB ());
+				unitStackOwner, mom);
 			tc.setGoldInRuin (null);
 		}
 	}

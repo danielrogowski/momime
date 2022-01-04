@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -16,21 +15,19 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitTypeEx;
-import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageOffer;
 import momime.common.messages.NewTurnMessageOfferHero;
@@ -43,6 +40,7 @@ import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.OfferAcceptedMessage;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.HeroItemUtils;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -51,7 +49,6 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
 
@@ -99,40 +96,42 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * Tests to see if the player has any heroes they can get, and if so rolls a chance that one offers to join them this turn (for a fee).
 	 * 
 	 * @param player Player to check for hero offer for
-	 * @param players List of players
-	 * @param trueMap True map details
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return The offer that was generate if there was one, otherwise null
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final NewTurnMessageOfferHero generateHeroOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final CommonDatabase db)
+	public final NewTurnMessageOfferHero generateHeroOffer (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		NewTurnMessageOfferHero offer = null;
 		
 		// How much fame and gold do we have?
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+			player.getPlayerDescription ().getPlayerID (), "generateHeroOffer");
 
 		int gold = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-		final int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player, players, trueMap, db);
+		final int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), wizardDetails,
+			mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
 		// Hiring fee is halved if Charismatic
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-
-		final boolean halfPrice = (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHARISMATIC) > 0);
+		final boolean halfPrice = (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_CHARISMATIC) > 0);
 		if (halfPrice)
 			gold = gold * 2;
 		
 		// Get a list of all heroes that aren't already dead and we have necessary prerequisite picks for		
-		final List<UnitEx> heroes = getServerUnitCalculations ().listHeroesForHire (player, trueMap.getUnit (), db);
+		final List<UnitEx> heroes = getServerUnitCalculations ().listHeroesForHire (wizardDetails, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ());
 		
 		// Cut down the list to only ones we have enough fame for and can afford
 		final Iterator<UnitEx> iter = heroes.iterator ();
@@ -147,16 +146,16 @@ public final class OfferGeneratorImpl implements OfferGenerator
 		if (heroes.size () > 0)
 		{
 			int heroCount = 0;
-			for (final MemoryUnit mu : trueMap.getUnit ())
+			for (final MemoryUnit mu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 				if ((mu.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (mu.getStatus () == UnitStatusID.ALIVE) &&
-					(db.findUnit (mu.getUnitID (), "generateHeroOffer").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
+					(mom.getServerDB ().findUnit (mu.getUnitID (), "generateHeroOffer").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
 					
 					heroCount++;
 			
 			int chance = 3 + (fame / 25);
 			int chanceOutOf = 50 * (heroCount + 2);
 			
-			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_FAMOUS) > 0)
+			if (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_FAMOUS) > 0)
 				chance = chance * 2;
 			
 			// Cap chance at 10% no matter what
@@ -171,11 +170,12 @@ public final class OfferGeneratorImpl implements OfferGenerator
 				final UnitEx heroDef = heroes.get (getRandomUtils ().nextInt (heroes.size ()));
 
 				// Find the actual hero unit
-				final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (trueMap.getUnit (), player.getPlayerDescription ().getPlayerID (), heroDef.getUnitID ());
+				final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+					player.getPlayerDescription ().getPlayerID (), heroDef.getUnitID ());
 
 				// Generate their skills if not already done so
 				if (hero.getStatus () == UnitStatusID.NOT_GENERATED)
-					getUnitServerUtils ().generateHeroNameAndRandomSkills (hero, db);
+					getUnitServerUtils ().generateHeroNameAndRandomSkills (hero, mom.getServerDB ());
 				
 				log.debug ("Player ID " + player.getPlayerDescription ().getPlayerID () + " got offer from hero " + heroDef.getUnitID () + ", Unit URN " + hero.getUnitURN ());
 				
@@ -197,35 +197,37 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	 * Randomly checks if the player gets an offer to hire mercenary units.
 	 * 
 	 * @param player Player to check for units offer for
-	 * @param players List of players
-	 * @param trueMap True map details
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return The offer that was generate if there was one, otherwise null
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final NewTurnMessageOfferUnits generateUnitsOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final CommonDatabase db)
+	public final NewTurnMessageOfferUnits generateUnitsOffer (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		NewTurnMessageOfferUnits offer = null;
 		
 		// Find which plane we are on
 		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
-			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, trueMap.getMap (), trueMap.getBuilding ());
+			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS,
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 		if (fortressLocation != null)
 		{
 			// How much fame do we have?
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player, players, trueMap, db);
+			
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+				player.getPlayerDescription ().getPlayerID (), "generateUnitsOffer");
+			
+			final int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), wizardDetails,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
 			// 1% chance +1 per each 20 fame
 			int chance = 1 + (fame / 20);
 			
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_FAMOUS) > 0)
+			if (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_FAMOUS) > 0)
 				chance = chance * 2;
 			
 			// Cap chance at 10% no matter what
@@ -237,11 +239,11 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			if (getRandomUtils ().nextInt (100) < chance)
 			{
 				// Get a list of races native to this plane
-				final List<String> raceIDs = db.getRaces ().stream ().filter
+				final List<String> raceIDs = mom.getServerDB ().getRaces ().stream ().filter
 					(r -> r.getNativePlane () == fortressLocation.getCityLocation ().getZ ()).map (r -> r.getRaceID ()).collect (Collectors.toList ());
 				
 				// Get a list of all normal units that belong to these races
-				final List<UnitEx> units = db.getUnits ().stream ().filter (u -> (raceIDs.contains (u.getUnitRaceID ())) && (u.getProductionCost () != null) && 
+				final List<UnitEx> units = mom.getServerDB ().getUnits ().stream ().filter (u -> (raceIDs.contains (u.getUnitRaceID ())) && (u.getProductionCost () != null) && 
 					(u.getUnitHasSkill ().stream ().noneMatch (s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST)))).collect (Collectors.toList ());
 						
 				// Randomly pick the hero
@@ -268,7 +270,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 					expLevel = 3;
 				
 				// Now we can work out how much they would cost
-				final boolean halfPrice = (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHARISMATIC) > 0);
+				final boolean halfPrice = (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_CHARISMATIC) > 0);
 				final int cost = (unitDef.getProductionCost () * unitCount * (expLevel + 3)) / 2 / (halfPrice ? 2 : 1);
 				
 				// Now we can see if we can actually afford them
@@ -298,35 +300,32 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	 * Randomly checks if the player gets an offer to buy a hero item.
 	 * 
 	 * @param player Player to check for item offer for
-	 * @param players List of players
-	 * @param trueMap True map details
-	 * @param db Lookup lists built over the XML database
-	 * @param gsk General server knowledge
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return The offer that was generate if there was one, otherwise null
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final NewTurnMessageOfferItem generateItemOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final CommonDatabase db, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd)
+	public final NewTurnMessageOfferItem generateItemOffer (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		NewTurnMessageOfferItem offer = null;
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+			player.getPlayerDescription ().getPlayerID (), "generateItemOffer");
+		
 		// For now (before we rolled to see if we actually get an item), just scan them and exit fast if we find one we can get
 		boolean anyItems = false;
-		if (!sd.getHeroItemSetting ().isRequireBooksForMerchants ())
-			anyItems = (gsk.getAvailableHeroItem ().size () > 0);
+		if (!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForMerchants ())
+			anyItems = (mom.getGeneralServerKnowledge ().getAvailableHeroItem ().size () > 0);
 		else
 		{
-			final Iterator<NumberedHeroItem> iter = gsk.getAvailableHeroItem ().iterator ();
+			final Iterator<NumberedHeroItem> iter = mom.getGeneralServerKnowledge ().getAvailableHeroItem ().iterator ();
 			while ((!anyItems) && (iter.hasNext ()))
 			{
 				final NumberedHeroItem heroItem = iter.next ();
-				if (getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, pub.getPick (), db))
+				if (getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, wizardDetails.getPick (), mom.getServerDB ()))
 					anyItems = true;
 			}
 		}		
@@ -335,12 +334,13 @@ public final class OfferGeneratorImpl implements OfferGenerator
 		{
 			// How much fame do we have?
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player, players, trueMap, db);
+			final int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), wizardDetails,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
 			// 2% chance +1 per each 25 fame
 			int chance = 2 + (fame / 25);
 			
-			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_FAMOUS) > 0)
+			if (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_FAMOUS) > 0)
 				chance = chance * 2;
 			
 			// Cap chance at 10% no matter what
@@ -353,15 +353,17 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			{
 				// Randomly pick an item
 				final List<NumberedHeroItem> heroItems = new ArrayList<NumberedHeroItem> ();
-				for (final NumberedHeroItem heroItem : gsk.getAvailableHeroItem ())
-					if ((!sd.getHeroItemSetting ().isRequireBooksForMerchants ()) || (getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, pub.getPick (), db)))
+				for (final NumberedHeroItem heroItem : mom.getGeneralServerKnowledge ().getAvailableHeroItem ())
+					if ((!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForMerchants ()) ||
+						(getHeroItemCalculations ().haveRequiredBooksForItem (heroItem, wizardDetails.getPick (), mom.getServerDB ())))
+						
 						heroItems.add (heroItem);
 				
 				final NumberedHeroItem item = heroItems.get (getRandomUtils ().nextInt (heroItems.size ()));
 				
 				// How much does it cost?
-				final boolean halfPrice = (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHARISMATIC) > 0);
-				final int cost = getHeroItemCalculations ().calculateCraftingCost (item, db) / (halfPrice ? 2 : 1);
+				final boolean halfPrice = (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_CHARISMATIC) > 0);
+				final int cost = getHeroItemCalculations ().calculateCraftingCost (item, mom.getServerDB ()) / (halfPrice ? 2 : 1);
 				
 				// Now we can see if we can actually afford it
 				final int gold = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
@@ -709,5 +711,21 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

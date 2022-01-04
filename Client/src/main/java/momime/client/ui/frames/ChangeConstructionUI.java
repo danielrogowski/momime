@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 
@@ -48,10 +47,12 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.Unit;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
@@ -138,6 +139,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	
 	/** Sample unit method */
 	private SampleUnitUtils sampleUnitUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -276,11 +280,11 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			{
 				try
 				{
-					final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID
-							(getClient ().getPlayers (), getClient ().getOurPlayerID (), "unitSelectionListener");
-						
+					final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "unitSelectionListener");
+					
 					final AvailableUnit sampleUnit = getSampleUnitUtils ().createSampleAvailableUnitFromCity (unitsItems.get (unitsList.getSelectedIndex ()).getUnitID (),
-						player, new MapCoordinates3DEx (getCityLocation ()), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+						ourWizard, new MapCoordinates3DEx (getCityLocation ()), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
 						
 					getUnitInfoPanel ().showUnit (sampleUnit);
@@ -664,5 +668,21 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	public final void setSampleUnitUtils (final SampleUnitUtils s)
 	{
 		sampleUnitUtils = s;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

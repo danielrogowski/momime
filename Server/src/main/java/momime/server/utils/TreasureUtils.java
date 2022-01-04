@@ -1,7 +1,5 @@
 package momime.server.utils;
 
-import java.util.List;
-
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -10,7 +8,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.server.MomSessionVariables;
@@ -74,13 +71,11 @@ public interface TreasureUtils
 	 * 
 	 * @param reward Details of treasure reward to send
 	 * @param player Player who earned the reward
-	 * @param players List of players in this session
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
-	public void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final CommonDatabase db)
+	public void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
 }

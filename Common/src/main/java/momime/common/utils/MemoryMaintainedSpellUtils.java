@@ -15,6 +15,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -164,7 +165,7 @@ public interface MemoryMaintainedSpellUtils
 	 * @param map Known terrain
 	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
-	 * @param players Players list
+	 * @param wizards Wizards list
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
@@ -172,7 +173,7 @@ public interface MemoryMaintainedSpellUtils
 	 */
 	public TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
 		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
-		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		final List<KnownWizardDetails> wizards, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException; 
 
 	/**

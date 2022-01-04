@@ -1014,12 +1014,8 @@ public final class CityViewUI extends MomClientFrameUI
 				// Create as a 'show unrest calculation' button
 				action = new LoggingAction ((ev) ->
 				{
-					final CityUnrestBreakdown breakdown = getCityCalculations ().calculateCityRebels (getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getClientDB ());
+					final CityUnrestBreakdown breakdown = getCityCalculations ().calculateCityRebels (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+						getCityLocation (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getClientDB ());
 					
 					final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
 					calc.setTitle (getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getTitle ()).replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));

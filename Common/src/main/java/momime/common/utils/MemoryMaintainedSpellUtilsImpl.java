@@ -36,7 +36,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -561,7 +560,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param map Known terrain
 	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
-	 * @param players Players list
+	 * @param wizards Wizards list
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
@@ -570,7 +569,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	@Override
 	public final TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
 		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
-		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		final List<KnownWizardDetails> wizards, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
     	final TargetSpellResult result;
@@ -628,9 +627,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else
     		{
     			// Special validation for Evil Presence - make sure the city owner has no Death Books
-    			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "isCityValidTargetForSpell");
-    			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
-    			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.PICK_ID_DEATH_BOOK) > 0)
+    			final KnownWizardDetails cityOwner = getKnownWizardUtils ().findKnownWizardDetails (wizards, cityData.getCityOwnerID (), "isCityValidTargetForSpell");
+    			if (getPlayerPickUtils ().getQuantityOfPick (cityOwner.getPick (), CommonDatabaseConstants.PICK_ID_DEATH_BOOK) > 0)
     				result = TargetSpellResult.WIZARD_HAS_DEATH_BOOKS;
     			else
     				result = TargetSpellResult.VALID_TARGET;

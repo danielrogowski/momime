@@ -20,7 +20,6 @@ import com.ndg.random.RandomUtils;
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeature;
 import momime.common.database.Pick;
@@ -33,20 +32,20 @@ import momime.common.database.Spell;
 import momime.common.database.SpellRank;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.FullSpellListMessage;
-import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.TreasureRewardPrisoner;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.HeroItemUtils;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
@@ -110,6 +109,12 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
 	
 	/**
 	 * The treasure reward process detailed in the strategy guide (Appendix C) and on the MoM Wiki is awkward to implement, and in
@@ -205,9 +210,10 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "rollTreasureReward");
+		
 		final Spell summonHero = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_SUMMON_HERO, "rollTreasureReward");
 
 		// Initialize message
@@ -224,7 +230,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			// Get a list of all hero items we might possibly get as a reward.
 			final List<NumberedHeroItem> availableHeroItems = new ArrayList<NumberedHeroItem> ();
 			for (final NumberedHeroItem item : mom.getGeneralServerKnowledge ().getAvailableHeroItem ())
-				if (((!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForTreasureRewards ()) || (getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), mom.getServerDB ()))) &&
+				if (((!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForTreasureRewards ()) || (getHeroItemCalculations ().haveRequiredBooksForItem (item, wizardDetails.getPick (), mom.getServerDB ()))) &&
 					(getHeroItemCalculations ().calculateCraftingCost (item, mom.getServerDB ()) <= remainingTreasureValue))
 					
 					availableHeroItems.add (item);
@@ -272,7 +278,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					while ((addToList) && (iter.hasNext ()))
 					{
 						final PickAndQuantity prereq = iter.next ();
-						if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
+						if (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
 							addToList = false;
 					}
 					
@@ -489,7 +495,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 						// Can't get life books if have any death books, and vice versa
 						boolean ok = true;
 						for (final String exclusive : pick.getPickExclusiveFrom ())
-							if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), exclusive) > 0)
+							if (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), exclusive) > 0)
 								ok = false;
 		
 						// We don't normally care about pre-requisites, except for the special situation that we only
@@ -501,7 +507,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 									final Pick prereqPick = mom.getServerDB ().findPick (prereq.getPrerequisiteID (), "rollTreasureReward");
 									
 									// Sneaky way to identify Divine Power and Infernal Power without hard coding them
-									if ((prereqPick.getPickExclusiveFrom ().size () > 0) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPrerequisiteID ()) == 0))
+									if ((prereqPick.getPickExclusiveFrom ().size () > 0) && (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), prereq.getPrerequisiteID ()) == 0))
 										ok = false;
 								}
 						
@@ -509,7 +515,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 						{
 							// Can't get retorts twice
 							ok = (pickType.getMaximumQuantity () == null) ||
-								(getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), pick.getPickID ()) < pickType.getMaximumQuantity ());
+								(getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), pick.getPickID ()) < pickType.getMaximumQuantity ());
 						}
 						
 						if (ok)
@@ -557,7 +563,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		
 					final List<NumberedHeroItem> availableHeroItems = new ArrayList<NumberedHeroItem> ();
 					for (final NumberedHeroItem item : mom.getGeneralServerKnowledge ().getAvailableHeroItem ())
-						if ((!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForTreasureRewards ()) && (getHeroItemCalculations ().haveRequiredBooksForItem (item, pub.getPick (), mom.getServerDB ())))
+						if ((!mom.getSessionDescription ().getHeroItemSetting ().isRequireBooksForTreasureRewards ()) && (getHeroItemCalculations ().haveRequiredBooksForItem (item, wizardDetails.getPick (), mom.getServerDB ())))
 							availableHeroItems.add (item);
 				
 					log.debug ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation +
@@ -592,7 +598,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					final List<Pick> availablePicks = availablePickTypes.get (pickTypeID);
 					final Pick pick = availablePicks.get (getRandomUtils ().nextInt (availablePicks.size ()));
 					
-					getPlayerPickUtils ().updatePickQuantity (pub.getPick (), pick.getPickID (), 1);
+					getPlayerPickUtils ().updatePickQuantity (wizardDetails.getPick (), pick.getPickID (), 1);
 					specialRewardCount = specialRewardCount - pick.getPickCost ();
 
 					log.debug ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation + " awarded special " +
@@ -677,37 +683,30 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	 * 
 	 * @param reward Details of treasure reward to send
 	 * @param player Player who earned the reward
-	 * @param players List of players in this session
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	@Override
-	public final void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final CommonDatabase db)
+	public final void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+	
+		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "sendTreasureReward");
 		
 		// Send picks - everybody can see these
 		if (reward.getPick ().size () > 0)
-		{
-			// Resend all of them, not just the new ones
-			final ReplacePicksMessage msg = new ReplacePicksMessage ();
-			msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
-			msg.getPick ().addAll (pub.getPick ());
-			
-			getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
-		}
+			getKnownWizardServerUtils ().copyAndSendUpdatedPicks (player.getPlayerDescription ().getPlayerID (), mom);
 			
 		// Did gaining another book add more spells available for us to research in future?
-		getServerSpellCalculations ().randomizeResearchableSpells (priv.getSpellResearchStatus (), pub.getPick (), db);
+		getServerSpellCalculations ().randomizeResearchableSpells (priv.getSpellResearchStatus (), wizardDetails.getPick (), mom.getServerDB ());
 
 		// Make sure we still have 8 spells available to research, in case one of the 8 already listed was now gained for free,
 		// or maybe we had less than 8 unresearched spells in total but now gained some more
-		getServerSpellCalculations ().randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
+		getServerSpellCalculations ().randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), mom.getServerDB ());
 		
 		// Send private info
 		if (player.getPlayerDescription ().isHuman ())
@@ -924,5 +923,37 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

@@ -17,7 +17,6 @@ import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -269,7 +268,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 		
 		// This follows the same logic and checks as UnitUtilsImpl.getExperienceLevel ()
 		// Does the player have the Warlord retort?
-		final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) getUnit ().getOwningPlayer ().getPersistentPlayerPublicKnowledge ()).getPick ();
+		final List<PlayerPick> picks = getUnit ().getOwningWizard ().getPick ();
 		if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_WARLORD) > 0)
 		{
 			if (s.length () > 0)

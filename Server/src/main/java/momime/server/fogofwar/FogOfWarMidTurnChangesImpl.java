@@ -25,6 +25,7 @@ import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -32,7 +33,6 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.UnitDamage;
@@ -53,6 +53,7 @@ import momime.common.movement.OverlandMovementCell;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -119,6 +120,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	/** expandUnitDetails method */
 	private ExpandUnitDetails expandUnitDetails;
 
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
 	 * i.e. the caller must update the True Map value themselves before calling this
@@ -337,8 +341,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		if ((initialStatus != UnitStatusID.NOT_GENERATED) && (initialStatus != UnitStatusID.ALIVE))
 			throw new MomException ("addUnitOnServerAndClients: Invalid initial status of " + initialStatus);
 
-		final MomPersistentPlayerPublicKnowledge unitOwnerPPK = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
-
 		// Check how much experience this unit should have
 		// Note the reason we pass in buildingsLocation separately from locationToAddUnit is in case a city is full and a unit gets bumped
 		// to the outside - it still needs to get the bonus from the buildings back in the city
@@ -351,12 +353,15 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}
 		else if (buildingsLocation != null)
 		{
+			final KnownWizardDetails unitOwnerWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+				unitOwner.getPlayerDescription ().getPlayerID (), "addUnitOnServerAndClients");
+			
 			startingExperience = getMemoryBuildingUtils ().experienceFromBuildings (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), buildingsLocation, mom.getServerDB ());
 			
 			weaponGrade = getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 				(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					buildingsLocation, unitOwnerPPK.getPick (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+					buildingsLocation, unitOwnerWizard.getPick (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 		}
 		else
 		{
@@ -1349,5 +1354,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void setExpandUnitDetails (final ExpandUnitDetails e)
 	{
 		expandUnitDetails = e;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

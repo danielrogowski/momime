@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -45,12 +44,13 @@ import momime.common.calculations.SkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionType;
 import momime.common.database.Spell;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 
@@ -112,6 +112,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	
 	/** Combat UI */
 	private CombatUI combatUI;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Mana title above the slider */
 	private JLabel manaTitle;
@@ -586,20 +589,20 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				// Use the real calc routine to work out how much MP/RP/SP we'll actually get, because this takes everything into
 				// account such as getting a bonus to research if we've got a lot of spell books in the magic realm of the spell currently
 				// being researched; and retorts like Archmage that give a bonus to mana spent on improving skill
-				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updatePerTurnLabels");
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-		
+				final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "updatePerTurnLabels");
+				
 				final int manaPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge (), ourWizard.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 
 				final int basicResearch = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge (), ourWizard.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 
 				final int skillPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge (), ourWizard.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 
 				final int magicPowerPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
-					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+					(getClient ().getOurPersistentPlayerPrivateKnowledge (), ourWizard.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
 				// Bonuses from heroes
 				final int modifiedResearch = basicResearch + getResourceValueUtils ().calculateResearchFromUnits (getClient ().getOurPlayerID (),
@@ -624,7 +627,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				// Update casting skill label
 				final int basicSkill = getResourceValueUtils ().calculateBasicCastingSkill (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ());
 				final int modifiedSkill = getResourceValueUtils ().calculateModifiedCastingSkill (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (),
-					ourPlayer, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (), true);
+					ourWizard, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (), true);
 				
 				if (basicSkill == modifiedSkill)
 					castingSkill.setText (getTextUtils ().intToStrCommas (modifiedSkill));
@@ -678,7 +681,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 
 					manaPerTurn.setMaximum (getSpellUtils ().getReducedOverlandCastingCost
 						(spellBeingCast, queued.getHeroItem (), queued.getVariableDamage (),
-							pub.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), 
+							ourWizard.getPick (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), 
 							getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()));
 					manaPerTurn.setValue (getClient ().getOurPersistentPlayerPrivateKnowledge ().getManaSpentOnCastingCurrentSpell ());					
 				}
@@ -975,6 +978,22 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
+	}
+	
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 	
 	/**

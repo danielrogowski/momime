@@ -1,6 +1,5 @@
 package momime.server.messages.process;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -10,18 +9,20 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.clienttoserver.ChooseCustomPicksMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
-import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.server.MomSessionVariables;
+import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 
 /**
@@ -34,6 +35,12 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 	
 	/** Server-only pick utils */
 	private PlayerPickServerUtils playerPickServerUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
+	/** Process for making sure one wizard has met another wizard */
+	private KnownWizardServerUtils knownWizardServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -63,9 +70,11 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 		else
 		{
 			// Record custom picks on server
-			final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
 			final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) sender.getTransientPlayerPrivateKnowledge ();
 			priv.setCustomPicksChosen (true);
+			
+			final KnownWizardDetails trueWizardDetails = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+				sender.getPlayerDescription ().getPlayerID (), "ChooseCustomPicksMessageImpl");
 
 			for (final PickAndQuantity srcPick : getPick ())
 			{
@@ -73,23 +82,16 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 				destPick.setPickID (srcPick.getPickID ());
 				destPick.setQuantity (srcPick.getQuantity ());
 				destPick.setOriginalQuantity (srcPick.getQuantity ());
-				ppk.getPick ().add (destPick);
+				trueWizardDetails.getPick ().add (destPick);
 			}
 
 			// Send picks to the player - they need to know their own picks so they know whether they're allowed to pick a Myrran race not
-			// We don't send picks to other players until the game is starting up
-			if (sender.getPlayerDescription ().isHuman ())
-			{
-				final ReplacePicksMessage picksMsg = new ReplacePicksMessage ();
-				picksMsg.setPlayerID (sender.getPlayerDescription ().getPlayerID ());
-				picksMsg.getPick ().addAll (ppk.getPick ());
-				sender.getConnection ().sendMessageToClient (picksMsg);
-			}
+			getKnownWizardServerUtils ().copyAndSendUpdatedPicks (sender.getPlayerDescription ().getPlayerID (), mom);
 
 			// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 			// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
 			log.debug ("process: About to search for first realm (if any) where human player " + sender.getPlayerDescription ().getPlayerName () + " gets free spells");
-			final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom.getServerDB ());
+			final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (sender, mom);
 			if (chooseSpellsMsg != null)
 				sender.getConnection ().sendMessageToClient (chooseSpellsMsg);
 			else
@@ -111,5 +113,37 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 	public final void setPlayerPickServerUtils (final PlayerPickServerUtils utils)
 	{
 		playerPickServerUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Process for making sure one wizard has met another wizard
+	 */
+	public final KnownWizardServerUtils getKnownWizardServerUtils ()
+	{
+		return knownWizardServerUtils;
+	}
+
+	/**
+	 * @param k Process for making sure one wizard has met another wizard
+	 */
+	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
+	{
+		knownWizardServerUtils = k;
 	}
 }

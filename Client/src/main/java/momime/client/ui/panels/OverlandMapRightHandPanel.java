@@ -74,8 +74,8 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileType;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.internal.CityProductionBreakdown;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryGridCell;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.NewTurnMessageData;
 import momime.common.messages.OverlandMapCityData;
@@ -84,6 +84,7 @@ import momime.common.messages.PendingMovement;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PendingMovementUtils;
@@ -120,6 +121,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Minimap generator */
 	private MiniMapBitmapGenerator miniMapBitmapGenerator;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Minimap panel */
 	private JPanel miniMapPanel;
@@ -948,23 +952,22 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 * @param productionTypeID Production type to display in this label
 	 * @param languageText Text to display
 	 * @param positiveColour The colour to display this value if it is positive
-	 * @throws PlayerNotFoundException If our player isn't in the list
 	 * @throws RecordNotFoundException If we look for a particular record that we expect to be present in the XML file and we can't find it
 	 * @throws MomException If we find an invalid casting reduction type
 	 */
 	private final void updateAmountPerTurn (final JLabel label, final String productionTypeID, final List<LanguageText> languageText, final Color positiveColour)
-		throws PlayerNotFoundException, RecordNotFoundException, MomException
+		throws  RecordNotFoundException, MomException
 	{
 		// Resource values get sent to us during game startup before the screen has been set up, so its possible to get here before the labels even exist
 		if (label != null)
 		{
-			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateAmountPerTurn");
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+			final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "updateAmountPerTurn");
 			
 			final String productionTypeDescription = getLanguageHolder ().findDescription
 				(getClient ().getClientDB ().findProductionType (productionTypeID, "updateAmountPerTurn").getProductionTypeDescription ());
 			final int amountPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
-				pub.getPick (), productionTypeID, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+				ourWizard.getPick (), productionTypeID, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
 			label.setText (getLanguageHolder ().findDescription (languageText).replaceAll
 				("AMOUNT_PER_TURN", getTextUtils ().intToStrCommas (amountPerTurn)).replaceAll
@@ -1280,14 +1283,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			final List<String> resourceIconFilenames = new ArrayList<String> ();
 			
 			// Now check every defined production type
-			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateProductionTypesStoppingUsFromEndingTurn");
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-
+			final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "updateProductionTypesStoppingUsFromEndingTurn");
+			
 			for (final ProductionTypeEx productionType : getClient ().getClientDB ().getProductionTypes ())
 				if (productionType.getEnforceProduction () != null)
 				{
 					int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
-						pub.getPick (), productionType.getProductionTypeID (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+						ourWizard.getPick (), productionType.getProductionTypeID (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
 					if (productionType.getEnforceProduction () == EnforceProductionID.STORED_AMOUNT_CANNOT_GO_BELOW_ZERO)
 						valueToCheck = valueToCheck + getResourceValueUtils ().findAmountStoredForProductionType
@@ -1329,7 +1332,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				(getSpellUtils ().getSpellsForStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (),
 					SpellResearchStatusID.RESEARCHABLE_NOW, getClient ().getClientDB ()).size () > 0) &&
 				(getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
-					pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH,
+					ourWizard.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH,
 					getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()) + getResourceValueUtils ().calculateResearchFromUnits
 					(getClient ().getOurPlayerID (), getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 						getClient ().getClientDB ()) > 0))
@@ -1910,5 +1913,21 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setMiniMapBitmapGenerator (final MiniMapBitmapGenerator gen)
 	{
 		miniMapBitmapGenerator = gen;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

@@ -5,15 +5,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -36,9 +31,10 @@ import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellUtilsImpl;
 
 /**
@@ -80,15 +76,21 @@ public final class TestVariableManaUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Player
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
 		pd.setHuman (true);
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		// Player's memory
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		priv.setFogOfWarMemory (mem);
+		
+		// Wizard
+		final KnownWizardDetails ourWizard = new KnownWizardDetails (); 
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (eq (mem.getWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (ourWizard);
 		
 		// Session description
 		final SpellSetting spellSettings = new SpellSetting ();
@@ -97,21 +99,10 @@ public final class TestVariableManaUI extends ClientTestData
 		sd.setSpellSetting (spellSettings);
 		
 		final MomClient client = mock (MomClient.class);
-		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
-		
-		// Player's memory
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
-		
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		priv.setFogOfWarMemory (mem);
-		
-		// Session utils
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
 		
 		// Example spell
 		final Spell spell = new Spell ();
@@ -122,7 +113,7 @@ public final class TestVariableManaUI extends ClientTestData
 
 		// Spell casting reduction
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateCastingCostReduction (0, spellSettings, spell, pub.getPick (), db)).thenReturn (30d);
+		when (spellCalc.calculateCastingCostReduction (0, spellSettings, spell, ourWizard.getPick (), db)).thenReturn (30d);
 		
 		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
 		spellUtils.setSpellCalculations (spellCalc);
@@ -141,11 +132,11 @@ public final class TestVariableManaUI extends ClientTestData
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
 		box.setTextUtils (new TextUtilsImpl ());
-		box.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		box.setClient (client);
 		box.setSpellUtils (spellUtils);
 		box.setMediumFont (CreateFontsForTests.getMediumFont ());
 		box.setCombatUI (combatUI);
+		box.setKnownWizardUtils (knownWizardUtils);
 		box.setSpellBeingTargeted (spell);
 		
 		// Display form		
@@ -188,15 +179,21 @@ public final class TestVariableManaUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Player
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
-		
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
 		pd.setHuman (true);
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		// Player's memory
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		priv.setFogOfWarMemory (mem);
+		
+		// Wizard
+		final KnownWizardDetails ourWizard = new KnownWizardDetails (); 
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (eq (mem.getWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (ourWizard);
 		
 		// Session description
 		final SpellSetting spellSettings = new SpellSetting ();
@@ -205,21 +202,10 @@ public final class TestVariableManaUI extends ClientTestData
 		sd.setSpellSetting (spellSettings);
 		
 		final MomClient client = mock (MomClient.class);
-		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
-		
-		// Player's memory
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
-		
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		priv.setFogOfWarMemory (mem);
-		
-		// Session utils
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
 		
 		// Example spell; so for 20 MP we get 30 attack; for each additional +1 MP we get +3 attack; for maximum of 60 MP giving 150 attack
 		final Spell spell = new Spell ();
@@ -230,7 +216,7 @@ public final class TestVariableManaUI extends ClientTestData
 
 		// Spell casting reduction
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
-		when (spellCalc.calculateCastingCostReduction (0, spellSettings, spell, pub.getPick (), db)).thenReturn (30d);
+		when (spellCalc.calculateCastingCostReduction (0, spellSettings, spell, ourWizard.getPick (), db)).thenReturn (30d);
 		
 		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
 		spellUtils.setSpellCalculations (spellCalc);
@@ -249,11 +235,11 @@ public final class TestVariableManaUI extends ClientTestData
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
 		box.setTextUtils (new TextUtilsImpl ());
-		box.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		box.setClient (client);
 		box.setSpellUtils (spellUtils);
 		box.setMediumFont (CreateFontsForTests.getMediumFont ());
 		box.setCombatUI (combatUI);
+		box.setKnownWizardUtils (knownWizardUtils);
 		box.setSpellBeingTargeted (spell);
 		
 		// Display form		

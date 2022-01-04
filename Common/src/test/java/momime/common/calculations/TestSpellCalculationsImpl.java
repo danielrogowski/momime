@@ -15,8 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
 import momime.common.database.CastingReductionCombination;
@@ -28,9 +26,9 @@ import momime.common.database.PickProductionBonus;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
@@ -549,10 +547,8 @@ public final class TestSpellCalculationsImpl
 		final CoordinateSystem overlandMapCoordinateSystem = GenerateTestData.createOverlandMapCoordinateSystem ();
 		
 		// Player
-		final PlayerDescription pd = new PlayerDescription ();
-		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
-		pd.setPlayerID (3);
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, ppk, null);
+		final KnownWizardDetails wizard = new KnownWizardDetails ();
+		wizard.setPlayerID (3);
 		
 		// Set up object to test
 		final MemoryBuildingUtils utils = mock (MemoryBuildingUtils.class);
@@ -564,52 +560,52 @@ public final class TestSpellCalculationsImpl
 		
 		// We're banished
 		final MapCoordinates3DEx location1 = new MapCoordinates3DEx (3, 7, 0);
-		assertNull (calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem));
+		assertNull (calc.calculateDoubleCombatCastingRangePenalty (wizard, location1, false, map, buildings, overlandMapCoordinateSystem));
 		
 		// Combat at wizard's fortress
 		final MemoryBuilding fortressLocation = new MemoryBuilding ();
 		fortressLocation.setCityLocation (new MapCoordinates3DEx (3, 7, 0));
-		when (utils.findCityWithBuilding (pd.getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressLocation);
+		when (utils.findCityWithBuilding (wizard.getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressLocation);
 
-		assertEquals (1, calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (1, calc.calculateDoubleCombatCastingRangePenalty (wizard, location1, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// Combat right next to wizard's fortress
 		final MapCoordinates3DEx location2 = new MapCoordinates3DEx (4, 7, 0);
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location2, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location2, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// Combat 1 square away but on other plane
 		final MapCoordinates3DEx location3 = new MapCoordinates3DEx (4, 7, 1);
-		assertEquals (6, calc.calculateDoubleCombatCastingRangePenalty (player, location3, false, map, buildings, overlandMapCoordinateSystem).intValue ());
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location3, true, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (6, calc.calculateDoubleCombatCastingRangePenalty (wizard, location3, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location3, true, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// 5 across, 3 down = 5.83 distance away
 		final MapCoordinates3DEx location4 = new MapCoordinates3DEx (3+5, 7+3, 0);
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location4, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location4, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 
 		// Same, but go left, across the wrapping boundary
 		final MapCoordinates3DEx location5 = new MapCoordinates3DEx (58, 7+3, 0);
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location5, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location5, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// 6 across, 0 down = 6.00 away
 		final MapCoordinates3DEx location6 = new MapCoordinates3DEx (3+6, 7, 0);
-		assertEquals (3, calc.calculateDoubleCombatCastingRangePenalty (player, location6, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (3, calc.calculateDoubleCombatCastingRangePenalty (wizard, location6, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 
 		// 6 across, 20 down = 20.88 away
 		final MapCoordinates3DEx location7 = new MapCoordinates3DEx (3+6, 7+20, 0);
-		assertEquals (5, calc.calculateDoubleCombatCastingRangePenalty (player, location7, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (5, calc.calculateDoubleCombatCastingRangePenalty (wizard, location7, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 
 		// Prove caps at 3x
 		final MapCoordinates3DEx location8 = new MapCoordinates3DEx (3+20, 7+20, 0);
-		assertEquals (6, calc.calculateDoubleCombatCastingRangePenalty (player, location8, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (6, calc.calculateDoubleCombatCastingRangePenalty (wizard, location8, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 		
 		// Channeler makes everying x1 unless right at wizard's fortress
-		when (picks.getQuantityOfPick (ppk.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
-		assertEquals (1, calc.calculateDoubleCombatCastingRangePenalty (player, location1, false, map, buildings, overlandMapCoordinateSystem).intValue ());
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location2, false, map, buildings, overlandMapCoordinateSystem).intValue ());
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location3, false, map, buildings, overlandMapCoordinateSystem).intValue ());
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location3, true, map, buildings, overlandMapCoordinateSystem).intValue ());
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location6, false, map, buildings, overlandMapCoordinateSystem).intValue ());
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location7, false, map, buildings, overlandMapCoordinateSystem).intValue ());
-		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (player, location8, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		when (picks.getQuantityOfPick (wizard.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
+		assertEquals (1, calc.calculateDoubleCombatCastingRangePenalty (wizard, location1, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location2, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location3, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location3, true, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location6, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location7, false, map, buildings, overlandMapCoordinateSystem).intValue ());
+		assertEquals (2, calc.calculateDoubleCombatCastingRangePenalty (wizard, location8, false, map, buildings, overlandMapCoordinateSystem).intValue ());
 	}
 }

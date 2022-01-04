@@ -5,15 +5,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -35,10 +30,11 @@ import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.QueuedSpell;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.SpellUtils;
 
 /**
@@ -93,17 +89,15 @@ public final class TestQueuedSpellsUI extends ClientTestData
 		pd.setPlayerID (3);
 		pd.setHuman (true);
 		
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		// Wizard
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
-		
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "QueuedSpellListCellRenderer")).thenReturn (player);
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (eq (mem.getWizardDetails ()), eq (pd.getPlayerID ()), anyString ())).thenReturn (ourWizard);
 		
 		// Mock spell definitions
-		final FogOfWarMemory mem = new FogOfWarMemory ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setFogOfWarMemory (mem);
 		
@@ -114,7 +108,7 @@ public final class TestQueuedSpellsUI extends ClientTestData
 			spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell SP00" + n));
 
 			when (db.findSpell (eq ("SP00" + n), anyString ())).thenReturn (spell);
-			when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 100);
+			when (spellUtils.getReducedOverlandCastingCost (spell, null, null, ourWizard.getPick (), mem.getMaintainedSpell (), spellSettings, db)).thenReturn (n * 100);
 		}
 		
 		// Mock queued spells
@@ -128,7 +122,6 @@ public final class TestQueuedSpellsUI extends ClientTestData
 
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
-		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		when (client.getClientDB ()).thenReturn (db);
 		when (client.getSessionDescription ()).thenReturn (sd);
@@ -136,9 +129,9 @@ public final class TestQueuedSpellsUI extends ClientTestData
 		// Cell renderer
 		final QueuedSpellListCellRenderer renderer = new QueuedSpellListCellRenderer ();
 		renderer.setLanguageHolder (langHolder);
-		renderer.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		renderer.setClient (client);
 		renderer.setSpellUtils (spellUtils);
+		renderer.setKnownWizardUtils (knownWizardUtils);
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/QueuedSpellsUI.xml"));

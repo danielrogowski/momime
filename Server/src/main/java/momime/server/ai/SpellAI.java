@@ -3,17 +3,18 @@ package momime.server.ai;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.utils.ExpandedUnitDetails;
@@ -50,6 +51,7 @@ public interface SpellAI
 	 * If AI player is not currently casting any spells overland, then look through all of them and consider if we should cast any.
 	 * 
 	 * @param player AI player who needs to choose what to cast
+	 * @param wizardDetails AI wizard who needs to choose what to cast
 	 * @param constructableUnits List of everything we can construct everywhere or summon
 	 * @param wantedUnitTypesOnEachPlane Map of which unit types we need to construct or summon on each plane
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -59,7 +61,7 @@ public interface SpellAI
 	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	public void decideWhatToCastOverland (final PlayerServerDetails player, final List<AIConstructableUnit> constructableUnits,
+	public void decideWhatToCastOverland (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<AIConstructableUnit> constructableUnits,
 		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
@@ -86,6 +88,7 @@ public interface SpellAI
 	 * AI player decides whether to cast a spell in combat
 	 * 
 	 * @param player AI player who needs to choose what to cast
+	 * @param wizardDetails AI wizard who needs to choose what to cast
 	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param combatLocation Location of the combat where this spell is being cast
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -96,8 +99,8 @@ public interface SpellAI
 	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	public CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation,
-		final MomSessionVariables mom)
+	public CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final KnownWizardDetails wizardDetails,
+		final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**

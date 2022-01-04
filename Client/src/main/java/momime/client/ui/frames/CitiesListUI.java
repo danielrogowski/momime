@@ -47,10 +47,11 @@ import momime.common.calculations.CityProductionCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitSkillEx;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 
 /**
@@ -126,6 +127,9 @@ public final class CitiesListUI extends MomClientFrameUI
 	
 	/** Cell renderer */
 	private CitiesListCellRenderer citiesListCellRenderer;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/** Minimap panel */
 	private JPanel miniMapPanel;
@@ -288,9 +292,9 @@ public final class CitiesListUI extends MomClientFrameUI
 			final MapCoordinates3DEx fortressLocation = (fortress == null) ? null : (MapCoordinates3DEx) fortress.getCityLocation ();
 			
 			// Player picks
-			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "refreshCitiesList");
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
-
+			final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "refreshCitiesList");
+			
 			// Container for weapon grade images
 			final UnitSkillEx melee = getClient ().getClientDB ().findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "refreshCitiesList");
 			
@@ -311,7 +315,7 @@ public final class CitiesListUI extends MomClientFrameUI
 							final int weaponGrade = getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
 								(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), cityLocation,
-									pub.getPick (), getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
+									ourWizard.getPick (), getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
 							final String weaponGradeImageFile = melee.findWeaponGradeImageFile (weaponGrade, "refreshCitiesList");
 							
 							final int enchantmentCount = (int) getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
@@ -569,5 +573,21 @@ public final class CitiesListUI extends MomClientFrameUI
 	public final void setCitiesListCellRenderer (final CitiesListCellRenderer rend)
 	{
 		citiesListCellRenderer = rend;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

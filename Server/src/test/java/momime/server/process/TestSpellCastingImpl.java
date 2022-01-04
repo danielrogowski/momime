@@ -24,6 +24,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageSummonUnit;
@@ -32,6 +33,7 @@ import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.KnownWizardUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
@@ -76,6 +78,12 @@ public final class TestSpellCastingImpl
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player3);
 		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), pd3.getPlayerID (), "castOverlandSummoningSpell")).thenReturn (wizardDetails);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -88,7 +96,7 @@ public final class TestSpellCastingImpl
 		
 		// It only summons 1 kind of unit
 		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
-		when (serverUnitCalculations.listUnitsSpellMightSummon (spell, player3, trueMap.getUnit (), db)).thenReturn (Arrays.asList (unitDef));
+		when (serverUnitCalculations.listUnitsSpellMightSummon (spell, wizardDetails, trueMap.getUnit (), db)).thenReturn (Arrays.asList (unitDef));
 
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (new MapCoordinates3DEx (15, 25, 0), UnitAddBumpTypeID.CITY);
@@ -114,6 +122,7 @@ public final class TestSpellCastingImpl
 		casting.setUnitServerUtils (unitServerUtils);
 		casting.setFogOfWarMidTurnChanges (midTurn);
 		casting.setExpandUnitDetails (expand);
+		casting.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);
@@ -171,6 +180,12 @@ public final class TestSpellCastingImpl
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (player3);
 		
+		// Wizard
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), pd3.getPlayerID (), "castOverlandSummoningSpell")).thenReturn (wizardDetails);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -183,7 +198,7 @@ public final class TestSpellCastingImpl
 		
 		// It only summons 1 kind of unit
 		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
-		when (serverUnitCalculations.listUnitsSpellMightSummon (spell, player3, trueMap.getUnit (), db)).thenReturn (possibleSummons);
+		when (serverUnitCalculations.listUnitsSpellMightSummon (spell, wizardDetails, trueMap.getUnit (), db)).thenReturn (possibleSummons);
 
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (new MapCoordinates3DEx (15, 25, 0), UnitAddBumpTypeID.CITY);
@@ -226,6 +241,7 @@ public final class TestSpellCastingImpl
 		casting.setUnitServerUtils (unitServerUtils);
 		casting.setFogOfWarMidTurnChanges (midTurn);
 		casting.setExpandUnitDetails (expand);
+		casting.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run test
 		casting.castOverlandSummoningSpell (spell, player3, new MapCoordinates3DEx (15, 25, 0), true, mom);

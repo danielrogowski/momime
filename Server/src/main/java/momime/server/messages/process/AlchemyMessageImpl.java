@@ -1,18 +1,8 @@
 package momime.server.messages.process;
 
-import jakarta.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
 
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.clienttoserver.AlchemyMessage;
-import momime.common.messages.servertoclient.TextPopupMessage;
-import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.ResourceValueUtils;
-import momime.server.MomSessionVariables;
-import momime.server.calculations.ServerResourceCalculations;
-import momime.server.utils.PlayerServerUtils;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,6 +10,19 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+
+import jakarta.xml.bind.JAXBException;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.clienttoserver.AlchemyMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.ResourceValueUtils;
+import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerResourceCalculations;
+import momime.server.utils.PlayerServerUtils;
 
 /**
  * Client sends this to server when they want to convert Gold to Mana or vice versa
@@ -41,15 +44,19 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	/** Player utils */
 	private PlayerServerUtils playerServerUtils;
 	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
@@ -90,10 +97,11 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 		else
 		{
 			// All ok - work out 'to' amount
-			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+				sender.getPlayerDescription ().getPlayerID (), "AlchemyMessageImpl");
 
 			final int toValue;
-			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0)
+			if (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0)
 				toValue = getFromValue ();
 			else
 				toValue = getFromValue () / 2;
@@ -169,5 +177,21 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	public final void setPlayerServerUtils (final PlayerServerUtils utils)
 	{
 		playerServerUtils = utils;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

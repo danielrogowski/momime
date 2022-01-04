@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
@@ -190,9 +189,6 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Spell calculations */
 	private SpellCalculations spellCalculations;
-	
-	/** Session utils */
-	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
@@ -1083,15 +1079,16 @@ public final class CombatUI extends MomClientFrameUI
 			cancelTargetSpellAttacker.setVisible (false);
 			
 			// If we're banished, then hide all casting-related info
-			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initNewCombat");
-
+			final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
+				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "initNewCombat");
+			
 			final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
 			
 			doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty
-				(ourPlayer, getCombatLocation (), getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getSessionDescription ().getOverlandMapSize ());
+				(ourWizard, getCombatLocation (), getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getSessionDescription ().getOverlandMapSize ());
 
 			if (doubleRangePenalty == null)
 			{
@@ -1116,7 +1113,7 @@ public final class CombatUI extends MomClientFrameUI
 
 				// Set up initial casting values
 				updateRemainingCastingSkill (getResourceValueUtils ().calculateModifiedCastingSkill (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (),
-					ourPlayer, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (), false));
+					ourWizard, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (), false));
 			}
 			
 			// Can't cast anything, at least until it is our turn
@@ -2235,22 +2232,6 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setSpellCalculations (final SpellCalculations calc)
 	{
 		spellCalculations = calc;
-	}
-
-	/**
-	 * @return Session utils
-	 */
-	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
-	{
-		return multiplayerSessionUtils;
-	}
-
-	/**
-	 * @param util Session utils
-	 */
-	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
-	{
-		multiplayerSessionUtils = util;
 	}
 
 	/**

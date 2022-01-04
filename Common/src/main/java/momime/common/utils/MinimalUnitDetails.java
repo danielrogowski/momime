@@ -17,6 +17,7 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
@@ -57,6 +58,11 @@ public interface MinimalUnitDetails
 	 * @return Details about the player who owns the unit
 	 */
 	public PlayerPublicDetails getOwningPlayer ();
+	
+	/**
+	 * @return Details about the wizard who owns the unit
+	 */
+	public KnownWizardDetails getOwningWizard ();
 	
 	/**
 	 * @return Whether or not the unit is a hero

@@ -37,7 +37,6 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 
@@ -780,7 +779,7 @@ public final class ExpandUnitDetailsUtilsImpl implements ExpandUnitDetailsUtils
 			modifiedUpkeepValues = new HashMap<String, Integer> ();		// Empty map
 		else
 		{
-			final List<PlayerPick> picks = (mu.getOwningPlayer () == null) ? null : ((MomPersistentPlayerPublicKnowledge) mu.getOwningPlayer ().getPersistentPlayerPublicKnowledge ()).getPick ();
+			final List<PlayerPick> picks = (mu.getOwningWizard () == null) ? null : mu.getOwningWizard ().getPick ();
 
 			// Noble replaces usual gold consumption with gain of +10 gold
 			final boolean isNoble = modifiedSkillValues.containsKey (CommonDatabaseConstants.UNIT_SKILL_ID_NOBLE);

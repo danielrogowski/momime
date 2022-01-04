@@ -55,7 +55,6 @@ import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
@@ -540,26 +539,29 @@ public final class WizardsUI extends MomClientFrameUI
 		bookImages.clear ();
 		
 		// Generate new images
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) selectedWizard.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails selectedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), selectedWizard.getPlayerDescription ().getPlayerID ());
+
 		int mergedBookshelfGridx = 0;
 		
-		for (final PlayerPick pick : pub.getPick ())
-		{
-			// Pick must exist in the graphics XML file, but may not have any image(s)
-			final Pick pickDef = getClient ().getClientDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks");
-			if (pickDef.getBookImageFile ().size () > 0)
-				for (int n = 0; n < pick.getQuantity (); n++)
-				{
-					// Choose random image for the pick
-					final BufferedImage bookImage = getUtils ().loadImage (getPlayerPickClientUtils ().chooseRandomBookImageFilename (pickDef));
-					
-					// Add on merged bookshelf
-					mergedBookshelfGridx++;
-					final JLabel mergedBookshelfImg = getUtils ().createImage (bookImage);
-					bookshelf.add (mergedBookshelfImg, getUtils ().createConstraintsNoFill (mergedBookshelfGridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
-					bookImages.add (mergedBookshelfImg);
-				}
-		}
+		if (selectedWizardDetails != null)
+			for (final PlayerPick pick : selectedWizardDetails.getPick ())
+			{
+				// Pick must exist in the graphics XML file, but may not have any image(s)
+				final Pick pickDef = getClient ().getClientDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks");
+				if (pickDef.getBookImageFile ().size () > 0)
+					for (int n = 0; n < pick.getQuantity (); n++)
+					{
+						// Choose random image for the pick
+						final BufferedImage bookImage = getUtils ().loadImage (getPlayerPickClientUtils ().chooseRandomBookImageFilename (pickDef));
+						
+						// Add on merged bookshelf
+						mergedBookshelfGridx++;
+						final JLabel mergedBookshelfImg = getUtils ().createImage (bookImage);
+						bookshelf.add (mergedBookshelfImg, getUtils ().createConstraintsNoFill (mergedBookshelfGridx, 0, 1, 1, NO_INSET, GridBagConstraintsNoFill.SOUTH));
+						bookImages.add (mergedBookshelfImg);
+					}
+			}
 		
 		// Redrawing only the bookshelf isn't enough, because the new books might be smaller than before so only the smaller so
 		// bookshelf.validate only redraws the new smaller area and leaves bits of the old books showing
@@ -576,31 +578,35 @@ public final class WizardsUI extends MomClientFrameUI
 	 */
 	private final String updateRetortsFromPicks (final int charIndex) throws RecordNotFoundException
 	{
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) selectedWizard.getPersistentPlayerPublicKnowledge ();
+		final KnownWizardDetails selectedWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), selectedWizard.getPlayerDescription ().getPlayerID ());
+		
 		final StringBuffer desc = new StringBuffer ();
 		String result = null;
-		
-		for (final PlayerPick pick : pub.getPick ())
-		{
-			// Pick must exist in the graphics XML file, but may not have any image(s)
-			if (getClient ().getClientDB ().findPick (pick.getPickID (), "WizardsUI.updateRetortsFromPicks").getBookImageFile ().size () == 0)
-			{
-				if (desc.length () > 0)
-					desc.append (", ");
-				
-				if (pick.getQuantity () > 1)
-					desc.append (pick.getQuantity () + "x");
-				
-				final String thisPickText = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPick (pick.getPickID (), "updateRetortsFromPicks").getPickDescriptionSingular ());
 
-				// Does the required index fall within the text for this pick?
-				if ((charIndex >= desc.length ()) && (charIndex < desc.length () + thisPickText.length ()))
-					result = pick.getPickID ();
-				
-				// Now add it
-				desc.append (thisPickText);
+		if (selectedWizardDetails != null)
+			for (final PlayerPick pick : selectedWizardDetails.getPick ())
+			{
+				// Pick must exist in the graphics XML file, but may not have any image(s)
+				if (getClient ().getClientDB ().findPick (pick.getPickID (), "WizardsUI.updateRetortsFromPicks").getBookImageFile ().size () == 0)
+				{
+					if (desc.length () > 0)
+						desc.append (", ");
+					
+					if (pick.getQuantity () > 1)
+						desc.append (pick.getQuantity () + "x");
+					
+					final String thisPickText = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPick (pick.getPickID (), "updateRetortsFromPicks").getPickDescriptionSingular ());
+	
+					// Does the required index fall within the text for this pick?
+					if ((charIndex >= desc.length ()) && (charIndex < desc.length () + thisPickText.length ()))
+						result = pick.getPickID ();
+					
+					// Now add it
+					desc.append (thisPickText);
+				}
 			}
-		}
+		
 		retorts.setText (getTextUtils ().replaceFinalCommaByAnd (desc.toString ()));
 
 		return result;
@@ -612,39 +618,41 @@ public final class WizardsUI extends MomClientFrameUI
 	private final void updateWizard ()
 	{
 		wizardPortrait.setVisible (false);
+		
+		final KnownWizardDetails selectedWizardDetails = (selectedWizard == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), selectedWizard.getPlayerDescription ().getPlayerID ());
+		
 		if (selectedWizard == null)
 			playerName.setText (null);
 		else
 		{
 			playerName.setText (getWizardClientUtils ().getPlayerName (selectedWizard));
 			
-			try
-			{
-				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), selectedWizard.getPlayerDescription ().getPlayerID ());
-				
-				final BufferedImage unscaledPortrait;
-				if (wizardDetails.getCustomPhoto () != null)
-					unscaledPortrait = ImageIO.read (new ByteArrayInputStream (wizardDetails.getCustomPhoto ()));
-				else if (wizardDetails.getStandardPhotoID () != null)
-					unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (wizardDetails.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
-				else
-					throw new MomException ("Player ID " + selectedWizard.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
-				
-				final Image scaledPortrait = unscaledPortrait.getScaledInstance
-					(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH);
-				
-				wizardPortrait.setIcon (new ImageIcon (scaledPortrait));
-				wizardPortrait.setVisible (true);
-			}
-			catch (final IOException e)
-			{
-				log.error ("Error displaying full size wizard portrait", e);
-			}
+			if (selectedWizardDetails != null)
+				try
+				{
+					final BufferedImage unscaledPortrait;
+					if (selectedWizardDetails.getCustomPhoto () != null)
+						unscaledPortrait = ImageIO.read (new ByteArrayInputStream (selectedWizardDetails.getCustomPhoto ()));
+					else if (selectedWizardDetails.getStandardPhotoID () != null)
+						unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (selectedWizardDetails.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
+					else
+						throw new MomException ("Player ID " + selectedWizard.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
+					
+					final Image scaledPortrait = unscaledPortrait.getScaledInstance
+						(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH);
+					
+					wizardPortrait.setIcon (new ImageIcon (scaledPortrait));
+					wizardPortrait.setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					log.error ("Error displaying full size wizard portrait", e);
+				}
 		}
 		
 		// Can only see fame of ourselves
-		fameLabel.setVisible ((selectedWizard != null) && (selectedWizard.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())));
+		fameLabel.setVisible ((selectedWizard != null) && (selectedWizardDetails != null) && (selectedWizard.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())));
 		if (fameLabel.isVisible ())
 			try
 			{
@@ -653,7 +661,7 @@ public final class WizardsUI extends MomClientFrameUI
 				
 				final int basicFame = getResourceValueUtils ().calculateBasicFame (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ());
 				final int modifiedFame = getResourceValueUtils ().calculateModifiedFame (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (),
-					selectedWizard, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					selectedWizardDetails, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				
 				if (basicFame == modifiedFame)
 					fameLabel.setText (getTextUtils ().intToStrCommas (basicFame) + " " + fameSuffix); 

@@ -41,6 +41,7 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -48,6 +49,7 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 
 /**
@@ -150,7 +152,6 @@ public final class TestCitiesListUI extends ClientTestData
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, 1)).thenReturn (ourPlayer);
-		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (1), anyString ())).thenReturn (ourPlayer);
 		
 		// Player name
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
@@ -171,6 +172,12 @@ public final class TestCitiesListUI extends ClientTestData
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setTaxRateID ("TR01");
 		priv.setFogOfWarMemory (fow);
+		
+		// Wizard
+		final KnownWizardDetails ourWizard = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (fow.getWizardDetails (), 1, "refreshCitiesList")).thenReturn (ourWizard);
 		
 		// Cities
 		final OverlandMapCityData city1Data = new OverlandMapCityData ();
@@ -225,7 +232,7 @@ public final class TestCitiesListUI extends ClientTestData
 				terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).setBuildingIdSoldThisTurn ("X");
 			
 			when (unitCalculations.calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-				(fow.getBuilding (), fow.getMap (), new MapCoordinates3DEx (x, y, z), pub.getPick (), mapSize, db)).thenReturn (cityNumber % 4); 
+				(fow.getBuilding (), fow.getMap (), new MapCoordinates3DEx (x, y, z), ourWizard.getPick (), mapSize, db)).thenReturn (cityNumber % 4); 
 			
 			// Enchantments and curses
 			final int enchantmentCount = cityNumber / 2;
@@ -288,6 +295,7 @@ public final class TestCitiesListUI extends ClientTestData
 		cities.setLargeFont (CreateFontsForTests.getLargeFont ());
 		cities.setSmallFont (CreateFontsForTests.getSmallFont ());
 		cities.setClient (client);
+		cities.setKnownWizardUtils (knownWizardUtils);
 		cities.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		cities.setWizardClientUtils (wizardClientUtils);
 		cities.setMemoryBuildingUtils (memoryBuildingUtils);

@@ -64,7 +64,6 @@ import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
@@ -695,8 +694,6 @@ public final class SpellBookUI extends MomClientFrameUI
 	{
 		final SpellBookSectionID sectionID = spell.getSpellBookSectionID ();
 
-		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "castSpell");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 		final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "castSpell");
 
@@ -728,7 +725,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		else
 		{										
 			// If spell is greyed due to incorrect cast type or not enough MP/skill in combat, then just ignore the click altogether
-			final Integer combatCost = getReducedCombatCastingCost (spell, pub.getPick ());
+			final Integer combatCost = getReducedCombatCastingCost (spell, ourWizard.getPick ());
 			
 			if ((getCastType () == SpellCastType.OVERLAND) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
 				proceed = false;
@@ -1172,9 +1169,6 @@ public final class SpellBookUI extends MomClientFrameUI
 
 				final String researchSuffix = getLanguageHolder ().findDescription
 					(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "SpellBookUI").getProductionTypeSuffix ());
-			
-				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "languageOrPageChanged");
-				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 				
 				final KnownWizardDetails ourWizard = getKnownWizardUtils ().findKnownWizardDetails
 					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "languageOrPageChanged");
@@ -1295,11 +1289,11 @@ public final class SpellBookUI extends MomClientFrameUI
 											else
 											{
 												overlandCost = (spell.getOverlandCastingCost () == null) ? null :
-													getSpellUtils ().getReducedOverlandCastingCost (spell, null, null, pub.getPick (),
+													getSpellUtils ().getReducedOverlandCastingCost (spell, null, null, ourWizard.getPick (),
 														getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 														getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
-												combatCost = getReducedCombatCastingCost (spell, pub.getPick ());
+												combatCost = getReducedCombatCastingCost (spell, ourWizard.getPick ());
 											}
 
 											if (overlandCost != null)

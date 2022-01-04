@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
@@ -223,6 +222,7 @@ public final class TestCombatUI extends ClientTestData
 		final KnownWizardDetails atkWizard = new KnownWizardDetails ();
 		atkWizard.setWizardID ("WZ01");
 		atkWizard.setStandardPhotoID ("WZ01");
+		when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (atkPd.getPlayerID ()), anyString ())).thenReturn (atkWizard);
 		
 		final KnownWizardDetails defWizard = new KnownWizardDetails ();
 		defWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
@@ -232,18 +232,15 @@ public final class TestCombatUI extends ClientTestData
 		// We're the attacker
 		when (client.getOurPlayerID ()).thenReturn (atkPd.getPlayerID ());
 		
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, atkPd.getPlayerID (), "initNewCombat")).thenReturn (attackingPlayer);
-		
 		// Spell stats
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.calculateModifiedCastingSkill (priv.getResourceValue (), attackingPlayer, players, fow, db, false)).thenReturn (22);
+		when (resourceValueUtils.calculateModifiedCastingSkill (priv.getResourceValue (), atkWizard, players, fow, db, false)).thenReturn (22);
 		
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (97);
 		
 		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
 		when (spellCalculations.calculateDoubleCombatCastingRangePenalty
-			(attackingPlayer, new MapCoordinates3DEx (20, 10, 0), false, fow.getMap (), fow.getBuilding (), overlandMapSize)).thenReturn (3);
+			(atkWizard, new MapCoordinates3DEx (20, 10, 0), false, fow.getMap (), fow.getBuilding (), overlandMapSize)).thenReturn (3);
 		
 		// Players involved in combat
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
@@ -353,7 +350,6 @@ public final class TestCombatUI extends ClientTestData
 		combat.setCombatMapBitmapGenerator (gen);
 		combat.setCombatMapUtils (combatMapUtils);
 		combat.setClient (client);
-		combat.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		combat.setResourceValueUtils (resourceValueUtils);
 		combat.setWizardClientUtils (wizardClientUtils);
 		combat.setMemoryGridCellUtils (memoryGridCellUtils);

@@ -25,6 +25,7 @@ import momime.common.database.UnitSkill;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.UnitTypeEx;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
@@ -49,6 +50,9 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	
 	/** Details about the player who owns the unit */
 	private final PlayerPublicDetails owningPlayer;
+	
+	/** Details about the wizard who owns the unit */
+	private final KnownWizardDetails owningWizard;
 	
 	/** Experience level of this unit (0-5 for regular units, 0-8 for heroes) excluding bonuses from Warlord/Crusade; for units that don't gain experience (e.g. summoned), returns null */
 	private final ExperienceLevel basicExperienceLevel;
@@ -75,17 +79,19 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	 * @param aUnitDefinition Definition for this unit from the XML database
 	 * @param aUnitType Unit type (normal, hero or summoned)
 	 * @param anOwningPlayer Details about the player who owns the unit
+	 * @param anOwningWizard Details about the wizard who owns the unit
 	 * @param aBasicExpLvl Experience level of this unit (0-5 for regular units, 0-8 for heroes) excluding bonuses from Warlord/Crusade; null for units that don't gain experience (e.g. summoned)
 	 * @param aModifiedExpLvl Experience level of this unit (0-5 for regular units, 0-8 for heroes) including bonuses from Warlord/Crusade; null for units that don't gain experience (e.g. summoned)
 	 * @param aBasicSkillValues Calculated basic skill map
 	 */
 	public MinimalUnitDetailsImpl (final AvailableUnit aUnit, final UnitEx aUnitDefinition, final UnitTypeEx aUnitType, final PlayerPublicDetails anOwningPlayer,
-		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl, final Map<String, Integer> aBasicSkillValues)
+		final KnownWizardDetails anOwningWizard, final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl, final Map<String, Integer> aBasicSkillValues)
 	{
 		unit = aUnit;
 		unitDefinition = aUnitDefinition;
 		unitType = aUnitType;
 		owningPlayer = anOwningPlayer;
+		owningWizard = anOwningWizard;
 		basicExperienceLevel = aBasicExpLvl;
 		modifiedExperienceLevel = aModifiedExpLvl;
 		basicSkillValues = aBasicSkillValues;
@@ -147,6 +153,15 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	public final PlayerPublicDetails getOwningPlayer ()
 	{
 		return owningPlayer;
+	}
+	
+	/**
+	 * @return Details about the wizard who owns the unit
+	 */
+	@Override
+	public final KnownWizardDetails getOwningWizard ()
+	{
+		return owningWizard;
 	}
 	
 	/**

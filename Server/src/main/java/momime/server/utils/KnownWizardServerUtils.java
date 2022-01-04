@@ -1,9 +1,12 @@
 package momime.server.utils;
 
+import java.util.List;
+
 import javax.xml.stream.XMLStreamException;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
 import momime.server.MomSessionVariables;
 
@@ -25,6 +28,12 @@ public interface KnownWizardServerUtils
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
+	 * @param src List of picks to copy from
+	 * @param dest List of picks to copy to
+	 */
+	public void copyPickList (final List<PlayerPick> src, final List<PlayerPick> dest);
+	
+	/**
 	 * Updates all copies of a wizard state on the server.  Does not notify clients of the change.
 	 * 
 	 * @param playerID Player whose state changed
@@ -34,4 +43,16 @@ public interface KnownWizardServerUtils
 	 */
 	public void updateWizardState (final int playerID, final WizardState newState, final MomSessionVariables mom)
 		throws RecordNotFoundException;
+
+	/**
+	 * Picks have been updated in server's true memory.  Now they need copying to the player memory of each player who knows that wizard, and sending to the clients.
+	 * 
+	 * @param playerID Player whose picks changed.
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If we can't find the player in the server's true wizard details
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void copyAndSendUpdatedPicks (final int playerID, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException,XMLStreamException;
 }

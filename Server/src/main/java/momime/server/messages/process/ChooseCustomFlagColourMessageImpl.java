@@ -1,12 +1,16 @@
 package momime.server.messages.process;
 
+import javax.xml.stream.XMLStreamException;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.clienttoserver.ChooseCustomFlagColourMessage;
+import momime.common.messages.servertoclient.YourFlagColourIsOkMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.server.MomSessionVariables;
 
@@ -21,11 +25,13 @@ public final class ChooseCustomFlagColourMessageImpl extends ChooseCustomFlagCol
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
+	 * @throws JAXBException Typically used if there is a problem sending a reply back to the client
+	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the client
 	 * @throws RecordNotFoundException If we can't find either the true or known copy of this wizard's details 
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws RecordNotFoundException
+		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		// No validation here or return message to send here, we just store it
 		final MomSessionVariables mom = (MomSessionVariables) thread;
@@ -38,6 +44,10 @@ public final class ChooseCustomFlagColourMessageImpl extends ChooseCustomFlagCol
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (),
 			sender.getPlayerDescription ().getPlayerID (), "ChooseCustomFlagColourMessageImpl (K)").setCustomFlagColour (getFlagColour ());
+
+		final YourFlagColourIsOkMessage reply = new YourFlagColourIsOkMessage ();
+		reply.setFlagColour (getFlagColour ());
+		sender.getConnection ().sendMessageToClient (reply);
 	}
 
 	/**

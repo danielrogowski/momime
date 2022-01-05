@@ -1412,9 +1412,6 @@ public final class NewGameUI extends MomClientFrameUI
 				final ChooseCustomFlagColourMessage msg = new ChooseCustomFlagColourMessage ();
 				msg.setFlagColour (sliderToHex (flagColourRed) + sliderToHex (flagColourGreen) + sliderToHex (flagColourBlue));
 				getClient ().getServerConnection ().sendMessageToServer (msg);
-				
-				// We assume the server is going to accept this, and go straight to the custom picks screen
-				showCustomPicksPanel ();
 			}
 			else if (picksPanel.isVisible ())
 			{

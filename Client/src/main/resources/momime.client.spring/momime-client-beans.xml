@@ -183,8 +183,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
 		<property name="newGameUI" ref="newGameUI" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+
+	<bean id="yourFlagColourIsOkMessage" class="momime.client.messages.process.YourFlagColourIsOkMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="newGameUI" ref="newGameUI" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<bean id="replacePicksMessage" class="momime.client.messages.process.ReplacePicksMessageImpl" scope="prototype">

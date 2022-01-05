@@ -67,6 +67,7 @@ import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.UpdateTurnPhaseMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
+import momime.common.messages.servertoclient.YourFlagColourIsOkMessage;
 import momime.common.messages.servertoclient.YourPhotoIsOkMessage;
 import momime.common.messages.servertoclient.YourRaceIsOkMessage;
 
@@ -259,6 +260,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final YourPhotoIsOkMessage createYourPhotoIsOkMessage ()
 	{
 		return getFactory ().createYourPhotoIsOkMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final YourFlagColourIsOkMessage createYourFlagColourIsOkMessage ()
+	{
+		return getFactory ().createYourFlagColourIsOkMessage ();
 	}
 
 	/**

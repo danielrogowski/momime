@@ -114,6 +114,11 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
+	public YourFlagColourIsOkMessageImpl createYourFlagColourIsOkMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
 	public AddOrUpdateCombatAreaEffectMessageImpl createAddOrUpdateCombatAreaEffectMessage ();
 
 	/**

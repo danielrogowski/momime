@@ -44,7 +44,10 @@ public final class UploadCustomPhotoMessageImpl extends UploadCustomPhotoMessage
 		getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (),
 			sender.getPlayerDescription ().getPlayerID (), "UploadCustomPhotoMessageImpl (K)").setCustomPhoto (getCustomPhoto ());
 
-		sender.getConnection ().sendMessageToClient (new YourPhotoIsOkMessage ());
+		// Send reply
+		final YourPhotoIsOkMessage reply = new YourPhotoIsOkMessage ();
+		reply.setCustomPhoto (getCustomPhoto ());
+		sender.getConnection ().sendMessageToClient (reply);
 	}
 
 	/**

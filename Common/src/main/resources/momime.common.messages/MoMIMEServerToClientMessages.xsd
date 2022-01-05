@@ -93,7 +93,27 @@ standard wizard portrait or custom .ndgbmp), so proceed to the next stage of gam
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage" />
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="0" maxOccurs="1" name="standardPhotoID" type="momimecommon:wizardID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="customPhoto" type="xsd:base64Binary" />
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="yourFlagColourIsOkMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Message server sends to a player to let them know their choice of flag colour was OK, so proceed to the next stage of game setup.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="flagColour" type="momimecommon:colour" />
+					</xsd:sequence>
+				</xsd:extension>
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>

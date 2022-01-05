@@ -55,7 +55,9 @@ public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMes
 				sender.getPlayerDescription ().getPlayerID (), "ChooseStandardPhotoMessageImpl (K)").setStandardPhotoID (getPhotoID ());
 
 			// Tell client choice was OK
-			sender.getConnection ().sendMessageToClient (new YourPhotoIsOkMessage ());
+			final YourPhotoIsOkMessage reply = new YourPhotoIsOkMessage ();
+			reply.setStandardPhotoID (getPhotoID ());
+			sender.getConnection ().sendMessageToClient (reply);
 		}
 		else
 		{

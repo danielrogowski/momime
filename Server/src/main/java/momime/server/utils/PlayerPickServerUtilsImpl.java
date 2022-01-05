@@ -120,13 +120,13 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	{
 		final MomTransientPlayerPrivateKnowledge priv = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "validateCustomPicks");
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 		
 		String msg = null;
-		if (wizardDetails.getWizardID () == null)
+		if (wizardDetails == null)
 			msg = "You must choose a custom wizard or before trying to choose custom picks";
 
-		else if (!wizardDetails.getWizardID ().equals (""))
+		else if (!getPlayerKnowledgeUtils ().isCustomWizard (wizardDetails.getWizardID ()))
 			msg = "You cannot choose custom picks when you have picked one of the pre-defined wizards";
 
 		else if ((priv.isCustomPicksChosen () != null) && (priv.isCustomPicksChosen ()))

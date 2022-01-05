@@ -337,7 +337,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	   			<value>momime.common.messages.MomGeneralPublicKnowledge</value>
 	   			<value>momime.server.messages.MomGeneralServerKnowledge</value>
 	   			<value>momime.server.messages.ServerGridCell</value>
-	   			<value>momime.common.messages.MomPersistentPlayerPublicKnowledge</value>
 	   			<value>momime.common.messages.MomPersistentPlayerPrivateKnowledge</value>
     		</list>
    		</constructor-arg>

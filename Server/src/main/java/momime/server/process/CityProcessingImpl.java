@@ -197,7 +197,7 @@ public final class CityProcessingImpl implements CityProcessing
 			if (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ()))
 				numberOfCities = 1;
 
-			else if (wizardDetails.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))
+			else if (CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (wizardDetails.getWizardID ()))
 				numberOfCities = mom.getSessionDescription ().getOverlandMapSize ().getRaiderCityCount ();
 
 			else
@@ -604,7 +604,7 @@ public final class CityProcessingImpl implements CityProcessing
 									(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), cityData.getCityOwnerID (), "growCities");
 								
 								if ((mc.getRaiderCityAdditionalPopulationCap () != null) && (mc.getRaiderCityAdditionalPopulationCap () > 0) &&
-									(cityOwnerWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
+									(CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (cityOwnerWizard.getWizardID ())) &&
 									(newPopulation > mc.getRaiderCityAdditionalPopulationCap ()))
 								{
 									newPopulation = mc.getRaiderCityAdditionalPopulationCap ();

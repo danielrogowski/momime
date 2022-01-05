@@ -763,7 +763,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 				
 				// Don't calc production for the Rampaging Monsters player, or the routine spots that they have lots of units
 				// that take a lot of mana to maintain, and no buildings generating any mana to support them, and kills them all off
-				if (!knownWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
+				if (!CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (knownWizard.getWizardID ()))
 				{
 					log.debug ("recalculateGlobalProductionValues processing player ID " + player.getPlayerDescription ().getPlayerID () + " (" + player.getPlayerDescription ().getPlayerName () + ")");
 

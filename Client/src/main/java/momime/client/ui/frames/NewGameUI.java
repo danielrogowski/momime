@@ -2848,8 +2848,8 @@ public final class NewGameUI extends MomClientFrameUI
 		// First list all the wizards, we need to know up front how many there are so we can arrange the buttons properly
 		final List<WizardEx> wizards = new ArrayList<WizardEx> ();
 		for (final WizardEx wizard : getClient ().getClientDB ().getWizards ())
-			if ((!wizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
-				(!wizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
+			if ((!CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (wizard.getWizardID ())) &&
+				(!CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (wizard.getWizardID ())))
 				
 				wizards.add (wizard);
 		

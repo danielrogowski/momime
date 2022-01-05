@@ -590,7 +590,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addPowerBaseHistoryMessage" class="momime.client.messages.process.AddPowerBaseHistoryMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="historyUI" ref="historyUI" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="playAnimationMessage" class="momime.client.messages.process.PlayAnimationMessageImpl" scope="prototype">

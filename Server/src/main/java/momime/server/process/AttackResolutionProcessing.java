@@ -1,14 +1,14 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.AttackResolution;
 import momime.common.database.AttackResolutionStep;
@@ -56,14 +56,12 @@ public interface AttackResolutionProcessing
 	 * @param combatLocation Location the combat is taking place; null if its damage from an overland spell
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit or other rule errors
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
 		final List<AttackResolutionStepContainer> steps, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 }

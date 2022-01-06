@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -69,15 +70,13 @@ public interface SpellCasting
 	 * @param targetLocations Location(s) where the spell is aimed
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Number of units that were killed
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public int castOverlandAttackSpell (final PlayerServerDetails castingPlayer, final String eventID, final Spell spell, final Integer variableDamage,
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Rolls when a spell has a certain % chance of destroying each building in a city.  Used for Earthquake and Chaos Rift.
@@ -88,15 +87,13 @@ public interface SpellCasting
 	 * @param targetLocations The city(s) being targeted
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Number of buildings that were destroyed
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public int rollChanceOfEachBuildingBeingDestroyed (final String spellID, final Integer castingPlayerID, final int percentageChance,
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * @param targetLocation Tile to corrupt
@@ -117,12 +114,10 @@ public interface SpellCasting
 	 * @param targetLocation Tile to change
 	 * @param castingPlayerID Player who cast the spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void changeTileType (final Spell spell, final MapCoordinates3DEx targetLocation, final int castingPlayerID, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 }

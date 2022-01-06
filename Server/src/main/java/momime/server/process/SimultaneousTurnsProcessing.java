@@ -1,13 +1,11 @@
 package momime.server.process;
 
-import jakarta.xml.bind.JAXBException;
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
+import jakarta.xml.bind.JAXBException;
 import momime.server.MomSessionVariables;
-
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Processing methods specifically for dealing with simultaneous turns games
@@ -29,12 +27,10 @@ public interface SimultaneousTurnsProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void processSimultaneousTurnsMovement (final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * Processes all unit & building special orders in a simultaneous turns game 'end phase'	 * 
@@ -42,10 +38,8 @@ public interface SimultaneousTurnsProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void processSpecialOrders (final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 }

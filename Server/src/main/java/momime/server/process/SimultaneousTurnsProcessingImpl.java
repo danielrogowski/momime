@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -12,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
@@ -21,7 +21,6 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.MapFeature;
 import momime.common.database.Plane;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
@@ -110,13 +109,11 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void processSimultaneousTurnsMovement (final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Process non combat moves
 		while (findAndProcessOneCellPendingMovement (mom));
@@ -197,12 +194,10 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	 * @return Whether we found a move to do
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	final boolean findAndProcessOneCellPendingMovement (final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Go through all pending movements for all players
 		final List<OneCellPendingMovement> moves = new ArrayList<OneCellPendingMovement> ();
@@ -301,12 +296,10 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	 * @return Whether we found a combat to do
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	final boolean findAndProcessOneCombat (final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Go through all pending movements for all players
 		final List<OneCellPendingMovement> combats = new ArrayList<OneCellPendingMovement> ();
@@ -446,13 +439,11 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void processSpecialOrders (final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Dismiss units with pending dismiss orders.
 		// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server.

@@ -1,10 +1,10 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystemUtils;
@@ -12,13 +12,12 @@ import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.OverlandMapCityData;
@@ -61,16 +60,14 @@ public final class SpellTriggersImpl implements SpellTriggers
 	 * @param offendingUnmodifiedCastingCost Unmodified mana cost of the spell that triggered this effect, including any extra MP for variable damage 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the spell was successfully cast or not; so false = was dispelled
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final boolean triggerSpell (final MemoryMaintainedSpell spell,
 		final PlayerServerDetails offendingPlayer, final Spell offendingSpell, final Integer offendingUnmodifiedCastingCost, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final Spell spellDef = mom.getServerDB ().findSpell (spell.getSpellID (), "triggerSpell");
 		

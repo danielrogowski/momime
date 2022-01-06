@@ -1,11 +1,11 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystemUtils;
@@ -15,6 +15,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.AttackResolution;
 import momime.common.database.CommonDatabase;
@@ -95,9 +96,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @return Whether the attack resulted in the combat ending and how many units on each side were killed
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final ResolveAttackResult resolveAttack (final MemoryUnit attacker, final List<ResolveAttackTarget> defenders,
@@ -106,7 +105,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final Integer attackerDirection, final String attackSkillID,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final boolean skipAnimation, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final List<MemoryUnit> defenderUnits = defenders.stream ().map (d -> d.getDefender ()).collect (Collectors.toList ());
 		getDamageCalculator ().sendDamageHeader (attacker, defenderUnits, false, attackingPlayer, defendingPlayer, eventID, attackSkillID, spell, castingPlayer);

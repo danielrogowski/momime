@@ -1,9 +1,9 @@
 package momime.server.events;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -15,6 +15,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.Event;
 import momime.common.database.RecordNotFoundException;
@@ -50,15 +51,13 @@ public final class RandomEventsImpl implements RandomEvents
 	/**
 	 * Rolls to see if server should trigger a random event this turn 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws RecordNotFoundException If we can't find an expected data item
-	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
-	 * @throws MomException If there is another kind of error
 	 * @throws JAXBException If there is a problem sending the message
 	 * @throws XMLStreamException If there is a problem sending the message
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void rollRandomEvent (final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		if ((mom.getGeneralPublicKnowledge ().getTurnNumber () > mom.getSessionDescription ().getDifficultyLevel ().getEventMinimumTurnNumber ()) &&
 			(mom.getGeneralPublicKnowledge ().getTurnNumber () > mom.getGeneralServerKnowledge ().getLastEventTurnNumber () +

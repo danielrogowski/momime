@@ -1,5 +1,6 @@
 package momime.server.ai;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -90,12 +91,10 @@ public interface CityAI
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void decideTaxRate (final PlayerServerDetails player, final MomSessionVariables mom)
-		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * AI checks cities to see if they want to rush buy anything

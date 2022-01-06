@@ -1,14 +1,13 @@
 package momime.server.calculations;
 
-import jakarta.xml.bind.JAXBException;
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
-import momime.server.MomSessionVariables;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+import jakarta.xml.bind.JAXBException;
+import momime.server.MomSessionVariables;
 
 /**
  * Server side methods for dealing with calculating and updating the global economy
@@ -37,13 +36,10 @@ public interface ServerResourceCalculations
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
 	 * @param duringStartPhase If true does additional work around enforcing that we are producing enough, and progresses city construction, spell research & casting and so on
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
-	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
-	 * @throws MomException If there are any issues with data or calculation logic
 	 * @throws JAXBException If there is a problem converting a reply message into XML
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
+	 * @throws IOException If there is another kind of problem
 	 */
-	public void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase,
-		final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+	public void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, IOException;
 }

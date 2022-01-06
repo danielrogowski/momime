@@ -1,15 +1,14 @@
 package momime.server.ai;
 
-import jakarta.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
-import momime.server.MomSessionVariables;
+import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+import jakarta.xml.bind.JAXBException;
+import momime.server.MomSessionVariables;
 
 /**
  * AI for deciding what to do with units in combat
@@ -29,10 +28,8 @@ public interface CombatAI
 	 * @return Whether we had at least one unit take some useful action or not
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public CombatAIMovementResult aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 }

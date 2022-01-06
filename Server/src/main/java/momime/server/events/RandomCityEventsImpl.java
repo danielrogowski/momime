@@ -1,5 +1,6 @@
 package momime.server.events;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -185,15 +186,13 @@ public final class RandomCityEventsImpl implements RandomCityEvents
 	 * @param targetWizard Wizard the event is being triggered for
 	 * @param cityLocation City the event is being triggered for
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws RecordNotFoundException If we can't find an expected data item
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is another kind of error
 	 * @throws JAXBException If there is a problem sending the message
 	 * @throws XMLStreamException If there is a problem sending the message
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void triggerCityEvent (final Event event, final PlayerServerDetails targetWizard, final MapCoordinates3DEx cityLocation, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());

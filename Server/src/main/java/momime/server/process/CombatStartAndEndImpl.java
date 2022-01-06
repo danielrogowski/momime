@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +13,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
@@ -20,7 +20,6 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CitySize;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.KnownWizardDetails;
@@ -162,15 +161,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void startCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
 		final List<Integer> attackingUnitURNs, final List<Integer> defendingUnitURNs,
 		final PendingMovement attackerPendingMovement, final PendingMovement defenderPendingMovement, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// If attacking a tower in Myrror, then Defending-AttackingFrom will be 0-1
 		// If attacking from a tower onto Myrror, then Defending-AttackingFrom will be 1-0 - both of these should be shown on Myrror only
@@ -325,15 +322,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void combatEnded (final MapCoordinates3DEx combatLocation,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
 		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());

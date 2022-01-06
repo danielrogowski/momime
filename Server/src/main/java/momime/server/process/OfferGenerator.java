@@ -1,5 +1,7 @@
 package momime.server.process;
 
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -66,10 +68,8 @@ public interface OfferGenerator
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected data item can't be found
-	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
-	 * @throws MomException If there is a validation problem
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void acceptOffer (final PlayerServerDetails player, final NewTurnMessageOffer offer, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 }

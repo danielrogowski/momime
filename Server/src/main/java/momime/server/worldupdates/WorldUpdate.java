@@ -1,12 +1,10 @@
 package momime.server.worldupdates;
 
-import jakarta.xml.bind.JAXBException;
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
+import jakarta.xml.bind.JAXBException;
 import momime.server.MomSessionVariables;
 
 /**
@@ -27,10 +25,8 @@ interface WorldUpdate
 	 * @return Whether this update was processed and/or generated any further updates
 	 * @throws JAXBException If there is a problem sending some message to the client
 	 * @throws XMLStreamException If there is a problem sending some message to the client
-	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
-	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
-	 * @throws MomException If there are any issues with data or calculation logic
+	 * @throws IOException If there is another kind of problem
 	 */
 	public WorldUpdateResult process (final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 }

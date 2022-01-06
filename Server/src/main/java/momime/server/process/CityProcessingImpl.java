@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -414,13 +415,11 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void progressConstructionProjects (final int onlyOnePlayerID, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
@@ -563,13 +562,11 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void growCities (final int onlyOnePlayerID, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
@@ -694,14 +691,12 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void sellBuilding (final MapCoordinates3DEx cityLocation, final Integer buildingURN,
 		final boolean pendingSale, final boolean voluntarySale, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Building details
 		final MemoryBuilding trueBuilding = (buildingURN == null) ? null : getMemoryBuildingUtils ().findBuildingURN
@@ -773,15 +768,13 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void destroyBuildings (final List<MemoryBuilding> buildingsToDestroy,
 		final String buildingsDestroyedBySpellID, final Integer buildingDestructionSpellCastByPlayerID, final MapCoordinates3DEx buildingDestructionSpellLocation,
 		final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Process each building
 		for (final MemoryBuilding destroyBuilding : buildingsToDestroy)
@@ -860,13 +853,11 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final MomSessionVariables mom)
-		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final TaxRate newTaxRate = mom.getServerDB ().getTaxRate ().stream ().filter (t -> t.getTaxRateID ().equals (taxRateID)).findAny ().orElse (null);
 		
@@ -926,13 +917,11 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void captureCity (final MapCoordinates3DEx cityLocation, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final MomSessionVariables mom) throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		final MomSessionVariables mom) throws JAXBException, XMLStreamException, IOException
 	{
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
@@ -980,13 +969,11 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void razeCity (final MapCoordinates3DEx cityLocation, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
@@ -1016,13 +1003,11 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void ruinCity (final MapCoordinates3DEx cityLocation, final int goldInRuin, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
@@ -1039,15 +1024,13 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @param attackingPlayer Player who won the combat, who is doing the banishing
 	 * @param defendingPlayer Player who lost the combat, who is the one being banished
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		getKnownWizardServerUtils ().meetWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);
 		getKnownWizardServerUtils ().meetWizard (defendingPlayer.getPlayerDescription ().getPlayerID (), null, false, mom);

@@ -1,16 +1,15 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
-import momime.common.MomException;
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
@@ -33,14 +32,12 @@ public interface SpellProcessing
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void castOverlandNow (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage, final HeroItem heroItem, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * Handles casting a spell in combat, after all validation has passed.
@@ -63,17 +60,15 @@ public interface SpellProcessing
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the spell cast was an attack that resulted in the combat ending
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public boolean castCombatNow (final PlayerServerDetails castingPlayer, final ExpandedUnitDetails xuCombatCastingUnit, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final boolean skipAnimation, final MomSessionVariables mom)
-		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.
@@ -93,14 +88,12 @@ public interface SpellProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell, final Integer targetPlayerID,
 		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit, final MemoryMaintainedSpell targetSpell,
 		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.
@@ -111,12 +104,10 @@ public interface SpellProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void cancelTargetOverlandSpell (final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * When a wizard is banished or defeated, can steal up to 2 spells from them as long as we have enough books to allow it.
@@ -150,68 +141,58 @@ public interface SpellProcessing
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void citySpellEffectsAttackingUnits (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * For Chaos Rift.  Each turn, there is a chance of each building in the city being destroyed.
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void citySpellEffectsAttackingBuildings (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * For Pestilence.  Each turn, there is a chance of 1000 people dying.
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void citySpellEffectsAttackingPopulation (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * For Stasis.  Each turn, units with stasis get a resistance roll for a chance to free themselves.
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process units belonging to everyone; if specified will process only units owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void rollToRemoveOverlandCurses (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Triggers any overland enchantments that activate every turn with no specific trigger
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process units belonging to everyone; if specified will process only units owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void triggerOverlandEnchantments (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 }

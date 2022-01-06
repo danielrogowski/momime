@@ -1,5 +1,6 @@
 package momime.server.utils;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -68,12 +69,10 @@ public interface CityServerUtils
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void buildCityFromSettler (final PlayerServerDetails player, final MemoryUnit settler, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * @param cityLocation City location

@@ -94,12 +94,12 @@ public interface MomSessionVariables
 	
 	/**
 	 * @param playerID Human player to convert to AI player
-	 * @throws PlayerNotFoundException If the requested playerID cannot be found
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void updateHumanPlayerToAI (final int playerID)
-		throws PlayerNotFoundException, JAXBException, XMLStreamException;
+		throws IOException, JAXBException, XMLStreamException;
 
 	/**
 	 * @return Engine for updating server's true copy of the game world

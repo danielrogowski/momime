@@ -1,5 +1,6 @@
 package momime.server.fogofwar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -141,13 +142,11 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void switchOffSpellsCastInCombat (final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		for (final MemoryMaintainedSpell trueSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 
@@ -173,14 +172,12 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void switchOffSpellsInLocationOnServerAndClients (final MapCoordinates3DEx cityLocation, final int castingPlayerID,
 		final boolean processChanges, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		for (final MemoryMaintainedSpell trueSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 			if ((cityLocation.equals (trueSpell.getCityLocation ())) &&
@@ -240,13 +237,11 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void healUnitsAndGainExperience (final int onlyOnePlayerID, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Find the best Armsmaster at each map cell
 		final Map<MapCoordinates3DEx, Integer> armsmasters = new HashMap<MapCoordinates3DEx, Integer> ();
@@ -690,15 +685,13 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @return Whether the move resulted in a combat being started in a one-player-at-a-time game (and thus the player's turn should halt while the combat is played out)
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final boolean moveUnitStack (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
 		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx originalMoveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (selectedUnits);
@@ -1044,13 +1037,11 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If an expected data item cannot be found
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void planeShiftUnitStack (final List<ExpandedUnitDetails> selectedUnits, final MomSessionVariables mom)
-		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final int playerID = selectedUnits.get (0).getOwningPlayerID ();
 		final MapCoordinates3DEx moveFrom = selectedUnits.get (0).getUnitLocation ();

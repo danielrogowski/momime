@@ -1,5 +1,6 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,7 +22,6 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
@@ -257,15 +257,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void castOverlandNow (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage, final HeroItem heroItem, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Does the magic realm of the cast spell trigger an affect from any overland enchantments?  e.g. casting Death/Chaos spells while Nature's Wrath in effect
 		boolean passesCounteringAttempts = true;
@@ -487,18 +485,16 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @param skipAnimation Tell the client to skip showing any animation and sound effect associated with this spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether the spell cast was an attack that resulted in the combat ending
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final boolean castCombatNow (final PlayerServerDetails castingPlayer, final ExpandedUnitDetails xuCombatCastingUnit, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final boolean skipAnimation, final MomSessionVariables mom)
-		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Which side is casting the spell
 		final UnitCombatSideID castingSide;
@@ -1111,15 +1107,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell, final Integer targetPlayerID,
 		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit, final MemoryMaintainedSpell targetSpell,
 		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), maintainedSpell.getCastingPlayerID (), "targetOverlandSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -1717,13 +1711,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void cancelTargetOverlandSpell (final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Remove it
 		mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
@@ -1861,15 +1853,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void citySpellEffectsAttackingUnits (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 			if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_CHAOS_RIFT)) && (spell.getCityLocation () != null) &&
@@ -1933,15 +1923,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void citySpellEffectsAttackingBuildings (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 			if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_CHAOS_RIFT)) && (spell.getCityLocation () != null) &&
@@ -1956,15 +1944,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process CSEs belonging to everyone; if specified will process only CAEs owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void citySpellEffectsAttackingPopulation (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Get a list of all cities with Pestilence cast on them, even if its the not the right player's turn to trigger it now
 		final List<MapCoordinates3DEx> pestilenceAll = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
@@ -2022,15 +2008,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process units belonging to everyone; if specified will process only units owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void rollToRemoveOverlandCurses (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Run down copy of spell list, since we'll be possibly removing some as we go along
 		final List<MemoryMaintainedSpell> trueSpells = new ArrayList<MemoryMaintainedSpell> ();
@@ -2088,15 +2072,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process units belonging to everyone; if specified will process only units owned by the specified player
-	 * @throws RecordNotFoundException If we encounter an unknown spell
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void triggerOverlandEnchantments (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		for (final MemoryMaintainedSpell spell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == spell.getCastingPlayerID ()))

@@ -1,5 +1,6 @@
 package momime.server.utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +15,6 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.math.RomanNumerals;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
@@ -190,15 +190,13 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * 
 	 * @param attackingSpirit The Magic or Guardian spirit attempting to take the node; its location tells us where the node is
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void attemptToMeldWithNode (final ExpandedUnitDetails attackingSpirit, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(attackingSpirit.getUnitLocation ().getZ ()).getRow ().get (attackingSpirit.getUnitLocation ().getY ()).getCell ().get (attackingSpirit.getUnitLocation ().getX ());

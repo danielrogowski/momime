@@ -1,5 +1,6 @@
 package momime.server.ai;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,7 +17,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 import com.ndg.random.WeightedChoicesImpl;
 
@@ -219,14 +219,12 @@ public final class SpellAIImpl implements SpellAI
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
-	 * @throws MomException If there are any issues with data or calculation logic
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void decideWhatToCastOverland (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final List<AIConstructableUnit> constructableUnits,
 		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Exit if we're already in the middle of casting something
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -429,13 +427,11 @@ public final class SpellAIImpl implements SpellAI
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void decideOverlandSpellTarget (final PlayerServerDetails player, final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
@@ -581,14 +577,12 @@ public final class SpellAIImpl implements SpellAI
 	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
-	 * @throws MomException If there are any issues with data or calculation logic
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final KnownWizardDetails wizardDetails,
 		final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -700,14 +694,12 @@ public final class SpellAIImpl implements SpellAI
 	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
-	 * @throws MomException If there are any issues with data or calculation logic
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final CombatAIMovementResult decideWhetherToCastFixedSpellInCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final WeightedChoicesImpl<CombatAISpellChoice> choices = new WeightedChoicesImpl<CombatAISpellChoice> ();
 		choices.setRandomUtils (getRandomUtils ());
@@ -738,14 +730,12 @@ public final class SpellAIImpl implements SpellAI
 	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
-	 * @throws MomException If there are any issues with data or calculation logic
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final CombatAIMovementResult decideWhetherToCastSpellImbuedInHeroItem (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final WeightedChoicesImpl<CombatAISpellChoice> choices = new WeightedChoicesImpl<CombatAISpellChoice> ();
 		choices.setRandomUtils (getRandomUtils ());

@@ -1,19 +1,17 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
-import momime.common.messages.CaptureCityDecisionID;
-import momime.common.messages.PendingMovement;
-import momime.server.MomSessionVariables;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+import jakarta.xml.bind.JAXBException;
+import momime.common.messages.CaptureCityDecisionID;
+import momime.common.messages.PendingMovement;
+import momime.server.MomSessionVariables;
 
 /**
  * Routines dealing with starting and ending combats
@@ -32,14 +30,12 @@ public interface CombatStartAndEnd
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void startCombat (final MapCoordinates3DEx defendingLocation, final MapCoordinates3DEx attackingFrom,
 		final List<Integer> attackingUnitURNs, final List<Integer> defendingUnitURNs,
 		final PendingMovement attackerPendingMovement, final PendingMovement defenderPendingMovement, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * Handles tidying up when a combat ends
@@ -55,12 +51,10 @@ public interface CombatStartAndEnd
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void combatEnded (final MapCoordinates3DEx combatLocation,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
 		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 }

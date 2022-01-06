@@ -1,5 +1,6 @@
 package momime.server.fogofwar;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
@@ -31,12 +32,10 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void switchOffSpellsCastInCombat (final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * @param cityLocation Location to turn spells off from
@@ -45,13 +44,11 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void switchOffSpellsInLocationOnServerAndClients (final MapCoordinates3DEx cityLocation, final int castingPlayerID,
 		final boolean processChanges, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * Note this only lists out the world updates, it doesn't call process.
@@ -84,12 +81,10 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void healUnitsAndGainExperience (final int onlyOnePlayerID, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * When a unit dies in combat, all the units on the opposing side gain 1 exp. 
@@ -157,14 +152,12 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @return Whether the move resulted in a combat being started in a one-player-at-a-time game (and thus the player's turn should halt while the combat is played out)
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public boolean moveUnitStack (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
 		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx originalMoveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * This follows the same logic as moveUnitStack, except that it only works out what the first cell of movement will be,
@@ -221,12 +214,10 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If an expected data item cannot be found
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void planeShiftUnitStack (final List<ExpandedUnitDetails> selectedUnits, final MomSessionVariables mom)
-		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Units stuck in webs in combat hack/burn some of the HP off the web trying to free themselves.

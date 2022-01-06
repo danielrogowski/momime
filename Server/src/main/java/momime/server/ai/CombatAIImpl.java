@@ -1,5 +1,6 @@
 package momime.server.ai;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -256,13 +257,11 @@ public final class CombatAIImpl implements CombatAI
 	 * @return Whether we did something with the unit or not
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	final CombatAIMovementResult moveOneUnit (final ExpandedUnitDetails tu, final MapCoordinates3DEx combatLocation,
 		final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Work out where this unit can move
 		final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
@@ -342,13 +341,11 @@ public final class CombatAIImpl implements CombatAI
 	 * @return Whether we had at least one unit take some useful action or not
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
-	 * @throws RecordNotFoundException If an expected item cannot be found in the db
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final CombatAIMovementResult aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// If AI Wizard (not raiders, not banished, not human player on auto) then maybe cast a spell before we move units
 		final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails

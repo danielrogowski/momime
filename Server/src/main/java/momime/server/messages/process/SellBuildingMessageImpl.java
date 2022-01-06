@@ -1,6 +1,7 @@
 package momime.server.messages.process;
 
-import jakarta.xml.bind.JAXBException;
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -10,11 +11,9 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
-import momime.common.MomException;
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.Building;
-import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.TurnSystem;
@@ -47,13 +46,11 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 	 * @param sender Player who sent the message
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If various elements cannot be found in the DB
-	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 

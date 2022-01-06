@@ -1,15 +1,14 @@
 package momime.server.messages.process;
 
-import jakarta.xml.bind.JAXBException;
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
+import jakarta.xml.bind.JAXBException;
 import momime.common.messages.clienttoserver.ChangeTaxRateMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CityProcessing;
@@ -27,13 +26,11 @@ public final class ChangeTaxRateMessageImpl extends ChangeTaxRateMessage impleme
 	 * @param sender Player who sent the message
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the client
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the client
-	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
-	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
-	 * @throws MomException If there are any issues with data or calculation logic
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		

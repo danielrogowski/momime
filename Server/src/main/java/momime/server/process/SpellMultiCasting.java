@@ -1,14 +1,13 @@
 package momime.server.process;
 
-import jakarta.xml.bind.JAXBException;
+import java.io.IOException;
+
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.Spell;
 import momime.common.messages.servertoclient.AttackCitySpellResult;
 import momime.server.MomSessionVariables;
@@ -28,13 +27,11 @@ public interface SpellMultiCasting
 	 * @param targetLocation The city being hit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Counts of how many units, buildings and population were killed
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public AttackCitySpellResult castCityAttackSpell (final Spell spell, final PlayerServerDetails castingPlayer, final String eventID,
 		final Integer variableDamage, final MapCoordinates3DEx targetLocation, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 }

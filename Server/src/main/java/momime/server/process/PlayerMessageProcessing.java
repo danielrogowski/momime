@@ -6,7 +6,6 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -51,12 +50,10 @@ public interface PlayerMessageProcessing
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending any messages to the clients
 	 * @throws XMLStreamException If there is a problem sending any messages to the clients
-	 * @throws MomException If there is a problem in any game logic or data
-	 * @throws RecordNotFoundException If various elements cannot be found in the DB
-	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void checkIfCanStartLoadedGame (final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * In a one-player-at-a-time game, this gets called when a player clicks the Next Turn button to tell everyone whose turn it is now
@@ -65,12 +62,10 @@ public interface PlayerMessageProcessing
 	 * @param loadingSavedGame True if the turn is being started immediately after loading a saved game
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If an expected element cannot be found
-	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void switchToNextPlayer (final MomSessionVariables mom, final boolean loadingSavedGame)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Kicks off a new turn in an everybody-allocate-movement-then-move-simultaneously game
@@ -79,12 +74,10 @@ public interface PlayerMessageProcessing
 	 * @param loadingSavedGame True if the turn is being started immediately after loading a saved game
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If an expected element cannot be found
-	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void kickOffSimultaneousTurn (final MomSessionVariables mom, final boolean loadingSavedGame)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 	
 	/**
 	 * Sends all new turn messages queued up on the server to each player, then clears them from the server
@@ -104,38 +97,33 @@ public interface PlayerMessageProcessing
 	 * Human player has clicked the next turn button, or AI player's turn has finished
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param player Player who hit the next turn button
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void nextTurnButton (final MomSessionVariables mom, final PlayerServerDetails player)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Processes the 'end phase' (for want of something better to call it), which happens at the end of each player's turn
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process start phase for all players; if specified will process start phase only for the specified player
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void endPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Checks to see if anyone has won the game, by every other wizard being defeated
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws PlayerNotFoundException If the requested playerID cannot be found
-	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws IOException If there is another kind of problem
 	 */
 	public void checkIfWonGame (final MomSessionVariables mom)
-		throws PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 }

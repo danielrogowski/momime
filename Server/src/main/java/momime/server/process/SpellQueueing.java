@@ -1,18 +1,16 @@
 package momime.server.process;
 
+import java.io.IOException;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
-import momime.common.MomException;
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.HeroItem;
-import momime.common.database.RecordNotFoundException;
 import momime.server.MomSessionVariables;
 
 /**
@@ -41,15 +39,13 @@ public interface SpellQueueing
  	 * @return Whether the spell cast was a combat spell that was an attack that resulted in the combat ending
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
-	 * @throws MomException If there are any issues with data or calculation logic
+	 * @throws IOException If there is another kind of problem
 	 */
 	public boolean requestCastSpell (final PlayerServerDetails castingPlayer, final Integer combatCastingUnitURN, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final String spellID, final HeroItem heroItem,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final Integer variableDamage, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
+		throws JAXBException, XMLStreamException, IOException;
 
 	/**
 	 * Adds a spell to a player's overland casting queue.  This assumes we've already been through all the validation to make sure they're allowed to cast it,
@@ -72,12 +68,10 @@ public interface SpellQueueing
 	 * @param player Player whose casting to progress
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if we cast at least one spell
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	public boolean progressOverlandCasting (final PlayerServerDetails player, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+		throws JAXBException, XMLStreamException, IOException;
 }

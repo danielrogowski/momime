@@ -1,10 +1,10 @@
 package momime.server.events;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -15,6 +15,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 import com.ndg.random.WeightedChoicesImpl;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Event;
@@ -94,15 +95,13 @@ public final class RandomEventTargetingImpl implements RandomEventTargeting
 	/**
 	 * @param event Event to trigger
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws RecordNotFoundException If we can't find an expected data item
-	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
-	 * @throws MomException If there is another kind of error
 	 * @throws JAXBException If there is a problem sending the message
 	 * @throws XMLStreamException If there is a problem sending the message
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void triggerEvent (final Event event, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Is it an event that targets a wizard?  If so then now need to pick the wizard to target
 		if (event.getEventWizardTarget () != null)

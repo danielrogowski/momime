@@ -607,13 +607,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending any messages to the clients
 	 * @throws XMLStreamException If there is a problem sending any messages to the clients
-	 * @throws MomException If there is a problem in any game logic or data
-	 * @throws RecordNotFoundException If various elements cannot be found in the DB
-	 * @throws PlayerNotFoundException If we encounter players that we cannot find in the list
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void checkIfCanStartLoadedGame (final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		if (getPlayerPickServerUtils ().allPlayersAreConnected (mom.getPlayers ()))
 		{
@@ -643,14 +641,12 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process start phase for all players; if specified will process start phase only for the specified player
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	private final void startPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// If someone has timeStop cast then even simultaneous turns games will only process one player
 		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell
@@ -813,13 +809,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @param loadingSavedGame True if the turn is being started immediately after loading a saved game
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If an expected element cannot be found
-	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void switchToNextPlayer (final MomSessionVariables mom, final boolean loadingSavedGame)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell
 			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_TIME_STOP, null, null, null, null);
@@ -918,13 +912,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @param loadingSavedGame True if the turn is being started immediately after loading a saved game
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
-	 * @throws RecordNotFoundException If an expected element cannot be found
-	 * @throws PlayerNotFoundException If the player who owns a unit, or the previous or next player cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void kickOffSimultaneousTurn (final MomSessionVariables mom, final boolean loadingSavedGame)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		if (!loadingSavedGame)
 		{
@@ -1040,15 +1032,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 *
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param onlyOnePlayerID If zero, will process start phase for all players; if specified will process start phase only for the specified player
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void endPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// If someone has timeStop cast then even simultaneous turns games will only process one player
 		final MemoryMaintainedSpell timeStop = getMemoryMaintainedSpellUtils ().findMaintainedSpell
@@ -1198,15 +1188,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * Human player has clicked the next turn button, or AI player's turn has finished
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param player Player who hit the next turn button
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void nextTurnButton (final MomSessionVariables mom, final PlayerServerDetails player)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Clear out any offers for that player - now that they ended their turn, they aren't valid anymore
 		final Iterator<NewTurnMessageOffer> iter = mom.getGeneralServerKnowledge ().getOffer ().iterator ();
@@ -1281,12 +1269,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	final void continueMovement (final int onlyOnePlayerID, final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		if (onlyOnePlayerID == 0)
 			log.info ("Continuing pending movements for everyone...");
@@ -1327,14 +1313,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * Checks to see if anyone has won the game, by every other wizard being defeated
 	 * 
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws PlayerNotFoundException If the requested playerID cannot be found
-	 * @throws RecordNotFoundException If one of the wizard isn't found in the list
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void checkIfWonGame (final MomSessionVariables mom)
-		throws PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		int aliveCount = 0;
 		PlayerServerDetails aliveWizard = null;

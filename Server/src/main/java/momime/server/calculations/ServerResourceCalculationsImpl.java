@@ -1,5 +1,6 @@
 package momime.server.calculations;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -500,13 +501,11 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @return True if had to sell something, false if all production OK
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	private final boolean findInsufficientProductionAndSellSomething (final PlayerServerDetails player, final KnownWizardDetails wizardDetails, final EnforceProductionID enforceType,
 		final boolean addOnStoredAmount, final MomSessionVariables mom)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -739,15 +738,13 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @param onlyOnePlayerID If zero will calculate values in cities for all players; if non-zero will calculate values only for the specified player
 	 * @param duringStartPhase If true does additional work around enforcing that we are producing enough, and progresses city construction, spell research & casting and so on
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws RecordNotFoundException If we find a game element (unit, building or so on) that we can't find the definition for in the DB
-	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
-	 * @throws MomException If there are any issues with data or calculation logic
 	 * @throws JAXBException If there is a problem converting a reply message into XML
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// Make a list of all players to process, in case the session ends and wipes the list out part way through
 		final List<PlayerServerDetails> playersToProcess = new ArrayList<PlayerServerDetails> ();

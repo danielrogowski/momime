@@ -1,5 +1,6 @@
 package momime.server.utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -295,16 +296,14 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param player Player who owns the units
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Error message if there was a problem; null = success
-	 * @throws RecordNotFoundException If an expected data item cannot be found
 	 * @throws JAXBException If there is a problem sending the message to the client
 	 * @throws XMLStreamException If there is a problem sending the message to the client
-	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
-	 * @throws MomException If the player's unit doesn't have the experience skill
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final String processSpecialOrder (final List<Integer> unitURNs, final UnitSpecialOrder specialOrder, final MapCoordinates3DEx mapLocation,
 		final PlayerServerDetails player, final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		// What skill do we need (if list is empty, we don't need any skills at all; if list has multiple then any of the listed skills will do)
 		final List<String> necessarySkillIDs = new ArrayList<String> ();
@@ -911,13 +910,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
 	public final void checkIfNaturallyElite (final MemoryUnit mu, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+		throws JAXBException, XMLStreamException, IOException
 	{
 		final int exp = getUnitSkillDirectAccess ().getDirectSkillValue (mu.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		if (exp > 0)

@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.JoinFailedReason;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -148,6 +149,27 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	{
 		// If its a single player game, then start it immediately
 		getPlayerMessageProcessing ().checkIfCanStartLoadedGame (this);
+	}
+	
+	/**
+	 * Implement custom rules for max players who can join a session, because we must leave enough space for AI players
+	 * 
+	 * @param playerID Player who wants to join this session
+	 * @return Reason why they cannot join this session; or null if they can
+	 */
+	@Override
+	public final JoinFailedReason canJoinSession (@SuppressWarnings ("unused") final int playerID)
+	{
+		// Max players = human opponents + AI opponents + 3, so from this work out the max number of human players
+		final int maxHumanPlayers = getSessionDescription ().getMaxPlayers () - getSessionDescription ().getAiPlayerCount () - 2;
+		
+		final JoinFailedReason result;
+		if (getPlayers ().size () < maxHumanPlayers)
+			result = null;
+		else
+			result = JoinFailedReason.SESSION_FULL;
+
+		return result;
 	}
 	
 	/**

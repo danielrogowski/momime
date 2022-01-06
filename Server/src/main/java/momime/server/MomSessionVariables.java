@@ -8,7 +8,6 @@ import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.ServerToClientSessionConnection;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 

@@ -59,7 +59,10 @@ public final class TestJoinGameUI extends ClientTestData
 		
 		joinGameScreenLang.getSessionsColumnGameName ().add (createLanguageText (Language.ENGLISH, "Game Name"));
 		joinGameScreenLang.getSessionsColumnPlayers ().add (createLanguageText (Language.ENGLISH, "Players"));
-		joinGameScreenLang.getSessionsColumnSettings ().add (createLanguageText (Language.ENGLISH, "Map, Land, Nodes, Difficulty"));
+		joinGameScreenLang.getSessionsColumnMapSize ().add (createLanguageText (Language.ENGLISH, "Map Size"));
+		joinGameScreenLang.getSessionsColumnLandProportion ().add (createLanguageText (Language.ENGLISH, "Land Proportion"));
+		joinGameScreenLang.getSessionsColumnNodeStrength ().add (createLanguageText (Language.ENGLISH, "Node Strength"));
+		joinGameScreenLang.getSessionsColumnDifficultyLevel ().add (createLanguageText (Language.ENGLISH, "Difficulty Level"));
 		joinGameScreenLang.getSessionsColumnTurnSystem ().add (createLanguageText (Language.ENGLISH, "Turn System"));
 		
 		final TurnSystems turnSystemsLang = new TurnSystems ();

@@ -224,10 +224,10 @@ public final class LoadGameUI extends MomClientFrameUI
 		savedGamesTable.setColumnSelectionAllowed (false);
 		
 		savedGamesTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
-		savedGamesTable.getColumnModel ().getColumn (0).setPreferredWidth (80);
-		savedGamesTable.getColumnModel ().getColumn (1).setPreferredWidth (70);
-		savedGamesTable.getColumnModel ().getColumn (2).setPreferredWidth (140);
-		savedGamesTable.getColumnModel ().getColumn (3).setPreferredWidth (180);
+		savedGamesTable.getColumnModel ().getColumn (0).setPreferredWidth (120);
+		savedGamesTable.getColumnModel ().getColumn (1).setPreferredWidth (180);
+		savedGamesTable.getColumnModel ().getColumn (2).setPreferredWidth (150);
+		savedGamesTable.getColumnModel ().getColumn (3).setPreferredWidth (200);
 		
 		savedGamesTablePane = new JScrollPane (savedGamesTable);
 		savedGamesTablePane.getViewport ().setOpaque (false);
@@ -252,8 +252,8 @@ public final class LoadGameUI extends MomClientFrameUI
 		savePointsTable.setColumnSelectionAllowed (false);
 		
 		savePointsTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
-		savePointsTable.getColumnModel ().getColumn (0).setPreferredWidth (150);
-		savePointsTable.getColumnModel ().getColumn (1).setPreferredWidth (70);
+		savePointsTable.getColumnModel ().getColumn (0).setPreferredWidth (160);
+		savePointsTable.getColumnModel ().getColumn (1).setPreferredWidth (80);
 		
 		savePointsTablePane = new JScrollPane (savePointsTable);
 		savePointsTablePane.getViewport ().setOpaque (false);

@@ -24,8 +24,13 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.database.AvailableDatabase;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.DifficultyLevel;
+import momime.common.database.LandProportion;
 import momime.common.database.LanguageText;
+import momime.common.database.NodeStrength;
+import momime.common.database.OverlandMapSize;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.TurnSystem;
 
@@ -135,10 +140,13 @@ public final class JoinGameUI extends MomClientFrameUI
 		sessionsTable.setColumnSelectionAllowed (false);
 		
 		sessionsTable.setAutoResizeMode (JTable.AUTO_RESIZE_OFF);		// So it actually pays attention to the preferred widths
-		sessionsTable.getColumnModel ().getColumn (0).setPreferredWidth (80);
-		sessionsTable.getColumnModel ().getColumn (1).setPreferredWidth (70);
-		sessionsTable.getColumnModel ().getColumn (2).setPreferredWidth (200);
-		sessionsTable.getColumnModel ().getColumn (3).setPreferredWidth (110);
+		sessionsTable.getColumnModel ().getColumn (0).setPreferredWidth (120);
+		sessionsTable.getColumnModel ().getColumn (1).setPreferredWidth (180);
+		sessionsTable.getColumnModel ().getColumn (2).setPreferredWidth (100);
+		sessionsTable.getColumnModel ().getColumn (3).setPreferredWidth (100);
+		sessionsTable.getColumnModel ().getColumn (4).setPreferredWidth (100);
+		sessionsTable.getColumnModel ().getColumn (5).setPreferredWidth (100);
+		sessionsTable.getColumnModel ().getColumn (6).setPreferredWidth (110);
 		
 		final JScrollPane sessionsTablePane = new JScrollPane (sessionsTable);
 		sessionsTablePane.getViewport ().setOpaque (false);
@@ -267,7 +275,7 @@ public final class JoinGameUI extends MomClientFrameUI
 		@Override
 		public final int getColumnCount ()
 		{
-			return 4;
+			return 7;
 		}
 		
 		/**
@@ -288,10 +296,22 @@ public final class JoinGameUI extends MomClientFrameUI
 					break;
 					
 				case 2:
-					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnSettings ();
+					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnMapSize ();
 					break;
 					
 				case 3:
+					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnLandProportion ();
+					break;
+					
+				case 4:
+					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnNodeStrength ();
+					break;
+					
+				case 5:
+					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnDifficultyLevel ();
+					break;
+					
+				case 6:
 					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnTurnSystem ();
 					break;
 				
@@ -320,7 +340,7 @@ public final class JoinGameUI extends MomClientFrameUI
 			final SessionAndPlayerDescriptions spd = getSessions ().get (rowIndex);
 			final MomSessionDescription sd = (MomSessionDescription) spd.getSessionDescription ();
 			
-			final String value;
+			String value = "";
 			switch (columnIndex)
 			{
 				case 0:
@@ -328,38 +348,99 @@ public final class JoinGameUI extends MomClientFrameUI
 					break;
 
 				case 1:
-					value = spd.getPlayer ().size () + " / " + (sd.getMaxPlayers () - sd.getAiPlayerCount () - 2) +
-						(sd.getAiPlayerCount () == 0 ? "" : (", +" + sd.getAiPlayerCount () + " AI")); 
+					// If its already at max players, yet the server told us we can join it, assume its a game being reloaded, so list names instead of showing numbers
+					if (spd.getPlayer ().size () == sd.getMaxPlayers ())
+					{
+						final StringBuffer players = new StringBuffer ();
+						int aiPlayerCount = -2;		// For raiders and rampaging monsters
+						for (final PlayerDescription pd : spd.getPlayer ())
+							if (pd.getPlayerType () == PlayerType.HUMAN)
+							{
+								if (players.length () > 0)
+									players.append (", ");
+								
+								players.append (pd.getPlayerName ());
+							}
+							else
+								aiPlayerCount++;
+						
+						if (aiPlayerCount > 0)
+							players.append (" + " + aiPlayerCount + " AI");
+						
+						value = players.toString ();
+					}
+					else
+						value = spd.getPlayer ().size () + "/" + (sd.getMaxPlayers () - sd.getAiPlayerCount () - 2) +
+							(sd.getAiPlayerCount () == 0 ? "" : (" + " + sd.getAiPlayerCount () + " AI")); 
 					break;
 
 				case 2:
 					// Display the name of each settings preset or "Custom"
-					value = (sd.getOverlandMapSize ().getOverlandMapSizeID () == null ?
-							getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ()) :
-							getLanguageHolder ().findDescription (sd.getOverlandMapSize ().getOverlandMapSizeDescription ())) + ", " +
-							
-						(sd.getLandProportion ().getLandProportionID () == null ?
-							getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ()) :
-							getLanguageHolder ().findDescription (sd.getLandProportion ().getLandProportionDescription ())) + ", " +
-						
-						(sd.getNodeStrength ().getNodeStrengthID () == null ?
-							getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ()) :
-							getLanguageHolder ().findDescription (sd.getNodeStrength ().getNodeStrengthDescription ())) + ", " +
-								
-						(sd.getDifficultyLevel ().getDifficultyLevelID () == null ?
-							getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ()) :
-							getLanguageHolder ().findDescription (sd.getDifficultyLevel ().getDifficultyLevelDescription ()));
+					if (sd.getOverlandMapSize ().getOverlandMapSizeID () == null)
+						value = getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ());
+					else
+					{
+						final AvailableDatabase db = getClient ().getNewGameDatabase ().getMomimeXmlDatabase ().stream ().filter (d -> d.getDbName ().equals (sd.getXmlDatabaseName ())).findAny ().orElse (null);
+						if (db != null)
+						{
+							final OverlandMapSize mapSize = db.getOverlandMapSize ().stream ().filter (m -> m.getOverlandMapSizeID ().equals (sd.getOverlandMapSize ().getOverlandMapSizeID ())).findAny ().orElse (null);
+							if (mapSize != null)
+								value = getLanguageHolder ().findDescription (mapSize.getOverlandMapSizeDescription ());
+						}
+					}
 					break;
 					
 				case 3:
+					if (sd.getLandProportion ().getLandProportionID () == null)
+						value = getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ());
+					else
+					{
+						final AvailableDatabase db = getClient ().getNewGameDatabase ().getMomimeXmlDatabase ().stream ().filter (d -> d.getDbName ().equals (sd.getXmlDatabaseName ())).findAny ().orElse (null);
+						if (db != null)
+						{
+							final LandProportion landProportion = db.getLandProportion ().stream ().filter (m -> m.getLandProportionID ().equals (sd.getLandProportion ().getLandProportionID ())).findAny ().orElse (null);
+							if (landProportion != null)
+								value = getLanguageHolder ().findDescription (landProportion.getLandProportionDescription ());
+						}
+					}
+					break;
+					
+				case 4:
+					if (sd.getNodeStrength ().getNodeStrengthID () == null)
+						value = getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ());
+					else
+					{
+						final AvailableDatabase db = getClient ().getNewGameDatabase ().getMomimeXmlDatabase ().stream ().filter (d -> d.getDbName ().equals (sd.getXmlDatabaseName ())).findAny ().orElse (null);
+						if (db != null)
+						{
+							final NodeStrength nodeStrength = db.getNodeStrength ().stream ().filter (m -> m.getNodeStrengthID ().equals (sd.getNodeStrength ().getNodeStrengthID ())).findAny ().orElse (null);
+							if (nodeStrength != null)
+								value = getLanguageHolder ().findDescription (nodeStrength.getNodeStrengthDescription ());
+						}
+					}
+					break;
+					
+				case 5:
+					if (sd.getDifficultyLevel ().getDifficultyLevelID () == null)
+						value = getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ());
+					else
+					{
+						final AvailableDatabase db = getClient ().getNewGameDatabase ().getMomimeXmlDatabase ().stream ().filter (d -> d.getDbName ().equals (sd.getXmlDatabaseName ())).findAny ().orElse (null);
+						if (db != null)
+						{
+							final DifficultyLevel difficultyLevel = db.getDifficultyLevel ().stream ().filter (m -> m.getDifficultyLevelID ().equals (sd.getDifficultyLevel ().getDifficultyLevelID ())).findAny ().orElse (null);
+							if (difficultyLevel != null)
+								value = getLanguageHolder ().findDescription (difficultyLevel.getDifficultyLevelDescription ());
+						}
+					}
+					break;
+					
+				case 6:
 					final List<LanguageText> languageText = (sd.getTurnSystem () == TurnSystem.SIMULTANEOUS) ?
 						getLanguages ().getTurnSystems ().getSimultaneous () : getLanguages ().getTurnSystems ().getOnePlayerAtATime ();
 						
 					value = getLanguageHolder ().findDescription (languageText);
 					break;
-					
-				default:
-					value = null;
 			}
 			return value;
 		}

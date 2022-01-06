@@ -1497,8 +1497,20 @@
 						<xsd:selector xpath="sessionsColumnPlayers" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="joinGameScreenSessionsColumnSettingsPK">
-						<xsd:selector xpath="sessionsColumnSettings" />
+					<xsd:key name="joinGameScreenSessionsColumnMapSizePK">
+						<xsd:selector xpath="sessionsColumnMapSize" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="joinGameScreenSessionsColumnLandProportionPK">
+						<xsd:selector xpath="sessionsColumnLandProportion" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="joinGameScreenSessionsColumnNodeStrengthPK">
+						<xsd:selector xpath="sessionsColumnNodeStrength" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="joinGameScreenSessionsColumnDifficultyLevelPK">
+						<xsd:selector xpath="sessionsColumnDifficultyLevel" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="joinGameScreenSessionsColumnTurnSystemPK">
@@ -4137,7 +4149,10 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnGameName" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnPlayers" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnSettings" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnMapSize" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnLandProportion" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnNodeStrength" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnDifficultyLevel" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnTurnSystem" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refresh" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="join" />

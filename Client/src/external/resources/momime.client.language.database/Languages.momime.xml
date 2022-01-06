@@ -3376,18 +3376,24 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<sessionsColumnPlayers language="pl">
 			<text>Gracze</text>
 		</sessionsColumnPlayers>
-		<sessionsColumnSettings language="en">
-			<text>Map, Land, Nodes, Difficulty</text>
-		</sessionsColumnSettings>
-		<sessionsColumnSettings language="fr">
-			<text>Taille de Carte</text>
-		</sessionsColumnSettings>
-		<sessionsColumnSettings language="de">
+		<sessionsColumnMapSize language="en">
 			<text>Map Size</text>
-		</sessionsColumnSettings>
-		<sessionsColumnSettings language="pl">
+		</sessionsColumnMapSize>
+		<sessionsColumnMapSize language="fr">
+			<text>Taille de Carte</text>
+		</sessionsColumnMapSize>
+		<sessionsColumnMapSize language="pl">
 			<text>Wielkość Mapy</text>
-		</sessionsColumnSettings>
+		</sessionsColumnMapSize>
+		<sessionsColumnLandProportion language="en">
+			<text>Land Proportion</text>
+		</sessionsColumnLandProportion>
+		<sessionsColumnNodeStrength language="en">
+			<text>Node Strength</text>
+		</sessionsColumnNodeStrength>
+		<sessionsColumnDifficultyLevel language="en">
+			<text>Difficulty Level</text>
+		</sessionsColumnDifficultyLevel>
 		<sessionsColumnTurnSystem language="en">
 			<text>Turn System</text>
 		</sessionsColumnTurnSystem>

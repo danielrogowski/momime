@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
-	<formWidth>640</formWidth>
+	<formWidth>960</formWidth>
 	<formHeight>480</formHeight>
 	<component name="frmJoinGameSessions">
 		<left>50</left>
 		<top>88</top>
-		<width>532</width>
+		<width>852</width>
 		<height>314</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmJoinGameRefresh">
-		<left>118</left>
+		<left>143</left>
 		<top>422</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmJoinGameConfirm">
-		<left>200</left>
+		<left>432</left>
 		<top>422</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmJoinGameCancel">
-		<left>462</left>
+		<left>723</left>
 		<top>422</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>

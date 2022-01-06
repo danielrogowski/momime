@@ -606,6 +606,10 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 							languageText = getLanguages ().getMultiplayer ().getJoinFailed ().getSessionFull ();
 							break;
 							
+						case CONVERTED_TO_AI:
+							languageText = getLanguages ().getMultiplayer ().getJoinFailed ().getConvertedToAI ();
+							break;
+							
 						default:
 							throw new MomException ("Don't understand join session failure code of " + joinFailed);
 					}

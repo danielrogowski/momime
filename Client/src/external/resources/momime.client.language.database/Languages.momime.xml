@@ -677,6 +677,9 @@
 			<sessionFull language="pl">
 				<text>Gra do której chcesz się dołączyć jest już pełna.</text>
 			</sessionFull>
+			<convertedToAI language="en">
+				<text>You cannot rejoin a game in which you have been defeated.</text>
+			</convertedToAI>
 		</joinFailed>
 		<leaveSessionFailed>
 			<title language="en">

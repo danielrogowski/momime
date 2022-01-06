@@ -2714,6 +2714,10 @@
 					<xsd:selector xpath="sessionFull" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
+				<xsd:key name="joinFailedConvertedToAIPK">
+					<xsd:selector xpath="convertedToAI" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
    			</xsd:element>
    			<xsd:element minOccurs="0" maxOccurs="1" name="leaveSessionFailed" type="momimelangs:leaveSessionFailed">
 				<xsd:key name="leaveSessionFailedTitlePK">
@@ -2887,6 +2891,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyInSession" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionIDNotFound" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionFull" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="convertedToAI" />
 		</xsd:sequence>
     </xsd:complexType>
 	

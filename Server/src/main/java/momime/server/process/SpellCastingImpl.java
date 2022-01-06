@@ -16,6 +16,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -159,7 +160,7 @@ public final class SpellCastingImpl implements SpellCasting
 			}
 
 			// Show on new turn messages for the player who summoned it
-			if ((sendNewTurnMessage) && (player.getPlayerDescription ().isHuman ()))
+			if ((sendNewTurnMessage) && (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 			{
 				final NewTurnMessageSummonUnit summoningSpell = new NewTurnMessageSummonUnit ();
 				summoningSpell.setMsgType (NewTurnMessageTypeID.SUMMONED_UNIT);
@@ -195,7 +196,7 @@ public final class SpellCastingImpl implements SpellCasting
 
 		for (final PlayerServerDetails sendToPlayer : mom.getPlayers ())
 			if (((onlyOnePlayerID == 0) || (onlyOnePlayerID == sendToPlayer.getPlayerDescription ().getPlayerID ())) &&
-				(sendToPlayer.getPlayerDescription ().isHuman ()) &&
+				(sendToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) &&
 				((ourSpellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST)) ||
 					(getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 						sendToPlayer.getPlayerDescription ().getPlayerID (), ourSpellID, null, null, null, null) != null)))

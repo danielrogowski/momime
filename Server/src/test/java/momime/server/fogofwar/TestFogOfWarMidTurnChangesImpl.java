@@ -23,6 +23,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
@@ -94,7 +95,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 					
 					final PlayerDescription pd = new PlayerDescription ();
 					pd.setPlayerID (playerID);
-					pd.setHuman (human);
+					pd.setPlayerType (human ? PlayerType.HUMAN : PlayerType.AI);
 					
 					// Mock whether the player can see the location
 					final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
@@ -141,7 +142,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 8; playerIndex++)
 		{
 			final PlayerServerDetails player = players.get (playerIndex);
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final DummyServerToClientConnection conn = (DummyServerToClientConnection) player.getConnection ();
 				if (playerIndex != 5)
@@ -199,7 +200,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 					
 					final PlayerDescription pd = new PlayerDescription ();
 					pd.setPlayerID (playerID);
-					pd.setHuman (human);
+					pd.setPlayerType (human ? PlayerType.HUMAN : PlayerType.AI);
 					
 					// Mock whether the player can see the location
 					final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
@@ -250,7 +251,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 8; playerIndex++)
 		{
 			final PlayerServerDetails player = players.get (playerIndex);
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final DummyServerToClientConnection conn = (DummyServerToClientConnection) player.getConnection ();
 				if (playerIndex != 5)
@@ -331,7 +332,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 					
 					final PlayerDescription pd = new PlayerDescription ();
 					pd.setPlayerID (playerID);
-					pd.setHuman (human);
+					pd.setPlayerType (human ? PlayerType.HUMAN : PlayerType.AI);
 					
 					// Need to make the spell lists unique for verify to work correctly
 					final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -381,7 +382,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 8; playerIndex++)
 		{
 			final PlayerServerDetails player = players.get (playerIndex);
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final DummyServerToClientConnection conn = (DummyServerToClientConnection) player.getConnection ();
 				if (playerIndex != 5)
@@ -451,7 +452,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				
 				final PlayerDescription pd = new PlayerDescription ();
 				pd.setPlayerID (playerID);
-				pd.setHuman (human);
+				pd.setPlayerType (human ? PlayerType.HUMAN : PlayerType.AI);
 				
 				// Mock whether the player can see the city
 				final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
@@ -526,7 +527,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 		{
 			final PlayerServerDetails player = players.get (playerIndex);
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final DummyServerToClientConnection conn = (DummyServerToClientConnection) player.getConnection ();
 				if (playerIndex != 3)
@@ -600,7 +601,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				
 				final PlayerDescription pd = new PlayerDescription ();
 				pd.setPlayerID (playerID);
-				pd.setHuman (human);
+				pd.setPlayerType (human ? PlayerType.HUMAN : PlayerType.AI);
 				
 				// Mock whether the player can see the city
 				final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
@@ -681,7 +682,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 		{
 			final PlayerServerDetails player = players.get (playerIndex);
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final DummyServerToClientConnection conn = (DummyServerToClientConnection) player.getConnection ();
 				if (playerIndex != 3)
@@ -753,7 +754,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				
 				final PlayerDescription pd = new PlayerDescription ();
 				pd.setPlayerID (playerID);
-				pd.setHuman (human);
+				pd.setPlayerType (human ? PlayerType.HUMAN : PlayerType.AI);
 				
 				// Mock whether the player can see the city
 				final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
@@ -829,7 +830,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 		{
 			final PlayerServerDetails player = players.get (playerIndex);
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final DummyServerToClientConnection conn = (DummyServerToClientConnection) player.getConnection ();
 				if (playerIndex != 3)

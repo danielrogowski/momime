@@ -24,6 +24,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.database.AttackResolution;
 import momime.common.database.AttackSpellTargetID;
@@ -77,13 +78,13 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (7);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -264,13 +265,13 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (7);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -450,13 +451,13 @@ public final class TestDamageProcessorImpl extends ServerTestData
 
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (7);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -570,13 +571,13 @@ public final class TestDamageProcessorImpl extends ServerTestData
 
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (7);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);

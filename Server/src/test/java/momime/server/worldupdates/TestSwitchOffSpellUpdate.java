@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.Spell;
@@ -87,7 +88,7 @@ public final class TestSwitchOffSpellUpdate
 				
 				final PlayerDescription pd = new PlayerDescription ();
 				pd.setPlayerID (playerID);
-				pd.setHuman (human);
+				pd.setPlayerType (human ? PlayerType.HUMAN : PlayerType.AI);
 				
 				// Need to make the spell lists unique for verify to work correctly
 				final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -128,7 +129,7 @@ public final class TestSwitchOffSpellUpdate
 		for (int playerIndex = 0; playerIndex < 4; playerIndex++)
 		{
 			final PlayerServerDetails player = players.get (playerIndex);
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final DummyServerToClientConnection conn = (DummyServerToClientConnection) player.getConnection ();
 				if (playerIndex != 3)

@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtilsImpl;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -146,7 +147,7 @@ public final class TestWizardsUI extends ClientTestData
 		for (int n = 1; n <= 16; n++)
 		{
 			final PlayerDescription pd = new PlayerDescription ();
-			pd.setHuman (n <= 14);
+			pd.setPlayerType ((n <= 14) ? PlayerType.HUMAN : PlayerType.AI);
 			pd.setPlayerID ((n <= 14) ? n : -n);
 			
 			final KnownWizardDetails wizardDetails = new KnownWizardDetails ();

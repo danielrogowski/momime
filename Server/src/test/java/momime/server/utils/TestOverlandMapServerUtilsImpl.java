@@ -12,8 +12,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,8 +27,10 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabase;
@@ -301,7 +301,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		final PlayerDescription attackerPd = new PlayerDescription ();
 		attackerPd.setPlayerID (2);
-		attackerPd.setHuman (true);
+		attackerPd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge attackerTrans = new MomTransientPlayerPrivateKnowledge ();
 		
@@ -407,7 +407,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		final PlayerDescription attackerPd = new PlayerDescription ();
 		attackerPd.setPlayerID (-1);
-		attackerPd.setHuman (false);
+		attackerPd.setPlayerType (PlayerType.AI);
 		
 		final MomTransientPlayerPrivateKnowledge attackerTrans = new MomTransientPlayerPrivateKnowledge ();
 		
@@ -514,7 +514,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		final PlayerDescription attackerPd = new PlayerDescription ();
 		attackerPd.setPlayerID (2);
-		attackerPd.setHuman (true);
+		attackerPd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge attackerTrans = new MomTransientPlayerPrivateKnowledge ();
 		
@@ -523,7 +523,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 
 		final PlayerDescription defenderPd = new PlayerDescription ();
 		defenderPd.setPlayerID (3);
-		defenderPd.setHuman (true);
+		defenderPd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge defenderTrans = new MomTransientPlayerPrivateKnowledge ();
 		
@@ -663,7 +663,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		
 		final PlayerDescription attackerPd = new PlayerDescription ();
 		attackerPd.setPlayerID (2);
-		attackerPd.setHuman (true);
+		attackerPd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge attackerTrans = new MomTransientPlayerPrivateKnowledge ();
 		
@@ -672,7 +672,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 
 		final PlayerDescription defenderPd = new PlayerDescription ();
 		defenderPd.setPlayerID (3);
-		defenderPd.setHuman (true);
+		defenderPd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge defenderTrans = new MomTransientPlayerPrivateKnowledge ();
 		

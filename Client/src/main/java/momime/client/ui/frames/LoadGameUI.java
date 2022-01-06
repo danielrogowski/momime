@@ -18,6 +18,7 @@ import javax.swing.table.AbstractTableModel;
 import com.ndg.multiplayer.sessionbase.BrowseSavePoints;
 import com.ndg.multiplayer.sessionbase.LoadGame;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.multiplayer.sessionbase.SavedGamePoint;
 import com.ndg.multiplayer.sessionbase.SavedGameSession;
 import com.ndg.swing.actions.LoggingAction;
@@ -124,7 +125,7 @@ public final class LoadGameUI extends MomClientFrameUI
 			
 			final StringBuilder playersList = new StringBuilder ();
 			for (final PlayerDescription player : savedGame.getPlayer ())
-				if (player.isHuman ())
+				if (player.getPlayerType () == PlayerType.HUMAN)
 				{
 					if (playersList.length () > 0)
 						playersList.append (", ");
@@ -490,15 +491,15 @@ public final class LoadGameUI extends MomClientFrameUI
 					final StringBuffer players = new StringBuffer ();
 					int aiPlayerCount = -2;		// For raiders and rampaging monsters
 					for (final PlayerDescription pd : savedGame.getPlayer ())
-						if (!pd.isHuman ())
-							aiPlayerCount++;
-						else
+						if (pd.getPlayerType () == PlayerType.HUMAN)
 						{
 							if (players.length () > 0)
 								players.append (", ");
 							
 							players.append (pd.getPlayerName ());
 						}
+						else
+							aiPlayerCount++;
 					
 					if (aiPlayerCount > 0)
 						players.append (" + " + aiPlayerCount + " AI");

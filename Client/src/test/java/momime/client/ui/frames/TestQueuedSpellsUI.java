@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -87,7 +88,7 @@ public final class TestQueuedSpellsUI extends ClientTestData
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		// Wizard
 		final FogOfWarMemory mem = new FogOfWarMemory ();

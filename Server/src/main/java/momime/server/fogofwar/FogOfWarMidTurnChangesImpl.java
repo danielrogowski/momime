@@ -14,6 +14,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -163,7 +164,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (getFogOfWarDuplication ().copyTerrainAndNodeAura (tc, mc))
 
 					// Update player's memory on client
-					if (thisPlayer.getPlayerDescription ().isHuman ())
+					if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						thisPlayer.getConnection ().sendMessageToClient (terrainMsgContainer);
 			}
 		}
@@ -223,7 +224,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (getFogOfWarDuplication ().copyCityData (tc, mc, includeCurrentlyConstructing, includeProductionSoFar))
 
 					// Update player's memory on client
-					if (thisPlayer.getPlayerDescription ().isHuman ())
+					if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						// Note unlike the terrain msg which we can build once and send to each applicable player, the data for the city msg
 						// needs to be reset for each player, since their visibility of the currentlyConstructing value may be different
@@ -264,7 +265,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
 
 					// Update player's memory on client
-					if (thisPlayer.getPlayerDescription ().isHuman ())
+					if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						thisPlayer.getConnection ().sendMessageToClient (spellMsg);
 			}
 		}
@@ -303,7 +304,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (getFogOfWarDuplication ().copyCombatAreaEffect (trueCAE, priv.getFogOfWarMemory ().getCombatAreaEffect ()))
 
 					// Update player's memory on client
-					if (thisPlayer.getPlayerDescription ().isHuman ())
+					if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						thisPlayer.getConnection ().sendMessageToClient (caeMsg);
 			}
 		}
@@ -444,7 +445,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 		// Check which players can see the spell; force the caster to be able to see it for casting Earth Lore in black areas
 		for (final PlayerServerDetails player : mom.getPlayers ())
-			if ((player.getPlayerDescription ().isHuman ()) && ((transientSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ()) ||
+			if ((player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((transientSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ()) ||
 				(getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (transientSpell, player, mom))))
 				
 				player.getConnection ().sendMessageToClient (msg);
@@ -491,7 +492,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
 
 					// Update on client
-					if (player.getPlayerDescription ().isHuman ())
+					if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						player.getConnection ().sendMessageToClient (msg);
 			}
 		}
@@ -621,7 +622,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					if (getFogOfWarDuplication ().copyCombatAreaEffect (trueCAE, priv.getFogOfWarMemory ().getCombatAreaEffect ()))
 	
 						// Update on client
-						if (player.getPlayerDescription ().isHuman ())
+						if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 							player.getConnection ().sendMessageToClient (msg);
 				}
 			}
@@ -680,7 +681,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 						getFogOfWarDuplication ().copyBuilding (trueBuilding, priv.getFogOfWarMemory ().getBuilding ());
 	
 					// Send to client
-					if (player.getPlayerDescription ().isHuman ())
+					if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						player.getConnection ().sendMessageToClient (msg);
 				}
 			}
@@ -738,7 +739,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
-			final DestroyBuildingMessage msg = player.getPlayerDescription ().isHuman () ? new DestroyBuildingMessage () : null;
+			final DestroyBuildingMessage msg = player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN ? new DestroyBuildingMessage () : null;
 
 			for (final MemoryBuilding trueBuilding : trueBuildings)
 			{
@@ -824,7 +825,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				if (getFogOfWarDuplication ().copyUnit (tu, priv.getFogOfWarMemory ().getUnit (), tu.getOwningPlayerID () == thisPlayer.getPlayerDescription ().getPlayerID ()))
 					
 					// Update player's memory on client
-					if (thisPlayer.getPlayerDescription ().isHuman ())
+					if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						if (msg != null)
 							thisPlayer.getConnection ().sendMessageToClient (msg);
@@ -879,7 +880,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			// unit stack but not the other - and so know about one unit but not the other.
 			// We handle this by leaving one of the UnitURNs as null, but this means we have to build the message separately for each client.
 			final ApplyDamageMessage msg;
-			if (thisPlayer.getPlayerDescription ().isHuman ())
+			if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				msg = new ApplyDamageMessage ();
 				msg.setYourCombat ((!skipAnimation) && ((thisPlayer == attackingPlayer) || (thisPlayer == defendingPlayer)));
@@ -984,7 +985,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			unitURNs.add (tu.getUnitURN ());
 
 			if (getFogOfWarDuplication ().copyUnit (tu, priv.getFogOfWarMemory ().getUnit (), tu.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
-				if (player.getPlayerDescription ().isHuman ())
+				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final AddOrUpdateUnitMessage msg = new AddOrUpdateUnitMessage ();
 					msg.setMemoryUnit (tu);
@@ -997,7 +998,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if (trueSpell.getUnitURN () != null)
 				if (unitURNs.contains (trueSpell.getUnitURN ()))
 					if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
-						if (player.getPlayerDescription ().isHuman ())
+						if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						{
 							final AddOrUpdateMaintainedSpellMessage msg = new AddOrUpdateMaintainedSpellMessage ();
 							msg.setMaintainedSpell (trueSpell);

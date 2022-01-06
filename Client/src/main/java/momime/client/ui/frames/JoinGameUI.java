@@ -16,6 +16,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.ndg.multiplayer.sessionbase.JoinSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.multiplayer.sessionbase.RequestSessionList;
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.swing.actions.LoggingAction;
@@ -92,7 +93,7 @@ public final class JoinGameUI extends MomClientFrameUI
 			final PlayerDescription pd = new PlayerDescription ();
 			pd.setPlayerID (getClient ().getOurPlayerID ());
 			pd.setPlayerName (getClient ().getOurPlayerName ());
-			pd.setHuman (true);
+			pd.setPlayerType (PlayerType.HUMAN);
 	
 			final JoinSession msg = new JoinSession ();
 			msg.setSessionID (spd.getSessionDescription ().getSessionID ());

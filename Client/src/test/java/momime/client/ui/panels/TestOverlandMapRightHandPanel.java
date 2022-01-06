@@ -20,6 +20,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -228,7 +229,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
 		trans1.setFlagColour ("FF8000");
@@ -238,7 +239,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (-1);
-		pd2.setHuman (false);
+		pd2.setPlayerType (PlayerType.AI);
 		
 		final MomTransientPlayerPublicKnowledge trans2 = new MomTransientPlayerPublicKnowledge ();
 		trans2.setFlagColour ("FF0080");

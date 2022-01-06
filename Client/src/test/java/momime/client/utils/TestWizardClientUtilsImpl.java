@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
@@ -78,11 +79,15 @@ public final class TestWizardClientUtilsImpl extends ClientTestData
 		utils.setKnownWizardUtils (knownWizardUtils);
 		
 		// Try with a human player
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		assertEquals ("Mr. Blah", utils.getPlayerName (player));
 		
 		// Try with an AI player
-		pd.setHuman (false);
+		pd.setPlayerType (PlayerType.AI);
 		assertEquals ("Merlin", utils.getPlayerName (player));
+		
+		// Try with a human player who was defeated
+		pd.setPlayerType (PlayerType.HUMAN_CONVERTED_TO_AI);
+		assertEquals ("Mr. Blah", utils.getPlayerName (player));
 	}
 }

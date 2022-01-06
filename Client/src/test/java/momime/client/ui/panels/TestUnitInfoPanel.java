@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.actions.LoggingAction;
@@ -269,7 +270,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 		
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerID (1);
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);

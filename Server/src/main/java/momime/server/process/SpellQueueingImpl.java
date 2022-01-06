@@ -13,6 +13,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -602,7 +603,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		priv.getQueuedSpell ().add (queued);
 		
 		// Queue it on client
-		if (player.getPlayerDescription ().isHuman ())
+		if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final OverlandCastQueuedMessage reply = new OverlandCastQueuedMessage ();
 			reply.setSpellID (spellID);
@@ -673,7 +674,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				priv.setManaSpentOnCastingCurrentSpell (0);
 
 				// Remove queued spell on client
-				if (player.getPlayerDescription ().isHuman ())
+				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final RemoveQueuedSpellMessage msg = new RemoveQueuedSpellMessage ();
 					msg.setQueuedSpellIndex (0);
@@ -700,7 +701,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Update mana spent so far on client (or set to 0 if finished)
 			// Maybe this should be moved out?  If we cast multiple queued spells, do we really have to keep sending 0's?
 			// Surely the client only cares on the mana spent on casting ones that we don't remove from its queue
-			if ((mom.getPlayers ().size () > 0) && (player.getPlayerDescription ().isHuman ()))
+			if ((mom.getPlayers ().size () > 0) && (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 			{
 				final UpdateManaSpentOnCastingCurrentSpellMessage msg = new UpdateManaSpentOnCastingCurrentSpellMessage ();
 				msg.setManaSpentOnCastingCurrentSpell (priv.getManaSpentOnCastingCurrentSpell ());

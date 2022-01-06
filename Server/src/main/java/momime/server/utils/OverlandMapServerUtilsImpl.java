@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystem;
@@ -16,8 +15,10 @@ import com.ndg.math.RomanNumerals;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -225,7 +226,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		{
 			// Add messages about it
 			final PlayerServerDetails attackingPlayer = (PlayerServerDetails) attackingSpirit.getOwningPlayer ();
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
+			if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final NewTurnMessageNode msg = new NewTurnMessageNode ();
 				msg.setMsgType (NewTurnMessageTypeID.NODE_CAPTURED);
@@ -242,7 +243,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			{
 				final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
 					(mom.getPlayers (), tc.getTerrainData ().getNodeOwnerID (), "attemptToMeldWithNode (d)");
-				if (defendingPlayer.getPlayerDescription ().isHuman ())
+				if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final NewTurnMessageNode msg = new NewTurnMessageNode ();
 					msg.setMsgType (NewTurnMessageTypeID.NODE_LOST);

@@ -21,6 +21,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
@@ -79,13 +80,13 @@ public final class TestCombatMapUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final PlayerDescription attackerPd = new PlayerDescription ();
-		attackerPd.setHuman (true);
+		attackerPd.setPlayerType (PlayerType.HUMAN);
 		attackerPd.setPlayerID (3);
 		final PlayerPublicDetails attacker = new PlayerPublicDetails (attackerPd, null, null);
 		players.add (attacker);
 
 		final PlayerDescription defenderPd = new PlayerDescription ();
-		defenderPd.setHuman (false);
+		defenderPd.setPlayerType (PlayerType.AI);
 		defenderPd.setPlayerID (-1);
 		final PlayerPublicDetails defender = new PlayerPublicDetails (defenderPd, null, null);
 		players.add (defender);

@@ -62,6 +62,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.NewSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
@@ -2789,7 +2790,7 @@ public final class NewGameUI extends MomClientFrameUI
 			final PlayerDescription pd = new PlayerDescription ();
 			pd.setPlayerID (getClient ().getOurPlayerID ());
 			pd.setPlayerName (getClient ().getOurPlayerName ());
-			pd.setHuman (true);
+			pd.setPlayerType (PlayerType.HUMAN);
 	
 			final NewSession msg = new NewSession ();
 			msg.setSessionDescription (buildSessionDescription ());
@@ -5276,7 +5277,7 @@ public final class NewGameUI extends MomClientFrameUI
 					break;
 
 				case 1:
-					final List<LanguageText> languageText = ppd.getPlayerDescription ().isHuman () ?
+					final List<LanguageText> languageText = (ppd.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) ?
 						getLanguages ().getWaitForPlayersToJoinScreen ().getHuman () : getLanguages ().getWaitForPlayersToJoinScreen ().getAi ();
 						
 					value = getLanguageHolder ().findDescription (languageText);

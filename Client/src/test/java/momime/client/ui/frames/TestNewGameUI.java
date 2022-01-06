@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtilsImpl;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -160,7 +161,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -307,7 +308,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -465,7 +466,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -619,7 +620,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -762,7 +763,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -919,7 +920,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -1067,7 +1068,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -1211,7 +1212,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -1353,7 +1354,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -1495,7 +1496,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -1638,7 +1639,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -1791,7 +1792,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -1930,7 +1931,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -2143,7 +2144,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -2394,7 +2395,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -2549,7 +2550,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -2765,7 +2766,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -2970,7 +2971,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
@@ -3191,7 +3192,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
@@ -3378,7 +3379,7 @@ public final class TestNewGameUI extends ClientTestData
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerName ("Mr. Blah");
 		
 		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();

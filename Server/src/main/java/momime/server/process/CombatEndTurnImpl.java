@@ -13,6 +13,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -443,7 +444,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 					
 					// We have to re-send the remaining casting skill with the message, since the client doesn't record it, and by sending
 					// it the client can correctly work out if the reduced MP is below the remaining casting skill and means the player can now cast less
-					if (thisPlayer.getPlayerDescription ().isHuman ())
+					if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 							(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());

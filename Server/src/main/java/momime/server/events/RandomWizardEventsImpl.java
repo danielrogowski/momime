@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -264,7 +265,7 @@ public final class RandomWizardEventsImpl implements RandomWizardEvents
 				mom.getGeneralServerKnowledge ().getAvailableHeroItem ().remove (item);
 				priv.getUnassignedHeroItem ().add (item);
 
-				if (targetWizard.getPlayerDescription ().isHuman ())
+				if (targetWizard.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final AddUnassignedHeroItemMessage msg = new AddUnassignedHeroItemMessage ();
 					msg.setHeroItem (item);

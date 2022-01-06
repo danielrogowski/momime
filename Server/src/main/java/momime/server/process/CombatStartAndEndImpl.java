@@ -13,6 +13,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -299,10 +300,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				defendingWizard, mom.getPlayers (), defendingPriv.getFogOfWarMemory (), mom.getServerDB (), false)); 
 			
 			// Finally send the message, containing all the unit positions, units (if monsters in a node/lair/tower) and combat scenery
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
+			if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				attackingPlayer.getConnection ().sendMessageToClient (startCombatMessage);
 
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
+			if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				defendingPlayer.getConnection ().sendMessageToClient (startCombatMessage);
 			
 			// Kick off first turn of combat
@@ -353,7 +354,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				useCaptureCityDecision = CaptureCityDecisionID.RAZE;
 			}
 			
-			else if (attackingPlayer.getPlayerDescription ().isHuman ())
+			else if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				log.debug ("Undecided city capture, bulk of method will not run");
 				
@@ -591,13 +592,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			
 			// Send the CombatEnded message
 			// Remember defending player may still be nil if we attacked an empty lair
-			if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ()))
+			if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 			{
 				msg.setFameChange (defenderFameChange);
 				defendingPlayer.getConnection ().sendMessageToClient (msg);
 			}
 			
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
+			if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				msg.setFameChange (attackerFameChange);
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
@@ -699,7 +700,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) winningPlayer.getPersistentPlayerPrivateKnowledge ();
 					priv.getUnassignedHeroItem ().addAll (tc.getItemsFromHeroesWhoDiedInCombat ());
 					
-					if (winningPlayer.getPlayerDescription ().isHuman ())
+					if (winningPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						final AddUnassignedHeroItemMessage heroItemMsg = new AddUnassignedHeroItemMessage ();
 						for (final NumberedHeroItem item : tc.getItemsFromHeroesWhoDiedInCombat ())
@@ -792,7 +793,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					final PlayerServerDetails currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
 						(mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "combatEnded (R)");
 					
-					if (currentPlayer.getPlayerDescription ().isHuman ())
+					if (currentPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						// If this is a one-at-a-time turns game, we need to tell the player to make their next move
 						currentPlayer.getConnection ().sendMessageToClient (new SelectNextUnitToMoveOverlandMessage ());

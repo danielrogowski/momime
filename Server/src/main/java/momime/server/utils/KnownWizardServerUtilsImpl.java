@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
@@ -82,7 +83,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 					
 					// Tell the player the wizard they chose was OK; in that way they get their copy of their own KnownWizardDetails record
-					if (player.getPlayerDescription ().isHuman ())
+					if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						final MeetWizardMessage meet = new MeetWizardMessage ();
 						meet.setKnownWizardDetails (knownWizardDetails);
@@ -168,7 +169,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 			if (wizardDetails != null)
 			{
 				copyPickList (trueWizard.getPick (), wizardDetails.getPick ());
-				if (player.getPlayerDescription ().isHuman ())
+				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					player.getConnection ().sendMessageToClient (msg);
 			}
 		}
@@ -230,7 +231,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 
 							wizardDetails.getPowerBaseHistory ().add (powerBase);
 							
-							if (player.getPlayerDescription ().isHuman ())
+							if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 							{
 								AddPowerBaseHistoryMessage msg = msgs.get (player.getPlayerDescription ().getPlayerID ());
 								if (msg == null)

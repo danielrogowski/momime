@@ -24,6 +24,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
@@ -1066,7 +1067,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection (); 
 		player1.setConnection (conn1);
@@ -1077,7 +1078,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection (); 
 		player2.setConnection (conn2);

@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.multiplayer.server.ServerToClientSessionConnection;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import momime.common.database.CommonDatabase;
@@ -168,7 +169,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -180,10 +181,8 @@ public final class TestPlayerPickServerUtilsImpl
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (mem);
 		
-		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (null);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -220,7 +219,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -236,7 +235,11 @@ public final class TestPlayerPickServerUtilsImpl
 		wizardDetails.setWizardID ("WZ01");
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		
+		// Wizard ID meanings
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isCustomWizard ("WZ01")).thenReturn (false);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -258,6 +261,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Check results
 		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
@@ -281,7 +285,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -294,10 +298,14 @@ public final class TestPlayerPickServerUtilsImpl
 		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		wizardDetails.setWizardID ("");
+		wizardDetails.setWizardID (null);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		
+		// Wizard ID meanings
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isCustomWizard (null)).thenReturn (true);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -315,6 +323,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setKnownWizardUtils (knownWizardUtils);
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
 		
 		// Check results
 		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
@@ -340,7 +349,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -353,10 +362,14 @@ public final class TestPlayerPickServerUtilsImpl
 		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		wizardDetails.setWizardID ("");
+		wizardDetails.setWizardID (null);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		
+		// Wizard ID meanings
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isCustomWizard (null)).thenReturn (true);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -379,7 +392,8 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setKnownWizardUtils (knownWizardUtils);
-		
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+
 		// Check results
 		assertNotNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
@@ -404,7 +418,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -417,10 +431,14 @@ public final class TestPlayerPickServerUtilsImpl
 		gsk.setTrueMap (mem);
 		
 		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
-		wizardDetails.setWizardID ("");
+		wizardDetails.setWizardID (null);
 		
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
-		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID (), "validateCustomPicks")).thenReturn (wizardDetails);
+		when (knownWizardUtils.findKnownWizardDetails (mem.getWizardDetails (), pd.getPlayerID ())).thenReturn (wizardDetails);
+		
+		// Wizard ID meanings
+		final PlayerKnowledgeUtils playerKnowledgeUtils = mock (PlayerKnowledgeUtils.class);
+		when (playerKnowledgeUtils.isCustomWizard (null)).thenReturn (true);
 		
 		// Create requested picks list
 		final List<PickAndQuantity> picks = new ArrayList<PickAndQuantity> ();
@@ -443,7 +461,8 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up object to test
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setKnownWizardUtils (knownWizardUtils);
-		
+		utils.setPlayerKnowledgeUtils (playerKnowledgeUtils);
+
 		// Check results
 		assertNull (utils.validateCustomPicks (player, picks, 11, mom));
 	}
@@ -468,7 +487,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -528,7 +547,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -601,7 +620,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -692,7 +711,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -781,7 +800,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (-1);
-		pd.setHuman (false);
+		pd.setPlayerType (PlayerType.AI);
 		pd.setPlayerName ("Name");
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
@@ -889,7 +908,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
@@ -958,7 +977,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
@@ -1021,7 +1040,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
@@ -1100,7 +1119,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
@@ -1187,7 +1206,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
@@ -1269,7 +1288,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
@@ -1351,7 +1370,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
@@ -1408,7 +1427,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
@@ -1446,7 +1465,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
@@ -1502,7 +1521,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 
@@ -1558,7 +1577,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
@@ -1601,7 +1620,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, null, null, null);
 		
@@ -1630,7 +1649,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -1678,7 +1697,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -1727,7 +1746,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -1775,7 +1794,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -1816,7 +1835,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Set up player details
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -1886,7 +1905,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Single player game just against raiders, and nothing chosen yet
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv = new MomTransientPlayerPrivateKnowledge ();
 
@@ -1916,7 +1935,7 @@ public final class TestPlayerPickServerUtilsImpl
 		// Add second player
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (3);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge priv2 = new MomTransientPlayerPrivateKnowledge ();
 
@@ -1942,16 +1961,16 @@ public final class TestPlayerPickServerUtilsImpl
 	{
 		// Set up 2 human and 1 AI player, 1 human player is still disconnected
 		final PlayerDescription pd1 = new PlayerDescription ();
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, null);
 		player1.setConnection (mock (ServerToClientSessionConnection.class));
 
 		final PlayerDescription pd2 = new PlayerDescription ();
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, null);
 		
 		final PlayerDescription pd3 = new PlayerDescription ();
-		pd3.setHuman (false);
+		pd3.setPlayerType (PlayerType.AI);
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, null, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();

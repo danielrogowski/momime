@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.multiplayer.sessionbase.SavedGamePoint;
 import com.ndg.multiplayer.sessionbase.SavedGameSession;
 import com.ndg.swing.NdgUIUtils;
@@ -121,22 +122,22 @@ public final class TestLoadGameUI extends ClientTestData
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		pd1.setPlayerName ("Nigel");
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		pd2.setPlayerName ("AI Wizard");
-		pd2.setHuman (false);
+		pd2.setPlayerType (PlayerType.AI);
 		
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (3);
 		pd3.setPlayerName ("Raiders");
-		pd3.setHuman (false);
+		pd3.setPlayerType (PlayerType.AI);
 		
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (4);
 		pd4.setPlayerName ("Rampaging Monsters");
-		pd4.setHuman (false);
+		pd4.setPlayerType (PlayerType.AI);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setAiPlayerCount (4);

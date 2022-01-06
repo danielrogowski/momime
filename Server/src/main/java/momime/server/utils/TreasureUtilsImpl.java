@@ -15,6 +15,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -709,7 +710,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		getServerSpellCalculations ().randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), mom.getServerDB ());
 		
 		// Send private info
-		if (player.getPlayerDescription ().isHuman ())
+		if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			// Send hero items
 			for (final NumberedHeroItem item : reward.getHeroItem ())

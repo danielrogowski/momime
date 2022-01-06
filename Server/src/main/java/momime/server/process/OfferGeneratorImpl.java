@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -409,7 +410,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 		getServerResourceCalculations ().sendGlobalProductionValues (player, null, false);
 		
 		// Mark offer as accepted
-		if (player.getPlayerDescription ().isHuman ())
+		if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final OfferAcceptedMessage msg = new OfferAcceptedMessage ();
 			msg.setOfferURN (offer.getOfferURN ());
@@ -512,7 +513,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			priv.getUnassignedHeroItem ().add (item);
 			
 			// Add on client
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final AddUnassignedHeroItemMessage msg = new AddUnassignedHeroItemMessage ();
 				msg.setHeroItem (item);

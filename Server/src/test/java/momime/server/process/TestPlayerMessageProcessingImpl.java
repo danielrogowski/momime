@@ -20,6 +20,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.database.CommonDatabase;
 import momime.common.messages.FogOfWarMemory;
@@ -60,7 +61,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Human player
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (2);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
 		final NewTurnMessageData player1message1 = new NewTurnMessageData ();		// These get used as-is, so no need to put real values in here
@@ -77,7 +78,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Computer player
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (-1);
-		pd2.setHuman (false);
+		pd2.setPlayerType (PlayerType.AI);
 		
 		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
 		final NewTurnMessageData player2message1 = new NewTurnMessageData ();
@@ -91,7 +92,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Human player
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans3 = new MomTransientPlayerPrivateKnowledge ();
 		final NewTurnMessageData player3message1 = new NewTurnMessageData ();
@@ -142,7 +143,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Human player
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (2);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
 		final NewTurnMessageData player1message1 = new NewTurnMessageData ();		// These get used as-is, so no need to put real values in here
@@ -159,7 +160,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Computer player
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (-1);
-		pd2.setHuman (false);
+		pd2.setPlayerType (PlayerType.AI);
 		
 		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
 		final NewTurnMessageData player2message1 = new NewTurnMessageData ();
@@ -173,7 +174,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Human player
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans3 = new MomTransientPlayerPrivateKnowledge ();
 		final NewTurnMessageData player3message1 = new NewTurnMessageData ();
@@ -230,7 +231,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Human player
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (2);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
 		final NewTurnMessageData player1message1 = new NewTurnMessageData ();		// These get used as-is, so no need to put real values in here
@@ -247,7 +248,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Computer player
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (-1);
-		pd2.setHuman (false);
+		pd2.setPlayerType (PlayerType.AI);
 		
 		final MomTransientPlayerPrivateKnowledge trans2 = new MomTransientPlayerPrivateKnowledge ();
 		final NewTurnMessageData player2message1 = new NewTurnMessageData ();
@@ -261,7 +262,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Human player
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans3 = new MomTransientPlayerPrivateKnowledge ();
 		final NewTurnMessageData player3message1 = new NewTurnMessageData ();

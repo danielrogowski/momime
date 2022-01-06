@@ -27,6 +27,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.CityCalculations;
@@ -207,7 +208,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		humanPriv.setTaxRateID ("TR01");
 		
 		final PlayerDescription humanPd = new PlayerDescription ();
-		humanPd.setHuman (true);
+		humanPd.setPlayerType (PlayerType.HUMAN);
 		humanPd.setPlayerID (5);
 		humanPd.setPlayerName ("Human player");
 		final PlayerServerDetails humanPlayer = new PlayerServerDetails (humanPd, null, humanPriv, null, humanTrans);
@@ -221,7 +222,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final KnownWizardDetails aiWizard = new KnownWizardDetails ();
 		aiWizard.setWizardID ("WZ01");				// Standard wizard
 		final PlayerDescription aiPd = new PlayerDescription ();
-		aiPd.setHuman (false);
+		aiPd.setPlayerType (PlayerType.AI);
 		aiPd.setPlayerID (-1);
 		aiPd.setPlayerName ("AI player");
 		final PlayerServerDetails aiPlayer = new PlayerServerDetails (aiPd, null, aiPriv, null, aiTrans);
@@ -232,7 +233,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final KnownWizardDetails raidersWizard = new KnownWizardDetails ();
 		raidersWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);
 		final PlayerDescription raidersPd = new PlayerDescription ();
-		raidersPd.setHuman (false);
+		raidersPd.setPlayerType (PlayerType.AI);
 		raidersPd.setPlayerID (-2);
 		raidersPd.setPlayerName ("Raiders");
 		final PlayerServerDetails raidersPlayer = new PlayerServerDetails (raidersPd, null, raidersPriv, null, null);
@@ -240,7 +241,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final KnownWizardDetails monstersWizard = new KnownWizardDetails ();
 		monstersWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
 		final PlayerDescription monstersPd = new PlayerDescription ();
-		monstersPd.setHuman (false);
+		monstersPd.setPlayerType (PlayerType.AI);
 		monstersPd.setPlayerID (-3);
 		monstersPd.setPlayerName ("Monsters");
 		final PlayerServerDetails monstersPlayer = new PlayerServerDetails (monstersPd, null, null, null, null);
@@ -645,7 +646,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
@@ -747,7 +748,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
@@ -857,7 +858,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		pd.setPlayerID (1);
 		
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
@@ -961,7 +962,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setTaxRateID ("TR");
@@ -1069,7 +1070,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setTaxRateID ("TR");
@@ -1177,7 +1178,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setTaxRateID ("TR");
@@ -1279,7 +1280,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails cityOwner = new PlayerServerDetails (pd, null, null, null, null);
 		
@@ -1379,7 +1380,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);

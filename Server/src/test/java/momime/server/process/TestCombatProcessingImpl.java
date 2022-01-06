@@ -28,6 +28,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
@@ -397,7 +398,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		attackingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -407,7 +408,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -563,14 +564,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Attacking player
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (false);
+		attackingPd.setPlayerType (PlayerType.AI);
 		attackingPd.setPlayerID (-1);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		// Defending player
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (3);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -659,14 +660,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Attacking player
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (false);
+		attackingPd.setPlayerType (PlayerType.AI);
 		attackingPd.setPlayerID (-1);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		// Defending player
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (3);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -775,14 +776,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Attacking player
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (false);
+		attackingPd.setPlayerType (PlayerType.AI);
 		attackingPd.setPlayerID (-1);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		// Defending player
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (3);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -894,14 +895,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Attacking player
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (false);
+		attackingPd.setPlayerType (PlayerType.AI);
 		attackingPd.setPlayerID (-1);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		// Defending player
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-2);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -1013,7 +1014,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -1031,7 +1032,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (true);
+		defendingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
 		defendingWizard.setWizardID ("WZ02");
@@ -1049,7 +1050,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, null, null, null);
 		players.add (otherPlayer);
@@ -1218,7 +1219,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -1236,7 +1237,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
@@ -1251,7 +1252,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, null, null, null);
 		players.add (otherPlayer);
@@ -1414,7 +1415,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -1432,7 +1433,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final KnownWizardDetails defendingWizard = new KnownWizardDetails ();
 		defendingWizard.setWizardID (CommonDatabaseConstants.WIZARD_ID_MONSTERS);
@@ -1447,7 +1448,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, null, null, null);
 		players.add (otherPlayer);
@@ -1610,7 +1611,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -1628,7 +1629,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, null, null, null);
 		players.add (otherPlayer);
@@ -1770,7 +1771,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -1788,7 +1789,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final PlayerServerDetails otherPlayer = new PlayerServerDetails (otherPD, null, null, null, null);
 		players.add (otherPlayer);
@@ -1917,7 +1918,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -1934,7 +1935,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (true);
+		defendingPD.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -1948,7 +1949,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -2088,7 +2089,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -2105,7 +2106,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2116,7 +2117,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -2249,7 +2250,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -2266,7 +2267,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2277,7 +2278,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -2410,7 +2411,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -2427,7 +2428,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2438,7 +2439,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -2571,7 +2572,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -2588,7 +2589,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2599,7 +2600,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -2724,7 +2725,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -2741,7 +2742,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (true);
+		defendingPD.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2755,7 +2756,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -2895,7 +2896,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -2912,7 +2913,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -2930,7 +2931,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -3056,7 +3057,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -3073,7 +3074,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3084,7 +3085,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -3217,7 +3218,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -3234,7 +3235,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3245,7 +3246,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -3379,7 +3380,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Attacking player
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizard = new KnownWizardDetails ();
 		attackingWizard.setWizardID ("WZ01");
@@ -3396,7 +3397,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Defending player
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		defendingPriv.setFogOfWarMemory (new FogOfWarMemory ());
@@ -3407,7 +3408,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Some other player not involved in the combat
 		final PlayerDescription otherPD = new PlayerDescription ();
 		otherPD.setPlayerID (5);
-		otherPD.setHuman (true);
+		otherPD.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails otherWizard = new KnownWizardDetails ();
 		otherWizard.setWizardID ("WZ03");
@@ -3550,7 +3551,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Human attacker
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -3563,7 +3564,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		// AI defender
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -3729,7 +3730,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Human attacker
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -3742,7 +3743,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		// AI defender
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -3891,7 +3892,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Human attacker
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -3904,7 +3905,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 
 		// AI defender
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();

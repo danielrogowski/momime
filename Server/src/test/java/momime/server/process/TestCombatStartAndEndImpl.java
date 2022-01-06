@@ -25,6 +25,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
@@ -175,7 +176,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Attacking player
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -186,7 +187,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Defending player
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -336,7 +337,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Attacking player
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -347,7 +348,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Defending player
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -505,7 +506,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Attacking player
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -516,7 +517,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Defending player
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -655,7 +656,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
@@ -663,7 +664,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (5);
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
@@ -728,7 +729,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
@@ -736,7 +737,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
@@ -855,7 +856,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -865,7 +866,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
@@ -1013,7 +1014,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -1023,7 +1024,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
@@ -1178,7 +1179,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -1190,7 +1191,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -1399,7 +1400,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -1411,7 +1412,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -1611,7 +1612,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -1622,7 +1623,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
@@ -1771,7 +1772,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (3);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
@@ -1780,7 +1781,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		attackingPlayer.setConnection (attackingMsgs);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (false);
+		defendingPd.setPlayerType (PlayerType.AI);
 		defendingPd.setPlayerID (-1);
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		

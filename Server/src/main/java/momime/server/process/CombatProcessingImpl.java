@@ -19,6 +19,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -683,10 +684,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 					msg.setPlayerID (tc.getCombatCurrentPlayerID ());
 					msg.getTerrifiedUnitURN ().addAll (terrifiedUnitURNs);
 					
-					if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().isHuman ())
+					if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						((PlayerServerDetails) combatPlayers.getDefendingPlayer ()).getConnection ().sendMessageToClient (msg);
 	
-					if (combatPlayers.getAttackingPlayer ().getPlayerDescription ().isHuman ())
+					if (combatPlayers.getAttackingPlayer ().getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
 					
 					// Give this player all their movement for this turn
@@ -707,7 +708,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if (tc.getCombatCurrentPlayerID () != null)
 			{
 				final PlayerServerDetails combatCurrentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCombatCurrentPlayerID (), "progressCombat");
-				if ((combatCurrentPlayer.getPlayerDescription ().isHuman ()) && (!autoControlHumanPlayer))
+				if ((combatCurrentPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && (!autoControlHumanPlayer))
 				{
 					// Human players' turn.
 					// Nothing to do here - we already notified them to take their turn so the loop & this method will just
@@ -1036,7 +1037,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 						final MomPersistentPlayerPrivateKnowledge defPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
 						getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), defPriv.getFogOfWarMemory ().getUnit ());
 
-						if (defendingPlayer.getPlayerDescription ().isHuman ())
+						if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 							defendingPlayer.getConnection ().sendMessageToClient (manualKillMessage);
 					}
 					
@@ -1046,7 +1047,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 						final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 						getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), atkPriv.getFogOfWarMemory ().getUnit ());
 					
-						if (attackingPlayer.getPlayerDescription ().isHuman ())
+						if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 							attackingPlayer.getConnection ().sendMessageToClient (manualKillMessage);
 					}
 				}
@@ -1129,7 +1130,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				defUnit.setCombatSide (combatSide);
 				
 				// Update on client
-				if (defendingPlayer.getPlayerDescription ().isHuman ())
+				if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					log.debug ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to defender's client");
 					defendingPlayer.getConnection ().sendMessageToClient (msg);
@@ -1157,7 +1158,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				atkUnit.setCombatSide (combatSide);
 	
 				// Update on client
-				if (attackingPlayer.getPlayerDescription ().isHuman ())
+				if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					log.debug ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to attacker's client");
 					attackingPlayer.getConnection ().sendMessageToClient (msg);
@@ -1262,10 +1263,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// Only send this to the players involved in the combat.
 			// Players not involved in the combat don't care where the units are positioned.
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
+			if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
 
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
+			if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				defendingPlayer.getConnection ().sendMessageToClient (msg);
 
 			// Actually put the units in that location on the server
@@ -1352,10 +1353,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 					
 					// Only send this to the players involved in the combat.
 					// Players not involved in the combat don't care where the units are positioned.
-					if (attackingPlayer.getPlayerDescription ().isHuman ())
+					if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						attackingPlayer.getConnection ().sendMessageToClient (msg);
 	
-					if (defendingPlayer.getPlayerDescription ().isHuman ())
+					if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						defendingPlayer.getConnection ().sendMessageToClient (msg);
 					
 					dirNo++;

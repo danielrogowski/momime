@@ -30,6 +30,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.MomException;
 import momime.common.database.Building;
@@ -864,7 +865,7 @@ public final class TestCityCalculationsImpl
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
@@ -941,7 +942,7 @@ public final class TestCityCalculationsImpl
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
@@ -1019,7 +1020,7 @@ public final class TestCityCalculationsImpl
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
@@ -1097,7 +1098,7 @@ public final class TestCityCalculationsImpl
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
@@ -1186,7 +1187,7 @@ public final class TestCityCalculationsImpl
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
@@ -1295,7 +1296,7 @@ public final class TestCityCalculationsImpl
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
-		pd.setHuman (false);
+		pd.setPlayerType (PlayerType.AI);
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
@@ -1408,7 +1409,7 @@ public final class TestCityCalculationsImpl
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
@@ -1517,7 +1518,7 @@ public final class TestCityCalculationsImpl
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
 		
@@ -4161,7 +4162,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
@@ -4206,7 +4207,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
@@ -4243,7 +4244,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
@@ -4288,7 +4289,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
@@ -4329,7 +4330,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
@@ -4371,7 +4372,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
@@ -4414,7 +4415,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
@@ -4457,7 +4458,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
@@ -4506,7 +4507,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (false);
+		pd.setPlayerType (PlayerType.AI);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 		
@@ -4566,7 +4567,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (false);
+		pd.setPlayerType (PlayerType.AI);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 
@@ -4626,7 +4627,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (false);
+		pd.setPlayerType (PlayerType.AI);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 
@@ -4682,7 +4683,7 @@ public final class TestCityCalculationsImpl
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (false);
+		pd.setPlayerType (PlayerType.AI);
 		
 		final PlayerPublicDetails cityOwnerPlayer = new PlayerPublicDetails (pd, null, null);
 

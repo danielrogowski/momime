@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
@@ -316,13 +317,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (7);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -447,13 +448,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (7);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -587,13 +588,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (7);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
@@ -718,13 +719,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (5);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
 		
 		final PlayerDescription defendingPd = new PlayerDescription ();
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		defendingPd.setPlayerID (7);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);

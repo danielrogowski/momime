@@ -34,6 +34,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.MouseClickListener;
 import com.ndg.swing.actions.LoggingAction;
@@ -483,7 +484,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.getHeight ());
 							
 							// Draw icon for AI or human player
-							g.drawImage (player.getPlayerDescription ().isHuman () ? playerHuman : playerAI, x + 1, 1, null);
+							g.drawImage ((player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) ? playerHuman : playerAI, x + 1, 1, null);
 							
 							// Move to next position
 							x = x + COLOUR_PATCH_WIDTH;
@@ -514,7 +515,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 							g.fillRect (x, 0, COLOUR_PATCH_WIDTH, colourPatchesSize.getHeight ());
 							
 							// Draw icon for AI or human player
-							g.drawImage (player.getPlayerDescription ().isHuman () ? playerHuman : playerAI, x + 1, 1, null);
+							g.drawImage ((player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) ? playerHuman : playerAI, x + 1, 1, null);
 							
 							// Show whether they finished allocating movement yet
 							if (trans.getMovementAllocatedForTurnNumber () >= getClient ().getGeneralPublicKnowledge ().getTurnNumber ())

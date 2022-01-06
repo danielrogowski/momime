@@ -14,6 +14,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -355,7 +356,7 @@ public final class CombatAIImpl implements CombatAI
 		
 		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
 		
-		if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
+		if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (currentPlayer.getPlayerDescription ().getPlayerType () == PlayerType.AI) &&
 			(wizardDetails.getWizardState () == WizardState.ACTIVE))
 			
 			result = getSpellAI ().decideWhatToCastCombat (currentPlayer, wizardDetails, null, combatLocation, mom);

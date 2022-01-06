@@ -25,6 +25,7 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -137,7 +138,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
@@ -378,7 +379,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -858,7 +859,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (isHuman);
+		pd.setPlayerType (isHuman ? PlayerType.HUMAN : PlayerType.AI);
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
 		

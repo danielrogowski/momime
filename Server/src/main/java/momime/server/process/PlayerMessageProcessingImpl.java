@@ -17,6 +17,7 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -225,7 +226,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		}
 
 		// Check if Raiders
-		else if ((player.getPlayerDescription ().isHuman ()) &&
+		else if ((player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) &&
 			((wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) || (wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS))))
 
 			error = "You cannot choose to play as Raiders or Rampaging Monsters";
@@ -263,7 +264,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			{
 				// Find the correct node in the database for the number of player human players have
 				final int desiredPickCount;
-				if (player.getPlayerDescription ().isHuman ())
+				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					desiredPickCount = mom.getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ();
 				else
 					desiredPickCount = mom.getSessionDescription ().getDifficultyLevel ().getAiSpellPicks ();
@@ -312,7 +313,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 			
 			// Tell the player the wizard they chose was OK; in that way they get their copy of their own KnownWizardDetails record
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final MeetWizardMessage meet = new MeetWizardMessage ();
 				meet.setKnownWizardDetails (knownWizardDetails);
@@ -323,7 +324,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			{
 				// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 				// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
-				if (player.getPlayerDescription ().isHuman ())
+				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					// This will tell the client to either pick free spells for the first magic realm that they have earned free spells in, or pick their race, depending on what picks they've chosen
 					log.debug ("chooseWizard: About to search for first realm (if any) where human player " + player.getPlayerDescription ().getPlayerName () + " gets free spells");
@@ -352,7 +353,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	private final PlayerDescription createAiPlayerDescription (final WizardEx wizard, final int aiPlayerNo)
 	{
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setHuman (false);
+		pd.setPlayerType (PlayerType.AI);
 		
 		if (aiPlayerNo > 0)
 			pd.setPlayerName ("Player " + aiPlayerNo);
@@ -474,7 +475,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						knownWizardDetails.setWizardState (automaticallyMeetWizard.getWizardState ());
 						priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 						
-						if (sendToPlayer.getPlayerDescription ().isHuman ())
+						if (sendToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						{
 							final MeetWizardMessage meet = new MeetWizardMessage ();
 							meet.setKnownWizardDetails (knownWizardDetails);
@@ -511,7 +512,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				getServerSpellCalculations ().randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), mom.getServerDB ());
 
 				// Send players' spells to them (and them only)
-				if (thisPlayer.getPlayerDescription ().isHuman ())
+				if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
 					spellsMsg.getSpellResearchStatus ().addAll (priv.getSpellResearchStatus ());
@@ -561,7 +562,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 					// Give each wizard their starting gold
 					final int startingGold;
-					if (thisPlayer.getPlayerDescription ().isHuman ())
+					if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						startingGold = mom.getSessionDescription ().getDifficultyLevel ().getHumanStartingGold ();
 					else
 						startingGold = mom.getSessionDescription ().getDifficultyLevel ().getAiStartingGold ();
@@ -747,15 +748,15 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				if ((getPlayerKnowledgeUtils ().isWizard (knownWizard.getWizardID ())) && (knownWizard.getWizardState () == WizardState.ACTIVE))
 				{
 					final NewTurnMessageOfferHero heroOffer = getOfferGenerator ().generateHeroOffer (player, mom);
-					if ((heroOffer != null) && (!player.getPlayerDescription ().isHuman ()))
+					if ((heroOffer != null) && (player.getPlayerDescription ().getPlayerType () == PlayerType.AI))
 						getMomAI ().decideOffer (player, heroOffer, mom);
 					
 					final NewTurnMessageOfferUnits unitsOffer = getOfferGenerator ().generateUnitsOffer (player, mom);
-					if ((unitsOffer != null) && (!player.getPlayerDescription ().isHuman ()))
+					if ((unitsOffer != null) && (player.getPlayerDescription ().getPlayerType () == PlayerType.AI))
 						getMomAI ().decideOffer (player, unitsOffer, mom);
 					
 					final NewTurnMessageOfferItem itemOffer = getOfferGenerator ().generateItemOffer (player, mom);
-					if ((itemOffer != null) && (!player.getPlayerDescription ().isHuman ()))
+					if ((itemOffer != null) && (player.getPlayerDescription ().getPlayerType () == PlayerType.AI))
 						getMomAI ().decideOffer (player, itemOffer, mom);
 					
 					// Give unique URNs to any offers that were generated
@@ -888,13 +889,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), mom.getSessionDescription ().getTurnSystem ());
 	
 			// Erase all pending movements on the client, since we're about to process movement
-			if (currentPlayer.getPlayerDescription ().isHuman ())
+			if (currentPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				currentPlayer.getConnection ().sendMessageToClient (new ErasePendingMovementsMessage ());
 	
 			// Continue the player's movement
 			continueMovement (currentPlayer.getPlayerDescription ().getPlayerID (), mom);
 	
-			if (currentPlayer.getPlayerDescription ().isHuman ())
+			if (currentPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				log.info ("Human turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
 				currentPlayer.getConnection ().sendMessageToClient (new EndOfContinuedMovementMessage ());
@@ -960,7 +961,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					nextTurnButton (mom, player);		// Auto end everybody else's turn except the player with Time Stop
 			
 				// Every AI player has their turn
-				else if (!player.getPlayerDescription ().isHuman ())
+				else if (player.getPlayerDescription ().getPlayerType () == PlayerType.AI)
 				{
 					log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + player.getPlayerDescription ().getPlayerName () + "...");
 					getMomAI ().aiPlayerTurn (player, mom);
@@ -987,7 +988,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		final TurnSystem messageType) throws JAXBException, XMLStreamException, MomException
 	{
 		for (final PlayerServerDetails player : players)
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 				
@@ -1350,7 +1351,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 		}
 		
-		if ((aliveCount == 1) && (aliveWizard != null) && (aliveWizard.getPlayerDescription ().isHuman ()))
+		if ((aliveCount == 1) && (aliveWizard != null) && (aliveWizard.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 		{
 			// Tell them they won, then end the session by converting them to an AI player
 			final PlayAnimationMessage msg = new PlayAnimationMessage ();

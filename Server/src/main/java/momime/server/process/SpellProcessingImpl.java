@@ -22,6 +22,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -344,7 +345,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				priv.getUnassignedHeroItem ().add (numberedHeroItem);
 	
 				// Put new item in mom.getPlayers ()' bank on the client
-				if (castingPlayer.getPlayerDescription ().isHuman ())
+				if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final AddUnassignedHeroItemMessage addItemMsg = new AddUnassignedHeroItemMessage ();
 					addItemMsg.setHeroItem (numberedHeroItem);
@@ -383,7 +384,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final MemoryMaintainedSpell maintainedSpell = getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
 					(castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, false, null, null, variableDamage, false, false, mom);
 	
-				if (castingPlayer.getPlayerDescription ().isHuman ())
+				if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					// Tell client to pick a target for this spell
 					final NewTurnMessageSpell targetSpell = new NewTurnMessageSpell ();
@@ -419,7 +420,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							{
 								getKnownWizardServerUtils ().updateWizardState (defeatedPlayer.getPlayerDescription ().getPlayerID (), WizardState.DEFEATED, mom);
 
-								if (defeatedPlayer.getPlayerDescription ().isHuman ())
+								if (defeatedPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 									mom.updateHumanPlayerToAI (defeatedPlayer.getPlayerDescription ().getPlayerID ());
 							}
 						}
@@ -629,10 +630,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 					anim.setCombatTargetUnitURN (targetUnit.getUnitURN ());
 					anim.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 
-					if (attackingPlayer.getPlayerDescription ().isHuman ())
+					if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						attackingPlayer.getConnection ().sendMessageToClient (anim);
 
-					if (defendingPlayer.getPlayerDescription ().isHuman ())
+					if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						defendingPlayer.getConnection ().sendMessageToClient (anim);
 				}
 			}
@@ -662,10 +663,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 				msg.setCombatLocation (combatLocation);
 				msg.setCombatTerrain (gc.getCombatMap ());
 				
-				if (attackingPlayer.getPlayerDescription ().isHuman ())
+				if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					attackingPlayer.getConnection ().sendMessageToClient (msg);
 	
-				if (defendingPlayer.getPlayerDescription ().isHuman ())
+				if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					defendingPlayer.getConnection ().sendMessageToClient (msg);
 			}
 			
@@ -707,10 +708,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 				anim.setCombatTargetLocation (targetLocation);
 				anim.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 	
-				if (attackingPlayer.getPlayerDescription ().isHuman ())
+				if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					attackingPlayer.getConnection ().sendMessageToClient (anim);
 	
-				if (defendingPlayer.getPlayerDescription ().isHuman ())
+				if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					defendingPlayer.getConnection ().sendMessageToClient (anim);
 				
 				// Send the updated map
@@ -718,10 +719,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 				msg.setCombatLocation (combatLocation);
 				msg.setCombatTerrain (gc.getCombatMap ());
 				
-				if (attackingPlayer.getPlayerDescription ().isHuman ())
+				if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					attackingPlayer.getConnection ().sendMessageToClient (msg);
 	
-				if (defendingPlayer.getPlayerDescription ().isHuman ())
+				if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					defendingPlayer.getConnection ().sendMessageToClient (msg);
 			}
 			
@@ -980,10 +981,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 						if ((spell.getAttackSpellCombatTarget () == AttackSpellTargetID.SINGLE_UNIT) && (targetUnits.size () > 0))
 							anim.setCombatTargetUnitURN (targetUnits.get (0).getUnitURN ());
 	
-						if (attackingPlayer.getPlayerDescription ().isHuman ())
+						if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 							attackingPlayer.getConnection ().sendMessageToClient (anim);
 	
-						if (defendingPlayer.getPlayerDescription ().isHuman ())
+						if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 							defendingPlayer.getConnection ().sendMessageToClient (anim);
 						
 						// Now get a list of all enchantments cast on all the units in the list by other wizards
@@ -1354,7 +1355,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					final int blastingCost = targetPriv.getManaSpentOnCastingCurrentSpell ();
 
 					// Remove on client
-					if (targetPlayer.getPlayerDescription ().isHuman ())
+					if (targetPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						final NewTurnMessageSpellBlast ntm = new NewTurnMessageSpellBlast ();
 						ntm.setMsgType (NewTurnMessageTypeID.SPELL_BLAST);
@@ -1783,7 +1784,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			getServerSpellCalculations ().randomizeSpellsResearchableNow (giveToPriv.getSpellResearchStatus (), db);
 		
 		// Any update to send to client?
-		if ((stolenSpellIDs.size () > 0) && (giveTo.getPlayerDescription ().isHuman ()))
+		if ((stolenSpellIDs.size () > 0) && (giveTo.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 		{
 			final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
 			spellsMsg.getSpellResearchStatus ().addAll (giveToPriv.getSpellResearchStatus ());

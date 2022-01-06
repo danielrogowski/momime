@@ -29,6 +29,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.JPanelWithConstantRepaints;
 import com.ndg.swing.actions.LoggingAction;
@@ -1497,7 +1498,7 @@ public final class CombatUI extends MomClientFrameUI
 			attackingPlayerName.setText (getWizardClientUtils ().getPlayerName (players.getAttackingPlayer ()));
 			
 			String defPlayerName = getWizardClientUtils ().getPlayerName (players.getDefendingPlayer ());
-			if (!players.getDefendingPlayer ().getPlayerDescription ().isHuman ())
+			if (players.getDefendingPlayer ().getPlayerDescription ().getPlayerType () == PlayerType.AI)
 				try
 				{
 					final KnownWizardDetails defendingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails

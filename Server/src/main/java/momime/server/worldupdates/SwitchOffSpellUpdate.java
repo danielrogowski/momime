@@ -1,12 +1,13 @@
 package momime.server.worldupdates;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CitySpellEffect;
 import momime.common.database.CombatAreaAffectsPlayersID;
@@ -178,10 +179,10 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 					combatMapMsg.setCombatLocation (trueSpell.getCityLocation ());
 					combatMapMsg.setCombatTerrain (gc.getCombatMap ());
 					
-					if (attackingPlayer.getPlayerDescription ().isHuman ())
+					if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						attackingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
 
-					if (defendingPlayer.getPlayerDescription ().isHuman ())
+					if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						defendingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
 				}
 			}
@@ -207,7 +208,7 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 					getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), priv.getFogOfWarMemory ().getMaintainedSpell ());
 	
 					// Update on client
-					if (player.getPlayerDescription ().isHuman ())
+					if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						player.getConnection ().sendMessageToClient (msg);
 				}
 			}

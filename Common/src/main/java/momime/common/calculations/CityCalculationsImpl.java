@@ -17,6 +17,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.MomException;
 import momime.common.database.Building;
@@ -563,7 +564,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			final PlayerPublicDetails cityOwnerPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");
 			final KnownWizardDetails cityOwnerWizard = getKnownWizardUtils ().findKnownWizardDetails (mem.getWizardDetails (), cityData.getCityOwnerID (), "calculateCityGrowthRate");
 			
-			if ((cityOwnerPlayer.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingPopulationBoom () <= 0))
+			if ((cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) || (growing.getTotalGrowthRateIncludingPopulationBoom () <= 0))
 				growing.setDifficultyLevelMultiplier (100);
 			else
 				growing.setDifficultyLevelMultiplier (getPlayerKnowledgeUtils ().isWizard (cityOwnerWizard.getWizardID ()) ? difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier () :
@@ -1527,8 +1528,8 @@ public final class CityCalculationsImpl implements CityCalculations
 		thisProduction.setProductionAmountBaseTotal (productionAmountMinusPercentagePenalty + thisProduction.getProductionAmountToAddAfterPercentages ());
 
 		// AI players get a special bonus
-		if ((thisProduction.getProductionAmountBaseTotal () > 0) &&
-			(cityOwnerPlayer != null) && (cityOwnerWizard != null) && (!cityOwnerPlayer.getPlayerDescription ().isHuman ()) && (productionType.isDifficultyLevelMultiplierApplies ()))
+		if ((thisProduction.getProductionAmountBaseTotal () > 0) && (cityOwnerPlayer != null) && (cityOwnerWizard != null) &&
+			(cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.AI) && (productionType.isDifficultyLevelMultiplierApplies ()))
 			
 			thisProduction.setDifficultyLevelMultiplier (getPlayerKnowledgeUtils ().isWizard (cityOwnerWizard.getWizardID ()) ? difficultyLevel.getAiWizardsProductionRateMultiplier () :
 				difficultyLevel.getAiRaidersProductionRateMultiplier ());

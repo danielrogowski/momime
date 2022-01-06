@@ -17,6 +17,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -473,7 +474,7 @@ public final class CityProcessingImpl implements CityProcessing
 											cityData.setProductionSoFar (0);
 
 											// Show on new turn messages for the player who built it
-											if (cityOwner.getPlayerDescription ().isHuman ())
+											if (cityOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 											{
 												final NewTurnMessageConstructBuilding completedConstruction = new NewTurnMessageConstructBuilding ();
 												completedConstruction.setMsgType (NewTurnMessageTypeID.COMPLETED_BUILDING);
@@ -499,7 +500,7 @@ public final class CityProcessingImpl implements CityProcessing
 												
 												// AI players need to reset construction back to default so they reconsider what to construct next,
 												// otherwise they'd construct the same unit forever.
-												if (!cityOwner.getPlayerDescription ().isHuman ())
+												if (cityOwner.getPlayerDescription ().getPlayerType () == PlayerType.AI)
 												{
 													cityData.setCurrentlyConstructingUnitID (null);
 													cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
@@ -510,7 +511,7 @@ public final class CityProcessingImpl implements CityProcessing
 													(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), mom);
 	
 												// Show on new turn messages for the player who built it
-												if (cityOwner.getPlayerDescription ().isHuman ())
+												if (cityOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 												{
 													final NewTurnMessageConstructUnit completedConstruction = new NewTurnMessageConstructUnit ();
 													completedConstruction.setMsgType (NewTurnMessageTypeID.COMPLETED_UNIT);
@@ -614,7 +615,7 @@ public final class CityProcessingImpl implements CityProcessing
 								cityData.setCityPopulation (newPopulation);
 	
 								// Show on new turn messages?
-								if ((cityOwnerPlayer.getPlayerDescription ().isHuman ()) && ((oldPopulation / 1000) != (newPopulation / 1000)))
+								if ((cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((oldPopulation / 1000) != (newPopulation / 1000)))
 								{
 									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
 									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
@@ -657,7 +658,7 @@ public final class CityProcessingImpl implements CityProcessing
 									razeCity (cityLocation, mom);		// Outposts can die off completely
 								
 								// Show on new turn messages?
-								if ((cityOwnerPlayer.getPlayerDescription ().isHuman ()) && ((newPopulation >= 1000) || (newPopulation <= 0)))
+								if ((cityOwnerPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((newPopulation >= 1000) || (newPopulation <= 0)))
 								{
 									final NewTurnMessagePopulationChange populationChange = new NewTurnMessagePopulationChange ();
 									populationChange.setMsgType (NewTurnMessageTypeID.POPULATION_CHANGE);
@@ -717,7 +718,7 @@ public final class CityProcessingImpl implements CityProcessing
 		{
 			// Building is not actually sold yet - we're simply marking that we want to sell it at the end of the turn
 			// So only the city owner knows about it, we've no production to recalculate or anything else, so this is easy
-			if (cityOwner.getPlayerDescription ().isHuman ())
+			if (cityOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final PendingSaleMessage msg = new PendingSaleMessage ();
 				msg.setCityLocation (cityLocation);
@@ -797,7 +798,7 @@ public final class CityProcessingImpl implements CityProcessing
 					(getMemoryBuildingUtils ().isBuildingAPrerequisiteForUnit (destroyBuilding.getBuildingID (), tc.getCityData ().getCurrentlyConstructingUnitID (), mom.getServerDB ()))))
 			{
 				// If it is a human player then we need to let them know that this has happened
-				if (cityOwner.getPlayerDescription ().isHuman ())
+				if (cityOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					if (tc.getCityData ().getCurrentlyConstructingBuildingID () != null)
 					{
@@ -824,7 +825,7 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 
 			// If it is a human player then tell them about the destroyed building
-			if ((cityOwner.getPlayerDescription ().isHuman ()) && (buildingsDestroyedBySpellID != null) && (buildingDestructionSpellCastByPlayerID != null))
+			if ((cityOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && (buildingsDestroyedBySpellID != null) && (buildingDestructionSpellCastByPlayerID != null))
 			{
 				final NewTurnMessageDestroyBuilding destroyedBuilding = new NewTurnMessageDestroyBuilding ();
 				destroyedBuilding.setMsgType (NewTurnMessageTypeID.DESTROYED_BUILDING);
@@ -885,7 +886,7 @@ public final class CityProcessingImpl implements CityProcessing
 			priv.setTaxRateID (taxRateID);
 			
 			// Set on client
-			if (player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final TaxRateChangedMessage reply = new TaxRateChangedMessage ();
 				reply.setTaxRateID (taxRateID);
@@ -1088,7 +1089,7 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 			
 			// Need to inform client about stuff they captured?
-			if ((attackingPlayer.getPlayerDescription ().isHuman ()) && ((stolenSpellIDs.size () > 0) || (manaSwiped > 0)))
+			if ((attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && ((stolenSpellIDs.size () > 0) || (manaSwiped > 0)))
 			{
 				final TreasureRewardMessage treasureMsg = new TreasureRewardMessage ();
 				treasureMsg.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
@@ -1174,7 +1175,7 @@ public final class CityProcessingImpl implements CityProcessing
 					}
 			
 			// If it was a human player, convert them to AI and possibly end the session
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
+			if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				mom.updateHumanPlayerToAI (defendingPlayer.getPlayerDescription ().getPlayerID ());
 			
 			// The attacker may have just defeated the last wizard
@@ -1191,7 +1192,7 @@ public final class CityProcessingImpl implements CityProcessing
 				defendingPriv.getQueuedSpell ().remove (0);
 	
 				// Remove queued spell on client
-				if (defendingPlayer.getPlayerDescription ().isHuman ())
+				if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final RemoveQueuedSpellMessage removeSpellMessage = new RemoveQueuedSpellMessage ();
 					removeSpellMessage.setQueuedSpellIndex (0);
@@ -1203,7 +1204,7 @@ public final class CityProcessingImpl implements CityProcessing
 			if (defendingPriv.getManaSpentOnCastingCurrentSpell () > 0)
 			{
 				defendingPriv.setManaSpentOnCastingCurrentSpell (0);
-				if (defendingPlayer.getPlayerDescription ().isHuman ())
+				if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					defendingPlayer.getConnection ().sendMessageToClient (new UpdateManaSpentOnCastingCurrentSpellMessage ());
 			}
 			
@@ -1274,7 +1275,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 					// If it is a human player then we need to let them know that this has happened
 					final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetCorruption");
-					if (cityOwner.getPlayerDescription ().isHuman ())
+					if (cityOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						final NewTurnMessageConstructBuilding abortConstruction = new NewTurnMessageConstructBuilding ();
 						abortConstruction.setMsgType (NewTurnMessageTypeID.ABORT_BUILDING);

@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -79,7 +80,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		
@@ -96,7 +97,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// Another human player who can see the unit
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow2 = new FogOfWarMemory ();
 		
@@ -113,7 +114,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can see the unit
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (-3);
-		pd3.setHuman (false);
+		pd3.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow3 = new FogOfWarMemory ();
 		
@@ -127,7 +128,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (4);
-		pd4.setHuman (true);
+		pd4.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow4 = new FogOfWarMemory ();
 		
@@ -144,7 +145,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can't see the unit
 		final PlayerDescription pd5 = new PlayerDescription ();
 		pd5.setPlayerID (-5);
-		pd5.setHuman (false);
+		pd5.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow5 = new FogOfWarMemory ();
 		
@@ -271,7 +272,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		
@@ -288,7 +289,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// Another human player who can see the unit
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow2 = new FogOfWarMemory ();
 		
@@ -305,7 +306,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can see the unit
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (-3);
-		pd3.setHuman (false);
+		pd3.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow3 = new FogOfWarMemory ();
 		
@@ -319,7 +320,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (4);
-		pd4.setHuman (true);
+		pd4.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow4 = new FogOfWarMemory ();
 		
@@ -336,7 +337,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can't see the unit
 		final PlayerDescription pd5 = new PlayerDescription ();
 		pd5.setPlayerID (-5);
-		pd5.setHuman (false);
+		pd5.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow5 = new FogOfWarMemory ();
 		
@@ -470,7 +471,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		
@@ -487,7 +488,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// Another human player who can see the unit
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow2 = new FogOfWarMemory ();
 		
@@ -504,7 +505,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can see the unit
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (-3);
-		pd3.setHuman (false);
+		pd3.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow3 = new FogOfWarMemory ();
 		
@@ -518,7 +519,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (4);
-		pd4.setHuman (true);
+		pd4.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow4 = new FogOfWarMemory ();
 		
@@ -535,7 +536,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can't see the unit
 		final PlayerDescription pd5 = new PlayerDescription ();
 		pd5.setPlayerID (-5);
-		pd5.setHuman (false);
+		pd5.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow5 = new FogOfWarMemory ();
 		
@@ -662,7 +663,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		
@@ -679,7 +680,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// Another human player who can see the unit
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow2 = new FogOfWarMemory ();
 		
@@ -696,7 +697,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can see the unit
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (-3);
-		pd3.setHuman (false);
+		pd3.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow3 = new FogOfWarMemory ();
 		
@@ -710,7 +711,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (4);
-		pd4.setHuman (true);
+		pd4.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow4 = new FogOfWarMemory ();
 		
@@ -727,7 +728,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can't see the unit
 		final PlayerDescription pd5 = new PlayerDescription ();
 		pd5.setPlayerID (-5);
-		pd5.setHuman (false);
+		pd5.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow5 = new FogOfWarMemory ();
 		
@@ -853,7 +854,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		
@@ -870,7 +871,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// Another human player who can see the unit
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow2 = new FogOfWarMemory ();
 		
@@ -887,7 +888,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can see the unit
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (-3);
-		pd3.setHuman (false);
+		pd3.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow3 = new FogOfWarMemory ();
 		
@@ -901,7 +902,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (4);
-		pd4.setHuman (true);
+		pd4.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow4 = new FogOfWarMemory ();
 		
@@ -918,7 +919,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can't see the unit
 		final PlayerDescription pd5 = new PlayerDescription ();
 		pd5.setPlayerID (-5);
-		pd5.setHuman (false);
+		pd5.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow5 = new FogOfWarMemory ();
 		
@@ -1045,7 +1046,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		
@@ -1062,7 +1063,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// Another human player who can see the unit
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow2 = new FogOfWarMemory ();
 		
@@ -1079,7 +1080,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can see the unit
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (-3);
-		pd3.setHuman (false);
+		pd3.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow3 = new FogOfWarMemory ();
 		
@@ -1093,7 +1094,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (4);
-		pd4.setHuman (true);
+		pd4.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow4 = new FogOfWarMemory ();
 		
@@ -1110,7 +1111,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can't see the unit
 		final PlayerDescription pd5 = new PlayerDescription ();
 		pd5.setPlayerID (-5);
-		pd5.setHuman (false);
+		pd5.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow5 = new FogOfWarMemory ();
 		
@@ -1246,7 +1247,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		
@@ -1263,7 +1264,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// The other human player who they are in combat with
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow2 = new FogOfWarMemory ();
 		
@@ -1280,7 +1281,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who can't see the unit
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (3);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow3 = new FogOfWarMemory ();
 		
@@ -1297,7 +1298,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (-4);
-		pd4.setHuman (false);
+		pd4.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow4 = new FogOfWarMemory ();
 		
@@ -1311,7 +1312,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who is a 3rd party observer who can see the unit from outside of the combat
 		final PlayerDescription pd5 = new PlayerDescription ();
 		pd5.setPlayerID (5);
-		pd5.setHuman (true);
+		pd5.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow5 = new FogOfWarMemory ();
 		
@@ -1328,7 +1329,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who is a 3rd party observer who can see the unit from outside of the combat
 		final PlayerDescription pd6 = new PlayerDescription ();
 		pd6.setPlayerID (-6);
-		pd6.setHuman (false);
+		pd6.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow6 = new FogOfWarMemory ();
 		
@@ -1489,7 +1490,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		
@@ -1506,7 +1507,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// The other human player who they are in combat with
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow2 = new FogOfWarMemory ();
 		
@@ -1523,7 +1524,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who can't see the unit
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (3);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow3 = new FogOfWarMemory ();
 		
@@ -1540,7 +1541,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who can't see the unit
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (-4);
-		pd4.setHuman (false);
+		pd4.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow4 = new FogOfWarMemory ();
 		
@@ -1554,7 +1555,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// A human player who is a 3rd party observer who can see the unit from outside of the combat
 		final PlayerDescription pd5 = new PlayerDescription ();
 		pd5.setPlayerID (5);
-		pd5.setHuman (true);
+		pd5.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow5 = new FogOfWarMemory ();
 		
@@ -1571,7 +1572,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// An AI player who is a 3rd party observer who can see the unit from outside of the combat
 		final PlayerDescription pd6 = new PlayerDescription ();
 		pd6.setPlayerID (-6);
-		pd6.setHuman (false);
+		pd6.setPlayerType (PlayerType.AI);
 		
 		final FogOfWarMemory fow6 = new FogOfWarMemory ();
 		

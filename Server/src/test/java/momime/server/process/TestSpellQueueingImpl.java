@@ -21,6 +21,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
@@ -103,7 +104,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -174,7 +175,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -240,7 +241,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -309,7 +310,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -386,7 +387,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -456,7 +457,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		
@@ -530,7 +531,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -618,7 +619,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -728,7 +729,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
@@ -822,14 +823,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 
@@ -936,14 +937,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final KnownWizardDetails attackingWizardDetails = new KnownWizardDetails ();
 		attackingWizardDetails.setWizardState (WizardState.ACTIVE);
@@ -1047,14 +1048,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -1170,14 +1171,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -1295,14 +1296,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -1421,14 +1422,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -1559,14 +1560,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -1691,14 +1692,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -1835,14 +1836,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -1984,14 +1985,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -2123,14 +2124,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -2266,14 +2267,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -2422,14 +2423,14 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
-		defendingPd.setHuman (true);
+		defendingPd.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
 		
 		// Attacking human player, who is also the one casting the spell
 		final PlayerDescription attackingPd = new PlayerDescription ();
 		attackingPd.setPlayerID (7);
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
@@ -2550,7 +2551,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (7);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
@@ -2611,7 +2612,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (7);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
@@ -2702,7 +2703,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (7);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
@@ -2802,7 +2803,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (7);
-		pd.setHuman (true);
+		pd.setPlayerType (PlayerType.HUMAN);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();

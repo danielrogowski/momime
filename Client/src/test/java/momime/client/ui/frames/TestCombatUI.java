@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -191,7 +192,7 @@ public final class TestCombatUI extends ClientTestData
 		// Attacker
 		final PlayerDescription atkPd = new PlayerDescription ();
 		atkPd.setPlayerID (3);
-		atkPd.setHuman (true);
+		atkPd.setPlayerType (PlayerType.HUMAN);
 		atkPd.setPlayerName ("Mr. Attacker");
 		
 		final MomTransientPlayerPublicKnowledge atkTrans = new MomTransientPlayerPublicKnowledge ();
@@ -202,7 +203,7 @@ public final class TestCombatUI extends ClientTestData
 		// Defender
 		final PlayerDescription defPd = new PlayerDescription ();
 		defPd.setPlayerID (-1);
-		defPd.setHuman (false);
+		defPd.setPlayerType (PlayerType.AI);
 		defPd.setPlayerName ("Mr. Defender");
 		
 		final MomTransientPlayerPublicKnowledge defTrans = new MomTransientPlayerPublicKnowledge ();

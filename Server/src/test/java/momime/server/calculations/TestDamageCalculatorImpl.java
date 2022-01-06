@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 import com.ndg.utils.Holder;
 
@@ -59,7 +60,7 @@ public final class TestDamageCalculatorImpl
 		// Players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (-1);
-		attackingPD.setHuman (false);
+		attackingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
@@ -67,7 +68,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		final DummyServerToClientConnection defendingConn = new DummyServerToClientConnection ();
@@ -95,7 +96,7 @@ public final class TestDamageCalculatorImpl
 		// Players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
@@ -103,7 +104,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (4);
-		defendingPD.setHuman (true);
+		defendingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		final DummyServerToClientConnection defendingConn = new DummyServerToClientConnection ();
@@ -148,7 +149,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -157,7 +158,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -258,7 +259,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -267,7 +268,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -477,7 +478,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -486,7 +487,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -583,7 +584,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -592,7 +593,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -652,7 +653,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -661,7 +662,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -721,7 +722,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -730,7 +731,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -809,7 +810,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -818,7 +819,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -897,7 +898,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -906,7 +907,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -985,7 +986,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -994,7 +995,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1076,7 +1077,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1085,7 +1086,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1147,7 +1148,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1156,7 +1157,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1223,7 +1224,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1232,7 +1233,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1295,7 +1296,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1304,7 +1305,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1369,7 +1370,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1378,7 +1379,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1443,7 +1444,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1452,7 +1453,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1515,7 +1516,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1524,7 +1525,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1591,7 +1592,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1600,7 +1601,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1668,7 +1669,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1677,7 +1678,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1745,7 +1746,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1754,7 +1755,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1822,7 +1823,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1831,7 +1832,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1894,7 +1895,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1903,7 +1904,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
@@ -1962,7 +1963,7 @@ public final class TestDamageCalculatorImpl
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
-		attackingPD.setHuman (true);
+		attackingPD.setPlayerType (PlayerType.HUMAN);
 		
 		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
 		
@@ -1971,7 +1972,7 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerDescription defendingPD = new PlayerDescription ();
 		defendingPD.setPlayerID (-2);
-		defendingPD.setHuman (false);
+		defendingPD.setPlayerType (PlayerType.AI);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		

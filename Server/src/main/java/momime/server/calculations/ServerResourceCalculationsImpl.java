@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -193,7 +194,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		}
 		
 		// AI players get cheaper upkeep
-		if ((!player.getPlayerDescription ().isHuman ()) && (mom.getSessionDescription ().getDifficultyLevel ().getAiUpkeepMultiplier () != 100))
+		if ((player.getPlayerDescription ().getPlayerType () == PlayerType.AI) && (mom.getSessionDescription ().getDifficultyLevel ().getAiUpkeepMultiplier () != 100))
 			for (final MomResourceValue resourceValue : priv.getResourceValue ())
 				if (resourceValue.getAmountPerTurn () < 0)
 					resourceValue.setAmountPerTurn ((resourceValue.getAmountPerTurn () * mom.getSessionDescription ().getDifficultyLevel ().getAiUpkeepMultiplier ()) / 100);
@@ -377,7 +378,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	public final void sendGlobalProductionValues (final PlayerServerDetails player, final Integer castingSkillRemainingThisCombat, final boolean spellCastThisCombatTurn)
 		throws JAXBException, XMLStreamException
 	{
-		if (player.getPlayerDescription ().isHuman ())
+		if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -653,7 +654,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 			log.debug ("Player ID " + player.getPlayerDescription ().getPlayerID () + " generated " + researchAmount + " RPs this turn in spell research");
 			
 			// AI players get a bonus based on the difficulty level
-			if (!player.getPlayerDescription ().isHuman ())
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.AI)
 			{
 				researchAmount = (researchAmount * sd.getDifficultyLevel ().getAiSpellResearchMultiplier ()) / 100;
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " gets " + sd.getDifficultyLevel ().getAiSpellResearchMultiplier () + "% research multiplier, so bumped up to " +
@@ -689,14 +690,14 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 					getServerSpellCalculations ().randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
 
 					// And send this info to the client
-					if (player.getPlayerDescription ().isHuman ())
+					if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
 						spellsMsg.getSpellResearchStatus ().addAll (priv.getSpellResearchStatus ());
 						player.getConnection ().sendMessageToClient (spellsMsg);
 					}
 				}
-				else if (player.getPlayerDescription ().isHuman ())
+				else if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					// Tell the client
 					// NB. we don't bother sending this if we've now finished researching the spell - there's no point, the client
@@ -799,7 +800,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 							if (mom.getPlayers ().size () > 0)
 								recalculateAmountsPerTurn (player, mom);
 					}
-					else if (player.getPlayerDescription ().isHuman ())
+					else if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 
 						// No need to send values during start phase, since the start phase calls recalculateGlobalProductionValues () for a second time with DuringStartPhase set to False
 						sendGlobalProductionValues (player, null, false);

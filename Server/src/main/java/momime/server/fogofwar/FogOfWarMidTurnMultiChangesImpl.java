@@ -19,6 +19,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -569,7 +570,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					}
 				
 				// Move units on client
-				if (thisPlayer.getPlayerDescription ().isHuman ())
+				if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					// Create a new message each time; reusing the same message messes up unit tests because the FreeAfterMoving flag changes each time 
 					final MoveUnitStackOverlandMessage movementUnitMessage = new MoveUnitStackOverlandMessage ();
@@ -847,7 +848,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				priv.getPendingMovement ().add (pending);
 
 				// Send the pending movement to the client
-				if (unitStackOwner.getPlayerDescription ().isHuman ())
+				if (unitStackOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final PendingMovementMessage pendingMsg = new PendingMovementMessage ();
 					pendingMsg.setPendingMovement (pending);
@@ -861,7 +862,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		if (!combatInitiated)
 		{
 			// No combat, so tell the client to ask for the next unit to move
-			if (unitStackOwner.getPlayerDescription ().isHuman ())
+			if (unitStackOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				unitStackOwner.getConnection ().sendMessageToClient (new SelectNextUnitToMoveOverlandMessage ());
 		}
 		else if (!processCombats)
@@ -1162,7 +1163,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		// For now, keeping this as informing the owner of the units, and not displaying an animation for it.  The client only does something with
 		// this message if the plane shift failed.  If we try to display an animation for anyone other than the unit owner then it gets messy, as they
 		// may be able to see the start/end point but not the other, or so on.
-		if (player.getPlayerDescription ().isHuman ())
+		if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final PlaneShiftUnitStackMessage msg = new PlaneShiftUnitStackMessage ();
 			msg.setMoveFrom (moveFrom);

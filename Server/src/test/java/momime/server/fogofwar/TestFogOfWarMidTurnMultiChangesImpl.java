@@ -23,6 +23,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -656,7 +657,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Player owning the units
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow1 = new FogOfWarMemory ();
 		fow1.getUnit ().add (new MemoryUnit ());
@@ -674,7 +675,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Player who can see the start of their move, but not the end
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (5);
-		pd2.setHuman (true);
+		pd2.setPlayerType (PlayerType.HUMAN);
 
 		final FogOfWarMemory fow2 = new FogOfWarMemory ();
 		fow2.getUnit ().add (new MemoryUnit ());
@@ -695,7 +696,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// AI player who can see the end of their move, but not the start
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (-1);
-		pd3.setHuman (false);
+		pd3.setPlayerType (PlayerType.AI);
 
 		final FogOfWarMemory fow3 = new FogOfWarMemory ();
 		fow3.getUnit ().add (new MemoryUnit ());
@@ -713,7 +714,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Player whose seen the units at some point in the past, but can't see them now
 		final PlayerDescription pd4 = new PlayerDescription ();
 		pd4.setPlayerID (6);
-		pd4.setHuman (true);
+		pd4.setPlayerType (PlayerType.HUMAN);
 		
 		final FogOfWarMemory fow4 = new FogOfWarMemory ();
 		fow4.getUnit ().add (new MemoryUnit ());
@@ -891,7 +892,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Player owning the units
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final MapVolumeOfMemoryGridCells terrain1 = createOverlandMap (overlandMapSize);
 		
@@ -1032,7 +1033,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Player owning the units
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final MapVolumeOfMemoryGridCells terrain1 = createOverlandMap (overlandMapSize);
 		

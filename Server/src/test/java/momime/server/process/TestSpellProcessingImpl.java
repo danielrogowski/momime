@@ -20,6 +20,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
@@ -79,7 +80,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
@@ -131,7 +132,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (5);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
 
@@ -141,7 +142,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// AI player
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (-1);
-		pd2.setHuman (false);
+		pd2.setPlayerType (PlayerType.AI);
 
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, null);
 		players.add (player2);
@@ -149,7 +150,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans3 = new MomTransientPlayerPrivateKnowledge ();
@@ -234,7 +235,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (5);
-		pd1.setHuman (true);
+		pd1.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans1 = new MomTransientPlayerPrivateKnowledge ();
 
@@ -244,7 +245,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// AI player
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (-1);
-		pd2.setHuman (false);
+		pd2.setPlayerType (PlayerType.AI);
 
 		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, null);
 		players.add (player2);
@@ -252,7 +253,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans3 = new MomTransientPlayerPrivateKnowledge ();
@@ -315,7 +316,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans3 = new MomTransientPlayerPrivateKnowledge ();
@@ -393,7 +394,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (null, null, null, null, null);
 		
 		final PlayerDescription castingPd = new PlayerDescription ();
-		castingPd.setHuman (true);
+		castingPd.setPlayerType (PlayerType.HUMAN);
 		castingPd.setPlayerID (7);
 		
 		final PlayerServerDetails castingPlayer = new PlayerServerDetails (castingPd, null, null, null, null); 
@@ -460,7 +461,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (7);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge (); 
@@ -594,7 +595,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (7);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge (); 
@@ -722,7 +723,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
 		final PlayerDescription attackingPd = new PlayerDescription ();
-		attackingPd.setHuman (true);
+		attackingPd.setPlayerType (PlayerType.HUMAN);
 		attackingPd.setPlayerID (7);
 
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge (); 

@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -46,7 +47,7 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 		String playerName = player.getPlayerDescription ().getPlayerName ();
 		
 		// Now see if we can find a better name for AI players
-		if (!player.getPlayerDescription ().isHuman ())
+		if (player.getPlayerDescription ().getPlayerType () == PlayerType.AI)
 			try
 			{
 				final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails

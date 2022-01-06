@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import momime.common.database.CommonDatabase;
@@ -69,7 +70,7 @@ public final class TestSpellCastingImpl
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans3 = new MomTransientPlayerPrivateKnowledge ();
 		
@@ -171,7 +172,7 @@ public final class TestSpellCastingImpl
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
-		pd3.setHuman (true);
+		pd3.setPlayerType (PlayerType.HUMAN);
 		
 		final MomTransientPlayerPrivateKnowledge trans3 = new MomTransientPlayerPrivateKnowledge ();
 		

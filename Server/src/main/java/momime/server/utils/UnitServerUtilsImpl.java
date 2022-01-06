@@ -15,6 +15,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 import com.ndg.utils.Holder;
 
@@ -890,7 +891,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final void checkIfHeroGainedALevel (final int unitURN, final UnitType unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue)
 	{
-		if ((unitType.isAnnounceWhenLevelGained ()) && (owningPlayer.getPlayerDescription ().isHuman ()))
+		if ((unitType.isAnnounceWhenLevelGained ()) && (owningPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 		{
 			if ((unitType.getExperienceLevel ().stream ().anyMatch (lvl -> experienceSkillValue == lvl.getExperienceRequired ())))
 			{

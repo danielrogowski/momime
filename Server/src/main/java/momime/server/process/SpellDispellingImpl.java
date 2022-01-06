@@ -13,6 +13,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import jakarta.xml.bind.JAXBException;
@@ -94,7 +95,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 	{
 		// Build up a map so we remember which results we have to send to which players
 		final Map<Integer, List<DispelMagicResult>> resultsMap = new HashMap<Integer, List<DispelMagicResult>> ();
-		if (castingPlayer.getPlayerDescription ().isHuman ())
+		if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			resultsMap.put (castingPlayer.getPlayerDescription ().getPlayerID (), new ArrayList<DispelMagicResult> ());
 
 		// Work out dispelling power - this is a bit of a cheat to just check combatBaseDamage first, we should know for certain if being cast in combat or overland.
@@ -189,10 +190,10 @@ public final class SpellDispellingImpl implements SpellDispelling
 				result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
 	
 				// Add it to the messages first, because we might update who owns it
-				if (castingPlayer.getPlayerDescription ().isHuman ())
+				if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 				
-				if (spellOwner.getPlayerDescription ().isHuman ())
+				if (spellOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					List<DispelMagicResult> results = resultsMap.get (spellToDispel.getCastingPlayerID ());
 					if (results == null)
@@ -279,10 +280,10 @@ public final class SpellDispellingImpl implements SpellDispelling
 					if (result.isDispelled ())
 						mom.getWorldUpdates ().removeCombatAreaEffect (cae.getCombatAreaEffectURN ());
 		
-					if (castingPlayer.getPlayerDescription ().isHuman ())
+					if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 					
-					if (spellOwner.getPlayerDescription ().isHuman ())
+					if (spellOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						List<DispelMagicResult> results = resultsMap.get (cae.getCastingPlayerID ());
 						if (results == null)
@@ -329,7 +330,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 						}
 			}
 			
-			if (castingPlayer.getPlayerDescription ().isHuman ())
+			if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 			
 			final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -338,7 +339,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 			if (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ()))
 			{
 				final PlayerServerDetails nodeOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), terrainData.getNodeOwnerID (), "processDispelling (W2)");
-				if (nodeOwner.getPlayerDescription ().isHuman ())
+				if (nodeOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					List<DispelMagicResult> results = resultsMap.get (terrainData.getNodeOwnerID ());
 					if (results == null)
@@ -389,10 +390,10 @@ public final class SpellDispellingImpl implements SpellDispelling
 					if (result.isDispelled ())
 						mom.getWorldUpdates ().killUnit (vortex.getUnitURN (), KillUnitActionID.PERMANENT_DAMAGE);
 					
-					if (castingPlayer.getPlayerDescription ().isHuman ())
+					if (castingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 					
-					if (spellOwner.getPlayerDescription ().isHuman ())
+					if (spellOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						List<DispelMagicResult> results = resultsMap.get (vortex.getOwningPlayerID ());
 						if (results == null)
@@ -536,17 +537,17 @@ public final class SpellDispellingImpl implements SpellDispelling
 		}
 		
 		// Any results to send to any human players?
-		if ((results.size () > 0) && ((attackingPlayer.getPlayerDescription ().isHuman ()) || (defendingPlayer.getPlayerDescription ().isHuman ())))
+		if ((results.size () > 0) && ((attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) || (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)))
 		{
 			final CounterMagicResultsMessage msg = new CounterMagicResultsMessage ();
 			msg.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 			msg.setSpellID (spell.getSpellID ());
 			msg.getCounterMagicResult ().addAll (results);
 			
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
+			if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
 
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
+			if (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				defendingPlayer.getConnection ().sendMessageToClient (msg);
 		}
 		

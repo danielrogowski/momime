@@ -1,11 +1,12 @@
 package momime.server.process.resourceconsumer;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
@@ -116,7 +117,7 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 		mom.getWorldUpdates ().killUnit (getUnit ().getUnitURN (), KillUnitActionID.LACK_OF_PRODUCTION);
 		mom.getWorldUpdates ().process (mom);
 
-		if (getPlayer ().getPlayerDescription ().isHuman ())
+		if (getPlayer ().getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
 			final NewTurnMessageUnitKilledFromLackOfProduction unitKilled = new NewTurnMessageUnitKilledFromLackOfProduction ();
 			unitKilled.setMsgType (NewTurnMessageTypeID.UNIT_LACK_OF_PRODUCTION);

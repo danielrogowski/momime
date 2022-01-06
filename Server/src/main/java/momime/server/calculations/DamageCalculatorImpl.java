@@ -3,15 +3,16 @@ package momime.server.calculations;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 import com.ndg.utils.Holder;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellTargetID;
@@ -82,16 +83,16 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final void sendDamageCalculationMessage (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final DamageCalculationData msg)
 		throws JAXBException, XMLStreamException
 	{
-		if (((attackingPlayer != null) && (attackingPlayer.getPlayerDescription ().isHuman ())) ||
-			((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ())))
+		if (((attackingPlayer != null) && (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)) ||
+			((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)))
 		{
 			final DamageCalculationMessage wrapper = new DamageCalculationMessage ();
 			wrapper.setBreakdown (msg);
 			
-			if ((attackingPlayer != null) && (attackingPlayer.getPlayerDescription ().isHuman ()))
+			if ((attackingPlayer != null) && (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 				attackingPlayer.getConnection ().sendMessageToClient (wrapper);
 			
-			if ((defendingPlayer != attackingPlayer) && (defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ()))
+			if ((defendingPlayer != attackingPlayer) && (defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN))
 				defendingPlayer.getConnection ().sendMessageToClient (wrapper);
 		}
 	}

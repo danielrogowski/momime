@@ -103,7 +103,7 @@
 		<dependency>
 			<groupId>com.ndg.common</groupId>
 			<artifactId>xmleditor</artifactId>
-			<version>0.5.2</version>
+			<version>${mom.xmleditor.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>

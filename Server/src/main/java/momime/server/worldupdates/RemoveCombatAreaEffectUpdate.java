@@ -1,11 +1,12 @@
 package momime.server.worldupdates;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -100,7 +101,7 @@ public final class RemoveCombatAreaEffectUpdate implements WorldUpdate
 				getMemoryCombatAreaEffectUtils ().removeCombatAreaEffectURN (getCombatAreaEffectURN (), priv.getFogOfWarMemory ().getCombatAreaEffect ());
 
 				// Update on client
-				if (player.getPlayerDescription ().isHuman ())
+				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					player.getConnection ().sendMessageToClient (msg);
 			}
 		}

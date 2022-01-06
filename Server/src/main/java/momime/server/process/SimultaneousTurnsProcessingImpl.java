@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -14,8 +13,10 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.MapFeature;
@@ -132,7 +133,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			for (final PlayerServerDetails player : mom.getPlayers ())
 			{
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-				if (player.getPlayerDescription ().isHuman ())
+				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final Iterator<PendingMovement> iter = priv.getPendingMovement ().iterator ();
 					while (iter.hasNext ())
@@ -547,7 +548,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				// Show error
 				log.warn ("process: " + settlerOwner.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
-				if (settlerOwner.getPlayerDescription ().isHuman ())
+				if (settlerOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final TextPopupMessage reply = new TextPopupMessage ();
 					reply.setText (error);
@@ -589,7 +590,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				// Show error
 				log.warn ("process: " + spiritOwner.getPlayerDescription ().getPlayerName () + " got an error: " + error);
 
-				if (spiritOwner.getPlayerDescription ().isHuman ())
+				if (spiritOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					final TextPopupMessage reply = new TextPopupMessage ();
 					reply.setText (error);

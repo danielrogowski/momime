@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
@@ -261,7 +262,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		// For human players at this point we're done, we either return null and then instruct them to proceed to choosing a race, or
 		// we've selected a type of book and listed for them how many spells of each rank they need to choose
 		// For AI players, we actually need to choose spells
-		if ((msg != null) && (!player.getPlayerDescription ().isHuman ()))
+		if ((msg != null) && (player.getPlayerDescription ().getPlayerType () == PlayerType.AI))
 			for (final ChooseInitialSpellsNowRank thisSpellRank : msg.getSpellRank ())
 			{
 				log.debug ("findRealmIDWhereWeNeedToChooseFreeSpells: AI player " + player.getPlayerDescription ().getPlayerName () + " about to choose " +
@@ -436,7 +437,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		while ((result) && (iter.hasNext ()))
 		{
 			final PlayerServerDetails player = iter.next ();
-			if ((player.getPlayerDescription ().isHuman ()) && (player.getConnection () == null))
+			if ((player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && (player.getConnection () == null))
 				result = false;
 		}
 		

@@ -16,6 +16,9 @@ import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.database.AvailableDatabase;
+import momime.client.database.NewGameDatabase;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -97,6 +100,7 @@ public final class TestJoinGameUI extends ClientTestData
 		difficultyLevel.getDifficultyLevelDescription ().add (createLanguageText (Language.ENGLISH, "Impossible"));
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setXmlDatabaseName ("Main database");
 		sd.setAiPlayerCount (4);
 		sd.setMaxPlayers (10);
 		sd.setSessionName ("Nigel's Game");
@@ -113,6 +117,20 @@ public final class TestJoinGameUI extends ClientTestData
 		final List<SessionAndPlayerDescriptions> sessions = new ArrayList<SessionAndPlayerDescriptions> ();
 		sessions.add (spd);
 		
+		// New game database
+		final AvailableDatabase db = new AvailableDatabase ();
+		db.setDbName ("Main database");
+		db.getOverlandMapSize ().add (overlandMapSize);
+		db.getLandProportion ().add (landProportion);
+		db.getNodeStrength ().add (nodeStrength);
+		db.getDifficultyLevel ().add (difficultyLevel);
+		
+		final NewGameDatabase newGameDatabase = new NewGameDatabase ();
+		newGameDatabase.getMomimeXmlDatabase ().add (db);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getNewGameDatabase ()).thenReturn (newGameDatabase);
+		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/JoinGameUI.xml"));
 		layout.buildMaps ();
@@ -123,6 +141,7 @@ public final class TestJoinGameUI extends ClientTestData
 		join.setUtils (utils);
 		join.setLanguageHolder (langHolder);
 		join.setLanguageChangeMaster (langMaster);
+		join.setClient (client);
 		join.setTinyFont (CreateFontsForTests.getTinyFont ());
 		join.setLargeFont (CreateFontsForTests.getLargeFont ());
 		join.setSessions (sessions);

@@ -114,4 +114,43 @@ public final class LbxArchiveReader
 
 		return new FixedLengthMemoryCacheImageInputStream (in, ending - offset);
 	}
+
+	/**
+	 * Creates an image input stream object positioned to a particular subfile in a .lbx file
+	 * This is an ImageInputStream with the length specifically constrained to the length of the subfile
+	 * The LBX image decoder needs the specific length in order to correctly identity LBX images, since they have no identifyable header
+	 * 
+	 * @param in Stream of the .lbx file
+	 * @param subFileNumber Entry number within the .lbx file, with the first sub file being 0 (note each "entry" can contain multiple frames)
+	 * @param headerSize Number of bytes to skip off the start of the file
+	 * @return Stream positioned to the start of the requested subfile
+	 * @throws IOException if there is a problem reading the file, or the file identifier doesn't match
+	 */
+	public final static ImageInputStream getSubFileImageInputStreamSkippingHeader (final InputStream in, final int subFileNumber, final long headerSize)
+		throws IOException
+	{
+		readLbxArchiveHeader (in, subFileNumber);
+
+		// Keep track of how many bytes we've read from the stream, because the offsets are based from the start of the file
+		long bytesRead = 8;
+
+		// Read all the offsets until we get the one we want
+		long offset = 0;
+		for (int subFileNo = 0; subFileNo <= subFileNumber; subFileNo++)
+		{
+			offset = StreamUtils.readUnsigned4ByteLongFromStream (in, ByteOrder.LITTLE_ENDIAN, ".lbx sub file offset");
+			bytesRead = bytesRead + 4;
+		}
+
+		// Read the next offset, or length of the file
+		final long ending = StreamUtils.readUnsigned4ByteLongFromStream (in, ByteOrder.LITTLE_ENDIAN, ".lbx sub file ending");
+		bytesRead = bytesRead + 4;
+
+		// Skip to the start of the requested subfile
+		final long bytesToSkip = offset + headerSize - bytesRead;
+		for (long n = 0; n < bytesToSkip; n++)
+			in.read ();
+
+		return new FixedLengthMemoryCacheImageInputStream (in, ending - offset - headerSize);
+	}
 }

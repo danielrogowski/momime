@@ -37,8 +37,32 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.0.1</b></td>
-			<td align=left><b>22 Dec 2021</b></td>
+			<td align=left><b>Current version: 1.1</b></td>
+			<td align=left><b>7 Jan 2022</b></td>
+			<td align=left>
+				<b>Meeting wizards:</b>
+				<ul>
+					<li>Like the original MoM, you now do not know the identity of opponent wizards at the start of the game until you meet them
+					<li>Wizards you haven't met yet don't show up on the wizards screen or power history graph
+					<li>Human players are named by their account name both before and after you meet them; AI players are named "Player 1" and so on, and change to the name of the wizard after you know who they are
+					<li>You learn the identity of a wizard by finding their units, cities, seeing their units or cities with Earth Lore or Awareness, them casting an overland enchantment,
+						them banishing or defeating someone or being banished or defeated themselves, or other less common ways
+				</ul>
+				
+				<b>Fixed multiplayer issues:</b>
+				<ul>
+					<li>If a human player using a standard wizard or custom wizard with standard photo is defeated, their name will now stay the same.  Previously it reverted to the name of the wizard, like a normal AI player would.
+					<li>If the player who created a game is defeated and kicked out of the game, saved games from that point on will transfer to the next player who is still alive.  Previously such games could not be reloaded and continued at all.
+					<li>Stopped being able to join games where the specified number of "human opponents" had already joined the game.
+					<li>Made Join Game screen wider so table can show more info
+					<li>When joining a reloaded game, will list player names out (similar to Load Game screen) rather than show a count
+					<li>Fixed the Map Size and similar settings column on Join Game screen so they actually display the name of the chosen setting
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.0.1</td>
+			<td align=left>22 Dec 2021</td>
 			<td align=left>
 				<b>Library upgrades:</b>
 				<ul>

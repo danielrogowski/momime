@@ -27,22 +27,33 @@ public final class XmiExtract
 		System.out.println ("Extracting " + lbxName + " sub file " + subFileNumber);
 		try (final FileInputStream in1 = new FileInputStream ("C:\\32 bit Program Files\\DosBox - Master of Magic\\Magic\\" + lbxName + ".LBX"))
 		{
-			final ImageInputStream in2 = LbxArchiveReader.getSubFileImageInputStream (in1, subFileNumber);
+			final ImageInputStream in2 = LbxArchiveReader.getSubFileImageInputStreamSkippingHeader (in1, subFileNumber, 16);
 			try (final FileOutputStream out = new FileOutputStream ("E:\\Install Games\\Master of Magic\\Music\\XMIs\\" + lbxName + "_" + s + ".xmi"))
 			{
 				for (int n = 0; n < in2.length (); n++)
 					out.write (in2.read ());
 			}
 		}
-
-		try (final FileInputStream in1 = new FileInputStream ("C:\\32 bit Program Files\\DosBox - Master of Magic\\Magic\\" + lbxName + ".LBX"))
+	}
+	
+	/**
+	 * @param lbxName Name of LBX file containing the XMI music
+	 */
+	public final void extractAll (final String lbxName)
+	{
+		try
 		{
-			final ImageInputStream in3 = LbxArchiveReader.getSubFileImageInputStreamSkippingHeader (in1, subFileNumber, 16);
-			try (final FileOutputStream out = new FileOutputStream ("E:\\Install Games\\Master of Magic\\Music\\XMIs\\" + lbxName + "_" + s + " without header.xmi"))
+			// Keep going until we run out of sub files, which throws an exception
+			int subFileNumber = 0;
+			while (true)
 			{
-				for (int n = 0; n < in3.length (); n++)
-					out.write (in3.read ());
+				extract (lbxName, subFileNumber);
+				subFileNumber++;
 			}
+		}
+		catch (final Exception e)
+		{
+			e.printStackTrace ();
 		}
 	}
 
@@ -51,18 +62,8 @@ public final class XmiExtract
 	 */
 	public final static void main (final String args [])
 	{
-		try
-		{
-			final XmiExtract extract = new XmiExtract ();
-			extract.extract ("MUSIC", 61);
-			extract.extract ("MUSIC", 62);
-			extract.extract ("MUSIC", 78);
-			
-			System.out.println ("All done!");
-		}
-		catch (final Exception e)
-		{
-			e.printStackTrace ();
-		}
+		final XmiExtract extract = new XmiExtract ();
+		extract.extractAll ("INTROSND");
+		extract.extractAll ("MUSIC");
 	}
 }

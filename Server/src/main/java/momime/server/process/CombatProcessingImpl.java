@@ -671,8 +671,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					(PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), mom);
 				if (terrifiedUnitURNs == null)
 				{
-					// Combat ended
-					tc.setCombatCurrentPlayerID (null);
+					// Combat ended; cleanup in "combatEnded" will already have cleared out CombatCurrentPlayerID 
 					aiPlayerTurn = false;
 				}
 				else

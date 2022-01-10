@@ -1,5 +1,10 @@
-Used my old Delphi LBXExtract program combined with XMI2MID to extract from .LBXs
-Then uploaded .MID files to www.solmire.com
-Used MagicSF2 soundfont at 192 KBps for majority of conversions
-Used A 340 for all the combat music (MagicSF2 sounded too drummy and didn't handle the fast changing notes well)
-PersonalCopy &  Titanic also sound good though haven't used them yet
+Used Java XmiExtract program to get original XMIs
+Used Awave Studio to convert XMIs to MIDs which gets the tempo right, which the old DOS XMI2MID was too fast
+	-  Awave Studio refuses to open XMIs that include the 16 byte SimTex header so have to strip it off.  Old DOS XMI2MID didn't care about this and read them anyway.
+	
+Converters:
+	- Originally uploaded .MID files to www.solmire.com but this doesn't exist anymore so had to find alternative
+	- Keppy's MIDI to MP3 converter is best thing I have found to convert the MIDs, must set volume to 50% or music is way too loud and can hear distortion in some parts.
+
+Used MagicSF2 soundfont for majority of conversions at 50% volume
+Used A 340 at 80% volume for combat and diplomacy music

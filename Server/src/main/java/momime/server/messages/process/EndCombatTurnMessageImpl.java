@@ -51,10 +51,14 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
-			(MapCoordinates3DEx) getCombatLocation (), "EndCombatTurnMessageImpl");
+			(MapCoordinates3DEx) getCombatLocation ());
 		
-		if (!sender.getPlayerDescription ().getPlayerID ().equals (combatDetails.getCombatCurrentPlayerID ()))
+		if (combatDetails == null)
+			log.warn ("Received EndCombatTurnMessage for a combat that doesn't exist - ignored");
+		
+		else if (!sender.getPlayerDescription ().getPlayerID ().equals (combatDetails.getCombatCurrentPlayerID ()))
 			log.warn ("Received EndCombatTurnMessage from wrong player - ignored");
+		
 		else
 		{
 			getCombatEndTurn ().combatEndTurn (combatDetails, sender.getPlayerDescription ().getPlayerID (), mom);

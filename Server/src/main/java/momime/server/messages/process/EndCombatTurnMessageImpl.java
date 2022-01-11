@@ -15,9 +15,10 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import jakarta.xml.bind.JAXBException;
 import momime.common.messages.clienttoserver.EndCombatTurnMessage;
 import momime.server.MomSessionVariables;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.process.CombatEndTurn;
 import momime.server.process.CombatProcessing;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * Message client sends to server when all units have been moved in combat
@@ -33,6 +34,9 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 	/** Combat end of turn processing */
 	private CombatEndTurn combatEndTurn;
 	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -46,14 +50,14 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(getCombatLocation ().getZ ()).getRow ().get (getCombatLocation ().getY ()).getCell ().get (getCombatLocation ().getX ());
+		final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
+			(MapCoordinates3DEx) getCombatLocation (), "EndCombatTurnMessageImpl");
 		
-		if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayerID ()))
+		if (!sender.getPlayerDescription ().getPlayerID ().equals (combatDetails.getCombatCurrentPlayerID ()))
 			log.warn ("Received EndCombatTurnMessage from wrong player - ignored");
 		else
 		{
-			getCombatEndTurn ().combatEndTurn ((MapCoordinates3DEx) getCombatLocation (), sender.getPlayerDescription ().getPlayerID (), mom);
+			getCombatEndTurn ().combatEndTurn (combatDetails, sender.getPlayerDescription ().getPlayerID (), mom);
 			
 			getCombatProcessing ().progressCombat ((MapCoordinates3DEx) getCombatLocation (), false, false, mom);
 		}
@@ -89,5 +93,21 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 	public final void setCombatEndTurn (final CombatEndTurn c)
 	{
 		combatEndTurn = c;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

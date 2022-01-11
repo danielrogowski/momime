@@ -51,6 +51,7 @@ import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
+import momime.server.knowledge.CombatDetails;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.SpellProcessing;
 import momime.server.process.SpellQueueing;
@@ -572,7 +573,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @param player AI player who needs to choose what to cast
 	 * @param wizardDetails AI wizard who needs to choose what to cast
 	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
-	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param combatDetails Details about the combat taking place
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -581,14 +582,11 @@ public final class SpellAIImpl implements SpellAI
 	 */
 	@Override
 	public final CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final KnownWizardDetails wizardDetails,
-		final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		final ExpandedUnitDetails combatCastingUnit, final CombatDetails combatDetails, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
-		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-		
 		// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
 		// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
 		String overridePickID = null;
@@ -605,7 +603,7 @@ public final class SpellAIImpl implements SpellAI
 		
 		// Are we completely blocked from casting spells of any particular magic realms?
 		final Set<String> blockedMagicRealms = getMemoryMaintainedSpellUtils ().listMagicRealmsBlockedAsCombatSpells
-			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getServerDB ());
+			(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), combatDetails.getCombatLocation (), mom.getServerDB ());
 		
 		// Ignore "recall" spells then the AI would then have to understand its likelehood of losing a combat, and there's nothing like this yet
 		for (final Spell spell : mom.getServerDB ().getSpell ())
@@ -642,11 +640,14 @@ public final class SpellAIImpl implements SpellAI
 					if (combatCastingUnit == null)
 					{
 						// Wizards get range penalty depending where the combat is in relation to their Fortress; units participating in the combat don't get this
+						final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+							(combatDetails.getCombatLocation ().getZ ()).getRow ().get (combatDetails.getCombatLocation ().getY ()).getCell ().get (combatDetails.getCombatLocation ().getX ());
+
 						final int reducedCombatCastingCost = getSpellUtils ().getReducedCombatCastingCost
 							(spell, variableDamage, wizardDetails.getPick (), priv.getFogOfWarMemory ().getMaintainedSpell (),
 								mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 
-						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (wizardDetails, combatLocation,
+						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (wizardDetails, combatDetails.getCombatLocation (),
 							getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
 							mom.getSessionDescription ().getOverlandMapSize ());
@@ -656,13 +657,13 @@ public final class SpellAIImpl implements SpellAI
 						
 						// Wizards have limited casting skill they can use in each combat
 						final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-							(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
+							(combatDetails.getCombatLocation (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
 
 						final int ourSkill;
 						if (player == combatPlayers.getAttackingPlayer ())
-							ourSkill = gc.getCombatAttackerCastingSkillRemaining ();
+							ourSkill = combatDetails.getAttackerCastingSkillRemaining ();
 						else if (player == combatPlayers.getDefendingPlayer ())
-							ourSkill = gc.getCombatDefenderCastingSkillRemaining ();
+							ourSkill = combatDetails.getDefenderCastingSkillRemaining ();
 						else
 							ourSkill = 0;
 
@@ -677,11 +678,11 @@ public final class SpellAIImpl implements SpellAI
 					}
 
 					if (canAffordSpell)
-						getCombatSpellAI ().listChoicesForSpell (player, spell, combatLocation, combatCastingUnit, null, null, mom, choices);
+						getCombatSpellAI ().listChoicesForSpell (player, spell, combatDetails, combatCastingUnit, null, null, mom, choices);
 				}
 			}
 		
-		return getCombatSpellAI ().makeCastingChoice (player, combatLocation, choices, combatCastingUnit, mom);
+		return getCombatSpellAI ().makeCastingChoice (player, combatDetails, choices, combatCastingUnit, mom);
 	}
 	
 	/**
@@ -689,7 +690,7 @@ public final class SpellAIImpl implements SpellAI
 	 * 
 	 * @param player AI player who needs to choose what to cast
 	 * @param combatCastingUnit Unit who is casting the spell
-	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param combatDetails Details about the combat taking place
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -698,7 +699,7 @@ public final class SpellAIImpl implements SpellAI
 	 */
 	@Override
 	public final CombatAIMovementResult decideWhetherToCastFixedSpellInCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
-		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		final CombatDetails combatDetails, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		final WeightedChoicesImpl<CombatAISpellChoice> choices = new WeightedChoicesImpl<CombatAISpellChoice> ();
@@ -711,13 +712,13 @@ public final class SpellAIImpl implements SpellAI
 			{
 				final Spell spell = mom.getServerDB ().findSpell (combatCastingUnit.getUnitDefinition ().getUnitCanCast ().get (fixedSpellNumber).getUnitSpellID (), "decideWhetherToCastFixedSpellInCombat");
 				if (!getMemoryMaintainedSpellUtils ().isBlockedCastingCombatSpellsOfRealm (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					player.getPlayerDescription ().getPlayerID (), combatLocation, spell.getSpellRealm (), mom.getServerDB ()))
+					player.getPlayerDescription ().getPlayerID (), combatDetails.getCombatLocation (), spell.getSpellRealm (), mom.getServerDB ()))
 					
-					getCombatSpellAI ().listChoicesForSpell (player, spell, combatLocation, combatCastingUnit, fixedSpellNumber, null, mom, choices);
+					getCombatSpellAI ().listChoicesForSpell (player, spell, combatDetails, combatCastingUnit, fixedSpellNumber, null, mom, choices);
 			}
 		}
 		
-		return getCombatSpellAI ().makeCastingChoice (player, combatLocation, choices, combatCastingUnit, mom);
+		return getCombatSpellAI ().makeCastingChoice (player, combatDetails, choices, combatCastingUnit, mom);
 	}
 	
 	/**
@@ -725,7 +726,7 @@ public final class SpellAIImpl implements SpellAI
 	 * 
 	 * @param player AI player who needs to choose what to cast
 	 * @param combatCastingUnit Unit who is casting the spell
-	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param combatDetails Details about the combat taking place
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -734,7 +735,7 @@ public final class SpellAIImpl implements SpellAI
 	 */
 	@Override
 	public final CombatAIMovementResult decideWhetherToCastSpellImbuedInHeroItem (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
-		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		final CombatDetails combatDetails, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		final WeightedChoicesImpl<CombatAISpellChoice> choices = new WeightedChoicesImpl<CombatAISpellChoice> ();
@@ -749,13 +750,13 @@ public final class SpellAIImpl implements SpellAI
 					(slotNumber).getHeroItem ().getSpellID (), "decideWhetherToCastSpellImbuedInHeroItem");
 				
 				if (!getMemoryMaintainedSpellUtils ().isBlockedCastingCombatSpellsOfRealm (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					player.getPlayerDescription ().getPlayerID (), combatLocation, spell.getSpellRealm (), mom.getServerDB ()))
+					player.getPlayerDescription ().getPlayerID (), combatDetails.getCombatLocation (), spell.getSpellRealm (), mom.getServerDB ()))
 				
-					getCombatSpellAI ().listChoicesForSpell (player, spell, combatLocation, combatCastingUnit, null, slotNumber, mom, choices);
+					getCombatSpellAI ().listChoicesForSpell (player, spell, combatDetails, combatCastingUnit, null, slotNumber, mom, choices);
 			}
 		}
 		
-		return getCombatSpellAI ().makeCastingChoice (player, combatLocation, choices, combatCastingUnit, mom);
+		return getCombatSpellAI ().makeCastingChoice (player, combatDetails, choices, combatCastingUnit, mom);
 	}
 	
 	/**

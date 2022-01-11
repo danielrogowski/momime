@@ -33,6 +33,7 @@ import momime.common.database.UnitSpellEffect;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -58,8 +59,9 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -454,9 +456,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
-		gc.setCombatAttackerCastingSkillRemaining (45);
-
 		// Players involved
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
@@ -479,11 +478,20 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "castCombatNow")).thenReturn (attackingWizard);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "castCombatNow")).thenReturn (combatDetails);
+		combatDetails.setAttackerCastingSkillRemaining (45);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Pick the 4th effect
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -512,6 +520,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellDispelling (spellDispelling);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, false, mom);
@@ -523,11 +532,11 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		
 		// We were charged skill for it
-		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
+		assertEquals (35, combatDetails.getAttackerCastingSkillRemaining ());
 		verify (serverResourceCalc).sendGlobalProductionValues (attackingPlayer, 35, true);
 		
 		// Can't cast another
-		assertTrue (gc.isSpellCastThisCombatTurn ());
+		assertTrue (combatDetails.isSpellCastThisCombatTurn ());
 		
 		verifyNoMoreInteractions (midTurn);
 		verifyNoMoreInteractions (resourceValueUtils);
@@ -585,11 +594,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
-		gc.setCombatAttackerCastingSkillRemaining (45);
-		
 		// Combat map
-		gc.setCombatMap (createCombatMap ());
+		final MapAreaOfCombatTiles combatMap = createCombatMap ();
 
 		// Players involved
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -613,11 +619,20 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "castCombatNow")).thenReturn (attackingWizard);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), combatMap, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "castCombatNow")).thenReturn (combatDetails);
+		combatDetails.setAttackerCastingSkillRemaining (45);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Pick the 4th effect
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -651,6 +666,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setExpandUnitDetails (expand);
 		proc.setMovementUtils (movementUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, false, mom);
@@ -663,11 +679,11 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		
 		// We were charged skill for it
-		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
+		assertEquals (35, combatDetails.getAttackerCastingSkillRemaining ());
 		verify (serverResourceCalc).sendGlobalProductionValues (attackingPlayer, 35, true);
 		
 		// Can't cast another
-		assertTrue (gc.isSpellCastThisCombatTurn ());
+		assertTrue (combatDetails.isSpellCastThisCombatTurn ());
 		
 		verifyNoMoreInteractions (midTurn);
 		verifyNoMoreInteractions (resourceValueUtils);
@@ -716,8 +732,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
 		
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (25).getCell ().get (15);
-		gc.setCombatAttackerCastingSkillRemaining (45);
+		// Combat map
+		final MapAreaOfCombatTiles combatMap = createCombatMap ();
 
 		// Players involved
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -741,12 +757,21 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), attackingPd.getPlayerID (), "castCombatNow")).thenReturn (attackingWizard);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), combatMap, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "castCombatNow")).thenReturn (combatDetails);
+		combatDetails.setAttackerCastingSkillRemaining (45);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Pick the 4th unit
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -780,7 +805,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		final MapCoordinates2DEx adjustedTargetLocation = new MapCoordinates2DEx (10, 7);
 		
-		when (unitServerUtils.findFreeCombatPositionAvoidingInvisibleClosestTo (xu, combatLocation, gc.getCombatMap (), targetLocation,
+		when (unitServerUtils.findFreeCombatPositionAvoidingInvisibleClosestTo (xu, combatLocation, combatMap, targetLocation,
 			trueMap.getUnit (), combatMapSize, db)).thenReturn (adjustedTargetLocation);
 		
 		// Counter magic
@@ -809,6 +834,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setUnitServerUtils (unitServerUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, false, mom);
@@ -821,11 +847,11 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		verify (resourceValueUtils).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);
 		
 		// We were charged skill for it
-		assertEquals (35, gc.getCombatAttackerCastingSkillRemaining ().intValue ());
+		assertEquals (35, combatDetails.getAttackerCastingSkillRemaining ());
 		verify (serverResourceCalc).sendGlobalProductionValues (attackingPlayer, 35, true);
 		
 		// Can't cast another
-		assertTrue (gc.isSpellCastThisCombatTurn ());
+		assertTrue (combatDetails.isSpellCastThisCombatTurn ());
 		
 		// Check values on unit
 		assertEquals (98, summonedUnit.getDoubleCombatMovesLeft ().intValue ());

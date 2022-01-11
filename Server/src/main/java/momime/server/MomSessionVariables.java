@@ -3,7 +3,6 @@ package momime.server;
 import java.io.IOException;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.ServerToClientSessionConnection;
@@ -11,9 +10,11 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabase;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.server.knowledge.CombatDetails;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.worldupdates.WorldUpdates;
@@ -104,4 +105,9 @@ public interface MomSessionVariables
 	 * @return Engine for updating server's true copy of the game world
 	 */
 	public WorldUpdates getWorldUpdates ();
+
+	/**
+	 * @return Combat details storage
+	 */
+	public List<CombatDetails> getCombatDetails ();
 }

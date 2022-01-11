@@ -36,8 +36,9 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.fogofwar.FogOfWarMidTurnVisibility;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * Tests the KillUnitUpdate class
@@ -1222,10 +1223,6 @@ public final class TestKillUnitUpdate extends ServerTestData
 		final OverlandMapSize mapSize = createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (mapSize);
 		
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-		gc.setAttackingPlayerID (1);
-		gc.setDefendingPlayerID (2);
-		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 
@@ -1380,6 +1377,13 @@ public final class TestKillUnitUpdate extends ServerTestData
 		mu2.setCombatLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) tu.getCombatLocation ()));
 		when (unitUtils.findUnitURN (mu2.getUnitURN (), fow2.getUnit (), "KillUnitUpdate (mu)")).thenReturn (mu2);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx ((MapCoordinates3DEx) tu.getCombatLocation ()), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx ((MapCoordinates3DEx) tu.getCombatLocation ()), "KillUnitUpdate")).thenReturn (combatDetails);
+		
 		// Session variables
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
@@ -1387,6 +1391,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final PendingMovementUtils pendingMovementUtils = mock (PendingMovementUtils.class);
@@ -1395,6 +1400,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.setFogOfWarMidTurnVisibility (midTurn);
 		update.setUnitUtils (unitUtils);
 		update.setPendingMovementUtils (pendingMovementUtils);
+		update.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		update.setUnitURN (tu.getUnitURN ());
@@ -1464,10 +1470,6 @@ public final class TestKillUnitUpdate extends ServerTestData
 		// True map details on server
 		final OverlandMapSize mapSize = createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (mapSize);
-		
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-		gc.setAttackingPlayerID (1);
-		gc.setDefendingPlayerID (2);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1615,6 +1617,13 @@ public final class TestKillUnitUpdate extends ServerTestData
 		mu1.setCombatLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) tu.getCombatLocation ()));
 		when (unitUtils.findUnitURN (mu1.getUnitURN (), fow1.getUnit (), "KillUnitUpdate (mu)")).thenReturn (mu1);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx ((MapCoordinates3DEx) tu.getCombatLocation ()), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx ((MapCoordinates3DEx) tu.getCombatLocation ()), "KillUnitUpdate")).thenReturn (combatDetails);
+		
 		// Session variables
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
@@ -1622,6 +1631,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final PendingMovementUtils pendingMovementUtils = mock (PendingMovementUtils.class);
@@ -1630,6 +1640,7 @@ public final class TestKillUnitUpdate extends ServerTestData
 		update.setFogOfWarMidTurnVisibility (midTurn);
 		update.setUnitUtils (unitUtils);
 		update.setPendingMovementUtils (pendingMovementUtils);
+		update.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		update.setUnitURN (tu.getUnitURN ());

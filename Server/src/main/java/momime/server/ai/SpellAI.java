@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import jakarta.xml.bind.JAXBException;
@@ -19,6 +18,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
+import momime.server.knowledge.CombatDetails;
 
 /**
  * Methods for AI players making decisions about spells
@@ -86,7 +86,7 @@ public interface SpellAI
 	 * @param player AI player who needs to choose what to cast
 	 * @param wizardDetails AI wizard who needs to choose what to cast
 	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
-	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param combatDetails Details about the combat taking place
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -94,7 +94,7 @@ public interface SpellAI
 	 * @throws IOException If there is another kind of problem
 	 */
 	public CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final KnownWizardDetails wizardDetails,
-		final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		final ExpandedUnitDetails combatCastingUnit, final CombatDetails combatDetails, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
 
 	/**
@@ -102,7 +102,7 @@ public interface SpellAI
 	 * 
 	 * @param player AI player who needs to choose what to cast
 	 * @param combatCastingUnit Unit who is casting the spell
-	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param combatDetails Details about the combat taking place
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -110,7 +110,7 @@ public interface SpellAI
 	 * @throws IOException If there is another kind of problem
 	 */
 	public CombatAIMovementResult decideWhetherToCastFixedSpellInCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
-		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		final CombatDetails combatDetails, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
 
 	/**
@@ -118,7 +118,7 @@ public interface SpellAI
 	 * 
 	 * @param player AI player who needs to choose what to cast
 	 * @param combatCastingUnit Unit who is casting the spell
-	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param combatDetails Details about the combat taking place
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -126,6 +126,6 @@ public interface SpellAI
 	 * @throws IOException If there is another kind of problem
 	 */
 	public CombatAIMovementResult decideWhetherToCastSpellImbuedInHeroItem (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
-		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		final CombatDetails combatDetails, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
 }

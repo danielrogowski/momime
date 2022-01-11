@@ -7,10 +7,12 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
+import momime.server.knowledge.CombatDetails;
 
 /**
  * Methods dealing with combat maps that are only needed on the server
@@ -46,4 +48,31 @@ public interface CombatMapServerUtils
 	 */
 	public boolean isWithinWallOfFire (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
 		final MapAreaOfCombatTiles combatMap, final List<MemoryMaintainedSpell> trueSpells, final CommonDatabase db);
+	
+	/**
+	 * @param combatDetails Combat details storage
+	 * @param combatURN Unique identifier for the combat to look for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Requested combat
+	 * @throws RecordNotFoundException If the combatURN does not exist
+	 */
+	public CombatDetails findCombatURN (final List<CombatDetails> combatDetails, final int combatURN, final String caller)
+		throws RecordNotFoundException;
+
+	/**
+	 * @param combatDetails Combat details storage
+	 * @param combatLocation Combat location to look for
+	 * @return Requested combat if exists, or null if not found
+	 */
+	public CombatDetails findCombatByLocation (final List<CombatDetails> combatDetails, final MapCoordinates3DEx combatLocation);
+
+	/**
+	 * @param combatDetails Combat details storage
+	 * @param combatLocation Combat location to look for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Requested combat
+	 * @throws RecordNotFoundException If there is no combat taking place at the requested location
+	 */
+	public CombatDetails findCombatByLocation (final List<CombatDetails> combatDetails, final MapCoordinates3DEx combatLocation, final String caller)
+		throws RecordNotFoundException;
 }

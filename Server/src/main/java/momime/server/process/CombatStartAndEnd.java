@@ -12,6 +12,7 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.PendingMovement;
 import momime.server.MomSessionVariables;
+import momime.server.knowledge.CombatDetails;
 
 /**
  * Routines dealing with starting and ending combats
@@ -43,7 +44,7 @@ public interface CombatStartAndEnd
 	 * If the combat results in the attacker capturing a city, and the attacker is a human player, then this gets called twice - the first time it
 	 * will spot that CaptureCityDecision = cdcUndecided, send a message to the player to ask them for the decision, and when we get an answer back, it'll be called again
 	 * 
-	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
+	 * @param combatDetails Details about the combat taking place
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - there should be no situations anymore where this can be passed in as null
 	 * @param winningPlayer Player who won
@@ -53,7 +54,7 @@ public interface CombatStartAndEnd
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws IOException If there is another kind of problem
 	 */
-	public void combatEnded (final MapCoordinates3DEx combatLocation,
+	public void combatEnded (final CombatDetails combatDetails,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
 		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;

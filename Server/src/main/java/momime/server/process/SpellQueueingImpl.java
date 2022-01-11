@@ -57,6 +57,7 @@ import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.knowledge.CombatDetails;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.HeroItemServerUtils;
@@ -333,17 +334,19 @@ public final class SpellQueueingImpl implements SpellQueueing
 			final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
+			final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), combatLocation, "requestCastSpell");
+			
 			// Work out unmodified casting cost
 			if (!combatPlayers.bothFound ())
 				msg = "You cannot cast combat spells if one side has been wiped out in the combat.";
 			
-			else if (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (gc.getCombatCurrentPlayerID ()))
+			else if (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (combatDetails.getCombatCurrentPlayerID ()))
 				msg = "You cannot cast combat spells when it isn't your turn.";
 			
 			else if (xuCombatCastingUnit == null)
 			{
 				// Validate wizard casting
-				if ((gc.isSpellCastThisCombatTurn () != null) && (gc.isSpellCastThisCombatTurn ()))
+				if (combatDetails.isSpellCastThisCombatTurn ())
 					msg = "You have already cast a spell this combat turn.";
 				else
 				{
@@ -355,9 +358,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 					// What our remaining skill?
 					final int ourSkill;
 					if (castingPlayer == combatPlayers.getAttackingPlayer ())
-						ourSkill = gc.getCombatAttackerCastingSkillRemaining ();
+						ourSkill = combatDetails.getAttackerCastingSkillRemaining ();
 					else if (castingPlayer == combatPlayers.getDefendingPlayer ())
-						ourSkill = gc.getCombatDefenderCastingSkillRemaining ();
+						ourSkill = combatDetails.getDefenderCastingSkillRemaining ();
 					else
 					{
 						ourSkill = -1;
@@ -421,7 +424,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, null, combatLocation, gc.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xuCombatTargetUnit,
+						(spell, null, combatLocation, combatDetails.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xuCombatTargetUnit,
 							true, mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ());
 					
 					if (validTarget != TargetSpellResult.VALID_TARGET)
@@ -479,7 +482,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					if (getMovementUtils ().calculateDoubleMovementToEnterCombatTile
-						(summonedUnit, gc.getCombatMap ().getRow ().get (combatTargetLocation.getY ()).getCell ().get (combatTargetLocation.getX ()), mom.getServerDB ()) < 0)
+						(summonedUnit, combatDetails.getCombatMap ().getRow ().get (combatTargetLocation.getY ()).getCell ().get (combatTargetLocation.getX ()), mom.getServerDB ()) < 0)
 					
 						msg = "The terrain at your chosen location is impassable so you cannot summon a unit there.";
 				}
@@ -499,7 +502,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(combatTargetLocation != null)))		// Cracks Call when targetted at a wall instead of a unit
 			{
 				// Check location is valid 
-				if (!getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatTargetLocation, gc.getCombatMap (), mom.getServerDB ()))
+				if (!getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatTargetLocation, combatDetails.getCombatMap (), mom.getServerDB ()))
 					msg = "This location is not a valid target for this combat spell";
 			}
 		}

@@ -8,7 +8,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.WeightedChoices;
@@ -30,7 +29,7 @@ import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.process.SpellQueueing;
 import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -72,7 +71,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	 * 
 	 * @param player AI player who is considering casting a spell
 	 * @param spell Spell they are considering casting
-	 * @param combatLocation Combat location
+	 * @param combatDetails Details about the combat taking place
 	 * @param combatCastingUnit Unit who is going to cast the spell; null = the wizard
 	 * @param combatCastingFixedSpellNumber For casting fixed spells the unit knows (e.g. Giant Spiders casting web), indicates the spell number; for other types of casting this is null
 	 * @param combatCastingSlotNumber For casting spells imbued into hero items, this is the number of the slot (0, 1 or 2); for other types of casting this is null
@@ -83,7 +82,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void listChoicesForSpell (final PlayerServerDetails player, final Spell spell, final MapCoordinates3DEx combatLocation,
+	public final void listChoicesForSpell (final PlayerServerDetails player, final Spell spell, final CombatDetails combatDetails,
 		final ExpandedUnitDetails combatCastingUnit, final Integer combatCastingFixedSpellNumber, final Integer combatCastingSlotNumber,
 		final MomSessionVariables mom, final WeightedChoices<CombatAISpellChoice> choices)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
@@ -97,7 +96,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 			// Only add combat enchantments that aren't already there
 			case COMBAT_ENCHANTMENTS:
 				if (getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (),
-					spell, player.getPlayerDescription ().getPlayerID (), combatLocation).size () == 0)
+					spell, player.getPlayerDescription ().getPlayerID (), combatDetails.getCombatLocation ()).size () == 0)
 					
 					valid = false;
 				break;
@@ -105,7 +104,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 			// Only allow Wall of Fire/Darkness/Stone if we don't already have it
 			case CITY_ENCHANTMENTS:
 				valid = (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-					spell, player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					spell, player.getPlayerDescription ().getPlayerID (), combatDetails.getCombatLocation (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 					priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
 					mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET);
 				break;
@@ -113,7 +112,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 			// Can't summon (including raise dead-type spells) if already max number of units
 			case SUMMONING:
 				if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&
-					(getCombatMapServerUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
+					(getCombatMapServerUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatDetails.getCombatLocation (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
 					
 					valid = false;
@@ -142,13 +141,11 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 				final ExpandedUnitDetails summonedUnit = getSampleUnitUtils ().createSampleUnit (spell.getSummonedUnit ().get (0), player.getPlayerDescription ().getPlayerID (), null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
-				final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-				
-				final MapCoordinates2DEx summoningLocation = getUnitServerUtils ().findFreeCombatPositionClosestTo (summonedUnit, combatLocation, gc.getCombatMap (),
-					new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
-					player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ());
+				final MapCoordinates2DEx summoningLocation = getUnitServerUtils ().findFreeCombatPositionClosestTo
+					(summonedUnit, combatDetails.getCombatLocation (), combatDetails.getCombatMap (),
+						new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
+						player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+						mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ());
 				
 				if (summoningLocation != null)
 				{
@@ -171,15 +168,12 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 				else
 					targetCount = 0;		// Targetted at all units, so count how many
 
-				final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-				
 				for (final MemoryUnit targetUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 				{
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-					if ((getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, gc.getCombatMap (), player.getPlayerDescription ().getPlayerID (),
+					if ((getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatDetails.getCombatLocation (), combatDetails.getCombatMap (), player.getPlayerDescription ().getPlayerID (),
 						combatCastingUnit, null, xu, true, mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getPlayers (),
 						mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
 							
@@ -191,7 +185,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 							// If we're trying to raise dead a specific unit, we have to prove there's somewhere valid to bring it back
 							if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 							{
-								final MapCoordinates2DEx summoningLocation = getUnitServerUtils ().findFreeCombatPositionClosestTo (xu, combatLocation, gc.getCombatMap (),
+								final MapCoordinates2DEx summoningLocation = getUnitServerUtils ().findFreeCombatPositionClosestTo (xu, combatDetails.getCombatLocation (), combatDetails.getCombatMap (),
 									new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
 									player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
 									mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ());
@@ -231,7 +225,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	 * Given a choice of spells and targets the AI can choose from in combat, picks one and casts it
 	 * 
 	 * @param player AI player who is considering casting a spell
-	 * @param combatLocation Combat location
+	 * @param combatDetails Details about the combat taking place
 	 * @param choices List of spells and targets to choose from
 	 * @param combatCastingUnit Unit who is going to cast the spell; null = the wizard
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -241,7 +235,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final CombatAIMovementResult makeCastingChoice (final PlayerServerDetails player, final MapCoordinates3DEx combatLocation,
+	public final CombatAIMovementResult makeCastingChoice (final PlayerServerDetails player, final CombatDetails combatDetails,
 		final WeightedChoices<CombatAISpellChoice> choices, final ExpandedUnitDetails combatCastingUnit, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
@@ -256,7 +250,7 @@ public final class CombatSpellAIImpl implements CombatSpellAI
 			
 			if (getSpellQueueing ().requestCastSpell (player, (combatCastingUnit == null) ? null : combatCastingUnit.getUnitURN (),
 				choice.getCombatCastingFixedSpellNumber (), choice.getCombatCastingSlotNumber (),
-				choice.getSpell ().getSpellID (), null, combatLocation, choice.getTargetLocation (),
+				choice.getSpell ().getSpellID (), null, combatDetails.getCombatLocation (), choice.getTargetLocation (),
 				(choice.getTargetUnit () == null) ? null : choice.getTargetUnit ().getUnitURN (), null, mom))
 				
 				result = CombatAIMovementResult.ENDED_COMBAT;

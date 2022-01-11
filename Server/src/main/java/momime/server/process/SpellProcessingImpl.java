@@ -106,9 +106,11 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.fogofwar.KillUnitActionID;
+import momime.server.knowledge.CombatDetails;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapArea;
 import momime.server.mapgenerator.CombatMapGenerator;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.HeroItemServerUtils;
 import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
@@ -248,6 +250,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Process for making sure one wizard has met another wizard */
 	private KnownWizardServerUtils knownWizardServerUtils;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -511,6 +516,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
+		final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), combatLocation, "castCombatNow");
+		
 		// Set this if we need to call combatEnded at the end
 		PlayerServerDetails winningPlayer = null;
 		
@@ -598,7 +605,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						targetUnit.getUnitURN (), unitSpellEffect.getUnitSkillID (), true, null, null, useVariableDamage, skipAnimation, true, mom);
 					
 					// In some cases adding a new spell may kill a unit, potentially ending the combat (webbing a unit that's flying over water)
-					final MomCombatTile tile = gc.getCombatMap ().getRow ().get (targetUnit.getCombatPosition ().getY ()).getCell ().get (targetUnit.getCombatPosition ().getX ());
+					final MomCombatTile tile = combatDetails.getCombatMap ().getRow ().get (targetUnit.getCombatPosition ().getY ()).getCell ().get (targetUnit.getCombatPosition ().getX ());
 					
 					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (targetUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
@@ -652,12 +659,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				// The new enchantment presumably requires the combat map to be regenerated so we can see it
 				// (the only city enchantments/curses that can be cast in combat are Wall of Fire / Wall of Darkness)
-				getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
+				getCombatMapGenerator ().regenerateCombatTileBorders (combatDetails.getCombatMap (),
+					mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
 				
 				// Send the updated map
 				final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();
 				msg.setCombatLocation (combatLocation);
-				msg.setCombatTerrain (gc.getCombatMap ());
+				msg.setCombatTerrain (combatDetails.getCombatMap ());
 				
 				if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					attackingPlayer.getConnection ().sendMessageToClient (msg);
@@ -675,13 +683,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if ((kind == KindOfSpell.ATTACK_WALLS) || (kind == KindOfSpell.ATTACK_UNITS_AND_WALLS))
 				{
 					// Wreck one tile
-					gc.getCombatMap ().getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).setWrecked (true);
+					combatDetails.getCombatMap ().getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).setWrecked (true);
 				}
 				else
 				{
 					// Make an area muddy, the size of the area is set in the radius field
 					final CombatMapArea areaBridge = new CombatMapArea ();
-					areaBridge.setArea (gc.getCombatMap ());
+					areaBridge.setArea (combatDetails.getCombatMap ());
 					areaBridge.setCoordinateSystem (mom.getSessionDescription ().getCombatMapSize ());
 					
 					final Set<String> muddableTiles = mom.getServerDB ().getCombatTileType ().stream ().filter
@@ -713,7 +721,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				// Send the updated map
 				final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();
 				msg.setCombatLocation (combatLocation);
-				msg.setCombatTerrain (gc.getCombatMap ());
+				msg.setCombatTerrain (combatDetails.getCombatMap ());
 				
 				if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					attackingPlayer.getConnection ().sendMessageToClient (msg);
@@ -770,7 +778,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
 				
 				final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-					(xuTargetUnit, combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+					(xuTargetUnit, combatLocation, combatDetails.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 						mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 	
 				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, targetUnit,
@@ -807,7 +815,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-						(xuSummonedUnit, combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+						(xuSummonedUnit, combatLocation, combatDetails.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 							mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
 					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, tu,
@@ -844,7 +852,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							final int thisCastingPlayerID = ((randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_HEALING)) ||
 								(randomSpellID.equals (CommonDatabaseConstants.SPELL_ID_CHAOS_CHANNELS))) ? thisUnit.getOwningPlayerID () : castingPlayer.getPlayerDescription ().getPlayerID ();
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (randomSpell, null, combatLocation, gc.getCombatMap (), thisCastingPlayerID,
+							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (randomSpell, null, combatLocation, combatDetails.getCombatMap (), thisCastingPlayerID,
 								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							{
@@ -880,7 +888,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 							final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 							
-							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, gc.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (),
+							if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, combatLocation, combatDetails.getCombatMap (),
+								castingPlayer.getPlayerDescription ().getPlayerID (),
 								xuCombatCastingUnit, variableDamage, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 								
@@ -909,7 +918,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						Integer wreckTileChance = null;
 						MapCoordinates2DEx wreckTilePosition = null;
 						if ((spell.getSpellValidBorderTarget ().size () > 0) && (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell
-							(spell, (MapCoordinates2DEx) targetUnit.getCombatPosition (), gc.getCombatMap (), mom.getServerDB ())))
+							(spell, (MapCoordinates2DEx) targetUnit.getCombatPosition (), combatDetails.getCombatMap (), mom.getServerDB ())))
 						{
 							wreckTileChance = 1;
 							wreckTilePosition = (MapCoordinates2DEx) targetUnit.getCombatPosition ();
@@ -1026,19 +1035,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 			Integer sendSkillValue = null;
 			if (castingPlayer == defendingPlayer)
 			{
-				if (gc.getCombatDefenderCastingSkillRemaining () != null)
-				{
-					gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
-					sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
-				}
+				combatDetails.setDefenderCastingSkillRemaining (combatDetails.getDefenderCastingSkillRemaining () - reducedCombatCastingCost);
+				sendSkillValue = combatDetails.getDefenderCastingSkillRemaining ();
 			}
 			else if (castingPlayer == attackingPlayer)
 			{
-				if (gc.getCombatAttackerCastingSkillRemaining () != null)
-				{
-					gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
-					sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
-				}
+				combatDetails.setAttackerCastingSkillRemaining (combatDetails.getAttackerCastingSkillRemaining () - reducedCombatCastingCost);
+				sendSkillValue = combatDetails.getAttackerCastingSkillRemaining ();
 			}
 			else
 				throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
@@ -1048,7 +1051,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue, true);
 			
 			// Only allow casting one spell each combat turn
-			gc.setSpellCastThisCombatTurn (true);
+			combatDetails.setSpellCastThisCombatTurn (true);
 		}
 		else if (combatCastingFixedSpellNumber != null)
 		{
@@ -1082,7 +1085,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Did casting the spell result in winning/losing the combat?
 		if (winningPlayer != null)
 		{
-			getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+			getCombatStartAndEnd ().combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 			combatEnded = true;
 		}
 
@@ -2766,5 +2769,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
 	{
 		knownWizardServerUtils = k;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

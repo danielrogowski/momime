@@ -2,7 +2,6 @@ package momime.server.messages.process;
 
 import java.io.IOException;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
@@ -14,11 +13,14 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.clienttoserver.CaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.server.MomSessionVariables;
+import momime.server.knowledge.CombatDetails;
 import momime.server.process.CombatStartAndEnd;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * Client sends this to tell the server whether they want to raze or capture a city they just took.
@@ -34,6 +36,9 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -47,10 +52,13 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
+		final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
+			(MapCoordinates3DEx) getCityLocation (), "CaptureCityDecisionMessageImpl");
+		
 		if ((getCaptureCityDecision () == CaptureCityDecisionID.CAPTURE) || (getCaptureCityDecision () == CaptureCityDecisionID.RAZE))
 		{
 			final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
-			getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
+			getCombatStartAndEnd ().combatEnded (combatDetails, sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
 		}
 		else
 		{
@@ -92,5 +100,21 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

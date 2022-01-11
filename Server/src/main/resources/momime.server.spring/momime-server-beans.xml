@@ -157,6 +157,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="captureCityDecisionMessage" class="momime.server.messages.process.CaptureCityDecisionMessageImpl" scope="prototype">
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 	
 	<bean id="dismissUnitMessage" class="momime.server.messages.process.DismissUnitMessageImpl" scope="prototype">
@@ -212,11 +213,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="playerServerUtils" ref="playerServerUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 	
 	<bean id="endCombatTurnMessage" class="momime.server.messages.process.EndCombatTurnMessageImpl" scope="prototype">
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="combatEndTurn" ref="combatEndTurn" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 	
 	<bean id="combatAutoControlMessage" class="momime.server.messages.process.CombatAutoControlMessageImpl" scope="prototype">
@@ -228,6 +231,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 
 	<bean id="requestMoveHeroItemMessage" class="momime.server.messages.process.RequestMoveHeroItemMessageImpl" scope="prototype">
@@ -675,6 +679,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -729,6 +734,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 	
 	<bean id="attackResolutionProcessing" class="momime.server.process.AttackResolutionProcessingImpl">
@@ -739,6 +745,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageCalculator" ref="damageCalculator" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 
 	<bean id="combatStartAndEnd" class="momime.server.process.CombatStartAndEndImpl">
@@ -763,6 +770,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
@@ -787,6 +795,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="movementUtils" ref="movementUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 
 	<bean id="combatHandling" class="momime.server.process.CombatHandlingImpl">
@@ -1130,6 +1139,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="nextFreeSpellURN" value="1" />
 		<property name="nextFreeCombatAreaEffectURN" value="1" />
 		<property name="nextFreeHeroItemURN" value="1" />
+		<property name="nextFreeOfferURN" value="1" />
+		<property name="nextFreeCombatURN" value="1" />
 	</bean>
 
 	<bean id="gpk" class="momime.common.messages.MomGeneralPublicKnowledge" scope="prototype" />
@@ -1171,6 +1182,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="fogOfWarMidTurnVisibility" ref="fogOfWarMidTurnVisibility" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 	
 	<bean id="removeCombatAreaEffectUpdate" class="momime.server.worldupdates.RemoveCombatAreaEffectUpdate" scope="prototype">
@@ -1187,6 +1199,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="movementUtils" ref="movementUtils" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 	
 	<bean id="recheckTransportCapacityUpdate" class="momime.server.worldupdates.RecheckTransportCapacityUpdate" scope="prototype">

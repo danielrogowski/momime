@@ -63,7 +63,8 @@ import momime.server.fogofwar.FogOfWarDuplication;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -154,6 +155,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
@@ -618,9 +622,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final boolean initialAutoControlHumanPlayer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-
+		// This method is always triggered from the client, because processing combats only stops when a human player must take an action
+		// hence why we look up the combat by its location and not its URN
+		final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), combatLocation, "progressCombat");
+		
 		// These get modified by the loop
 		boolean firstTurn = initialFirstTurn;
 		boolean autoControlHumanPlayer = initialAutoControlHumanPlayer;
@@ -630,7 +635,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		boolean aiPlayerTurn = true;
 		CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getServerDB ());
-		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()) && (tc.getCombatTurnCount () < COMBAT_MAX_TURNS))
+		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()) && (combatDetails.getCombatTurnCount () < COMBAT_MAX_TURNS))
 		{
 			// Who should take their turn next?
 			// If human player hits Auto, then we want to play their turn for them through their AI, without switching players
@@ -640,38 +645,41 @@ public final class CombatProcessingImpl implements CombatProcessing
 				if (firstTurn)
 				{
 					firstTurn = false;
-					tc.setCombatCurrentPlayerID (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
+					combatDetails.setCombatCurrentPlayerID (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
 					log.debug ("First turn - Defender");
 				}
 				
 				// Otherwise compare against the player from the last turn
-				else if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayerID ()))
+				else if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ().equals (combatDetails.getCombatCurrentPlayerID ()))
 				{
-					tc.setCombatCurrentPlayerID (combatPlayers.getAttackingPlayer ().getPlayerDescription ().getPlayerID ());
+					combatDetails.setCombatCurrentPlayerID (combatPlayers.getAttackingPlayer ().getPlayerDescription ().getPlayerID ());
 					log.debug ("Attacker's turn");
 				}
 				else
 				{
-					tc.setCombatCurrentPlayerID (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
+					combatDetails.setCombatCurrentPlayerID (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
 					log.debug ("Defender's turn");
 				}
 				
 				// Sequence is always (start new turn) - defender - attacker - (start new turn) - defender - attacker,
 				// so if its about to be the defender's turn, then take care of any start new turn things, like rolling for confusion
-				if (tc.getCombatCurrentPlayerID ().equals (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ()))
+				if (combatDetails.getCombatCurrentPlayerID () == combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ())
 				{
-					tc.setCombatTurnCount (tc.getCombatTurnCount () + 1);
+					combatDetails.setCombatTurnCount (combatDetails.getCombatTurnCount () + 1);
 					
 					getCombatEndTurn ().combatBeforeEitherTurn ((PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (),
-						combatLocation, mom);
+						combatDetails, mom);
 				}
 				
 				// Roll for which units will be terrified and cannot move this turn; this also moves Magic Vortexes which could end the combat, or the whole session
-				final List<Integer> terrifiedUnitURNs = getCombatEndTurn ().startCombatTurn (combatLocation, tc.getCombatCurrentPlayerID (),
+				final List<Integer> terrifiedUnitURNs = getCombatEndTurn ().startCombatTurn (combatDetails, combatDetails.getCombatCurrentPlayerID (),
 					(PlayerServerDetails) combatPlayers.getAttackingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), mom);
 				if (terrifiedUnitURNs == null)
 				{
-					// Combat ended; cleanup in "combatEnded" will already have cleared out CombatCurrentPlayerID 
+					// Combat ended
+					final boolean removed = mom.getCombatDetails ().remove (combatDetails);
+					combatDetails.setCombatCurrentPlayerID (0);
+					log.debug ("progressCombat detected combat URN " + combatDetails.getCombatURN () + " ended after call to startCombatTurn; removed = " + removed);
 					aiPlayerTurn = false;
 				}
 				else
@@ -679,7 +687,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					// Tell all human players involved in the combat who the new player is
 					final SetCombatPlayerMessage msg = new SetCombatPlayerMessage ();
 					msg.setCombatLocation (combatLocation);
-					msg.setPlayerID (tc.getCombatCurrentPlayerID ());
+					msg.setPlayerID (combatDetails.getCombatCurrentPlayerID ());
 					msg.getTerrifiedUnitURN ().addAll (terrifiedUnitURNs);
 					
 					if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
@@ -689,23 +697,25 @@ public final class CombatProcessingImpl implements CombatProcessing
 						((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
 					
 					// Give this player all their movement for this turn
-					final List<ExpandedUnitDetails> webbedUnits = getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayerID (), combatLocation,
+					final List<ExpandedUnitDetails> webbedUnits = getUnitCalculations ().resetUnitCombatMovement (combatDetails.getCombatCurrentPlayerID (), combatLocation,
 						terrifiedUnitURNs, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					getFogOfWarMidTurnMultiChanges ().processWebbedUnits (webbedUnits, mom);
 					
 					// Allow the player to cast a spell this turn
-					tc.setSpellCastThisCombatTurn (null);
+					combatDetails.setSpellCastThisCombatTurn (false);
 					
 					// Reset counterattack to hit penalties
-					tc.getNumberOfTimedAttacked ().clear ();
+					combatDetails.getNumberOfTimedAttacked ().clear ();
 				}
 			}
 			
 			// AI or human player?
-			if (tc.getCombatCurrentPlayerID () != null)
+			if (combatDetails.getCombatCurrentPlayerID () == 0)
+				log.debug ("progressCombat skipping doing anything for combat URN " + combatDetails.getCombatURN () + " because combatCurrentPlayerID = 0");
+			else
 			{
-				final PlayerServerDetails combatCurrentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCombatCurrentPlayerID (), "progressCombat");
+				final PlayerServerDetails combatCurrentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), combatDetails.getCombatCurrentPlayerID (), "progressCombat");
 				if ((combatCurrentPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN) && (!autoControlHumanPlayer))
 				{
 					// Human players' turn.
@@ -716,7 +726,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				else
 				{
 					// Take AI player's turn
-					CombatAIMovementResult aiMovementResult = getCombatAI ().aiCombatTurn (combatLocation, combatCurrentPlayer, mom);
+					CombatAIMovementResult aiMovementResult = getCombatAI ().aiCombatTurn (combatDetails, combatCurrentPlayer, mom);
 					switch (aiMovementResult)
 					{
 						// Did something useful, so number of turns not doing anything useful resets to 0
@@ -742,8 +752,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 					autoControlHumanPlayer = false;
 					
 					// End of AI player's turn
-					if ((mom.getPlayers ().size () > 0) && (tc.getCombatCurrentPlayerID () != null))
-						getCombatEndTurn ().combatEndTurn (combatLocation, tc.getCombatCurrentPlayerID (), mom);
+					if ((mom.getPlayers ().size () > 0) && (combatDetails.getCombatCurrentPlayerID () != 0))
+						getCombatEndTurn ().combatEndTurn (combatDetails, combatDetails.getCombatCurrentPlayerID (), mom);
 				}
 			}
 			
@@ -755,10 +765,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 		}
 		
 		// If the combat is a stalemate, then just declare the defender as the winner
-		if ((mom.getPlayers ().size () > 0) && (combatPlayers.bothFound ()) && (tc.getCombatTurnCount () != null) && (tc.getCombatTurnCount () >= COMBAT_MAX_TURNS))
+		if ((mom.getPlayers ().size () > 0) && (combatPlayers.bothFound ()) && (combatDetails.getCombatTurnCount () >= COMBAT_MAX_TURNS))
 		{
-			log.debug ("Combat at " + combatLocation + " timed out");
-			getCombatStartAndEnd ().combatEnded (combatLocation, (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
+			log.debug ("Combat URN " + combatDetails.getCombatURN () + " timed out");
+			getCombatStartAndEnd ().combatEnded (combatDetails, (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), null, mom);
 		}
 	}
@@ -1225,8 +1235,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
 		
 		// Get the grid cell, so we can access the combat map
-		final ServerGridCellEx combatCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), combatLocation, "okToMoveUnitInCombat");
 		
 		// Ranged attacks always reduce movement remaining to zero and never result in the unit actually moving.
 		// The value gets sent to the client by resolveAttack below.
@@ -1240,7 +1249,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		{
 			// Bump to different cell if there's an invisible unit here
 			final MapCoordinates2DEx actualMoveTo = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
-				(tu, combatLocation, combatCell.getCombatMap (), moveTo, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+				(tu, combatLocation, combatDetails.getCombatMap (), moveTo, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 					mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 			
 			// Update on client
@@ -1333,15 +1342,15 @@ public final class CombatProcessingImpl implements CombatProcessing
 				{
 					// Good, no invisible unit here, so can make the move
 					// Test for crossing wall of fire
-					combatEnded = getCombatHandling ().crossCombatBorder (tu, combatLocation, combatCell.getCombatMap (),
+					combatEnded = getCombatHandling ().crossCombatBorder (tu, combatLocation, combatDetails.getCombatMap (),
 						attackingPlayer, defendingPlayer, (MapCoordinates2DEx) msg.getMoveFrom (), movePath, mom);
 					
 					// How much movement did it take us to walk into this cell?
 					// Units that ignore combat terrain always spend a fixed amount per move, so don't even bother calling the method
 					reduceMovementRemaining (tu.getMemoryUnit (), ignoresCombatTerrain ? 2 : getMovementUtils ().calculateDoubleMovementToEnterCombatTile
-						(tu, combatCell.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
+						(tu, combatDetails.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
 					msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
-					combatCell.getLastCombatMoveDirection ().put (tu.getUnitURN (), d);
+					combatDetails.getLastCombatMoveDirection ().put (tu.getUnitURN (), d);
 					
 					// Only send this to the players involved in the combat.
 					// Players not involved in the combat don't care where the units are positioned.
@@ -1398,7 +1407,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				case MELEE_UNIT:
 				case MELEE_WALL:
 				case MELEE_UNIT_AND_WALL:
-					combatEnded = getCombatHandling ().crossCombatBorder (tu, combatLocation, combatCell.getCombatMap (),
+					combatEnded = getCombatHandling ().crossCombatBorder (tu, combatLocation, combatDetails.getCombatMap (),
 						attackingPlayer, defendingPlayer, tu.getCombatPosition (), moveTo, mom);
 					
 					if (!combatEnded)
@@ -1797,5 +1806,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

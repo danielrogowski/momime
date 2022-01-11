@@ -2,6 +2,8 @@ package momime.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -45,6 +47,7 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.knowledge.CombatDetails;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.PlayerMessageProcessing;
@@ -79,6 +82,9 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	
 	/** Engine for updating server's true copy of the game world */
 	private WorldUpdates worldUpdates;
+	
+	/** Combat details storage */
+	private List<CombatDetails> combatDetails = new ArrayList<CombatDetails> ();
 	
 	/**
 	 * Descendant server classes will want to override this to create a thread that knows how to process useful messages
@@ -380,6 +386,15 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	public final void setWorldUpdates (final WorldUpdates wu)
 	{
 		worldUpdates = wu;
+	}
+
+	/**
+	 * @return Combat details storage
+	 */
+	@Override
+	public final List<CombatDetails> getCombatDetails ()
+	{
+		return combatDetails;
 	}
 	
 	/**

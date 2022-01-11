@@ -67,10 +67,12 @@ import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
+import momime.server.knowledge.CombatDetails;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.CityServerUtils;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.worldupdates.WorldUpdates;
 
@@ -103,7 +105,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
@@ -138,7 +139,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up object to test
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
@@ -253,12 +253,18 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingWizard, players,
 			defendingPriv.getFogOfWarMemory (), db, false)).thenReturn (22);
 		
+		// No existing combat here
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		
 		// Session variables
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
@@ -270,37 +276,39 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
+		cse.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, null, null, mom);
 		
 		// Check that a map got generated
-		final ServerGridCellEx tc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		assertEquals (1, combatList.size ());
+		final CombatDetails combatDetails = combatList.get (0);
 		
-		assertNotNull (tc.getCombatMap ());
-		assertEquals (28, tc.getCombatAttackerCastingSkillRemaining ().intValue ());
-		assertEquals (22, tc.getCombatDefenderCastingSkillRemaining ().intValue ());
-		assertNull (tc.getCombatAttackerPendingMovement ());
-		assertNull (tc.getCombatDefenderPendingMovement ());
+		assertNotNull (combatDetails.getCombatMap ());
+		assertEquals (28, combatDetails.getAttackerCastingSkillRemaining ());
+		assertEquals (22, combatDetails.getDefenderCastingSkillRemaining ());
+		assertNull (combatDetails.getAttackerPendingMovement ());
+		assertNull (combatDetails.getDefenderPendingMovement ());
 
 		// Check the messages sent to the client were correct
 		assertEquals (1, attackingMsgs.getMessages ().size ());
 		assertEquals (StartCombatMessage.class.getName (), attackingMsgs.getMessages ().get (0).getClass ().getName ());
 		final StartCombatMessage msg = (StartCombatMessage) attackingMsgs.getMessages ().get (0);
 		assertEquals (defendingLocation, msg.getCombatLocation ());
-		assertSame (tc.getCombatMap (), msg.getCombatTerrain ());
+		assertSame (combatDetails.getCombatMap (), msg.getCombatTerrain ());
 		assertEquals (0, msg.getUnitPlacement ().size ());		// Is zero because these are added by positionCombatUnits (), which is mocked out
 		
 		// Check that units were added into combat on both sides
 		verify (combatProcessing).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, defendingLocation,
 			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X, CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y,
 			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_ROWS, CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FACING,
-			UnitCombatSideID.DEFENDER, null, tc.getCombatMap (), mom);
+			UnitCombatSideID.DEFENDER, null, combatDetails.getCombatMap (), mom);
 
 		verify (combatProcessing).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, attackingFrom,
 			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y,
 			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_ROWS, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING,
-			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
+			UnitCombatSideID.ATTACKER, attackingUnitURNs, combatDetails.getCombatMap (), mom);
 		
 		// Check the combat was started
 		verify (combatProcessing).progressCombat (defendingLocation, true, false, mom);
@@ -423,12 +431,18 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingWizard, players,
 			defendingPriv.getFogOfWarMemory (), db, false)).thenReturn (22);
 		
+		// No existing combat here
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		
 		// Session variables
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
@@ -440,6 +454,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
+		cse.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		final PendingMovement combatAttackerPendingMovement = new PendingMovement ();
@@ -447,32 +462,33 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, defendingUnitURNs, combatAttackerPendingMovement, combatDefenderPendingMovement, mom);
 		
 		// Check that a map got generated
-		final ServerGridCellEx tc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		assertEquals (1, combatList.size ());
+		final CombatDetails combatDetails = combatList.get (0);
 		
-		assertNotNull (tc.getCombatMap ());
-		assertEquals (28, tc.getCombatAttackerCastingSkillRemaining ().intValue ());
-		assertEquals (22, tc.getCombatDefenderCastingSkillRemaining ().intValue ());
-		assertSame (combatAttackerPendingMovement, tc.getCombatAttackerPendingMovement ());
-		assertSame (combatDefenderPendingMovement, tc.getCombatDefenderPendingMovement ());
+		assertNotNull (combatDetails.getCombatMap ());
+		assertEquals (28, combatDetails.getAttackerCastingSkillRemaining ());
+		assertEquals (22, combatDetails.getDefenderCastingSkillRemaining ());
+		assertSame (combatAttackerPendingMovement, combatDetails.getAttackerPendingMovement ());
+		assertSame (combatDefenderPendingMovement, combatDetails.getDefenderPendingMovement ());
 
 		// Check the messages sent to the client were correct
 		assertEquals (1, attackingMsgs.getMessages ().size ());
 		assertEquals (StartCombatMessage.class.getName (), attackingMsgs.getMessages ().get (0).getClass ().getName ());
 		final StartCombatMessage msg = (StartCombatMessage) attackingMsgs.getMessages ().get (0);
 		assertEquals (defendingLocation, msg.getCombatLocation ());
-		assertSame (tc.getCombatMap (), msg.getCombatTerrain ());
+		assertSame (combatDetails.getCombatMap (), msg.getCombatTerrain ());
 		assertEquals (0, msg.getUnitPlacement ().size ());		// Is zero because these are added by positionCombatUnits (), which is mocked out
 		
 		// Check that units were added into combat on both sides
 		verify (combatProcessing).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, defendingLocation,
 			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X, CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y,
 			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_ROWS, CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FACING,
-			UnitCombatSideID.DEFENDER, defendingUnitURNs, tc.getCombatMap (), mom);
+			UnitCombatSideID.DEFENDER, defendingUnitURNs, combatDetails.getCombatMap (), mom);
 
 		verify (combatProcessing).positionCombatUnits (defendingLocation, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, attackingFrom,
 			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y,
 			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_ROWS, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING,
-			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
+			UnitCombatSideID.ATTACKER, attackingUnitURNs, combatDetails.getCombatMap (), mom);
 		
 		// Check the combat was started
 		verify (combatProcessing).progressCombat (defendingLocation, true, false, mom);
@@ -584,12 +600,18 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Casting skill of each player
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		
+		// No existing combat here
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		
 		// Session variables
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
@@ -601,16 +623,20 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setKnownWizardUtils (knownWizardUtils);
+		cse.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		cse.startCombat (defendingLocation, attackingFrom, attackingUnitURNs, null, null, null, mom);
 		
 		// Check that a map got generated
-		assertNotNull (tc.getCombatMap ());
-		assertNull (tc.getCombatAttackerCastingSkillRemaining ());		// These never get set if the combat ends before it even starts
-		assertNull (tc.getCombatDefenderCastingSkillRemaining ());
-		assertNull (tc.getCombatAttackerPendingMovement ());
-		assertNull (tc.getCombatDefenderPendingMovement ());
+		assertEquals (1, combatList.size ());
+		final CombatDetails combatDetails = combatList.get (0);
+		
+		assertNotNull (combatDetails.getCombatMap ());
+		assertEquals (0, combatDetails.getAttackerCastingSkillRemaining ());
+		assertEquals (0, combatDetails.getDefenderCastingSkillRemaining ());
+		assertNull (combatDetails.getAttackerPendingMovement ());
+		assertNull (combatDetails.getDefenderPendingMovement ());
 
 		// Check the messages sent to the client were correct
 		// Generating this message is really all that combatEnded does in this situation, see testCombatEnded_CaptureCityUndecided
@@ -625,13 +651,13 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 			eq (combatMapCoordinateSystem), eq (defendingLocation),
 			eq (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X), eq (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y),
 			eq (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_ROWS), eq (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FACING),
-			eq (UnitCombatSideID.DEFENDER), isNull (), eq (tc.getCombatMap ()), eq (mom));
+			eq (UnitCombatSideID.DEFENDER), isNull (), eq (combatDetails.getCombatMap ()), eq (mom));
 
 		verify (combatProcessing).positionCombatUnits (eq (defendingLocation), any (StartCombatMessage.class), eq (attackingPlayer), isNull (),
 			eq (combatMapCoordinateSystem), eq (attackingFrom),
 			eq (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X), eq (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y),
 			eq (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_ROWS), eq (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING),
-			eq (UnitCombatSideID.ATTACKER), eq (attackingUnitURNs), eq (tc.getCombatMap ()), eq (mom));
+			eq (UnitCombatSideID.ATTACKER), eq (attackingUnitURNs), eq (combatDetails.getCombatMap ()), eq (mom));
 		
 		// Check the combat wasn't started
 		verifyNoMoreInteractions	(combatProcessing);
@@ -690,12 +716,15 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
+		// Combat details
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		
 		// Set up object to test
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl (); 
 		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 		
 		// Check message was sent
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -774,14 +803,13 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
-		gc.setDefenderUnitCount (1);
-		gc.setAttackerUnitCount (1);
-		gc.setDefenderMostExpensiveUnitCost (100);
-		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// It isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (false);
+		
+		// Combat details
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
 		
 		// Set up object to test
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
@@ -799,7 +827,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -906,10 +934,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
-		gc.setDefenderUnitCount (1);
-		gc.setAttackerUnitCount (1);
-		gc.setDefenderMostExpensiveUnitCost (100);
-		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// It isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -934,6 +958,9 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 			trueMap.getUnit ().add (tu);
 		}
 		
+		// Combat details
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
+		
 		// Set up object to test
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
@@ -950,7 +977,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1064,10 +1091,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
-		gc.setDefenderUnitCount (1);
-		gc.setAttackerUnitCount (1);
-		gc.setDefenderMostExpensiveUnitCost (100);
-		gc.setAttackerMostExpensiveUnitCost (100);
 
 		// It's a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1092,6 +1115,9 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 			trueMap.getUnit ().add (tu);
 		}
 		
+		// Combat details
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
+		
 		// Set up object to test
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
@@ -1108,7 +1134,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1240,10 +1266,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
 		gc.setCityData (cityData);
-		gc.setDefenderUnitCount (1);
-		gc.setAttackerUnitCount (1);
-		gc.setDefenderMostExpensiveUnitCost (100);
-		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// Defending player has 1200 coins in total
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1296,6 +1318,9 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
 		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID ())).thenReturn (10);
 		
+		// Combat details
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
+		
 		// Set up object to test
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
@@ -1320,7 +1345,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setSpellCasting (mock (SpellCasting.class));
 		
 		// Run method
-		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1461,10 +1486,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
 		gc.setCityData (cityData);
-		gc.setDefenderUnitCount (1);
-		gc.setAttackerUnitCount (1);
-		gc.setDefenderMostExpensiveUnitCost (100);
-		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// Defending player has 1200 coins in total
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1520,6 +1541,9 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		when (memoryBuildingUtils.	findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
 		when (cityServerUtils.countCities (trueTerrain, defendingPd.getPlayerID ())).thenReturn (10);
 		
+		// Combat details
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 1, 1, 100, 100);
+		
 		// Set up object to test
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
@@ -1542,7 +1566,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setKnownWizardUtils (knownWizardUtils);
 		
 		// Run method
-		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
 		
 		// Check correct messages were generated
 		assertEquals (2, attackingMsgs.getMessages ().size ());
@@ -1655,10 +1679,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
-		gc.setDefenderUnitCount (1);
-		gc.setAttackerUnitCount (1);
-		gc.setDefenderMostExpensiveUnitCost (100);
-		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// It isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1701,14 +1721,16 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Regular combat, so only the attacker has a pending movement
 		final PendingMovement attackerPendingMovement = new PendingMovement ();
-		gc.setCombatAttackerPendingMovement (attackerPendingMovement);
 		
 		final PendingMovement attackerOtherPendingMovement = new PendingMovement ();
 		attackingPriv.getPendingMovement ().add (attackerOtherPendingMovement);
 		attackingPriv.getPendingMovement ().add (attackerPendingMovement);
 		
+		// Combat details
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, attackerPendingMovement, null, 1, 1, 100, 100);
+		
 		// Run method
-		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 		
 		// Check correct messages were generated
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1742,7 +1764,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check pending movement was removed
 		assertEquals (1, attackingPriv.getPendingMovement ().size ());
 		assertSame (attackerOtherPendingMovement, attackingPriv.getPendingMovement ().get (0));
-		assertNull (gc.getCombatAttackerPendingMovement ());
 		
 		verifyNoMoreInteractions	(midTurnMulti);
 		verifyNoMoreInteractions	(fowProcessing);
@@ -1810,10 +1831,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
-		gc.setDefenderUnitCount (1);
-		gc.setAttackerUnitCount (1);
-		gc.setDefenderMostExpensiveUnitCost (100);
-		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// It isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1856,13 +1873,13 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Border conflict, so we have two pending movements
 		final PendingMovement attackerPendingMovement = new PendingMovement ();
-		gc.setCombatAttackerPendingMovement (attackerPendingMovement);
-
 		final PendingMovement defenderPendingMovement = new PendingMovement ();
-		gc.setCombatDefenderPendingMovement (defenderPendingMovement);
+		
+		// Combat details
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, attackerPendingMovement, defenderPendingMovement, 1, 1, 100, 100);
 		
 		// Run method
-		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+		cse.combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 		
 		// Check correct messages were generated
 		assertEquals (1, attackingMsgs.getMessages ().size ());
@@ -1888,10 +1905,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Update both players' production
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (defendingPd.getPlayerID (), false, mom);
 		verify (serverResourceCalculations).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
-		
-		// Check pending movement was removed
-		assertNull (gc.getCombatAttackerPendingMovement ());
-		assertNull (gc.getCombatDefenderPendingMovement ());
 		
 		// Check the attacker's units do not advanced forward
 		verifyNoMoreInteractions	(midTurnMulti);

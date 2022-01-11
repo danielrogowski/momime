@@ -71,8 +71,9 @@ import momime.server.ai.CombatAIMovementResult;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.worldupdates.WorldUpdates;
 
 /**
@@ -596,9 +597,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-		gc.setSpellCastThisCombatTurn (true);
-		gc.setCombatTurnCount (0);
 
 		// Players in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -606,6 +604,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 				
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "progressCombat")).thenReturn (combatDetails);
+		combatDetails.setSpellCastThisCombatTurn (true);
+		
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
@@ -617,12 +623,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setCombatEndTurn (combatEndTurn);
 		proc.setFogOfWarMidTurnMultiChanges (multi);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		proc.progressCombat (combatLocation, true, false, mom);
 		
 		// Check player set correctly on server
-		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayerID ());
+		assertEquals (defendingPd.getPlayerID (), combatDetails.getCombatCurrentPlayerID ());
 		
 		// Check player set correctly on client
 		assertEquals (1, defendingMsgs.getMessages ().size ());
@@ -632,7 +639,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertEquals (defendingPd.getPlayerID ().intValue (), msg.getPlayerID ());
 		
 		// Check other setup
-		assertNull (gc.isSpellCastThisCombatTurn ());
+		assertFalse (combatDetails.isSpellCastThisCombatTurn ());
 		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 		
 		verifyNoMoreInteractions (unitCalc);
@@ -693,23 +700,28 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-		gc.setSpellCastThisCombatTurn (true);
-		gc.setCombatTurnCount (0);
 
 		// Players in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
+
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "progressCombat")).thenReturn (combatDetails);
+		combatDetails.setSpellCastThisCombatTurn (true);
 		
 		// Defender/human player just finished turn
-		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
+		combatDetails.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
 		
 		// AI player takes their turn
 		final CombatAI ai = mock (CombatAI.class);
-		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
-				
+		when (ai.aiCombatTurn (combatDetails, attackingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
+		
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
@@ -722,15 +734,16 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setCombatEndTurn (combatEndTurn);
 		proc.setFogOfWarMidTurnMultiChanges (multi);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		proc.progressCombat (combatLocation, false, false, mom);
 		
 		// Check the AI player took their turn
-		verify (ai, times (1)).aiCombatTurn (combatLocation, attackingPlayer, mom);
+		verify (ai, times (1)).aiCombatTurn (combatDetails, attackingPlayer, mom);
 		
 		// Check player set correctly on server
-		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayerID ());
+		assertEquals (defendingPd.getPlayerID (), combatDetails.getCombatCurrentPlayerID ());
 		
 		// Check player set correctly on client (attacker, then back to defender)
 		assertEquals (2, defendingMsgs.getMessages ().size ());
@@ -746,7 +759,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertEquals (defendingPd.getPlayerID ().intValue (), msg2.getPlayerID ());
 		
 		// Check other setup
-		assertNull (gc.isSpellCastThisCombatTurn ());
+		assertFalse (combatDetails.isSpellCastThisCombatTurn ());
 		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 		verify (unitCalc, times (1)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 		
@@ -809,9 +822,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-		gc.setSpellCastThisCombatTurn (true);
-		gc.setCombatTurnCount (0);
 
 		// Players in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -819,13 +829,21 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "progressCombat")).thenReturn (combatDetails);
+		combatDetails.setSpellCastThisCombatTurn (true);
+		
 		// Its the Defender/human player's turn
-		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
+		combatDetails.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
 		
 		// Both players have something useful to do
 		final CombatAI ai = mock (CombatAI.class);
-		when (ai.aiCombatTurn (combatLocation, defendingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
-		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
+		when (ai.aiCombatTurn (combatDetails, defendingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
+		when (ai.aiCombatTurn (combatDetails, attackingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
 		
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -839,17 +857,18 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setCombatEndTurn (combatEndTurn);
 		proc.setFogOfWarMidTurnMultiChanges (multi);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		proc.progressCombat (combatLocation, false, true, mom);
 
 		// Check the AI played our turn for us, then took their turn
-		verify (ai, times (1)).aiCombatTurn (combatLocation, defendingPlayer, mom);
-		verify (ai, times (1)).aiCombatTurn (combatLocation, attackingPlayer, mom);
+		verify (ai, times (1)).aiCombatTurn (combatDetails, defendingPlayer, mom);
+		verify (ai, times (1)).aiCombatTurn (combatDetails, attackingPlayer, mom);
 		
 		// Check its now the defenders turn again (the method doesn't loop despite the human player
 		// being on auto, to give the client a chance to turn auto off again)
-		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayerID ());
+		assertEquals (defendingPd.getPlayerID (), combatDetails.getCombatCurrentPlayerID ());
 		
 		// Check player set correctly on client (attacker after AI takes our defender's turn, then back to defender)
 		assertEquals (2, defendingMsgs.getMessages ().size ());
@@ -865,7 +884,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertEquals (defendingPd.getPlayerID ().intValue (), msg2.getPlayerID ());
 		
 		// Check other setup
-		assertNull (gc.isSpellCastThisCombatTurn ());
+		assertFalse (combatDetails.isSpellCastThisCombatTurn ());
 		verify (unitCalc, times (1)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 		verify (unitCalc, times (1)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 		
@@ -925,9 +944,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-		gc.setSpellCastThisCombatTurn (true);
-		gc.setCombatTurnCount (0);
 
 		// Players in combat, after a few turns the attacker wins
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -937,13 +953,21 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn
 			(combatPlayers, combatPlayers, combatPlayers, combatPlayers, attackerWins);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "progressCombat")).thenReturn (combatDetails);
+		combatDetails.setSpellCastThisCombatTurn (true);
+		
 		// Defender/human player just finished turn
-		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
+		combatDetails.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
 		
 		// Both players have something useful to do
 		final CombatAI ai = mock (CombatAI.class);
-		when (ai.aiCombatTurn (combatLocation, defendingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
-		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
+		when (ai.aiCombatTurn (combatDetails, defendingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
+		when (ai.aiCombatTurn (combatDetails, attackingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -957,19 +981,20 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		proc.setCombatEndTurn (combatEndTurn);
 		proc.setFogOfWarMidTurnMultiChanges (multi);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		proc.progressCombat (combatLocation, true, false, mom);
 		
 		// Check each AI player had 2 turns
-		verify (ai, times (2)).aiCombatTurn (combatLocation, defendingPlayer, mom);
-		verify (ai, times (2)).aiCombatTurn (combatLocation, attackingPlayer, mom);
+		verify (ai, times (2)).aiCombatTurn (combatDetails, defendingPlayer, mom);
+		verify (ai, times (2)).aiCombatTurn (combatDetails, attackingPlayer, mom);
 		
 		// Attacker had their turn last
-		assertEquals (attackingPd.getPlayerID (), gc.getCombatCurrentPlayerID ());
+		assertEquals (attackingPd.getPlayerID (), combatDetails.getCombatCurrentPlayerID ());
 		
 		// Check other setup
-		assertNull (gc.isSpellCastThisCombatTurn ());
+		assertFalse (combatDetails.isSpellCastThisCombatTurn ());
 		verify (unitCalc, times (2)).resetUnitCombatMovement (defendingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 		verify (unitCalc, times (2)).resetUnitCombatMovement (attackingPd.getPlayerID (), combatLocation, new ArrayList<Integer> (), players, trueMap, db);
 		
@@ -3594,8 +3619,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Combat map
 		final MapAreaOfCombatTiles combatMap = createCombatMap ();
-		final ServerGridCellEx combatCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		combatCell.setCombatMap (combatMap);
 		
 		// True unit
 		final MemoryUnit tu = new MemoryUnit ();
@@ -3667,6 +3690,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Non-flying unit
 		when (xu.unitIgnoresCombatTerrain (db)).thenReturn (false);
 
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), combatMap, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "okToMoveUnitInCombat")).thenReturn (combatDetails);
+		
 		// Set up object to test
 		final CombatHandling combatHandling = mock (CombatHandling.class);
 		
@@ -3676,6 +3706,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setMovementUtils (movementUtils);
 		proc.setUnitUtils (unitUtils);
 		proc.setCombatHandling (combatHandling);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, MoveUnitInCombatReason.MANUAL, movementDirections, movementTypes, mom));
@@ -3773,8 +3804,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Combat map
 		final MapAreaOfCombatTiles combatMap = createCombatMap ();
-		final ServerGridCellEx combatCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		combatCell.setCombatMap (combatMap);
 		
 		// True unit
 		final MemoryUnit tu = new MemoryUnit ();
@@ -3847,6 +3876,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, false, mom)).thenReturn
 				(new ResolveAttackResult (false, 0, 0));
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), combatMap, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "okToMoveUnitInCombat")).thenReturn (combatDetails);
+		
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
@@ -3854,6 +3890,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitCalculations (unitCalc);
 		proc.setUnitUtils (unitUtils);
 		proc.setDamageProcessor (damageProcessor);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, MoveUnitInCombatReason.MANUAL, movementDirections, movementTypes, mom));
@@ -3935,8 +3972,6 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Combat map
 		final MapAreaOfCombatTiles combatMap = createCombatMap ();
-		final ServerGridCellEx combatCell = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		combatCell.setCombatMap (combatMap);
 		
 		// True unit
 		final MemoryUnit tu = new MemoryUnit ();
@@ -4018,6 +4053,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			null, null, null, 3, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, false, mom)).thenReturn
 				(new ResolveAttackResult (false, 0, 0));
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), combatMap, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "okToMoveUnitInCombat")).thenReturn (combatDetails);
+		
 		// Set up object to test
 		final CombatHandling combatHandling = mock (CombatHandling.class);
 		
@@ -4028,6 +4070,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		proc.setDamageProcessor (damageProcessor);
 		proc.setCombatHandling (combatHandling);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, MoveUnitInCombatReason.MANUAL, movementDirections, movementTypes, mom));

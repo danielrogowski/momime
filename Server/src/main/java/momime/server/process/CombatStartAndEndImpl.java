@@ -23,6 +23,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NumberedHeroItem;
@@ -47,9 +48,11 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.fogofwar.KillUnitActionID;
+import momime.server.knowledge.CombatDetails;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.CityServerUtils;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 
 /**
@@ -149,6 +152,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
+	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
 	 *
@@ -177,16 +183,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (defendingLocation.getX (), defendingLocation.getY (),
 			Math.max (defendingLocation.getZ (), attackingFrom.getZ ()));
 		
-		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-		
-		// Record the pending movement(s)
-		tc.setCombatAttackerPendingMovement (attackerPendingMovement);
-		tc.setCombatDefenderPendingMovement (defenderPendingMovement);
-		
 		// The attacker is easy to find from the first attackingUnitURN
 		if ((attackingUnitURNs == null) || (attackingUnitURNs.size () == 0))
 			throw new MomException ("startCombat given null or empty list of attackingUnitURNs");
+
+		// Trap when a previous combat hasn't been cleaned up properly
+		final CombatDetails existingCombat = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), combatLocation);
+		if (existingCombat != null)
+			throw new MomException ("startCombat trying to set up a combat at " + combatLocation + " but combat URN " + existingCombat.getCombatURN () + " is already there"); 
 		
 		final MemoryUnit firstAttackingUnit = getUnitUtils ().findUnitURN (attackingUnitURNs.get (0), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "startCombat-A");
 		final PlayerServerDetails attackingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
@@ -208,9 +212,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		startCombatMessage.setCombatLocation (combatLocation);
 		
 		// Generate the combat scenery
-		tc.setCombatMap (getCombatMapGenerator ().generateCombatMap (mom.getSessionDescription ().getCombatMapSize (),
-			mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation));
-		startCombatMessage.setCombatTerrain (tc.getCombatMap ());
+		final MapAreaOfCombatTiles combatMap = getCombatMapGenerator ().generateCombatMap (mom.getSessionDescription ().getCombatMapSize (),
+			mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
+		startCombatMessage.setCombatTerrain (combatMap);
 		
 		// Set the location of both defenders and attackers.
 		// Need the map generation done first, so we know where there is impassable terrain to avoid placing units on it.
@@ -221,31 +225,20 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			attackingPlayer, defendingPlayer, mom.getSessionDescription ().getCombatMapSize (), defendingLocation,
 			COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y,
 			COMBAT_SETUP_DEFENDER_ROWS, COMBAT_SETUP_DEFENDER_FACING,
-			UnitCombatSideID.DEFENDER, defendingUnitURNs, tc.getCombatMap (), mom);
+			UnitCombatSideID.DEFENDER, defendingUnitURNs, combatMap, mom);
 				
 		log.debug ("Positioning attackers at " + defendingLocation);
 		final PositionCombatUnitsSummary attackerSummary = getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage,
 			attackingPlayer, defendingPlayer, mom.getSessionDescription ().getCombatMapSize (), attackingFrom,
 			COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y,
 			COMBAT_SETUP_ATTACKER_ROWS, COMBAT_SETUP_ATTACKER_FACING,
-			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
-		
-		// Remember how many units were initially on each side - need this to award fame at the end
-		if (defenderSummary != null)
-		{
-			tc.setDefenderUnitCount (defenderSummary.getUnitCount ());
-			tc.setDefenderMostExpensiveUnitCost (defenderSummary.getMostExpensiveUnitCost ());
-			tc.setDefenderSpecialFameLost (0);
-		}
-		
-		if (attackerSummary != null)
-		{
-			tc.setAttackerUnitCount (attackerSummary.getUnitCount ());
-			tc.setAttackerMostExpensiveUnitCost (attackerSummary.getMostExpensiveUnitCost ());
-			tc.setAttackerSpecialFameLost (0);
-		}
+			UnitCombatSideID.ATTACKER, attackingUnitURNs, combatMap, mom);
 		
 		// Did the attacker try to attack with only non-combat units?  If so then bypass the combat entirely
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+
+		PlayerServerDetails endImmediately = null;
 		if ((attackerSummary != null) && (attackerSummary.getUnitCount () == 0))
 		{
 			log.debug ("Combat ending before it starts (no attackers)");
@@ -254,8 +247,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			if ((defendingPlayer == null) && (tc.getCityData () != null))
 				defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "startCombat-CA");
 				
-			combatEnded (combatLocation, attackingPlayer, defendingPlayer, defendingPlayer,	// <-- who won
-				null, mom);
+			endImmediately = defendingPlayer;
 		}
 		
 		// Are there any defenders (attacking an empty city) - if not then bypass the combat entirely
@@ -267,20 +259,29 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			if (tc.getCityData () != null)
 				defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCityData ().getCityOwnerID (), "startCombat-CD");
 				
-			combatEnded (combatLocation, attackingPlayer, defendingPlayer, attackingPlayer,	// <-- who won
-				null, mom);
+			endImmediately = attackingPlayer;
 		}
+		
+		// Create storage for this combat
+		final int combatURN = mom.getGeneralServerKnowledge ().getNextFreeCombatURN ();
+		mom.getGeneralServerKnowledge ().setNextFreeCombatURN (combatURN + 1);
+		
+		final CombatDetails combatDetails = new CombatDetails (combatURN, combatLocation, combatMap,
+			attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (),
+			attackerPendingMovement, defenderPendingMovement,
+			(attackerSummary == null ) ? 0 : attackerSummary.getUnitCount (),
+			(defenderSummary == null) ? 0 : defenderSummary.getUnitCount (),
+			(attackerSummary == null) ? 0 : attackerSummary.getMostExpensiveUnitCost (),
+			(defenderSummary == null) ? 0 : defenderSummary.getMostExpensiveUnitCost ());
+		mom.getCombatDetails ().add (combatDetails);
+		
+		// Bypass combat entirely?
+		if (endImmediately != null)
+			combatEnded (combatDetails, attackingPlayer, defendingPlayer, endImmediately, null, mom);
 		else
 		{
 			log.debug ("Continuing combat setup");
-			
-			// Store the two players involved
-			tc.setCombatTurnCount (0);
-			tc.setCollateralAccumulator (0);
-			tc.setAttackingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
-			tc.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
-			tc.getLastCombatMoveDirection ().clear ();
-			
+
 			// Set casting skill allocation for this combat
 			final KnownWizardDetails attackingWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
 				attackingPlayer.getPlayerDescription ().getPlayerID (), "startCombat-A");
@@ -289,11 +290,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				defendingPlayer.getPlayerDescription ().getPlayerID (), "startCombat-D");
 			
 			final MomPersistentPlayerPrivateKnowledge attackingPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-			tc.setCombatAttackerCastingSkillRemaining (getResourceValueUtils ().calculateModifiedCastingSkill (attackingPriv.getResourceValue (),
+			combatDetails.setAttackerCastingSkillRemaining (getResourceValueUtils ().calculateModifiedCastingSkill (attackingPriv.getResourceValue (),
 				attackingWizard, mom.getPlayers (), attackingPriv.getFogOfWarMemory (), mom.getServerDB (), false)); 
 			
 			final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-			tc.setCombatDefenderCastingSkillRemaining (getResourceValueUtils ().calculateModifiedCastingSkill (defendingPriv.getResourceValue (),
+			combatDetails.setDefenderCastingSkillRemaining (getResourceValueUtils ().calculateModifiedCastingSkill (defendingPriv.getResourceValue (),
 				defendingWizard, mom.getPlayers (), defendingPriv.getFogOfWarMemory (), mom.getServerDB (), false)); 
 			
 			// Finally send the message, containing all the unit positions, units (if monsters in a node/lair/tower) and combat scenery
@@ -314,7 +315,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	 * If the combat results in the attacker capturing a city, and the attacker is a human player, then this gets called twice - the first time it
 	 * will spot that CaptureCityDecision = cdcUndecided, send a message to the player to ask them for the decision, and when we get an answer back, it'll be called again
 	 * 
-	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
+	 * @param combatDetails Details about the combat taking place
 	 * @param attackingPlayer Player who is attacking
 	 * @param defendingPlayer Player who is defending - there should be no situations anymore where this can be passed in as null
 	 * @param winningPlayer Player who won
@@ -325,13 +326,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final void combatEnded (final MapCoordinates3DEx combatLocation,
+	public final void combatEnded (final CombatDetails combatDetails,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final PlayerServerDetails winningPlayer,
 		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+			(combatDetails.getCombatLocation ().getZ ()).getRow ().get (combatDetails.getCombatLocation ().getY ()).getCell ().get (combatDetails.getCombatLocation ().getX ());
 		
 		CaptureCityDecisionID useCaptureCityDecision = captureCityDecision;
 
@@ -354,7 +355,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				log.debug ("Undecided city capture, bulk of method will not run");
 				
 				final AskForCaptureCityDecisionMessage msg = new AskForCaptureCityDecisionMessage ();
-				msg.setCityLocation (combatLocation);
+				msg.setCityLocation (combatDetails.getCombatLocation ());
 				if (defendingPlayer != null)
 					msg.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
 				
@@ -364,7 +365,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Rampaging monsters have their own special options for captured cities
 			else if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (atkWizard.getWizardID ()))
 			{
-				if (getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null)
+				if (getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatDetails.getCombatLocation (),
+					CommonDatabaseConstants.BUILDING_FORTRESS) != null)
+					
 					useCaptureCityDecision = CaptureCityDecisionID.RAMPAGE;
 				else
 					useCaptureCityDecision = getRandomUtils ().nextBoolean () ? CaptureCityDecisionID.RAMPAGE : CaptureCityDecisionID.RUIN;
@@ -383,10 +386,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		{
 			// Build the bulk of the CombatEnded message
 			final CombatEndedMessage msg = new CombatEndedMessage ();
-			msg.setCombatLocation (combatLocation);
+			msg.setCombatLocation (combatDetails.getCombatLocation ());
 			msg.setWinningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
 			msg.setCaptureCityDecisionID (useCaptureCityDecision);
-			msg.setHeroItemCount (tc.getItemsFromHeroesWhoDiedInCombat ().size ());
+			msg.setHeroItemCount (combatDetails.getItemsFromHeroesWhoDiedInCombat ().size ());
 			
 			// Start to work out fame change for each player involved
 			int winningFameChange = 0;
@@ -413,7 +416,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				final int goldFromRazing; 
 				if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
 				{
-					goldFromRazing = getCityServerUtils ().totalCostOfBuildingsAtLocation (combatLocation,
+					goldFromRazing = getCityServerUtils ().totalCostOfBuildingsAtLocation (combatDetails.getCombatLocation (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ()) / 10;
 					msg.setGoldFromRazing (goldFromRazing);
 				}
@@ -441,7 +444,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Need this much lower down too
 				wasWizardsFortress = (getMemoryBuildingUtils ().findBuilding
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null);
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatDetails.getCombatLocation (), CommonDatabaseConstants.BUILDING_FORTRESS) != null);
 				if (wasWizardsFortress)
 					winningFameChange = winningFameChange + 5;
 			}
@@ -452,9 +455,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					(useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE))) ||
 				(winningPlayer == defendingPlayer)))
 			{
-				if (tc.getCollateralAccumulator () == null)
-					tc.setCollateralAccumulator (0);
-				
 				int baseChance = 0;
 				if (winningPlayer == attackingPlayer)
 					baseChance = baseChance + 10;
@@ -462,10 +462,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE)
 					baseChance = baseChance + 40;
 				
-				if ((tc.getCollateralAccumulator () > 0) || (baseChance > 0))
+				if ((combatDetails.getCollateralAccumulator () > 0) || (baseChance > 0))
 				{
 					// Roll population
-					final int populationChance = Math.min (baseChance + (tc.getCollateralAccumulator () * 2), 50);
+					final int populationChance = Math.min (baseChance + (combatDetails.getCollateralAccumulator () * 2), 50);
 					final int populationRolls = (tc.getCityData ().getCityPopulation () / 1000) - 1;
 					int populationKilled = 0;
 					for (int n = 0; n < populationRolls; n++)
@@ -479,8 +479,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					}
 					
 					// Roll buildings
-					final int buildingsChance = Math.min (baseChance + tc.getCollateralAccumulator (), 75);
-					final int buildingsDestroyed = getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (null, null, buildingsChance, Arrays.asList (combatLocation), mom);
+					final int buildingsChance = Math.min (baseChance + combatDetails.getCollateralAccumulator (), 75);
+					final int buildingsDestroyed = getSpellCasting ().rollChanceOfEachBuildingBeingDestroyed (null, null, buildingsChance, Arrays.asList (combatDetails.getCombatLocation ()), mom);
 					
 					if (buildingsDestroyed > 0)
 						msg.setBuildingsDestroyed (buildingsDestroyed);
@@ -488,22 +488,22 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					// If buildings are destroyed, that recalculates the city anyway
 					if ((populationKilled > 0) && (buildingsDestroyed == 0))
 					{
-						mom.getWorldUpdates ().recalculateCity (combatLocation);
+						mom.getWorldUpdates ().recalculateCity (combatDetails.getCombatLocation ());
 						mom.getWorldUpdates ().process (mom);
 					}
 				}
 			}
 			
 			// Cancel any spells that were cast in combat, note doing so can actually kill some units
-			getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombat (combatLocation, mom);
+			getFogOfWarMidTurnMultiChanges ().switchOffSpellsCastInCombat (combatDetails.getCombatLocation (), mom);
 
 			// Work out moveToPlane - If attackers are capturing a tower from Myrror, in which case they jump to Arcanus as part of the move
-			final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (combatLocation);
+			final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (combatDetails.getCombatLocation ());
 			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
 				moveTo.setZ (0);
 			
 			// Units with regeneration come back from being dead and/or regain full health
-			msg.setRegeneratedCount (getCombatProcessing ().regenerateUnits (combatLocation, winningPlayer, mom));
+			msg.setRegeneratedCount (getCombatProcessing ().regenerateUnits (combatDetails.getCombatLocation (), winningPlayer, mom));
 			
 			// Undead created from ghouls / life stealing?
 			// Note these are always moved to the "moveTo" i.e. defending location - if the attacker won, their main force will advance
@@ -514,11 +514,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			if (useCaptureCityDecision == CaptureCityDecisionID.RAMPAGE)
 				undead = new ArrayList<MemoryUnit> ();
 			else
-				undead = getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer, mom);
+				undead = getCombatProcessing ().createUndead (combatDetails.getCombatLocation (), moveTo, winningPlayer, losingPlayer, mom);
 			
 			msg.setUndeadCreated (undead.size ());
 
-			final List<MemoryUnit> zombies = getCombatProcessing ().createZombies (combatLocation, moveTo, winningPlayer, mom);
+			final List<MemoryUnit> zombies = getCombatProcessing ().createZombies (combatDetails.getCombatLocation (), moveTo, winningPlayer, mom);
 			msg.setZombiesCreated (zombies.size ());
 			
 			// If won a combat vs 4 or more units, gain +1 fame
@@ -526,13 +526,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			int attackerFameChange = (winningPlayer == attackingPlayer) ? winningFameChange : losingFameChange;
 			int defenderFameChange = (winningPlayer == defendingPlayer) ? winningFameChange : losingFameChange;
 			
-			if ((winningPlayer == attackingPlayer) && (tc.getDefenderUnitCount () >= 4))
+			if ((winningPlayer == attackingPlayer) && (combatDetails.getDefenderUnitCount () >= 4))
 			{
 				attackerFameChange++;
 				defenderFameChange--;
 			}
 
-			if ((winningPlayer == defendingPlayer) && (tc.getAttackerUnitCount () >= 4))
+			if ((winningPlayer == defendingPlayer) && (combatDetails.getAttackerUnitCount () >= 4))
 			{
 				defenderFameChange++;
 				attackerFameChange--;
@@ -540,24 +540,24 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			
 			// If won a combat vs an expensive unit, gain +1 fame
 			// If lost a combat including losing an expensive unit, lose -1 fame
-			if ((winningPlayer == attackingPlayer) && (tc.getDefenderMostExpensiveUnitCost () >= 600))
+			if ((winningPlayer == attackingPlayer) && (combatDetails.getDefenderMostExpensiveUnitCost () >= 600))
 			{
 				attackerFameChange++;
 				defenderFameChange--;
 			}
 
-			if ((winningPlayer == defendingPlayer) && (tc.getAttackerMostExpensiveUnitCost () >= 600))
+			if ((winningPlayer == defendingPlayer) && (combatDetails.getAttackerMostExpensiveUnitCost () >= 600))
 			{
 				defenderFameChange++;
 				attackerFameChange--;
 			}
 			
 			// Fame for losing heroes
-			if ((winningPlayer == attackingPlayer) && (tc.getDefenderSpecialFameLost () != null))
-				defenderFameChange = defenderFameChange - tc.getDefenderSpecialFameLost ();
+			if ((winningPlayer == attackingPlayer) && (combatDetails.getDefenderSpecialFameLost () > 0))
+				defenderFameChange = defenderFameChange - combatDetails.getDefenderSpecialFameLost ();
 
-			if ((winningPlayer == defendingPlayer) && (tc.getAttackerSpecialFameLost () != null))
-				attackerFameChange = attackerFameChange - tc.getAttackerSpecialFameLost ();
+			if ((winningPlayer == defendingPlayer) && (combatDetails.getAttackerSpecialFameLost () > 0))
+				attackerFameChange = attackerFameChange - combatDetails.getAttackerSpecialFameLost ();
 			
 			// Update fame
 			final KnownWizardDetails defWizard = (defendingPlayer == null) ? null : getKnownWizardUtils ().findKnownWizardDetails
@@ -602,13 +602,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
 			// This also removes ('kills') on the client monsters in a lair/node/tower who won
 			// Have to do this before we advance the attacker, otherwise we end up trying to advance the combat summoned units
-			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, mom);
+			getCombatProcessing ().purgeDeadUnitsAndCombatSummonsFromCombat (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, mom);
 			
 			// If its a border conflict, then we don't actually care who won - one side will already have been wiped out, and hence their
 			// PendingMovement will have been removed, leaving the winner's PendingMovement still to be processed, and the main
 			// processSimultaneousTurnsMovement method will figure out what to do about that (i.e. whether its a move or another combat)
 			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) &&
-				(tc.getCombatAttackerPendingMovement () != null) && (tc.getCombatDefenderPendingMovement () != null))
+				(combatDetails.getAttackerPendingMovement () != null) && (combatDetails.getDefenderPendingMovement () != null))
 			{
 				log.debug ("Border conflict, so don't care who won");
 			}
@@ -626,7 +626,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
 				
 				for (final MemoryUnit trueUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) && (trueUnit.getCombatSide () != null))
+					if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatDetails.getCombatLocation ().equals (trueUnit.getCombatLocation ())) && (trueUnit.getCombatSide () != null))
 					{
 						if (trueUnit.getCombatSide () == UnitCombatSideID.ATTACKER)
 						{
@@ -654,17 +654,17 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Before we remove buildings, check if this was the wizard's fortress and/or summoning circle
 				final boolean wasSummoningCircle = (useCaptureCityDecision != null) && (getMemoryBuildingUtils ().findBuilding
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE) != null);
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatDetails.getCombatLocation (), CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE) != null);
 				
 				// Deal with cities
 				if (useCaptureCityDecision == CaptureCityDecisionID.CAPTURE)
-					getCityProcessing ().captureCity (combatLocation, attackingPlayer, defendingPlayer, mom);
+					getCityProcessing ().captureCity (combatDetails.getCombatLocation (), attackingPlayer, defendingPlayer, mom);
 				
 				else if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
-					getCityProcessing ().razeCity (combatLocation, mom);
+					getCityProcessing ().razeCity (combatDetails.getCombatLocation (), mom);
 
 				else if (useCaptureCityDecision == CaptureCityDecisionID.RUIN)
-					getCityProcessing ().ruinCity (combatLocation, (int) goldSwiped, mom);
+					getCityProcessing ().ruinCity (combatDetails.getCombatLocation (), (int) goldSwiped, mom);
 				
 				// If they're already banished and this was their last city being taken, then treat it just like their wizard's fortress being taken
 				if ((!wasWizardsFortress) && (useCaptureCityDecision != null) &&
@@ -690,22 +690,22 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			if (mom.getPlayers ().size () > 0)
 			{
 				// Give any hero items to the winner
-				if (tc.getItemsFromHeroesWhoDiedInCombat ().size () > 0)
+				if (combatDetails.getItemsFromHeroesWhoDiedInCombat ().size () > 0)
 				{
 					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) winningPlayer.getPersistentPlayerPrivateKnowledge ();
-					priv.getUnassignedHeroItem ().addAll (tc.getItemsFromHeroesWhoDiedInCombat ());
+					priv.getUnassignedHeroItem ().addAll (combatDetails.getItemsFromHeroesWhoDiedInCombat ());
 					
 					if (winningPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
 						final AddUnassignedHeroItemMessage heroItemMsg = new AddUnassignedHeroItemMessage ();
-						for (final NumberedHeroItem item : tc.getItemsFromHeroesWhoDiedInCombat ())
+						for (final NumberedHeroItem item : combatDetails.getItemsFromHeroesWhoDiedInCombat ())
 						{
 							heroItemMsg.setHeroItem (item);
 							winningPlayer.getConnection ().sendMessageToClient (heroItemMsg);
 						}
 					}
 					
-					tc.getItemsFromHeroesWhoDiedInCombat ().clear ();
+					combatDetails.getItemsFromHeroesWhoDiedInCombat ().clear ();
 				}
 				
 				// If life stealing attacks created some undead, its possible we've now got over 9 units in the map cell so have to kill some off again.
@@ -715,7 +715,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				getCombatProcessing ().killUnitsIfTooManyInMapCell (moveTo, undead, mom);
 	
 				// Recheck that transports have enough capacity to hold all units that require them (both for attacker and defender, and regardless who won)
-				getCombatProcessing ().recheckTransportCapacityAfterCombat (combatLocation, mom);
+				getCombatProcessing ().recheckTransportCapacityAfterCombat (combatDetails.getCombatLocation (), mom);
 				
 				// Set all units CombatX, CombatY back to -1, -1 so we don't think they're in combat anymore.
 				// Have to do this after we advance the attackers, otherwise the attackers' CombatX, CombatY will already
@@ -723,7 +723,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Have to do this before we recalc FOW, since if one side was wiped out, the FOW update may delete their memory of the opponent... which
 				// then crashes the client if we then try to send msgs to take those opposing units out of combat.
 				log.debug ("Removing units out of combat");
-				getCombatProcessing ().removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatLocation, mom);
+				getCombatProcessing ().removeUnitsFromCombat (attackingPlayer, defendingPlayer, combatDetails.getCombatLocation (), mom);
 				
 				// Even if one side won the combat, they might have lost their unit with the longest scouting range
 				// So easiest to just recalculate FOW for both players
@@ -736,7 +736,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Remove all combat area effects from spells like Prayer, Mass Invisibility, etc.
 				log.debug ("Removing all spell CAEs");
-				getFogOfWarMidTurnMultiChanges ().removeCombatAreaEffectsFromLocalisedSpells (combatLocation, mom);
+				getFogOfWarMidTurnMultiChanges ().removeCombatAreaEffectsFromLocalisedSpells (combatDetails.getCombatLocation (), mom);
 				
 				// Assuming both sides may have taken losses, could have gained/lost a city, etc. etc., best to just recalculate production for both
 				// DefendingPlayer may still be nil
@@ -746,39 +746,24 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getServerResourceCalculations ().recalculateGlobalProductionValues (defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
 
 				// Clear out combat related items
-				tc.setCombatTurnCount (null);
-				tc.setAttackingPlayerID (null);
-				tc.setDefendingPlayerID (null);
-				tc.setCombatCurrentPlayerID (null);
-				tc.setSpellCastThisCombatTurn (null);
-				tc.setCombatDefenderCastingSkillRemaining (null);
-				tc.setCombatAttackerCastingSkillRemaining (null);
-				tc.setDefenderUnitCount (null);
-				tc.setAttackerUnitCount (null);
-				tc.setDefenderMostExpensiveUnitCost (null);
-				tc.setAttackerMostExpensiveUnitCost (null);
-				tc.setDefenderSpecialFameLost (null);
-				tc.setAttackerSpecialFameLost (null);
-				tc.setCollateralAccumulator (null);
+				final boolean removed = mom.getCombatDetails ().remove (combatDetails);
+				log.debug ("combatEnded clearing up combat URN " + combatDetails.getCombatURN () + "; removed = " + removed);
 				
 				// Figure out what to do next now the combat is over
 				if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
 				{
 					// Clean up the PendingMovement(s) that caused this combat
-					if (tc.getCombatAttackerPendingMovement () == null)
+					if (combatDetails.getAttackerPendingMovement () == null)
 						throw new MomException ("Simultaneous turns combat ended, but CombatAttackerPendingMovement is null");
 					
 					// If its a border conflict, do not clean up the PendingMovement - the unit stack didn't advance yet and still needs to do so
 					// so only clear the ref to the pending movements from the grid cell
-					if (tc.getCombatDefenderPendingMovement () == null)
+					if (combatDetails.getDefenderPendingMovement () == null)
 						
 						// NB. PendingMovements of the side who was wiped out will already have been removed from the list as the last unit died
 						// (see killUnitOnServerAndClients) so we may actually have nothing to remove here
-						atkPriv.getPendingMovement ().remove (tc.getCombatAttackerPendingMovement ());
+						atkPriv.getPendingMovement ().remove (combatDetails.getAttackerPendingMovement ());
 	
-					tc.setCombatAttackerPendingMovement (null);
-					tc.setCombatDefenderPendingMovement (null);
-					
 					// This routine is reponsible for figuring out if there are more combats to play, or if we can start the next turn
 					getSimultaneousTurnsProcessing ().processSimultaneousTurnsMovement (mom);
 				}
@@ -1139,5 +1124,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

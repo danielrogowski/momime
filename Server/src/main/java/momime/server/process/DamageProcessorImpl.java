@@ -38,7 +38,8 @@ import momime.server.calculations.DamageCalculator;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -72,6 +73,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * Performs one attack in combat, which may be a melee, ranged or spell attack.
@@ -129,9 +133,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 		// Process our attack against each defender
-		final ServerGridCellEx tc = (combatLocation == null) ? null : (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-
+		final CombatDetails combatDetails = (combatLocation == null) ? null :
+			getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), combatLocation, "resolveAttack");
+		
 		// If any defenders are being attacked by a different kind of spell, skip them until the next iteration
 		final List<ResolveAttackTarget> defendersLeftToProcess = new ArrayList<ResolveAttackTarget> ();
 		defendersLeftToProcess.addAll (defenders);
@@ -247,8 +251,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 					// Count this as an attack against this defender, as long as its a regular attack from a unit and not a spell
 					if (attackSkillID != null)
 					{
-						final Integer count = tc.getNumberOfTimedAttacked ().get (xuDefender.getUnitURN ());
-						tc.getNumberOfTimedAttacked ().put (xuDefender.getUnitURN (), ((count == null) ? 0 : count) + 1);
+						final Integer count = combatDetails.getNumberOfTimedAttacked ().get (xuDefender.getUnitURN ());
+						combatDetails.getNumberOfTimedAttacked ().put (xuDefender.getUnitURN (), ((count == null) ? 0 : count) + 1);
 					}
 					
 					// Done processing this defender
@@ -268,7 +272,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 
 			if (wallMsg.isWrecked ())
 			{
-				final MapAreaOfCombatTiles combatMap = tc.getCombatMap ();
+				final MapAreaOfCombatTiles combatMap = combatDetails.getCombatMap ();
 				
 				final MomCombatTile tile = combatMap.getRow ().get (wreckTilePosition.getY ()).getCell ().get (wreckTilePosition.getX ());
 				tile.setWrecked (true);
@@ -330,7 +334,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyAttackingPlayerUnitsSurvived = true;
 				else
 				{
-					tc.setAttackerSpecialFameLost (tc.getAttackerSpecialFameLost () + xuAttackingPlayerUnit.calculateFameLostForUnitDying ());
+					combatDetails.setAttackerSpecialFameLost (combatDetails.getAttackerSpecialFameLost () + xuAttackingPlayerUnit.calculateFameLostForUnitDying ());
 					
 					final KillUnitActionID action;
 					if (getUnitServerUtils ().whatKilledUnit (attackingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT)
@@ -371,8 +375,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyDefendingPlayerUnitsSurvived = true;
 				else
 				{
-					if ((tc != null) && (tc.getDefenderSpecialFameLost () != null))
-						tc.setDefenderSpecialFameLost (tc.getDefenderSpecialFameLost () + xuDefendingPlayerUnit.calculateFameLostForUnitDying ());
+					if ((combatDetails != null) && (combatDetails.getDefenderSpecialFameLost () > 0))
+						combatDetails.setDefenderSpecialFameLost (combatDetails.getDefenderSpecialFameLost () + xuDefendingPlayerUnit.calculateFameLostForUnitDying ());
 					
 					final KillUnitActionID action;
 					if (getUnitServerUtils ().whatKilledUnit (defendingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT)
@@ -403,7 +407,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 		
 		// End the combat if one side was totally wiped out
 		if (combatEnded)
-			getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+			getCombatStartAndEnd ().combatEnded (combatDetails, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 		
 		return new ResolveAttackResult (combatEnded, attackingPlayerUnitsKilled, defendingPlayerUnitsKilled);
 	}
@@ -635,5 +639,21 @@ public final class DamageProcessorImpl implements DamageProcessor
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

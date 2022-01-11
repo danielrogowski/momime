@@ -33,6 +33,7 @@ import momime.common.database.SpellSetting;
 import momime.common.database.UnitSetting;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -67,6 +68,7 @@ import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.knowledge.CombatDetails;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.CombatMapServerUtils;
@@ -721,11 +723,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
@@ -747,7 +744,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -775,12 +771,28 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final CombatMapUtils combatMapUtils = mock (CombatMapUtils.class);
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
+		// We already cast a spell
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -815,11 +827,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -849,7 +856,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -871,9 +877,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
-		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
 		
@@ -881,7 +884,20 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players, db)).thenReturn (combatPlayers);
 		
 		// We already cast a spell
-		gc.setSpellCastThisCombatTurn (true);
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setSpellCastThisCombatTurn (true);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -889,6 +905,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -928,12 +945,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -962,7 +973,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -980,8 +990,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
-		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat (ok this makes the variable names a little misleading, because attackingPlayer isn't really attacking, but it suits the test)
 		final CombatPlayers combatPlayers = new CombatPlayers (new PlayerServerDetails (null, null, null, null, null), defendingPlayer);
@@ -992,6 +1000,22 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
+
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -999,6 +1023,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -1039,12 +1064,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -1074,7 +1093,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -1093,7 +1111,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1104,7 +1121,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (15);
 		
 		// Isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1113,6 +1129,23 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Range multiplier
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (null);	// <--- banished
+
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (15);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1122,6 +1155,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryGridCellUtils (memoryGridCellUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -1162,12 +1196,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -1196,7 +1224,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -1215,7 +1242,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1226,7 +1252,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (15);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		
@@ -1238,6 +1263,23 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (15);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
@@ -1247,6 +1289,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -1287,12 +1330,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -1321,7 +1358,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -1340,7 +1376,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1351,7 +1386,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (28);
@@ -1364,6 +1398,23 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		when (spellCalc.calculateDoubleCombatCastingRangePenalty (attackingWizardDetails, combatLocation, false, trueTerrain, trueMap.getBuilding (), sys)).thenReturn (3);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (21);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
@@ -1373,6 +1424,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -1413,12 +1465,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -1447,7 +1493,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -1466,7 +1511,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1477,7 +1521,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
@@ -1496,6 +1539,23 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		possibleEffectIDs.add (null);
 		when (caeUtils.listCombatEffectsNotYetCastAtLocation (trueMap.getCombatAreaEffect (), spell, attackingPlayer.getPlayerDescription ().getPlayerID (), combatLocation)).thenReturn (possibleEffectIDs);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (21);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);
 		
@@ -1509,6 +1569,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setMemoryCombatAreaEffectUtils (caeUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, null, null, mom);
@@ -1551,12 +1612,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -1585,7 +1640,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -1604,7 +1658,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1615,7 +1668,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
@@ -1631,7 +1683,24 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Unit doesn't exist
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (101, trueMap.getUnit ())).thenReturn (null);
+
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
 		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (21);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
@@ -1642,6 +1711,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, 101, null, mom);
@@ -1683,12 +1753,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -1717,7 +1781,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -1736,7 +1799,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1747,7 +1809,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
@@ -1774,6 +1835,23 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, null, combatLocation, null, attackingPd.getPlayerID (), null, null, xu, true,
 			trueMap, attackingPriv.getFogOfWar (), players, db)).thenReturn (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (21);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
@@ -1786,6 +1864,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setExpandUnitDetails (expand);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, 101, null, mom);
@@ -1827,12 +1906,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -1861,7 +1934,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -1880,7 +1952,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1891,7 +1962,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
@@ -1913,11 +1983,28 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (expand.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
 		
-		// Invalid target
+		// Valid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, null, combatLocation, null, attackingPd.getPlayerID (), null, null, xu, true,
 			trueMap, attackingPriv.getFogOfWar (), players, db)).thenReturn (TargetSpellResult.VALID_TARGET);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (21);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);
 		
@@ -1933,6 +2020,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setExpandUnitDetails (expand);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, null, 101, null, mom);
@@ -1976,12 +2064,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -2010,7 +2092,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -2029,7 +2110,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -2040,7 +2120,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
@@ -2061,6 +2140,23 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (unitUtils.findAliveUnitInCombatWeCanSeeAt (combatLocation, combatTargetLocation, 7, players,
 			trueMap, db, sd.getCombatMapSize (), true)).thenReturn (mock (ExpandedUnitDetails.class));
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (21);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
@@ -2071,6 +2167,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardUtils (knownWizardUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 
 		// Run test
 		proc.requestCastSpell (attackingPlayer, null, null, null, "SP001", null, combatLocation, combatTargetLocation, null, null, mom);
@@ -2115,12 +2212,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -2149,7 +2240,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -2168,7 +2258,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -2179,7 +2268,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
@@ -2201,6 +2289,22 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Number of units already here
 		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
 		when (combatMapServerUtils.countPlayersAliveUnitsAtCombatLocation (attackingPd.getPlayerID (), combatLocation, trueMap.getUnit (), db)).thenReturn (9);
+		
+		// Combat details
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (21);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -2258,12 +2362,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -2292,7 +2390,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -2312,8 +2409,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatMap (createCombatMap ());
-		gc.setCombatCurrentPlayerID (7);
+		final MapAreaOfCombatTiles combatMap = createCombatMap ();
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -2324,7 +2420,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
@@ -2354,8 +2449,24 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Combat terrain cell
 		final MovementUtils movementUtils = mock (MovementUtils.class);
-		when (movementUtils.calculateDoubleMovementToEnterCombatTile (xu, gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (-1);
+		when (movementUtils.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (7).getCell ().get (9), db)).thenReturn (-1);
 		
+		// Combat details
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), combatMap, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (21);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setSpellUtils (spellUtils);
@@ -2414,12 +2525,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getSessionDescription ()).thenReturn (sd);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-
 		// Defending human player
 		final PlayerDescription defendingPd = new PlayerDescription ();
 		defendingPd.setPlayerID (5);
@@ -2448,7 +2553,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		players.add (defendingPlayer);
 		players.add (attackingPlayer);
-		when (mom.getPlayers ()).thenReturn (players);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -2468,8 +2572,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatMap (createCombatMap ());
-		gc.setCombatCurrentPlayerID (7);
+		final MapAreaOfCombatTiles combatMap = createCombatMap ();
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -2480,7 +2583,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Casting cost
 		spell.setCombatCastingCost (20);
 		when (spellUtils.getReducedCombatCastingCost (spell, null, attackingWizardDetails.getPick (), trueMap.getMaintainedSpell (), settings, db)).thenReturn (20);
-		gc.setCombatAttackerCastingSkillRemaining (21);
 
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (35);
@@ -2511,7 +2613,23 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Combat terrain cell
 		final MovementUtils movementUtils = mock (MovementUtils.class);
-		when (movementUtils.calculateDoubleMovementToEnterCombatTile (xu, gc.getCombatMap ().getRow ().get (7).getCell ().get (9), db)).thenReturn (1);
+		when (movementUtils.calculateDoubleMovementToEnterCombatTile (xu, combatMap.getRow ().get (7).getCell ().get (9), db)).thenReturn (1);
+		
+		// Combat details
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), combatMap, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "requestCastSpell")).thenReturn (combatDetails);
+		combatDetails.setCombatCurrentPlayerID (7);
+		combatDetails.setAttackerCastingSkillRemaining (21);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);

@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -25,8 +26,9 @@ import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.process.CombatProcessing;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * Client sends this to server to request a unit be moved in combat
@@ -52,6 +54,9 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	
 	/** Methods dealing with unit movement */
 	private UnitMovement unitMovement;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -91,10 +96,10 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		ExpandedUnitDetails xu = null;
 		if (error == null)
 		{
-			final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(tu.getCombatLocation ().getZ ()).getRow ().get (tu.getCombatLocation ().getY ()).getCell ().get (tu.getCombatLocation ().getX ());
+			final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
+				(MapCoordinates3DEx) tu.getCombatLocation (), "RequestMoveCombatUnitMessageImpl");
 			
-			if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayerID ()))
+			if (!sender.getPlayerDescription ().getPlayerID ().equals (combatDetails.getCombatCurrentPlayerID ()))
 				error = "You cannot move units in combat when it isn't your turn";
 			else
 			{
@@ -108,7 +113,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 					final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 					
 					getUnitMovement ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
-						xu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
+						xu, mom.getGeneralServerKnowledge ().getTrueMap (), combatDetails.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
 					
 					// Can we reach where we're trying to go?
 					if (movementTypes [getMoveTo ().getY ()] [getMoveTo ().getX ()] == CombatMovementType.CANNOT_MOVE)
@@ -196,5 +201,21 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	public final void setUnitMovement (final UnitMovement u)
 	{
 		unitMovement = u;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

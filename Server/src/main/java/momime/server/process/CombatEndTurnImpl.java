@@ -11,7 +11,6 @@ import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerType;
@@ -48,7 +47,7 @@ import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -103,20 +102,17 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 * 
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
-	 * @param combatLocation The location the combat is taking place
+	 * @param combatDetails Details about the combat taking place
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final void combatBeforeEitherTurn (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
+	public final void combatBeforeEitherTurn (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CombatDetails combatDetails,
 		final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-		
 		// Look for units with confusion cast on them
 		// Map is from unit URN to casting player ID
 		final Map<Integer, Integer> unitsWithConfusion = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
@@ -125,7 +121,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 
 		if (unitsWithConfusion.size () > 0)
 			for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-				if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+				if ((combatDetails.getCombatLocation ().equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 					(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 				{
 					if (!unitsWithConfusion.containsKey (thisUnit.getUnitURN ()))
@@ -168,7 +164,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 									final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 									
 									getUnitMovement ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
-										mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
+										mom.getGeneralServerKnowledge ().getTrueMap (), combatDetails.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
 									
 									// Check the intended cell
 									final MapCoordinates2DEx coords = new MapCoordinates2DEx ((MapCoordinates2DEx) thisUnit.getCombatPosition ());
@@ -197,23 +193,23 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 			(t -> (t.isInsideCity () != null) && (t.isInsideCity ())).map (t -> t.getCombatTileTypeID ()).collect (Collectors.toList ());
 
 		for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+			if ((combatDetails.getCombatLocation ().equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
 				(thisUnit.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ()) &&
 				(!mom.getServerDB ().getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())))		// Ignore vortexes, they have their own way of increasing dmg
 			{
 				// Are they in the 4x4 town area?  Get the specific tile where the unit is
-				final MomCombatTile combatTile = tc.getCombatMap ().getRow ().get (thisUnit.getCombatPosition ().getY ()).getCell ().get (thisUnit.getCombatPosition ().getX ());
+				final MomCombatTile combatTile = combatDetails.getCombatMap ().getRow ().get (thisUnit.getCombatPosition ().getY ()).getCell ().get (thisUnit.getCombatPosition ().getX ());
 				
 				if (combatTile.getTileLayer ().stream ().anyMatch (l -> cityTiles.contains (l.getCombatTileTypeID ())))
-					tc.setCollateralAccumulator (tc.getCollateralAccumulator () + 1);
+					combatDetails.setCollateralAccumulator (combatDetails.getCollateralAccumulator () + 1);
 			}
 	}
 	
 	/**
 	 * Deals with any processing at the start of one player's turn in combat, before their movement is initialized.
 	 * 
-	 * @param combatLocation The location the combat is taking place
+	 * @param combatDetails Details about the combat taking place
 	 * @param playerID Which player is about to have their combat turn
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
@@ -224,19 +220,17 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final List<Integer> startCombatTurn (final MapCoordinates3DEx combatLocation, final int playerID,
+	public final List<Integer> startCombatTurn (final CombatDetails combatDetails, final int playerID,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
-		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
 		// Do we have any vortexes?  If so then move their 3 random moves.  Then they get their 1 movement controlled by the player during their regular turn.
 		final List<ExpandedUnitDetails> vortexes = new ArrayList<ExpandedUnitDetails> ();
 		
 		for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+			if ((combatDetails.getCombatLocation ().equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
 				(mom.getServerDB ().getUnitsThatMoveThroughOtherUnits ().contains (thisUnit.getUnitID ())))
 			{
@@ -259,11 +253,11 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 					// Only ever deviates +/- 90 degres from the last direction the vortex moved (whether a random or player chosen move).
 					// okToMoveUnitInCombat will record the direction chosen, so don't need to track it here.
 					final int d;
-					if (!tc.getLastCombatMoveDirection ().containsKey (xu.getUnitURN ()))
+					if (!combatDetails.getLastCombatMoveDirection ().containsKey (xu.getUnitURN ()))
 						d = getRandomUtils ().nextInt (getCoordinateSystemUtils ().getMaxDirection (combatMapSize.getCoordinateSystemType ())) + 1;
 					else
 						d = getCoordinateSystemUtils ().normalizeDirection (combatMapSize.getCoordinateSystemType (),
-							tc.getLastCombatMoveDirection ().get (xu.getUnitURN ()) - 2 + getRandomUtils ().nextInt (5));
+							combatDetails.getLastCombatMoveDirection ().get (xu.getUnitURN ()) - 2 + getRandomUtils ().nextInt (5));
 	
 					// Nothing is impassable, but might bang into the edge of the map
 					final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
@@ -271,7 +265,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 					final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 					
 					getUnitMovement ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
-						mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
+						mom.getGeneralServerKnowledge ().getTrueMap (), combatDetails.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
 					
 					// Check the intended cell
 					final MapCoordinates2DEx coords = new MapCoordinates2DEx (xu.getCombatPosition ());
@@ -303,7 +297,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				{
 					final String combatAreaEffectID = damagingCAE.getSpellHasCombatEffect ().get (0);
 					
-					if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
+					if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatDetails.getCombatLocation (),
 						combatAreaEffectID, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
 					{
 						// Terror has special handling below
@@ -314,7 +308,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 							final List<MemoryUnit> enemyUnits = new ArrayList<MemoryUnit> ();
 							
 							for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-								if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+								if ((combatDetails.getCombatLocation ().equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 									(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 									
 									enemyUnits.add (thisUnit);
@@ -347,7 +341,8 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 									
 									if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-										(damagingCAE, SpellBookSectionID.ATTACK_SPELLS, combatLocation, tc.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (),
+										(damagingCAE, SpellBookSectionID.ATTACK_SPELLS, combatDetails.getCombatLocation (), combatDetails.getCombatMap (),
+											castingPlayer.getPlayerDescription ().getPlayerID (),
 											null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 											mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 										
@@ -356,7 +351,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	
 								if (targetUnits.size () > 0)
 									combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits,
-										attackingPlayer, defendingPlayer, null, null, null, null, null, damagingCAE, null, castingPlayer, combatLocation, false, mom).isCombatEnded ();
+										attackingPlayer, defendingPlayer, null, null, null, null, null, damagingCAE, null, castingPlayer, combatDetails.getCombatLocation (), false, mom).isCombatEnded ();
 							}
 						}
 					}
@@ -375,14 +370,15 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 				
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+					if ((combatDetails.getCombatLocation ().equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 						(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 					{
 						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, terrorSpell.getSpellRealm (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if ((xu.getControllingPlayerID () == playerID) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-							(terrorSpell, SpellBookSectionID.ATTACK_SPELLS, combatLocation, tc.getCombatMap (), castingPlayer.getPlayerDescription ().getPlayerID (),
+							(terrorSpell, SpellBookSectionID.ATTACK_SPELLS, combatDetails.getCombatLocation (), combatDetails.getCombatMap (),
+								castingPlayer.getPlayerDescription ().getPlayerID (),
 								null, null, xu, false, mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayerPriv.getFogOfWar (),
 								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 							
@@ -403,11 +399,11 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 			}
 			
 			// Does opposing player have mana leak cast on this combat?
-			if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatLocation,
+			if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), combatDetails.getCombatLocation (),
 				CommonDatabaseConstants.COMBAT_AREA_EFFECT_ID_MANA_LEAK, castingPlayer.getPlayerDescription ().getPlayerID ()) != null)
 			{
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+					if ((combatDetails.getCombatLocation ().equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 						(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 					{
 						final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null,
@@ -443,20 +439,11 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 					// it the client can correctly work out if the reduced MP is below the remaining casting skill and means the player can now cast less
 					if (thisPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 					{
-						final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-							(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-	
 						Integer sendSkillValue = null;
 						if (thisPlayer == defendingPlayer)
-						{
-							if (gc.getCombatDefenderCastingSkillRemaining () != null)
-								sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
-						}
+							sendSkillValue = combatDetails.getDefenderCastingSkillRemaining ();
 						else if (thisPlayer == attackingPlayer)
-						{
-							if (gc.getCombatAttackerCastingSkillRemaining () != null)
-								sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
-						}
+							sendSkillValue = combatDetails.getAttackerCastingSkillRemaining ();
 						
 						getServerResourceCalculations ().sendGlobalProductionValues (thisPlayer, sendSkillValue, false);
 					}
@@ -470,7 +457,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	/**
 	 * Deals with any processing at the end of one player's turn in combat (after none of their units have any moves left) 
 	 * 
-	 * @param combatLocation The location the combat is taking place
+	 * @param combatDetails Details about the combat taking place
 	 * @param playerID Which player just finished their combat turn
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If an expected data item cannot be found
@@ -480,14 +467,14 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final void combatEndTurn (final MapCoordinates3DEx combatLocation, final int playerID, final MomSessionVariables mom)
+	public final void combatEndTurn (final CombatDetails combatDetails, final int playerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Note we don't check the unit can normally heal damage (is not undead) because regeneration works even on undead
 		final List<MemoryUnit> healedUnits = new ArrayList<MemoryUnit> ();
 
 		for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
+			if ((thisUnit.getOwningPlayerID () == playerID) && (combatDetails.getCombatLocation ().equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
 				(thisUnit.getUnitDamage ().size () > 0))
 			{

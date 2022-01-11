@@ -38,7 +38,7 @@ import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.process.CombatProcessing;
 import momime.server.process.CombatStartAndEndImpl;
 
@@ -335,7 +335,7 @@ public final class CombatAIImpl implements CombatAI
 	 * This might be for node defenders, raiders, rampaging monsters, an AI controlled
 	 * wizard, or a human controlled wizard who has put the combat on 'Auto'
 	 * 
-	 * @param combatLocation Where the combat is taking place 
+	 * @param combatDetails Details about the combat taking place
 	 * @param currentPlayer The player whose turn is being taken
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether we had at least one unit take some useful action or not
@@ -344,7 +344,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final CombatAIMovementResult aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
+	public final CombatAIMovementResult aiCombatTurn (final CombatDetails combatDetails, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		// If AI Wizard (not raiders, not banished, not human player on auto) then maybe cast a spell before we move units
@@ -356,22 +356,19 @@ public final class CombatAIImpl implements CombatAI
 		if ((getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())) && (currentPlayer.getPlayerDescription ().getPlayerType () == PlayerType.AI) &&
 			(wizardDetails.getWizardState () == WizardState.ACTIVE))
 			
-			result = getSpellAI ().decideWhatToCastCombat (currentPlayer, wizardDetails, null, combatLocation, mom);
+			result = getSpellAI ().decideWhatToCastCombat (currentPlayer, wizardDetails, null, combatDetails, mom);
 		
 		if (result != CombatAIMovementResult.ENDED_COMBAT)
 		{
 			// Get the combat terrain
-			final ServerGridCellEx serverGridCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-			
-			final MapAreaOfCombatTiles combatMap = serverGridCell.getCombatMap ();
+			final MapAreaOfCombatTiles combatMap = combatDetails.getCombatMap ();
 			
 			// Let units move more than once, but only safe way to do this is to call listUnitsToMove each time as units may be killed, scrubbed from memory, etc
 			int retryCount = 0;
 			while ((retryCount < 10) && (mom.getPlayers ().size () > 0))
 			{
 				// Get a list of all unit we need to move
-				final List<MemoryUnit> unitsToMove = listUnitsToMove (combatLocation, currentPlayer.getPlayerDescription ().getPlayerID (),
+				final List<MemoryUnit> unitsToMove = listUnitsToMove (combatDetails.getCombatLocation (), currentPlayer.getPlayerDescription ().getPlayerID (),
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				if (unitsToMove.size () == 0)
 					retryCount = 100;
@@ -400,20 +397,20 @@ public final class CombatAIImpl implements CombatAI
 						if (tu.getUnit ().getCombatPosition () != null)
 						{
 							// First try to cast fixed spells (e.g. Giant Spiders' web)
-							CombatAIMovementResult thisResult = getSpellAI ().decideWhetherToCastFixedSpellInCombat (currentPlayer, tu.getUnit (), combatLocation, mom);
+							CombatAIMovementResult thisResult = getSpellAI ().decideWhetherToCastFixedSpellInCombat (currentPlayer, tu.getUnit (), combatDetails, mom);
 							
 							// Next try to cast spells imbued in hero items
 							if (thisResult == CombatAIMovementResult.NOTHING)
-								thisResult = getSpellAI ().decideWhetherToCastSpellImbuedInHeroItem (currentPlayer, tu.getUnit (), combatLocation, mom);
+								thisResult = getSpellAI ().decideWhetherToCastSpellImbuedInHeroItem (currentPlayer, tu.getUnit (), combatDetails, mom);
 							
 							// Next consider casting a spell if the unit is a spellcaster without a ranged attack (e.g. Angel)
 							if ((thisResult == CombatAIMovementResult.NOTHING) &&
 								(tu.getUnit ().getManaRemaining () > 0) && (tu.getUnit ().canCastSpells ()) && (!getUnitCalculations ().canMakeRangedAttack (tu.getUnit ())))
 								
-								thisResult = getSpellAI ().decideWhatToCastCombat (currentPlayer, wizardDetails, tu.getUnit (), combatLocation, mom);
+								thisResult = getSpellAI ().decideWhatToCastCombat (currentPlayer, wizardDetails, tu.getUnit (), combatDetails, mom);
 							
 							if (thisResult == CombatAIMovementResult.NOTHING)
-								thisResult = moveOneUnit (tu.getUnit (), combatLocation, combatMap, mom);
+								thisResult = moveOneUnit (tu.getUnit (), combatDetails.getCombatLocation (), combatMap, mom);
 							
 							if (thisResult != CombatAIMovementResult.NOTHING)
 								result = thisResult;

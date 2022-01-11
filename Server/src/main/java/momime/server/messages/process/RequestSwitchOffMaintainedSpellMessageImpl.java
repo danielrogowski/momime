@@ -24,8 +24,10 @@ import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.knowledge.CombatDetails;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.DamageProcessor;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.PlayerServerUtils;
 
 /**
@@ -54,6 +56,9 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	
 	/** Player utils */
 	private PlayerServerUtils playerServerUtils;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -122,8 +127,10 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 					final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
 					final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
 					
-					getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
-						attackingPlayer, defendingPlayer,
+					final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
+						(MapCoordinates3DEx) trueUnit.getCombatLocation (), "RequestSwitchOffMaintainedSpellMessageImpl");
+					
+					getCombatStartAndEnd ().combatEnded (combatDetails, attackingPlayer, defendingPlayer,
 						(trueUnit.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer,
 						null, mom);
 				}
@@ -224,5 +231,21 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	public final void setPlayerServerUtils (final PlayerServerUtils utils)
 	{
 		playerServerUtils = utils;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

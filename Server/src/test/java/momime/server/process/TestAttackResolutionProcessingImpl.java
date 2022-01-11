@@ -46,7 +46,9 @@ import momime.server.ServerTestData;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.knowledge.CombatDetails;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.UnitServerUtilsImpl;
 
 /**
@@ -381,6 +383,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		// Range penalty
 		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (new MapCoordinates3DEx (20, 10, 1)), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (new MapCoordinates3DEx (20, 10, 1)), "processAttackResolutionStep")).thenReturn (combatDetails);
+		
 		// Session variables
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setCombatMapSize (combatMapSize);
@@ -393,6 +402,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -403,6 +413,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		proc.setServerUnitCalculations (serverUnitCalculations);
 		proc.setExpandUnitDetails (expand);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
@@ -524,6 +535,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		when (damageCalc.calculateSingleFigureDamage (xuAttacker, xuDefender, attackingPlayer, defendingPlayer, potentialDamageToAttacker,
 			new MapCoordinates3DEx (20, 10, 1), null, fow.getBuilding (), db)).thenReturn (4);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (new MapCoordinates3DEx (20, 10, 1)), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (new MapCoordinates3DEx (20, 10, 1)), "processAttackResolutionStep")).thenReturn (combatDetails);
+		
 		// Session variables
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setCombatMapSize (combatMapSize);
@@ -535,6 +553,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -544,6 +563,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		proc.setUnitCalculations (unitCalc);
 		proc.setExpandUnitDetails (expand);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
@@ -657,6 +677,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		when (damageCalc.calculateResistOrTakeDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender1, db)).thenReturn (3);
 		when (damageCalc.calculateDoomDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender2, db)).thenReturn (4);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (new MapCoordinates3DEx (20, 10, 1)), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (new MapCoordinates3DEx (20, 10, 1)), "processAttackResolutionStep")).thenReturn (combatDetails);
+		
 		// Session variables
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setCombatMapSize (combatMapSize);
@@ -668,6 +695,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -677,6 +705,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		proc.setUnitCalculations (unitCalc);
 		proc.setExpandUnitDetails (expand);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
@@ -761,6 +790,13 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, steps.get (0).getSpellStep (),
 			new MapCoordinates3DEx (20, 10, 1), null, fow.getBuilding (), db)).thenReturn (3);
 
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (new MapCoordinates3DEx (20, 10, 1)), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (new MapCoordinates3DEx (20, 10, 1)), "processAttackResolutionStep")).thenReturn (combatDetails);
+		
 		// Session variables
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setCombatMapSize (combatMapSize);
@@ -772,6 +808,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -781,6 +818,7 @@ public final class TestAttackResolutionProcessingImpl extends ServerTestData
 		proc.setUnitCalculations (unitCalc);
 		proc.setExpandUnitDetails (expand);
 		proc.setUnitUtils (unitUtils);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method

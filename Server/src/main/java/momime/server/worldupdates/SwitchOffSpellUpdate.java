@@ -36,8 +36,9 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnVisibility;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.mapgenerator.CombatMapGenerator;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * World update for switching off a maintained spell
@@ -70,6 +71,9 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	
 	/** The spell to switch off */
 	private int spellURN;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * @return Enum indicating which kind of update this is
@@ -168,16 +172,16 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 					final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
 					final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
 				
-					final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-						(trueSpell.getCityLocation ().getZ ()).getRow ().get (trueSpell.getCityLocation ().getY ()).getCell ().get (trueSpell.getCityLocation ().getX ());
+					final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
+						(MapCoordinates3DEx) trueSpell.getCityLocation (), "SwitchOffSpellUpdate");
 					
-					getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), mom.getServerDB (),
+					getCombatMapGenerator ().regenerateCombatTileBorders (combatDetails.getCombatMap (), mom.getServerDB (),
 						mom.getGeneralServerKnowledge ().getTrueMap (), (MapCoordinates3DEx) trueSpell.getCityLocation ());
 					
 					// Send the updated map
 					final UpdateCombatMapMessage combatMapMsg = new UpdateCombatMapMessage ();
 					combatMapMsg.setCombatLocation (trueSpell.getCityLocation ());
-					combatMapMsg.setCombatTerrain (gc.getCombatMap ());
+					combatMapMsg.setCombatTerrain (combatDetails.getCombatMap ());
 					
 					if (attackingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 						attackingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
@@ -240,10 +244,10 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 				if ((!killed) && (mu.getCombatLocation () != null) && (mu.getCombatPosition () != null))
 				{
 					// Make sure the unit is still able to be on the combat tile it is on, and that we didn't lose our flight spell over water
-					final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-						(mu.getCombatLocation ().getZ ()).getRow ().get (mu.getCombatLocation ().getY ()).getCell ().get (mu.getCombatLocation ().getX ());
+					final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
+						(MapCoordinates3DEx) mu.getCombatLocation (), "SwitchOffSpellUpdate");
 					
-					final MomCombatTile tile = gc.getCombatMap ().getRow ().get (mu.getCombatPosition ().getY ()).getCell ().get (mu.getCombatPosition ().getX ());
+					final MomCombatTile tile = combatDetails.getCombatMap ().getRow ().get (mu.getCombatPosition ().getY ()).getCell ().get (mu.getCombatPosition ().getX ());
 
 					if (xu == null)
 						xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
@@ -455,5 +459,21 @@ public final class SwitchOffSpellUpdate implements WorldUpdate
 	public final void setSpellURN (final int s)
 	{
 		spellURN = s;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

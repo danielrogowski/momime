@@ -33,7 +33,8 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -62,6 +63,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	
 	/** Spell processing methods */
 	private SpellProcessing spellProcessing;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * When one unit initiates a basic attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
@@ -172,10 +176,10 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		final List<AttackResolutionStepContainer> steps, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		final ServerGridCellEx tc = (combatLocation == null) ? null : (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		final CombatDetails combatDetails = (combatLocation == null) ? null : 
+			getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), combatLocation, "processAttackResolutionStep");
 		
-		final MapAreaOfCombatTiles combatMap = (tc == null) ? null : tc.getCombatMap ();
+		final MapAreaOfCombatTiles combatMap = (combatDetails == null) ? null : combatDetails.getCombatMap ();
 		
 		// Zero out damage taken
 		final List<UnitDamage> damageToDefender = new ArrayList<UnitDamage> ();
@@ -267,7 +271,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							// If the unit has suffered too many attacks, its counterattack to hit chance goes down
 							if ((step != null) && (step.getCombatSide () == UnitCombatSideID.DEFENDER))
 							{
-								final Integer numberOfTimedAttacked = tc.getNumberOfTimedAttacked ().get (unitMakingAttack.getUnit ().getUnitURN ());
+								final Integer numberOfTimedAttacked = combatDetails.getNumberOfTimedAttacked ().get (unitMakingAttack.getUnit ().getUnitURN ());
 								if ((numberOfTimedAttacked != null) && (numberOfTimedAttacked >= 2))
 									penalty = penalty + (numberOfTimedAttacked / 2);
 							}
@@ -595,5 +599,21 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	public final void setSpellProcessing (final SpellProcessing obj)
 	{
 		spellProcessing = obj;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

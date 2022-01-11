@@ -95,9 +95,6 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		if (flyingFortress)
 			placeClouds (map, db);
 		
-		// Store the map against the grid cell on the server
-		mc.setCombatMap (map);
-		
 		return map;
 	}
 	

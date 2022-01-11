@@ -54,8 +54,9 @@ import momime.server.calculations.DamageCalculator;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.UnitServerUtils;
 import momime.server.worldupdates.WorldUpdates;
 
@@ -124,8 +125,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		
 		// General server knowledge
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
-		final ServerGridCellEx tc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-		tc.setAttackerSpecialFameLost (0);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -160,6 +159,20 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		stepNumbers.add (steps);
 		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ())).thenReturn (stepNumbers);
 		
+		// Combat location
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
+		
+		// Damage taken
+		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (3);
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1, 0);
+		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "resolveAttack")).thenReturn (combatDetails);
+		
 		// Session variables
 		final WorldUpdates wu = mock (WorldUpdates.class);
 		
@@ -169,13 +182,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
-		
-		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		
-		// Damage taken
-		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (3);
-		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1, 0);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
@@ -193,6 +200,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setUnitServerUtils (unitServerUtils);
 		proc.setExpandUnitDetails (expand);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Need another surviving unit on each side, so the combat doesn't end
 		for (final PlayerServerDetails thisPlayer : players)
@@ -311,8 +319,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		
 		// General server knowledge
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
-		final ServerGridCellEx tc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-		tc.setAttackerSpecialFameLost (0);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -348,6 +354,20 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		stepNumbers.add (steps);
 		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ())).thenReturn (stepNumbers);
 		
+		// Combat location
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
+		
+		// Damage taken
+		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (3);
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1, 0);
+		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "resolveAttack")).thenReturn (combatDetails);
+		
 		// Session variables
 		final WorldUpdates wu = mock (WorldUpdates.class);
 
@@ -357,13 +377,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getWorldUpdates ()).thenReturn (wu);
-		
-		// Combat location
-		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
-		
-		// Damage taken
-		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (3);
-		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1, 0);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
@@ -381,6 +395,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setUnitServerUtils (unitServerUtils);
 		proc.setExpandUnitDetails (expand);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// The 'attacker' unit is still left alive because it still took no dmg, so put a unit in the list so the combat doesn't end for them (attacker is owned by defendingPlayer)
 		final MemoryUnit survivingUnit = new MemoryUnit ();
@@ -429,7 +444,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		verify (midTurnMulti).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, mom);
 		
 		// Defending player won
-		verify (combatStartAndEnd).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), isNull (), eq (mom));
+		verify (combatStartAndEnd).combatEnded (eq (combatDetails), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), isNull (), eq (mom));
 		
 		verifyNoMoreInteractions (attackResolutionProc);
 		verifyNoMoreInteractions (wu);
@@ -488,12 +503,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getPlayers ()).thenReturn (players);
-
 		// Expanded unit detalis
 		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
@@ -518,6 +527,20 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Damage taken
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "resolveAttack")).thenReturn (combatDetails);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+		
 		// Set up object to test
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
@@ -527,6 +550,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setFogOfWarMidTurnChanges (midTurnSingle);
 		proc.setExpandUnitDetails (expand);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();
@@ -638,12 +662,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final ExpandedUnitDetails xuDefender3 = mock (ExpandedUnitDetails.class);
 		when (expand.expandUnitDetails (defender3, null, null, null, players, trueMap, db)).thenReturn (xuDefender3);
 		
-		// Session variables
-		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
-		when (mom.getServerDB ()).thenReturn (db);
-		when (mom.getPlayers ()).thenReturn (players);
-		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
@@ -664,6 +682,20 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		when (xuDefender2.calculateAliveFigureCount ()).thenReturn (2);
 		when (xuDefender3.calculateAliveFigureCount ()).thenReturn (3);
 		
+		// Combat details
+		final CombatMapServerUtils combatMapServerUtils = mock (CombatMapServerUtils.class);
+		final List<CombatDetails> combatList = new ArrayList<CombatDetails> ();
+		
+		final CombatDetails combatDetails = new CombatDetails (1, new MapCoordinates3DEx (combatLocation), null, 1, 2, null, null, 0, 0, 0, 0);
+		when (combatMapServerUtils.findCombatByLocation (combatList, new MapCoordinates3DEx (combatLocation), "resolveAttack")).thenReturn (combatDetails);
+
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getCombatDetails ()).thenReturn (combatList);
+		
 		// Set up object to test
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
@@ -673,6 +705,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setFogOfWarMidTurnChanges (midTurnSingle);
 		proc.setExpandUnitDetails (expand);
+		proc.setCombatMapServerUtils (combatMapServerUtils);
 		
 		// Run method
 		final List<ResolveAttackTarget> defenders = new ArrayList<ResolveAttackTarget> ();

@@ -25,7 +25,8 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnVisibility;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.ServerGridCellEx;
+import momime.server.knowledge.CombatDetails;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * World update for killing a unit, whether that means really removing it permanently or just marking it as dead 
@@ -49,6 +50,9 @@ public final class KillUnitUpdate implements WorldUpdate
 	
 	/** Method by which the unit is being killed; this controls whether the unit is fully removed, or just marked as dead and could be raised */
 	private KillUnitActionID untransmittedAction;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * @return Enum indicating which kind of update this is
@@ -117,14 +121,13 @@ public final class KillUnitUpdate implements WorldUpdate
 			final boolean isHero = unitMagicRealmID.equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 			
 			// If the unit was a hero dying in combat, move any items they had into the pool for the winner of the combat to claim
-			final ServerGridCellEx gc = (trueUnit.getCombatLocation () == null) ? null :
-				(ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (trueUnit.getCombatLocation ().getZ ()).getRow ().get
-					(trueUnit.getCombatLocation ().getY ()).getCell ().get (trueUnit.getCombatLocation ().getX ());
-
+			final CombatDetails combatDetails = (trueUnit.getCombatLocation () == null) ? null :
+				getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (), (MapCoordinates3DEx) trueUnit.getCombatLocation (), "KillUnitUpdate");
+			
 			if ((trueUnit.getCombatLocation () != null) && (untransmittedAction != KillUnitActionID.PERMANENT_DAMAGE))
 				trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
 				{
-					gc.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
+					combatDetails.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
 					slot.setHeroItem (null);
 				});
 			
@@ -169,7 +172,8 @@ public final class KillUnitUpdate implements WorldUpdate
 								newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
 							else if (isHero)
 								newStatusInPlayersMemoryOnServer = null;
-							else if ((player.getPlayerDescription ().getPlayerID ().equals (gc.getAttackingPlayerID ())) || (player.getPlayerDescription ().getPlayerID ().equals (gc.getDefendingPlayerID ())))
+							else if ((player.getPlayerDescription ().getPlayerID ().equals (combatDetails.getAttackingPlayerID ())) ||
+										(player.getPlayerDescription ().getPlayerID ().equals (combatDetails.getDefendingPlayerID ())))
 								newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
 							else
 								newStatusInPlayersMemoryOnServer = null;
@@ -384,5 +388,21 @@ public final class KillUnitUpdate implements WorldUpdate
 	public final void setUntransmittedAction (final KillUnitActionID a)
 	{
 		untransmittedAction = a;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

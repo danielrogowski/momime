@@ -10,6 +10,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -17,6 +18,7 @@ import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.server.knowledge.CombatDetails;
 
 /**
  * Methods dealing with combat maps that are only needed on the server
@@ -115,6 +117,47 @@ public final class CombatMapServerUtilsImpl implements CombatMapServerUtils
 		return withinWallOfFire;
 	}
 
+	/**
+	 * @param combatDetails Combat details storage
+	 * @param combatURN Unique identifier for the combat to look for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Requested combat
+	 * @throws RecordNotFoundException If the combatURN does not exist
+	 */
+	@Override
+	public final CombatDetails findCombatURN (final List<CombatDetails> combatDetails, final int combatURN, final String caller)
+		throws RecordNotFoundException
+	{
+		return combatDetails.stream ().filter (c -> c.getCombatURN () == combatURN).findAny ().orElseThrow
+			(() -> new RecordNotFoundException (CombatDetails.class, combatURN, caller));
+	}
+
+	/**
+	 * @param combatDetails Combat details storage
+	 * @param combatLocation Combat location to look for
+	 * @return Requested combat if exists, or null if not found
+	 */
+	@Override
+	public final CombatDetails findCombatByLocation (final List<CombatDetails> combatDetails, final MapCoordinates3DEx combatLocation)
+	{
+		return combatDetails.stream ().filter (c -> combatLocation.equals (c.getCombatLocation ())).findAny ().orElse (null);
+	}
+
+	/**
+	 * @param combatDetails Combat details storage
+	 * @param combatLocation Combat location to look for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Requested combat
+	 * @throws RecordNotFoundException If there is no combat taking place at the requested location
+	 */
+	@Override
+	public final CombatDetails findCombatByLocation (final List<CombatDetails> combatDetails, final MapCoordinates3DEx combatLocation, final String caller)
+		throws RecordNotFoundException
+	{
+		return combatDetails.stream ().filter (c -> combatLocation.equals (c.getCombatLocation ())).findAny ().orElseThrow
+			(() -> new RecordNotFoundException (CombatDetails.class, combatLocation.toString (), caller));
+	}
+	
 	/**
 	 * @return MemoryMaintainedSpell utils
 	 */

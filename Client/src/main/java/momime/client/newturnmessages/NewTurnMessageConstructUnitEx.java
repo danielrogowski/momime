@@ -226,7 +226,7 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
 		// Look up the image for the new construction, if it is a building
-		if (cityData.getCurrentlyConstructingBuildingID () != null)
+		if ((cityData != null) && (cityData.getCurrentlyConstructingBuildingID () != null))
 		{
 			final CityViewElement newBuilding = getClient ().getClientDB ().findCityViewElementBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
 			getAnim ().registerRepaintTrigger (newBuilding.getCityViewAnimation (), newTurnMessagesList, AnimationContainer.COMMON_XML);

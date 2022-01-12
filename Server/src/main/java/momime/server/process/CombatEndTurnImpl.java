@@ -309,7 +309,8 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 							
 							for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 								if ((combatDetails.getCombatLocation ().equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
-									(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
+									(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+									(thisUnit.getOwningPlayerID () == playerID))
 									
 									enemyUnits.add (thisUnit);
 							

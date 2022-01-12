@@ -363,7 +363,7 @@ public final class CombatUI extends MomClientFrameUI
 	private CombatUIUnitAndAnimations [] [] [] unitToDrawAtEachLocation;
 	
 	/** Let AI auto control our units? */
-	private boolean autoControl;
+	private CombatAutoControl autoControl;
 	
 	/** Whose turn it currently is in this combat */
 	private Integer currentPlayerID;
@@ -429,9 +429,12 @@ public final class CombatUI extends MomClientFrameUI
 		autoAction = new LoggingAction ((ev) ->
 		{
 			// If it is currently our turn, then we immediately need to tell the server to have the AI take the rest of our turn
-			autoControl = !autoControl;
+			if (getAutoControl () == CombatAutoControl.MANUAL)
+				setAutoControl (CombatAutoControl.AUTO);
+			else
+				setAutoControl (CombatAutoControl.SWITCHING_TO_MANUAL);		// Gets set back actually to MANUAL in SetCombatPlayerMessageImpl
 			
-			if ((autoControl) && (getClient ().getOurPlayerID ().equals (currentPlayerID)))
+			if ((getAutoControl () == CombatAutoControl.AUTO) && (getClient ().getOurPlayerID ().equals (currentPlayerID)))
 			{
 				final CombatAutoControlMessage msg = new CombatAutoControlMessage ();
 				msg.setCombatLocation (getCombatLocation ());
@@ -1070,7 +1073,7 @@ public final class CombatUI extends MomClientFrameUI
 		if (defendingPlayerName != null)
 		{
 			// Always turn auto back off again for new combats
-			autoControl = false;
+			setAutoControl (CombatAutoControl.MANUAL);
 			currentPlayerID = null;
 			flashColour = NO_FLASH_COLOUR;
 
@@ -2078,7 +2081,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @return Let AI auto control our units?
 	 */
-	public final boolean isAutoControl ()
+	public final CombatAutoControl getAutoControl ()
 	{
 		return autoControl;
 	}
@@ -2086,7 +2089,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @param auto Let AI auto control our units?
 	 */
-	public final void setAutoControl (final boolean auto)
+	public final void setAutoControl (final CombatAutoControl auto)
 	{
 		autoControl = auto;
 	}

@@ -8,6 +8,7 @@ import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.CombatAutoControl;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.common.messages.MemoryUnit;
@@ -73,7 +74,7 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	public final void selectNextUnitToMoveCombat ()
 		throws JAXBException, XMLStreamException, IOException
 	{
-		if ((getClient ().getOurPlayerID ().equals (getCombatUI ().getCurrentPlayerID ())) && (!getCombatUI ().isAutoControl ()))
+		if ((getClient ().getOurPlayerID ().equals (getCombatUI ().getCurrentPlayerID ())) && (getCombatUI ().getAutoControl () == CombatAutoControl.MANUAL))
 		{
 			// Revert back to the spells the wizard knows, and their cost reductions, in case the spell book was showing casting for a particular unit
 			if ((getCombatUI ().getCastingSource () != null) && (getCombatUI ().getCastingSource ().getCastingUnit () != null))

@@ -13,6 +13,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.process.CombatMapProcessing;
+import momime.client.ui.frames.CombatAutoControl;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.common.calculations.UnitCalculations;
@@ -51,14 +52,14 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 		
 		if (getPlayerID () == getClient ().getOurPlayerID ())
 		{
-			log.debug ("Its our combat turn, auto = " + getCombatUI ().isAutoControl ());
+			log.debug ("Its our combat turn, auto = " + getCombatUI ().getAutoControl ());
 			
 			// We can cast a spell again; and default to casting from the wizard
 			getCombatUI ().setCastingSource (new CastCombatSpellFrom (null, null, null), false);
 			getCombatUI ().setSpellCastThisCombatTurn (false);
 			
 			// Tell the server to auto control our units?
-			if (getCombatUI ().isAutoControl ())
+			if (getCombatUI ().getAutoControl () == CombatAutoControl.AUTO)
 			{
 				final CombatAutoControlMessage msg = new CombatAutoControlMessage ();
 				msg.setCombatLocation (getCombatLocation ());
@@ -67,6 +68,8 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 			else
 			{
 				// Our turn with manual control
+				getCombatUI ().setAutoControl (CombatAutoControl.MANUAL);
+				
 				// Give all units their movement for this turn
 				getUnitCalculations ().resetUnitCombatMovement (getPlayerID (), (MapCoordinates3DEx) getCombatLocation (), getTerrifiedUnitURN (),
 					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());

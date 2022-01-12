@@ -677,9 +677,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 				if (terrifiedUnitURNs == null)
 				{
 					// Combat ended
-					final boolean removed = mom.getCombatDetails ().remove (combatDetails);
 					combatDetails.setCombatCurrentPlayerID (0);
-					log.debug ("progressCombat detected combat URN " + combatDetails.getCombatURN () + " ended after call to startCombatTurn; removed = " + removed);
+					log.debug ("progressCombat detected combat URN " + combatDetails.getCombatURN () + " ended after call to startCombatTurn; not removing it");
 					aiPlayerTurn = false;
 				}
 				else

@@ -2,8 +2,10 @@ package momime.server.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -378,12 +380,16 @@ public final class CityServerUtilsImpl implements CityServerUtils
 			playerID, unitStack, 0, mom.getPlayers (), mom.getSessionDescription ().getOverlandMapSize (), fogOfWarMemory, mom.getServerDB ());
 		
 		final List<MapCoordinates3DEx> missingRoadCells = new ArrayList<MapCoordinates3DEx> ();
+		final Set<MapCoordinates3DEx> cellsVisited = new HashSet<MapCoordinates3DEx> ();
+		
 		if (moves [secondCityLocation.getZ ()] [secondCityLocation.getY ()] [secondCityLocation.getX ()] != null)
 		{
 			// Trace route between the two cities
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (secondCityLocation);
-			while (!coords.equals (firstCityLocation))
+			while ((!coords.equals (firstCityLocation)) && (!cellsVisited.contains (coords)))
 			{
+				cellsVisited.add (new MapCoordinates3DEx (coords));
+				
 				final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (),
 					moves [coords.getZ ()] [coords.getY ()] [coords.getX ()].getDirection () + 4);
 				

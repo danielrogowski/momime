@@ -37,8 +37,30 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.1</b></td>
-			<td align=left><b>7 Jan 2022</b></td>
+			<td align=left><b>Current version: 1.1.1</b></td>
+			<td align=left><b>13 Jan 2022</b></td>
+			<td align=left>
+				<b>Music changes:</b>
+				<ul>
+					<li>Re-converted all the combat music files because the old XMI2MID converter I had used made them play a little too fast which was particularly noticable on Freya's
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed a number of issues on the server when a combat ends and then another combat immediately takes place at the same map cell
+					<li>Fixed issue that would often mean combat area effects that roll units to attack each turn such as Call Lightning wouldn't hit as many targets as they should
+					<li>Fixed issue with ending combats correctly that were won by a combat area effect that roll units to attack each turn such as Call Lightning killing the last enemy unit
+					<li>Fixed bug that meant after switching on auto control in combat, attempting to switch it off again would give a period of a few turns where your units would stand and do nothing
+					<li>Fixed server potentially getting stuck trying to figure the path for a road between cities
+					<li>Fixed error if a city was completely destroyed (razed or rampaging monsters) while you had its city screen open
+					<li>Fixed wizard still being referred to by their name as if you hadn't met them yet (e.g. "Player 1" for AI players) after you met them in messages about nodes
+					<li>Stopped Call the Void (and Meteor random event) from corrupting tiles that can't normally be corrupted (mainly water tiles)
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>1.1</td>
+			<td align=left>7 Jan 2022</td>
 			<td align=left>
 				<b>Meeting wizards:</b>
 				<ul>

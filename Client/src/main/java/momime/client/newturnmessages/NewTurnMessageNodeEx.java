@@ -12,6 +12,7 @@ import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.utils.WizardClientUtils;
 import momime.common.database.LanguageText;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.NewTurnMessageNode;
@@ -37,6 +38,9 @@ public final class NewTurnMessageNodeEx extends NewTurnMessageNode
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -74,7 +78,7 @@ public final class NewTurnMessageNodeEx extends NewTurnMessageNode
 					getLanguages ().getNewTurnMessages ().getOwnedNodeCaptured ();
 				
 				final PlayerPublicDetails otherPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getOtherPlayerID ());
-				otherPlayerName = (otherPlayer != null) ? otherPlayer.getPlayerDescription ().getPlayerName () : getOtherPlayerID ().toString ();
+				otherPlayerName = (otherPlayer != null) ? getWizardClientUtils ().getPlayerName (otherPlayer) : getOtherPlayerID ().toString ();
 			}
 			else
 				languageText = (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ? getLanguages ().getNewTurnMessages ().getEmptyNodeCapturedLastTurn () :
@@ -204,5 +208,21 @@ public final class NewTurnMessageNodeEx extends NewTurnMessageNode
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
 	}
 }

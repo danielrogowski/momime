@@ -733,6 +733,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
 	</bean>
 
 	<bean id="newTurnMessageHeroGainedALevel" class="momime.client.newturnmessages.NewTurnMessageHeroGainedALevelEx" scope="prototype">

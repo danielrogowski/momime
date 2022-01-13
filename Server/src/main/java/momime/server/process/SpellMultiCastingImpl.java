@@ -17,6 +17,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AttackCitySpellResult;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 
 /**
@@ -32,6 +34,9 @@ public final class SpellMultiCastingImpl implements SpellMultiCasting
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * Used for spells that can hit the units stationed in a city, destroy buildings and (sometimes) kill some of the population as well.  Earthquake + Call the Void.
@@ -85,11 +90,16 @@ public final class SpellMultiCastingImpl implements SpellMultiCasting
 				}
 			}
 			
-			// Surrounding tiles
+			// Surrounding tiles; don't target water tiles or already corrupted tiles
+			final Spell singleTileSpell = mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_CORRUPTION, "castCityAttackSpell");
+			
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (targetLocation);
 			for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 				if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
-					getRandomUtils ().nextBoolean ())
+					(getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (singleTileSpell,
+						(castingPlayer == null) ? 0: castingPlayer.getPlayerDescription ().getPlayerID (), coords,
+							mom.getGeneralServerKnowledge ().getTrueMap (), null, mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
+					(getRandomUtils ().nextBoolean ()))
 					
 					getSpellCasting ().corruptTile (coords, mom);
 		}
@@ -143,5 +153,21 @@ public final class SpellMultiCastingImpl implements SpellMultiCasting
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
 	}
 }

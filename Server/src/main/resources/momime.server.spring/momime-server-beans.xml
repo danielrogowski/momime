@@ -634,6 +634,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellCasting" ref="spellCasting" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">

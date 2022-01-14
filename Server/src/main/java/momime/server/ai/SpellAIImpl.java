@@ -306,7 +306,10 @@ public final class SpellAIImpl implements SpellAI
 							
 							log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " won't try to cast " + spell.getSpellID () + " because it can't afford the maintenance"); 
 						else
-							switch (spell.getSpellBookSectionID ())
+						{
+							final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
+							
+							switch (kind)
 							{
 								// Consider casting any overland enchantment that we don't already have
 								case OVERLAND_ENCHANTMENTS:
@@ -320,7 +323,7 @@ public final class SpellAIImpl implements SpellAI
 									
 								// Consider summoning combat units that are the best we can get in that realm, and over minimum summoning cost
 								case SUMMONING:
-									if ((spell.getHeroItemBonusMaximumCraftingCost () == null) && (spell.getOverlandCastingCost () >= minSummonCost) &&
+									if ((spell.getOverlandCastingCost () >= minSummonCost) &&
 										(summonableCombatUnits.containsKey (spell.getSpellRealm ())) && (summonableCombatUnits.get (spell.getSpellRealm ()).get (0).getSpell () == spell))
 									{
 										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting summoning spell " + spell.getSpellID ());
@@ -331,6 +334,7 @@ public final class SpellAIImpl implements SpellAI
 								// City enchantments and curses - we don't pick the target until its finished casting, but must prove that there is a valid target to pick
 								case CITY_ENCHANTMENTS:
 								case CITY_CURSES:
+								case ATTACK_UNITS_AND_BUILDINGS:
 									// Ignore Spell of Return, Summoning Circle & Move Fortress or the AI will just keep wasting mana moving them around
 									if (spell.getBuildingID () == null)
 									{
@@ -370,6 +374,7 @@ public final class SpellAIImpl implements SpellAI
 									
 								// Unit enchantments - again don't pick target until its finished casting
 								case UNIT_ENCHANTMENTS:
+								case CHANGE_UNIT_ID:
 									boolean validTargetFound = false;
 									final Iterator<MemoryUnit> iter = priv.getFogOfWarMemory ().getUnit ().iterator ();
 									while ((!validTargetFound) && (iter.hasNext ()))
@@ -401,6 +406,7 @@ public final class SpellAIImpl implements SpellAI
 								// This is fine, the AI doesn't cast every type of spell yet
 								default:
 							}
+						}
 					}
 			}
 						
@@ -442,11 +448,14 @@ public final class SpellAIImpl implements SpellAI
 		String citySpellEffectID = null;
 		String unitSkillID = null;
 		
-		switch (spell.getSpellBookSectionID ())
+		final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
+		
+		switch (kind)
 		{
 			// City enchantments and curses, including Spell of Return
 			case CITY_ENCHANTMENTS:
 			case CITY_CURSES:
+			case ATTACK_UNITS_AND_BUILDINGS:
 				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SUMMONING_CIRCLE))
 				{
 					final List<MapCoordinates3DEx> nodeLocations = getUnitAI ().listNodesWeDontOwnOnPlane (player.getPlayerDescription ().getPlayerID (), null, priv.getFogOfWarMemory (),
@@ -526,6 +535,27 @@ public final class SpellAIImpl implements SpellAI
 						{
 							targetUnit = mu;
 							bestUnitRating = thisUnitRating;
+						}
+					}
+				}
+				break;
+				
+			// Lycanthrophy - prefer casting on the worst unit possible, rather than the best:
+			case CHANGE_UNIT_ID:
+				int worstUnitRating = Integer.MAX_VALUE;
+				for (final MemoryUnit mu : priv.getFogOfWarMemory ().getUnit ())
+				{
+					final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (mu, null, null, null,
+						mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
+					if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
+						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, null, null, player.getPlayerDescription ().getPlayerID (), null, null, xu, true,
+							priv.getFogOfWarMemory (), priv.getFogOfWar (), mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+					{
+						int thisUnitRating = getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
+						if ((targetUnit == null) || (thisUnitRating < worstUnitRating))
+						{
+							targetUnit = mu;
+							worstUnitRating = thisUnitRating;
 						}
 					}
 				}

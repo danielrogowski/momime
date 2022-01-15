@@ -489,11 +489,47 @@ public final class SpellAIImpl implements SpellAI
 									}
 									if (found)
 									{
-										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting spell binding");
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting Spell Binding");
 										considerSpells.add (4, spell);
 									}
-									break;
 								}
+								break;
+								
+								// Warp node
+								case WARP_NODE:
+								{
+									boolean validTargetFound = false;
+									int z = 0;
+									while ((!validTargetFound) && (z < mom.getSessionDescription ().getOverlandMapSize ().getDepth ()))
+									{
+										int y = 0;
+										while ((!validTargetFound) && (y < mom.getSessionDescription ().getOverlandMapSize ().getHeight ()))
+										{
+											int x = 0;
+											while ((!validTargetFound) && (x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()))
+											{
+												final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (x, y, z);
+												
+												// Routine checks everything, looking for visible enemy owned unwarped nodes
+												if (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell,
+													player.getPlayerDescription ().getPlayerID (), nodeLocation, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+													mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+													
+													validTargetFound = true;
+		
+												x++;
+											}
+											y++;
+										}
+										z++;
+									}
+									if (validTargetFound)
+									{
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting Warp Node");
+										considerSpells.add (3, spell);
+									}
+								}
+								break;
 									
 								// Unit enchantments - again don't pick target until its finished casting
 								case UNIT_ENCHANTMENTS:
@@ -730,6 +766,31 @@ public final class SpellAIImpl implements SpellAI
 					targetSpell = secondaryTargets.get (getRandomUtils ().nextInt (secondaryTargets.size ()));
 				
 				break;
+				
+			// Warp node
+			case WARP_NODE:
+			{
+				final List<MapCoordinates3DEx> warpedNodes = new ArrayList<MapCoordinates3DEx> ();
+				
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+						{
+							final MapCoordinates3DEx nodeLocation = new MapCoordinates3DEx (x, y, z);
+							
+							// Routine checks everything, looking for visible enemy owned unwarped nodes
+							if (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell,
+								player.getPlayerDescription ().getPlayerID (), nodeLocation, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+								mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+								
+								warpedNodes.add (nodeLocation);
+
+						}
+				
+				if (!warpedNodes.isEmpty ())
+					targetLocation = warpedNodes.get (getRandomUtils ().nextInt (warpedNodes.size ()));
+			}
+			break;
 				
 			default:
 				throw new MomException ("AI decideSpellTarget does not know how to decide a target for spell " + spell.getSpellID () + " in section " + spell.getSpellBookSectionID ());

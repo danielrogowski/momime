@@ -473,6 +473,28 @@ public final class SpellAIImpl implements SpellAI
 									}
 									break;
 									
+								// Spell Binding - look for any overland enchantments that we don't know
+								case SPELL_BINDING:
+								{
+									boolean found = false;
+									final Iterator<MemoryMaintainedSpell> iter = priv.getFogOfWarMemory ().getMaintainedSpell ().iterator ();
+									while ((!found) && (iter.hasNext ()))
+									{
+										final MemoryMaintainedSpell enemySpell = iter.next ();
+										final Spell spellDef = mom.getServerDB ().findSpell (enemySpell.getSpellID (), "decideWhatToCastOverland");
+										if ((spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
+											(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), enemySpell.getSpellID ()).getStatus () != SpellResearchStatusID.AVAILABLE))
+											
+											found = true;
+									}
+									if (found)
+									{
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting spell binding");
+										considerSpells.add (4, spell);
+									}
+									break;
+								}
+									
 								// Unit enchantments - again don't pick target until its finished casting
 								case UNIT_ENCHANTMENTS:
 								case CHANGE_UNIT_ID:
@@ -682,6 +704,31 @@ public final class SpellAIImpl implements SpellAI
 							bestWeighting = spellDef.getDispelWeighting ();
 						}
 					}				
+				break;
+
+			// Spell Binding - look for any overland enchantments that we don't know
+			case SPELL_BINDING:
+				final List<MemoryMaintainedSpell> primaryTargets = new ArrayList<MemoryMaintainedSpell> ();
+				final List<MemoryMaintainedSpell> secondaryTargets = new ArrayList<MemoryMaintainedSpell> ();
+				
+				for (final MemoryMaintainedSpell enemySpell : priv.getFogOfWarMemory ().getMaintainedSpell ())
+					if (enemySpell.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ())
+					{
+						final Spell spellDef = mom.getServerDB ().findSpell (enemySpell.getSpellID (), "decideOverlandSpellTarget");
+						if (spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+						{
+							if (getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), enemySpell.getSpellID ()).getStatus () != SpellResearchStatusID.AVAILABLE)
+								primaryTargets.add (enemySpell);
+							else
+								secondaryTargets.add (enemySpell);
+						}
+					}
+				
+				if (!primaryTargets.isEmpty ())
+					targetSpell = primaryTargets.get (getRandomUtils ().nextInt (primaryTargets.size ()));
+				else if (!secondaryTargets.isEmpty ())
+					targetSpell = secondaryTargets.get (getRandomUtils ().nextInt (secondaryTargets.size ()));
+				
 				break;
 				
 			default:

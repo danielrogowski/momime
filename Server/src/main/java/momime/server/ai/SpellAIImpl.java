@@ -496,8 +496,8 @@ public final class SpellAIImpl implements SpellAI
 										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting Spell Binding");
 										considerSpells.add (4, spell);
 									}
+									break;
 								}
-								break;
 								
 								// Warp node
 								case WARP_NODE:
@@ -532,12 +532,13 @@ public final class SpellAIImpl implements SpellAI
 										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting Warp Node");
 										considerSpells.add (3, spell);
 									}
+									break;
 								}
-								break;
 									
 								// Unit enchantments - again don't pick target until its finished casting
 								case UNIT_ENCHANTMENTS:
 								case CHANGE_UNIT_ID:
+								{
 									boolean validTargetFound = false;
 									final Iterator<MemoryUnit> iter = priv.getFogOfWarMemory ().getUnit ().iterator ();
 									while ((!validTargetFound) && (iter.hasNext ()))
@@ -559,6 +560,7 @@ public final class SpellAIImpl implements SpellAI
 									}
 									
 									break;
+								}
 									
 								// Special spells with no target to choose (especially spell of mastery)
 								case SPECIAL_SPELLS:
@@ -574,6 +576,30 @@ public final class SpellAIImpl implements SpellAI
 											considerSpells.add (2, spell);
 									}
 									break;
+									
+								// Spells that directly target wizards - just make sure there's a non-banished wizard
+								case ENEMY_WIZARD_SPELLS:
+								{
+									boolean validPlayerFound = false;
+									final Iterator<PlayerServerDetails> iter = mom.getPlayers ().iterator ();
+									while ((!validPlayerFound) && (iter.hasNext ()))
+									{
+										final PlayerServerDetails targetPlayer = iter.next ();
+										
+										// Don't need OverlandCastingInfo since this isn't Spell Blast
+										if (getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (spell, player.getPlayerDescription ().getPlayerID (),
+											priv, targetPlayer.getPlayerDescription ().getPlayerID (), null) == TargetSpellResult.VALID_TARGET)
+											
+											validPlayerFound = true;
+									}
+									
+									if (validPlayerFound)
+									{
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering enemy wizard spell " + spell.getSpellID ());
+										considerSpells.add (2, spell);
+									}
+								}
+								break;
 									
 								// This is fine, the AI doesn't cast every type of spell yet
 								default:
@@ -802,9 +828,29 @@ public final class SpellAIImpl implements SpellAI
 				
 				if (!warpedNodes.isEmpty ())
 					targetLocation = warpedNodes.get (getRandomUtils ().nextInt (warpedNodes.size ()));
-			}
-			break;
 				
+				break;				
+			}
+				
+			// Spells that directly target wizards - prefer targeting strong wizards, same as beneficial random events do
+			case ENEMY_WIZARD_SPELLS:
+			{
+				final WeightedChoicesImpl<Integer> playerChoices = new WeightedChoicesImpl<Integer> ();
+				playerChoices.setRandomUtils (getRandomUtils ());
+
+				for (final PlayerServerDetails targetPlayer : mom.getPlayers ())
+					if (getMemoryMaintainedSpellUtils ().isWizardValidTargetForSpell (spell, player.getPlayerDescription ().getPlayerID (),
+						priv, targetPlayer.getPlayerDescription ().getPlayerID (), null) == TargetSpellResult.VALID_TARGET)
+					{
+						final MomPersistentPlayerPrivateKnowledge targetPriv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+						final int thisPowerBase = getResourceValueUtils ().findAmountPerTurnForProductionType (targetPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+						playerChoices.add (10 + thisPowerBase, targetPlayer.getPlayerDescription ().getPlayerID ());
+					}
+				
+				targetPlayerID = playerChoices.nextWeightedValue ();
+				break;
+			}
+			
 			default:
 				throw new MomException ("AI decideSpellTarget does not know how to decide a target for spell " + spell.getSpellID () + " in section " + spell.getSpellBookSectionID ());
 		}

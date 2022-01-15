@@ -919,6 +919,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="combatSpellAI" ref="combatSpellAI" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
+		<property name="spellDispelling" ref="spellDispelling" />
 	</bean>
 
 	<bean id="aiCityCalculations" class="momime.server.ai.AICityCalculationsImpl">

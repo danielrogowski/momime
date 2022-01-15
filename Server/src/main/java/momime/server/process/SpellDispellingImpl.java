@@ -20,10 +20,13 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.CounterMagicResult;
@@ -547,6 +550,106 @@ public final class SpellDispellingImpl implements SpellDispelling
 		}
 		
 		return !dispelled;
+	}
+	
+	/**
+	 * @param player AI player who is casting Disenchant Area
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Best location for AI to target an overland Disenchant Area spell
+	 * @throws RecordNotFoundException If an expected data item cannot be found
+	 */
+	@Override
+	public final MapCoordinates3DEx chooseDisenchantAreaTarget (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		MapCoordinates3DEx bestTarget = null;
+		Integer bestCount = null;
+		
+		// First look for our cities or warped nodes
+		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+				{
+					final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
+
+					int thisCount = 0;					
+					if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
+						(mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+						
+						// How many enemy spells are here?
+						thisCount = (int) priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
+							(s -> (s.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()) && (coords.equals (s.getCityLocation ()))).count ();
+
+					if ((thisCount == 0) && (mc != null) && (mc.getTerrainData () != null) && (mc.getTerrainData ().getNodeOwnerID () != null) &&
+						(mc.getTerrainData ().getNodeOwnerID () == player.getPlayerDescription ().getPlayerID ()) &&
+						(mc.getTerrainData ().isWarped () != null) && (mc.getTerrainData ().isWarped ()))
+					{
+						// Has to be actual node, not just an aura tile
+						if (mom.getServerDB ().findTileType (mc.getTerrainData ().getTileTypeID (), "chooseDisenchantAreaTarget").getMagicRealmID () != null)
+							thisCount = 1;
+					}
+					
+					if ((thisCount > 0) && ((bestCount == null) || (thisCount > bestCount)))
+					{
+						bestCount = thisCount;
+						bestTarget = coords;
+					}
+				}
+		
+		// If we didn't find any, look for positive spells cast on enemy cities or unit stacks, where the ONLY spells cast at
+		// that location belong to the city or unit owner, or us.  Otherwise if someone else has curses cast
+		// on the city, we might accidentally help remove them.
+		if (bestTarget == null)
+		{
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
+
+						int thisCount = 0;					
+						if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
+							(mc.getCityData ().getCityOwnerID () != player.getPlayerDescription ().getPlayerID ()))
+						{
+							if (priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().anyMatch
+								(s -> (s.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()) && (s.getCastingPlayerID () != mc.getCityData ().getCityOwnerID ()) &&
+									(coords.equals (s.getCityLocation ()))))
+								
+								thisCount = -1;
+							else
+								thisCount = (int) priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().filter (s -> coords.equals (s.getCityLocation ())).count ();
+						}
+						
+						if (thisCount >= 0)
+						{
+							// Look for enemy units at this location
+							final List<MemoryUnit> enemyUnits = priv.getFogOfWarMemory ().getUnit ().stream ().filter
+								(u -> (u.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ()) && (coords.equals (u.getUnitLocation ()))).collect (Collectors.toList ());
+							for (final MemoryUnit enemyUnit : enemyUnits)
+								if (priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().anyMatch
+									(s -> (s.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()) && (s.getCastingPlayerID () != enemyUnit.getOwningPlayerID ()) &&
+										(s.getUnitURN () != null) && (s.getUnitURN () == enemyUnit.getUnitURN ())))
+								
+									thisCount = -1;
+							
+								else if (thisCount >= 0)
+									thisCount = thisCount + (int) priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().filter
+										(s -> (s.getUnitURN () != null) && (s.getUnitURN () == enemyUnit.getUnitURN ())).count ();
+						}
+						
+						if ((thisCount > 0) && ((bestCount == null) || (thisCount > bestCount)))
+						{
+							bestCount = thisCount;
+							bestTarget = coords;
+						}
+					}
+		}
+		
+		return bestTarget;
 	}
 
 	/**

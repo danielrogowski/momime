@@ -9,6 +9,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import jakarta.xml.bind.JAXBException;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -62,4 +63,13 @@ public interface SpellDispelling
 		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final Spell triggerSpellDef, final Integer triggerSpellCasterPlayerID, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
+
+	/**
+	 * @param player AI player who is casting Disenchant Area
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Best location for AI to target an overland Disenchant Area spell
+	 * @throws RecordNotFoundException If an expected data item cannot be found
+	 */
+	public MapCoordinates3DEx chooseDisenchantAreaTarget (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException;
 }

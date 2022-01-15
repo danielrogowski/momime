@@ -3,6 +3,7 @@ package momime.server.ai;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -53,6 +55,7 @@ import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 import momime.server.knowledge.CombatDetails;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.process.SpellDispelling;
 import momime.server.process.SpellProcessing;
 import momime.server.process.SpellQueueing;
 
@@ -117,6 +120,9 @@ public final class SpellAIImpl implements SpellAI
 	
 	/** Kind of spell utils */
 	private KindOfSpellUtils kindOfSpellUtils;
+	
+	/** Dispel magic processing */
+	private SpellDispelling spellDispelling;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -296,6 +302,44 @@ public final class SpellAIImpl implements SpellAI
 				for (final List<AIConstructableUnit> summonableUnitsForThisMagicRealm : summonableCombatUnits.values ())
 					summonableUnitsForThisMagicRealm.sort ((s1, s2) -> s2.getSpell ().getOverlandCastingCost () - s1.getSpell ().getOverlandCastingCost ());
 				
+				// Never use Disenchant Area if we have Disenchant Area True
+				Spell bestDisenchantArea = null;
+				for (final Spell spell : mom.getServerDB ().getSpell ())
+					if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
+						(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
+					{
+						final KindOfSpell kind = getKindOfSpellUtils ().determineKindOfSpell (spell, null);
+						if (kind == KindOfSpell.DISPEL_UNIT_CITY_COMBAT_SPELLS)
+						{
+							if ((bestDisenchantArea == null) || (spell.getOverlandBaseDamage () > bestDisenchantArea.getOverlandBaseDamage ()))
+								bestDisenchantArea = spell;
+						}
+					}
+				
+				// Get a list of cities and warped nodes
+				final Set<MapCoordinates3DEx> ourCities = new HashSet<MapCoordinates3DEx> ();
+				final Set<MapCoordinates3DEx> ourWarpedNodes = new HashSet<MapCoordinates3DEx> ();
+				
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+						{
+							final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
+								(mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+								
+								ourCities.add (new MapCoordinates3DEx (x, y, z));
+							
+							if ((mc != null) && (mc.getTerrainData () != null) && (mc.getTerrainData ().getNodeOwnerID () != null) &&
+								(mc.getTerrainData ().getNodeOwnerID () == player.getPlayerDescription ().getPlayerID ()) &&
+								(mc.getTerrainData ().isWarped () != null) && (mc.getTerrainData ().isWarped ()))
+							{
+								// Has to be actual node, not just an aura tile
+								if (mom.getServerDB ().findTileType (mc.getTerrainData ().getTileTypeID (), "decideWhatToCastOverland").getMagicRealmID () != null)
+									ourWarpedNodes.add (new MapCoordinates3DEx (x, y, z));
+							}
+						}
+				
 				// Consider every possible spell we could cast overland and can afford maintainence of
 				for (final Spell spell : mom.getServerDB ().getSpell ())
 					if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
@@ -368,6 +412,36 @@ public final class SpellAIImpl implements SpellAI
 										{
 											log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting city enchantment/curse spell " + spell.getSpellID ());
 											considerSpells.add (1, spell);
+										}
+									}
+									break;
+									
+								// Disenchant area - similar to above, prove there is a vaild target to pick
+								case DISPEL_UNIT_CITY_COMBAT_SPELLS:
+									if (spell == bestDisenchantArea)
+									{
+										// isOverlandLocationValidTargetForSpell will look for spells cast on cities, spells cast on units, and warped nodes.
+										// Problem is, it will look for ALL warped nodes, not just our own, and it returns no info about WHY the choice is valid.
+										// So really we have to repeat everything here.
+										final int weighting;
+										
+										// First look for curses on our cities and any nodes we own that are warped
+										if ((!ourWarpedNodes.isEmpty ()) || (priv.getFogOfWarMemory ().getMaintainedSpell ().stream ().anyMatch
+											(s -> (s.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ()) && (ourCities.contains (s.getCityLocation ())))))
+											
+											weighting = 3;
+										
+										// This routine looks for anything we might possibly want to disenchant area, but we already know there's no curses on our cities or nodes from above
+										else if (getSpellDispelling ().chooseDisenchantAreaTarget (player, mom) != null)
+											weighting = 1;
+											
+										else
+											weighting = 0;
+										
+										if (weighting > 0)
+										{
+											log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting Disenchant Area spell " + spell.getSpellID () + " with weighting " + weighting);
+											considerSpells.add (weighting, spell);
 										}
 									}
 									break;
@@ -559,6 +633,11 @@ public final class SpellAIImpl implements SpellAI
 						}
 					}
 				}
+				break;
+				
+			// Disenchant area
+			case DISPEL_UNIT_CITY_COMBAT_SPELLS:
+				targetLocation = getSpellDispelling ().chooseDisenchantAreaTarget (player, mom);
 				break;
 				
 			default:
@@ -1075,5 +1154,21 @@ public final class SpellAIImpl implements SpellAI
 	public final void setKindOfSpellUtils (final KindOfSpellUtils k)
 	{
 		kindOfSpellUtils = k;
+	}
+
+	/**
+	 * @return Dispel magic processing
+	 */
+	public final SpellDispelling getSpellDispelling ()
+	{
+		return spellDispelling;
+	}
+
+	/**
+	 * @param p Dispel magic processing
+	 */
+	public final void setSpellDispelling (final SpellDispelling p)
+	{
+		spellDispelling = p;
 	}
 }

@@ -267,6 +267,7 @@ public final class SpellCastingImpl implements SpellCasting
 		final List<MapCoordinates3DEx> targetLocations, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
+		// Pass in FOW area, though it doesn't really have any effect as we're passing isTargeting = false which turns off the check that we must be able to see the target units
 		final MomPersistentPlayerPrivateKnowledge priv = (castingPlayer == null) ? null :
 			(MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		

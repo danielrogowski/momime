@@ -114,6 +114,7 @@ import momime.server.utils.CombatMapServerUtils;
 import momime.server.utils.HeroItemServerUtils;
 import momime.server.utils.KnownWizardServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
+import momime.server.utils.SpellServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
 
@@ -253,6 +254,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Methods dealing with combat maps that are only needed on the server */
 	private CombatMapServerUtils combatMapServerUtils;
+	
+	/** Server-side only spell utils */
+	private SpellServerUtils spellServerUtils;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -441,26 +445,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), anim);
 					
-					// Find all citySpellEffectIDs that block this realm of magic (Consecration and Spell Wards)
-					final List<String> protectedByCitySpellEffectIDs = mom.getServerDB ().getCitySpellEffect ().stream ().filter
-						(e -> e.getProtectsAgainstSpellRealm ().contains (spell.getSpellRealm ())).map
-						(e -> e.getCitySpellEffectID ()).collect (Collectors.toList ());
+					// Find all target locations
+					final List<MemoryUnit> targetUnits = getSpellServerUtils ().listGlobalAttackTargets (spell, castingPlayer, false, mom);
+					if (!targetUnits.isEmpty ())
+					{
+						final List<MapCoordinates3DEx> unitLocations = targetUnits.stream ().map (u -> (MapCoordinates3DEx) u.getUnitLocation ()).distinct ().collect (Collectors.toList ());
 					
-					// Get a list of all locations which have those citySpellEffectIDs cast
-					final List<MapCoordinates3DEx> excludedLocations = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
-						(s -> (s.getCityLocation () != null) && (protectedByCitySpellEffectIDs.contains (s.getCitySpellEffectID ()))).map
-						(s -> (MapCoordinates3DEx) s.getCityLocation ()).collect (Collectors.toList ());
-					
-					// Target everywhere else that there are units
-					final boolean attackOwnUnits = (spell.isAttackSpellOwnUnits () != null) && (spell.isAttackSpellOwnUnits ());
-					final List<MapCoordinates3DEx> unitLocations = mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
-						(u -> (u.getStatus () == UnitStatusID.ALIVE) &&
-							((attackOwnUnits) || (u.getOwningPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ())) &&
-							(!excludedLocations.contains (u.getUnitLocation ()))).map (u -> (MapCoordinates3DEx) u.getUnitLocation ()).distinct ().collect (Collectors.toList ());
-					
-					// Roll all units at once
-					if (unitLocations.size () > 0)
+						// Roll all units at once
 						getSpellCasting ().castOverlandAttackSpell (castingPlayer, null, spell, variableDamage, unitLocations, mom);
+					}
 				}
 			}
 	
@@ -2785,5 +2778,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
 	{
 		combatMapServerUtils = u;
+	}
+
+	/**
+	 * @return Server-side only spell utils
+	 */
+	public final SpellServerUtils getSpellServerUtils ()
+	{
+		return spellServerUtils;
+	}
+
+	/**
+	 * @param utils Server-side only spell utils
+	 */
+	public final void setSpellServerUtils (final SpellServerUtils utils)
+	{
+		spellServerUtils = utils;
 	}
 }

@@ -58,6 +58,7 @@ import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.SpellDispelling;
 import momime.server.process.SpellProcessing;
 import momime.server.process.SpellQueueing;
+import momime.server.utils.SpellServerUtils;
 
 /**
  * Methods for AI players making decisions about spells
@@ -123,6 +124,9 @@ public final class SpellAIImpl implements SpellAI
 	
 	/** Dispel magic processing */
 	private SpellDispelling spellDispelling;
+	
+	/** Server-side only spell utils */
+	private SpellServerUtils spellServerUtils;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -560,6 +564,15 @@ public final class SpellAIImpl implements SpellAI
 								case SPECIAL_SPELLS:
 									if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY))
 										considerSpells.add (10, spell);
+									else
+									{
+										// Global attack spell like Great Unsummoning or Death Wish; so see how many of our units we might hit vs how many of everyone else's
+										final List<MemoryUnit> targetUnits = getSpellServerUtils ().listGlobalAttackTargets (spell, player, true, mom);
+										final long ourTargetUnits = targetUnits.stream ().filter (u -> u.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()).count ();
+										final long enemyTargetUnits = targetUnits.stream ().filter (u -> u.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ()).count ();
+										if ((ourTargetUnits < 5) && (enemyTargetUnits > 15))
+											considerSpells.add (2, spell);
+									}
 									break;
 									
 								// This is fine, the AI doesn't cast every type of spell yet
@@ -1322,5 +1335,21 @@ public final class SpellAIImpl implements SpellAI
 	public final void setSpellDispelling (final SpellDispelling p)
 	{
 		spellDispelling = p;
+	}
+
+	/**
+	 * @return Server-side only spell utils
+	 */
+	public final SpellServerUtils getSpellServerUtils ()
+	{
+		return spellServerUtils;
+	}
+
+	/**
+	 * @param utils Server-side only spell utils
+	 */
+	public final void setSpellServerUtils (final SpellServerUtils utils)
+	{
+		spellServerUtils = utils;
 	}
 }

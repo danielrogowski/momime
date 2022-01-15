@@ -433,6 +433,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="expandUnitDetails" ref="expandUnitDetails" />
 	</bean>
 
 	<bean id="playerServerUtils" class="momime.server.utils.PlayerServerUtilsImpl" />
@@ -681,6 +683,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
+		<property name="spellServerUtils" ref="spellServerUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -920,6 +923,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatSpellAI" ref="combatSpellAI" />
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="spellDispelling" ref="spellDispelling" />
+		<property name="spellServerUtils" ref="spellServerUtils" />
 	</bean>
 
 	<bean id="aiCityCalculations" class="momime.server.ai.AICityCalculationsImpl">

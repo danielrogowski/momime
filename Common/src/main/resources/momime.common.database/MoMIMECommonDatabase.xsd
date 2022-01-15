@@ -3577,6 +3577,7 @@ triggeredBySelf sets when the effect triggers *at all*.  triggerAffectsUnits set
 			<xsd:element minOccurs="0" maxOccurs="1" name="triggerDispelPower" type="momimecommon:spellCastingCost" nxe:label="Dispel Power" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="triggerCastingCostIncrease" type="momimecommon:percentage" nxe:label="% increased casting cost" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="destroyBuildingChance" type="momimecommon:percentage" nxe:label="% chance of buildings being destroyed" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="dispelWeighting" type="xsd:unsignedShort" nxe:label="How badly the AI wants to dispel this enemy spell" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:unitID" nxe:label="Summoned unit">
 		        <xsd:annotation>
 		        	<xsd:documentation>For summoning spells, defines all possible units that can be summoned by the spell.

@@ -28,6 +28,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.KnownWizardDetails;
@@ -47,7 +48,6 @@ import momime.common.utils.KindOfSpellUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -304,6 +304,7 @@ public final class SpellAIImpl implements SpellAI
 				
 				// Never use Disenchant Area if we have Disenchant Area True
 				Spell bestDisenchantArea = null;
+				Spell bestDisjunction = null;
 				for (final Spell spell : mom.getServerDB ().getSpell ())
 					if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
 						(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
@@ -313,6 +314,11 @@ public final class SpellAIImpl implements SpellAI
 						{
 							if ((bestDisenchantArea == null) || (spell.getOverlandBaseDamage () > bestDisenchantArea.getOverlandBaseDamage ()))
 								bestDisenchantArea = spell;
+						}
+						else if (kind == KindOfSpell.DISPEL_OVERLAND_ENCHANTMENTS)
+						{
+							if ((bestDisjunction == null) || (spell.getOverlandBaseDamage () > bestDisjunction.getOverlandBaseDamage ()))
+								bestDisjunction = spell;
 						}
 					}
 				
@@ -446,6 +452,27 @@ public final class SpellAIImpl implements SpellAI
 									}
 									break;
 									
+								// Disjunction - weight according to worst overland enchantment any enemy wizard has
+								case DISPEL_OVERLAND_ENCHANTMENTS:
+									if (spell == bestDisjunction)
+									{
+										int weighting = 0;
+										for (final MemoryMaintainedSpell enemySpell : priv.getFogOfWarMemory ().getMaintainedSpell ())
+											if (enemySpell.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ())
+											{
+												final Spell spellDef = mom.getServerDB ().findSpell (enemySpell.getSpellID (), "decideWhatToCastOverland");
+												if ((spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) && (spellDef.getDispelWeighting () > weighting))
+													weighting = spellDef.getDispelWeighting ();
+											}
+										
+										if (weighting > 0)
+										{
+											log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting Disjunction spell " + spell.getSpellID () + " with weighting " + weighting);
+											considerSpells.add (weighting, spell);
+										}
+									}
+									break;
+									
 								// Unit enchantments - again don't pick target until its finished casting
 								case UNIT_ENCHANTMENTS:
 								case CHANGE_UNIT_ID:
@@ -519,6 +546,7 @@ public final class SpellAIImpl implements SpellAI
 		MapCoordinates3DEx targetLocation = null;
 		MemoryUnit targetUnit = null;
 		MemoryMaintainedSpell targetSpell = null;
+		Integer targetPlayerID = null;
 		String citySpellEffectID = null;
 		String unitSkillID = null;
 		
@@ -640,12 +668,28 @@ public final class SpellAIImpl implements SpellAI
 				targetLocation = getSpellDispelling ().chooseDisenchantAreaTarget (player, mom);
 				break;
 				
+			// Disjunction
+			case DISPEL_OVERLAND_ENCHANTMENTS:
+				int bestWeighting = 0;
+				for (final MemoryMaintainedSpell enemySpell : priv.getFogOfWarMemory ().getMaintainedSpell ())
+					if (enemySpell.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ())
+					{
+						final Spell spellDef = mom.getServerDB ().findSpell (enemySpell.getSpellID (), "decideOverlandSpellTarget");
+						if ((spellDef.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
+							((targetSpell == null) || (spellDef.getDispelWeighting () > bestWeighting)))
+						{
+							targetSpell = enemySpell;
+							bestWeighting = spellDef.getDispelWeighting ();
+						}
+					}				
+				break;
+				
 			default:
 				throw new MomException ("AI decideSpellTarget does not know how to decide a target for spell " + spell.getSpellID () + " in section " + spell.getSpellBookSectionID ());
 		}
 		
 		// If we got a location then target the spell; if we didn't then cancel the spell
-		if ((targetLocation == null) && (targetUnit == null))
+		if ((targetLocation == null) && (targetUnit == null) && (targetSpell == null) && (targetPlayerID == null))
 			getSpellProcessing ().cancelTargetOverlandSpell (maintainedSpell, mom);
 		else
 		{
@@ -672,7 +716,7 @@ public final class SpellAIImpl implements SpellAI
 			}
 			
 			// Target it
-			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, null, targetLocation, targetUnit, targetSpell, citySpellEffectID, unitSkillID, mom);
+			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, targetPlayerID, targetLocation, targetUnit, targetSpell, citySpellEffectID, unitSkillID, mom);
 		}
 	}
 

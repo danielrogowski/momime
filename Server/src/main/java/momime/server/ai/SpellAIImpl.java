@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
@@ -23,9 +24,11 @@ import com.ndg.random.WeightedChoicesImpl;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
+import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -37,6 +40,7 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.WizardState;
@@ -346,6 +350,7 @@ public final class SpellAIImpl implements SpellAI
 				
 				// Get a list of cities and warped nodes
 				final Set<MapCoordinates3DEx> ourCities = new HashSet<MapCoordinates3DEx> ();
+				final Set<MapCoordinates3DEx> enemyCities = new HashSet<MapCoordinates3DEx> ();
 				final Set<MapCoordinates3DEx> ourWarpedNodes = new HashSet<MapCoordinates3DEx> ();
 				
 				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
@@ -353,10 +358,13 @@ public final class SpellAIImpl implements SpellAI
 						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 						{
 							final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
-								(mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
-								
-								ourCities.add (new MapCoordinates3DEx (x, y, z));
+							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000))
+							{
+								if (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())
+									ourCities.add (new MapCoordinates3DEx (x, y, z));
+								else
+									enemyCities.add (new MapCoordinates3DEx (x, y, z));
+							}
 							
 							if ((mc != null) && (mc.getTerrainData () != null) && (mc.getTerrainData ().getNodeOwnerID () != null) &&
 								(mc.getTerrainData ().getNodeOwnerID () == player.getPlayerDescription ().getPlayerID ()) &&
@@ -653,6 +661,44 @@ public final class SpellAIImpl implements SpellAI
 									}
 									break;
 									
+								// Corruption and Raise Volcano
+								case CORRUPTION:
+								case CHANGE_TILE_TYPE:
+									if ((kind == KindOfSpell.CORRUPTION) || (spell.getSpellValidTileTypeTarget ().get (0).getChangeToTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO)))
+									{
+										// Look for a land tile near an enemy city, that isn't also near one of our cities
+										final Set<MapCoordinates3DEx> nearOurCities = new HashSet<MapCoordinates3DEx> ();
+										for (final MapCoordinates3DEx ourCityLocation : ourCities)
+										{
+											final MapCoordinates3DEx coords = new MapCoordinates3DEx (ourCityLocation);
+											for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+												if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+													nearOurCities.add (new MapCoordinates3DEx (coords));
+										}
+
+										boolean found = false;
+										final Iterator<MapCoordinates3DEx> enemyCitiesIter = enemyCities.iterator ();
+										while ((!found) && (enemyCitiesIter.hasNext ()))
+										{
+											final MapCoordinates3DEx enemyCityLocation = enemyCitiesIter.next ();
+											final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
+											for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+												if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
+													(!nearOurCities.contains (coords)) && (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+														(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+															mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+													
+													found = true;
+										}
+										
+										if (found)
+										{
+											log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering Corruption/Volcano spell " + spell.getSpellID ());
+											considerSpells.add (1, spell);
+										}
+									}
+									break;
+									
 								// This is fine, the AI doesn't cast every type of spell yet
 								default:
 							}
@@ -839,6 +885,7 @@ public final class SpellAIImpl implements SpellAI
 
 			// Spell Binding - look for any overland enchantments that we don't know
 			case SPELL_BINDING:
+			{
 				final List<MemoryMaintainedSpell> primaryTargets = new ArrayList<MemoryMaintainedSpell> ();
 				final List<MemoryMaintainedSpell> secondaryTargets = new ArrayList<MemoryMaintainedSpell> ();
 				
@@ -861,6 +908,7 @@ public final class SpellAIImpl implements SpellAI
 					targetSpell = secondaryTargets.get (getRandomUtils ().nextInt (secondaryTargets.size ()));
 				
 				break;
+			}
 				
 			// Warp node
 			case WARP_NODE:
@@ -958,6 +1006,71 @@ public final class SpellAIImpl implements SpellAI
 					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldToConvert);
 					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, manaToConvert);
 				}
+				
+				break;
+			}
+			
+			// Corruption and Raise Volcano
+			case CORRUPTION:
+			case CHANGE_TILE_TYPE:
+			{
+				// Get a list of cities
+				final Set<MapCoordinates3DEx> ourCities = new HashSet<MapCoordinates3DEx> ();
+				final Set<MapCoordinates3DEx> enemyCities = new HashSet<MapCoordinates3DEx> ();
+				
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+						{
+							final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000))
+							{
+								if (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())
+									ourCities.add (new MapCoordinates3DEx (x, y, z));
+								else
+									enemyCities.add (new MapCoordinates3DEx (x, y, z));
+							}
+						}
+				
+				// Look for a land tile near an enemy city, that isn't also near one of our cities
+				final Set<MapCoordinates3DEx> nearOurCities = new HashSet<MapCoordinates3DEx> ();
+				for (final MapCoordinates3DEx ourCityLocation : ourCities)
+				{
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx (ourCityLocation);
+					for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+						if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+							nearOurCities.add (new MapCoordinates3DEx (coords));
+				}
+
+				final List<MapCoordinates3DEx> primaryTargets = new ArrayList<MapCoordinates3DEx> ();
+				final List<MapCoordinates3DEx> secondaryTargets = new ArrayList<MapCoordinates3DEx> ();
+				for (final MapCoordinates3DEx enemyCityLocation : enemyCities)
+				{
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
+					for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+						if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
+							(!nearOurCities.contains (coords)) && (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+								(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+									mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+						{
+							// Aim for minerals first
+							final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+							if (terrainData.getMapFeatureID () != null)
+							{
+								final MapFeatureEx mapFeature = mom.getServerDB ().findMapFeature (terrainData.getMapFeatureID (), "decideOverlandSpellTarget");
+								if (mapFeature.getMapFeatureMagicRealm ().isEmpty ())
+									primaryTargets.add (new MapCoordinates3DEx (coords));
+								else
+									secondaryTargets.add (new MapCoordinates3DEx (coords));
+							}
+						}
+				}
+				
+				if (!primaryTargets.isEmpty ())
+					targetLocation = primaryTargets.get (getRandomUtils ().nextInt (primaryTargets.size ()));
+				else if (!secondaryTargets.isEmpty ())
+					targetLocation = secondaryTargets.get (getRandomUtils ().nextInt (secondaryTargets.size ()));
 				
 				break;
 			}

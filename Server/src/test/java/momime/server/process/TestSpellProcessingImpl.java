@@ -73,12 +73,21 @@ import momime.server.utils.UnitServerUtils;
 public final class TestSpellProcessingImpl extends ServerTestData
 {
 	/**
-	 * Tests the castOverlandNow spell casting a spell that we haven't researched yet
+	 * Tests the castOverlandNow spell casting a spell that we haven't researched yet.
+	 * This test is a bit misleading - what's really happening is because the research status is not AVAILABLE, kindOfSpell ends up as null, and so the
+	 * exception that gets thrown is actually just saying it doesn't know how to deal with casting a spell of kind "null" - there isn't an actual real check on research status.
+	 * 
 	 * @throws Exception If there is a problem
 	 */
 	@Test
 	public final void testCastOverlandNow_Unavailable () throws Exception
 	{
+		// Maintained spell list
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Human player, who is also the one casting the spell
 		final PlayerDescription pd3 = new PlayerDescription ();
 		pd3.setPlayerID (7);
@@ -87,6 +96,12 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 
+		// Wizard casting the spell
+		final KnownWizardDetails wizard3 = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), pd3.getPlayerID (), "castOverlandNow")).thenReturn (wizard3);
+		
 		// Spell to cast
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
@@ -101,15 +116,20 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (utils.findSpellResearchStatus (priv3.getSpellResearchStatus (), "SP001")).thenReturn (researchStatus);
 		when (utils.getModifiedSectionID (spell, researchStatus.getStatus (), true)).thenReturn (SpellBookSectionID.RESEARCHABLE_NOW);		// Can research, but don't know it yet
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		
 		// Set up test object
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 		proc.setSpellUtils (utils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 
 		// Run test
 		assertThrows (MomException.class, () ->
 		{
-			proc.castOverlandNow (player3, spell, null, null, null);
+			proc.castOverlandNow (player3, spell, null, null, mom);
 		});
 	}
 
@@ -160,6 +180,12 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, trans3);
 		players.add (player3);
 		
+		// Wizard casting the spell
+		final KnownWizardDetails wizard3 = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), pd3.getPlayerID (), "castOverlandNow")).thenReturn (wizard3);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -201,6 +227,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setRandomUtils (randomUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
 		proc.setKnownWizardServerUtils (knownWizardServerUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, null, mom);
@@ -263,6 +290,12 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, trans3);
 		players.add (player3);
 
+		// Wizard casting the spell
+		final KnownWizardDetails wizard3 = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), pd3.getPlayerID (), "castOverlandNow")).thenReturn (wizard3);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
@@ -294,6 +327,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellUtils (utils);
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, null, mom);
@@ -312,6 +346,12 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	@Test
 	public final void testCastOverlandNow_UnitEnchantment () throws Exception
 	{
+		// Maintained spell list
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
 		// Human player
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
@@ -326,8 +366,15 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, trans3);
 		players.add (player3);
 
+		// Wizard casting the spell
+		final KnownWizardDetails wizard3 = new KnownWizardDetails ();
+		
+		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
+		when (knownWizardUtils.findKnownWizardDetails (trueMap.getWizardDetails (), pd3.getPlayerID (), "castOverlandNow")).thenReturn (wizard3);
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Spell to cast
 		final Spell spell = new Spell ();
@@ -350,6 +397,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellUtils (utils);
 		proc.setFogOfWarMidTurnChanges (midTurn);
 		proc.setKindOfSpellUtils (kindOfSpellUtils);
+		proc.setKnownWizardUtils (knownWizardUtils);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, null, mom);

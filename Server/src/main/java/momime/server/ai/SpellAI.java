@@ -69,6 +69,7 @@ public interface SpellAI
 	 * types of spell that don't require targets (e.g. overland enchantments or summoning spells), see method castOverlandNow.
 	 * 
 	 * @param player AI player who needs to choose a spell target
+	 * @param wizardDetails AI wizard who needs to choose what to cast
 	 * @param spell Definition for the spell to target
 	 * @param maintainedSpell Spell being targetted in server's true memory - at the time this is called, this is the only copy of the spell that exists,
 	 * 	so its the only thing we need to clean up
@@ -77,7 +78,8 @@ public interface SpellAI
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws IOException If there is another kind of problem
 	 */
-	public void decideOverlandSpellTarget (final PlayerServerDetails player, final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
+	public void decideOverlandSpellTarget (final PlayerServerDetails player, final KnownWizardDetails wizardDetails,
+		final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
 
 	/**

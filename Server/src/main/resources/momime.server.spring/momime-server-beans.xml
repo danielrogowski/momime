@@ -924,6 +924,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="kindOfSpellUtils" ref="kindOfSpellUtils" />
 		<property name="spellDispelling" ref="spellDispelling" />
 		<property name="spellServerUtils" ref="spellServerUtils" />
+		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="spellCasting" ref="spellCasting" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 
 	<bean id="aiCityCalculations" class="momime.server.ai.AICityCalculationsImpl">

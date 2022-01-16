@@ -39,15 +39,20 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandUnitDetails;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.KindOfSpell;
 import momime.common.utils.KindOfSpellUtils;
+import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -55,6 +60,7 @@ import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 import momime.server.knowledge.CombatDetails;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.process.SpellCasting;
 import momime.server.process.SpellDispelling;
 import momime.server.process.SpellProcessing;
 import momime.server.process.SpellQueueing;
@@ -127,6 +133,18 @@ public final class SpellAIImpl implements SpellAI
 	
 	/** Server-side only spell utils */
 	private SpellServerUtils spellServerUtils;
+	
+	/** Methods for working with wizardIDs */
+	private PlayerKnowledgeUtils playerKnowledgeUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
+	/** Casting for each type of spell */
+	private SpellCasting spellCasting;
+	
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -598,8 +616,42 @@ public final class SpellAIImpl implements SpellAI
 										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering enemy wizard spell " + spell.getSpellID ());
 										considerSpells.add (2, spell);
 									}
+									
+									break;
 								}
-								break;
+								
+								// Spell Blast
+								case SPELL_BLAST:
+									// We have to have Detect Magic cast, or we don't know if there's anything nasty being cast that's worth blasting
+									if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
+										CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, null, null, null, null) != null)
+									{
+										int weighting = 0;
+										for (final PlayerServerDetails targetPlayer : mom.getPlayers ())
+											if (targetPlayer != player)
+											{
+												final KnownWizardDetails targetWizard = getKnownWizardUtils ().findKnownWizardDetails
+													(priv.getFogOfWarMemory ().getWizardDetails (), targetPlayer.getPlayerDescription ().getPlayerID ());
+												
+												if ((targetWizard != null) && (getPlayerKnowledgeUtils ().isWizard (targetWizard.getWizardID ())) && (targetWizard.getWizardState () == WizardState.ACTIVE))
+												{
+													final OverlandCastingInfo castingInfo = getSpellCasting ().createOverlandCastingInfo (targetPlayer, CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC);
+													if (castingInfo.getSpellID () != null)
+													{
+														final Spell targetSpell = mom.getServerDB ().findSpell (castingInfo.getSpellID (), "decideWhatToCastOverland");
+														if ((targetSpell.getSpellBlastWeighting () != null) && (targetSpell.getSpellBlastWeighting () > weighting))
+															weighting = targetSpell.getSpellBlastWeighting ();
+													}
+												}
+											}
+										
+										if (weighting > 0)
+										{
+											log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering Spell Blast " + spell.getSpellID () + " with weighting " + weighting);
+											considerSpells.add (weighting, spell);
+										}
+									}
+									break;
 									
 								// This is fine, the AI doesn't cast every type of spell yet
 								default:
@@ -626,6 +678,7 @@ public final class SpellAIImpl implements SpellAI
 	 * types of spell that don't require targets (e.g. overland enchantments or summoning spells), see method castOverlandNow.
 	 * 
 	 * @param player AI player who needs to choose a spell target
+	 * @param wizardDetails AI wizard who needs to choose what to cast
 	 * @param spell Definition for the spell to target
 	 * @param maintainedSpell Spell being targetted in server's true memory - at the time this is called, this is the only copy of the spell that exists,
 	 * 	so its the only thing we need to clean up
@@ -635,7 +688,8 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws IOException If there is another kind of problem
 	 */
 	@Override
-	public final void decideOverlandSpellTarget (final PlayerServerDetails player, final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
+	public final void decideOverlandSpellTarget (final PlayerServerDetails player, final KnownWizardDetails wizardDetails,
+		final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -767,6 +821,7 @@ public final class SpellAIImpl implements SpellAI
 				
 			// Disjunction
 			case DISPEL_OVERLAND_ENCHANTMENTS:
+			{
 				int bestWeighting = 0;
 				for (final MemoryMaintainedSpell enemySpell : priv.getFogOfWarMemory ().getMaintainedSpell ())
 					if (enemySpell.getCastingPlayerID () != player.getPlayerDescription ().getPlayerID ())
@@ -780,6 +835,7 @@ public final class SpellAIImpl implements SpellAI
 						}
 					}				
 				break;
+			}
 
 			// Spell Binding - look for any overland enchantments that we don't know
 			case SPELL_BINDING:
@@ -848,6 +904,61 @@ public final class SpellAIImpl implements SpellAI
 					}
 				
 				targetPlayerID = playerChoices.nextWeightedValue ();
+				break;
+			}
+
+			// Spell Blast
+			case SPELL_BLAST:
+			{
+				// What's the maximum MP we couild generate with alchemy?
+				final boolean alchemyRetort = (getPlayerPickUtils ().getQuantityOfPick (wizardDetails.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0);
+				
+				final int manaStored = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+				final int goldStored = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+				final int maximumMana = manaStored + (alchemyRetort ? goldStored : (goldStored/2));
+				
+				// No randomness, just blast the nastiest thing that's being cast
+				int bestWeighting = 0;
+				int bestBlastingCost = 0;
+				for (final PlayerServerDetails targetPlayer : mom.getPlayers ())
+					if (targetPlayer != player)
+					{
+						final KnownWizardDetails targetWizard = getKnownWizardUtils ().findKnownWizardDetails
+							(priv.getFogOfWarMemory ().getWizardDetails (), targetPlayer.getPlayerDescription ().getPlayerID ());
+						
+						if ((targetWizard != null) && (getPlayerKnowledgeUtils ().isWizard (targetWizard.getWizardID ())) && (targetWizard.getWizardState () == WizardState.ACTIVE))
+						{
+							final OverlandCastingInfo castingInfo = getSpellCasting ().createOverlandCastingInfo (targetPlayer, spell.getSpellID ());
+							if (castingInfo.getSpellID () != null)
+							{
+								final Spell targetSpellDef = mom.getServerDB ().findSpell (castingInfo.getSpellID (), "decideWhatToCastOverland");
+								if ((targetSpellDef.getSpellBlastWeighting () != null) && (targetSpellDef.getSpellBlastWeighting () > bestWeighting))
+								{
+									// Found one we want to blast, but have we got enough MP?
+									final int blastingCost = castingInfo.getManaSpentOnCasting ();
+									if (maximumMana >= blastingCost)
+									{
+										bestWeighting = targetSpellDef.getSpellBlastWeighting ();
+										bestBlastingCost = blastingCost;
+										targetPlayerID = targetPlayer.getPlayerDescription ().getPlayerID ();
+									}
+								}
+							}
+						}
+					}
+				
+				// Use alchemy to generate enough MP
+				if ((bestBlastingCost > 0) && (bestBlastingCost > manaStored))
+				{
+					final int manaToConvert = bestBlastingCost - manaStored;
+					final int goldToConvert = alchemyRetort ? manaToConvert : (manaToConvert * 2);
+					
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " converting " + goldToConvert + " GP into " + manaToConvert + " MP so it can afford to Spell Blast");
+					
+					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldToConvert);
+					getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, manaToConvert);
+				}
+				
 				break;
 			}
 			
@@ -1397,5 +1508,69 @@ public final class SpellAIImpl implements SpellAI
 	public final void setSpellServerUtils (final SpellServerUtils utils)
 	{
 		spellServerUtils = utils;
+	}
+
+	/**
+	 * @return Methods for working with wizardIDs
+	 */
+	public final PlayerKnowledgeUtils getPlayerKnowledgeUtils ()
+	{
+		return playerKnowledgeUtils;
+	}
+
+	/**
+	 * @param k Methods for working with wizardIDs
+	 */
+	public final void setPlayerKnowledgeUtils (final PlayerKnowledgeUtils k)
+	{
+		playerKnowledgeUtils = k;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Casting for each type of spell
+	 */
+	public final SpellCasting getSpellCasting ()
+	{
+		return spellCasting;
+	}
+
+	/**
+	 * @param c Casting for each type of spell
+	 */
+	public final void setSpellCasting (final SpellCasting c)
+	{
+		spellCasting = c;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

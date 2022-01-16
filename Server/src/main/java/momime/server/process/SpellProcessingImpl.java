@@ -274,13 +274,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void castOverlandNow (final PlayerServerDetails castingPlayer, final Spell spell, final Integer variableDamage, final HeroItem heroItem, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
+		final KnownWizardDetails castingWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
+			castingPlayer.getPlayerDescription ().getPlayerID (), "castOverlandNow");
+
 		// Does the magic realm of the cast spell trigger an affect from any overland enchantments?  e.g. casting Death/Chaos spells while Nature's Wrath in effect
 		boolean passesCounteringAttempts = true;
 		if (spell.getSpellRealm () != null)
 		{
-			final KnownWizardDetails castingWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (),
-				castingPlayer.getPlayerDescription ().getPlayerID (), "castOverlandNow");
-			
 			final int unmodifiedOverlandCastingCost = getSpellUtils ().getUnmodifiedOverlandCastingCost (spell, heroItem, variableDamage, castingWizard.getPick (), mom.getServerDB ());
 			
 			// Don't trigger the same spell multiple times, even if multiple enemy wizards have it cast
@@ -400,7 +400,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					trans.getNewTurnMessage ().add (targetSpell);
 				}
 				else
-					getSpellAI ().decideOverlandSpellTarget (castingPlayer, spell, maintainedSpell, mom);
+					getSpellAI ().decideOverlandSpellTarget (castingPlayer, castingWizard, spell, maintainedSpell, mom);
 			}
 			
 			// Special spells (Spell of Mastery and a few other unique spells that you don't even pick a target for)

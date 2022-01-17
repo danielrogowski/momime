@@ -33,6 +33,7 @@ import momime.common.database.MapFeatureEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellValidMapFeatureTarget;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.KnownWizardDetails;
@@ -770,6 +771,74 @@ public final class SpellAIImpl implements SpellAI
 									}
 									break;
 									
+								// Transmute
+								case CHANGE_MAP_FEATURE:
+									boolean found = false;
+									
+									// Look for beneficial map feature near an enemy city that we can change into a worse one
+									final Set<MapCoordinates3DEx> nearEnemyCities = new HashSet<MapCoordinates3DEx> ();
+									
+									final Iterator<MapCoordinates3DEx> enemyCitiesIter = enemyCities.iterator ();
+									while ((!found) && (enemyCitiesIter.hasNext ()))
+									{
+										final MapCoordinates3DEx enemyCityLocation = enemyCitiesIter.next ();
+										final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
+										
+										for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+											if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+											{
+												nearEnemyCities.add (new MapCoordinates3DEx (coords));
+												
+												final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+													(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+												
+												if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+													(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+														mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
+													(terrainData != null) && (terrainData.getMapFeatureID () != null))
+												{
+													final SpellValidMapFeatureTarget targetMapFeature = spell.getSpellValidMapFeatureTarget ().stream ().filter
+														(t -> t.getMapFeatureID ().equals (terrainData.getMapFeatureID ())).findAny ().orElse (null);
+													if ((targetMapFeature != null) && (!targetMapFeature.isChangeBeneficial ()))
+														found = true;
+												}
+											}
+									}
+									
+									// Look for poor map feature near our city that we can change into a better one
+									final Iterator<MapCoordinates3DEx> ourCitiesIter = ourCities.iterator ();
+									while ((!found) && (ourCitiesIter.hasNext ()))
+									{
+										final MapCoordinates3DEx ourCityLocation = ourCitiesIter.next ();
+										final MapCoordinates3DEx coords = new MapCoordinates3DEx (ourCityLocation);
+										
+										for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+											if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
+												(!nearEnemyCities.contains (coords)))
+											{
+												final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+													(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+												
+												if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+													(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+														mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
+													(terrainData != null) && (terrainData.getMapFeatureID () != null))
+												{
+													final SpellValidMapFeatureTarget targetMapFeature = spell.getSpellValidMapFeatureTarget ().stream ().filter
+														(t -> t.getMapFeatureID ().equals (terrainData.getMapFeatureID ())).findAny ().orElse (null);
+													if ((targetMapFeature != null) && (targetMapFeature.isChangeBeneficial ()))
+														found = true;
+												}
+											}
+									}
+									
+									if (found)
+									{
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering Transmute spell " + spell.getSpellID ());
+										considerSpells.add (3, spell);
+									}
+									break;
+									
 								// This is fine, the AI doesn't cast every type of spell yet
 								default:
 							}
@@ -1084,6 +1153,7 @@ public final class SpellAIImpl implements SpellAI
 			// Corruption, Raise Volcano and Change Terrain
 			case CORRUPTION:
 			case CHANGE_TILE_TYPE:
+			{
 				final List<MapCoordinates3DEx> primaryTargets = new ArrayList<MapCoordinates3DEx> ();
 				final List<MapCoordinates3DEx> secondaryTargets = new ArrayList<MapCoordinates3DEx> ();
 
@@ -1204,7 +1274,89 @@ public final class SpellAIImpl implements SpellAI
 				else if (!secondaryTargets.isEmpty ())
 					targetLocation = secondaryTargets.get (getRandomUtils ().nextInt (secondaryTargets.size ()));
 				break;
+			}
 			
+			// Transmute
+			case CHANGE_MAP_FEATURE:
+			{
+				// Get a list of cities
+				final Set<MapCoordinates3DEx> ourCities = new HashSet<MapCoordinates3DEx> ();
+				final Set<MapCoordinates3DEx> enemyCities = new HashSet<MapCoordinates3DEx> ();
+				
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+						{
+							final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000))
+							{
+								if (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ())
+									ourCities.add (new MapCoordinates3DEx (x, y, z));
+								else
+									enemyCities.add (new MapCoordinates3DEx (x, y, z));
+							}
+						}
+
+				// Look for beneficial map feature near an enemy city that we can change into a worse one
+				final List<MapCoordinates3DEx> targetLocations = new ArrayList<MapCoordinates3DEx> ();
+				final Set<MapCoordinates3DEx> nearEnemyCities = new HashSet<MapCoordinates3DEx> ();
+				
+				for (final MapCoordinates3DEx enemyCityLocation : enemyCities)
+				{
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
+					
+					for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+						if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+						{
+							nearEnemyCities.add (new MapCoordinates3DEx (coords));
+							
+							final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+							
+							if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+								(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+									mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
+								(terrainData != null) && (terrainData.getMapFeatureID () != null))
+							{
+								final SpellValidMapFeatureTarget targetMapFeature = spell.getSpellValidMapFeatureTarget ().stream ().filter
+									(t -> t.getMapFeatureID ().equals (terrainData.getMapFeatureID ())).findAny ().orElse (null);
+								if ((targetMapFeature != null) && (!targetMapFeature.isChangeBeneficial ()))
+									targetLocations.add (new MapCoordinates3DEx (coords));
+							}
+						}
+				}
+				
+				// Look for poor map feature near our city that we can change into a better one
+				for (final MapCoordinates3DEx ourCityLocation : ourCities)
+				{
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx (ourCityLocation);
+					
+					for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+						if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
+							(!nearEnemyCities.contains (coords)))
+						{
+							final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+							
+							if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+								(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+									mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
+								(terrainData != null) && (terrainData.getMapFeatureID () != null))
+							{
+								final SpellValidMapFeatureTarget targetMapFeature = spell.getSpellValidMapFeatureTarget ().stream ().filter
+									(t -> t.getMapFeatureID ().equals (terrainData.getMapFeatureID ())).findAny ().orElse (null);
+								if ((targetMapFeature != null) && (targetMapFeature.isChangeBeneficial ()))
+									targetLocations.add (new MapCoordinates3DEx (coords));
+							}
+						}
+				}
+				
+				if (!targetLocations.isEmpty ())
+					targetLocation = targetLocations.get (getRandomUtils ().nextInt (targetLocations.size ()));
+				
+				break;
+			}					
+				
 			default:
 				throw new MomException ("AI decideSpellTarget does not know how to decide a target for spell " + spell.getSpellID () + " in section " + spell.getSpellBookSectionID ());
 		}

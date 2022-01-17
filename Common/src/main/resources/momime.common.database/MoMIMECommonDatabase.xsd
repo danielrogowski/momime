@@ -3701,6 +3701,7 @@ Also specifies the type of terrain it gets changed to.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="changeToMapFeatureID" type="momimecommon:mapFeatureID" nxe:label="Change to Map Feature" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="changeBeneficial" type="xsd:boolean" nxe:label="Change is beneficial?" nxe:gridwith="150" />
 		</xsd:sequence>
 		<xsd:attribute name="mapFeatureID" type="momimecommon:mapFeatureID" use="required" nxe:label="Target Map Feature" nxe:showmaincolumn="false" />
 	</xsd:complexType>

@@ -82,6 +82,9 @@ public final class SpellAIImpl implements SpellAI
 	
 	/** Tile types around or cities we want to get rid of */
 	private final static List<String> BAD_TILE_TYPES = Arrays.asList (CommonDatabaseConstants.TILE_TYPE_SWAMP, CommonDatabaseConstants.TILE_TYPE_DESERT);
+
+	/** How far from cities the AI wants to put enchanted roads */
+	private final static int ENCHANT_ROAD_DISTANCE = 8;
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -773,6 +776,7 @@ public final class SpellAIImpl implements SpellAI
 									
 								// Transmute
 								case CHANGE_MAP_FEATURE:
+								{
 									boolean found = false;
 									
 									// Look for beneficial map feature near an enemy city that we can change into a worse one
@@ -838,7 +842,45 @@ public final class SpellAIImpl implements SpellAI
 										considerSpells.add (3, spell);
 									}
 									break;
+								}
+								
+								// Enchant Road - look for any normal road tiles with n squares of our cities
+								case ENCHANT_ROAD:
+								{
+									boolean validTargetFound = false;
+									final int z = 0;
+									int y = 0;
+									while ((!validTargetFound) && (y < mom.getSessionDescription ().getOverlandMapSize ().getHeight ()))
+									{
+										int x = 0;
+										while ((!validTargetFound) && (x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()))
+										{
+											final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+												(z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+											if ((terrainData != null) && (CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD.equals (terrainData.getRoadTileTypeID ())))
+											{
+												int shortestDistance = Integer.MAX_VALUE;
+												for (final MapCoordinates3DEx ourCityLocation : ourCities)
+													shortestDistance = Math.min (shortestDistance, getCoordinateSystemUtils ().determineStep2DDistanceBetween
+														(mom.getSessionDescription ().getOverlandMapSize (), x, y, ourCityLocation.getX (), ourCityLocation.getY ()));
+												
+												if (shortestDistance <= ENCHANT_ROAD_DISTANCE)
+													validTargetFound = true;
+											}
+												
+											x++;
+										}
+										y++;
+									}
 									
+									if (validTargetFound)
+									{
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting Enchant Road");
+										considerSpells.add (1, spell);
+									}
+									break;
+								}
+								
 								// This is fine, the AI doesn't cast every type of spell yet
 								default:
 							}
@@ -1355,7 +1397,48 @@ public final class SpellAIImpl implements SpellAI
 					targetLocation = targetLocations.get (getRandomUtils ().nextInt (targetLocations.size ()));
 				
 				break;
-			}					
+			}
+			
+			// Enchant Road - look for any normal road tiles with n squares of our cities
+			case ENCHANT_ROAD:
+			{
+				// Get a list of cities
+				final Set<MapCoordinates3DEx> ourCities = new HashSet<MapCoordinates3DEx> ();
+				
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+						{
+							final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+							if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityPopulation () >= 1000) &&
+								(mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+									ourCities.add (new MapCoordinates3DEx (x, y, z));
+						}
+				
+				final List<MapCoordinates3DEx> targetLocations = new ArrayList<MapCoordinates3DEx> ();
+				final int z = 0;
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+							(z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						if ((terrainData != null) && (CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD.equals (terrainData.getRoadTileTypeID ())))
+						{
+							int shortestDistance = Integer.MAX_VALUE;
+							for (final MapCoordinates3DEx ourCityLocation : ourCities)
+								shortestDistance = Math.min (shortestDistance, getCoordinateSystemUtils ().determineStep2DDistanceBetween
+									(mom.getSessionDescription ().getOverlandMapSize (), x, y, ourCityLocation.getX (), ourCityLocation.getY ()));
+							
+							if (shortestDistance <= ENCHANT_ROAD_DISTANCE)
+								targetLocations.add (new MapCoordinates3DEx (x, y, z));
+						}
+					}
+				
+				if (!targetLocations.isEmpty ())
+					targetLocation = targetLocations.get (getRandomUtils ().nextInt (targetLocations.size ()));
+				
+				break;
+			}
 				
 			default:
 				throw new MomException ("AI decideSpellTarget does not know how to decide a target for spell " + spell.getSpellID () + " in section " + spell.getSpellBookSectionID ());

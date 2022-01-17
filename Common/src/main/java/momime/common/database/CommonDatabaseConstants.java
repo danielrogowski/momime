@@ -144,6 +144,12 @@ public final class CommonDatabaseConstants
 	
 	// tile types
 
+	/** Mountain tiles */
+	public final static String TILE_TYPE_MOUNTAIN = "TT01";
+
+	/** Hill tiles */
+	public final static String TILE_TYPE_HILLS = "TT02";
+	
 	/** Forest tiles */
 	public final static String TILE_TYPE_FOREST = "TT03";
 
@@ -152,7 +158,28 @@ public final class CommonDatabaseConstants
 
 	/** Swamp tiles */
 	public final static String TILE_TYPE_SWAMP = "TT05";
+	
+	/** Grass tiles */
+	public final static String TILE_TYPE_GRASS = "TT06";
 
+	/** Tundra tiles */
+	public final static String TILE_TYPE_TUNDRA = "TT07";
+
+	/** Shore tiles (i.e. ocean tiles that have been converted to shore by smoothing) */
+	public final static String TILE_TYPE_SHORE = "TT08";
+
+	/** Water tiles */
+	public final static String TILE_TYPE_OCEAN = "TT09";
+
+	/** Inland river tiles */
+	public final static String TILE_TYPE_RIVER = "TT10";
+
+	/** Shore tiles with a river leading from them */
+	public final static String TILE_TYPE_OCEANSIDE_RIVER_MOUTH = "TT11";
+
+	/** Land tiles that are the first river tile from the ocean */
+	public final static String TILE_TYPE_LANDSIDE_RIVER_MOUTH = "TT15";
+	
 	/** Volcano (from Raise Volcano spell, not Chaos nodes) tiles */
 	public final static String TILE_TYPE_RAISE_VOLCANO = "TT16";
 	

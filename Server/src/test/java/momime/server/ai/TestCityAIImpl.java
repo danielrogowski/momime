@@ -34,7 +34,6 @@ import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculationsImpl;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
@@ -151,11 +150,11 @@ public final class TestCityAIImpl extends ServerTestData
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (19).setTerrainData (forest);
 
 		final OverlandMapTerrainData mountain = new OverlandMapTerrainData ();
-		mountain.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
+		mountain.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_MOUNTAIN);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (20).setTerrainData (mountain);
 
 		final OverlandMapTerrainData ocean = new OverlandMapTerrainData ();
-		ocean.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEAN);
+		ocean.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_OCEAN);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
 
 		// Set up city

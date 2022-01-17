@@ -10,8 +10,6 @@ import java.io.File;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
 
 import org.junit.jupiter.api.Test;
@@ -24,6 +22,8 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
 import com.ndg.random.RandomUtilsImpl;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 import momime.common.MomException;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
@@ -46,7 +46,6 @@ import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.server.ServerTestData;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.utils.CombatMapServerUtilsImpl;
 import momime.unittests.mapstorage.StoredCombatMap;
 
@@ -222,7 +221,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 			}
 		
 		// Element based on map feature
-		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);		// i.e. anything that doesn't produce a combat map element
+		terrainData.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_GRASS);		// i.e. anything that doesn't produce a combat map element
 		terrainData.setMapFeatureID ("MF19");		// Fallen temple
 
 		mapGen.placeCombatMapElements (map, db, trueTerrain, combatMapLocation);
@@ -384,7 +383,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 		
 		// Put a city here so we get some buildings
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
+		terrainData.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_GRASS);
 		
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityPopulation (6000);

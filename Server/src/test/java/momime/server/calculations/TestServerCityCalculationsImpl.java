@@ -41,7 +41,6 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.CityServerUtils;
 
@@ -605,11 +604,11 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (19).setTerrainData (forest);
 
 		final OverlandMapTerrainData mountain = new OverlandMapTerrainData ();
-		mountain.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
+		mountain.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_MOUNTAIN);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (20).setTerrainData (mountain);
 
 		final OverlandMapTerrainData ocean = new OverlandMapTerrainData ();
-		ocean.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEAN);
+		ocean.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_OCEAN);
 		trueTerrain.getPlane ().get (1).getRow ().get (9).getCell ().get (21).setTerrainData (ocean);
 
 		// Set up city
@@ -649,7 +648,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 
 		// Orcs can't build Ship Wrights' Guilds if there's no water
 		cityData.setCityRaceID ("RC09");
-		ocean.setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
+		ocean.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_GRASS);
 		assertFalse (calc.canEventuallyConstructBuilding (trueTerrain, buildings, cityLocation,
 			db.findBuilding ("BL12", "testCanEventuallyConstructBuilding"), sd.getOverlandMapSize (), db));
 

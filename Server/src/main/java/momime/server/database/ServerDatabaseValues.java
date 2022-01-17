@@ -7,37 +7,6 @@ import momime.common.database.CommonDatabaseConstants;
  */
 public final class ServerDatabaseValues
 {
-	// tile types
-
-	/** Mountain tiles */
-	public final static String TILE_TYPE_MOUNTAIN = "TT01";
-
-	/** Hill tiles */
-	public final static String TILE_TYPE_HILLS = "TT02";
-
-	/** Forest/Desert/Swamp -TT03/04/05 - are defined in CommonDatabaseConstants */
-
-	/** Grass tiles */
-	public final static String TILE_TYPE_GRASS = "TT06";
-
-	/** Tundra tiles */
-	public final static String TILE_TYPE_TUNDRA = "TT07";
-
-	/** Shore tiles (i.e. ocean tiles that have been converted to shore by smoothing) */
-	public final static String TILE_TYPE_SHORE = "TT08";
-
-	/** Water tiles */
-	public final static String TILE_TYPE_OCEAN = "TT09";
-
-	/** Inland river tiles */
-	public final static String TILE_TYPE_RIVER = "TT10";
-
-	/** Shore tiles with a river leading from them */
-	public final static String TILE_TYPE_OCEANSIDE_RIVER_MOUTH = "TT11";
-
-	/** Land tiles that are the first river tile from the ocean */
-	public final static String TILE_TYPE_LANDSIDE_RIVER_MOUTH = "TT15";
-
 	// buildings
 
 	/** Default construction project for new cities */

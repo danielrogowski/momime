@@ -2,6 +2,7 @@ package momime.server.ai;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -77,6 +78,9 @@ public final class SpellAIImpl implements SpellAI
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (SpellAIImpl.class);
+	
+	/** Tile types around or cities we want to get rid of */
+	private final static List<String> BAD_TILE_TYPES = Arrays.asList (CommonDatabaseConstants.TILE_TYPE_SWAMP, CommonDatabaseConstants.TILE_TYPE_DESERT);
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
@@ -661,9 +665,11 @@ public final class SpellAIImpl implements SpellAI
 									}
 									break;
 									
-								// Corruption and Raise Volcano
+								// Corruption, Raise Volcano and Change Terrain
 								case CORRUPTION:
 								case CHANGE_TILE_TYPE:
+									
+									// Corruption and Raise Volcano
 									if ((kind == KindOfSpell.CORRUPTION) || (spell.getSpellValidTileTypeTarget ().get (0).getChangeToTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO)))
 									{
 										// Look for a land tile near an enemy city, that isn't also near one of our cities
@@ -695,6 +701,71 @@ public final class SpellAIImpl implements SpellAI
 										{
 											log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering Corruption/Volcano spell " + spell.getSpellID ());
 											considerSpells.add (1, spell);
+										}
+									}
+									else
+									{
+										// Change Terrain - look for any tile near an enemy city that isn't grass 
+										int weighting = 0;
+										final Set<MapCoordinates3DEx> nearEnemyCities = new HashSet<MapCoordinates3DEx> ();
+										for (final MapCoordinates3DEx enemyCityLocation : enemyCities) 
+										{
+											final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
+											for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+												if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+												{
+													nearEnemyCities.add (new MapCoordinates3DEx (coords));
+													
+													final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+														(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+													
+													if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+														(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+															mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
+														(terrainData != null) && (terrainData.getTileTypeID () != null) && (!terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_GRASS)))	
+													
+														weighting = 1;
+												}
+										}
+										
+										// Also look for any of our cities that have deserts, swamps, or don't have at least one forest tile
+										final Iterator<MapCoordinates3DEx> ourCitiesIter = ourCities.iterator ();
+										while ((weighting < 3) && (ourCitiesIter.hasNext ()))
+										{
+											final MapCoordinates3DEx ourCityLocation = ourCitiesIter.next ();
+											final MapCoordinates3DEx coords = new MapCoordinates3DEx (ourCityLocation);
+											
+											boolean forestTileFound = false;
+											boolean grassTileNotNearEnemyCityFound = false;
+											for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+												if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+												{
+													final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+														(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+													
+													if ((terrainData != null) && (terrainData.getTileTypeID () != null))
+													{
+														if (terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOREST))
+															forestTileFound = true;
+														else if ((terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_GRASS)) && (!nearEnemyCities.contains (coords)))
+															grassTileNotNearEnemyCityFound = true;
+														
+														else if ((BAD_TILE_TYPES.contains (terrainData.getTileTypeID ())) &&
+															(getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+																(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+																	mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+															weighting = 3;														
+													}
+												}
+											
+											if ((grassTileNotNearEnemyCityFound) && (!forestTileFound))
+												weighting = 3;
+										}
+
+										if (weighting > 0)
+										{
+											log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering Change Terrain " + spell.getSpellID () + " with weighting " + weighting);
+											considerSpells.add (weighting, spell);
 										}
 									}
 									break;
@@ -1010,10 +1081,12 @@ public final class SpellAIImpl implements SpellAI
 				break;
 			}
 			
-			// Corruption and Raise Volcano
+			// Corruption, Raise Volcano and Change Terrain
 			case CORRUPTION:
 			case CHANGE_TILE_TYPE:
-			{
+				final List<MapCoordinates3DEx> primaryTargets = new ArrayList<MapCoordinates3DEx> ();
+				final List<MapCoordinates3DEx> secondaryTargets = new ArrayList<MapCoordinates3DEx> ();
+
 				// Get a list of cities
 				final Set<MapCoordinates3DEx> ourCities = new HashSet<MapCoordinates3DEx> ();
 				final Set<MapCoordinates3DEx> enemyCities = new HashSet<MapCoordinates3DEx> ();
@@ -1032,48 +1105,105 @@ public final class SpellAIImpl implements SpellAI
 							}
 						}
 				
-				// Look for a land tile near an enemy city, that isn't also near one of our cities
-				final Set<MapCoordinates3DEx> nearOurCities = new HashSet<MapCoordinates3DEx> ();
-				for (final MapCoordinates3DEx ourCityLocation : ourCities)
+				// Corruption and Raise Volcano
+				if ((kind == KindOfSpell.CORRUPTION) || (spell.getSpellValidTileTypeTarget ().get (0).getChangeToTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO)))
 				{
-					final MapCoordinates3DEx coords = new MapCoordinates3DEx (ourCityLocation);
-					for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-						if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
-							nearOurCities.add (new MapCoordinates3DEx (coords));
-				}
-
-				final List<MapCoordinates3DEx> primaryTargets = new ArrayList<MapCoordinates3DEx> ();
-				final List<MapCoordinates3DEx> secondaryTargets = new ArrayList<MapCoordinates3DEx> ();
-				for (final MapCoordinates3DEx enemyCityLocation : enemyCities)
-				{
-					final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
-					for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-						if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
-							(!nearOurCities.contains (coords)) && (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
-								(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
-									mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
-						{
-							// Aim for minerals first
-							final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
-								(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-							if (terrainData.getMapFeatureID () != null)
+					// Look for a land tile near an enemy city, that isn't also near one of our cities
+					final Set<MapCoordinates3DEx> nearOurCities = new HashSet<MapCoordinates3DEx> ();
+					for (final MapCoordinates3DEx ourCityLocation : ourCities)
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (ourCityLocation);
+						for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+							if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+								nearOurCities.add (new MapCoordinates3DEx (coords));
+					}
+	
+					for (final MapCoordinates3DEx enemyCityLocation : enemyCities)
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
+						for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+							if ((getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ())) &&
+								(!nearOurCities.contains (coords)) && (getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+									(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+										mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 							{
-								final MapFeatureEx mapFeature = mom.getServerDB ().findMapFeature (terrainData.getMapFeatureID (), "decideOverlandSpellTarget");
-								if (mapFeature.getMapFeatureMagicRealm ().isEmpty ())
-									primaryTargets.add (new MapCoordinates3DEx (coords));
-								else
+								// Aim for minerals first
+								final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+									(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+								if (terrainData.getMapFeatureID () != null)
+								{
+									final MapFeatureEx mapFeature = mom.getServerDB ().findMapFeature (terrainData.getMapFeatureID (), "decideOverlandSpellTarget");
+									if (mapFeature.getMapFeatureMagicRealm ().isEmpty ())
+										primaryTargets.add (new MapCoordinates3DEx (coords));
+									else
+										secondaryTargets.add (new MapCoordinates3DEx (coords));
+								}
+							}
+					}
+				}
+				else
+				{
+					// Change Terrain - look for any tile near an enemy city that isn't grass 
+					final Set<MapCoordinates3DEx> nearEnemyCities = new HashSet<MapCoordinates3DEx> ();
+					for (final MapCoordinates3DEx enemyCityLocation : enemyCities) 
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (enemyCityLocation);
+						for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+							if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+							{
+								nearEnemyCities.add (new MapCoordinates3DEx (coords));
+								
+								final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+									(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+								
+								if ((getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+									(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+										mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET) &&
+									(terrainData != null) && (terrainData.getTileTypeID () != null) && (!terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_GRASS)))	
+								
 									secondaryTargets.add (new MapCoordinates3DEx (coords));
 							}
-						}
+					}
+					
+					// Also look for any of our cities that have deserts, swamps, or don't have at least one forest tile
+					for (final MapCoordinates3DEx ourCityLocation : ourCities)
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (ourCityLocation);
+						
+						boolean forestTileFound = false;
+						final Set<MapCoordinates3DEx> grassTilesNotNearEnemyCity = new HashSet<MapCoordinates3DEx> ();
+						
+						for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+							if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, direction.getDirectionID ()))
+							{
+								final OverlandMapTerrainData terrainData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+									(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+								
+								if ((terrainData != null) && (terrainData.getTileTypeID () != null))
+								{
+									if (terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOREST))
+										forestTileFound = true;
+									else if ((terrainData.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_GRASS)) && (!nearEnemyCities.contains (coords)))
+										grassTilesNotNearEnemyCity.add (new MapCoordinates3DEx (coords));
+									
+									else if ((BAD_TILE_TYPES.contains (terrainData.getTileTypeID ())) &&
+										(getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell
+											(spell, player.getPlayerDescription ().getPlayerID (), coords, priv.getFogOfWarMemory (), priv.getFogOfWar (),
+												mom.getPlayers (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+										primaryTargets.add (new MapCoordinates3DEx (coords));
+								}
+							}
+						
+						if ((!grassTilesNotNearEnemyCity.isEmpty ()) && (!forestTileFound))
+							primaryTargets.addAll (grassTilesNotNearEnemyCity);
+					}
 				}
 				
 				if (!primaryTargets.isEmpty ())
 					targetLocation = primaryTargets.get (getRandomUtils ().nextInt (primaryTargets.size ()));
 				else if (!secondaryTargets.isEmpty ())
 					targetLocation = secondaryTargets.get (getRandomUtils ().nextInt (secondaryTargets.size ()));
-				
 				break;
-			}
 			
 			default:
 				throw new MomException ("AI decideSpellTarget does not know how to decide a target for spell " + spell.getSpellID () + " in section " + spell.getSpellBookSectionID ());

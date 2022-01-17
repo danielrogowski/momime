@@ -40,7 +40,6 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SampleUnitUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
@@ -359,7 +358,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 					final OverlandMapTerrainData terrainData = trueTerrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
 					if ((CommonDatabaseConstants.TILE_TYPE_RAISE_VOLCANO.equals (terrainData.getTileTypeID ())) && (getRandomUtils ().nextInt (50) == 0))
 					{
-						terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
+						terrainData.setTileTypeID (CommonDatabaseConstants.TILE_TYPE_MOUNTAIN);
 						terrainData.setVolcanoOwnerID (null);
 						
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueTerrain, players, new MapCoordinates3DEx (x, y, z), terrainAndNodeAurasSetting);

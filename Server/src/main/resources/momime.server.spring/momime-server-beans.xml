@@ -979,6 +979,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="damageTypeCalculations" ref="damageTypeCalculations" />
 	</bean>
 
 	<bean id="unitAI" class="momime.server.ai.UnitAIImpl">

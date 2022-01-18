@@ -22,6 +22,8 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
+import momime.common.database.DamageTypeImmunity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
@@ -39,6 +41,7 @@ import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.DamageTypeCalculations;
 import momime.server.knowledge.CombatDetails;
 import momime.server.process.CombatProcessing;
 import momime.server.process.CombatStartAndEndImpl;
@@ -82,6 +85,9 @@ public final class CombatAIImpl implements CombatAI
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Damage type calculations */
+	private DamageTypeCalculations damageTypeCalculations;
 	
 	/**
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
@@ -153,11 +159,13 @@ public final class CombatAIImpl implements CombatAI
 	 * 
 	 * @param attacker Unit that we are attacking with
 	 * @param defender Unit we are considering attacking
+	 * @param damageType Type of damage the attacker will do
 	 * @return Numeric rating for how good of a target this unit is to attack; higher value=attack first, lower value=attack last
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@SuppressWarnings ("unused")
-	final int evaluateTarget (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender) throws MomException
+	final int evaluateTarget (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender, final DamageType damageType)
+		throws MomException
 	{
 		int result;
 
@@ -194,6 +202,15 @@ public final class CombatAIImpl implements CombatAI
 		
 		if ((webHP == null) || (webHP <= 0))
 			result = result + 6;
+		
+		// If our attack does NOT trigger some kind of immunity that boosts defence then add +3
+		boolean anyImmunities = false;
+		for (final DamageTypeImmunity immunity : damageType.getDamageTypeImmunity ())
+			if (defender.hasModifiedSkill (immunity.getUnitSkillID ()))
+				anyImmunities = true;
+		
+		if (!anyImmunities)
+			result = result + 3;
 		
 		return result;
 	}
@@ -243,13 +260,25 @@ public final class CombatAIImpl implements CombatAI
 				((ALL_ATTACKS.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()])) ||
 				(movementDirections [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] > 0)))
 			{
+				// Figure out details about the kind of attack
+				final boolean isRangedAttack = RANGED_ATTACKS.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()]);
+				final String attackSkillID = isRangedAttack ? CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK : CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK;
+				
+				final String attackFromMagicRealmID;
+				if (isRangedAttack)
+					attackFromMagicRealmID = attacker.getRangedAttackType ().getMagicRealmID ();
+				else
+					attackFromMagicRealmID = db.findUnitSkill (attackSkillID, "selectBestTarget").getMagicRealmID ();
+
 				// Make sure we can actually see it
-				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+				final ExpandedUnitDetails xu = getExpandUnitDetails ().expandUnitDetails (thisUnit, Arrays.asList (attacker), attackSkillID, attackFromMagicRealmID, players, mem, db);
 				if (getUnitUtils ().canSeeUnitInCombat (xu, attacker.getOwningPlayerID (), players, mem, db, combatMapCoordinateSystem))
 				{
+					final DamageType damageType = getDamageTypeCalculations ().determineSkillDamageType (attacker, attackSkillID, db);
+					
 					// Is this the first possible target we've found, or better than our current target.
 					// EvaluateTarget just returns 1, 2 or 3 - bump that up a lot.
-					int thisScore = evaluateTarget (attacker, xu) * 1000;
+					int thisScore = evaluateTarget (attacker, xu, damageType) * 1000;
 					
 					// Subtract more the further away the unit is, so closer units get a higher score.
 					// Can't use doubleMovementDistances for this as it gets set to the same high 999 value for all ranged attacks.
@@ -590,5 +619,21 @@ public final class CombatAIImpl implements CombatAI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Damage type calculations
+	 */
+	public final DamageTypeCalculations getDamageTypeCalculations ()
+	{
+		return damageTypeCalculations;
+	}
+
+	/**
+	 * @param calc Damage type calculations
+	 */
+	public final void setDamageTypeCalculations (final DamageTypeCalculations calc)
+	{
+		damageTypeCalculations = calc;
 	}
 }

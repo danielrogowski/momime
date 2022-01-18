@@ -18,6 +18,9 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
+import momime.common.database.DamageTypeImmunity;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
@@ -240,10 +243,13 @@ public final class TestCombatAIImpl
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
 		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
 		
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
 		// Caster with MP remaining
 		when (defender.getManaRemaining ()).thenReturn (10);
 		when (defender.canCastSpells ()).thenReturn (true);
-		assertEquals (9, ai.evaluateTarget (attacker, defender));
+		assertEquals (12, ai.evaluateTarget (attacker, defender, damageType));
 	}
 
 	/**
@@ -265,9 +271,12 @@ public final class TestCombatAIImpl
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
 		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
 		
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
 		// Caster with MP remaining
 		when (defender.getManaRemaining ()).thenReturn (9);
-		assertEquals (7, ai.evaluateTarget (attacker, defender));
+		assertEquals (10, ai.evaluateTarget (attacker, defender, damageType));
 	}
 
 	/**
@@ -289,9 +298,12 @@ public final class TestCombatAIImpl
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
 		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
 		
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
 		// Unit with a ranged attack
 		when (unitCalculations.canMakeRangedAttack (defender)).thenReturn (true);
-		assertEquals (8, ai.evaluateTarget (attacker, defender));
+		assertEquals (11, ai.evaluateTarget (attacker, defender, damageType));
 	}
 
 	/**
@@ -313,7 +325,103 @@ public final class TestCombatAIImpl
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
 		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
 		
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
 		// Regular unit
-		assertEquals (7, ai.evaluateTarget (attacker, defender));
+		assertEquals (10, ai.evaluateTarget (attacker, defender, damageType));
+	}
+
+	/**
+	 * Tests the evaluateTarget method on a normal unit who is webbed and has no chance of escape
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testEvaluateTarget_WebbedCantEscape () throws Exception
+	{
+		// Set up object to test
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		
+		final CombatAIImpl ai = new CombatAIImpl ();
+		ai.setExpandUnitDetails (expand);
+		ai.setUnitCalculations (unitCalculations);
+		
+		// Attacking unit
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		
+		when (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)).thenReturn (true);
+		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)).thenReturn (1);
+		
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
+		// Regular unit
+		assertEquals (4, ai.evaluateTarget (attacker, defender, damageType));
+	}
+
+	/**
+	 * Tests the evaluateTarget method on a normal unit who is webbed and is able to free itself
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testEvaluateTarget_WebbedCanEscape () throws Exception
+	{
+		// Set up object to test
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		
+		final CombatAIImpl ai = new CombatAIImpl ();
+		ai.setExpandUnitDetails (expand);
+		ai.setUnitCalculations (unitCalculations);
+		
+		// Attacking unit
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		
+		when (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)).thenReturn (true);
+		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)).thenReturn (1);
+		when (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
+		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (1);
+		
+		// Damage type
+		final DamageType damageType = new DamageType ();
+		
+		// Regular unit
+		assertEquals (10, ai.evaluateTarget (attacker, defender, damageType));
+	}
+
+	/**
+	 * Tests the evaluateTarget method on a normal unit who has some kind of immunity against the damage type
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testEvaluateTarget_Immunity () throws Exception
+	{
+		// Set up object to test
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		
+		final CombatAIImpl ai = new CombatAIImpl ();
+		ai.setExpandUnitDetails (expand);
+		ai.setUnitCalculations (unitCalculations);
+		
+		// Attacking unit
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		
+		// Damage type
+		final DamageTypeImmunity immunity = new DamageTypeImmunity ();
+		immunity.setUnitSkillID ("US100");
+		
+		final DamageType damageType = new DamageType ();
+		damageType.getDamageTypeImmunity ().add (immunity);
+		
+		when (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB)).thenReturn (false);
+		when (defender.hasModifiedSkill ("US100")).thenReturn (true);
+		
+		// Regular unit
+		assertEquals (7, ai.evaluateTarget (attacker, defender, damageType));
 	}
 }

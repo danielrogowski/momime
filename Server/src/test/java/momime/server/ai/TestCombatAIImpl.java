@@ -222,11 +222,11 @@ public final class TestCombatAIImpl
 	}
 	
 	/**
-	 * Tests the evaluateTarget method
+	 * Tests the evaluateTarget method when the target is a caster with MP remaining
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testEvaluateTarget () throws Exception
+	public final void testEvaluateTarget_CasterWithMP () throws Exception
 	{
 		// Set up object to test
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
@@ -243,15 +243,77 @@ public final class TestCombatAIImpl
 		// Caster with MP remaining
 		when (defender.getManaRemaining ()).thenReturn (10);
 		when (defender.canCastSpells ()).thenReturn (true);
-		assertEquals (3, ai.evaluateTarget (attacker, defender));
+		assertEquals (9, ai.evaluateTarget (attacker, defender));
+	}
+
+	/**
+	 * Tests the evaluateTarget method when the target is a caster without much MP remaining
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testEvaluateTarget_CasterWithoutMP () throws Exception
+	{
+		// Set up object to test
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		
+		final CombatAIImpl ai = new CombatAIImpl ();
+		ai.setExpandUnitDetails (expand);
+		ai.setUnitCalculations (unitCalculations);
+		
+		// Attacking unit
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		
+		// Caster with MP remaining
+		when (defender.getManaRemaining ()).thenReturn (9);
+		assertEquals (7, ai.evaluateTarget (attacker, defender));
+	}
+
+	/**
+	 * Tests the evaluateTarget method when the target has a ranged attack
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testEvaluateTarget_Ranged () throws Exception
+	{
+		// Set up object to test
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
+		
+		final CombatAIImpl ai = new CombatAIImpl ();
+		ai.setExpandUnitDetails (expand);
+		ai.setUnitCalculations (unitCalculations);
+		
+		// Attacking unit
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
 		
 		// Unit with a ranged attack
-		when (defender.getManaRemaining ()).thenReturn (9);
 		when (unitCalculations.canMakeRangedAttack (defender)).thenReturn (true);
-		assertEquals (2, ai.evaluateTarget (attacker, defender));
+		assertEquals (8, ai.evaluateTarget (attacker, defender));
+	}
+
+	/**
+	 * Tests the evaluateTarget method on a normal unit who is neither a caster nor has a ranged attack
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testEvaluateTarget_Normal () throws Exception
+	{
+		// Set up object to test
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final ExpandUnitDetails expand = mock (ExpandUnitDetails.class);
 		
-		// Unit without the caster skill
-		when (unitCalculations.canMakeRangedAttack (defender)).thenReturn (false);
-		assertEquals (1, ai.evaluateTarget (attacker, defender));
+		final CombatAIImpl ai = new CombatAIImpl ();
+		ai.setExpandUnitDetails (expand);
+		ai.setUnitCalculations (unitCalculations);
+		
+		// Attacking unit
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		
+		// Regular unit
+		assertEquals (7, ai.evaluateTarget (attacker, defender));
 	}
 }

@@ -21,6 +21,7 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
@@ -158,7 +159,7 @@ public final class CombatAIImpl implements CombatAI
 	@SuppressWarnings ("unused")
 	final int evaluateTarget (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender) throws MomException
 	{
-		final int result;
+		int result;
 
 		// Go for units with sufficient mana to still cast spells first
 		if ((defender.getManaRemaining () >= 10) && (defender.canCastSpells ()))
@@ -171,6 +172,28 @@ public final class CombatAIImpl implements CombatAI
 		// Then take out everyone else
 		else
 			result = 1;
+		
+		// If unit is NOT webbed with no hope of escape then add +6, so we take out any units who are a threat first and stuck catapaults absolutely last
+		Integer webHP = defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_WEB) ? defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_WEB) : null;
+		if ((webHP != null) && (webHP > 0))
+		{
+			// Same logic as processWebbedUnits uses to work out how many HP of web we can remove each turn
+			final int meleeStrength = defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK) ?
+				defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK) : 0;
+			
+			final int rangedStrength = ((defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) &&
+				(defender.getRangedAttackType ().getMagicRealmID () != null)) ? 
+					defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK) : 0;
+			
+			final int attackStrength = Math.max (meleeStrength, rangedStrength);
+			
+			// If unit can free itself, then treat it like it isn't webbed at all
+			if (attackStrength > 0)
+				webHP = null;
+		}
+		
+		if ((webHP == null) || (webHP <= 0))
+			result = result + 6;
 		
 		return result;
 	}

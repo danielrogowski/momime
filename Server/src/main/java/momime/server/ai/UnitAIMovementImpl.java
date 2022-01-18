@@ -737,17 +737,65 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * 
 	 * @param units The units to move
 	 * @param moves Array listing all cells we can reach and the paths to get there
+	 * @param desiredPurifyLocations Corrupted locations near our cities that need to be purified
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
-	@Override
-	public final AIMovementDecision considerUnitMovement_Purify (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys)
+	 @Override
+	public final AIMovementDecision considerUnitMovement_Purify (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
+		final List<MapCoordinates3DEx> desiredPurifyLocations, final CoordinateSystem sys)
 	{
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
-		log.warn ("AI movement code PURIFY is not yet implemented");
+		// If we have nowhere we need to purify, then nothing to do
+		final AIMovementDecision decision;
+		if ((desiredPurifyLocations == null) || (desiredPurifyLocations.size () == 0))
+			decision = null;
 		
-		final AIMovementDecision decision = null;
+		// If we're already at any of the right spots, then go ahead and start purifying
+		else if (desiredPurifyLocations.contains (currentLocation))
+		{
+			log.debug ("Unit movement AI - Decided to stay at " + currentLocation + " and purify corruption");
+			decision = new AIMovementDecision (UnitSpecialOrder.PURIFY);
+		}
+		
+		// Find the closest location where we want to purify and head there
+		else
+		{
+			final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+			AIMovementDistance bestDistanceSoFar = null;
+			
+			// Check all locations we want to head to and find the closest one (or multiple closest ones)
+			for (final MapCoordinates3DEx location : desiredPurifyLocations)
+			{
+				final OverlandMovementCell cell = moves [location.getZ ()] [location.getY ()] [location.getX ()];
+				if (cell != null)
+				{
+					// We can get there, eventually
+					final int doubleThisDistance = cell.getDoubleMovementDistance ();
+					final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+						getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+					
+					if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
+					{
+						bestDistanceSoFar = thisDistance;
+						destinations.clear ();
+						destinations.add (location);
+					}
+					else if (thisDistance.equals (bestDistanceSoFar))
+						destinations.add (location);
+				}
+			}
+			
+			if (destinations.isEmpty ())
+				decision = null;		// No reachable corruptedlocations
+			else
+			{
+				final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+				log.debug ("Unit movement AI - Decided to go head towards " + chosenLocation + " to purify corruption there which is " + bestDistanceSoFar + " away");
+				decision = new AIMovementDecision (chosenLocation);
+			}
+		}
 		
 		return decision;
 	}

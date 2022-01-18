@@ -635,6 +635,7 @@ public final class UnitAIImpl implements UnitAI
 		final List<MapCoordinates3DEx> desiredCityLocations = new ArrayList<MapCoordinates3DEx> ();
 		final List<MapCoordinates3DEx> desiredRoadLocations = new ArrayList<MapCoordinates3DEx> ();
 		final List<MapCoordinates3DEx> desiredNodeLocations = new ArrayList<MapCoordinates3DEx> ();
+		final List<MapCoordinates3DEx> corruptedLocations = new ArrayList<MapCoordinates3DEx> ();
 		
 		for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 		{
@@ -663,6 +664,15 @@ public final class UnitAIImpl implements UnitAI
 				log.debug ("AI Player ID " + playerID + " has " + nodesWeDontOwn.size () + " guarded nodes it needs to capture on plane " + plane);
 				desiredNodeLocations.addAll (nodesWeDontOwn);
 			}
+			
+			// Corrupted tiles near our cities
+			final List<MapCoordinates3DEx> corruptedTiles = getCityAI ().listCorruptedTilesNearOurCities (playerID, plane, fogOfWarMemory.getMap (),
+				mom.getSessionDescription ().getOverlandMapSize ());
+			if ((corruptedTiles != null) && (corruptedTiles.size () > 0))
+			{
+				log.debug ("AI Player ID " + playerID + " has " + corruptedTiles.size () + " cells it needs to purify on plane " + plane);
+				corruptedLocations.addAll (corruptedTiles);
+			}
 		}
 
 		// Now put the non-empty lists into the map
@@ -675,6 +685,9 @@ public final class UnitAIImpl implements UnitAI
 
 		if (desiredNodeLocations.size () > 0)
 			desiredSpecialUnitLocations.put (AIUnitType.MELD_WITH_NODE, desiredNodeLocations);
+
+		if (corruptedLocations.size () > 0)
+			desiredSpecialUnitLocations.put (AIUnitType.PURIFY, corruptedLocations);
 		
 		return desiredSpecialUnitLocations;
 	}
@@ -757,7 +770,7 @@ public final class UnitAIImpl implements UnitAI
 						break;
 					
 					case PURIFY:
-						decision = getUnitAIMovement ().considerUnitMovement_Purify (units, moves, sys);
+						decision = getUnitAIMovement ().considerUnitMovement_Purify (units, moves, desiredSpecialUnitLocations.get (AIUnitType.PURIFY), sys);
 						break;
 						
 					case MELD_WITH_NODE:

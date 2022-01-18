@@ -171,10 +171,12 @@ public interface UnitAIMovement
 	 * 
 	 * @param units The units to move
 	 * @param moves Array listing all cells we can reach and the paths to get there
+	 * @param desiredPurifyLocations Corrupted locations near our cities that need to be purified
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
-	public AIMovementDecision considerUnitMovement_Purify (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves, final CoordinateSystem sys);
+	public AIMovementDecision considerUnitMovement_Purify (final AIUnitsAndRatings units, final OverlandMovementCell [] [] [] moves,
+		final List<MapCoordinates3DEx> desiredPurifyLocations, final CoordinateSystem sys);
 
 	/**
 	 * AI looks for a node that a magic/guardian spirit can meld with

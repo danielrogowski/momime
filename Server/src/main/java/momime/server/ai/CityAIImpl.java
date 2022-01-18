@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -24,6 +25,7 @@ import com.ndg.random.WeightedChoicesImpl;
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.CityProductionCalculations;
 import momime.common.database.AiBuildingTypeID;
@@ -726,6 +728,38 @@ public final class CityAIImpl implements CityAI
 		}
 		
 		return (closestDistance == null) ? 0 : closestDistance;
+	}
+	
+	/**
+	 * @param playerID Player whose cities we are interested in
+	 * @param plane Plane to check
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @return List of all corrupted tiles near our cities
+	 */
+	@Override
+	public final List<MapCoordinates3DEx> listCorruptedTilesNearOurCities (final int playerID, final int plane, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
+	{
+		final List<MapCoordinates3DEx> list = new ArrayList<MapCoordinates3DEx> ();
+		
+		for (int y = 0; y < sys.getHeight (); y++)
+			for (int x = 0; x < sys.getWidth (); x++)
+			{
+				final OverlandMapCityData cityData = terrain.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
+				if ((cityData != null) && (cityData.getCityOwnerID () == playerID))
+				{
+					final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, plane);
+					for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+						if (getCoordinateSystemUtils ().move3DCoordinates (sys, coords, direction.getDirectionID ()))
+						{
+							final OverlandMapTerrainData terrainData = terrain.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
+							if ((terrainData.getCorrupted () != null) && (terrainData.getCorrupted () > 0) && (!list.contains (coords)))
+								list.add (new MapCoordinates3DEx (coords));
+						}
+				}
+			}
+		
+		return list;
 	}
 
 	/**

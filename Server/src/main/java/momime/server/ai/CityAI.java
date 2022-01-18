@@ -127,4 +127,13 @@ public interface CityAI
 	 * @return Distance to closest city; 0 if we have no cities on this plane or we are right on top of one
 	 */
 	public int findDistanceToClosestCity (final int x, final int y, final List<MapCoordinates2DEx> ourCitiesOnPlane, final CoordinateSystem sys);
+	
+	/**
+	 * @param playerID Player whose cities we are interested in
+	 * @param plane Plane to check
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @return List of all corrupted tiles near our cities
+	 */
+	public List<MapCoordinates3DEx> listCorruptedTilesNearOurCities (final int playerID, final int plane, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys);
 }

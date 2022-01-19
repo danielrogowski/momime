@@ -2032,7 +2032,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 						final TileType tileType = mom.getServerDB ().findTileType (terrainData.getTileTypeID (), "generateRampagingMonsters");
 						if ((tileType.isLand () != null) && (tileType.isLand ()) && (!getMemoryGridCellUtils ().isNodeLairTower (terrainData, mom.getServerDB ())) &&
 							(getUnitUtils ().findFirstAliveEnemyAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), coords.getX (), coords.getY (), coords.getZ (), 0) == null))
-							spawnLocations.add (coords);
+							spawnLocations.add (new MapCoordinates3DEx (coords));
 					}
 				}
 				

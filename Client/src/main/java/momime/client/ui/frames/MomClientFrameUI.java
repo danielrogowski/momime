@@ -95,9 +95,12 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 					@Override
 					public final void mouseDragged (final MouseEvent e)
 					{
-						final Point mouseNow = e.getLocationOnScreen ();
-						final Point frameNow = new Point (frameStart.x + mouseNow.x - mouseStart.x, frameStart.y + mouseNow.y - mouseStart.y);
-						frame.setLocation (frameNow);
+						if (frameStart != null)
+						{
+							final Point mouseNow = e.getLocationOnScreen ();
+							final Point frameNow = new Point (frameStart.x + mouseNow.x - mouseStart.x, frameStart.y + mouseNow.y - mouseStart.y);
+							frame.setLocation (frameNow);
+						}
 					}
 					
 					/**

@@ -385,22 +385,29 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		if (moves [secondCityLocation.getZ ()] [secondCityLocation.getY ()] [secondCityLocation.getX ()] != null)
 		{
 			// Trace route between the two cities
+			boolean keepGoing = true;
 			final MapCoordinates3DEx coords = new MapCoordinates3DEx (secondCityLocation);
-			while ((!coords.equals (firstCityLocation)) && (!cellsVisited.contains (coords)))
+			while ((keepGoing) && (!coords.equals (firstCityLocation)) && (!cellsVisited.contains (coords)))
 			{
 				cellsVisited.add (new MapCoordinates3DEx (coords));
 				
-				final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (),
-					moves [coords.getZ ()] [coords.getY ()] [coords.getX ()].getDirection () + 4);
-				
-				if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
-					throw new MomException ("listMissingRoadCellsBetween: Road tracing moved to a cell off the map");
-				
-				if (!coords.equals (firstCityLocation))
+				final OverlandMovementCell cell = moves [coords.getZ ()] [coords.getY ()] [coords.getX ()];
+				if (cell == null)
+					keepGoing = false;
 				{
-					final OverlandMapTerrainData terrainData = fogOfWarMemory.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-					if ((terrainData != null) && (terrainData.getRoadTileTypeID () == null))
-						missingRoadCells.add (new MapCoordinates3DEx (coords));
+					final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), cell.getDirection () + 4);
+				
+					if (getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
+					{
+						if (!coords.equals (firstCityLocation))
+						{
+							final OverlandMapTerrainData terrainData = fogOfWarMemory.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+							if ((terrainData != null) && (terrainData.getRoadTileTypeID () == null))
+								missingRoadCells.add (new MapCoordinates3DEx (coords));
+						}
+					}
+					else
+						keepGoing = false;
 				}
 			}
 		}

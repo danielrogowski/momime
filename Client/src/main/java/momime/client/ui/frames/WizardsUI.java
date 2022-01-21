@@ -729,44 +729,47 @@ public final class WizardsUI extends MomClientFrameUI
 					final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
 					
-					if ((wizardDetails != null) && (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())))
-						try
-						{
-							final OverlandCastingInfo info = getOverlandCastingInfo ().get (player.getPlayerDescription ().getPlayerID ());
-							
-							// Spell name
-							final List<LanguageText> text;
-							if ((info == null) || (info.getSpellID () == null))
-								text = getLanguages ().getWizardsScreen ().getCastingNothing ();
-							else
-								text = getClient ().getClientDB ().findSpell (info.getSpellID (), "WizardsUI").getSpellName ();
-						
-							currentlyCastingLabels.get (n).setText (getLanguageHolder ().findDescription (text));
-							
-							// Mana spent
-							if (spellBlast)
+					if ((wizardDetails == null) || (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())))
+					{
+						if ((wizardDetails != null) && (getPlayerKnowledgeUtils ().isWizard (wizardDetails.getWizardID ())))
+							try
 							{
-								if ((info == null) || (info.getManaSpentOnCasting () == null))
-									currentlyCastingManaLabels.get (n).setText (null);
+								final OverlandCastingInfo info = getOverlandCastingInfo ().get (player.getPlayerDescription ().getPlayerID ());
+								
+								// Spell name
+								final List<LanguageText> text;
+								if ((info == null) || (info.getSpellID () == null))
+									text = getLanguages ().getWizardsScreen ().getCastingNothing ();
 								else
-									try
-									{
-										currentlyCastingManaLabels.get (n).setText (getTextUtils ().intToStrCommas (info.getManaSpentOnCasting ()) + " " +
-											getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
-												(CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "WizardsUI").getProductionTypeSuffix ()));
-									}
-									catch (final IOException e)
-									{
-										log.error ("Can't find mana production type to display mana spent for Spell Blast", e);
-									}
-							}
+									text = getClient ().getClientDB ().findSpell (info.getSpellID (), "WizardsUI").getSpellName ();
 							
-							n++;
-						}
-						catch (final IOException e)
-						{
-							log.error (e, e);
-						}
+								currentlyCastingLabels.get (n).setText (getLanguageHolder ().findDescription (text));
+								
+								// Mana spent
+								if (spellBlast)
+								{
+									if ((info == null) || (info.getManaSpentOnCasting () == null))
+										currentlyCastingManaLabels.get (n).setText (null);
+									else
+										try
+										{
+											currentlyCastingManaLabels.get (n).setText (getTextUtils ().intToStrCommas (info.getManaSpentOnCasting ()) + " " +
+												getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
+													(CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "WizardsUI").getProductionTypeSuffix ()));
+										}
+										catch (final IOException e)
+										{
+											log.error ("Can't find mana production type to display mana spent for Spell Blast", e);
+										}
+								}
+							}
+							catch (final IOException e)
+							{
+								log.error (e, e);
+							}
+						
+						n++;
+					}
 				}
 			}
 		}

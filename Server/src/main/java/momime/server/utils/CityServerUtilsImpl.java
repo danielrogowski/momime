@@ -394,6 +394,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 				final OverlandMovementCell cell = moves [coords.getZ ()] [coords.getY ()] [coords.getX ()];
 				if (cell == null)
 					keepGoing = false;
+				else
 				{
 					final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (), cell.getDirection () + 4);
 				

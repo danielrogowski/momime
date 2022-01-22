@@ -284,9 +284,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 			final int unmodifiedOverlandCastingCost = getSpellUtils ().getUnmodifiedOverlandCastingCost (spell, heroItem, variableDamage, castingWizard.getPick (), mom.getServerDB ());
 			
 			// Don't trigger the same spell multiple times, even if multiple enemy wizards have it cast
+			// Copy list, as have seen a ConcurrentModificationException here
 			final Set<String> triggeredSpells = new HashSet<String> (); 
+			final List<MemoryMaintainedSpell> copyOfSpells = new ArrayList<MemoryMaintainedSpell> (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 			
-			for (final MemoryMaintainedSpell triggerSpell : mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ())
+			for (final MemoryMaintainedSpell triggerSpell : copyOfSpells)
 				if (!triggeredSpells.contains (triggerSpell.getSpellID ()))
 				{
 					final Spell triggerSpellDef = mom.getServerDB ().findSpell (triggerSpell.getSpellID (), "castOverlandNow");

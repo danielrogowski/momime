@@ -7,14 +7,19 @@
 	<h2>Master of Magic - Implode's Multiplayer Edition Version History</h2>
 
 	<h3>Introduction</h3>
-	<p>This is the start of an attempt at an open source Java-based Multiplayer Client/Server edition of Microprose/Simtex's classic
+	<p>This is an open source Java-based Multiplayer Client/Server rewrite of Microprose/Simtex's classic
 		game 'Master of Magic'.  The project is now hosted <a href="http://sourceforge.net/projects/momime">on SourceForge</a>.</p>
 
-	<p>Since 0.9.5, you no longer need to have the original Master of Magic v1.31 installed to run the Client, and no configuration is necessary,
-		just download it, unzip it and run the .bat files.  All you do require is a Java 11 which is easy to download and unzip, but requires a little more
-		work than older versions to configure it as there is no Windows installer to correctly set your PATH statement so you must do this yourself after
-		unzipping it.  On Windows, I suggest you <b>do not</b> unzip it into "C:\Program Files" or similar, or
+	<p>It needs Java 11 to run, so two versions are provided to download.  The "with JRE" version is larger but can be just unzipped and ran.
+		The "without JRE" version requires that you download the JRE or JDK yourself separately and set your PATH statement to include the location of java.exe.
+		For either version, on Windows, I suggest you <b>do not</b> unzip it into "C:\Program Files" or similar, or
 		MoM IME will have problems with lacking permission to update its config files and save games.</p>
+
+	<p>As a pure Java application, it should work on operating systems other than Windows.  It has been tested on some Linux distributions so
+		pretty sure things are generally fine there too, but its impossible to test all of them or very often.  If anybody has issues with running on other operating
+		systems then please let me know so I can try to make improvements.</p>
+
+	<p>It will currently <b>not</b> run on Java 17.</p>
 
 	<p>To get a game going, run the server.  There is nothing else to set up here, just get the server running, assuming it starts up successfully
 		it'll say "Listening for client connection requests on port 18250".  Then run the client, choose Connect to Server, and click 'localhost'
@@ -22,10 +27,6 @@
 		reserves your player name on your server.  After connecting, choose New Game and set options in a similar way to the original MoM
 		(you must add at least one human or AI opponent) and click OK, and proceed through the rest of the normal game setup like choosing a wizard, picks, race and so on.</p>
 		
-	<p>Now MoM IME is a pure Java application, it should now work on operating systems other than Windows.  It has been tested on some Linux distributions so
-		pretty sure things are generally fine there too, but obviously haven't exhaustively tested across all of them.  If anybody has issues with running on other operating
-		systems then please let me know so I can try to make improvements.</p>
-
 	<p>Come join our discord channel <a href="https://discord.gg/wFNQf36">here</a>, or contact the author at <a href="mailto:momime@hotmail.ca">momime@hotmail.ca</a>.</p>
 
 	<h3>Version History</h3>
@@ -37,8 +38,39 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 1.1.1</b></td>
-			<td align=left><b>13 Jan 2022</b></td>
+			<td align=left><b>Current version: 1.2</b></td>
+			<td align=left><b>26 Jan 2022</b></td>
+			<td align=left>
+				<b>Spells the AI will now use overland that it did not before:</b>
+				<ul>
+					<li>City attack spells (Earthquake, Call the Void)
+					<li>Global attack spells (Great Unsummoning, Death Wish)
+					<li>Enemy wizard spells (Cruel Unminding, Drain Power)
+					<li>Special overland spells (Corruption, Raise Volcano, Warp Node, Change Terrain, Transmute)
+					<li>Disenchant Area / True
+					<li>Disjunction / True
+					<li>Spell Binding
+					<li>Spell Blast
+				</ul>
+				
+				<b>Other AI improvements:</b>
+				<ul>
+					<li>Will now cast Lycanthrophy on the worst unit it can find (as opposed to typical unit enchantments which are targeted on the best unit it can find)
+					<li>In combat, AI (and if you put your own units on auto), it will treat units who are webbed with no hope of escape (e.g. catapaults) as absolute lowest priority targets
+					<li>In combat, AI (and if you put your own units on auto), it will treat units who have some partial immunity to the attack
+						(e.g. archers shooting units with Guardian Wind, or units with non-magical weapons hitting units with Weapon Immunity) as next lowest priority targets
+					<li>AI will use priests and shaman to purify corruption near its cities
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed bug that made rampaging monsters spawn not where intended, potentially on top of other units or on impassable terrain causing various problems
+					<li>Fixed bug on Wizards screen when you have Detect Magic cast or cast Spell Blast, where the names of spells and MP spent so far might appear under the wrong wizard portrait
+				</ul>
+			</td>
+		</tr>
+			<td align=left>1.1.1</td>
+			<td align=left>13 Jan 2022</td>
 			<td align=left>
 				<b>Music changes:</b>
 				<ul>

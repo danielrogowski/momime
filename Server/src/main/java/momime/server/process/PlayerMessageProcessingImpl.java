@@ -320,7 +320,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				player.getConnection ().sendMessageToClient (meet);
 			}
 
-			if ((wizard != null) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
+			if (getPlayerKnowledgeUtils ().isWizard (wizardID))
 			{
 				// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
 				// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
@@ -336,9 +336,15 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				}
 				else
 				{
-					// For AI players, we call this repeatedly until all free spells have been chosen
-					log.debug ("chooseWizard: About to choose all free spells for AI player " + player.getPlayerDescription ().getPlayerName ());
+					// For AI players, choose their personality
+					final String wizardPersonalityID = getMomAI ().decideWizardPersonality (trueWizardDetails.getPick (), mom.getServerDB ());
+					log.debug ("AI player " + player.getPlayerDescription ().getPlayerName () + " given personality " + wizardPersonalityID);
+					
+					final String wizardObjectiveID = getMomAI ().decideWizardObjective (trueWizardDetails.getPick (), mom.getServerDB ());
+					log.debug ("AI player " + player.getPlayerDescription ().getPlayerName () + " given objective " + wizardObjectiveID);					
 
+					// Call this repeatedly until all free spells have been chosen
+					log.debug ("chooseWizard: About to choose all free spells for AI player " + player.getPlayerDescription ().getPlayerName ());
 					while (getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom) != null);
 				}
 			}

@@ -549,6 +549,16 @@ public interface CommonDatabase
 	 * @throws RecordNotFoundException If the eventID doesn't exist
 	 */
 	public Event findEvent (final String eventID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return Complete list of wizard personalities
+	 */
+	public List<WizardPersonality> getWizardPersonality ();
+	
+	/**
+	 * @return Complete list of wizard objectives
+	 */
+	public List<WizardObjective> getWizardObjective ();
 	
 	/**
 	 * @return Cost to construct the most expensive unit or building in the database

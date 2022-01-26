@@ -18,6 +18,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
+import com.ndg.random.WeightedChoicesImpl;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
@@ -26,12 +27,16 @@ import momime.common.database.AiUnitCategory;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SelectedByPick;
 import momime.common.database.SpellSetting;
 import momime.common.database.Wizard;
+import momime.common.database.WizardObjective;
+import momime.common.database.WizardPersonality;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageOffer;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.WizardState;
@@ -548,6 +553,74 @@ public final class MomAIImpl implements MomAI
 	{
 		// AI players should have plenty money so just accept all offers
 		getOfferGenerator ().acceptOffer (player, offer, mom);
+	}
+	
+	/**
+	 * @param picks Wizard's picks
+	 * @param db Lookup lists built over the XML database
+	 * @return Chosen personality
+	 */
+	@Override
+	public final String decideWizardPersonality (final List<PlayerPick> picks, final CommonDatabase db)
+	{
+		final WeightedChoicesImpl<String> choices = new WeightedChoicesImpl<String> ();
+		choices.setRandomUtils (getRandomUtils ());
+		
+		// Each personality has under it rules for how to calculate the chance of picking it
+		for (final WizardPersonality personality : db.getWizardPersonality ())
+		{
+			int weighting = 0;
+			for (final SelectedByPick selectedByPick : personality.getSelectedByPick ())
+				if (getPlayerPickUtils ().getQuantityOfPick (picks, selectedByPick.getPickID ()) > 0)
+					weighting = weighting + selectedByPick.getWeighting ();
+			
+			if (weighting > 0)
+			{
+				log.debug ("decideWizardPersonality: Weighting for personality " + personality.getWizardPersonalityID () + " = " + weighting);
+				choices.add (weighting, personality.getWizardPersonalityID ());
+			}
+		}
+		
+		// Pick random personality, or default to the first one
+		String personalityID = choices.nextWeightedValue ();
+		if (personalityID == null)
+			personalityID = db.getWizardPersonality ().get (0).getWizardPersonalityID ();
+		
+		return personalityID;
+	}
+	
+	/**
+	 * @param picks Wizard's picks
+	 * @param db Lookup lists built over the XML database
+	 * @return Chosen objective
+	 */
+	@Override
+	public final String decideWizardObjective (final List<PlayerPick> picks, final CommonDatabase db)
+	{
+		final WeightedChoicesImpl<String> choices = new WeightedChoicesImpl<String> ();
+		choices.setRandomUtils (getRandomUtils ());
+		
+		// Each objective has under it rules for how to calculate the chance of picking it
+		for (final WizardObjective objective : db.getWizardObjective ())
+		{
+			int weighting = 0;
+			for (final SelectedByPick selectedByPick : objective.getSelectedByPick ())
+				if (getPlayerPickUtils ().getQuantityOfPick (picks, selectedByPick.getPickID ()) > 0)
+					weighting = weighting + selectedByPick.getWeighting ();
+			
+			if (weighting > 0)
+			{
+				log.debug ("decideWizardObjective: Weighting for objective " + objective.getWizardObjectiveID () + " = " + weighting);
+				choices.add (weighting, objective.getWizardObjectiveID ());
+			}
+		}
+		
+		// Pick random objective, or default to the first one
+		String objectiveID = choices.nextWeightedValue ();
+		if (objectiveID == null)
+			objectiveID = db.getWizardObjective ().get (0).getWizardObjectiveID ();
+		
+		return objectiveID;
 	}
 	
 	/**

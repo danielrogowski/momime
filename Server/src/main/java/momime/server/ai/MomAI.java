@@ -1,13 +1,16 @@
 package momime.server.ai;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import jakarta.xml.bind.JAXBException;
+import momime.common.database.CommonDatabase;
 import momime.common.messages.NewTurnMessageOffer;
+import momime.common.messages.PlayerPick;
 import momime.server.MomSessionVariables;
 
 /**
@@ -39,4 +42,18 @@ public interface MomAI
 	 */
 	public void decideOffer (final PlayerServerDetails player, final NewTurnMessageOffer offer, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException;
+
+	/**
+	 * @param picks Wizard's picks
+	 * @param db Lookup lists built over the XML database
+	 * @return Chosen personality
+	 */
+	public String decideWizardPersonality (final List<PlayerPick> picks, final CommonDatabase db);
+	
+	/**
+	 * @param picks Wizard's picks
+	 * @param db Lookup lists built over the XML database
+	 * @return Chosen objective
+	 */
+	public String decideWizardObjective (final List<PlayerPick> picks, final CommonDatabase db);
 }

@@ -556,9 +556,25 @@ public interface CommonDatabase
 	public List<WizardPersonality> getWizardPersonality ();
 	
 	/**
+	 * @param personalityID Wizard personality ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Wizard personality object
+	 * @throws RecordNotFoundException If the personalityID doesn't exist
+	 */
+	public WizardPersonality findWizardPersonality (final String personalityID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @return Complete list of wizard objectives
 	 */
 	public List<WizardObjective> getWizardObjective ();
+
+	/**
+	 * @param objectiveID Wizard objective ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Wizard objective object
+	 * @throws RecordNotFoundException If the objectiveID doesn't exist
+	 */
+	public WizardObjective findWizardObjective (final String objectiveID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Cost to construct the most expensive unit or building in the database

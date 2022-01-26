@@ -77,6 +77,8 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					knownWizardDetails.setCustomPhoto (metWizard.getCustomPhoto ());
 					knownWizardDetails.setCustomFlagColour (metWizard.getCustomFlagColour ());
 					knownWizardDetails.setWizardState (metWizard.getWizardState ());
+					knownWizardDetails.setWizardPersonalityID (metWizard.getWizardPersonalityID ());
+					knownWizardDetails.setWizardObjectiveID (metWizard.getWizardObjectiveID ());
 					knownWizardDetails.getPowerBaseHistory ().addAll (metWizard.getPowerBaseHistory ());
 					copyPickList (metWizard.getPick (), knownWizardDetails.getPick ());
 

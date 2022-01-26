@@ -4436,6 +4436,12 @@ Bonus Or +GOLD_BONUS%</text>
 		<targetWizard language="en">
 			<text>Select a wizard to target</text>
 		</targetWizard>
+		<personality language="en">
+			<text>Personality</text>
+		</personality>
+		<objective language="en">
+			<text>Objective</text>
+		</objective>
 	</wizardsScreen>
 	<armyListScreen>
 		<title language="en">

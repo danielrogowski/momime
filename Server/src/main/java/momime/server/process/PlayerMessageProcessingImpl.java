@@ -338,9 +338,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				{
 					// For AI players, choose their personality
 					final String wizardPersonalityID = getMomAI ().decideWizardPersonality (trueWizardDetails.getPick (), mom.getServerDB ());
+					trueWizardDetails.setWizardPersonalityID (wizardPersonalityID);
+					knownWizardDetails.setWizardPersonalityID (wizardPersonalityID);
 					log.debug ("AI player " + player.getPlayerDescription ().getPlayerName () + " given personality " + wizardPersonalityID);
 					
 					final String wizardObjectiveID = getMomAI ().decideWizardObjective (trueWizardDetails.getPick (), mom.getServerDB ());
+					trueWizardDetails.setWizardObjectiveID (wizardObjectiveID);
+					knownWizardDetails.setWizardObjectiveID (wizardObjectiveID);
 					log.debug ("AI player " + player.getPlayerDescription ().getPlayerName () + " given objective " + wizardObjectiveID);					
 
 					// Call this repeatedly until all free spells have been chosen

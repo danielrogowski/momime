@@ -54,6 +54,8 @@ import momime.common.database.Pick;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.WizardObjective;
+import momime.common.database.WizardPersonality;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
@@ -154,6 +156,12 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** Wizard's fame */
 	private JLabel fameLabel;
+	
+	/** Wizard's personality */
+	private JLabel personalityLabel;
+	
+	/** Wizard's objective */
+	private JLabel objectiveLabel;
 	
 	/** Wizard being viewed */
 	private PlayerPublicDetails selectedWizard;
@@ -265,6 +273,12 @@ public final class WizardsUI extends MomClientFrameUI
 		
 		fameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
 		contentPane.add (fameLabel, "frmWizardsFame");
+		
+		personalityLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (personalityLabel, "frmWizardsPersonality");
+		
+		objectiveLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (objectiveLabel, "frmWizardsObjective");
 		
 		bookshelf = new JPanel (new GridBagLayout ());
 		bookshelf.setOpaque (false);
@@ -672,6 +686,35 @@ public final class WizardsUI extends MomClientFrameUI
 			{
 				log.error (e, e);
 				fameLabel.setVisible (false);
+			}
+		
+		// Personality and Objective will only be populated for AI wizards
+		personalityLabel.setVisible ((selectedWizard != null) && (selectedWizardDetails != null) && (selectedWizardDetails.getWizardPersonalityID () != null));
+		if (personalityLabel.isVisible ())
+			try
+			{
+				final WizardPersonality personality = getClient ().getClientDB ().findWizardPersonality (selectedWizardDetails.getWizardPersonalityID (), "updateWizard");
+				personalityLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getPersonality ()) + ": " +
+					getLanguageHolder ().findDescription (personality.getWizardPersonalityName ()));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+				personalityLabel.setVisible (false);
+			}
+		
+		objectiveLabel.setVisible ((selectedWizard != null) && (selectedWizardDetails != null) && (selectedWizardDetails.getWizardObjectiveID () != null));
+		if (objectiveLabel.isVisible ())
+			try
+			{
+				final WizardObjective objective = getClient ().getClientDB ().findWizardObjective (selectedWizardDetails.getWizardObjectiveID (), "updateWizard");
+				objectiveLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getObjective ()) + ": " +
+					getLanguageHolder ().findDescription (objective.getWizardObjectiveName ()));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+				objectiveLabel.setVisible (false);
 			}
 	}
 	

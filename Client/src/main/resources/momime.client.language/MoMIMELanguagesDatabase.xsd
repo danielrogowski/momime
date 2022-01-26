@@ -2299,6 +2299,14 @@
 						<xsd:selector xpath="targetWizard" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="wizardsScreenPersonalityPK">
+						<xsd:selector xpath="personality" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardsScreenObjectivePK">
+						<xsd:selector xpath="objective" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="armyListScreen" type="momimelangs:armyListScreen">
 					<xsd:key name="armyListScreenTitlePK">
@@ -4668,6 +4676,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingNothing" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="personality" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="objective" />
 		</xsd:sequence>
     </xsd:complexType>
 	

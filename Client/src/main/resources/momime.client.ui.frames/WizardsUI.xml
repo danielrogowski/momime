@@ -462,6 +462,18 @@
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmWizardsPersonality">
+		<left>180</left>
+		<top>426</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardsObjective">
+		<left>180</left>
+		<top>446</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmWizardsClose">
 		<left>928</left>
 		<top>25</top>

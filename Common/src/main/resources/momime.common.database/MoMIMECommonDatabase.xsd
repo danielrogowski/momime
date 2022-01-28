@@ -4624,6 +4624,8 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="1" maxOccurs="1" name="settlersChance" type="momimecommon:weighting" nxe:label="Settlers chance" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="engineersChance" type="momimecommon:weighting" nxe:label="Engineers chance" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="objectiveSelectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitFactoryBuildQueue" type="momimecommon:aiBuildingTypeID" nxe:label="Unit Factory build queue" nxe:showmaincolumn="false" />			
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="otherCityBuildQueue" type="momimecommon:aiBuildingTypeID" nxe:label="Other City build queue" nxe:showmaincolumn="false" />			
 		</xsd:sequence>
 		<xsd:attribute name="wizardObjectiveID" type="momimecommon:wizardObjectiveID" use="required" nxe:label="Objective ID" nxe:gridwidth="150" />
 	</xsd:complexType>

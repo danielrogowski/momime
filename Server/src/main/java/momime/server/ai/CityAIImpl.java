@@ -397,30 +397,8 @@ public final class CityAIImpl implements CityAI
 				{
 					case BUILDING:
 						// Set list of building priorities depending if this is a unit factory or not
-						final List<AiBuildingTypeID> buildingTypes = new ArrayList<AiBuildingTypeID> ();
-						if (isUnitFactory)
-						{
-							buildingTypes.add (AiBuildingTypeID.UNITS);		// Doesn't mean build units, it means "buildings that make units better", e.g. Fighters' Guild
-							buildingTypes.add (AiBuildingTypeID.PRODUCTION);
-							buildingTypes.add (AiBuildingTypeID.RESEARCH);
-							buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
-							buildingTypes.add (AiBuildingTypeID.NAVAL);
-							buildingTypes.add (AiBuildingTypeID.GOLD);
-							buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
-							buildingTypes.add (AiBuildingTypeID.DEFENCE);
-						}
-						else
-						{
-							buildingTypes.add (AiBuildingTypeID.PRODUCTION);
-							buildingTypes.add (AiBuildingTypeID.RESEARCH);
-							buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
-							buildingTypes.add (AiBuildingTypeID.GOLD);
-							buildingTypes.add (AiBuildingTypeID.UNITS);
-							buildingTypes.add (AiBuildingTypeID.NAVAL);
-							buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
-							buildingTypes.add (AiBuildingTypeID.DEFENCE);
-						}
-				
+						final List<AiBuildingTypeID> buildingTypes = isUnitFactory ? objective.getUnitFactoryBuildQueue () : objective.getOtherCityBuildQueue ();
+						
 						final Iterator<AiBuildingTypeID> buildingTypesIter = buildingTypes.iterator ();
 						while ((!decided) && (buildingTypesIter.hasNext ()))
 						{

@@ -29,7 +29,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SelectedByPick;
 import momime.common.database.SpellSetting;
-import momime.common.database.Wizard;
 import momime.common.database.WizardObjective;
 import momime.common.database.WizardPersonality;
 import momime.common.messages.KnownWizardDetails;
@@ -314,8 +313,6 @@ public final class MomAIImpl implements MomAI
 					}
 					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnitsMod);
 				
-					final Wizard wizard = mom.getServerDB ().findWizard (wizardDetails.getWizardID (), "aiPlayerTurn");
-					
 					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 					{
 						final int finalZ = z;
@@ -365,7 +362,7 @@ public final class MomAIImpl implements MomAI
 										}
 	
 									// Now we can decide what to build
-									getCityAI ().decideWhatToBuild (wizard, cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnitsMod, constructableHere, wantedUnitTypes,
+									getCityAI ().decideWhatToBuild (wizardDetails, cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnitsMod, constructableHere, wantedUnitTypes,
 										priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
 										mom.getSessionDescription (), mom.getServerDB ());
 									
@@ -570,7 +567,7 @@ public final class MomAIImpl implements MomAI
 		for (final WizardPersonality personality : db.getWizardPersonality ())
 		{
 			int weighting = 0;
-			for (final SelectedByPick selectedByPick : personality.getSelectedByPick ())
+			for (final SelectedByPick selectedByPick : personality.getPersonalitySelectedByPick ())
 				if (getPlayerPickUtils ().getQuantityOfPick (picks, selectedByPick.getPickID ()) > 0)
 					weighting = weighting + selectedByPick.getWeighting ();
 			
@@ -604,7 +601,7 @@ public final class MomAIImpl implements MomAI
 		for (final WizardObjective objective : db.getWizardObjective ())
 		{
 			int weighting = 0;
-			for (final SelectedByPick selectedByPick : objective.getSelectedByPick ())
+			for (final SelectedByPick selectedByPick : objective.getObjectiveSelectedByPick ())
 				if (getPlayerPickUtils ().getQuantityOfPick (picks, selectedByPick.getPickID ()) > 0)
 					weighting = weighting + selectedByPick.getWeighting ();
 			

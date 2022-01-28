@@ -23,8 +23,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.TileTypeEx;
-import momime.common.database.Wizard;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
@@ -164,8 +164,8 @@ public final class TestCityAIImpl extends ServerTestData
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Set up wizard
-		final Wizard wizard = new Wizard ();
-		wizard.setBuildingChance (1);
+		final KnownWizardDetails wizardDetails = new KnownWizardDetails ();
+		wizardDetails.setWizardObjectiveID ("WO01");
 
 		// Set up test object
 		final MemoryBuildingUtilsImpl memoryBuildingUtils = new MemoryBuildingUtilsImpl ();
@@ -187,7 +187,7 @@ public final class TestCityAIImpl extends ServerTestData
 		cityData.setCityRaceID ("RC09");
 		while (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
-			ai.decideWhatToBuild (wizard, cityLocation, cityData, 2, false, 0, null, null, trueTerrain, trueBuildings, sd, db);
+			ai.decideWhatToBuild (wizardDetails, cityLocation, cityData, 2, false, 0, null, null, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -241,7 +241,7 @@ public final class TestCityAIImpl extends ServerTestData
 		cityData.setCurrentlyConstructingBuildingID (null);
 		while (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
-			ai.decideWhatToBuild (wizard, cityLocation, cityData, 2, false, 0, null, null, trueTerrain, trueBuildings, sd, db);
+			ai.decideWhatToBuild (wizardDetails, cityLocation, cityData, 2, false, 0, null, null, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MemoryBuilding building = new MemoryBuilding ();

@@ -16,8 +16,8 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Wizard;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
@@ -65,7 +65,7 @@ public interface CityAI
 	/**
 	 * AI player decides what to build in this city
 	 *
-	 * @param wizard Which wizard the AI player is controlling
+	 * @param wizardDetails Which wizard the AI player is controlling
 	 * @param cityLocation Location of the city
 	 * @param cityData True info on the city, so it can be updated
 	 * @param numberOfCities Number of cities we own
@@ -79,7 +79,7 @@ public interface CityAI
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
-	public void decideWhatToBuild (final Wizard wizard, final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
+	public void decideWhatToBuild (final KnownWizardDetails wizardDetails, final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
 		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnitsMod, Map<AIUnitType, List<AIConstructableUnit>> constructableHere,
 		final List<AIUnitType> wantedUnitTypes, final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		final MomSessionDescription sd, final CommonDatabase db) throws RecordNotFoundException;

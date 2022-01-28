@@ -260,7 +260,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ().add (trueWizardDetails);
 
-			if ((wizard != null) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) && (!wizardID.equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
+			if (getPlayerKnowledgeUtils ().isWizard (wizardID))
 			{
 				// Find the correct node in the database for the number of player human players have
 				final int desiredPickCount;
@@ -320,21 +320,36 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				player.getConnection ().sendMessageToClient (meet);
 			}
 
-			if (getPlayerKnowledgeUtils ().isWizard (wizardID))
+			// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
+			// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
+			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
-				// Tell client to either pick free starting spells or pick a race, depending on whether the pre-defined wizard chosen has >1 of any kind of book
-				// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
-				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-				{
-					// This will tell the client to either pick free spells for the first magic realm that they have earned free spells in, or pick their race, depending on what picks they've chosen
-					log.debug ("chooseWizard: About to search for first realm (if any) where human player " + player.getPlayerDescription ().getPlayerName () + " gets free spells");
-					final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom);
-					if (chooseSpellsMsg != null)
-						player.getConnection ().sendMessageToClient (chooseSpellsMsg);
-					else
-						player.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
-				}
+				// This will tell the client to either pick free spells for the first magic realm that they have earned free spells in, or pick their race, depending on what picks they've chosen
+				log.debug ("chooseWizard: About to search for first realm (if any) where human player " + player.getPlayerDescription ().getPlayerName () + " gets free spells");
+				final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom);
+				if (chooseSpellsMsg != null)
+					player.getConnection ().sendMessageToClient (chooseSpellsMsg);
 				else
+					player.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
+			}
+			else
+			{
+				// If a fixed objective is defined, set it even for non-wizards (Raiders)
+				if ((wizard != null) && (wizard.getWizardObjectiveID () != null))
+				{
+					trueWizardDetails.setWizardObjectiveID (wizard.getWizardObjectiveID ());
+					knownWizardDetails.setWizardObjectiveID (wizard.getWizardObjectiveID ());
+					log.debug ("AI player " + player.getPlayerDescription ().getPlayerName () + " given fixed objective " + wizard.getWizardObjectiveID ());
+				}
+				else if (getPlayerKnowledgeUtils ().isWizard (wizardID))
+				{
+					final String wizardObjectiveID = getMomAI ().decideWizardObjective (trueWizardDetails.getPick (), mom.getServerDB ());
+					trueWizardDetails.setWizardObjectiveID (wizardObjectiveID);
+					knownWizardDetails.setWizardObjectiveID (wizardObjectiveID);
+					log.debug ("AI player " + player.getPlayerDescription ().getPlayerName () + " given objective " + wizardObjectiveID);
+				}
+
+				if (getPlayerKnowledgeUtils ().isWizard (wizardID))
 				{
 					// For AI players, choose their personality
 					final String wizardPersonalityID = getMomAI ().decideWizardPersonality (trueWizardDetails.getPick (), mom.getServerDB ());
@@ -342,11 +357,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					knownWizardDetails.setWizardPersonalityID (wizardPersonalityID);
 					log.debug ("AI player " + player.getPlayerDescription ().getPlayerName () + " given personality " + wizardPersonalityID);
 					
-					final String wizardObjectiveID = getMomAI ().decideWizardObjective (trueWizardDetails.getPick (), mom.getServerDB ());
-					trueWizardDetails.setWizardObjectiveID (wizardObjectiveID);
-					knownWizardDetails.setWizardObjectiveID (wizardObjectiveID);
-					log.debug ("AI player " + player.getPlayerDescription ().getPlayerName () + " given objective " + wizardObjectiveID);					
-
 					// Call this repeatedly until all free spells have been chosen
 					log.debug ("chooseWizard: About to choose all free spells for AI player " + player.getPlayerDescription ().getPlayerName ());
 					while (getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom) != null);
@@ -483,6 +493,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						knownWizardDetails.setWizardID (automaticallyMeetWizard.getWizardID ());
 						knownWizardDetails.setStandardPhotoID (automaticallyMeetWizard.getStandardPhotoID ());
 						knownWizardDetails.setWizardState (automaticallyMeetWizard.getWizardState ());
+						knownWizardDetails.setWizardPersonalityID (automaticallyMeetWizard.getWizardPersonalityID ());
+						knownWizardDetails.setWizardObjectiveID (automaticallyMeetWizard.getWizardObjectiveID ());
 						priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 						
 						if (sendToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)

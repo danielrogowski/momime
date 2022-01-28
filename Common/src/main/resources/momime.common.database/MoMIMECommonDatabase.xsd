@@ -726,8 +726,8 @@
 						<xsd:selector xpath="wizardPersonalityName" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="wizardPersonalitySelectedByPickPK">
-						<xsd:selector xpath="selectedByPick" />
+					<xsd:key name="personalitySelectedByPickPK">
+						<xsd:selector xpath="personalitySelectedByPick" />
 						<xsd:field xpath="@pickID" />
 					</xsd:key>
 				</xsd:element>
@@ -736,8 +736,8 @@
 						<xsd:selector xpath="wizardObjectiveName" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="wizardObjectiveSelectedByPickPK">
-						<xsd:selector xpath="selectedByPick" />
+					<xsd:key name="objectiveSelectedByPickPK">
+						<xsd:selector xpath="objectiveSelectedByPick" />
 						<xsd:field xpath="@pickID" />
 					</xsd:key>
 				</xsd:element>
@@ -1592,11 +1592,11 @@
 		
 		<!-- Wizard personality types, new for 1.3 -->
 		<xsd:keyref refer="momimecommon:pickPK" name="wizardPersonalitySelectedByFKpick">
-			<xsd:selector xpath="wizardPersonality/selectedByPick" />
+			<xsd:selector xpath="wizardPersonality/personalitySelectedByPick" />
 			<xsd:field xpath="@pickID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:pickPK" name="wizardObjectiveSelectedByFKpick">
-			<xsd:selector xpath="wizardObjective/selectedByPick" />
+			<xsd:selector xpath="wizardObjective/objectiveSelectedByPick" />
 			<xsd:field xpath="@pickID" />
 		</xsd:keyref>
 		
@@ -1684,6 +1684,10 @@
 		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimation4">
 			<xsd:selector xpath="wizard" />
 			<xsd:field xpath="ballAnimation" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:wizardObjectivePK" name="wizardFKobjective">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="wizardObjectiveID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:playListPK" name="combatPlayListFKplayList">
 			<xsd:selector xpath="wizard/combatPlayList" />
@@ -2496,10 +2500,6 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardName" type="momimecommon:languageText" nxe:label="Name" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="baseNeedForNewUnits" type="momimecommon:weighting" nxe:label="Base need for new units" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="buildingChance" type="momimecommon:weighting" nxe:label="Building chance" nxe:gridwidth="120" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="settlersChance" type="momimecommon:weighting" nxe:label="Settlers chance" nxe:gridwidth="120" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="engineersChance" type="momimecommon:weighting" nxe:label="Engineers chance" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="flagColour" type="momimecommon:colour" nxe:label="Flag colour" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="portraitImageFile" type="momimecommon:imageFilename" nxe:label="Portrait image file" nxe:gridwidth="270" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="standingImageFile" type="momimecommon:imageFilename" nxe:label="Standing image file" nxe:gridwidth="330" />
@@ -2535,6 +2535,14 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="screamSoundFile" type="momimecommon:imageFilename" nxe:label="Scream sound file" nxe:gridwidth="350" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="wizardObjectiveID" type="momimecommon:wizardObjectiveID" nxe:label="Fixed objective" nxe:gridwidth="150">
+				<xsd:annotation>
+		        	<xsd:documentation>Objective is fixed rather than rolled randomly based on picks.  Used for Raiders.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>wizardObjectiveName</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatPlayList" type="momimecommon:playListID" nxe:label="Combat play list" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPickCount" type="momimecommon:wizardPickCount">
 				<xsd:key name="wizardPickPK">
@@ -4603,7 +4611,7 @@ Ordering of this list is very significant.
 	<xsd:complexType name="wizardPersonality" nxe:singular="Personality" nxe:plural="Personalities" nxe:submenu="Wizards">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPersonalityName" type="momimecommon:languageText" nxe:label="Name" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="selectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="personalitySelectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
 		</xsd:sequence>
 		<xsd:attribute name="wizardPersonalityID" type="momimecommon:wizardPersonalityID" use="required" nxe:label="Personality ID" nxe:gridwidth="150" />
 	</xsd:complexType>	
@@ -4611,7 +4619,11 @@ Ordering of this list is very significant.
 	<xsd:complexType name="wizardObjective" nxe:singular="Objective" nxe:plural="Objectives" nxe:submenu="Wizards">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardObjectiveName" type="momimecommon:languageText" nxe:label="Name" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="selectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseNeedForNewUnits" type="momimecommon:weighting" nxe:label="Base need for new units" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="buildingChance" type="momimecommon:weighting" nxe:label="Building chance" nxe:gridwidth="120" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="settlersChance" type="momimecommon:weighting" nxe:label="Settlers chance" nxe:gridwidth="120" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="engineersChance" type="momimecommon:weighting" nxe:label="Engineers chance" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="objectiveSelectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
 		</xsd:sequence>
 		<xsd:attribute name="wizardObjectiveID" type="momimecommon:wizardObjectiveID" use="required" nxe:label="Objective ID" nxe:gridwidth="150" />
 	</xsd:complexType>

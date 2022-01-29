@@ -730,6 +730,10 @@
 						<xsd:selector xpath="personalitySelectedByPick" />
 						<xsd:field xpath="@pickID" />
 					</xsd:key>
+					<xsd:key name="initialMeetingPhrasePK">
+						<xsd:selector xpath="initialMeetingPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>					
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardObjective" type="momimecommon:wizardObjective">
 					<xsd:key name="wizardObjectiveNamePK">
@@ -739,6 +743,14 @@
 					<xsd:key name="objectiveSelectedByPickPK">
 						<xsd:selector xpath="objectiveSelectedByPick" />
 						<xsd:field xpath="@pickID" />
+					</xsd:key>
+					<xsd:key name="unitFactoryBuildQueuePK">
+						<xsd:selector xpath="unitFactoryBuildQueue" />
+						<xsd:field xpath="." />
+					</xsd:key>
+					<xsd:key name="otherCityBuildQueuePK">
+						<xsd:selector xpath="unitFactoryBuildQueue" />
+						<xsd:field xpath="." />
 					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimecommon:animation" />
@@ -4338,8 +4350,18 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="1" maxOccurs="1" name="text" type="momimecommon:multiLineDescription" nxe:label="Text" nxe:gridwidth="300" />
 		</xsd:sequence>
 		<xsd:attribute name="language" type="momimecommon:language" use="required" nxe:label="Code" nxe:gridwidth="150" />
-	</xsd:complexType>	
+	</xsd:complexType>
 
+	<xsd:complexType name="languageTextVariant">
+        <xsd:annotation>
+        	<xsd:documentation>Language text where multiple versions of the same piece of text exist.  Used for diplomacy messages, so the wizards don't always say exactly the same thing.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="textVariant" type="momimecommon:languageText" nxe:label="Variant" />
+		</xsd:sequence>
+		<xsd:attribute name="variantNumber" type="momimecommon:variantNumber" use="required" nxe:label="Variant number" nxe:gridwidth="150" />
+	</xsd:complexType>
+	
 <!-- Merged graphics XML, new for 0.9.9.0 -->
 
 	<xsd:complexType name="cityImage" nxe:singular="City Image" nxe:plural="City Images" nxe:submenu="Overland Map">
@@ -4612,6 +4634,12 @@ Ordering of this list is very significant.
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPersonalityName" type="momimecommon:languageText" nxe:label="Name" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="personalitySelectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="initialMeetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Initial meeting">
+				<xsd:key name="textVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="wizardPersonalityID" type="momimecommon:wizardPersonalityID" use="required" nxe:label="Personality ID" nxe:gridwidth="150" />
 	</xsd:complexType>	
@@ -4623,9 +4651,9 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="1" maxOccurs="1" name="buildingChance" type="momimecommon:weighting" nxe:label="Building chance" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="settlersChance" type="momimecommon:weighting" nxe:label="Settlers chance" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="engineersChance" type="momimecommon:weighting" nxe:label="Engineers chance" nxe:gridwidth="120" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="objectiveSelectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitFactoryBuildQueue" type="momimecommon:aiBuildingTypeID" nxe:label="Unit Factory build queue" nxe:showmaincolumn="false" />			
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="otherCityBuildQueue" type="momimecommon:aiBuildingTypeID" nxe:label="Other City build queue" nxe:showmaincolumn="false" />			
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="objectiveSelectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
 		</xsd:sequence>
 		<xsd:attribute name="wizardObjectiveID" type="momimecommon:wizardObjectiveID" use="required" nxe:label="Objective ID" nxe:gridwidth="150" />
 	</xsd:complexType>
@@ -6085,6 +6113,10 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="accumulator">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="variantNumber">
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	

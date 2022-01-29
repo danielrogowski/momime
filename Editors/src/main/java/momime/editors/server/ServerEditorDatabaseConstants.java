@@ -253,6 +253,26 @@ public final class ServerEditorDatabaseConstants
 	/** Chosen bonus */
 	public final static String TAG_CHILD_ENTITY_HERO_ITEM_CHOSEN_BONUS = "heroItemChosenBonus";
 	
+	// wizardPersonality
+	
+	/** AI wizard personalities */
+	public final static String TAG_ENTITY_WIZARD_PERSONALITY = "wizardPersonality";
+	
+	/** Uniquely identifies each AI wizard personality */
+	public final static String TAG_ATTRIBUTE_WIZARD_PERSONALITY_ID = "wizardPersonalityID";
+	
+	/** Variants of initial meeting phrase for a personality */
+	public final static String TAG_CHILD_ENTITY_INITIAL_MEETING_PHRASE = "initialMeetingPhrase";
+
+	/** Uniquely identifies each phrase variant */
+	public final static String TAG_ATTRIBUTE_VARIANT_NUMBER = "variantNumber";
+	
+	/** Phrase variant in each language */
+	public final static String TAG_GRANDCHILD_ENTITY_TEXT_VARIANT = "textVariant";
+	
+	/** Which language it is in */
+	public final static String TAG_ATTRIBUTE_LANGUAGE = "language";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

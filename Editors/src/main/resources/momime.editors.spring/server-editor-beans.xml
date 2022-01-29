@@ -583,6 +583,11 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="wizardPersonalityGrid" class="momime.editors.server.wizardPersonality.WizardPersonalityGrid" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+	</bean>
 
 	<bean id="editUnit" class="momime.editors.server.unit.EditUnit" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
@@ -639,6 +644,7 @@
 				<entry key="combatTileBorderImage" value="combatTileBorderImageGrid" />
 				<entry key="cityViewElement" value="cityViewElementGrid" />
 				<entry key="smoothedTile" value="smoothedTileGrid" />
+				<entry key="wizardPersonality" value="wizardPersonalityGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

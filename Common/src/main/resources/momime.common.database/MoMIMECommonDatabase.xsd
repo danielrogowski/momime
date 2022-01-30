@@ -2367,6 +2367,11 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickCost" type="momimecommon:pickCost" nxe:label="Cost" nxe:gridwidth="60" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickAlignment" type="xsd:int" nxe:label="Alignment" nxe:gridwidth="80">
+				<xsd:annotation>
+					<xsd:documentation>Used in calculating baseRelation.  +1 for "nice" books, -1 for "evil" books, 0 for neutral and retorts.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="nodeAndDispelBonus" type="momimecommon:pickID" nxe:label="Node + Dispel bonus" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>

@@ -537,6 +537,15 @@ standardPhotoIDs over and over again</xsd:documentation>
 					<xsd:documentation>Only filled in for AI wizards (not human wizards, raiders or rampaging monsters).</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+
+			<!-- For all the relation scores below, this is THEIR opinion of US, so that on the client we use this to show the red/green colour.
+				Left blank for a) our own record, b) raiders/monsters, c) in true wizard details on server.  -->			
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseRelation" type="momimemsgs:relationScore">
+			    <xsd:annotation>
+  						<xsd:documentation>Base symmetric relation.  Initially calculated by comparing the spell books of two wizards, but can be reduced by
+-5 for either wizard declaring war on the other or -20 for breaking an alliance.  Wiki calls this startingRelation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
         </xsd:sequence>
@@ -1417,6 +1426,13 @@ So need a separate data item for this.</xsd:documentation>
     		<xsd:documentation>Unique identifier allocated to each combat taking place in a game.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="relationScore">
+	    <xsd:annotation>
+    		<xsd:documentation>+100 for a wizard we love, -100 for a wizard we hate.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:int" />
 	</xsd:simpleType>
 	
 </xsd:schema>

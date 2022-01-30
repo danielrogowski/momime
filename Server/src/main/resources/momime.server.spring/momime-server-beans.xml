@@ -473,6 +473,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="relationAI" ref="relationAI" />
 	</bean>
 	
 	<!-- Calculations -->
@@ -1047,6 +1048,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="sampleUnitUtils" ref="sampleUnitUtils" />
 	</bean>	
+
+	<bean id="relationAI" class="momime.server.ai.RelationAIImpl">
+		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
 	
 	<!-- Fog of War -->
 

@@ -1697,9 +1697,21 @@
 			<xsd:selector xpath="wizard" />
 			<xsd:field xpath="ballAnimation" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimation5">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="diplomacyAnimation" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:wizardObjectivePK" name="wizardFKobjective">
 			<xsd:selector xpath="wizard" />
 			<xsd:field xpath="wizardObjectiveID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:playListPK" name="wizardFKplayList1">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="diplomacyPlayList" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:playListPK" name="wizardFKplayList12">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="madPlayList" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:playListPK" name="combatPlayListFKplayList">
 			<xsd:selector xpath="wizard/combatPlayList" />
@@ -2519,6 +2531,8 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardName" type="momimecommon:languageText" nxe:label="Name" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="flagColour" type="momimecommon:colour" nxe:label="Flag colour" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="portraitImageFile" type="momimecommon:imageFilename" nxe:label="Portrait image file" nxe:gridwidth="270" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="happyImageFile" type="momimecommon:imageFilename" nxe:label="Happy image file" nxe:gridwidth="270" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="madImageFile" type="momimecommon:imageFilename" nxe:label="Mad image file" nxe:gridwidth="270" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="standingImageFile" type="momimecommon:imageFilename" nxe:label="Standing image file" nxe:gridwidth="330" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="banishingImageFile" type="momimecommon:imageFilename" nxe:label="Banishing image file" nxe:gridwidth="360" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="banishingHandImageFile" type="momimecommon:imageFilename" nxe:label="Banishing hand image file" nxe:gridwidth="360" />
@@ -2551,6 +2565,13 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="diplomacyAnimation" type="momimecommon:animationID" nxe:label="Diplomacy anim" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="screamSoundFile" type="momimecommon:imageFilename" nxe:label="Scream sound file" nxe:gridwidth="350" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="wizardObjectiveID" type="momimecommon:wizardObjectiveID" nxe:label="Fixed objective" nxe:gridwidth="150">
 				<xsd:annotation>
@@ -2560,6 +2581,8 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="diplomacyPlayList" type="momimecommon:playListID" nxe:label="Diplomacy play list" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="madPlayList" type="momimecommon:playListID" nxe:label="Diplomacy (mad) )play list" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatPlayList" type="momimecommon:playListID" nxe:label="Combat play list" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPickCount" type="momimecommon:wizardPickCount">
 				<xsd:key name="wizardPickPK">

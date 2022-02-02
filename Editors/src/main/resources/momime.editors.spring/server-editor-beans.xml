@@ -147,6 +147,8 @@
 		<property name="imageColumns">
 			<list>
 				<value>portraitImageFile</value>
+				<value>happyImageFile</value>
+				<value>madImageFile</value>
 				<value>standingImageFile</value>
 				<value>banishingImageFile</value>
 				<value>banishingHandImageFile</value>

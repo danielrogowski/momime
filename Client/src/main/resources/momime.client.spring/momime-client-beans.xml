@@ -2133,6 +2133,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 	

@@ -363,6 +363,40 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	}
 
 	/**
+	 * Used by OverlandEnchantmentsUI to merge the pics of the mirror fading in/out
+	 * 
+	 * @param sourceImage Source image to start from
+	 * @param fadeAnimFrame One frame from the fading animation
+	 * @param xOffset How much to offset the sourceImage by
+	 * @param yOffset How much to offset the sourceImage by
+	 * @return Image which will draw only pixels from sourceImage where the matching pixels in fadeAnimFrame are transparent
+	 */
+	@Override
+	public final BufferedImage mergeImages (final Image sourceImage, final BufferedImage fadeAnimFrame, final int xOffset, final int yOffset)
+	{
+		final BufferedImage mergedImage = new BufferedImage (fadeAnimFrame.getWidth () * 2, fadeAnimFrame.getHeight () * 2, BufferedImage.TYPE_INT_ARGB);
+		final Graphics2D g2 = mergedImage.createGraphics ();
+		try
+		{
+			g2.drawImage (sourceImage, xOffset, yOffset, null);
+		}
+		finally
+		{
+			g2.dispose ();
+		}
+		
+		for (int x = 0; x < fadeAnimFrame.getWidth (); x++)
+			for (int y = 0; y < fadeAnimFrame.getHeight (); y++)
+				if (fadeAnimFrame.getRGB (x, y) != 0)
+					for (int x2 = 0; x2 < 2; x2++)
+						for (int y2 = 0; y2 < 2; y2++)
+							mergedImage.setRGB ((x*2) + x2, (y*2) + y2, 0);
+		
+		return mergedImage;
+	}
+	
+	
+	/**
 	 * @return Language database holder
 	 */
 	public final LanguageDatabaseHolder getLanguageHolder ()

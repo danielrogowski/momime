@@ -32,6 +32,7 @@ import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.frames.MagicSlidersUI;
+import momime.client.utils.SpellClientUtilsImpl;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
 import momime.common.database.AnimationFrame;
@@ -207,6 +208,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		ench.setKnownWizardUtils (knownWizardUtils);
 		ench.setMagicSlidersUI (new MagicSlidersUI ());
 		ench.setMemoryMaintainedSpellUtils (mock (MemoryMaintainedSpellUtils.class));
+		ench.setSpellClientUtils (new SpellClientUtilsImpl ());
 		
 		// Display form
 		ench.setModal (false);

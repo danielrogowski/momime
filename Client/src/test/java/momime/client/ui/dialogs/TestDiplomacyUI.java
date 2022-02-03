@@ -58,7 +58,8 @@ public final class TestDiplomacyUI extends ClientTestData
 		{
 			final WizardEx wizard = new WizardEx ();
 			wizard.setPortraitImageFile ("/momime.client.graphics/wizards/WZ12.png");
-			when (db.findWizard ("WZ01", "DiplomacyUI")).thenReturn (wizard);
+			wizard.setDiplomacyAnimation ("TALKING_ANIM");
+			when (db.findWizard ("WZ12", "DiplomacyUI")).thenReturn (wizard);
 		}
 		
 		// Mock entries from the graphics XML
@@ -99,8 +100,21 @@ public final class TestDiplomacyUI extends ClientTestData
 		if (!anotherWizard)
 		{
 			final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
-			wizardDetails1.setStandardPhotoID ("WZ01");
+			wizardDetails1.setStandardPhotoID ("WZ12");
 			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (1), anyString ())).thenReturn (wizardDetails1);
+			
+			final AnimationEx talkingAnim = new AnimationEx ();
+			for (int n = 1; n <= 25; n++)
+			{
+				String s = Integer.valueOf (n).toString ();
+				while (s.length () < 2)
+					s = "0" + s;
+				
+				final AnimationFrame frame = new AnimationFrame ();
+				frame.setImageFile ("/momime.client.graphics/wizards/WZ12-diplomacy-frame-" + s + ".png");
+				talkingAnim.getFrame ().add (frame);
+			}
+			when (db.findAnimation ("TALKING_ANIM", "DiplomacyUI")).thenReturn (talkingAnim);
 		}
 		else
 		{
@@ -131,11 +145,12 @@ public final class TestDiplomacyUI extends ClientTestData
 		diplomacy.setKnownWizardUtils (knownWizardUtils);
 		diplomacy.setTalkingWizardID (anotherWizard ? 2 : 1);
 		diplomacy.setSpellClientUtils (new SpellClientUtilsImpl ());
+		diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);
 		
 		// Display form		
 		diplomacy.setModal (false);
 		diplomacy.setVisible (true);
-		Thread.sleep (5000);
+		Thread.sleep (10000);
 		diplomacy.setVisible (false);
 	}
 

@@ -470,7 +470,7 @@ public final class CityProcessingImpl implements CityProcessing
 										{
 											// Current building is now finished
 											cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);											
-											cityData.setProductionSoFar (0);
+											cityData.setProductionSoFar (cityData.getProductionSoFar () - productionCost);
 
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
@@ -495,7 +495,7 @@ public final class CityProcessingImpl implements CityProcessing
 												cityData.setProductionSoFar (productionCost);
 											else
 											{
-												cityData.setProductionSoFar (0);
+												cityData.setProductionSoFar (cityData.getProductionSoFar () - productionCost);
 												
 												// AI players need to reset construction back to default so they reconsider what to construct next,
 												// otherwise they'd construct the same unit forever.

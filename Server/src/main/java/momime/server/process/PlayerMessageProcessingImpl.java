@@ -260,7 +260,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ().add (trueWizardDetails);
 
-			if (getPlayerKnowledgeUtils ().isWizard (wizardID))
+			if ((getPlayerKnowledgeUtils ().isWizard (wizardID)) && (!getPlayerKnowledgeUtils ().isCustomWizard (wizardID)))
 			{
 				// Find the correct node in the database for the number of player human players have
 				final int desiredPickCount;
@@ -324,13 +324,17 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// Its fine to do this before we confirm to the client that their wizard choice was OK by the mmChosenWizard message sent below
 			if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
-				// This will tell the client to either pick free spells for the first magic realm that they have earned free spells in, or pick their race, depending on what picks they've chosen
-				log.debug ("chooseWizard: About to search for first realm (if any) where human player " + player.getPlayerDescription ().getPlayerName () + " gets free spells");
-				final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom);
-				if (chooseSpellsMsg != null)
-					player.getConnection ().sendMessageToClient (chooseSpellsMsg);
-				else
-					player.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
+				// If picked custom wizard, the MeetWizardMessage above triggers showing the "choose portrait" screen on the client
+				if (!getPlayerKnowledgeUtils ().isCustomWizard (wizardID))
+				{
+					// This will tell the client to either pick free spells for the first magic realm that they have earned free spells in, or pick their race, depending on what picks they've chosen
+					log.debug ("chooseWizard: About to search for first realm (if any) where human player " + player.getPlayerDescription ().getPlayerName () + " gets free spells");
+					final ChooseInitialSpellsNowMessage chooseSpellsMsg = getPlayerPickServerUtils ().findRealmIDWhereWeNeedToChooseFreeSpells (player, mom);
+					if (chooseSpellsMsg != null)
+						player.getConnection ().sendMessageToClient (chooseSpellsMsg);
+					else
+						player.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
+				}
 			}
 			else
 			{

@@ -23,6 +23,7 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.DiplomacyScreen;
+import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.SpellClientUtilsImpl;
 import momime.common.database.AnimationEx;
 import momime.common.database.AnimationFrame;
@@ -140,6 +141,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		diplomacy.setUtils (utils);
 		diplomacy.setClient (client);
 		diplomacy.setGraphicsDB (gfx);
+		diplomacy.setMediumFont (CreateFontsForTests.getMediumFont ());
 		diplomacy.setLanguageHolder (langHolder);
 		diplomacy.setLanguageChangeMaster (langMaster);
 		diplomacy.setKnownWizardUtils (knownWizardUtils);

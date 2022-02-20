@@ -20,4 +20,12 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmDiplomacyText">
+		<left>10</left>
+		<top>282</top>
+		<width>620</width>
+		<height>108</height>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 </ns2:xmlLayoutContainer>

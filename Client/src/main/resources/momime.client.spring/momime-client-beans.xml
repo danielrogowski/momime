@@ -180,6 +180,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="historyUI" ref="historyUI" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype">
@@ -2324,6 +2325,26 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="expandUnitDetails" ref="expandUnitDetails" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+	</bean>
+	
+	<bean id="diplomacyLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/DiplomacyUI.xml" />
+	</bean>
+
+	<bean id="diplomacyUI" class="momime.client.ui.dialogs.DiplomacyUI" scope="prototype">
+		<property name="diplomacyLayout" ref="diplomacyLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="client" ref="client" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="spellClientUtils" ref="spellClientUtils" />
+		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
 </beans>

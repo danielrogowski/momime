@@ -4,14 +4,17 @@ import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
+import momime.client.ui.dialogs.DiplomacyPortraitState;
+import momime.client.ui.dialogs.DiplomacyUI;
 import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.NewGameUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.WizardsUI;
 import momime.common.MomException;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -24,7 +27,7 @@ import momime.common.utils.PlayerKnowledgeUtils;
  * We get sent our own wizard record when we pick which wizard we want to be.  We get sent the raiders/monsters records when the game starts.
  * Other wizards' records we are only sent when we learn who they are.
  */
-public final class MeetWizardMessageImpl extends MeetWizardMessage implements BaseServerToClientMessage
+public final class MeetWizardMessageImpl extends MeetWizardMessage implements CustomDurationServerToClientMessage
 {
 	/** Multiplayer client */
 	private MomClient client;
@@ -46,6 +49,9 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 	
 	/** UI for screen showing power base history for each wizard */
 	private HistoryUI historyUI;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -76,10 +82,30 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 		// mmChooseYourRaceNow to tell us what to do next before it sent this mmChosenWizard message
 		if ((getKnownWizardDetails ().getPlayerID () == getClient ().getOurPlayerID ()) && (getPlayerKnowledgeUtils ().isCustomWizard (getKnownWizardDetails ().getWizardID ())))
 			getNewGameUI ().showPortraitPanel ();
-		
+			
 		// Update screens to show opponent wizards as we meet them
 		getWizardsUI ().updateWizards (false);
 		getHistoryUI ().redrawChart ();
+		
+		// Show diplomacy screen?
+		if ((getKnownWizardDetails ().getPlayerID () != getClient ().getOurPlayerID ()) && (isShowAnimation () != null) && (isShowAnimation ()))
+		{
+			final DiplomacyUI diplomacy = getPrototypeFrameCreator ().createDiplomacy ();
+			diplomacy.setTalkingWizardID (getKnownWizardDetails ().getPlayerID ());
+			diplomacy.setMeetWizardMessage (this);
+			diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);
+			diplomacy.setVisible (true);
+		}
+		else
+			getClient ().finishCustomDurationMessage (this);
+	}
+	
+	/**
+	 * Nothing to do here when the message completes, because DiplomacyUI already closed itself
+	 */
+	@Override
+	public final void finish ()
+	{
 	}
 	
 	/**
@@ -192,5 +218,21 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Ba
 	public final void setHistoryUI (final HistoryUI h)
 	{
 		historyUI = h;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

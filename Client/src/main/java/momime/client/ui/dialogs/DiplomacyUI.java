@@ -1,10 +1,19 @@
 package momime.client.ui.dialogs;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -14,21 +23,33 @@ import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.WindowConstants;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.random.RandomUtils;
+import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
+import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.messages.process.MeetWizardMessageImpl;
+import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellClientUtils;
+import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
+import momime.common.database.LanguageTextVariant;
 import momime.common.database.WizardEx;
+import momime.common.database.WizardPersonality;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.utils.KnownWizardUtils;
 
@@ -54,6 +75,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/** How many ticks to show for appearing/disappearing anim */
 	private final static int APPEARING_TICKS = 10;
 	
+	/** Spaces left around components added to the text panel */
+	private final static int NO_INSET = 0;
+	
 	/** XML layout */
 	private XmlLayoutContainerEx diplomacyLayout;
 
@@ -68,6 +92,21 @@ public final class DiplomacyUI extends MomClientDialogUI
 	
 	/** Client-side spell utils */
 	private SpellClientUtils spellClientUtils;
+
+	/** Music player */
+	private AudioPlayer musicPlayer;
+	
+	/** Medium font */
+	private Font mediumFont;
+	
+	/** Random utils */
+	private RandomUtils randomUtils;
+
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
+
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/** Which wizard we are talking to */
 	private int talkingWizardID;
@@ -101,6 +140,21 @@ public final class DiplomacyUI extends MomClientDialogUI
 	
 	/** Content pane */
 	private JPanel contentPane;
+	
+	/** The meet wizard message we're showing the animation for */
+	private MeetWizardMessageImpl meetWizardMessage;
+	
+	/** Whether we've unblocked the message queue */
+	private boolean unblocked;
+	
+	/** Text or buttons in the lower half of the screen */
+	private JPanel textPanel;
+	
+	/** Sizing of the text panel */
+	private XmlLayoutComponent textPanelLayout;
+	
+	/** Components added to the text panel */
+	private List<Component> textPanelComponents = new ArrayList<Component> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -137,6 +191,43 @@ public final class DiplomacyUI extends MomClientDialogUI
 		// Need this to know where to draw the wizard's photo
 		final XmlLayoutComponent mirrorLocation = getDiplomacyLayout ().findComponent ("frmDiplomacyMirror");
 		
+		// Initialize the frame
+		final DiplomacyUI ui = this;
+		getDialog ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		getDialog ().addWindowListener (new WindowAdapter ()
+		{
+			@Override
+			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
+			{
+				try
+				{
+					getLanguageChangeMaster ().removeLanguageChangeListener (ui);
+				
+					// Unblock the message that caused this
+					if (!unblocked)
+					{
+						getClient ().finishCustomDurationMessage (getMeetWizardMessage ());
+						unblocked = true;
+					}
+					
+					// Stop animation timer
+					if ((timer != null) && (timer.isRunning ()))
+						timer.stop ();
+					
+					// Go back to the overland music
+					if ((standardPhotoDef != null) && (standardPhotoDef.getDiplomacyPlayList () != null))
+					{
+						getMusicPlayer ().setShuffle (true);
+						getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC, AnimationContainer.GRAPHICS_XML);
+					}
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+			}
+		});
+		
 		// Initialize the content pane
 		contentPane = new JPanel (new XmlLayoutManager (getDiplomacyLayout ()))
 		{
@@ -161,6 +252,24 @@ public final class DiplomacyUI extends MomClientDialogUI
 			}
 		};
 		
+		// Clicks advance to the next state
+		final MouseAdapter diplomacyMouseAdapter = new MouseAdapter ()
+		{
+			/**
+			 * Advance to the next state
+			 */
+			@Override
+			public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
+			{
+				// For now, since the only thing this is used for is meeting wizards, clicking just closes the dialog out
+				if (!MIRROR_STATES.contains (getPortraitState ()))
+				{
+					setPortraitState (DiplomacyPortraitState.DISAPPEARING);
+					initializeState ();
+				}
+			}
+		};
+		
 		// Green/red eyes
 		final JLabel eyesLeftLabel = getUtils ().createImage (eyesLeft);
 		contentPane.add (eyesLeftLabel, "frmDiplomacyEyesLeft");
@@ -168,9 +277,21 @@ public final class DiplomacyUI extends MomClientDialogUI
 		final JLabel eyesRightLabel = getUtils ().createImage (eyesRight);
 		contentPane.add (eyesRightLabel, "frmDiplomacyEyesRight");
 		
+		// Text area
+		final JPanel textPanelContainer = new JPanel (new BorderLayout ());
+		textPanelContainer.setOpaque (false);
+		contentPane.add (textPanelContainer, "frmDiplomacyText");
+
+		textPanel = new JPanel (new GridBagLayout ());
+		textPanel.setOpaque (false);
+		textPanelContainer.add (textPanel, BorderLayout.NORTH);
+		
+		textPanelLayout = getDiplomacyLayout ().findComponent ("frmDiplomacyText");
+		
 		// Lock dialog size
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
+		getDialog ().addMouseListener (diplomacyMouseAdapter);
 		initializeState ();
 	}
 	
@@ -179,6 +300,36 @@ public final class DiplomacyUI extends MomClientDialogUI
 	 */
 	private final void initializeState ()
 	{
+		// Initialize text
+		if ((getPortraitState () == DiplomacyPortraitState.TALKING) && (talkingWizardDetails != null))
+			try
+			{
+				// Human players have no personality set, in which case just use messages from the first one
+				final WizardPersonality personality;
+				if (talkingWizardDetails.getWizardPersonalityID () != null)
+					personality = getClient ().getClientDB ().findWizardPersonality (talkingWizardDetails.getWizardPersonalityID (), "initializeState");
+				else
+					personality = getClient ().getClientDB ().getWizardPersonality ().get (0);
+				
+				if (!personality.getInitialMeetingPhrase ().isEmpty ())
+				{
+					final PlayerPublicDetails talkingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTalkingWizardID (), "initializeState (T)");
+					final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initializeState (O)");
+
+					final LanguageTextVariant variant = personality.getInitialMeetingPhrase ().get (getRandomUtils ().nextInt (personality.getInitialMeetingPhrase ().size ()));
+					final String text = getLanguageHolder ().findDescription (variant.getTextVariant ()).replaceAll
+						("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingWizard));
+					
+					showText (text);
+				}
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+		
+		// Initialize animation
 		final int frameCount = getFrameCount ();
 		if (frameCount > 0)
 		{
@@ -192,13 +343,29 @@ public final class DiplomacyUI extends MomClientDialogUI
 					frameNumber = 0;
 					
 					if (getPortraitState () == DiplomacyPortraitState.APPEARING)
+					{
+						// Start music
+						if ((standardPhotoDef != null) && (standardPhotoDef.getDiplomacyPlayList () != null))
+							try
+							{
+								getMusicPlayer ().setShuffle (false);
+								getMusicPlayer ().playPlayList (standardPhotoDef.getDiplomacyPlayList (), AnimationContainer.COMMON_XML);
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
+						
 						setPortraitState (DiplomacyPortraitState.TALKING);
-					else if (getPortraitState () == DiplomacyPortraitState.TALKING)
+						initializeState ();
+					}
+					else if ((getPortraitState () == DiplomacyPortraitState.TALKING) && (getMeetWizardMessage () == null))	// This is really here for the unit test; normally advanced by clicking
+					{
 						setPortraitState (DiplomacyPortraitState.DISAPPEARING);
-					else
-						setPortraitState (DiplomacyPortraitState.MIRROR);
-					
-					initializeState ();
+						initializeState ();
+					}
+					else if (getPortraitState () == DiplomacyPortraitState.DISAPPEARING)
+						getDialog ().dispose ();
 				}
 				
 				contentPane.repaint ();
@@ -302,6 +469,39 @@ public final class DiplomacyUI extends MomClientDialogUI
 		}
 		return count;
 	}
+	
+	/**
+	 * Updates the contents of the text panel with the specified components
+	 * 
+	 * @param components Components to place within the text panel
+	 */
+	private final void updateTextPanel (final List<? extends Component> components)
+	{
+		// Remove old components
+		textPanelComponents.forEach (c -> textPanel.remove (c));
+		textPanelComponents.clear ();
+		
+		// Add new components
+		int y = 0;
+		for (final Component component : components)
+		{
+			textPanel.add (component, getUtils ().createConstraintsNoFill (0, y, 1, 1, NO_INSET, GridBagConstraintsNoFill.CENTRE));
+			textPanelComponents.add (component);
+			y++;
+		}
+		
+		contentPane.validate ();
+		contentPane.repaint ();
+	}
+	
+	/**
+	 * @param text Text to show in the text panel
+	 */
+	private final void showText (final String text)
+	{
+		final List<JLabel> labels = getUtils ().wrapLabels (getMediumFont (), MomUIConstants.GOLD, text, textPanelLayout.getWidth ());
+		updateTextPanel (labels);
+	}
 
 	/**
 	 * Update all labels and such from the chosen language 
@@ -391,6 +591,86 @@ public final class DiplomacyUI extends MomClientDialogUI
 	{
 		spellClientUtils = utils;
 	}
+
+	/**
+	 * @return Music player
+	 */
+	public final AudioPlayer getMusicPlayer ()
+	{
+		return musicPlayer;
+	}
+
+	/**
+	 * @param player Music player
+	 */
+	public final void setMusicPlayer (final AudioPlayer player)
+	{
+		musicPlayer = player;
+	}
+	
+	/**
+	 * @return Medium font
+	 */
+	public final Font getMediumFont ()
+	{
+		return mediumFont;
+	}
+	
+	/**
+	 * @param font Medium font
+	 */
+	public final void setMediumFont (final Font font)
+	{
+		mediumFont = font;
+	}
+	
+	/**
+	 * @return Random utils
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random utils
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
+	}
+	
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
 	
 	/**
 	 * @return Which wizard we are talking to
@@ -438,5 +718,21 @@ public final class DiplomacyUI extends MomClientDialogUI
 	public final void setFrameNumber (final int f)
 	{
 		frameNumber = f;
+	}
+
+	/**
+	 * @return The meet wizard message we're showing the animation for
+	 */
+	public final MeetWizardMessageImpl getMeetWizardMessage ()
+	{
+		return meetWizardMessage;
+	}
+
+	/**
+	 * @param m The meet wizard message we're showing the animation for
+	 */
+	public final void setMeetWizardMessage (final MeetWizardMessageImpl m)
+	{
+		meetWizardMessage = m;
 	}
 }

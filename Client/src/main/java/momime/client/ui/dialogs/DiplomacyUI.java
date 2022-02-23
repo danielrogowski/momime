@@ -48,6 +48,7 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
 import momime.common.database.LanguageTextVariant;
+import momime.common.database.RelationScore;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPersonality;
 import momime.common.messages.KnownWizardDetails;
@@ -114,6 +115,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/** Which wizard we are talking to */
 	private KnownWizardDetails talkingWizardDetails;
 
+	/** Our relationship with the talking wizard */
+	private RelationScore relationScore;
+	
 	/** Contains image and animation names if using standard photo */
 	private WizardEx standardPhotoDef;
 	
@@ -166,8 +170,6 @@ public final class DiplomacyUI extends MomClientDialogUI
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/diplomacy/background.png");
 		final BufferedImage shiny = getUtils ().loadImage ("/momime.client.graphics/ui/mirror/shiny.png");
-		final Image eyesLeft = getUtils ().doubleSize (getUtils ().loadImage ("/momime.client.graphics/ui/diplomacy/eyes-left-11.png"));
-		final Image eyesRight = getUtils ().doubleSize (getUtils ().loadImage ("/momime.client.graphics/ui/diplomacy/eyes-right-11.png"));
 
 		// Need this just to cut the corner off the wizard portraits
 		fadeAnim = getGraphicsDB ().findAnimation (OverlandEnchantmentsUI.MIRROR_ANIM, "DiplomacyUI");
@@ -178,6 +180,10 @@ public final class DiplomacyUI extends MomClientDialogUI
 		// enchantments would be available for custom wizard portraits.  So this has to work just from the main wizard portrait.
 		talkingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkingWizardID (), "DiplomacyUI");
+		
+		relationScore = getClient ().getClientDB ().findRelationScore (talkingWizardDetails.getBaseRelation (), "DiplomacyUI");
+		final Image eyesLeft = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesLeftImage ()));
+		final Image eyesRight = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesRightImage ()));
 
 		if (talkingWizardDetails.getStandardPhotoID () != null)
 		{

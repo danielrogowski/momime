@@ -29,6 +29,7 @@ import momime.common.database.AnimationEx;
 import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
+import momime.common.database.RelationScore;
 import momime.common.database.WizardEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
@@ -62,6 +63,11 @@ public final class TestDiplomacyUI extends ClientTestData
 			wizard.setDiplomacyAnimation ("TALKING_ANIM");
 			when (db.findWizard ("WZ12", "DiplomacyUI")).thenReturn (wizard);
 		}
+		
+		final RelationScore relationScore = new RelationScore ();
+		relationScore.setEyesLeftImage ("/momime.client.graphics/ui/diplomacy/eyes-left-08.png");
+		relationScore.setEyesRightImage ("/momime.client.graphics/ui/diplomacy/eyes-right-08.png");
+		when (db.findRelationScore (50, "DiplomacyUI")).thenReturn (relationScore);
 		
 		// Mock entries from the graphics XML
 		final AnimationEx fade = new AnimationEx ();
@@ -101,6 +107,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		if (!anotherWizard)
 		{
 			final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
+			wizardDetails1.setBaseRelation (50);
 			wizardDetails1.setStandardPhotoID ("WZ12");
 			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (1), anyString ())).thenReturn (wizardDetails1);
 			
@@ -120,6 +127,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		else
 		{
 			final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();
+			wizardDetails2.setBaseRelation (50);
 			wizardDetails2.setCustomPhoto (Files.readAllBytes (Paths.get (getClass ().getResource ("/CustomWizardPhoto.png").toURI ())));
 			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (2), anyString ())).thenReturn (wizardDetails2);
 		}
@@ -127,9 +135,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
-
-		if (!anotherWizard)
-			when (client.getClientDB ()).thenReturn (db);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/DiplomacyUI.xml"));

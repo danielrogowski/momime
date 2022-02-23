@@ -538,7 +538,7 @@ standardPhotoIDs over and over again</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 
-			<!-- For all the relation scores below, this is THEIR opinion of US, so that on the client we use this to show the red/green colour.
+			<!-- So far all relation scores defined are symmetric, so represents both our opinion of them, and their opinion of us.
 				Left blank for a) our own record, b) raiders/monsters, c) in true wizard details on server.  -->			
 			<xsd:element minOccurs="1" maxOccurs="1" name="baseRelation" type="momimemsgs:relationScore">
 			    <xsd:annotation>

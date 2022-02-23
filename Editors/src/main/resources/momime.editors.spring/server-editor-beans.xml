@@ -591,6 +591,18 @@
 		<property name="utils" ref="utils" />
 	</bean>
 
+	<bean id="relationScoreGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>eyesLeftImage</value>
+				<value>eyesRightImage</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="editUnit" class="momime.editors.server.unit.EditUnit" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
@@ -647,6 +659,7 @@
 				<entry key="cityViewElement" value="cityViewElementGrid" />
 				<entry key="smoothedTile" value="smoothedTileGrid" />
 				<entry key="wizardPersonality" value="wizardPersonalityGrid" />
+				<entry key="relationScore" value="relationScoreGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

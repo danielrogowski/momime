@@ -753,6 +753,12 @@
 						<xsd:field xpath="." />
 					</xsd:key>
 				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="relationScore" type="momimecommon:relationScore">
+					<xsd:key name="relationScoreNamePK">
+						<xsd:selector xpath="relationScoreName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimecommon:animation" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimecommon:playList" />
 			</xsd:sequence>
@@ -945,6 +951,10 @@
 		<xsd:key name="wizardObjectivePK">
 			<xsd:selector xpath="wizardObjective" />
 			<xsd:field xpath="@wizardObjectiveID" />
+		</xsd:key>
+		<xsd:key name="relationScorePK">
+			<xsd:selector xpath="relationScore" />
+			<xsd:field xpath="@relationScoreID" />
 		</xsd:key>
 		
 		<!-- Merging graphics XSD -->		
@@ -4701,6 +4711,17 @@ Ordering of this list is very significant.
 			</xsd:annotation>
 		</xsd:attribute>
 	</xsd:complexType>
+
+	<xsd:complexType name="relationScore" nxe:singular="Relation score" nxe:plural="Relation scores" nxe:submenu="Wizards">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="relationScoreName" type="momimecommon:languageText" nxe:label="Name" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="relationScoreMinimum" type="momimecommon:relationValue" nxe:label="Minimum score" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="relationScoreMaximum" type="momimecommon:relationValue" nxe:label="Maximum score" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eyesLeftImage" type="momimecommon:imageFilename" nxe:label="Eyes left image file" nxe:gridwidth="290" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eyesRightImage" type="momimecommon:imageFilename" nxe:label="Eyes right image file" nxe:gridwidth="290" />
+		</xsd:sequence>
+		<xsd:attribute name="relationScoreID" type="momimecommon:relationScoreID" use="required" nxe:label="Relation score ID" nxe:gridwidth="150" />
+	</xsd:complexType>
 	
 	<xsd:complexType name="animation" nxe:singular="Animation" nxe:plural="Animations">
 		<xsd:sequence>
@@ -6146,6 +6167,14 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 	
 	<xsd:simpleType name="variantNumber">
 		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="relationScoreID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="relationValue">
+		<xsd:restriction base="xsd:int" />
 	</xsd:simpleType>
 	
 </xsd:schema>

@@ -1198,6 +1198,31 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 
 		return found;
 	}
+	/**
+	 * @param score Relation score to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Relation score object
+	 * @throws RecordNotFoundException If no object is defined with the specified score in its range
+	 */
+	@Override
+	public final RelationScore findRelationScore (final int score, final String caller) throws RecordNotFoundException
+	{
+		int useScore = score;
+		if (useScore < -100)
+			useScore = -100;
+		if (useScore > 100)
+			useScore = 100;
+		
+		RelationScore found = null;
+		for (final RelationScore thisScore : getRelationScore ())
+			if ((useScore >= thisScore.getRelationScoreMinimum ()) && (useScore <= thisScore.getRelationScoreMaximum ()))
+				found = thisScore;
+		
+		if (found == null)
+			throw new RecordNotFoundException (RelationScore.class, useScore, caller);
+
+		return found;
+	}
 	
 	/**
 	 * @return Complete list of all animations in game

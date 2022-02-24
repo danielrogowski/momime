@@ -4717,6 +4717,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="relationScoreName" type="momimecommon:languageText" nxe:label="Name" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="relationScoreMinimum" type="momimecommon:relationValue" nxe:label="Minimum score" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="relationScoreMaximum" type="momimecommon:relationValue" nxe:label="Maximum score" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="mood" type="momimecommon:wizardPortraitMood" nxe:label="Mood" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="eyesLeftImage" type="momimecommon:imageFilename" nxe:label="Eyes left image file" nxe:gridwidth="290" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="eyesRightImage" type="momimecommon:imageFilename" nxe:label="Eyes right image file" nxe:gridwidth="290" />
 		</xsd:sequence>
@@ -5928,6 +5929,23 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 			<xsd:enumeration value="W"><xsd:annotation>
 				<xsd:documentation>Target weak wizard</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="WEAK" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="wizardPortraitMood">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="H"><xsd:annotation>
+				<xsd:documentation>Happy</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="HAPPY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>Normal</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NORMAL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Mad</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MAD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

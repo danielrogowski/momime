@@ -51,6 +51,7 @@ import momime.common.database.LanguageTextVariant;
 import momime.common.database.RelationScore;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPersonality;
+import momime.common.database.WizardPortraitMood;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.utils.KnownWizardUtils;
 
@@ -351,16 +352,25 @@ public final class DiplomacyUI extends MomClientDialogUI
 					if (getPortraitState () == DiplomacyPortraitState.APPEARING)
 					{
 						// Start music
-						if ((standardPhotoDef != null) && (standardPhotoDef.getDiplomacyPlayList () != null))
-							try
-							{
-								getMusicPlayer ().setShuffle (false);
-								getMusicPlayer ().playPlayList (standardPhotoDef.getDiplomacyPlayList (), AnimationContainer.COMMON_XML);
-							}
-							catch (final Exception e)
-							{
-								log.error (e, e);
-							}
+						if (standardPhotoDef != null)
+						{
+							final String playList;
+							if ((relationScore.getMood () == WizardPortraitMood.MAD) && (standardPhotoDef.getMadPlayList () != null))
+								playList = standardPhotoDef.getMadPlayList ();
+							else
+								playList = standardPhotoDef.getDiplomacyPlayList ();
+							
+							if (playList != null)
+								try
+								{
+									getMusicPlayer ().setShuffle (false);
+									getMusicPlayer ().playPlayList (playList, AnimationContainer.COMMON_XML);
+								}
+								catch (final Exception e)
+								{
+									log.error (e, e);
+								}
+						}
 						
 						setPortraitState (DiplomacyPortraitState.TALKING);
 						initializeState ();
@@ -417,6 +427,14 @@ public final class DiplomacyUI extends MomClientDialogUI
 			
 			else if (standardPhotoDef != null)
 			{
+				final String moodPortraitFile;
+				if ((relationScore.getMood () == WizardPortraitMood.HAPPY) && (standardPhotoDef.getHappyImageFile () != null))
+					moodPortraitFile = standardPhotoDef.getHappyImageFile ();
+				else if ((relationScore.getMood () == WizardPortraitMood.MAD) && (standardPhotoDef.getMadImageFile () != null))
+					moodPortraitFile = standardPhotoDef.getMadImageFile ();
+				else
+					moodPortraitFile = standardPhotoDef.getPortraitImageFile ();
+				
 				if ((getPortraitState () == DiplomacyPortraitState.HAPPY) && (standardPhotoDef.getHappyImageFile () != null))
 					unscaledPortrait = getUtils ().loadImage (standardPhotoDef.getHappyImageFile ());
 				
@@ -429,12 +447,12 @@ public final class DiplomacyUI extends MomClientDialogUI
 				else if (getPortraitState () == DiplomacyPortraitState.APPEARING)
 				{
 					final int alpha = (255 * getFrameNumber ()) / APPEARING_TICKS;
-					unscaledPortrait = getUtils ().multiplyImageByColourAndAlpha (getUtils ().loadImage (standardPhotoDef.getPortraitImageFile ()),
+					unscaledPortrait = getUtils ().multiplyImageByColourAndAlpha (getUtils ().loadImage (moodPortraitFile),
 						(alpha << 24) | 0xFFFFFF);
 				}
 				
 				else
-					unscaledPortrait = getUtils ().loadImage (standardPhotoDef.getPortraitImageFile ());
+					unscaledPortrait = getUtils ().loadImage (moodPortraitFile);
 			}
 			else
 				throw new MomException ("Player ID " + getTalkingWizardID () + " has neither a custom or standard photo");

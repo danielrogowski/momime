@@ -345,8 +345,11 @@ public final class DiplomacyUI extends MomClientDialogUI
 				frameNumber = frameNumber + 1;
 				if (frameNumber >= frameCount)
 				{
-					timer.stop ();
-					timer = null;
+					if (timer != null)
+					{
+						timer.stop ();					
+						timer = null;
+					}
 					frameNumber = 0;
 					
 					if (getPortraitState () == DiplomacyPortraitState.APPEARING)

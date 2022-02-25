@@ -4436,6 +4436,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<targetWizard language="en">
 			<text>Select a wizard to target</text>
 		</targetWizard>
+		<relations language="en">
+			<text>Relations</text>
+		</relations>
 		<personality language="en">
 			<text>Personality</text>
 		</personality>

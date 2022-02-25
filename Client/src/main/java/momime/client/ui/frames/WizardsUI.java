@@ -53,6 +53,7 @@ import momime.common.database.LanguageText;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.RelationScore;
 import momime.common.database.Spell;
 import momime.common.database.WizardObjective;
 import momime.common.database.WizardPersonality;
@@ -156,6 +157,9 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** Wizard's fame */
 	private JLabel fameLabel;
+
+	/** Our relations with this wizard (text description of the state of the green/red eyes) */
+	private JLabel relationsLabel;
 	
 	/** Wizard's personality */
 	private JLabel personalityLabel;
@@ -273,6 +277,9 @@ public final class WizardsUI extends MomClientFrameUI
 		
 		fameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
 		contentPane.add (fameLabel, "frmWizardsFame");
+		
+		relationsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
+		contentPane.add (relationsLabel, "frmWizardsRelations");
 		
 		personalityLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (personalityLabel, "frmWizardsPersonality");
@@ -689,6 +696,20 @@ public final class WizardsUI extends MomClientFrameUI
 			}
 		
 		// Personality and Objective will only be populated for AI wizards
+		relationsLabel.setVisible ((selectedWizard != null) && (selectedWizardDetails != null) && (selectedWizardDetails.getWizardPersonalityID () != null));
+		if (relationsLabel.isVisible ())
+			try
+			{
+				final RelationScore relationScore = getClient ().getClientDB ().findRelationScore (selectedWizardDetails.getBaseRelation (), "updateWizard");
+				relationsLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getRelations ()) + ": " +
+					getLanguageHolder ().findDescription (relationScore.getRelationScoreName ()));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+				relationsLabel.setVisible (false);
+			}
+
 		personalityLabel.setVisible ((selectedWizard != null) && (selectedWizardDetails != null) && (selectedWizardDetails.getWizardPersonalityID () != null));
 		if (personalityLabel.isVisible ())
 			try

@@ -7,11 +7,17 @@ import static org.mockito.Mockito.when;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.random.RandomUtils;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -25,12 +31,15 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.DiplomacyScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.SpellClientUtilsImpl;
+import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
 import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
+import momime.common.database.LanguageTextVariant;
 import momime.common.database.RelationScore;
 import momime.common.database.WizardEx;
+import momime.common.database.WizardPersonality;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -68,6 +77,13 @@ public final class TestDiplomacyUI extends ClientTestData
 		relationScore.setEyesLeftImage ("/momime.client.graphics/ui/diplomacy/eyes-left-08.png");
 		relationScore.setEyesRightImage ("/momime.client.graphics/ui/diplomacy/eyes-right-08.png");
 		when (db.findRelationScore (50, "DiplomacyUI")).thenReturn (relationScore);
+		
+		final WizardPersonality personality = new WizardPersonality ();
+		when (db.getWizardPersonality ()).thenReturn (Arrays.asList (personality));
+		
+		final LanguageTextVariant phrase = new LanguageTextVariant ();
+		personality.getInitialMeetingPhrase ().add (phrase);
+		phrase.getTextVariant ().add (createLanguageText (Language.ENGLISH, "Greetings OUR_PLAYER_NAME, it is I, TALKING_PLAYER_NAME!"));
 		
 		// Mock entries from the graphics XML
 		final AnimationEx fade = new AnimationEx ();
@@ -132,10 +148,25 @@ public final class TestDiplomacyUI extends ClientTestData
 			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (2), anyString ())).thenReturn (wizardDetails2);
 		}
 		
+		// Players
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final PlayerPublicDetails talkingWizard = new PlayerPublicDetails (null, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, anotherWizard ? 2 : 1, "initializeState (T)")).thenReturn (talkingWizard);
+		when (wizardClientUtils.getPlayerName (talkingWizard)).thenReturn ("Ariel");
+
+		final PlayerPublicDetails ourWizard = new PlayerPublicDetails (null, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 3, "initializeState (O)")).thenReturn (ourWizard); 
+		when (wizardClientUtils.getPlayerName (ourWizard)).thenReturn ("Bob");
+		
 		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getClientDB ()).thenReturn (db);
+		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPlayerID ()).thenReturn (3);
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/DiplomacyUI.xml"));
@@ -147,12 +178,15 @@ public final class TestDiplomacyUI extends ClientTestData
 		diplomacy.setUtils (utils);
 		diplomacy.setClient (client);
 		diplomacy.setGraphicsDB (gfx);
+		diplomacy.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		diplomacy.setMediumFont (CreateFontsForTests.getMediumFont ());
 		diplomacy.setLanguageHolder (langHolder);
 		diplomacy.setLanguageChangeMaster (langMaster);
 		diplomacy.setKnownWizardUtils (knownWizardUtils);
+		diplomacy.setWizardClientUtils (wizardClientUtils);
 		diplomacy.setTalkingWizardID (anotherWizard ? 2 : 1);
 		diplomacy.setSpellClientUtils (new SpellClientUtilsImpl ());
+		diplomacy.setRandomUtils (mock (RandomUtils.class));
 		diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);
 		
 		// Display form		

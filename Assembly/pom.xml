@@ -267,11 +267,13 @@
 			<version>${project.version}</version>
 			<classifier>config</classifier>
 		</dependency>
+        <!--
 		<dependency>
 			<groupId>org.adoptopenjdk</groupId>
 			<artifactId>jre</artifactId>
 			<version>${jre.version}</version>
 			<type>zip</type>
 		</dependency>
+        -->
 	</dependencies>
 </project>

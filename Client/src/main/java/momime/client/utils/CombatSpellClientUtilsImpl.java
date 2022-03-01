@@ -73,6 +73,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	 * 
 	 * @param spell The spell being cast
 	 * @param combatLocation Where the combat is taking place
+	 * @param combatURN Unique identifier for the combat, for sending messages back to the server
 	 * @param combatCoords The tile within the combat map where the player wants to target the spell
 	 * @param castingSource Source that is currently casting a combat spell
 	 * @param combatTerrain Combat terrain
@@ -82,7 +83,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	 * @throws IOException If there is a problem
 	 */
 	@Override
-	public final RequestCastSpellMessage buildCastCombatSpellMessage (final Spell spell, final MapCoordinates3DEx combatLocation,
+	public final RequestCastSpellMessage buildCastCombatSpellMessage (final Spell spell, final MapCoordinates3DEx combatLocation, final int combatURN,
 		final MapCoordinates2DEx combatCoords, final CastCombatSpellFrom castingSource, final MapAreaOfCombatTiles combatTerrain,
 		final MemoryUnit unitBeingRaised, final boolean showErrorMessage) throws IOException
 	{
@@ -98,7 +99,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 		// Build message
 		final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
 		msg.setSpellID (spell.getSpellID ());
-		msg.setCombatLocation (combatLocation);
+		msg.setCombatURN (combatURN);
 		if ((castingSource != null) && (castingSource.getCastingUnit () != null))
 		{
 			msg.setCombatCastingUnitURN (castingSource.getCastingUnit ().getUnitURN ());
@@ -238,6 +239,7 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	 * 
 	 * @param spell The spell being cast
 	 * @param combatLocation Where the combat is taking place
+	 * @param combatURN Unique identifier for the combat, for sending messages back to the server
 	 * @param combatCoords The tile within the combat map where the player wants to target the spell
 	 * @param castingSource Source that is currently casting a combat spell
 	 * @param combatTerrain Combat terrain
@@ -246,13 +248,13 @@ public final class CombatSpellClientUtilsImpl implements CombatSpellClientUtils
 	 * @throws IOException If there is a problem
 	 */
 	@Override
-	public final boolean isCombatTileValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation,
+	public final boolean isCombatTileValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation, final int combatURN,
 		final MapCoordinates2DEx combatCoords, final CastCombatSpellFrom castingSource, final MapAreaOfCombatTiles combatTerrain,
 		final MemoryUnit unitBeingRaised) throws IOException
 	{
 		// This was doing exactly the same logic as buildCastCombatSpellMessage just without building up the message.
 		// Rather than repeating it all, just use the same method and test the result
-		return (buildCastCombatSpellMessage (spell, combatLocation, combatCoords, castingSource, combatTerrain, unitBeingRaised, false) != null);
+		return (buildCastCombatSpellMessage (spell, combatLocation, combatURN, combatCoords, castingSource, combatTerrain, unitBeingRaised, false) != null);
 	}
 
 	/**

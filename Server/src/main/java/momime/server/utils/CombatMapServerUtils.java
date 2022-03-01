@@ -52,12 +52,9 @@ public interface CombatMapServerUtils
 	/**
 	 * @param combatDetails Combat details storage
 	 * @param combatURN Unique identifier for the combat to look for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Requested combat
-	 * @throws RecordNotFoundException If the combatURN does not exist
+	 * @return Requested combat, or null if not found
 	 */
-	public CombatDetails findCombatURN (final List<CombatDetails> combatDetails, final int combatURN, final String caller)
-		throws RecordNotFoundException;
+	public CombatDetails findCombatURN (final List<CombatDetails> combatDetails, final int combatURN);
 
 	/**
 	 * @param combatDetails Combat details storage

@@ -980,7 +980,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				
 				if (getCastType () == SpellCastType.COMBAT)
 				{
-					msg.setCombatLocation (getCombatUI ().getCombatLocation ());
+					msg.setCombatURN (getCombatUI ().getCombatURN ());
 					if ((getCombatUI ().getCastingSource () != null) && (getCombatUI ().getCastingSource ().getCastingUnit () != null))
 					{
 						msg.setCombatCastingUnitURN (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitURN ());

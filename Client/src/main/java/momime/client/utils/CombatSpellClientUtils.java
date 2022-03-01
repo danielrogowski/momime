@@ -22,6 +22,7 @@ public interface CombatSpellClientUtils
 	 * 
 	 * @param spell The spell being cast
 	 * @param combatLocation Where the combat is taking place
+	 * @param combatURN Unique identifier for the combat, for sending messages back to the server
 	 * @param combatCoords The tile within the combat map where the player wants to target the spell
 	 * @param castingSource Source that is currently casting a combat spell
 	 * @param combatTerrain Combat terrain
@@ -30,7 +31,7 @@ public interface CombatSpellClientUtils
 	 * @return Message to send to server to request spell cast if it is valid; if it is not valid for some reason then returns null
 	 * @throws IOException If there is a problem
 	 */
-	public RequestCastSpellMessage buildCastCombatSpellMessage (final Spell spell, final MapCoordinates3DEx combatLocation,
+	public RequestCastSpellMessage buildCastCombatSpellMessage (final Spell spell, final MapCoordinates3DEx combatLocation, final int combatURN,
 		final MapCoordinates2DEx combatCoords, final CastCombatSpellFrom castingSource, final MapAreaOfCombatTiles combatTerrain,
 		final MemoryUnit unitBeingRaised, final boolean showErrorMessage) throws IOException;
 
@@ -42,6 +43,7 @@ public interface CombatSpellClientUtils
 	 * 
 	 * @param spell The spell being cast
 	 * @param combatLocation Where the combat is taking place
+	 * @param combatURN Unique identifier for the combat, for sending messages back to the server
 	 * @param combatCoords The tile within the combat map where the player wants to target the spell
 	 * @param castingSource Source that is currently casting a combat spell
 	 * @param combatTerrain Combat terrain
@@ -49,7 +51,7 @@ public interface CombatSpellClientUtils
 	 * @return Whether the desired target tile is a valid place to cast the spell or not
 	 * @throws IOException If there is a problem
 	 */
-	public boolean isCombatTileValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation,
+	public boolean isCombatTileValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation, final int combatURN,
 		final MapCoordinates2DEx combatCoords, final CastCombatSpellFrom castingSource, final MapAreaOfCombatTiles combatTerrain,
 		final MemoryUnit unitBeingRaised) throws IOException;
 }

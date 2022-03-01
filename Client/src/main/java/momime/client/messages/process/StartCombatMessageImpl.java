@@ -85,6 +85,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 		
 		// Start up the UI
 		getCombatUI ().setCombatLocation ((MapCoordinates3DEx) getCombatLocation ());
+		getCombatUI ().setCombatURN (getCombatURN ());
 		getCombatUI ().setCombatTerrain (getCombatTerrain ());
 		getCombatUI ().initNewCombat ();
 		getCombatUI ().setVisible (true);

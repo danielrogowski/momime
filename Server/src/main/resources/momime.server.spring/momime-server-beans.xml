@@ -187,6 +187,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="requestCastSpellMessage" class="momime.server.messages.process.RequestCastSpellMessageImpl" scope="prototype">
 		<property name="spellQueueing" ref="spellQueueing" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 	
 	<bean id="targetSpellMessage" class="momime.server.messages.process.TargetSpellMessageImpl" scope="prototype">
@@ -224,6 +225,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="combatAutoControlMessage" class="momime.server.messages.process.CombatAutoControlMessageImpl" scope="prototype">
 		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="combatMapServerUtils" ref="combatMapServerUtils" />
 	</bean>
 	
 	<bean id="requestMoveCombatUnitMessage" class="momime.server.messages.process.RequestMoveCombatUnitMessageImpl" scope="prototype">

@@ -145,6 +145,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Combat location */
 	private MapCoordinates3DEx combatLocation;
+
+	/** Unique identifier for the combat, for sending messages back to the server */
+	private int combatURN;
 	
 	/** Combat terrain */
 	private MapAreaOfCombatTiles combatTerrain;
@@ -437,7 +440,7 @@ public final class CombatUI extends MomClientFrameUI
 			if ((getAutoControl () == CombatAutoControl.AUTO) && (getClient ().getOurPlayerID ().equals (currentPlayerID)))
 			{
 				final CombatAutoControlMessage msg = new CombatAutoControlMessage ();
-				msg.setCombatLocation (getCombatLocation ());
+				msg.setCombatURN (getCombatURN ());
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 		});		
@@ -520,8 +523,8 @@ public final class CombatUI extends MomClientFrameUI
 						else
 						{
 							// Trying to target a spell here
-							final boolean validTarget = getCombatSpellClientUtils ().isCombatTileValidTargetForSpell (getSpellBeingTargeted (), getCombatLocation (), moveToLocation,
-								getCastingSource (), getCombatTerrain (), getUnitBeingRaised ());
+							final boolean validTarget = getCombatSpellClientUtils ().isCombatTileValidTargetForSpell (getSpellBeingTargeted (), getCombatLocation (),
+								getCombatURN (), moveToLocation, getCastingSource (), getCombatTerrain (), getUnitBeingRaised ());
 							
 							moveTypeFilename = "/momime.client.graphics/ui/combat/moveType-" + (validTarget ? "spell" : "cannot") + ".png";
 						}
@@ -1000,7 +1003,7 @@ public final class CombatUI extends MomClientFrameUI
 					else if (getSpellBeingTargeted () != null)
 					{
 						final RequestCastSpellMessage msg = getCombatSpellClientUtils ().buildCastCombatSpellMessage (getSpellBeingTargeted (),
-							getCombatLocation (), combatCoords, getCastingSource (), getCombatTerrain (), getUnitBeingRaised (), true);
+							getCombatLocation (), getCombatURN (), combatCoords, getCastingSource (), getCombatTerrain (), getUnitBeingRaised (), true);
 						if (msg != null)
 						{
 							getClient ().getServerConnection ().sendMessageToServer (msg);
@@ -1932,6 +1935,22 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setCombatLocation (final MapCoordinates3DEx loc)
 	{
 		combatLocation = loc;
+	}
+	
+	/**
+	 * @return Unique identifier for the combat, for sending messages back to the server
+	 */
+	public final int getCombatURN ()
+	{
+		return combatURN;
+	}
+
+	/**
+	 * @param c Unique identifier for the combat, for sending messages back to the server
+	 */
+	public final void setCombatURN (final int c)
+	{
+		combatURN = c;
 	}
 	
 	/**

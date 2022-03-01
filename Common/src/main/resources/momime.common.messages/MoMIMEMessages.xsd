@@ -515,18 +515,37 @@ for RAIDERS, MONSTERS and custom wizards uploading a custom photo, will be null.
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="customPhoto" type="xsd:base64Binary">
 			    <xsd:annotation>
-  						<xsd:documentation>Custom 218x250 photo encoded in any image format supported by Java, e.g. JPG or PNG;
+					<xsd:documentation>Custom 218x250 photo encoded in any image format supported by Java, e.g. JPG or PNG;
 for RAIDERS, MONSTERS and custom wizards uploading a standard photo, will be null.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="customFlagColour" type="momimecommon:colour">
 			    <xsd:annotation>
-  						<xsd:documentation>Only filled in if player chose a custom photo, otherwise their flag colour is derived from standardPhotoID; whichever of the two is
+					<xsd:documentation>Only filled in if player chose a custom photo, otherwise their flag colour is derived from standardPhotoID; whichever of the two is
 used, the resulting value is written into momTransientPlayerPublicKnowledge so that we don't keep having to look up the flag colour of
 standardPhotoIDs over and over again</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="wizardPersonalityID" type="momimecommon:wizardPersonalityID">
+			    <xsd:annotation>
+					<xsd:documentation>Only filled in for AI wizards (not human wizards, raiders or rampaging monsters).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="wizardObjectiveID" type="momimecommon:wizardObjectiveID">
+			    <xsd:annotation>
+					<xsd:documentation>Only filled in for AI wizards (not human wizards, raiders or rampaging monsters).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+
+			<!-- So far all relation scores defined are symmetric, so represents both our opinion of them, and their opinion of us.
+				Left blank for a) our own record, b) raiders/monsters, c) in true wizard details on server.  -->			
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseRelation" type="momimemsgs:relationScore">
+			    <xsd:annotation>
+  						<xsd:documentation>Base symmetric relation.  Initially calculated by comparing the spell books of two wizards, but can be reduced by
+-5 for either wizard declaring war on the other or -20 for breaking an alliance.  Wiki calls this startingRelation.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
         </xsd:sequence>
@@ -1407,6 +1426,13 @@ So need a separate data item for this.</xsd:documentation>
     		<xsd:documentation>Unique identifier allocated to each combat taking place in a game.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="relationScore">
+	    <xsd:annotation>
+    		<xsd:documentation>+100 for a wizard we love, -100 for a wizard we hate.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:int" />
 	</xsd:simpleType>
 	
 </xsd:schema>

@@ -4436,6 +4436,15 @@ Bonus Or +GOLD_BONUS%</text>
 		<targetWizard language="en">
 			<text>Select a wizard to target</text>
 		</targetWizard>
+		<relations language="en">
+			<text>Relations</text>
+		</relations>
+		<personality language="en">
+			<text>Personality</text>
+		</personality>
+		<objective language="en">
+			<text>Objective</text>
+		</objective>
 	</wizardsScreen>
 	<armyListScreen>
 		<title language="en">
@@ -4574,6 +4583,11 @@ Bonus Or +GOLD_BONUS%</text>
 			<text>History of Wizards' Power</text>
 		</title>
 	</historyScreen>
+	<diplomacyScreen>
+		<title language="en">
+			<text>Diplomacy</text>
+		</title>
+	</diplomacyScreen>
 	<helpScreen>
 		<title language="en">
 			<text>Help</text>

@@ -147,6 +147,8 @@
 		<property name="imageColumns">
 			<list>
 				<value>portraitImageFile</value>
+				<value>happyImageFile</value>
+				<value>madImageFile</value>
 				<value>standingImageFile</value>
 				<value>banishingImageFile</value>
 				<value>banishingHandImageFile</value>
@@ -583,6 +585,23 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="wizardPersonalityGrid" class="momime.editors.server.wizardPersonality.WizardPersonalityGrid" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+	</bean>
+
+	<bean id="relationScoreGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>eyesLeftImage</value>
+				<value>eyesRightImage</value>
+			</list>
+		</property>
+	</bean>
 
 	<bean id="editUnit" class="momime.editors.server.unit.EditUnit" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
@@ -639,6 +658,8 @@
 				<entry key="combatTileBorderImage" value="combatTileBorderImageGrid" />
 				<entry key="cityViewElement" value="cityViewElementGrid" />
 				<entry key="smoothedTile" value="smoothedTileGrid" />
+				<entry key="wizardPersonality" value="wizardPersonalityGrid" />
+				<entry key="relationScore" value="relationScoreGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

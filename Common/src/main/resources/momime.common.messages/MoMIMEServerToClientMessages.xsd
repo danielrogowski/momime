@@ -458,6 +458,7 @@ details of all the units in the combat and the terrain, so is probably the most 
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatURN" type="momimemsgs:combatURN" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="combatTerrain" type="momimemsgs:mapAreaOfCombatTiles" />
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPlacement" type="momimestoc:startCombatMessageUnit" />
 					</xsd:sequence>

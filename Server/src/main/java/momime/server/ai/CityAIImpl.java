@@ -35,9 +35,10 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.database.Unit;
-import momime.common.database.Wizard;
+import momime.common.database.WizardObjective;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
@@ -295,7 +296,7 @@ public final class CityAIImpl implements CityAI
 	/**
 	 * AI player decides what to build in this city
 	 *
-	 * @param wizard Which wizard the AI player is controlling
+	 * @param wizardDetails Which wizard the AI player is controlling
 	 * @param cityLocation Location of the city
 	 * @param cityData True info on the city, so it can be updated
 	 * @param numberOfCities Number of cities we own
@@ -310,7 +311,7 @@ public final class CityAIImpl implements CityAI
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
 	@Override
-	public final void decideWhatToBuild (final Wizard wizard, final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
+	public final void decideWhatToBuild (final KnownWizardDetails wizardDetails, final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
 		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnitsMod, Map<AIUnitType, List<AIConstructableUnit>> constructableHere,
 		final List<AIUnitType> wantedUnitTypes, final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		final MomSessionDescription sd, final CommonDatabase db) throws RecordNotFoundException
@@ -322,6 +323,8 @@ public final class CityAIImpl implements CityAI
 		boolean decided = tryToConstructBuildingOfType (cityLocation, cityData, AiBuildingTypeID.GROWTH, knownTerrain, knownBuildings, sd, db);
 		if (!decided)
 		{
+			final WizardObjective objective = db.findWizardObjective (wizardDetails.getWizardObjectiveID (), "decideWhatToBuild");
+			
 			// After that, depends on type of city and choose somewhat randomly
 			final WeightedChoicesImpl<AICityConstructionType> choices = new WeightedChoicesImpl<AICityConstructionType> ();
 			choices.setRandomUtils (getRandomUtils ());
@@ -343,14 +346,14 @@ public final class CityAIImpl implements CityAI
 			
 			final StringBuilder debugChoices = new StringBuilder ();
 			
-			if ((wizard.getBuildingChance () > 0) && (anyBuildingsLeftToBuild))
+			if ((objective.getBuildingChance () > 0) && (anyBuildingsLeftToBuild))
 			{
-				choices.add (wizard.getBuildingChance (), AICityConstructionType.BUILDING);
-				debugChoices.append (wizard.getBuildingChance () + ":Building");
+				choices.add (objective.getBuildingChance (), AICityConstructionType.BUILDING);
+				debugChoices.append (objective.getBuildingChance () + ":Building");
 			}
 			
 			// or we have only 1 city, in which case its our unit factory by definition
-			final int needForNewUnits = wizard.getBaseNeedForNewUnits () + needForNewUnitsMod;
+			final int needForNewUnits = objective.getBaseNeedForNewUnits () + needForNewUnitsMod;
 			if ((isUnitFactory) && (needForNewUnits > 0) && (constructableHere.containsKey (AIUnitType.COMBAT_UNIT)))
 			{
 				choices.add (needForNewUnits, AICityConstructionType.COMBAT_UNIT);
@@ -362,27 +365,27 @@ public final class CityAIImpl implements CityAI
 			}
 			
 			// Don't waste our good unit factory building settlers if there's somewhere else that can do it
-			if ((wizard.getSettlersChance () > 0) && (wantedUnitTypes != null) && (wantedUnitTypes.contains (AIUnitType.BUILD_CITY)) &&
+			if ((objective.getSettlersChance () > 0) && (wantedUnitTypes != null) && (wantedUnitTypes.contains (AIUnitType.BUILD_CITY)) &&
 				(constructableHere.containsKey (AIUnitType.BUILD_CITY)) && ((numberOfCities == 1) || (!isUnitFactory)))
 			{
-				choices.add (wizard.getSettlersChance (), AICityConstructionType.SETTLER);
+				choices.add (objective.getSettlersChance (), AICityConstructionType.SETTLER);
 				
 				if (debugChoices.length () > 0)
 					debugChoices.append (", ");
 
-				debugChoices.append (wizard.getSettlersChance () + ":Settler");
+				debugChoices.append (objective.getSettlersChance () + ":Settler");
 			}
 			
 			// Engineers are very similar to settlers
-			if ((wizard.getEngineersChance () > 0) && (wantedUnitTypes != null) && (wantedUnitTypes.contains (AIUnitType.BUILD_ROAD)) &&
+			if ((objective.getEngineersChance () > 0) && (wantedUnitTypes != null) && (wantedUnitTypes.contains (AIUnitType.BUILD_ROAD)) &&
 				(constructableHere.containsKey (AIUnitType.BUILD_ROAD)) && ((numberOfCities == 1) || (!isUnitFactory)))
 				{
-					choices.add (wizard.getEngineersChance (), AICityConstructionType.ENGINEER);
+					choices.add (objective.getEngineersChance (), AICityConstructionType.ENGINEER);
 					
 					if (debugChoices.length () > 0)
 						debugChoices.append (", ");
 
-					debugChoices.append (wizard.getEngineersChance () + ":Engineer");
+					debugChoices.append (objective.getEngineersChance () + ":Engineer");
 				}
 			
 			// Make random choice
@@ -394,30 +397,8 @@ public final class CityAIImpl implements CityAI
 				{
 					case BUILDING:
 						// Set list of building priorities depending if this is a unit factory or not
-						final List<AiBuildingTypeID> buildingTypes = new ArrayList<AiBuildingTypeID> ();
-						if (isUnitFactory)
-						{
-							buildingTypes.add (AiBuildingTypeID.UNITS);		// Doesn't mean build units, it means "buildings that make units better", e.g. Fighters' Guild
-							buildingTypes.add (AiBuildingTypeID.PRODUCTION);
-							buildingTypes.add (AiBuildingTypeID.RESEARCH);
-							buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
-							buildingTypes.add (AiBuildingTypeID.NAVAL);
-							buildingTypes.add (AiBuildingTypeID.GOLD);
-							buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
-							buildingTypes.add (AiBuildingTypeID.DEFENCE);
-						}
-						else
-						{
-							buildingTypes.add (AiBuildingTypeID.PRODUCTION);
-							buildingTypes.add (AiBuildingTypeID.RESEARCH);
-							buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
-							buildingTypes.add (AiBuildingTypeID.GOLD);
-							buildingTypes.add (AiBuildingTypeID.UNITS);
-							buildingTypes.add (AiBuildingTypeID.NAVAL);
-							buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
-							buildingTypes.add (AiBuildingTypeID.DEFENCE);
-						}
-				
+						final List<AiBuildingTypeID> buildingTypes = isUnitFactory ? objective.getUnitFactoryBuildQueue () : objective.getOtherCityBuildQueue ();
+						
 						final Iterator<AiBuildingTypeID> buildingTypesIter = buildingTypes.iterator ();
 						while ((!decided) && (buildingTypesIter.hasNext ()))
 						{

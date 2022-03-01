@@ -62,7 +62,7 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 			if (getCombatUI ().getAutoControl () == CombatAutoControl.AUTO)
 			{
 				final CombatAutoControlMessage msg = new CombatAutoControlMessage ();
-				msg.setCombatLocation (getCombatLocation ());
+				msg.setCombatURN (getCombatUI ().getCombatURN ());
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 			else

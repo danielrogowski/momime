@@ -364,7 +364,7 @@ Server uses standard updateCity to reply.</xsd:documentation>
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatURN" type="momimemsgs:combatURN" />
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -381,7 +381,7 @@ Auto switched on or not - this makes it easier to allow the player to switch Aut
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="combatURN" type="momimemsgs:combatURN" />
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -471,7 +471,7 @@ If in combat, and casting at a location (e.g. summoning), combatTargetLocation w
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="combatLocation" type="map:mapCoordinates3D" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatURN" type="momimemsgs:combatURN" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetLocation" type="map:mapCoordinates2D" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetUnitURN" type="momimemsgs:unitURN" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="combatCastingUnitURN" type="momimemsgs:unitURN">

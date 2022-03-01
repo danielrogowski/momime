@@ -128,8 +128,14 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	/** Map of tileSet IDs to tileSet objects */
 	private Map<String, TileSetEx> tileSetsMap;
 	
-	/** Map of eventIDs to event objects */
+	/** Map of event IDs to event objects */
 	private Map<String, Event> eventsMap;
+
+	/** Map of personality IDs to personality objects */
+	private Map<String, WizardPersonality> wizardPersonalitiesMap;
+
+	/** Map of objective IDs to objective objects */
+	private Map<String, WizardObjective> wizardObjectivesMap;
 	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationEx> animationsMap;
@@ -207,6 +213,8 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		damageTypesMap = getDamageType ().stream ().collect (Collectors.toMap (d -> d.getDamageTypeID (), d -> d));
 		tileSetsMap = getTileSets ().stream ().collect (Collectors.toMap (s -> s.getTileSetID (), s -> s));
 		eventsMap = getEvent ().stream ().collect (Collectors.toMap (e -> e.getEventID (), e -> e));
+		wizardPersonalitiesMap = getWizardPersonality ().stream ().collect (Collectors.toMap (w -> w.getWizardPersonalityID (), w -> w));
+		wizardObjectivesMap = getWizardObjective ().stream ().collect (Collectors.toMap (w -> w.getWizardObjectiveID (), w -> w));
 		animationsMap = getAnimations ().stream ().collect (Collectors.toMap (a -> a.getAnimationID (), a -> a));
 		playListsMap = getPlayList ().stream ().collect (Collectors.toMap (p -> p.getPlayListID (), p -> p));
 		
@@ -1155,6 +1163,63 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		final Event found = eventsMap.get (eventID);
 		if (found == null)
 			throw new RecordNotFoundException (Event.class, eventID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param personalityID Wizard personality ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Wizard personality object
+	 * @throws RecordNotFoundException If the personalityID doesn't exist
+	 */
+	@Override
+	public final WizardPersonality findWizardPersonality (final String personalityID, final String caller) throws RecordNotFoundException
+	{
+		final WizardPersonality found = wizardPersonalitiesMap.get (personalityID);
+		if (found == null)
+			throw new RecordNotFoundException (WizardPersonality.class, personalityID, caller);
+
+		return found;
+	}
+	
+	/**
+	 * @param objectiveID Wizard objective ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Wizard objective object
+	 * @throws RecordNotFoundException If the objectiveID doesn't exist
+	 */
+	@Override
+	public final WizardObjective findWizardObjective (final String objectiveID, final String caller) throws RecordNotFoundException
+	{
+		final WizardObjective found = wizardObjectivesMap.get (objectiveID);
+		if (found == null)
+			throw new RecordNotFoundException (WizardObjective.class, objectiveID, caller);
+
+		return found;
+	}
+	/**
+	 * @param score Relation score to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Relation score object
+	 * @throws RecordNotFoundException If no object is defined with the specified score in its range
+	 */
+	@Override
+	public final RelationScore findRelationScore (final int score, final String caller) throws RecordNotFoundException
+	{
+		int useScore = score;
+		if (useScore < -100)
+			useScore = -100;
+		if (useScore > 100)
+			useScore = 100;
+		
+		RelationScore found = null;
+		for (final RelationScore thisScore : getRelationScore ())
+			if ((useScore >= thisScore.getRelationScoreMinimum ()) && (useScore <= thisScore.getRelationScoreMaximum ()))
+				found = thisScore;
+		
+		if (found == null)
+			throw new RecordNotFoundException (RelationScore.class, useScore, caller);
 
 		return found;
 	}

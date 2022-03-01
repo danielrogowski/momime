@@ -2,6 +2,7 @@ package momime.client.ui.frames;
 
 import momime.client.ui.dialogs.ArmyListUI;
 import momime.client.ui.dialogs.CombatEndedUI;
+import momime.client.ui.dialogs.DiplomacyUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
@@ -113,9 +114,13 @@ public interface PrototypeFrameCreator
 	 */
 	public HeroItemOfferUI createHeroItemOffer ();
 
-
 	/**
 	 * @return New random event UI
 	 */
 	public RandomEventUI createRandomEvent ();
+
+	/**
+	 * @return New diplomacy UI
+	 */
+	public DiplomacyUI createDiplomacy ();
 }

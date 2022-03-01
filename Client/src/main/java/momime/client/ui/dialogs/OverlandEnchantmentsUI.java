@@ -3,7 +3,6 @@ package momime.client.ui.dialogs;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -34,6 +33,7 @@ import momime.client.messages.process.ShowSpellAnimationMessageImpl;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.WizardsUI;
+import momime.client.utils.SpellClientUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
@@ -98,6 +98,9 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** Client-side spell utils */
+	private SpellClientUtils spellClientUtils;
+	
 	/** Wizards UI */
 	private WizardsUI wizardsUI;
 	
@@ -161,7 +164,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 			(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH);
 		
 		// Cut the square corners off the wizard's photo
-		final BufferedImage portrait = mergeImages (unclippedPortrait, getUtils ().loadImage (fadeAnim.getFrame ().get
+		final BufferedImage portrait = getSpellClientUtils ().mergeImages (unclippedPortrait, getUtils ().loadImage (fadeAnim.getFrame ().get
 			(fadeAnim.getFrame ().size () - 1).getImageFile ()), 0, -5*2);
 		
 		// Get the pic of the spell
@@ -223,7 +226,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 						final BufferedImage fadeImage = getUtils ().loadImage (fadeAnim.getFrame ().get (useAnimationFrame).getImageFile ());
 						
 						// Merge the animation image and the wizard's portrait
-						final BufferedImage mergedImage = mergeImages (portrait, fadeImage, 0, 0);						
+						final BufferedImage mergedImage = getSpellClientUtils ().mergeImages (portrait, fadeImage, 0, 0);						
 						g.drawImage (mergedImage, 11*2, 11*2, null);
 					}
 
@@ -240,7 +243,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 						final BufferedImage fadeImage = getUtils ().loadImage (fadeAnim.getFrame ().get (useAnimationFrame).getImageFile ());
 						
 						// Merge the animation image and the spell pic
-						final BufferedImage mergedImage = mergeImages (spellPic, fadeImage, -1*2, -3*2);						
+						final BufferedImage mergedImage = getSpellClientUtils ().mergeImages (spellPic, fadeImage, -1*2, -3*2);						
 						g.drawImage (mergedImage, 11*2, 11*2, null);
 					}
 				}
@@ -324,36 +327,6 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
 		setCloseOnClick (true);
-	}
-	
-	/**
-	 * @param sourceImage Source image to start from
-	 * @param fadeAnimFrame One frame from the fading animation
-	 * @param xOffset How much to offset the sourceImage by
-	 * @param yOffset How much to offset the sourceImage by
-	 * @return Image which will draw only pixels from sourceImage where the matching pixels in fadeAnimFrame are transparent
-	 */
-	private final BufferedImage mergeImages (final Image sourceImage, final BufferedImage fadeAnimFrame, final int xOffset, final int yOffset)
-	{
-		final BufferedImage mergedImage = new BufferedImage (fadeAnimFrame.getWidth () * 2, fadeAnimFrame.getHeight () * 2, BufferedImage.TYPE_INT_ARGB);
-		final Graphics2D g2 = mergedImage.createGraphics ();
-		try
-		{
-			g2.drawImage (sourceImage, xOffset, yOffset, null);
-		}
-		finally
-		{
-			g2.dispose ();
-		}
-		
-		for (int x = 0; x < fadeAnimFrame.getWidth (); x++)
-			for (int y = 0; y < fadeAnimFrame.getHeight (); y++)
-				if (fadeAnimFrame.getRGB (x, y) != 0)
-					for (int x2 = 0; x2 < 2; x2++)
-						for (int y2 = 0; y2 < 2; y2++)
-							mergedImage.setRGB ((x*2) + x2, (y*2) + y2, 0);
-		
-		return mergedImage;
 	}
 	
 	/**
@@ -615,6 +588,22 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		knownWizardUtils = k;
 	}
 
+	/**
+	 * @return Client-side spell utils
+	 */
+	public final SpellClientUtils getSpellClientUtils ()
+	{
+		return spellClientUtils;
+	}
+
+	/**
+	 * @param utils Client-side spell utils
+	 */
+	public final void setSpellClientUtils (final SpellClientUtils utils)
+	{
+		spellClientUtils = utils;
+	}
+	
 	/**
 	 * @return Wizards UI
 	 */

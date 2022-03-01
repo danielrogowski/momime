@@ -4,7 +4,9 @@ import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -13,7 +15,9 @@ import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.CombatAutoControlMessage;
 import momime.server.MomSessionVariables;
+import momime.server.knowledge.CombatDetails;
 import momime.server.process.CombatProcessing;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * Message client sends to server when they want the server to use its AI to move their combat units for this combat turn.
@@ -22,9 +26,15 @@ import momime.server.process.CombatProcessing;
  */
 public final class CombatAutoControlMessageImpl extends CombatAutoControlMessage implements PostSessionClientToServerMessage
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (CombatAutoControlMessageImpl.class);
+	
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
 
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -39,7 +49,11 @@ public final class CombatAutoControlMessageImpl extends CombatAutoControlMessage
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		getCombatProcessing ().progressCombat ((MapCoordinates3DEx) getCombatLocation (), false, true, mom);
+		final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatURN (mom.getCombatDetails (), getCombatURN ());
+		if (combatDetails == null)
+			log.warn (sender.getPlayerDescription ().getPlayerName () + " sent CombatAutoControlMessage for combat URN " + getCombatURN () + " which does not exist");
+		else
+			getCombatProcessing ().progressCombat (combatDetails.getCombatLocation (), false, true, mom);
 	}
 
 	/**
@@ -56,5 +70,21 @@ public final class CombatAutoControlMessageImpl extends CombatAutoControlMessage
 	public final void setCombatProcessing (final CombatProcessing proc)
 	{
 		combatProcessing = proc;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

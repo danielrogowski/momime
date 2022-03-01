@@ -2299,6 +2299,18 @@
 						<xsd:selector xpath="targetWizard" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="wizardsScreenRelationsPK">
+						<xsd:selector xpath="relations" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardsScreenPersonalityPK">
+						<xsd:selector xpath="personality" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardsScreenObjectivePK">
+						<xsd:selector xpath="objective" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="armyListScreen" type="momimelangs:armyListScreen">
 					<xsd:key name="armyListScreenTitlePK">
@@ -2472,6 +2484,12 @@
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="historyScreen" type="momimelangs:historyScreen">
 					<xsd:key name="historyScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="diplomacyScreen" type="momimelangs:diplomacyScreen">
+					<xsd:key name="diplomacyScreenTitlePK">
 						<xsd:selector xpath="title" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
@@ -4668,6 +4686,9 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingNothing" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="relations" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="personality" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="objective" />
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -4755,6 +4776,12 @@
     </xsd:complexType>
 	
 	<xsd:complexType name="historyScreen" nxe:submenu="UI" nxe:singular="Power history" nxe:plural="Power history">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="diplomacyScreen" nxe:submenu="UI" nxe:singular="Diplomacy" nxe:plural="Diplomacy">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 		</xsd:sequence>

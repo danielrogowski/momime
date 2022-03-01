@@ -2,8 +2,10 @@ package momime.server.messages.process;
 
 import java.io.IOException;
 
-import jakarta.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -11,10 +13,13 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
+import jakarta.xml.bind.JAXBException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.server.MomSessionVariables;
+import momime.server.knowledge.CombatDetails;
 import momime.server.process.SpellQueueing;
+import momime.server.utils.CombatMapServerUtils;
 
 /**
  * Client sends this to request a spell being cast, in combat or overland.
@@ -29,8 +34,14 @@ import momime.server.process.SpellQueueing;
  */
 public class RequestCastSpellMessageImpl extends RequestCastSpellMessage implements PostSessionClientToServerMessage
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (RequestCastSpellMessageImpl.class);
+	
 	/** Spell queueing methods */
 	private SpellQueueing spellQueueing;
+	
+	/** Methods dealing with combat maps that are only needed on the server */
+	private CombatMapServerUtils combatMapServerUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -45,9 +56,29 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
-		getSpellQueueing ().requestCastSpell (sender, getCombatCastingUnitURN (), getCombatCastingFixedSpellNumber (),
-			getCombatCastingSlotNumber (), getSpellID (), getHeroItem (),
-			(MapCoordinates3DEx) getCombatLocation (), (MapCoordinates2DEx) getCombatTargetLocation (), getCombatTargetUnitURN (), getVariableDamage (), mom);
+		final CombatDetails combatDetails;
+		final boolean proceed;
+		if (getCombatURN () == null)
+		{
+			combatDetails = null;
+			proceed = true;
+		}
+		else
+		{
+			combatDetails = getCombatMapServerUtils ().findCombatURN (mom.getCombatDetails (), getCombatURN ());
+			proceed = (combatDetails != null);
+		}
+
+		if (!proceed)
+			log.warn (sender.getPlayerDescription ().getPlayerName () + " sent RequestCastSpellMessage to cast a spell in combat URN " + getCombatURN () + " which does not exist");
+		else
+		{
+			final MapCoordinates3DEx combatLocation = (combatDetails == null) ? null : combatDetails.getCombatLocation ();
+			
+			getSpellQueueing ().requestCastSpell (sender, getCombatCastingUnitURN (), getCombatCastingFixedSpellNumber (),
+				getCombatCastingSlotNumber (), getSpellID (), getHeroItem (),
+				combatLocation, (MapCoordinates2DEx) getCombatTargetLocation (), getCombatTargetUnitURN (), getVariableDamage (), mom);
+		}
 	}
 
 	/**
@@ -64,5 +95,21 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 	public final void setSpellQueueing (final SpellQueueing obj)
 	{
 		spellQueueing = obj;
+	}
+
+	/**
+	 * @return Methods dealing with combat maps that are only needed on the server
+	 */
+	public final CombatMapServerUtils getCombatMapServerUtils ()
+	{
+		return combatMapServerUtils;
+	}
+
+	/**
+	 * @param u Methods dealing with combat maps that are only needed on the server
+	 */
+	public final void setCombatMapServerUtils (final CombatMapServerUtils u)
+	{
+		combatMapServerUtils = u;
 	}
 }

@@ -22,13 +22,19 @@ public interface PlayerPickUtils
 		throws RecordNotFoundException;
 
 	/**
-	 * Delphi method used to be called 'FindPick'
 	 * @param picks List of picks to check
 	 * @param pickID The ID of the pick to search for
 	 * @return The quantity of the requested pick that the player has; for spell books this is the number of books, for retorts it is always 1; if has none of requested pick, returns zero
 	 */
 	public int getQuantityOfPick (final List<PlayerPick> picks, final String pickID);
 
+	/**
+	 * @param picks List of picks to check
+	 * @param pickID The ID of the pick to search for
+	 * @return The original quantity of the requested pick that the player had at the start of the game
+	 */
+	public int getOriginalQuantityOfPick (final List<PlayerPick> picks, final String pickID);
+	
 	/**
 	 * Changes the number of a particular type of pick we have
 	 * Will add a new pick to the list of we add a new pick ID that we didn't previously have

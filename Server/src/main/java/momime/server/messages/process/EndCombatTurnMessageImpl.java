@@ -7,7 +7,6 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -50,20 +49,19 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 	{
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
-		final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatByLocation (mom.getCombatDetails (),
-			(MapCoordinates3DEx) getCombatLocation ());
+		final CombatDetails combatDetails = getCombatMapServerUtils ().findCombatURN (mom.getCombatDetails (), getCombatURN ());
 		
 		if (combatDetails == null)
-			log.warn ("Received EndCombatTurnMessage for a combat that doesn't exist - ignored");
+			log.warn (sender.getPlayerDescription ().getPlayerName () + " sent EndCombatTurnMessage for combat URN " + getCombatURN () + " which does not exist");
 		
 		else if (!sender.getPlayerDescription ().getPlayerID ().equals (combatDetails.getCombatCurrentPlayerID ()))
-			log.warn ("Received EndCombatTurnMessage from wrong player - ignored");
+			log.warn (sender.getPlayerDescription ().getPlayerName () + " sent EndCombatTurnMessage when it isn't their turn - ignored");
 		
 		else
 		{
 			getCombatEndTurn ().combatEndTurn (combatDetails, sender.getPlayerDescription ().getPlayerID (), mom);
 			
-			getCombatProcessing ().progressCombat ((MapCoordinates3DEx) getCombatLocation (), false, false, mom);
+			getCombatProcessing ().progressCombat (combatDetails.getCombatLocation (), false, false, mom);
 		}
 	}
 

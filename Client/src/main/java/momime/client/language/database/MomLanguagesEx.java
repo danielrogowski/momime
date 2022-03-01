@@ -20,6 +20,7 @@ import momime.client.languages.database.CombatEndedScreen;
 import momime.client.languages.database.CombatScreen;
 import momime.client.languages.database.ConnectToServerScreen;
 import momime.client.languages.database.CustomPicksScreen;
+import momime.client.languages.database.DiplomacyScreen;
 import momime.client.languages.database.DispelMagic;
 import momime.client.languages.database.HelpScreen;
 import momime.client.languages.database.HeroItemInfoScreen;
@@ -379,8 +380,13 @@ public interface MomLanguagesEx
 	/**
 	 * @return Container for language strings
 	 */
-  public HistoryScreen getHistoryScreen ();
+    public HistoryScreen getHistoryScreen ();
 	
+	/**
+	 * @return Container for language strings
+	 */
+	public DiplomacyScreen getDiplomacyScreen ();
+    
 	/**
 	 * @return Container for language strings
 	 */

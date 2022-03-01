@@ -721,6 +721,44 @@
 						<xsd:field xpath="." />
 					</xsd:key>
 				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPersonality" type="momimecommon:wizardPersonality">
+					<xsd:key name="wizardPersonalityNamePK">
+						<xsd:selector xpath="wizardPersonalityName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="personalitySelectedByPickPK">
+						<xsd:selector xpath="personalitySelectedByPick" />
+						<xsd:field xpath="@pickID" />
+					</xsd:key>
+					<xsd:key name="initialMeetingPhrasePK">
+						<xsd:selector xpath="initialMeetingPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>					
+				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardObjective" type="momimecommon:wizardObjective">
+					<xsd:key name="wizardObjectiveNamePK">
+						<xsd:selector xpath="wizardObjectiveName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="objectiveSelectedByPickPK">
+						<xsd:selector xpath="objectiveSelectedByPick" />
+						<xsd:field xpath="@pickID" />
+					</xsd:key>
+					<xsd:key name="unitFactoryBuildQueuePK">
+						<xsd:selector xpath="unitFactoryBuildQueue" />
+						<xsd:field xpath="." />
+					</xsd:key>
+					<xsd:key name="otherCityBuildQueuePK">
+						<xsd:selector xpath="unitFactoryBuildQueue" />
+						<xsd:field xpath="." />
+					</xsd:key>
+				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="relationScore" type="momimecommon:relationScore">
+					<xsd:key name="relationScoreNamePK">
+						<xsd:selector xpath="relationScoreName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimecommon:animation" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimecommon:playList" />
 			</xsd:sequence>
@@ -903,6 +941,20 @@
 		<xsd:key name="eventPK">
 			<xsd:selector xpath="event" />
 			<xsd:field xpath="@eventID" />
+		</xsd:key>
+
+		<!-- Wizard personality types, new for 1.3 -->
+		<xsd:key name="wizardPersonalityPK">
+			<xsd:selector xpath="wizardPersonality" />
+			<xsd:field xpath="@wizardPersonalityID" />
+		</xsd:key>
+		<xsd:key name="wizardObjectivePK">
+			<xsd:selector xpath="wizardObjective" />
+			<xsd:field xpath="@wizardObjectiveID" />
+		</xsd:key>
+		<xsd:key name="relationScorePK">
+			<xsd:selector xpath="relationScore" />
+			<xsd:field xpath="@relationScoreID" />
 		</xsd:key>
 		
 		<!-- Merging graphics XSD -->		
@@ -1560,6 +1612,16 @@
 			<xsd:field xpath="." />
 		</xsd:keyref>
 		
+		<!-- Wizard personality types, new for 1.3 -->
+		<xsd:keyref refer="momimecommon:pickPK" name="wizardPersonalitySelectedByFKpick">
+			<xsd:selector xpath="wizardPersonality/personalitySelectedByPick" />
+			<xsd:field xpath="@pickID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:pickPK" name="wizardObjectiveSelectedByFKpick">
+			<xsd:selector xpath="wizardObjective/objectiveSelectedByPick" />
+			<xsd:field xpath="@pickID" />
+		</xsd:keyref>
+		
 		<!-- Moved from graphics XSD -->
 		<xsd:keyref refer="momimecommon:citySizePK" name="cityImageFKcitySize">
 			<xsd:selector xpath="cityImage" />
@@ -1644,6 +1706,22 @@
 		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimation4">
 			<xsd:selector xpath="wizard" />
 			<xsd:field xpath="ballAnimation" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimation5">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="diplomacyAnimation" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:wizardObjectivePK" name="wizardFKobjective">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="wizardObjectiveID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:playListPK" name="wizardFKplayList1">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="diplomacyPlayList" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:playListPK" name="wizardFKplayList12">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="madPlayList" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:playListPK" name="combatPlayListFKplayList">
 			<xsd:selector xpath="wizard/combatPlayList" />
@@ -2311,6 +2389,11 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickCost" type="momimecommon:pickCost" nxe:label="Cost" nxe:gridwidth="60" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="pickAlignment" type="xsd:int" nxe:label="Alignment" nxe:gridwidth="80">
+				<xsd:annotation>
+					<xsd:documentation>Used in calculating baseRelation.  +1 for "nice" books, -1 for "evil" books, 0 for neutral and retorts.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="nodeAndDispelBonus" type="momimecommon:pickID" nxe:label="Node + Dispel bonus" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -2450,18 +2533,16 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="wizard" nxe:singular="Wizard" nxe:plural="Wizards">
+	<xsd:complexType name="wizard" nxe:singular="Wizard" nxe:plural="Wizards" nxe:submenu="Wizards">
         <xsd:annotation>
         	<xsd:documentation>The pre-built wizards and their standard picks.  Human players can choose a pre-built wizard or a custom wizard; AI players will always choose one of the pre-defined wizards.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardName" type="momimecommon:languageText" nxe:label="Name" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="baseNeedForNewUnits" type="momimecommon:weighting" nxe:label="Base need for new units" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="buildingChance" type="momimecommon:weighting" nxe:label="Building chance" nxe:gridwidth="120" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="settlersChance" type="momimecommon:weighting" nxe:label="Settlers chance" nxe:gridwidth="120" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="engineersChance" type="momimecommon:weighting" nxe:label="Engineers chance" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="flagColour" type="momimecommon:colour" nxe:label="Flag colour" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="portraitImageFile" type="momimecommon:imageFilename" nxe:label="Portrait image file" nxe:gridwidth="270" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="happyImageFile" type="momimecommon:imageFilename" nxe:label="Happy image file" nxe:gridwidth="270" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="madImageFile" type="momimecommon:imageFilename" nxe:label="Mad image file" nxe:gridwidth="270" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="standingImageFile" type="momimecommon:imageFilename" nxe:label="Standing image file" nxe:gridwidth="330" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="banishingImageFile" type="momimecommon:imageFilename" nxe:label="Banishing image file" nxe:gridwidth="360" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="banishingHandImageFile" type="momimecommon:imageFilename" nxe:label="Banishing hand image file" nxe:gridwidth="360" />
@@ -2494,7 +2575,24 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="diplomacyAnimation" type="momimecommon:animationID" nxe:label="Diplomacy anim" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="screamSoundFile" type="momimecommon:imageFilename" nxe:label="Scream sound file" nxe:gridwidth="350" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="wizardObjectiveID" type="momimecommon:wizardObjectiveID" nxe:label="Fixed objective" nxe:gridwidth="150">
+				<xsd:annotation>
+		        	<xsd:documentation>Objective is fixed rather than rolled randomly based on picks.  Used for Raiders.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>wizardObjectiveName</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="diplomacyPlayList" type="momimecommon:playListID" nxe:label="Diplomacy play list" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="madPlayList" type="momimecommon:playListID" nxe:label="Diplomacy (mad) )play list" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatPlayList" type="momimecommon:playListID" nxe:label="Combat play list" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPickCount" type="momimecommon:wizardPickCount">
 				<xsd:key name="wizardPickPK">
@@ -4290,8 +4388,18 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="1" maxOccurs="1" name="text" type="momimecommon:multiLineDescription" nxe:label="Text" nxe:gridwidth="300" />
 		</xsd:sequence>
 		<xsd:attribute name="language" type="momimecommon:language" use="required" nxe:label="Code" nxe:gridwidth="150" />
-	</xsd:complexType>	
+	</xsd:complexType>
 
+	<xsd:complexType name="languageTextVariant">
+        <xsd:annotation>
+        	<xsd:documentation>Language text where multiple versions of the same piece of text exist.  Used for diplomacy messages, so the wizards don't always say exactly the same thing.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="textVariant" type="momimecommon:languageText" nxe:label="Variant" />
+		</xsd:sequence>
+		<xsd:attribute name="variantNumber" type="momimecommon:variantNumber" use="required" nxe:label="Variant number" nxe:gridwidth="150" />
+	</xsd:complexType>
+	
 <!-- Merged graphics XML, new for 0.9.9.0 -->
 
 	<xsd:complexType name="cityImage" nxe:singular="City Image" nxe:plural="City Images" nxe:submenu="Overland Map">
@@ -4508,7 +4616,7 @@ Ordering of this list is very significant.
 		<xsd:attribute name="bitmask" type="momimecommon:bitmask" use="required" nxe:label="Bitmask" nxe:gridwidth="80" />
 	</xsd:complexType>
 
-		<xsd:complexType name="event" nxe:singular="Random Event" nxe:plural="Random Events">
+	<xsd:complexType name="event" nxe:singular="Random Event" nxe:plural="Random Events">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventName" type="momimecommon:languageText" nxe:label="Name" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="eventDescriptionPlayer" type="momimecommon:languageText" nxe:label="Player text" />
@@ -4559,6 +4667,62 @@ Ordering of this list is very significant.
 		</xsd:sequence>
 		<xsd:attribute name="eventID" type="momimecommon:eventID" use="required" nxe:label="Event ID" nxe:gridwidth="150" />
 	</xsd:complexType>	
+	
+	<xsd:complexType name="wizardPersonality" nxe:singular="Personality" nxe:plural="Personalities" nxe:submenu="Wizards">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPersonalityName" type="momimecommon:languageText" nxe:label="Name" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="personalitySelectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="initialMeetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Initial meeting">
+				<xsd:key name="textVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="wizardPersonalityID" type="momimecommon:wizardPersonalityID" use="required" nxe:label="Personality ID" nxe:gridwidth="150" />
+	</xsd:complexType>	
+	
+	<xsd:complexType name="wizardObjective" nxe:singular="Objective" nxe:plural="Objectives" nxe:submenu="Wizards">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardObjectiveName" type="momimecommon:languageText" nxe:label="Name" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseNeedForNewUnits" type="momimecommon:weighting" nxe:label="Base need for new units" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="buildingChance" type="momimecommon:weighting" nxe:label="Building chance" nxe:gridwidth="120" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="settlersChance" type="momimecommon:weighting" nxe:label="Settlers chance" nxe:gridwidth="120" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="engineersChance" type="momimecommon:weighting" nxe:label="Engineers chance" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitFactoryBuildQueue" type="momimecommon:aiBuildingTypeID" nxe:label="Unit Factory build queue" nxe:showmaincolumn="false" />			
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="otherCityBuildQueue" type="momimecommon:aiBuildingTypeID" nxe:label="Other City build queue" nxe:showmaincolumn="false" />			
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="objectiveSelectedByPick" type="momimecommon:selectedByPick" nxe:label="Selected by" />
+		</xsd:sequence>
+		<xsd:attribute name="wizardObjectiveID" type="momimecommon:wizardObjectiveID" use="required" nxe:label="Objective ID" nxe:gridwidth="150" />
+	</xsd:complexType>
+
+	<xsd:complexType name="selectedByPick" nxe:singular="Selected by pick" nxe:plural="Selected by picks">
+        <xsd:annotation>
+      		<xsd:documentation>This is taken from the wizard's primary magic realm only.  Secondary magic realm nor how many of the book they have are important.</xsd:documentation>
+   		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="weighting" type="momimecommon:weighting" nxe:label="Weighting" nxe:gridwidth="120" />
+		</xsd:sequence>
+		<xsd:attribute name="pickID" type="momimecommon:pickID" use="required" nxe:label="Pick" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="relationScore" nxe:singular="Relation score" nxe:plural="Relation scores" nxe:submenu="Wizards">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="relationScoreName" type="momimecommon:languageText" nxe:label="Name" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="relationScoreMinimum" type="momimecommon:relationValue" nxe:label="Minimum score" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="relationScoreMaximum" type="momimecommon:relationValue" nxe:label="Maximum score" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="mood" type="momimecommon:wizardPortraitMood" nxe:label="Mood" nxe:gridwidth="120" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eyesLeftImage" type="momimecommon:imageFilename" nxe:label="Eyes left image file" nxe:gridwidth="290" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eyesRightImage" type="momimecommon:imageFilename" nxe:label="Eyes right image file" nxe:gridwidth="290" />
+		</xsd:sequence>
+		<xsd:attribute name="relationScoreID" type="momimecommon:relationScoreID" use="required" nxe:label="Relation score ID" nxe:gridwidth="150" />
+	</xsd:complexType>
 	
 	<xsd:complexType name="animation" nxe:singular="Animation" nxe:plural="Animations">
 		<xsd:sequence>
@@ -5769,6 +5933,23 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 		</xsd:restriction>
 	</xsd:simpleType>
 
+	<xsd:simpleType name="wizardPortraitMood">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="H"><xsd:annotation>
+				<xsd:documentation>Happy</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="HAPPY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>Normal</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NORMAL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Mad</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MAD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
 <!-- Moved from server XSD -->
 
 	<xsd:simpleType name="fame">
@@ -5854,6 +6035,14 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 	</xsd:simpleType>
 
 	<xsd:simpleType name="eventID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="wizardPersonalityID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="wizardObjectiveID">
 		<xsd:restriction base="xsd:normalizedString" />
 	</xsd:simpleType>
 
@@ -5992,6 +6181,18 @@ This is used a lot in hero skills, e.g. Blademaster increases the hero's chance 
 	
 	<xsd:simpleType name="accumulator">
 		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="variantNumber">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="relationScoreID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="relationValue">
+		<xsd:restriction base="xsd:int" />
 	</xsd:simpleType>
 	
 </xsd:schema>

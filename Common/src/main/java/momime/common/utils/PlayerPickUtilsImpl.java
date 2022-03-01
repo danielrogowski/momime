@@ -76,6 +76,26 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 	}
 
 	/**
+	 * @param picks List of picks to check
+	 * @param pickID The ID of the pick to search for
+	 * @return The original quantity of the requested pick that the player had at the start of the game
+	 */
+	@Override
+	public final int getOriginalQuantityOfPick (final List<PlayerPick> picks, final String pickID)
+	{
+		int result = 0;
+		final Iterator<PlayerPick> iter = picks.iterator ();
+		while ((result == 0) && (iter.hasNext ()))
+		{
+			final PlayerPick thisPick = iter.next ();
+			if (thisPick.getPickID ().equals (pickID))
+				result = thisPick.getOriginalQuantity ();
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Changes the number of a particular type of pick we have
 	 * Will add a new pick to the list of we add a new pick ID that we didn't previously have
 	 * Will remove picks from the list if we reduce their quantity to zero

@@ -264,6 +264,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		
 		// Create storage for this combat
 		final int combatURN = mom.getGeneralServerKnowledge ().getNextFreeCombatURN ();
+		startCombatMessage.setCombatURN (combatURN);
 		mom.getGeneralServerKnowledge ().setNextFreeCombatURN (combatURN + 1);
 		
 		final CombatDetails combatDetails = new CombatDetails (combatURN, combatLocation, combatMap,

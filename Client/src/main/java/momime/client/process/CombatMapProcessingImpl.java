@@ -86,7 +86,7 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 				
 				// In combat, turns are auto-ended when we have no units to move
 				final EndCombatTurnMessage msg = new EndCombatTurnMessage ();
-				msg.setCombatLocation (getCombatUI ().getCombatLocation ());
+				msg.setCombatURN (getCombatUI ().getCombatURN ());
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 			else

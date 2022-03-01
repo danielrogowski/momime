@@ -27,6 +27,7 @@ import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
+import momime.server.ai.RelationAI;
 
 /**
  * Process for making sure one wizard has met another wizard
@@ -44,6 +45,9 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** For calculating relation scores between two wizards */
+	private RelationAI relationAI;
 	
 	/**
 	 * @param metWizardID The wizard who has become known
@@ -77,8 +81,15 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					knownWizardDetails.setCustomPhoto (metWizard.getCustomPhoto ());
 					knownWizardDetails.setCustomFlagColour (metWizard.getCustomFlagColour ());
 					knownWizardDetails.setWizardState (metWizard.getWizardState ());
+					knownWizardDetails.setWizardPersonalityID (metWizard.getWizardPersonalityID ());
+					knownWizardDetails.setWizardObjectiveID (metWizard.getWizardObjectiveID ());
 					knownWizardDetails.getPowerBaseHistory ().addAll (metWizard.getPowerBaseHistory ());
 					copyPickList (metWizard.getPick (), knownWizardDetails.getPick ());
+					
+					// Calculate their base opinion of us based on what spell books we both have
+					final KnownWizardDetails ourWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "meetWizard");
+					knownWizardDetails.setBaseRelation (getRelationAI ().calculateBaseRelation (metWizard.getPick (), ourWizardDetails.getPick (), mom.getServerDB ()));
 
 					priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 					
@@ -316,5 +327,21 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return For calculating relation scores between two wizards
+	 */
+	public final RelationAI getRelationAI ()
+	{
+		return relationAI;
+	}
+
+	/**
+	 * @param ai For calculating relation scores between two wizards
+	 */
+	public final void setRelationAI (final RelationAI ai)
+	{
+		relationAI = ai;
 	}
 }

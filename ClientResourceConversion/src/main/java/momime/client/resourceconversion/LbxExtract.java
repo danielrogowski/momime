@@ -71,13 +71,13 @@ public final class LbxExtract
 			}
 		};
 		
-/*		for (int w = 0; w <= 13; w++)
+		/* for (int w = 0; w <= 13; w++)
 		{
 			String t = Integer.valueOf (w+1).toString ();
 			while (t.length () < 2)
 				t = "0" + t;
 			
-			final int maxFrame = 59; // ((w == 0) || (w == 7)) ? 19 : 24;
+			final int maxFrame = 24; // ((w == 0) || (w == 7)) ? 19 : 24;
 			
 			for (int n = 0; n <= maxFrame ; n++)
 			{
@@ -85,24 +85,20 @@ public final class LbxExtract
 				while (s.length () < 2)
 					s = "0" + s;
 				
-				convertImage ("SPLMASTR.LBX", w, n, "wizards\\WZ" + t + "-ball-frame-" + s);
+				convertImage ("DIPLOMAC.LBX", 24+w, n, "wizards\\WZ" + t + "-diplomacy-frame-" + s);
 			}
-		} */
+		} */		
 		
-		/**
-		for (int n = 0; n <= 23 ; n++)
+		for (int n = 0; n <= 10; n++)
 		{
 			String s = Integer.valueOf (n+1).toString ();
 			while (s.length () < 2)
 				s = "0" + s;
-			
-			convertImage ("SPECFX.LBX", 11, n, "spells\\SP098\\cast-frame" + (n+1));
-		} */
+
+			convertImage ("DIPLOMAC.LBX", 13+n, 0, "ui\\diplomacy\\eyes-left-" + s);
+		}
 		
-		for (int n = 0; n <= 5; n++)
-			convertImage ("SPECFX.LBX", 41, n, "spells\\SP191\\cast-frame" + (n+1));
-		
-		//convertImage ("SPECIAL2.LBX", 4, 0, "unitSkills\\SC068-icon");
+		//convertImage ("DIPLOMAC.LBX", 0, 0, "ui\\backgrounds\\diplomacy");
 		
 		System.out.println ("All done!");
 	} 

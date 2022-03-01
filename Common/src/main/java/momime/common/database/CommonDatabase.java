@@ -549,6 +549,40 @@ public interface CommonDatabase
 	 * @throws RecordNotFoundException If the eventID doesn't exist
 	 */
 	public Event findEvent (final String eventID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return Complete list of wizard personalities
+	 */
+	public List<WizardPersonality> getWizardPersonality ();
+	
+	/**
+	 * @param personalityID Wizard personality ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Wizard personality object
+	 * @throws RecordNotFoundException If the personalityID doesn't exist
+	 */
+	public WizardPersonality findWizardPersonality (final String personalityID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @return Complete list of wizard objectives
+	 */
+	public List<WizardObjective> getWizardObjective ();
+
+	/**
+	 * @param objectiveID Wizard objective ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Wizard objective object
+	 * @throws RecordNotFoundException If the objectiveID doesn't exist
+	 */
+	public WizardObjective findWizardObjective (final String objectiveID, final String caller) throws RecordNotFoundException;
+	
+	/**
+	 * @param score Relation score to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Relation score object
+	 * @throws RecordNotFoundException If no object is defined with the specified score in its range
+	 */
+	public RelationScore findRelationScore (final int score, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @return Cost to construct the most expensive unit or building in the database

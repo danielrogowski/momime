@@ -1,6 +1,7 @@
 package momime.client.utils;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
@@ -52,4 +53,15 @@ public interface SpellClientUtils
 	 * @throws IOException If a necessary record or image is not found
 	 */
 	public Image findImageForSpell (final String spellID, final Integer castingPlayerID) throws IOException;
+
+	/**
+	 * Used by OverlandEnchantmentsUI to merge the pics of the mirror fading in/out
+	 * 
+	 * @param sourceImage Source image to start from
+	 * @param fadeAnimFrame One frame from the fading animation
+	 * @param xOffset How much to offset the sourceImage by
+	 * @param yOffset How much to offset the sourceImage by
+	 * @return Image which will draw only pixels from sourceImage where the matching pixels in fadeAnimFrame are transparent
+	 */
+	public BufferedImage mergeImages (final Image sourceImage, final BufferedImage fadeAnimFrame, final int xOffset, final int yOffset);
 }

@@ -2,7 +2,6 @@ package momime.server.process;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -481,14 +480,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			
 			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom);
 			
-			// Everyone automatically "meets" the raiders and monsters "wizards"
-			final List<KnownWizardDetails> automaticallyMeetWizards = Arrays.asList
-				(getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), raidersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (R)"),
-				 getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), monstersPlayer.getPlayerDescription ().getPlayerID (), "checkIfCanStartGame (M)"));
-			
+			// Everyone automatically "meets" the raiders and monsters "wizards", and raiders and monsters automatically "meet" all the wizards
 			for (final PlayerServerDetails sendToPlayer : mom.getPlayers ())
-				for (final KnownWizardDetails automaticallyMeetWizard : automaticallyMeetWizards)
-					if (automaticallyMeetWizard.getPlayerID () != sendToPlayer.getPlayerDescription ().getPlayerID ())
+				for (final KnownWizardDetails automaticallyMeetWizard : mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails ())
+					if ((automaticallyMeetWizard.getPlayerID () != sendToPlayer.getPlayerDescription ().getPlayerID ()) &&
+						((sendToPlayer == raidersPlayer) || (sendToPlayer == monstersPlayer) ||
+							(automaticallyMeetWizard.getPlayerID () == raidersPlayer.getPlayerDescription ().getPlayerID ()) ||
+							(automaticallyMeetWizard.getPlayerID () == monstersPlayer.getPlayerDescription ().getPlayerID ())))
 					{
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sendToPlayer.getPersistentPlayerPrivateKnowledge ();
 						

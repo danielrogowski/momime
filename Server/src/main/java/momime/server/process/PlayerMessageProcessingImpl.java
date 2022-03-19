@@ -33,6 +33,7 @@ import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPickCount;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -301,7 +302,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			
 			// On the server, remember that this wizard has met themselves; make a separate copy of the object
 			// Remaining field values (photo choice, flag colour, picks) are not yet known yet
-			final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
+			final DiplomacyWizardDetails knownWizardDetails = new DiplomacyWizardDetails ();
 			knownWizardDetails.setPlayerID (player.getPlayerDescription ().getPlayerID ());
 			knownWizardDetails.setWizardID (wizardID);
 			knownWizardDetails.setStandardPhotoID (wizardID);
@@ -490,7 +491,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					{
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sendToPlayer.getPersistentPlayerPrivateKnowledge ();
 						
-						final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
+						final DiplomacyWizardDetails knownWizardDetails = new DiplomacyWizardDetails ();
 						knownWizardDetails.setPlayerID (automaticallyMeetWizard.getPlayerID ());
 						knownWizardDetails.setWizardID (automaticallyMeetWizard.getWizardID ());
 						knownWizardDetails.setStandardPhotoID (automaticallyMeetWizard.getStandardPhotoID ());

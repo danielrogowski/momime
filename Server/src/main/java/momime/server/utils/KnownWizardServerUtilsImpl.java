@@ -15,6 +15,7 @@ import com.ndg.multiplayer.sessionbase.PlayerType;
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.PlayerPick;
@@ -74,7 +75,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 				if (getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), metWizardID) == null)
 				{
 					// On the server, remember these wizard have now met; make a separate copy of the object
-					final KnownWizardDetails knownWizardDetails = new KnownWizardDetails ();
+					final DiplomacyWizardDetails knownWizardDetails = new DiplomacyWizardDetails ();
 					knownWizardDetails.setPlayerID (metWizardID);
 					knownWizardDetails.setWizardID (metWizard.getWizardID ());
 					knownWizardDetails.setStandardPhotoID (metWizard.getStandardPhotoID ());
@@ -100,7 +101,10 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 						meet.setKnownWizardDetails (knownWizardDetails);
 						
 						if (showAnimation)
+						{
 							meet.setShowAnimation (true);
+							meet.setVisibleRelation (knownWizardDetails.getBaseRelation ());
+						}
 						
 						player.getConnection ().sendMessageToClient (meet);
 					}

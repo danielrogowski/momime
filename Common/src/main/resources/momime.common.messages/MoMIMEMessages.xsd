@@ -87,7 +87,11 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="building" type="momimemsgs:memoryBuilding" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimemsgs:memoryCombatAreaEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="maintainedSpell" type="momimemsgs:memoryMaintainedSpell" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardDetails" type="momimemsgs:knownWizardDetails" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardDetails" type="momimemsgs:knownWizardDetails">
+				<xsd:annotation><xsd:documentation>This is only "knownWizardDetails" in the server's true memory.  In each player's memory
+(on both server and client) it is "diplomacyWizardDetails" and needs to be typecast.  Having said that, it will never need to be typecast on the client
+as all the diplomacy values about how we feel about other wizards are meaningless for human players.</xsd:documentation></xsd:annotation>
+			</xsd:element>
         </xsd:sequence>
 	</xsd:complexType>
 
@@ -491,13 +495,7 @@ so must include the full details of the item here.</xsd:documentation>
 
 	<xsd:complexType name="knownWizardDetails">
 	    <xsd:annotation>
-    		<xsd:documentation>Holds all knowledge about a player we have met or know about in game.  Each player has a list of these that initially only contains
-themselves, raiders and rampaging monsters.  Each time they "meet" a new wizard (or an unknown wizard announces themselves to the world by casting an
-overland enchantment or banishing/being banished) they will be added to the list.
-
-Server has their own simple list of all the details of each player.  A player gets their wizard record created when they choose which wizard they want to be (or custom).
-Updates made (like choosing or gaining picks, or power history values) get written to the one place on the server and then copied to each player's PPK who knows
-that wizard (including themselves).</xsd:documentation>
+    		<xsd:documentation>Holds all knowledge about a player that is only learned after you "meet" them.  The server has a simple list of this data for each player.</xsd:documentation>    		
 		</xsd:annotation>
         <xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID" />
@@ -537,20 +535,48 @@ standardPhotoIDs over and over again</xsd:documentation>
 					<xsd:documentation>Only filled in for AI wizards (not human wizards, raiders or rampaging monsters).</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-
-			<!-- So far all relation scores defined are symmetric, so represents both our opinion of them, and their opinion of us.
-				Left blank for a) our own record, b) raiders/monsters, c) in true wizard details on server.  -->			
-			<xsd:element minOccurs="1" maxOccurs="1" name="baseRelation" type="momimemsgs:relationScore">
-			    <xsd:annotation>
-  						<xsd:documentation>Base symmetric relation.  Initially calculated by comparing the spell books of two wizards, but can be reduced by
--5 for either wizard declaring war on the other or -20 for breaking an alliance.  Wiki calls this startingRelation.</xsd:documentation>
-				</xsd:annotation>
-			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
         </xsd:sequence>
 	</xsd:complexType>
 
+	<xsd:complexType name="diplomacyWizardDetails">
+	    <xsd:annotation>
+	    	<xsd:documentation>Holds details that one wizard knows about another wizard after they mave "met" them.   		
+Each player has a list of these that initially only contain themselves, raiders and rampaging monsters.  Raiders and rampaging
+monsters automatically know everybody from the start of the game.  Each a wizards "meets" a new wizard (or an unknown wizard
+announces themselves to the world by casting an overland enchantment or banishing/being banished) they will be added to the list.
+
+A player gets their own wizard record created when they choose which wizard they want to be (or custom).
+Updates made (like choosing or gaining picks, or power history values) get written to the one place on the server and then copied to each player's PPK who knows
+that wizard (including themselves).
+
+All diplomacy relation values hold OUR opinion of THEM, since a player only really knows how they feel about other players.  The only time we learn how another
+player feels about US is when we're in the diplomacy screen and see the colour of the gargoyle eyes - in this case the server sends the value as part of the
+message to open the DiplomacyUI and it exists only for the duration of that screen being open.
+
+The values are meaningless for human players, as the way they feel about all other players (both human and AI) is entirely up to them.  When a human
+player initiates diplomacy with another human player, a popup asks them what colour the eyes should be shown.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:knownWizardDetails">
+		        <xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="baseRelation" type="momimemsgs:relationScore">
+					    <xsd:annotation>
+	  						<xsd:documentation>Base relation (wiki calls this startingRelation).  This represents natural trust/distrust about another wizard,
+based on the spell books of two wizards.  In original MoM this value is symmetric, so the way we feel about another wizard is always identical
+to the way they feel about us and the modifiers below are applied in both directions, but decided not to do this in MoM IME
+as when wizard A declares way on wizard B, this should only reduce wizard B's opinion of Wizard A, not the other way around.
+
+Our opinion of an enemy wizard is reduced by -5 each time they declare war on us.
+Our opinion of an enemy wizard is reduced by -20 each time they break an alliance on us.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
 	<xsd:complexType name="momTransientPlayerPublicKnowledge">
 	    <xsd:annotation>
     		<xsd:documentation>Holds all knowledge about a player in the game that is freely known to all players once they have joined the game,
@@ -1430,9 +1456,12 @@ So need a separate data item for this.</xsd:documentation>
 	
 	<xsd:simpleType name="relationScore">
 	    <xsd:annotation>
-    		<xsd:documentation>+100 for a wizard we love, -100 for a wizard we hate.</xsd:documentation>
+    		<xsd:documentation>+100 for a wizard we love, -100 for a wizard we hate.  Capped at these values.</xsd:documentation>
 		</xsd:annotation>
-		<xsd:restriction base="xsd:int" />
+		<xsd:restriction base="xsd:int" >
+			<xsd:minInclusive value="-100" />
+			<xsd:maxInclusive value="100" />
+		</xsd:restriction>
 	</xsd:simpleType>
 	
 </xsd:schema>

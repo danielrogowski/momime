@@ -123,7 +123,6 @@ public final class TestDiplomacyUI extends ClientTestData
 		if (!anotherWizard)
 		{
 			final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
-			wizardDetails1.setBaseRelation (50);
 			wizardDetails1.setStandardPhotoID ("WZ12");
 			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (1), anyString ())).thenReturn (wizardDetails1);
 			
@@ -143,7 +142,6 @@ public final class TestDiplomacyUI extends ClientTestData
 		else
 		{
 			final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();
-			wizardDetails2.setBaseRelation (50);
 			wizardDetails2.setCustomPhoto (Files.readAllBytes (Paths.get (getClass ().getResource ("/CustomWizardPhoto.png").toURI ())));
 			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (2), anyString ())).thenReturn (wizardDetails2);
 		}
@@ -185,6 +183,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		diplomacy.setKnownWizardUtils (knownWizardUtils);
 		diplomacy.setWizardClientUtils (wizardClientUtils);
 		diplomacy.setTalkingWizardID (anotherWizard ? 2 : 1);
+		diplomacy.setVisibleRelation (50);
 		diplomacy.setSpellClientUtils (new SpellClientUtilsImpl ());
 		diplomacy.setRandomUtils (mock (RandomUtils.class));
 		diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);

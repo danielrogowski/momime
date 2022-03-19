@@ -149,6 +149,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/** The meet wizard message we're showing the animation for */
 	private MeetWizardMessageImpl meetWizardMessage;
 	
+	/** Relation to use to decide the eye colour, facial expression and music */
+	private int visibleRelation;
+	
 	/** Whether we've unblocked the message queue */
 	private boolean unblocked;
 	
@@ -182,7 +185,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 		talkingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkingWizardID (), "DiplomacyUI");
 		
-		relationScore = getClient ().getClientDB ().findRelationScore (talkingWizardDetails.getBaseRelation (), "DiplomacyUI");
+		relationScore = getClient ().getClientDB ().findRelationScore (getVisibleRelation (), "DiplomacyUI");
 		final Image eyesLeft = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesLeftImage ()));
 		final Image eyesRight = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesRightImage ()));
 
@@ -761,5 +764,21 @@ public final class DiplomacyUI extends MomClientDialogUI
 	public final void setMeetWizardMessage (final MeetWizardMessageImpl m)
 	{
 		meetWizardMessage = m;
+	}
+	
+	/**
+	 * @return Relation to use to decide the eye colour, facial expression and music
+	 */
+	public final  int getVisibleRelation ()
+	{
+		return visibleRelation;
+	}
+
+	/**
+	 * @param r Relation to use to decide the eye colour, facial expression and music
+	 */
+	public final void setVisibleRelation (final int r)
+	{
+		visibleRelation = r;
 	}
 }

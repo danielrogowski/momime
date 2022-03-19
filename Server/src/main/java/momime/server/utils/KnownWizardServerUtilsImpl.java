@@ -56,14 +56,17 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param showAnimation Whether to show animation popup of wizard announcing themselves to you
 	 * @throws RecordNotFoundException If we can't find the wizard we are meeting
+	 * @throws PlayerNotFoundException If we can't find the player we are meeting
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
 	public final void meetWizard (final int metWizardID, final Integer meetingWizardID, final boolean showAnimation, final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		final KnownWizardDetails metWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), metWizardID, "meetWizard");		
+		final KnownWizardDetails metWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), metWizardID, "meetWizard");
+		final PlayerServerDetails metPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), metWizardID, "meetWizard");
+		final MomPersistentPlayerPrivateKnowledge metPlayerPriv = (MomPersistentPlayerPrivateKnowledge) metPlayer.getPersistentPlayerPrivateKnowledge ();
 		
 		// Go through each player who gets to meet them
 		for (final PlayerServerDetails player : mom.getPlayers ())
@@ -91,6 +94,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					final KnownWizardDetails ourWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 						(mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), player.getPlayerDescription ().getPlayerID (), "meetWizard");
 					knownWizardDetails.setBaseRelation (getRelationAI ().calculateBaseRelation (metWizard.getPick (), ourWizardDetails.getPick (), mom.getServerDB ()));
+					knownWizardDetails.setVisibleRelation (knownWizardDetails.getBaseRelation ());
 
 					priv.getFogOfWarMemory ().getWizardDetails ().add (knownWizardDetails);
 					
@@ -103,7 +107,14 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 						if (showAnimation)
 						{
 							meet.setShowAnimation (true);
-							meet.setVisibleRelation (knownWizardDetails.getBaseRelation ());
+							
+							// Even though we're only just meeting this wizard, its possible they knew about us a long time ago,
+							// for example maybe we cast an overland enchantment, so if they do know about us then use their
+							// real visible relation score.  Otherwise use the base starting value calculated above
+							// (which is technically OUR opinion of THEM so is not really what we want, but initially its the same value)
+							final DiplomacyWizardDetails theirOpinionOfUs = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+								(metPlayerPriv.getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
+							meet.setVisibleRelation ((theirOpinionOfUs != null) ? theirOpinionOfUs.getVisibleRelation () : knownWizardDetails.getVisibleRelation ());
 						}
 						
 						player.getConnection ().sendMessageToClient (meet);

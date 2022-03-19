@@ -23,11 +23,12 @@ public interface KnownWizardServerUtils
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @param showAnimation Whether to show animation popup of wizard announcing themselves to you
 	 * @throws RecordNotFoundException If we can't find the wizard we are meeting
+	 * @throws PlayerNotFoundException If we can't find the player we are meeting
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public void meetWizard (final int metWizardID, final Integer meetingWizardID, final boolean showAnimation, final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException;
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
 	 * @param src List of picks to copy from

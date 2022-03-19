@@ -568,8 +568,20 @@ based on the spell books of two wizards.  In original MoM this value is symmetri
 to the way they feel about us and the modifiers below are applied in both directions, but decided not to do this in MoM IME
 as when wizard A declares way on wizard B, this should only reduce wizard B's opinion of Wizard A, not the other way around.
 
-Our opinion of an enemy wizard is reduced by -5 each time they declare war on us.
-Our opinion of an enemy wizard is reduced by -20 each time they break an alliance on us.</xsd:documentation>
+Our base opinion of an enemy wizard is reduced by -5 each time they declare war on us.
+Our base opinion of an enemy wizard is reduced by -20 each time they break an alliance on us.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="visibleRelation" type="momimemsgs:relationScore">
+					    <xsd:annotation>
+	  						<xsd:documentation>This starts off being set the same as baseRelation, and each turn visibleRelation
+will move a little towards the original startingRelation value, but is also modified by actions the enemy wizard takes in the game.
+
+Many actions will alter it but some examples are:
+Our visible opinion of an enemy wizard increases each turn we maintain a wizard's pact or alliance with them
+Our visible opinion of an enemy wizard increases if we give them a beneficial trade (we give them a better spell than they gave us)
+Our visible opinion of an enemy wizard is reduced each time they attack one of our cities
+Our visible opinion of an enemy wizard is reduced if they start to get too many units or cities</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>

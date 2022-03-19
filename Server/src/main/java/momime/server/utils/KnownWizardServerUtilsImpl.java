@@ -15,6 +15,7 @@ import com.ndg.multiplayer.sessionbase.PlayerType;
 import jakarta.xml.bind.JAXBException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.RelationScore;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -114,7 +115,9 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 							// (which is technically OUR opinion of THEM so is not really what we want, but initially its the same value)
 							final DiplomacyWizardDetails theirOpinionOfUs = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
 								(metPlayerPriv.getFogOfWarMemory ().getWizardDetails (), player.getPlayerDescription ().getPlayerID ());
-							meet.setVisibleRelation ((theirOpinionOfUs != null) ? theirOpinionOfUs.getVisibleRelation () : knownWizardDetails.getVisibleRelation ());
+							final int visibleRelation = (theirOpinionOfUs != null) ? theirOpinionOfUs.getVisibleRelation () : knownWizardDetails.getVisibleRelation ();
+							final RelationScore relationScore = mom.getServerDB ().findRelationScoreForValue (visibleRelation, "meetWizard");
+							meet.setVisibleRelationScoreID (relationScore.getRelationScoreID ());
 						}
 						
 						player.getConnection ().sendMessageToClient (meet);

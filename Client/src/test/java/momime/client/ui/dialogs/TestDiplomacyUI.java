@@ -76,7 +76,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		final RelationScore relationScore = new RelationScore ();
 		relationScore.setEyesLeftImage ("/momime.client.graphics/ui/diplomacy/eyes-left-08.png");
 		relationScore.setEyesRightImage ("/momime.client.graphics/ui/diplomacy/eyes-right-08.png");
-		when (db.findRelationScore (50, "DiplomacyUI")).thenReturn (relationScore);
+		when (db.findRelationScore ("RS05", "DiplomacyUI")).thenReturn (relationScore);
 		
 		final WizardPersonality personality = new WizardPersonality ();
 		when (db.getWizardPersonality ()).thenReturn (Arrays.asList (personality));
@@ -183,7 +183,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		diplomacy.setKnownWizardUtils (knownWizardUtils);
 		diplomacy.setWizardClientUtils (wizardClientUtils);
 		diplomacy.setTalkingWizardID (anotherWizard ? 2 : 1);
-		diplomacy.setVisibleRelation (50);
+		diplomacy.setVisibleRelationScoreID ("RS05");
 		diplomacy.setSpellClientUtils (new SpellClientUtilsImpl ());
 		diplomacy.setRandomUtils (mock (RandomUtils.class));
 		diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);

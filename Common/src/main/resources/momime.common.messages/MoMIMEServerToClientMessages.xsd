@@ -80,7 +80,7 @@ Other wizards' records we are only sent when we learn who they are.</xsd:documen
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="knownWizardDetails" type="momimemsgs:diplomacyWizardDetails" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="showAnimation" type="xsd:boolean" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="visibleRelation" type="momimemsgs:relationScore">
+						<xsd:element minOccurs="0" maxOccurs="1" name="visibleRelationScoreID" type="momimecommon:relationScoreID">
 						    <xsd:annotation>
 		  						<xsd:documentation>The relation values inside knownWizardDetails are our opinion of the wizard being met.
 visibleRelation is their opinion of us, so the UI knows how red or green to draw the gargoyle eyes.  Unnecessary if showAnimation is not true.</xsd:documentation>

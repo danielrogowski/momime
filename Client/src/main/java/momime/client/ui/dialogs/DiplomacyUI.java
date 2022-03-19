@@ -150,7 +150,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 	private MeetWizardMessageImpl meetWizardMessage;
 	
 	/** Relation to use to decide the eye colour, facial expression and music */
-	private int visibleRelation;
+	private String visibleRelationScoreID;
 	
 	/** Whether we've unblocked the message queue */
 	private boolean unblocked;
@@ -185,7 +185,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 		talkingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkingWizardID (), "DiplomacyUI");
 		
-		relationScore = getClient ().getClientDB ().findRelationScore (getVisibleRelation (), "DiplomacyUI");
+		relationScore = getClient ().getClientDB ().findRelationScore (getVisibleRelationScoreID (), "DiplomacyUI");
 		final Image eyesLeft = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesLeftImage ()));
 		final Image eyesRight = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesRightImage ()));
 
@@ -769,16 +769,16 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/**
 	 * @return Relation to use to decide the eye colour, facial expression and music
 	 */
-	public final  int getVisibleRelation ()
+	public final String getVisibleRelationScoreID ()
 	{
-		return visibleRelation;
+		return visibleRelationScoreID;
 	}
 
 	/**
 	 * @param r Relation to use to decide the eye colour, facial expression and music
 	 */
-	public final void setVisibleRelation (final int r)
+	public final void setVisibleRelationScoreID (final String r)
 	{
-		visibleRelation = r;
+		visibleRelationScoreID = r;
 	}
 }

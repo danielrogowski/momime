@@ -94,7 +94,7 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Cu
 			diplomacy.setTalkingWizardID (getKnownWizardDetails ().getPlayerID ());
 			diplomacy.setMeetWizardMessage (this);
 			diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);
-			diplomacy.setVisibleRelation (getVisibleRelation ());
+			diplomacy.setVisibleRelationScoreID (getVisibleRelationScoreID ());
 			diplomacy.setVisible (true);
 		}
 		else

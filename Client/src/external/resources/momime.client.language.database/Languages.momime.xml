@@ -4436,9 +4436,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<targetWizard language="en">
 			<text>Select a wizard to target</text>
 		</targetWizard>
-		<relations language="en">
-			<text>Relations</text>
-		</relations>
+		<diplomacy language="en">
+			<text>Diplomacy</text>
+		</diplomacy>
 		<personality language="en">
 			<text>Personality</text>
 		</personality>
@@ -4587,6 +4587,19 @@ Bonus Or +GOLD_BONUS%</text>
 		<title language="en">
 			<text>Diplomacy</text>
 		</title>
+		<notYourTurn language="en">
+			<text>You can't initiate diplomacy when it isn't your turn</text>
+		</notYourTurn>
+		<normalGreetingPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, normal greeting from TALKING_PLAYER_NAME.</text>
+			</textVariant>
+		</normalGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, impatient greeting from TALKING_PLAYER_NAME.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
 	</diplomacyScreen>
 	<helpScreen>
 		<title language="en">

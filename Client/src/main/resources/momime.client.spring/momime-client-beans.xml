@@ -628,6 +628,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
+	<bean id="requestAudienceMessage" class="momime.client.messages.process.RequestAudienceMessageImpl" scope="prototype">
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
+
 	<!-- Create extended versions of NTMs which include drawing implementations -->
 
 	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">

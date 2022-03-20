@@ -46,6 +46,7 @@ import momime.common.messages.servertoclient.RandomEventMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.RemoveUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
+import momime.common.messages.servertoclient.RequestAudienceMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
@@ -692,6 +693,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final RandomEventMessage createRandomEventMessage ()
 	{
 		return getFactory ().createRandomEventMessage ();
+	}
+	
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final RequestAudienceMessage createRequestAudienceMessage ()
+	{
+		return getFactory ().createRequestAudienceMessage ();
 	}
 	
 	/**

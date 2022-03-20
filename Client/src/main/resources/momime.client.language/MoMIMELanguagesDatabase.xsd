@@ -2299,8 +2299,8 @@
 						<xsd:selector xpath="targetWizard" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="wizardsScreenRelationsPK">
-						<xsd:selector xpath="relations" />
+					<xsd:key name="wizardsScreenDiplomacyPK">
+						<xsd:selector xpath="diplomacy" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="wizardsScreenPersonalityPK">
@@ -2492,6 +2492,18 @@
 					<xsd:key name="diplomacyScreenTitlePK">
 						<xsd:selector xpath="title" />
 						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenNotYourTurnPK">
+						<xsd:selector xpath="notYourTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenNormalGreetingPhrasePK">
+						<xsd:selector xpath="normalGreetingPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenImpatientGreetingPhrasePK">
+						<xsd:selector xpath="impatientGreetingPhrase" />
+						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="helpScreen" type="momimelangs:helpScreen">
@@ -4686,7 +4698,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingNothing" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetWizard" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="relations" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="diplomacy" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="personality" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="objective" />
 		</xsd:sequence>
@@ -4784,6 +4796,19 @@
 	<xsd:complexType name="diplomacyScreen" nxe:submenu="UI" nxe:singular="Diplomacy" nxe:plural="Diplomacy">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notYourTurn" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="normalGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Normal greeting">
+				<xsd:key name="diplomacyScreenNormalGreetingPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="impatientGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Impatient greeting">
+				<xsd:key name="diplomacyScreenImpatientGreetingPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
 		</xsd:sequence>
     </xsd:complexType>
 	

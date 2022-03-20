@@ -350,4 +350,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public RandomEventMessageImpl createRandomEventMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
+	public RequestAudienceMessageImpl createRequestAudienceMessage ();
 }

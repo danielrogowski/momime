@@ -174,4 +174,9 @@ public interface ClientToServerMessagesFactory
 	 * @return Newly created message
 	 */
 	public RequestAcceptOfferMessageImpl createRequestAcceptOfferMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public RequestDiplomacyMessageImpl createRequestDiplomacyMessage ();
 }

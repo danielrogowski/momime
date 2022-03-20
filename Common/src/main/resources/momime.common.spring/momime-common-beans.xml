@@ -59,6 +59,7 @@
     			<value>momime.common.messages.clienttoserver.RequestMoveHeroItemMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestRemoveQueuedSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestAcceptOfferMessage</value>
+    			<value>momime.common.messages.clienttoserver.RequestDiplomacyMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -152,6 +153,7 @@
     			<value>momime.common.messages.servertoclient.UpdateTurnPhaseMessage</value>
     			<value>momime.common.messages.servertoclient.OverlandCastingInfoMessage</value>
     			<value>momime.common.messages.servertoclient.RandomEventMessage</value>
+    			<value>momime.common.messages.servertoclient.RequestAudienceMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.UpdateTerrainMessage</value>

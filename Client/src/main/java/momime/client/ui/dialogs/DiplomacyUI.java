@@ -42,6 +42,7 @@ import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.MeetWizardMessageImpl;
+import momime.client.messages.process.RequestAudienceMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.WizardClientUtils;
@@ -149,6 +150,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/** The meet wizard message we're showing the animation for */
 	private MeetWizardMessageImpl meetWizardMessage;
 	
+	/** The request audience message we're showing the animation for */
+	private RequestAudienceMessageImpl requestAudienceMessage;
+	
 	/** Relation to use to decide the eye colour, facial expression and music */
 	private String visibleRelationScoreID;
 	
@@ -216,7 +220,12 @@ public final class DiplomacyUI extends MomClientDialogUI
 					// Unblock the message that caused this
 					if (!unblocked)
 					{
-						getClient ().finishCustomDurationMessage (getMeetWizardMessage ());
+						if (getMeetWizardMessage () != null)
+							getClient ().finishCustomDurationMessage (getMeetWizardMessage ());
+						
+						if (getRequestAudienceMessage () != null)
+							getClient ().finishCustomDurationMessage (getRequestAudienceMessage ());
+							
 						unblocked = true;
 					}
 					
@@ -314,23 +323,40 @@ public final class DiplomacyUI extends MomClientDialogUI
 		if ((getPortraitState () == DiplomacyPortraitState.TALKING) && (talkingWizardDetails != null))
 			try
 			{
-				// Human players have no personality set, in which case just use messages from the first one
-				final WizardPersonality personality;
-				if (talkingWizardDetails.getWizardPersonalityID () != null)
-					personality = getClient ().getClientDB ().findWizardPersonality (talkingWizardDetails.getWizardPersonalityID (), "initializeState");
-				else
-					personality = getClient ().getClientDB ().getWizardPersonality ().get (0);
-				
-				if (!personality.getInitialMeetingPhrase ().isEmpty ())
+				List<LanguageTextVariant> variants = null;
+				if (getRequestAudienceMessage () != null)
 				{
+					// Normal or impatient greeting, based on their level of patience talking to us
+					if ((getRequestAudienceMessage ().isImpatient ()) && (!getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ().isEmpty ()))
+						variants = getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ();
+					else
+						variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
+				}
+				else
+				{
+					// Initial meeting message, based on personality of the talking wizard
+					// Human players have no personality set, in which case just use messages from the first one
+					final WizardPersonality personality;
+					if (talkingWizardDetails.getWizardPersonalityID () != null)
+						personality = getClient ().getClientDB ().findWizardPersonality (talkingWizardDetails.getWizardPersonalityID (), "initializeState");
+					else
+						personality = getClient ().getClientDB ().getWizardPersonality ().get (0);
+					
+					if (!personality.getInitialMeetingPhrase ().isEmpty ())
+						variants = personality.getInitialMeetingPhrase ();
+				}
+
+				if ((variants != null) && (!variants.isEmpty ()))
+				{
+					final LanguageTextVariant variant = variants.get (getRandomUtils ().nextInt (variants.size ()));
+					
 					final PlayerPublicDetails talkingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTalkingWizardID (), "initializeState (T)");
 					final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initializeState (O)");
-
-					final LanguageTextVariant variant = personality.getInitialMeetingPhrase ().get (getRandomUtils ().nextInt (personality.getInitialMeetingPhrase ().size ()));
+					
 					final String text = getLanguageHolder ().findDescription (variant.getTextVariant ()).replaceAll
 						("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingWizard));
-					
+						
 					showText (text);
 				}
 			}
@@ -381,7 +407,8 @@ public final class DiplomacyUI extends MomClientDialogUI
 						setPortraitState (DiplomacyPortraitState.TALKING);
 						initializeState ();
 					}
-					else if ((getPortraitState () == DiplomacyPortraitState.TALKING) && (getMeetWizardMessage () == null))	// This is really here for the unit test; normally advanced by clicking
+					else if ((getPortraitState () == DiplomacyPortraitState.TALKING) &&
+						(getMeetWizardMessage () == null) && (getRequestAudienceMessage () == null))	// This is really here for the unit test which will have no message set; normally advanced by clicking
 					{
 						setPortraitState (DiplomacyPortraitState.DISAPPEARING);
 						initializeState ();
@@ -764,6 +791,22 @@ public final class DiplomacyUI extends MomClientDialogUI
 	public final void setMeetWizardMessage (final MeetWizardMessageImpl m)
 	{
 		meetWizardMessage = m;
+	}
+
+	/**
+	 * @return The request audience message we're showing the animation for
+	 */
+	public final RequestAudienceMessageImpl getRequestAudienceMessage ()
+	{
+		return requestAudienceMessage;
+	}
+
+	/**
+	 * @param m The request audience message we're showing the animation for
+	 */
+	public final void setRequestAudienceMessage (final RequestAudienceMessageImpl m)
+	{
+		requestAudienceMessage = m;
 	}
 	
 	/**

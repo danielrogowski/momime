@@ -575,6 +575,11 @@ public interface CommonDatabase
 	 * @throws RecordNotFoundException If the objectiveID doesn't exist
 	 */
 	public WizardObjective findWizardObjective (final String objectiveID, final String caller) throws RecordNotFoundException;
+
+	/**
+	 * @return Complete list of relation score brackets
+	 */
+	public List<RelationScore> getRelationScore ();
 	
 	/**
 	 * @param relationScoreID Relation score ID to search for

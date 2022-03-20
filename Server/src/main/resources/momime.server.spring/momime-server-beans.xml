@@ -257,6 +257,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="offerGenerator" ref="offerGenerator" />
 	</bean>
 	
+	<bean id="requestDiplomacyMessage" class="momime.server.messages.process.RequestDiplomacyMessageImpl" scope="prototype">
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+	</bean>
+
 	<!-- User registry -->
 
 		<bean id="userRegistrySchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">

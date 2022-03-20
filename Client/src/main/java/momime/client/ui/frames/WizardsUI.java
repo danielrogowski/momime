@@ -24,7 +24,9 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
@@ -32,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
@@ -59,6 +62,7 @@ import momime.common.database.WizardPersonality;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
+import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -141,6 +145,12 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** Close action */
 	private Action closeAction;
+
+	/** Diplomacy action */
+	private Action diplomacyAction;
+	
+	/** Diplomacy button */
+	private JButton diplomacyButton;
 	
 	/** Shelf displaying chosen books */
 	private JPanel bookshelf;
@@ -218,6 +228,48 @@ public final class WizardsUI extends MomClientFrameUI
 		// Actions
 		closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
+		diplomacyAction = new LoggingAction ((ev) ->
+		{
+			if (selectedWizard != null)
+			{
+				if (!getClient ().isPlayerTurn ())
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getDiplomacyScreen ().getTitle ());
+					msg.setLanguageText (getLanguages ().getDiplomacyScreen ().getNotYourTurn ());
+					msg.setVisible (true);
+				}
+				else if (selectedWizard.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				{
+					// Show popup menu to select mood to talk to the wizard with
+					final JPopupMenu popup = new JPopupMenu ();
+					
+					getClient ().getClientDB ().getRelationScore ().forEach (rs ->
+					{
+						final String relationScoreName = getLanguageHolder ().findDescription (rs.getRelationScoreName ());
+						final JMenuItem item = new JMenuItem (new LoggingAction (relationScoreName, (ev2) ->
+						{
+							final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+							msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
+							msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
+							getClient ().getServerConnection ().sendMessageToServer (msg);
+						}));
+						
+						item.setFont (getSmallFont ());
+						popup.add (item);								
+					});
+					
+					popup.show (contentPane, diplomacyButton.getX (), diplomacyButton.getY ());
+				}
+				else
+				{
+					final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+					msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+				}
+			}
+		});
+		
 		// Initialize the content pane
 		contentPane = new JPanel ()
 		{
@@ -279,6 +331,9 @@ public final class WizardsUI extends MomClientFrameUI
 		
 		objectiveLabel = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (objectiveLabel, "frmWizardsObjective");
+
+		diplomacyButton = getUtils ().createImageButton (diplomacyAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonNormal);
+		contentPane.add (diplomacyButton, "frmWizardsDiplomacy");
 		
 		bookshelf = new JPanel (new GridBagLayout ());
 		bookshelf.setOpaque (false);
@@ -716,6 +771,9 @@ public final class WizardsUI extends MomClientFrameUI
 				log.error (e, e);
 				objectiveLabel.setVisible (false);
 			}
+		
+		// Diplomacy only enabled if its another wizard
+		diplomacyButton.setVisible ((selectedWizard != null) && (selectedWizardDetails != null) && (!selectedWizard.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())));
 	}
 	
 	/**
@@ -753,6 +811,7 @@ public final class WizardsUI extends MomClientFrameUI
 			wizardsTitle.setText (title);
 			
 			closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
+			diplomacyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getDiplomacy ()));
 			
 			updateWizard ();
 			

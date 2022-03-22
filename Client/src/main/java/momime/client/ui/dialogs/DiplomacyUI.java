@@ -2,6 +2,7 @@ package momime.client.ui.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
@@ -20,8 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
 
@@ -30,8 +35,10 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.random.RandomUtils;
 import com.ndg.swing.GridBagConstraintsNoFill;
+import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -54,6 +61,7 @@ import momime.common.database.WizardEx;
 import momime.common.database.WizardPersonality;
 import momime.common.database.WizardPortraitMood;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.clienttoserver.AcceptDiplomacyMessage;
 import momime.common.utils.KnownWizardUtils;
 
 /**
@@ -102,6 +110,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/** Medium font */
 	private Font mediumFont;
 	
+	/** Small font */
+	private Font smallFont;
+	
 	/** Random utils */
 	private RandomUtils randomUtils;
 
@@ -116,6 +127,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 	
 	/** Which wizard we are talking to */
 	private KnownWizardDetails talkingWizardDetails;
+	
+	/** Which player we are talking to */
+	private PlayerPublicDetails talkingPlayer;
 
 	/** Our relationship with the talking wizard */
 	private RelationScore relationScore;
@@ -168,6 +182,12 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/** Components added to the text panel */
 	private List<Component> textPanelComponents = new ArrayList<Component> ();
 	
+	/** Other wizard requested to talk to us and we accept */
+	private Action acceptTalkToAction;
+	
+	/** Other wizard requested to talk to us and we refuse */
+	private Action refuseTalkToAction;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -189,6 +209,8 @@ public final class DiplomacyUI extends MomClientDialogUI
 		talkingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkingWizardID (), "DiplomacyUI");
 		
+		talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTalkingWizardID (), "DiplomacyUI (T)");
+		
 		relationScore = getClient ().getClientDB ().findRelationScore (getVisibleRelationScoreID (), "DiplomacyUI");
 		final Image eyesLeft = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesLeftImage ()));
 		final Image eyesRight = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesRightImage ()));
@@ -204,6 +226,48 @@ public final class DiplomacyUI extends MomClientDialogUI
 		
 		// Need this to know where to draw the wizard's photo
 		final XmlLayoutComponent mirrorLocation = getDiplomacyLayout ().findComponent ("frmDiplomacyMirror");
+		
+		// Actions
+		acceptTalkToAction = new LoggingAction ((ev) ->
+		{
+			if (talkingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+			{
+				// Show popup menu to select mood to talk to the wizard with
+				final JPopupMenu popup = new JPopupMenu ();
+				
+				getClient ().getClientDB ().getRelationScore ().forEach (rs ->
+				{
+					final String relationScoreName = getLanguageHolder ().findDescription (rs.getRelationScoreName ());
+					final JMenuItem item = new JMenuItem (new LoggingAction (relationScoreName, (ev2) ->
+					{
+						final AcceptDiplomacyMessage msg = new AcceptDiplomacyMessage ();
+						msg.setTalkToPlayerID (getTalkingWizardID ());
+						msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
+						msg.setAccept (true);
+						getClient ().getServerConnection ().sendMessageToServer (msg);
+					}));
+					
+					item.setFont (getSmallFont ());
+					popup.add (item);								
+				});
+				
+				popup.show (contentPane, contentPane.getWidth () / 2, (contentPane.getHeight () * 3) / 4);
+			}
+			else
+			{
+				final AcceptDiplomacyMessage msg = new AcceptDiplomacyMessage ();
+				msg.setTalkToPlayerID (getTalkingWizardID ());
+				msg.setAccept (true);
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+			}
+		});
+		
+		refuseTalkToAction = new LoggingAction ((ev) ->
+		{
+			final AcceptDiplomacyMessage msg = new AcceptDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+		});
 		
 		// Initialize the frame
 		final DiplomacyUI ui = this;
@@ -280,8 +344,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 			@Override
 			public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
 			{
-				// For now, since the only thing this is used for is meeting wizards, clicking just closes the dialog out
-				if (!MIRROR_STATES.contains (getPortraitState ()))
+				// If the diplomacy screen is only used for an initial meeting or other message which has no associated options for us to pick, then clicking just closes it
+				// For any other use of the screen, assume there'll be some other option to close it with
+				if ((!MIRROR_STATES.contains (getPortraitState ())) && (getMeetWizardMessage () != null))
 				{
 					setPortraitState (DiplomacyPortraitState.DISAPPEARING);
 					initializeState ();
@@ -324,6 +389,8 @@ public final class DiplomacyUI extends MomClientDialogUI
 			try
 			{
 				List<LanguageTextVariant> variants = null;
+				final List<Component> componentsBelowText = new ArrayList<Component> ();
+				
 				if (getRequestAudienceMessage () != null)
 				{
 					// Normal or impatient greeting, based on their level of patience talking to us
@@ -331,6 +398,10 @@ public final class DiplomacyUI extends MomClientDialogUI
 						variants = getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ();
 					else
 						variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
+
+					componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+					componentsBelowText.add (getUtils ().createTextOnlyButton (acceptTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
+					componentsBelowText.add (getUtils ().createTextOnlyButton (refuseTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
 				}
 				else
 				{
@@ -350,14 +421,13 @@ public final class DiplomacyUI extends MomClientDialogUI
 				{
 					final LanguageTextVariant variant = variants.get (getRandomUtils ().nextInt (variants.size ()));
 					
-					final PlayerPublicDetails talkingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTalkingWizardID (), "initializeState (T)");
 					final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initializeState (O)");
 					
 					final String text = getLanguageHolder ().findDescription (variant.getTextVariant ()).replaceAll
 						("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingWizard));
+						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer));
 						
-					showText (text);
+					showText (text, componentsBelowText);
 				}
 			}
 			catch (final Exception e)
@@ -532,7 +602,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 	 * 
 	 * @param components Components to place within the text panel
 	 */
-	private final void updateTextPanel (final List<? extends Component> components)
+	private final void updateTextPanel (final List<Component> components)
 	{
 		// Remove old components
 		textPanelComponents.forEach (c -> textPanel.remove (c));
@@ -553,11 +623,17 @@ public final class DiplomacyUI extends MomClientDialogUI
 	
 	/**
 	 * @param text Text to show in the text panel
+	 * @param componentsBelowText Any components to add below the text lines
 	 */
-	private final void showText (final String text)
+	private final void showText (final String text, final List<Component> componentsBelowText)
 	{
-		final List<JLabel> labels = getUtils ().wrapLabels (getMediumFont (), MomUIConstants.GOLD, text, textPanelLayout.getWidth ());
-		updateTextPanel (labels);
+		final List<Component> components = new ArrayList<Component> ();
+		components.addAll (getUtils ().wrapLabels (getMediumFont (), MomUIConstants.GOLD, text, textPanelLayout.getWidth ()));
+		
+		if (componentsBelowText != null)
+			components.addAll (componentsBelowText);
+		
+		updateTextPanel (components);
 	}
 
 	/**
@@ -567,6 +643,23 @@ public final class DiplomacyUI extends MomClientDialogUI
 	public final void languageChanged ()
 	{
 		getDialog ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getTitle ()));
+
+		try
+		{
+			final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "languageChanged (O)");
+			
+			acceptTalkToAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getAcceptTalkTo ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			refuseTalkToAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getRefuseTalkTo ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+		}
+		catch (final IOException e)
+		{
+			log.error (e, e);
+		}
 	}
 	
 	/**
@@ -679,6 +772,22 @@ public final class DiplomacyUI extends MomClientDialogUI
 	public final void setMediumFont (final Font font)
 	{
 		mediumFont = font;
+	}
+	
+	/**
+	 * @return Small font
+	 */
+	public final Font getSmallFont ()
+	{
+		return smallFont;
+	}
+
+	/**
+	 * @param font Small font
+	 */
+	public final void setSmallFont (final Font font)
+	{
+		smallFont = font;
 	}
 	
 	/**

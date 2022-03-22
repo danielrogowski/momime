@@ -4590,6 +4590,12 @@ Bonus Or +GOLD_BONUS%</text>
 		<notYourTurn language="en">
 			<text>You can't initiate diplomacy when it isn't your turn</text>
 		</notYourTurn>
+		<acceptTalkTo language="en">
+			<text>Agree to talk to TALKING_PLAYER_NAME</text>
+		</acceptTalkTo>
+		<refuseTalkTo language="en">
+			<text>Refuse to talk to TALKING_PLAYER_NAME</text>
+		</refuseTalkTo>
 		<normalGreetingPhrase variantNumber="1">
 			<textVariant language="en">
 				<text>OUR_PLAYER_NAME, normal greeting from TALKING_PLAYER_NAME.</text>

@@ -60,6 +60,7 @@
     			<value>momime.common.messages.clienttoserver.RequestRemoveQueuedSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestAcceptOfferMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestDiplomacyMessage</value>
+    			<value>momime.common.messages.clienttoserver.AcceptDiplomacyMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>

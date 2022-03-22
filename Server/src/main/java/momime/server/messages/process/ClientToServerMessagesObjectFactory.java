@@ -1,6 +1,7 @@
 package momime.server.messages.process;
 
 import jakarta.xml.bind.annotation.XmlRegistry;
+import momime.common.messages.clienttoserver.AcceptDiplomacyMessage;
 import momime.common.messages.clienttoserver.AlchemyMessage;
 import momime.common.messages.clienttoserver.CancelPendingMovementAndSpecialOrdersMessage;
 import momime.common.messages.clienttoserver.CancelTargetSpellMessage;
@@ -362,6 +363,15 @@ public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 	public final RequestDiplomacyMessage createRequestDiplomacyMessage ()
 	{
 		return getFactory ().createRequestDiplomacyMessage ();
+	}
+
+	/**
+	 * @return Newly created AcceptDiplomacyMessage
+	 */
+	@Override
+	public final AcceptDiplomacyMessage createAcceptDiplomacyMessage ()
+	{
+		return getFactory ().createAcceptDiplomacyMessage ();
 	}
 	
 	/**

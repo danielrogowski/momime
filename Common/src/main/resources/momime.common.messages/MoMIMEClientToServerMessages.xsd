@@ -640,6 +640,27 @@ They get that choice before we get to say what we want to talk to them about.</x
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="acceptDiplomacyMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Another wizard wanted to talk to us, and we accept or refuse.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="talkToPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="visibleRelationScoreID" type="momimecommon:relationScoreID">
+						    <xsd:annotation>
+		  						<xsd:documentation>Only set if the player we want to talk to is another human player.  AI players don't care what mood we're in with them.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
+						<xsd:element minOccurs="1" maxOccurs="1" name="accept" type="xsd:boolean" />
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
 <!-- Simple types -->
 
 	<xsd:simpleType name="heroItemSlotNumber">

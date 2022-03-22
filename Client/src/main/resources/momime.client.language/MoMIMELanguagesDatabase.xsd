@@ -2497,6 +2497,14 @@
 						<xsd:selector xpath="notYourTurn" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptTalkToPK">
+						<xsd:selector xpath="acceptTalkTo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRefuseTalkToPK">
+						<xsd:selector xpath="refuseTalkTo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenNormalGreetingPhrasePK">
 						<xsd:selector xpath="normalGreetingPhrase" />
 						<xsd:field xpath="@variantNumber" />
@@ -4797,6 +4805,8 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notYourTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="acceptTalkTo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refuseTalkTo" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="normalGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Normal greeting">
 				<xsd:key name="diplomacyScreenNormalGreetingPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />

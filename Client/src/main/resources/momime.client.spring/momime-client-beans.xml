@@ -2346,6 +2346,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellClientUtils" ref="spellClientUtils" />
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="mediumFont" ref="mediumFont" />
+		<property name="smallFont" ref="smallFont" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />

@@ -152,11 +152,11 @@ public final class TestDiplomacyUI extends ClientTestData
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final PlayerPublicDetails talkingWizard = new PlayerPublicDetails (null, null, null);
-		when (multiplayerSessionUtils.findPlayerWithID (players, anotherWizard ? 2 : 1, "initializeState (T)")).thenReturn (talkingWizard);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (anotherWizard ? 2 : 1), anyString ())).thenReturn (talkingWizard);
 		when (wizardClientUtils.getPlayerName (talkingWizard)).thenReturn ("Ariel");
 
 		final PlayerPublicDetails ourWizard = new PlayerPublicDetails (null, null, null);
-		when (multiplayerSessionUtils.findPlayerWithID (players, 3, "initializeState (O)")).thenReturn (ourWizard); 
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (3), anyString ())).thenReturn (ourWizard); 
 		when (wizardClientUtils.getPlayerName (ourWizard)).thenReturn ("Bob");
 		
 		// Client

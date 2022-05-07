@@ -1632,6 +1632,11 @@ Exception to this is if conjunction is true, it tells the client to update (or c
 		  						<xsd:documentation>Whether to use normal or impatient greeting (not set when its a human player talking).</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>						
+						<xsd:element minOccurs="1" maxOccurs="1" name="initiatingRequest" type="xsd:boolean">
+						    <xsd:annotation>
+		  						<xsd:documentation>If true, we're the one asking the other wizard to talk to us.  If false, we're agreeing to a request from the other wizard to talk to them.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

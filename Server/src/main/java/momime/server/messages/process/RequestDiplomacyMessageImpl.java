@@ -55,6 +55,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			final RequestAudienceMessage msg = new RequestAudienceMessage ();
 			msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
 			msg.setVisibleRelationScoreID (getVisibleRelationScoreID ());
+			msg.setInitiatingRequest (true);
 			talkToPlayer.getConnection ().sendMessageToClient (msg);
 		}
 		else

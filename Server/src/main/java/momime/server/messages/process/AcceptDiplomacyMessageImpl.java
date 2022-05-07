@@ -41,10 +41,10 @@ public final class AcceptDiplomacyMessageImpl extends AcceptDiplomacyMessage imp
 			final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getTalkToPlayerID (), "AcceptDiplomacyMessageImpl");
 			if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
-				// Need to replace this with a different message, or put some kind of "responding to our request" flag in it so client shows greeting without the accept/refuse option
 				final RequestAudienceMessage msg = new RequestAudienceMessage ();
 				msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
 				msg.setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				msg.setInitiatingRequest (false);		// Responding to request from the other wizard, rather than initiating diplomacy ourselves
 				talkToPlayer.getConnection ().sendMessageToClient (msg);
 			}
 			else

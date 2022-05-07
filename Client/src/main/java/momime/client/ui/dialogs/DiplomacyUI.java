@@ -167,6 +167,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/** The request audience message we're showing the animation for */
 	private RequestAudienceMessageImpl requestAudienceMessage;
 	
+	/** Whether we've accepted talking to the other wizard (this hides the accept/reject options, same as setting initiatingRequest = true on the message above) */
+	private boolean accepted;
+	
 	/** Relation to use to decide the eye colour, facial expression and music */
 	private String visibleRelationScoreID;
 	
@@ -245,6 +248,10 @@ public final class DiplomacyUI extends MomClientDialogUI
 						msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
 						msg.setAccept (true);
 						getClient ().getServerConnection ().sendMessageToServer (msg);
+
+						accepted = true;
+						setPortraitState (DiplomacyPortraitState.NORMAL);
+						initializeState ();
 					}));
 					
 					item.setFont (getSmallFont ());
@@ -255,10 +262,15 @@ public final class DiplomacyUI extends MomClientDialogUI
 			}
 			else
 			{
+				// Don't need to ask for mood to talk to AI players with so just send it right away
 				final AcceptDiplomacyMessage msg = new AcceptDiplomacyMessage ();
 				msg.setTalkToPlayerID (getTalkingWizardID ());
 				msg.setAccept (true);
 				getClient ().getServerConnection ().sendMessageToServer (msg);
+				
+				accepted = true;
+				setPortraitState (DiplomacyPortraitState.NORMAL);
+				initializeState ();
 			}
 		});
 		
@@ -295,7 +307,10 @@ public final class DiplomacyUI extends MomClientDialogUI
 					
 					// Stop animation timer
 					if ((timer != null) && (timer.isRunning ()))
+					{
 						timer.stop ();
+						timer = null;
+					}
 					
 					// Go back to the overland music
 					if ((standardPhotoDef != null) && (standardPhotoDef.getDiplomacyPlayList () != null))
@@ -384,8 +399,15 @@ public final class DiplomacyUI extends MomClientDialogUI
 	 */
 	private final void initializeState ()
 	{
+		// If there's an old timer running then stop it
+		if ((timer != null) && (timer.isRunning ()))
+		{
+			timer.stop ();
+			timer = null;
+		}
+		
 		// Initialize text
-		if ((getPortraitState () == DiplomacyPortraitState.TALKING) && (talkingWizardDetails != null))
+		if (((accepted) || (getPortraitState () == DiplomacyPortraitState.TALKING)) && (talkingWizardDetails != null))
 			try
 			{
 				List<LanguageTextVariant> variants = null;
@@ -399,9 +421,13 @@ public final class DiplomacyUI extends MomClientDialogUI
 					else
 						variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
 
-					componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
-					componentsBelowText.add (getUtils ().createTextOnlyButton (acceptTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
-					componentsBelowText.add (getUtils ().createTextOnlyButton (refuseTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
+					// Only show choices if we're responding to a request for diplomacy from the other wizard (not if they're accepting our request)
+					if ((getRequestAudienceMessage ().isInitiatingRequest ()) && (!accepted))
+					{
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (acceptTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
+					}
 				}
 				else
 				{

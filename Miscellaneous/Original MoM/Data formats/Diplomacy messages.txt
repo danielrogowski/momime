@@ -16,12 +16,12 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	195 - Switch off your X spell cast on Y (city curse) or I will kill you
 	210 - Stop getting stronger or I will kill you
 	
-	225 - Meet, Maniacal
-	240 - Meet, Ruthless
-	255 - Meet, Aggressive
-	270 - Meet, Choatic
-	285 - Meet, Lawful
-	300 - Meet, Peaceful (though this seems a bug, as none of the messages sound at all peaceful)
+	225 - Meet, Maniacal (wizardPersonality WP01 initialMeetingPhrase)
+	240 - Meet, Ruthless (wizardPersonality WP02 initialMeetingPhrase)
+	255 - Meet, Aggressive (wizardPersonality WP03 initialMeetingPhrase)
+	270 - Meet, Choatic (wizardPersonality WP04 initialMeetingPhrase)
+	285 - Meet, Lawful (wizardPersonality WP05 initialMeetingPhrase)
+	300 - Meet, Peaceful (though this seems a bug, as none of the messages sound at all peaceful) (wizardPersonality WP06 initialMeetingPhrase)
 	
 	315 - Broken treaty
 	330 - Get out of my land or I will break treaty
@@ -47,9 +47,9 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	600 - Declare war
 	615 - Declare war
 	
-	630 - Starting diplomacy (saying hi)
-	645 - Starting diplomacy (saying hi, but mad)
-	660 - I'm not talking to you!
+	630 - Starting diplomacy (saying hi) (diplomacyScreen / normalGreetingPhrase)
+	645 - Starting diplomacy (saying hi, but mad) (diplomacyScreen / impatientGreetingPhrase)
+	660 - I'm not talking to you! (diplomacyScreen / refuseGreeting)
 	675 - Lets have a wizard pact
 	690 - Lets have an alliance
 	705 - Break your treaty with wizard X

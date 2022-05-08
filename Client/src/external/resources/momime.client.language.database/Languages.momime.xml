@@ -2160,9 +2160,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 		<enterServer language="pl">
 			<text>lub wpisz poniżej adres IP serwera</text>
 		</enterServer>
-        <portNumber language="en">
-            <text>port</text>
-        </portNumber>
+		<portNumber language="en">
+			<text>port</text>
+		</portNumber>
 		<playerName language="en">
 			<text>Player name:</text>
 		</playerName>
@@ -4225,12 +4225,12 @@ Bonus Or +GOLD_BONUS%</text>
 		<enemyRazed language="pl">
 			<text>CITY_NAME zostało zniszczone</text>
 		</enemyRazed>
-        <enemyRampaged language="en">
-            <text>The monsters rampage through CITY_NAME then disappear</text>
-        </enemyRampaged>
-        <enemyRuined language="en">
-            <text>CITY_NAME was reduced to ruins</text>
-        </enemyRuined>
+		<enemyRampaged language="en">
+			<text>The monsters rampage through CITY_NAME then disappear</text>
+		</enemyRampaged>
+		<enemyRuined language="en">
+			<text>CITY_NAME was reduced to ruins</text>
+		</enemyRuined>
 		<enemyGotGoldFromYourCity language="en">
 			<text>GOLD_FROM_CITY gold pieces were lost.</text>
 		</enemyGotGoldFromYourCity>
@@ -4598,14 +4598,180 @@ Bonus Or +GOLD_BONUS%</text>
 		</refuseTalkTo>
 		<normalGreetingPhrase variantNumber="1">
 			<textVariant language="en">
-				<text>OUR_PLAYER_NAME, normal greeting from TALKING_PLAYER_NAME.</text>
+				<text>Hail, mighty OUR_PLAYER_NAME. I bear greetings and words of wisdom.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations, puissant OUR_PLAYER_NAME. Je suis porteur de messages de bienvenue et de sagesse.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich verneige mich vor solcher Macht. Seid gegruesst, OUR_PLAYER_NAME. Ich komme mit guten Wuenschen und Worten der Weisheit.</text>
+			</textVariant>
+		</normalGreetingPhrase>
+		<normalGreetingPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Hail, glorious OUR_PLAYER_NAME. I, TALKING_PLAYER_NAME bear greetings.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations, glorieux OUR_PLAYER_NAME. TALKING_PLAYER_NAME vous salue.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich verneige mich vor solchem Ruhm. Seid gegruesst OUR_PLAYER_NAME. Ich, TALKING_PLAYER_NAME freue mich, Euch zu sehen.</text>
+			</textVariant>
+		</normalGreetingPhrase>
+		<normalGreetingPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Greetings, most powerful OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations, tout puissant OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich verneige mich vor solcher Macht. Seid gegruesst OUR_PLAYER_NAME.</text>
 			</textVariant>
 		</normalGreetingPhrase>
 		<impatientGreetingPhrase variantNumber="1">
 			<textVariant language="en">
-				<text>OUR_PLAYER_NAME, impatient greeting from TALKING_PLAYER_NAME.</text>
+				<text>Despite your insolence and arrogant pride, TALKING_PLAYER_NAME grants you an audience.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>En depit de votre insolence et de votre orgueil, TALKING_PLAYER_NAME vous accorde une audience.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Trotzt Eurer Unverfrorenheit und Eures hochmuetigen Stolzes gewaehrt Euch TALKING_PLAYER_NAME eine Audienz.</text>
 			</textVariant>
 		</impatientGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>We expect you have come to offer amends to the mighty TALKING_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Nous esperons que vous venez presenter des excuses au puissant TALKING_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Wir nehmen an, Ihr seid gekommen, um d. maechtigen TALKING_PLAYER_NAME eine Wiedergutmachung anzubieten.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I will grant a short audience with a dishonorable wizard, but do not try my patience.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accorde une courte audience a un magicien peu honorable, mais n'essayez pas d'abuser de ma patience.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich werde einem ehrlosen Zauberer eine kurze Audienz gewaehren, aber stellt meine Geduld auf keine allzu grosse Probe.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I reluctantly grant you an audience. Be brief, for my time is precious.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>C'est a contre-coeur que je vous accorde une audience. Soyez bref car mon temps est precieux.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich gewaehre Euch eine Audienz, wenn auch widerstrebend. Fasst Euch kurz, denn meine Zeit ist kostbar.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
+		<impatientGreetingPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>I have little time to spare, so be brief.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je n'ai pas beaucoup de temps a vous consacrer, soyez bref.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich kann keine Zeit verschwenden, also fasst Euch kurz.</text>
+			</textVariant>
+		</impatientGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>Go away. The time for conversation is past, and the time for action is now.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Partez. Il n'est plus temps de parler mais d'agir.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Schert Euch weg! Die Zeit der Verhandlungen ist vorueber. Nun ist es Zeit zu handeln.</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I have more pressing matters than to speak with a tyrant.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai mieux a faire que de discuter avec un tyran.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe Wichtigeres zu tun, als mit einem Tyrannen zu debattieren.</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>More important issues require my attention.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Des problemes plus importants m'appellent.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich muss mich nun wichtigeren Angelegenheiten zuwenden.</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>Any discussions would be inappropriate at this time.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Le moment est mal choisi pour discuter.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Verhandlungen sind zu diesem Zeitpunkt nicht mehr angebracht.</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>I do not wish to speak with you!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne souhaite pas vous parler!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich verspuere keinerlei Beduerfnis, mit Euch zu sprechen!</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>You have tried my patience. Now go away!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ma patience est a bout. Partez maintenant!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr habt meine Geduld auf die Probe gestellt. Macht Euch nun davon!</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>I wish to be left alone at this time!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je veux qu'on me laisse seul!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich wuensche, alleingelassen zu werden!</text>
+			</textVariant>
+		</refuseGreetingPhrase>
+		<refuseGreetingPhrase variantNumber="8">
+			<textVariant language="en">
+				<text>You can't see the wizard today.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous ne pouvez pas voir le sorcier aujourd'hui.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr koennt den Zauberer heute nicht sehen!</text>
+			</textVariant>
+		</refuseGreetingPhrase>
 	</diplomacyScreen>
 	<helpScreen>
 		<title language="en">

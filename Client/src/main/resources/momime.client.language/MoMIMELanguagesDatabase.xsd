@@ -2513,6 +2513,10 @@
 						<xsd:selector xpath="impatientGreetingPhrase" />
 						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenRefuseGreetingPhrasePK">
+						<xsd:selector xpath="refuseGreetingPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="helpScreen" type="momimelangs:helpScreen">
 					<xsd:key name="helpScreenTitlePK">
@@ -4815,6 +4819,12 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="impatientGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Impatient greeting">
 				<xsd:key name="diplomacyScreenImpatientGreetingPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="refuseGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Refuse greeting">
+				<xsd:key name="diplomacyScreenRefuseGreetingPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />
 					<xsd:field xpath="@language" />
 				</xsd:key>

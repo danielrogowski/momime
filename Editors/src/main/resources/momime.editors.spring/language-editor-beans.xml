@@ -22,10 +22,16 @@
 
 	<!-- MoM IME Language specific -->
 
+	<bean id="diplomacyScreenGrid" class="momime.editors.client.language.diplomacyScreen.DiplomacyScreenGrid" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+	</bean>
+
 	<bean id="dispatcher" class="com.ndg.xmleditor.editor.XmlEditorDispatcher">
 		<property name="creator" ref="creator" />
 		<property name="gridBeansMap">
 			<map>
+				<entry key="diplomacyScreen" value="diplomacyScreenGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

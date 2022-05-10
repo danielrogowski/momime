@@ -2505,6 +2505,34 @@
 						<xsd:selector xpath="refuseTalkTo" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenWaitingForAcceptTalkToPK">
+						<xsd:selector xpath="waitingForAcceptTalkTo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenWaitingForProposalPK">
+						<xsd:selector xpath="waitingForProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeTreatyPK">
+						<xsd:selector xpath="proposeTreaty" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenBreakTreatyPK">
+						<xsd:selector xpath="breakTreaty" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenOfferTributePK">
+						<xsd:selector xpath="offerTribute" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenExchangeSpellsPK">
+						<xsd:selector xpath="exchangeSpells" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenDoneChoicesPK">
+						<xsd:selector xpath="doneChoices" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenNormalGreetingPhrasePK">
 						<xsd:selector xpath="normalGreetingPhrase" />
 						<xsd:field xpath="@variantNumber" />
@@ -4811,6 +4839,13 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notYourTurn" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="acceptTalkTo" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refuseTalkTo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForAcceptTalkTo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeTreaty" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakTreaty" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerTribute" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="exchangeSpells" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="doneChoices" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="normalGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Normal greeting">
 				<xsd:key name="diplomacyScreenNormalGreetingPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />

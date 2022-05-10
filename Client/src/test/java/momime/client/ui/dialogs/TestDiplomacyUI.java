@@ -187,6 +187,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		diplomacy.setSpellClientUtils (new SpellClientUtilsImpl ());
 		diplomacy.setRandomUtils (mock (RandomUtils.class));
 		diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);
+		diplomacy.setTextState (DiplomacyTextState.INITIAL_CONTACT);
 		
 		// Display form		
 		diplomacy.setModal (false);

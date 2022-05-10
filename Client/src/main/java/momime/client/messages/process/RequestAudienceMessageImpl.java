@@ -8,6 +8,7 @@ import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.ui.dialogs.DiplomacyPortraitState;
+import momime.client.ui.dialogs.DiplomacyTextState;
 import momime.client.ui.dialogs.DiplomacyUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.messages.servertoclient.RequestAudienceMessage;
@@ -32,6 +33,7 @@ public final class RequestAudienceMessageImpl extends RequestAudienceMessage imp
 		diplomacy.setTalkingWizardID (getTalkFromPlayerID ());
 		diplomacy.setRequestAudienceMessage (this);
 		diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);
+		diplomacy.setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
 		diplomacy.setVisibleRelationScoreID (getVisibleRelationScoreID ());
 		diplomacy.setVisible (true);
 	}

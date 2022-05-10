@@ -45,6 +45,9 @@ import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.client.ui.dialogs.DiplomacyPortraitState;
+import momime.client.ui.dialogs.DiplomacyTextState;
+import momime.client.ui.dialogs.DiplomacyUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.utils.PlayerPickClientUtils;
 import momime.client.utils.TextUtils;
@@ -253,6 +256,13 @@ public final class WizardsUI extends MomClientFrameUI
 							msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
 							msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
 							getClient ().getServerConnection ().sendMessageToServer (msg);
+
+							// Show the mirror while we wait for them to respond
+							final DiplomacyUI diplomacy = getPrototypeFrameCreator ().createDiplomacy ();
+							diplomacy.setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
+							diplomacy.setPortraitState (DiplomacyPortraitState.MIRROR);
+							diplomacy.setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+							diplomacy.setVisible (true);
 						}));
 						
 						item.setFont (getSmallFont ());
@@ -263,9 +273,17 @@ public final class WizardsUI extends MomClientFrameUI
 				}
 				else
 				{
+					// Don't need to ask for mood to talk to an AI wizard
 					final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 					msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
 					getClient ().getServerConnection ().sendMessageToServer (msg);
+					
+					// Show the mirror while we wait for them to respond
+					final DiplomacyUI diplomacy = getPrototypeFrameCreator ().createDiplomacy ();
+					diplomacy.setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
+					diplomacy.setPortraitState (DiplomacyPortraitState.MIRROR);
+					diplomacy.setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+					diplomacy.setVisible (true);
 				}
 			}
 		});

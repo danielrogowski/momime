@@ -4596,6 +4596,27 @@ Bonus Or +GOLD_BONUS%</text>
 		<refuseTalkTo language="en">
 			<text>Refuse to talk to TALKING_PLAYER_NAME</text>
 		</refuseTalkTo>
+		<waitingForAcceptTalkTo language="en">
+			<text>Waiting to see whether TALKING_PLAYER_NAME will grant you an audience...</text>
+		</waitingForAcceptTalkTo>
+		<waitingForProposal language="en">
+			<text>Waiting for TALKING_PLAYER_NAME to make a proposal...</text>
+		</waitingForProposal>
+		<proposeTreaty language="en">
+			<text>Propose Treaty</text>
+		</proposeTreaty>
+		<breakTreaty language="en">
+			<text>Threaten/Break Treaty</text>
+		</breakTreaty>
+		<offerTribute language="en">
+			<text>Offer Tribute</text>
+		</offerTribute>
+		<exchangeSpells language="en">
+			<text>Exchange Spells</text>
+		</exchangeSpells>
+		<doneChoices language="en">
+			<text>See if TALKING_PLAYER_NAME wishes to make any proposals, or end conversation</text>
+		</doneChoices>
 		<normalGreetingPhrase variantNumber="1">
 			<textVariant language="en">
 				<text>Hail, mighty OUR_PLAYER_NAME. I bear greetings and words of wisdom.</text>

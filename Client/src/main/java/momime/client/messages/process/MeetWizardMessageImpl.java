@@ -14,7 +14,6 @@ import momime.client.ui.dialogs.DiplomacyPortraitState;
 import momime.client.ui.dialogs.DiplomacyUI;
 import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.NewGameUI;
-import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.WizardsUI;
 import momime.common.MomException;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -50,8 +49,8 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Cu
 	/** UI for screen showing power base history for each wizard */
 	private HistoryUI historyUI;
 	
-	/** Prototype frame creator */
-	private PrototypeFrameCreator prototypeFrameCreator;
+	/** Diplomacy UI */
+	private DiplomacyUI diplomacyUI;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -90,12 +89,11 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Cu
 		// Show diplomacy screen?
 		if ((getKnownWizardDetails ().getPlayerID () != getClient ().getOurPlayerID ()) && (isShowAnimation () != null) && (isShowAnimation ()))
 		{
-			final DiplomacyUI diplomacy = getPrototypeFrameCreator ().createDiplomacy ();
-			diplomacy.setTalkingWizardID (getKnownWizardDetails ().getPlayerID ());
-			diplomacy.setMeetWizardMessage (this);
-			diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);
-			diplomacy.setVisibleRelationScoreID (getVisibleRelationScoreID ());
-			diplomacy.setVisible (true);
+			getDiplomacyUI ().setTalkingWizardID (getKnownWizardDetails ().getPlayerID ());
+			getDiplomacyUI ().setMeetWizardMessage (this);
+			getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
+			getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+			getDiplomacyUI ().setVisible (true);
 		}
 		else
 			getClient ().finishCustomDurationMessage (this);
@@ -222,18 +220,18 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Cu
 	}
 
 	/**
-	 * @return Prototype frame creator
+	 * @return Diplomacy UI
 	 */
-	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	public final DiplomacyUI getDiplomacyUI ()
 	{
-		return prototypeFrameCreator;
+		return diplomacyUI;
 	}
 
 	/**
-	 * @param obj Prototype frame creator
+	 * @param ui Diplomacy UI
 	 */
-	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	public final void setDiplomacyUI (final DiplomacyUI ui)
 	{
-		prototypeFrameCreator = obj;
+		diplomacyUI = ui;
 	}
 }

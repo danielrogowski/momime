@@ -1643,6 +1643,21 @@ Exception to this is if conjunction is true, it tells the client to update (or c
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="endDiplomacyMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Another player (may be human or AI player) either refuses to talk to us up front, or we've been talking to them and now they lost patience and telling us to go away.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="talkFromPlayerID" type="mps:playerID" />
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
 <!--  Enums -->
 
 	<xsd:simpleType name="animationID">

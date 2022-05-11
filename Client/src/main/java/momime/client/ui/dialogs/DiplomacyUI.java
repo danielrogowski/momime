@@ -309,8 +309,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 		doneChoicesAction = new LoggingAction ((ev) -> {});
 		
 		// Initialize the frame
-		final DiplomacyUI ui = this;
-		getDialog ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		getDialog ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
 		getDialog ().addWindowListener (new WindowAdapter ()
 		{
 			@Override
@@ -318,17 +317,12 @@ public final class DiplomacyUI extends MomClientDialogUI
 			{
 				try
 				{
-					getLanguageChangeMaster ().removeLanguageChangeListener (ui);
-				
 					// Unblock the message that caused this
 					if (!unblocked)
 					{
 						if (getMeetWizardMessage () != null)
 							getClient ().finishCustomDurationMessage (getMeetWizardMessage ());
 						
-						if (getRequestAudienceMessage () != null)
-							getClient ().finishCustomDurationMessage (getRequestAudienceMessage ());
-							
 						unblocked = true;
 					}
 					
@@ -384,7 +378,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 		final MouseAdapter diplomacyMouseAdapter = new MouseAdapter ()
 		{
 			/**
-			 * Advance to the next state
+			 * Clicks advance to the next state or close the window, depending on current state
 			 */
 			@Override
 			public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
@@ -396,6 +390,16 @@ public final class DiplomacyUI extends MomClientDialogUI
 					setPortraitState (DiplomacyPortraitState.DISAPPEARING);
 					initializePortrait ();
 				}
+				
+				else if (getTextState () == DiplomacyTextState.REFUSED_TALK)
+					try
+					{
+						setVisible (false);
+					}
+					catch (final IOException e)
+					{
+						log.error (e, e);
+					}
 			}
 		};
 		
@@ -450,7 +454,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/**
 	 * Updates the text, buttons or other controls in the main portion of the screen according to whatever is set in textState
 	 */
-	private final void initializeText ()
+	public final void initializeText ()
 	{
 		List<LanguageTextVariant> variants = null;
 		List<LanguageText> singular = null;
@@ -628,7 +632,14 @@ public final class DiplomacyUI extends MomClientDialogUI
 						}
 					}
 					else if (getPortraitState () == DiplomacyPortraitState.DISAPPEARING)
-						getDialog ().dispose ();
+						try
+						{
+							setVisible (false);
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
 				}
 				
 				contentPane.repaint ();

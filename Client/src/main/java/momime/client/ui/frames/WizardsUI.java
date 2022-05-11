@@ -140,6 +140,9 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
 	
+	/** Diplomacy UI */
+	private DiplomacyUI diplomacyUI;
+	
 	/** List of gem buttons for each wizard */
 	final List<JButton> wizardButtons = new ArrayList<JButton> ();
 	
@@ -258,11 +261,10 @@ public final class WizardsUI extends MomClientFrameUI
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 
 							// Show the mirror while we wait for them to respond
-							final DiplomacyUI diplomacy = getPrototypeFrameCreator ().createDiplomacy ();
-							diplomacy.setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
-							diplomacy.setPortraitState (DiplomacyPortraitState.MIRROR);
-							diplomacy.setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
-							diplomacy.setVisible (true);
+							getDiplomacyUI ().setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
+							getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.MIRROR);
+							getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+							getDiplomacyUI ().setVisible (true);
 						}));
 						
 						item.setFont (getSmallFont ());
@@ -279,11 +281,10 @@ public final class WizardsUI extends MomClientFrameUI
 					getClient ().getServerConnection ().sendMessageToServer (msg);
 					
 					// Show the mirror while we wait for them to respond
-					final DiplomacyUI diplomacy = getPrototypeFrameCreator ().createDiplomacy ();
-					diplomacy.setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
-					diplomacy.setPortraitState (DiplomacyPortraitState.MIRROR);
-					diplomacy.setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
-					diplomacy.setVisible (true);
+					getDiplomacyUI ().setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
+					getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.MIRROR);
+					getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+					getDiplomacyUI ().setVisible (true);
 				}
 			}
 		});
@@ -1183,6 +1184,22 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+	
+	/**
+	 * @return Diplomacy UI
+	 */
+	public final DiplomacyUI getDiplomacyUI ()
+	{
+		return diplomacyUI;
+	}
+
+	/**
+	 * @param ui Diplomacy UI
+	 */
+	public final void setDiplomacyUI (final DiplomacyUI ui)
+	{
+		diplomacyUI = ui;
 	}
 	
 	/**

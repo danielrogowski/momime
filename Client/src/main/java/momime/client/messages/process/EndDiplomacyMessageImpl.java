@@ -7,15 +7,14 @@ import javax.xml.stream.XMLStreamException;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import jakarta.xml.bind.JAXBException;
-import momime.client.ui.dialogs.DiplomacyPortraitState;
 import momime.client.ui.dialogs.DiplomacyTextState;
 import momime.client.ui.dialogs.DiplomacyUI;
-import momime.common.messages.servertoclient.RequestAudienceMessage;
+import momime.common.messages.servertoclient.EndDiplomacyMessage;
 
 /**
- * Another player (may be human or AI player) wants to talk to us.  We have to pick whether we will talk to them or refuse.
+ * Another player (may be human or AI player) either refuses to talk to us up front, or we've been talking to them and now they lost patience and telling us to go away.
  */
-public final class RequestAudienceMessageImpl extends RequestAudienceMessage implements BaseServerToClientMessage
+public final class EndDiplomacyMessageImpl extends EndDiplomacyMessage implements BaseServerToClientMessage
 {
 	/** Diplomacy UI */
 	private DiplomacyUI diplomacyUI;
@@ -29,11 +28,8 @@ public final class RequestAudienceMessageImpl extends RequestAudienceMessage imp
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
 		getDiplomacyUI ().setTalkingWizardID (getTalkFromPlayerID ());
-		getDiplomacyUI ().setRequestAudienceMessage (this);
-		getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
-		getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
-		getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-		getDiplomacyUI ().setVisible (true);
+		getDiplomacyUI ().setTextState (DiplomacyTextState.REFUSED_TALK);
+		getDiplomacyUI ().initializeText ();
 	}
 	
 	/**

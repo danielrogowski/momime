@@ -12,6 +12,7 @@ import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.messages.clienttoserver.AcceptDiplomacyMessage;
+import momime.common.messages.servertoclient.EndDiplomacyMessage;
 import momime.common.messages.servertoclient.RequestAudienceMessage;
 import momime.server.MomSessionVariables;
 
@@ -34,11 +35,12 @@ public final class AcceptDiplomacyMessageImpl extends AcceptDiplomacyMessage imp
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
+		final MomSessionVariables mom = (MomSessionVariables) thread;
+		
+		final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getTalkToPlayerID (), "AcceptDiplomacyMessageImpl");
+		
 		if (isAccept ())
 		{
-			final MomSessionVariables mom = (MomSessionVariables) thread;
-			
-			final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getTalkToPlayerID (), "AcceptDiplomacyMessageImpl");
 			if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
 				final RequestAudienceMessage msg = new RequestAudienceMessage ();
@@ -51,6 +53,18 @@ public final class AcceptDiplomacyMessageImpl extends AcceptDiplomacyMessage imp
 			{
 				throw new IOException ("Rules for accepting an AI player's request to talk not yet written");
 			}
+		}
+		else
+		{
+			// Refusing
+			if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+			{
+				final EndDiplomacyMessage msg = new EndDiplomacyMessage ();
+				msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+				talkToPlayer.getConnection ().sendMessageToClient (msg);
+			}
+			
+			// Don't need to do anything to refuse talking to AI players, just nothing happens
 		}
 	}
 	

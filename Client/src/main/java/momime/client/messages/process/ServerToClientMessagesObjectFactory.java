@@ -24,6 +24,7 @@ import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationWallData;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
+import momime.common.messages.servertoclient.EndDiplomacyMessage;
 import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
@@ -702,6 +703,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final RequestAudienceMessage createRequestAudienceMessage ()
 	{
 		return getFactory ().createRequestAudienceMessage ();
+	}
+	
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final EndDiplomacyMessage createEndDiplomacyMessage ()
+	{
+		return getFactory ().createEndDiplomacyMessage ();
 	}
 	
 	/**

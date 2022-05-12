@@ -262,10 +262,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
 	</bean>
 
-	<bean id="acceptDiplomacyMessage" class="momime.server.messages.process.AcceptDiplomacyMessageImpl" scope="prototype">
-		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
-	</bean>
-
 	<!-- User registry -->
 
 		<bean id="userRegistrySchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">

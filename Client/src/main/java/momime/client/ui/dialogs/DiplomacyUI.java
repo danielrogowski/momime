@@ -62,7 +62,8 @@ import momime.common.database.WizardEx;
 import momime.common.database.WizardPersonality;
 import momime.common.database.WizardPortraitMood;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.clienttoserver.AcceptDiplomacyMessage;
+import momime.common.messages.clienttoserver.RequestDiplomacyAction;
+import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.utils.KnownWizardUtils;
 
 /**
@@ -261,10 +262,10 @@ public final class DiplomacyUI extends MomClientDialogUI
 					final String relationScoreName = getLanguageHolder ().findDescription (rs.getRelationScoreName ());
 					final JMenuItem item = new JMenuItem (new LoggingAction (relationScoreName, (ev2) ->
 					{
-						final AcceptDiplomacyMessage msg = new AcceptDiplomacyMessage ();
+						final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 						msg.setTalkToPlayerID (getTalkingWizardID ());
+						msg.setAction (RequestDiplomacyAction.ACCEPT_TALKING);
 						msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
-						msg.setAccept (true);
 						getClient ().getServerConnection ().sendMessageToServer (msg);
 
 						setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
@@ -280,9 +281,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 			else
 			{
 				// Don't need to ask for mood to talk to AI players with so just send it right away
-				final AcceptDiplomacyMessage msg = new AcceptDiplomacyMessage ();
+				final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 				msg.setTalkToPlayerID (getTalkingWizardID ());
-				msg.setAccept (true);
+				msg.setAction (RequestDiplomacyAction.ACCEPT_TALKING);
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 				
 				setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
@@ -292,8 +293,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 		
 		refuseTalkToAction = new LoggingAction ((ev) ->
 		{
-			final AcceptDiplomacyMessage msg = new AcceptDiplomacyMessage ();
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (RequestDiplomacyAction.REJECT_TALKING);
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 
 			setTextState (DiplomacyTextState.NONE);

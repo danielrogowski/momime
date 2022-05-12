@@ -621,40 +621,39 @@ The to/from locations can be their bank, the anvil, or actually being used by a 
 
 	<xsd:element name="requestDiplomacyMessage">
 	    <xsd:annotation>
-    		<xsd:documentation>We want to initiate talks with a particular wizard.  They might accept or refuse to talk to us.
-They get that choice before we get to say what we want to talk to them about.</xsd:documentation>
+    		<xsd:documentation>We make a proposal, offer or demand to another wizard, the exact nature of which is set by the action value.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="talkToPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="action" type="momimectos:requestDiplomacyAction" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="visibleRelationScoreID" type="momimecommon:relationScoreID">
 						    <xsd:annotation>
-		  						<xsd:documentation>Only set if the player we want to talk to is another human player.  AI players don't care what mood we're in with them.</xsd:documentation>
+		  						<xsd:documentation>Required for INITIATE_DIPLOMACY and ACCEPT_TALKING, only if the wizard is another human player.  AI players don't care what mood we're in with them.</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>						
-		        	</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name="acceptDiplomacyMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Another wizard wanted to talk to us, and we accept or refuse.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:clientToServerMessage">
-		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="talkToPlayerID" type="mps:playerID" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="visibleRelationScoreID" type="momimecommon:relationScoreID">
+						<xsd:element minOccurs="0" maxOccurs="1" name="otherPlayerID" type="mps:playerID">
 						    <xsd:annotation>
-		  						<xsd:documentation>Only set if the player we want to talk to is another human player.  AI players don't care what mood we're in with them.</xsd:documentation>
+		  						<xsd:documentation>Required for PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD and PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD.</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>						
-						<xsd:element minOccurs="1" maxOccurs="1" name="accept" type="xsd:boolean" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="offerGoldAmount" type="momimecommon:undoubledProductionValue">
+						    <xsd:annotation>
+		  						<xsd:documentation>Required for OFFER_GOLD.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>
+		  				<xsd:element minOccurs="0" maxOccurs="1" name="offerSpellID" type="momimecommon:spellID">
+						    <xsd:annotation>
+		  						<xsd:documentation>Required for OFFER_SPELL and PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
+		  				<xsd:element minOccurs="0" maxOccurs="1" name="requestSpellID" type="momimecommon:spellID">
+						    <xsd:annotation>
+		  						<xsd:documentation>Required for PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -688,6 +687,70 @@ They get that choice before we get to say what we want to talk to them about.</x
 			<xsd:enumeration value="H"><xsd:annotation>
 				<xsd:documentation>Being used by one of our heroes</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="HERO" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="requestDiplomacyAction">
+	    <xsd:annotation>
+    		<xsd:documentation>Different diplomacy actions are listed as an enum, rather than making a separate message for every one</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="I"><xsd:annotation>
+				<xsd:documentation>Initiate diplomacy / request an audience</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="INITIATE_DIPLOMACY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="R"><xsd:annotation>
+				<xsd:documentation>Reject request to initiate diplomacy, or if we were already talking with them, we've lost patience and telling them to go away</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_TALKING" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Accept request to initiate diplomacy</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_TALKING" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="W"><xsd:annotation>
+				<xsd:documentation>Propose wizard pact</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_WIZARD_PACT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="X"><xsd:annotation>
+				<xsd:documentation>Propose alliance</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_ALLIANCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="Y"><xsd:annotation>
+				<xsd:documentation>Propose peace treaty (this isn't a status, it just means "propose that we end the war")</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_PEACE_TREATY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="Z"><xsd:annotation>
+				<xsd:documentation>Propose declare war on another wizard</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Propose break alliance with another wizard</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="T"><xsd:annotation>
+				<xsd:documentation>Threaten to attack</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="THREATEN" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="G"><xsd:annotation>
+				<xsd:documentation>Offer gold</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OFFER_GOLD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Offer spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OFFER_SPELL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="E"><xsd:annotation>
+				<xsd:documentation>Exchange spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_EXCHANGE_SPELL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Pass control - see if other wizard wants to make any proposals</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PASS_CONTROL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="C"><xsd:annotation>
+				<xsd:documentation>End conversation nicely (as opposed to REJECT_TALKING where you tell them to go away)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="END_CONVERSATION" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

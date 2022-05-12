@@ -12,13 +12,13 @@ import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
+import momime.common.messages.servertoclient.EndDiplomacyMessage;
 import momime.common.messages.servertoclient.RequestAudienceMessage;
 import momime.server.MomSessionVariables;
 import momime.server.utils.KnownWizardServerUtils;
 
 /**
- * We want to initiate talks with a particular wizard.  They might accept or refuse to talk to us.
- * They get that choice before we get to say what we want to talk to them about.
+ * We make a proposal, offer or demand to another wizard, the exact nature of which is set by the action value.
  */
 public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage implements PostSessionClientToServerMessage
 {
@@ -47,20 +47,54 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		// Don't need to test whether we need to do this.  If wizard already knows us then the routine will simply do nothing and exit.
 		getKnownWizardServerUtils ().meetWizard (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), false, mom);
 		
-		// If the player we want to talk to is an AI player then they can immediately decide if they want to talk to us
-		// If the player we want to talk to is another human player then open up their DiplomacyUI and ask them if they will talk to us
 		final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl");
-		if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		switch (getAction ())
 		{
-			final RequestAudienceMessage msg = new RequestAudienceMessage ();
-			msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
-			msg.setVisibleRelationScoreID (getVisibleRelationScoreID ());
-			msg.setInitiatingRequest (true);
-			talkToPlayer.getConnection ().sendMessageToClient (msg);
-		}
-		else
-		{
-			throw new IOException ("Rules for whether AI player has patience to talk to you not yet written");
+			// If the player we want to talk to is an AI player then they can immediately decide if they want to talk to us
+			// If the player we want to talk to is another human player then open up their DiplomacyUI and ask them if they will talk to us
+			case INITIATE_DIPLOMACY:
+				if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				{
+					final RequestAudienceMessage msg = new RequestAudienceMessage ();
+					msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+					msg.setVisibleRelationScoreID (getVisibleRelationScoreID ());
+					msg.setInitiatingRequest (true);
+					talkToPlayer.getConnection ().sendMessageToClient (msg);
+				}
+				else
+				{
+					throw new IOException ("Rules for whether AI player has patience to talk to you not yet written");
+				}
+				break;
+				
+			case ACCEPT_TALKING:
+				if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				{
+					final RequestAudienceMessage msg = new RequestAudienceMessage ();
+					msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+					msg.setVisibleRelationScoreID (getVisibleRelationScoreID ());
+					msg.setInitiatingRequest (false);		// Responding to request from the other wizard, rather than initiating diplomacy ourselves
+					talkToPlayer.getConnection ().sendMessageToClient (msg);
+				}
+				else
+				{
+					throw new IOException ("Rules for accepting an AI player's request to talk not yet written");
+				}
+				break;
+				
+			case REJECT_TALKING:
+				if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+				{
+					final EndDiplomacyMessage msg = new EndDiplomacyMessage ();
+					msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+					talkToPlayer.getConnection ().sendMessageToClient (msg);
+				}
+				
+				// Don't need to do anything to refuse talking to AI players, just nothing happens
+				break;
+				
+			default:
+				throw new IOException ("Server code not yet written for diplomacy action " + getAction ());
 		}
 	}
 

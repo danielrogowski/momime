@@ -33,7 +33,15 @@ public final class RequestAudienceMessageImpl extends RequestAudienceMessage imp
 		getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
 		getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
 		getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
-		getDiplomacyUI ().setVisible (true);
+		
+		if (isInitiatingRequest ())
+			getDiplomacyUI ().setVisible (true);
+		else
+		{
+			getDiplomacyUI ().updateRelationScore ();
+			getDiplomacyUI ().initializeText ();
+			getDiplomacyUI ().initializePortrait ();
+		}
 	}
 	
 	/**

@@ -374,11 +374,11 @@ public final class DiplomacyUI extends MomClientDialogUI
 		if (getVisibleRelationScoreID () != null)
 			updateRelationScore ();
 		
-		// Clicks advance to the next state
+		// Clicks advance to the next state, close the window, or do nothing, depending on current state
 		final MouseAdapter diplomacyMouseAdapter = new MouseAdapter ()
 		{
 			/**
-			 * Clicks advance to the next state or close the window, depending on current state
+			 * Clicks advance to the next state, close the window, or do nothing, depending on current state
 			 */
 			@Override
 			public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
@@ -389,6 +389,12 @@ public final class DiplomacyUI extends MomClientDialogUI
 				{
 					setPortraitState (DiplomacyPortraitState.DISAPPEARING);
 					initializePortrait ();
+				}
+				
+				else if (getTextState () == DiplomacyTextState.ACCEPT_TALK)
+				{
+					setTextState (DiplomacyTextState.MAIN_CHOICES);
+					initializeText ();
 				}
 				
 				else if (getTextState () == DiplomacyTextState.REFUSED_TALK)
@@ -471,7 +477,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 				case INITIAL_CONTACT:
 					final WizardPersonality personality;
 					if (talkingWizardDetails.getWizardPersonalityID () != null)
-						personality = getClient ().getClientDB ().findWizardPersonality (talkingWizardDetails.getWizardPersonalityID (), "initializePortrait");
+						personality = getClient ().getClientDB ().findWizardPersonality (talkingWizardDetails.getWizardPersonalityID (), "initializeText");
 					else
 						// Human players have no personality set, in which case just use messages from the first one
 						personality = getClient ().getClientDB ().getWizardPersonality ().get (0);
@@ -485,7 +491,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 					singular = getLanguages ().getDiplomacyScreen ().getWaitingForAcceptTalkTo ();
 					break;
 					
-				// Normal or impatient greeting, based on their level of patience talking to us
+				// Normal or impatient greeting, based on their level of patience talking to us, and 2 options to accept or reject talking to them
 				case ACCEPT_OR_REFUSE_TALK:
 					if ((getRequestAudienceMessage ().isImpatient ()) && (!getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ().isEmpty ()))
 						variants = getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ();
@@ -497,7 +503,15 @@ public final class DiplomacyUI extends MomClientDialogUI
 					componentsBelowText.add (getUtils ().createTextOnlyButton (acceptTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
 					componentsBelowText.add (getUtils ().createTextOnlyButton (refuseTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
 					break;
-				
+
+				// Normal or impatient greeting, based on their level of patience talking to us
+				case ACCEPT_TALK:
+					if ((getRequestAudienceMessage ().isImpatient ()) && (!getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ().isEmpty ()))
+						variants = getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ();
+					else
+						variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
+					break;
+					
 				// We requested another wizard talk to us and they refused
 				case REFUSED_TALK:
 					variants = getLanguages ().getDiplomacyScreen ().getRefuseGreetingPhrase ();
@@ -526,7 +540,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 			
 			if ((singular != null) && (!singular.isEmpty ()))
 			{
-				final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initializePortrait (O)");
+				final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initializeText (O)");
 				
 				final String text = getLanguageHolder ().findDescription (singular).replaceAll
 					("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
@@ -546,7 +560,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/**
 	 * Initializes the currently set portrait state, setting off a timer if necessary
 	 */
-	private final void initializePortrait ()
+	public final void initializePortrait ()
 	{
 		// If there's an old timer running then stop it
 		if ((timer != null) && (timer.isRunning ()))
@@ -600,7 +614,11 @@ public final class DiplomacyUI extends MomClientDialogUI
 						// Figure out which text to show when the wizard first appears
 						if (getRequestAudienceMessage () != null)
 						{
-							setTextState (DiplomacyTextState.ACCEPT_OR_REFUSE_TALK);
+							if (getRequestAudienceMessage ().isInitiatingRequest ())
+								setTextState (DiplomacyTextState.ACCEPT_OR_REFUSE_TALK);
+							else
+								setTextState (DiplomacyTextState.ACCEPT_TALK);
+							
 							initializeText ();
 						}
 					}

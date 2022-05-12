@@ -20,6 +20,9 @@ public enum DiplomacyTextState
 	
 	/** We requested another wizard talk to us and they refused; portrait state will be none (MIRROR) */
 	REFUSED_TALK,
+
+	/** We requested another wizard talk to us and they accepted; we get a greeting message to click once prior to getting main choices */
+	ACCEPT_TALK,
 	
 	/** We requested another wizard talk to us and they accepted; now we get a list of choices like trading spells and making/breaking pacts to choose from and passing control of the conversation */
 	MAIN_CHOICES,

@@ -24,7 +24,7 @@ import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationWallData;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
-import momime.common.messages.servertoclient.EndDiplomacyMessage;
+import momime.common.messages.servertoclient.DiplomacyMessage;
 import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
@@ -47,7 +47,6 @@ import momime.common.messages.servertoclient.RandomEventMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.RemoveUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
-import momime.common.messages.servertoclient.RequestAudienceMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
@@ -700,18 +699,9 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final RequestAudienceMessage createRequestAudienceMessage ()
+	public final DiplomacyMessage createDiplomacyMessage ()
 	{
-		return getFactory ().createRequestAudienceMessage ();
-	}
-	
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final EndDiplomacyMessage createEndDiplomacyMessage ()
-	{
-		return getFactory ().createEndDiplomacyMessage ();
+		return getFactory ().createDiplomacyMessage ();
 	}
 	
 	/**

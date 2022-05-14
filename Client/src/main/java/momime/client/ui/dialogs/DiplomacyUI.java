@@ -49,7 +49,6 @@ import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.MeetWizardMessageImpl;
-import momime.client.messages.process.RequestAudienceMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.WizardClientUtils;
@@ -172,11 +171,11 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/** Content pane */
 	private JPanel contentPane;
 	
-	/** The meet wizard message we're showing the animation for */
+	/** The meet wizard message we're showing the animation for; either this or diplomacyAction must be set but not both */
 	private MeetWizardMessageImpl meetWizardMessage;
 	
-	/** The request audience message we're showing the animation for */
-	private RequestAudienceMessageImpl requestAudienceMessage;
+	/** The last action we received; either this or meetWizardMessage must be set but not both */
+	private DiplomacyAction diplomacyAction;
 	
 	/** Relation to use to decide the eye colour, facial expression and music */
 	private String visibleRelationScoreID;
@@ -493,12 +492,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 					singular = getLanguages ().getDiplomacyScreen ().getWaitingForAcceptTalkTo ();
 					break;
 					
-				// Normal or impatient greeting, based on their level of patience talking to us, and 2 options to accept or reject talking to them
+				// Normal greeting, and 2 options to accept or reject talking to them
 				case ACCEPT_OR_REFUSE_TALK:
-					if ((getRequestAudienceMessage ().isImpatient ()) && (!getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ().isEmpty ()))
-						variants = getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ();
-					else
-						variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
+					variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
 	
 					// Buttons to accept or refuse
 					componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
@@ -508,7 +504,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 
 				// Normal or impatient greeting, based on their level of patience talking to us
 				case ACCEPT_TALK:
-					if ((getRequestAudienceMessage ().isImpatient ()) && (!getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ().isEmpty ()))
+					if ((getDiplomacyAction () == DiplomacyAction.ACCEPT_TALKING_IMPATIENT) && (!getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ().isEmpty ()))
 						variants = getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ();
 					else
 						variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
@@ -614,20 +610,30 @@ public final class DiplomacyUI extends MomClientDialogUI
 						initializePortrait ();
 						
 						// Figure out which text to show when the wizard first appears
-						if (getRequestAudienceMessage () != null)
+						if (getDiplomacyAction () != null)
 						{
-							if (getRequestAudienceMessage ().isInitiatingRequest ())
-								setTextState (DiplomacyTextState.ACCEPT_OR_REFUSE_TALK);
-							else
-								setTextState (DiplomacyTextState.ACCEPT_TALK);
-							
-							initializeText ();
+							switch (getDiplomacyAction ())
+							{
+								case INITIATE_TALKING:
+									setTextState (DiplomacyTextState.ACCEPT_OR_REFUSE_TALK);
+									initializeText ();
+									break;
+									
+								case ACCEPT_TALKING:
+								case ACCEPT_TALKING_IMPATIENT:
+									setTextState (DiplomacyTextState.ACCEPT_TALK);
+									initializeText ();
+									break;
+									
+								default:
+									log.warn ("DiplomacyUI doesn't know what text to show after portrait appears for action " + getDiplomacyAction ());
+							}
 						}
 					}
 					else if (getPortraitState () == DiplomacyPortraitState.TALKING)
 					{
 						// This is really here for the unit test which will have no message set; normally advanced by clicking
-						if ((getMeetWizardMessage () == null) && (getRequestAudienceMessage () == null))
+						if ((getMeetWizardMessage () == null) && (getDiplomacyAction () == null))
 						{
 							setPortraitState (DiplomacyPortraitState.DISAPPEARING);
 							initializePortrait ();
@@ -1099,7 +1105,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return The meet wizard message we're showing the animation for
+	 * @return The meet wizard message we're showing the animation for; either this or diplomacyAction must be set but not both
 	 */
 	public final MeetWizardMessageImpl getMeetWizardMessage ()
 	{
@@ -1107,7 +1113,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @param m The meet wizard message we're showing the animation for
+	 * @param m The meet wizard message we're showing the animation for; either this or diplomacyAction must be set but not both
 	 */
 	public final void setMeetWizardMessage (final MeetWizardMessageImpl m)
 	{
@@ -1115,21 +1121,21 @@ public final class DiplomacyUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return The request audience message we're showing the animation for
+	 * @return The last action we received; either this or meetWizardMessage must be set but not both
 	 */
-	public final RequestAudienceMessageImpl getRequestAudienceMessage ()
+	public final DiplomacyAction getDiplomacyAction ()
 	{
-		return requestAudienceMessage;
+		return diplomacyAction;
 	}
 
 	/**
-	 * @param m The request audience message we're showing the animation for
+	 * @param a The last action we received; either this or meetWizardMessage must be set but not both
 	 */
-	public final void setRequestAudienceMessage (final RequestAudienceMessageImpl m)
+	public final void setDiplomacyAction (final DiplomacyAction a)
 	{
-		requestAudienceMessage = m;
+		diplomacyAction = a;
 	}
-	
+
 	/**
 	 * @return Relation to use to decide the eye colour, facial expression and music
 	 */

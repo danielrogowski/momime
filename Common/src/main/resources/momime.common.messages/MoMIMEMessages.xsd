@@ -1406,59 +1406,135 @@ So need a separate data item for this.</xsd:documentation>
     		<xsd:documentation>Different diplomacy actions are listed as an enum, rather than making a separate message for every one</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="I"><xsd:annotation>
+			<xsd:enumeration value="IT"><xsd:annotation>
 				<xsd:documentation>Initiate diplomacy / request an audience</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="INITIATE_DIPLOMACY" /></xsd:appinfo>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="INITIATE_TALKING" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="R"><xsd:annotation>
-				<xsd:documentation>Reject request to initiate diplomacy, or if we were already talking with them, we've lost patience and telling them to go away</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_TALKING" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="A"><xsd:annotation>
+			<xsd:enumeration value="AT"><xsd:annotation>
 				<xsd:documentation>Accept request to initiate diplomacy</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_TALKING" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="W"><xsd:annotation>
+			<xsd:enumeration value="AI"><xsd:annotation>
+				<xsd:documentation>Accept request to initiate diplomacy, but use impatient greeting</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_TALKING_IMPATIENT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="RT"><xsd:annotation>
+				<xsd:documentation>Reject request to initiate diplomacy, or if we were already talking with them, we've lost patience and telling them to go away</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_TALKING" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="PW"><xsd:annotation>
 				<xsd:documentation>Propose wizard pact</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_WIZARD_PACT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="X"><xsd:annotation>
+			<xsd:enumeration value="AW"><xsd:annotation>
+				<xsd:documentation>Accept wizard pact</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_WIZARD_PACT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="RW"><xsd:annotation>
+				<xsd:documentation>Reject wizard pact</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_WIZARD_PACT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="PA"><xsd:annotation>
 				<xsd:documentation>Propose alliance</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_ALLIANCE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="Y"><xsd:annotation>
-				<xsd:documentation>Propose peace treaty (this isn't a status, it just means "propose that we end the war")</xsd:documentation>
+			<xsd:enumeration value="AA"><xsd:annotation>
+				<xsd:documentation>Propose alliance</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_ALLIANCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="RA"><xsd:annotation>
+				<xsd:documentation>Propose alliance</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_ALLIANCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="PP"><xsd:annotation>
+				<xsd:documentation>Propose peace treaty</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_PEACE_TREATY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="Z"><xsd:annotation>
+			<xsd:enumeration value="AP"><xsd:annotation>
+				<xsd:documentation>Accept peace treaty</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_PEACE_TREATY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="RP"><xsd:annotation>
+				<xsd:documentation>Reject peace treaty</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_PEACE_TREATY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="PD"><xsd:annotation>
 				<xsd:documentation>Propose declare war on another wizard</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="B"><xsd:annotation>
+			<xsd:enumeration value="AD"><xsd:annotation>
+				<xsd:documentation>Accept declare war on another wizard</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_DECLARE_WAR_ON_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="RD"><xsd:annotation>
+				<xsd:documentation>Reject declare war on another wizard</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_DECLARE_WAR_ON_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="PB"><xsd:annotation>
 				<xsd:documentation>Propose break alliance with another wizard</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="T"><xsd:annotation>
+			<xsd:enumeration value="AB"><xsd:annotation>
+				<xsd:documentation>Accept break alliance with another wizard</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_BREAK_ALLIANCE_WITH_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="RB"><xsd:annotation>
+				<xsd:documentation>Reject break alliance with another wizard</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_BREAK_ALLIANCE_WITH_OTHER_WIZARD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="PE"><xsd:annotation>
+				<xsd:documentation>Propose exchange spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_EXCHANGE_SPELL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="AE"><xsd:annotation>
+				<xsd:documentation>Accept exchange spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_EXCHANGE_SPELL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="RE"><xsd:annotation>
+				<xsd:documentation>Reject exchange spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_EXCHANGE_SPELL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="GG"><xsd:annotation>
+				<xsd:documentation>Give gold</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="GIVE_GOLD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="AG"><xsd:annotation>
+				<xsd:documentation>Accept gold</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_GOLD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="GS"><xsd:annotation>
+				<xsd:documentation>Give spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="GIVE_SPELL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="AS"><xsd:annotation>
+				<xsd:documentation>Accept spell</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_SPELL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="TA"><xsd:annotation>
 				<xsd:documentation>Threaten to attack</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="THREATEN" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="G"><xsd:annotation>
-				<xsd:documentation>Offer gold</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="OFFER_GOLD" /></xsd:appinfo>
+			<xsd:enumeration value="TI"><xsd:annotation>
+				<xsd:documentation>Threaten to attack</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="IGNORE_THREAT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="S"><xsd:annotation>
-				<xsd:documentation>Offer spell</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="OFFER_SPELL" /></xsd:appinfo>
+			<xsd:enumeration value="TG"><xsd:annotation>
+				<xsd:documentation>Give gold becasue threatened</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="GIVE_GOLD_BECAUSE_THREATENED" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="E"><xsd:annotation>
-				<xsd:documentation>Exchange spell</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_EXCHANGE_SPELL" /></xsd:appinfo>
+			<xsd:enumeration value="TS"><xsd:annotation>
+				<xsd:documentation>Give spell because threatened</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="GIVE_SPELL_BECAUSE_THREATENED" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="P"><xsd:annotation>
+			<xsd:enumeration value="TW"><xsd:annotation>
+				<xsd:documentation>Declare war because threatened</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DECLARE_WAR_BECAUSE_THREATENED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="PC"><xsd:annotation>
 				<xsd:documentation>Pass control - see if other wizard wants to make any proposals</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PASS_CONTROL" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="C"><xsd:annotation>
+			<xsd:enumeration value="EC"><xsd:annotation>
 				<xsd:documentation>End conversation nicely (as opposed to REJECT_TALKING where you tell them to go away)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="END_CONVERSATION" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>

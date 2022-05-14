@@ -258,7 +258,7 @@ public final class WizardsUI extends MomClientFrameUI
 						{
 							final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 							msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
-							msg.setAction (DiplomacyAction.INITIATE_DIPLOMACY);
+							msg.setAction (DiplomacyAction.INITIATE_TALKING);
 							msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 
@@ -280,7 +280,7 @@ public final class WizardsUI extends MomClientFrameUI
 					// Don't need to ask for mood to talk to an AI wizard
 					final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 					msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
-					msg.setAction (DiplomacyAction.INITIATE_DIPLOMACY);
+					msg.setAction (DiplomacyAction.INITIATE_TALKING);
 					getClient ().getServerConnection ().sendMessageToServer (msg);
 					
 					// Show the mirror while we wait for them to respond

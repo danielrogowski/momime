@@ -628,11 +628,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
-	<bean id="requestAudienceMessage" class="momime.client.messages.process.RequestAudienceMessageImpl" scope="prototype">
-		<property name="diplomacyUI" ref="diplomacyUI" />
-	</bean>
-
-	<bean id="endDiplomacyMessage" class="momime.client.messages.process.EndDiplomacyMessageImpl" scope="prototype">
+	<bean id="diplomacyMessage" class="momime.client.messages.process.DiplomacyMessageImpl" scope="prototype">
 		<property name="diplomacyUI" ref="diplomacyUI" />
 	</bean>
 

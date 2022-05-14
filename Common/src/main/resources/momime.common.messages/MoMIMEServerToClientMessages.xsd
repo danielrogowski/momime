@@ -1613,45 +1613,41 @@ Exception to this is if conjunction is true, it tells the client to update (or c
 
 <!-- Diplomacy, new for 1.4 -->
 
-	<xsd:element name="requestAudienceMessage">
+	<xsd:element name="diplomacyMessage">
 	    <xsd:annotation>
-    		<xsd:documentation>Another player (may be human or AI player) wants to talk to us.  We have to pick whether we will talk to them or refuse.</xsd:documentation>
+    		<xsd:documentation>Notifying a player of a proposal, offer or demand to another wizard, the exact nature of which is set by the action value.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="talkFromPlayerID" type="mps:playerID" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="visibleRelationScoreID" type="momimecommon:relationScoreID">
+						<xsd:element minOccurs="1" maxOccurs="1" name="action" type="momimemsgs:diplomacyAction" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="visibleRelationScoreID" type="momimecommon:relationScoreID">
 						    <xsd:annotation>
-		  						<xsd:documentation>Indication of the mood of the wizard towards us as they greet us, used to set green/red colour of the gargoyle eyes.</xsd:documentation>
+		  						<xsd:documentation>For human players, only set on initiating talking.  AI players can send this with every response, if you propose something that makes them happy/mad.</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>						
-						<xsd:element minOccurs="1" maxOccurs="1" name="impatient" type="xsd:boolean">
+						<xsd:element minOccurs="0" maxOccurs="1" name="otherPlayerID" type="mps:playerID">
 						    <xsd:annotation>
-		  						<xsd:documentation>Whether to use normal or impatient greeting (not set when its a human player talking).</xsd:documentation>
+		  						<xsd:documentation>Required for PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD and PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD.</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>						
-						<xsd:element minOccurs="1" maxOccurs="1" name="initiatingRequest" type="xsd:boolean">
+						<xsd:element minOccurs="1" maxOccurs="1" name="offerGoldAmount" type="momimecommon:undoubledProductionValue">
 						    <xsd:annotation>
-		  						<xsd:documentation>If true, we're the one asking the other wizard to talk to us.  If false, we're agreeing to a request from the other wizard to talk to them.</xsd:documentation>
+		  						<xsd:documentation>Required for OFFER_GOLD.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>
+		  				<xsd:element minOccurs="0" maxOccurs="1" name="offerSpellID" type="momimecommon:spellID">
+						    <xsd:annotation>
+		  						<xsd:documentation>Required for OFFER_SPELL and PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>						
-		        	</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name="endDiplomacyMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Another player (may be human or AI player) either refuses to talk to us up front, or we've been talking to them and now they lost patience and telling us to go away.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="talkFromPlayerID" type="mps:playerID" />
+		  				<xsd:element minOccurs="0" maxOccurs="1" name="requestSpellID" type="momimecommon:spellID">
+						    <xsd:annotation>
+		  						<xsd:documentation>Required for PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

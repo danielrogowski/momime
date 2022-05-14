@@ -61,8 +61,8 @@ import momime.common.database.RelationScore;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPersonality;
 import momime.common.database.WizardPortraitMood;
+import momime.common.messages.DiplomacyAction;
 import momime.common.messages.KnownWizardDetails;
-import momime.common.messages.clienttoserver.RequestDiplomacyAction;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.utils.KnownWizardUtils;
 
@@ -264,7 +264,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 					{
 						final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 						msg.setTalkToPlayerID (getTalkingWizardID ());
-						msg.setAction (RequestDiplomacyAction.ACCEPT_TALKING);
+						msg.setAction (DiplomacyAction.ACCEPT_TALKING);
 						msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
 						getClient ().getServerConnection ().sendMessageToServer (msg);
 
@@ -283,7 +283,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 				// Don't need to ask for mood to talk to AI players with so just send it right away
 				final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 				msg.setTalkToPlayerID (getTalkingWizardID ());
-				msg.setAction (RequestDiplomacyAction.ACCEPT_TALKING);
+				msg.setAction (DiplomacyAction.ACCEPT_TALKING);
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 				
 				setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
@@ -295,7 +295,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 		{
 			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 			msg.setTalkToPlayerID (getTalkingWizardID ());
-			msg.setAction (RequestDiplomacyAction.REJECT_TALKING);
+			msg.setAction (DiplomacyAction.REJECT_TALKING);
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 
 			setTextState (DiplomacyTextState.NONE);

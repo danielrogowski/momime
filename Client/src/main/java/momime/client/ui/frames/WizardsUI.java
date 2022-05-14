@@ -62,10 +62,10 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.WizardObjective;
 import momime.common.database.WizardPersonality;
+import momime.common.messages.DiplomacyAction;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
-import momime.common.messages.clienttoserver.RequestDiplomacyAction;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.messages.servertoclient.OverlandCastingInfo;
 import momime.common.utils.KnownWizardUtils;
@@ -258,7 +258,7 @@ public final class WizardsUI extends MomClientFrameUI
 						{
 							final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 							msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
-							msg.setAction (RequestDiplomacyAction.INITIATE_DIPLOMACY);
+							msg.setAction (DiplomacyAction.INITIATE_DIPLOMACY);
 							msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
 							getClient ().getServerConnection ().sendMessageToServer (msg);
 
@@ -280,7 +280,7 @@ public final class WizardsUI extends MomClientFrameUI
 					// Don't need to ask for mood to talk to an AI wizard
 					final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 					msg.setTalkToPlayerID (selectedWizard.getPlayerDescription ().getPlayerID ());
-					msg.setAction (RequestDiplomacyAction.INITIATE_DIPLOMACY);
+					msg.setAction (DiplomacyAction.INITIATE_DIPLOMACY);
 					getClient ().getServerConnection ().sendMessageToServer (msg);
 					
 					// Show the mirror while we wait for them to respond

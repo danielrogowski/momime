@@ -372,9 +372,6 @@ public final class DiplomacyUI extends MomClientDialogUI
 			}
 		};
 		
-		if (getVisibleRelationScoreID () != null)
-			updateRelationScore ();
-		
 		// Clicks advance to the next state, close the window, or do nothing, depending on current state
 		final MouseAdapter diplomacyMouseAdapter = new MouseAdapter ()
 		{
@@ -425,6 +422,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
 		getDialog ().addMouseListener (diplomacyMouseAdapter);
+		
+		// Set up dialog with values that should've been set before making it visible
+		updateRelationScore ();
 		initializeText ();
 		initializePortrait ();
 	}
@@ -436,26 +436,33 @@ public final class DiplomacyUI extends MomClientDialogUI
 	 */
 	public final void updateRelationScore () throws IOException
 	{
-		// Remove old eyes
-		if (eyesLeftLabel != null)
-			contentPane.remove (eyesLeftLabel);
-
-		if (eyesRightLabel != null)
-			contentPane.remove (eyesRightLabel);
-		
-		// Find updated relation
-		relationScore = getClient ().getClientDB ().findRelationScore (getVisibleRelationScoreID (), "DiplomacyUI");
-		final Image eyesLeft = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesLeftImage ()));
-		final Image eyesRight = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesRightImage ()));
-		
-		// Create new eyes
-		eyesLeftLabel = getUtils ().createImage (eyesLeft);
-		contentPane.add (eyesLeftLabel, "frmDiplomacyEyesLeft");
-		
-		eyesRightLabel = getUtils ().createImage (eyesRight);
-		contentPane.add (eyesRightLabel, "frmDiplomacyEyesRight");
-		
-		contentPane.repaint ();
+		if (contentPane != null)
+		{
+			// Remove old eyes
+			if (eyesLeftLabel != null)
+				contentPane.remove (eyesLeftLabel);
+	
+			if (eyesRightLabel != null)
+				contentPane.remove (eyesRightLabel);
+			
+			// Find updated relation
+			if (getVisibleRelationScoreID () != null)
+			{
+				relationScore = getClient ().getClientDB ().findRelationScore (getVisibleRelationScoreID (), "DiplomacyUI");
+				final Image eyesLeft = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesLeftImage ()));
+				final Image eyesRight = getUtils ().doubleSize (getUtils ().loadImage (relationScore.getEyesRightImage ()));
+				
+				// Create new eyes
+				eyesLeftLabel = getUtils ().createImage (eyesLeft);
+				contentPane.add (eyesLeftLabel, "frmDiplomacyEyesLeft");
+				
+				eyesRightLabel = getUtils ().createImage (eyesRight);
+				contentPane.add (eyesRightLabel, "frmDiplomacyEyesRight");
+			}
+			
+			contentPane.validate ();
+			contentPane.repaint ();
+		}
 	}
 	
 	/**
@@ -463,95 +470,98 @@ public final class DiplomacyUI extends MomClientDialogUI
 	 */
 	public final void initializeText ()
 	{
-		List<LanguageTextVariant> variants = null;
-		List<LanguageText> singular = null;
-		final List<Component> componentsBelowText = new ArrayList<Component> ();
-
-		try
+		if (contentPane != null)
 		{
-			switch (getTextState ())
-			{
-				case NONE:
-					break;
-					
-				// Initial meeting message, based on personality of the talking wizard
-				case INITIAL_CONTACT:
-					final WizardPersonality personality;
-					if (talkingWizardDetails.getWizardPersonalityID () != null)
-						personality = getClient ().getClientDB ().findWizardPersonality (talkingWizardDetails.getWizardPersonalityID (), "initializeText");
-					else
-						// Human players have no personality set, in which case just use messages from the first one
-						personality = getClient ().getClientDB ().getWizardPersonality ().get (0);
-					
-					if (!personality.getInitialMeetingPhrase ().isEmpty ())
-						variants = personality.getInitialMeetingPhrase ();
-					break;
-					
-				// We requested another wizard talk to us and waiting to see if they accept or refuse
-				case WAITING_FOR_ACCEPT:
-					singular = getLanguages ().getDiplomacyScreen ().getWaitingForAcceptTalkTo ();
-					break;
-					
-				// Normal greeting, and 2 options to accept or reject talking to them
-				case ACCEPT_OR_REFUSE_TALK:
-					variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
+			List<LanguageTextVariant> variants = null;
+			List<LanguageText> singular = null;
+			final List<Component> componentsBelowText = new ArrayList<Component> ();
 	
-					// Buttons to accept or refuse
-					componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
-					componentsBelowText.add (getUtils ().createTextOnlyButton (acceptTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
-					componentsBelowText.add (getUtils ().createTextOnlyButton (refuseTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
-					break;
-
-				// Normal or impatient greeting, based on their level of patience talking to us
-				case ACCEPT_TALK:
-					if ((getDiplomacyAction () == DiplomacyAction.ACCEPT_TALKING_IMPATIENT) && (!getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ().isEmpty ()))
-						variants = getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ();
-					else
+			try
+			{
+				switch (getTextState ())
+				{
+					case NONE:
+						break;
+						
+					// Initial meeting message, based on personality of the talking wizard
+					case INITIAL_CONTACT:
+						final WizardPersonality personality;
+						if (talkingWizardDetails.getWizardPersonalityID () != null)
+							personality = getClient ().getClientDB ().findWizardPersonality (talkingWizardDetails.getWizardPersonalityID (), "initializeText");
+						else
+							// Human players have no personality set, in which case just use messages from the first one
+							personality = getClient ().getClientDB ().getWizardPersonality ().get (0);
+						
+						if (!personality.getInitialMeetingPhrase ().isEmpty ())
+							variants = personality.getInitialMeetingPhrase ();
+						break;
+						
+					// We requested another wizard talk to us and waiting to see if they accept or refuse
+					case WAITING_FOR_ACCEPT:
+						singular = getLanguages ().getDiplomacyScreen ().getWaitingForAcceptTalkTo ();
+						break;
+						
+					// Normal greeting, and 2 options to accept or reject talking to them
+					case ACCEPT_OR_REFUSE_TALK:
 						variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
-					break;
-					
-				// We requested another wizard talk to us and they refused
-				case REFUSED_TALK:
-					variants = getLanguages ().getDiplomacyScreen ().getRefuseGreetingPhrase ();
-					break;
-
-				// Main list of choices when we are in control of the conversation, trading spells and making/breaking pacts to choose from and passing control of the conversation
-				case MAIN_CHOICES:
-					componentsBelowText.add (getUtils ().createTextOnlyButton (proposeTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
-					componentsBelowText.add (getUtils ().createTextOnlyButton (breakTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
-					componentsBelowText.add (getUtils ().createTextOnlyButton (offerTributeAction, MomUIConstants.GOLD, getMediumFont ()));
-					componentsBelowText.add (getUtils ().createTextOnlyButton (exchangeSpellsAction, MomUIConstants.GOLD, getMediumFont ()));
-					componentsBelowText.add (getUtils ().createTextOnlyButton (doneChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
-					break;
+		
+						// Buttons to accept or refuse
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (acceptTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
 	
-				// Other wizard has "main choices", so we're waiting to see what they choose
-				case WAITING_FOR_CHOICE:
-					singular = getLanguages ().getDiplomacyScreen ().getWaitingForProposal ();
-					break;
-			}
+					// Normal or impatient greeting, based on their level of patience talking to us
+					case ACCEPT_TALK:
+						if ((getDiplomacyAction () == DiplomacyAction.ACCEPT_TALKING_IMPATIENT) && (!getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ().isEmpty ()))
+							variants = getLanguages ().getDiplomacyScreen ().getImpatientGreetingPhrase ();
+						else
+							variants = getLanguages ().getDiplomacyScreen ().getNormalGreetingPhrase ();
+						break;
+						
+					// We requested another wizard talk to us and they refused
+					case REFUSED_TALK:
+						variants = getLanguages ().getDiplomacyScreen ().getRefuseGreetingPhrase ();
+						break;
 	
-			if ((variants != null) && (!variants.isEmpty ()))
-			{
-				final LanguageTextVariant variant = variants.get (getRandomUtils ().nextInt (variants.size ()));
-				singular = variant.getTextVariant ();
-			}
-			
-			if ((singular != null) && (!singular.isEmpty ()))
-			{
-				final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initializeText (O)");
+					// Main list of choices when we are in control of the conversation, trading spells and making/breaking pacts to choose from and passing control of the conversation
+					case MAIN_CHOICES:
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (breakTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (offerTributeAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (exchangeSpellsAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (doneChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
+		
+					// Other wizard has "main choices", so we're waiting to see what they choose
+					case WAITING_FOR_CHOICE:
+						singular = getLanguages ().getDiplomacyScreen ().getWaitingForProposal ();
+						break;
+				}
+		
+				if ((variants != null) && (!variants.isEmpty ()))
+				{
+					final LanguageTextVariant variant = variants.get (getRandomUtils ().nextInt (variants.size ()));
+					singular = variant.getTextVariant ();
+				}
 				
-				final String text = getLanguageHolder ().findDescription (singular).replaceAll
-					("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
-					("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer));
+				if ((singular != null) && (!singular.isEmpty ()))
+				{
+					final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initializeText (O)");
 					
-				showText (text, componentsBelowText);
+					final String text = getLanguageHolder ().findDescription (singular).replaceAll
+						("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer));
+						
+					showText (text, componentsBelowText);
+				}
+				else
+					showText (null, componentsBelowText);
 			}
-			else
-				showText (null, componentsBelowText);
-		}
-		catch (final Exception e)
-		{
-			log.error (e, e);
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
 		}
 	}
 	
@@ -560,118 +570,121 @@ public final class DiplomacyUI extends MomClientDialogUI
 	 */
 	public final void initializePortrait ()
 	{
-		// If there's an old timer running then stop it
-		if ((timer != null) && (timer.isRunning ()))
+		if (contentPane != null)
 		{
-			timer.stop ();
-			timer = null;
-		}
-		
-		// Initialize animation
-		final int frameCount = getFrameCount ();
-		if (frameCount > 0)
-		{
-			timer = new Timer (TIMER_TICKS_MS, (ev2) ->
+			// If there's an old timer running then stop it
+			if ((timer != null) && (timer.isRunning ()))
 			{
-				frameNumber = frameNumber + 1;
-				if (frameNumber >= frameCount)
-				{
-					if (timer != null)
-					{
-						timer.stop ();					
-						timer = null;
-					}
-					frameNumber = 0;
-					
-					if (getPortraitState () == DiplomacyPortraitState.APPEARING)
-					{
-						// Start music
-						if (standardPhotoDef != null)
-						{
-							final String playList;
-							if ((relationScore.getMood () == WizardPortraitMood.MAD) && (standardPhotoDef.getMadPlayList () != null))
-								playList = standardPhotoDef.getMadPlayList ();
-							else
-								playList = standardPhotoDef.getDiplomacyPlayList ();
-							
-							if (playList != null)
-								try
-								{
-									getMusicPlayer ().setShuffle (false);
-									getMusicPlayer ().playPlayList (playList, AnimationContainer.COMMON_XML);
-								}
-								catch (final Exception e)
-								{
-									log.error (e, e);
-								}
-						}
-						
-						setPortraitState (DiplomacyPortraitState.TALKING);
-						initializePortrait ();
-						
-						// Figure out which text to show when the wizard first appears
-						if (getDiplomacyAction () != null)
-						{
-							switch (getDiplomacyAction ())
-							{
-								case INITIATE_TALKING:
-									setTextState (DiplomacyTextState.ACCEPT_OR_REFUSE_TALK);
-									initializeText ();
-									break;
-									
-								case ACCEPT_TALKING:
-								case ACCEPT_TALKING_IMPATIENT:
-									setTextState (DiplomacyTextState.ACCEPT_TALK);
-									initializeText ();
-									break;
-									
-								default:
-									log.warn ("DiplomacyUI doesn't know what text to show after portrait appears for action " + getDiplomacyAction ());
-							}
-						}
-					}
-					else if (getPortraitState () == DiplomacyPortraitState.TALKING)
-					{
-						// This is really here for the unit test which will have no message set; normally advanced by clicking
-						if ((getMeetWizardMessage () == null) && (getDiplomacyAction () == null))
-						{
-							setPortraitState (DiplomacyPortraitState.DISAPPEARING);
-							initializePortrait ();
-						}
-						
-						// For any other "done talking", just revert back to the normal/happy/mad face
-						else
-						{
-							switch (relationScore.getMood ())
-							{
-								case HAPPY:
-									setPortraitState (DiplomacyPortraitState.HAPPY);
-									break;
-								case NORMAL:
-									setPortraitState (DiplomacyPortraitState.NORMAL);
-									break;
-								case MAD:
-									setPortraitState (DiplomacyPortraitState.MAD);
-									break;
-							}
-							initializePortrait ();
-						}
-					}
-					else if (getPortraitState () == DiplomacyPortraitState.DISAPPEARING)
-						try
-						{
-							setVisible (false);
-						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-				}
-				
-				contentPane.repaint ();
-			});
+				timer.stop ();
+				timer = null;
+			}
 			
-			timer.start ();
+			// Initialize animation
+			final int frameCount = getFrameCount ();
+			if (frameCount > 0)
+			{
+				timer = new Timer (TIMER_TICKS_MS, (ev2) ->
+				{
+					frameNumber = frameNumber + 1;
+					if (frameNumber >= frameCount)
+					{
+						if (timer != null)
+						{
+							timer.stop ();					
+							timer = null;
+						}
+						frameNumber = 0;
+						
+						if (getPortraitState () == DiplomacyPortraitState.APPEARING)
+						{
+							// Start music
+							if (standardPhotoDef != null)
+							{
+								final String playList;
+								if ((relationScore.getMood () == WizardPortraitMood.MAD) && (standardPhotoDef.getMadPlayList () != null))
+									playList = standardPhotoDef.getMadPlayList ();
+								else
+									playList = standardPhotoDef.getDiplomacyPlayList ();
+								
+								if (playList != null)
+									try
+									{
+										getMusicPlayer ().setShuffle (false);
+										getMusicPlayer ().playPlayList (playList, AnimationContainer.COMMON_XML);
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
+									}
+							}
+							
+							setPortraitState (DiplomacyPortraitState.TALKING);
+							initializePortrait ();
+							
+							// Figure out which text to show when the wizard first appears
+							if (getDiplomacyAction () != null)
+							{
+								switch (getDiplomacyAction ())
+								{
+									case INITIATE_TALKING:
+										setTextState (DiplomacyTextState.ACCEPT_OR_REFUSE_TALK);
+										initializeText ();
+										break;
+										
+									case ACCEPT_TALKING:
+									case ACCEPT_TALKING_IMPATIENT:
+										setTextState (DiplomacyTextState.ACCEPT_TALK);
+										initializeText ();
+										break;
+										
+									default:
+										log.warn ("DiplomacyUI doesn't know what text to show after portrait appears for action " + getDiplomacyAction ());
+								}
+							}
+						}
+						else if (getPortraitState () == DiplomacyPortraitState.TALKING)
+						{
+							// This is really here for the unit test which will have no message set; normally advanced by clicking
+							if ((getMeetWizardMessage () == null) && (getDiplomacyAction () == null))
+							{
+								setPortraitState (DiplomacyPortraitState.DISAPPEARING);
+								initializePortrait ();
+							}
+							
+							// For any other "done talking", just revert back to the normal/happy/mad face
+							else
+							{
+								switch (relationScore.getMood ())
+								{
+									case HAPPY:
+										setPortraitState (DiplomacyPortraitState.HAPPY);
+										break;
+									case NORMAL:
+										setPortraitState (DiplomacyPortraitState.NORMAL);
+										break;
+									case MAD:
+										setPortraitState (DiplomacyPortraitState.MAD);
+										break;
+								}
+								initializePortrait ();
+							}
+						}
+						else if (getPortraitState () == DiplomacyPortraitState.DISAPPEARING)
+							try
+							{
+								setVisible (false);
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
+					}
+					
+					contentPane.repaint ();
+				});
+				
+				timer.start ();
+			}
 		}
 	}
 	
@@ -688,10 +701,25 @@ public final class DiplomacyUI extends MomClientDialogUI
 		final String cacheKey;
 		if ((customPhoto != null) && (!MIRROR_STATES.contains (getPortraitState ())))
 			cacheKey = DiplomacyPortraitState.NORMAL.toString ();
-		else if (getPortraitState () == DiplomacyPortraitState.DISAPPEARING)
-			cacheKey = DiplomacyPortraitState.APPEARING.toString () + "-" + (APPEARING_TICKS - 1 - getFrameNumber ());
+		else if (!ANIMATED_STATES.contains (getPortraitState ()))
+			cacheKey = getPortraitState ().toString ();
+		else if (MIRROR_STATES.contains (getPortraitState ()))
+		{
+			final String relation;
+			if ((relationScore != null) && (relationScore.getMood () == WizardPortraitMood.HAPPY) && (standardPhotoDef != null) && (standardPhotoDef.getHappyImageFile () != null))
+				relation = DiplomacyPortraitState.HAPPY.toString ();
+			else if ((relationScore != null) && (relationScore.getMood () == WizardPortraitMood.MAD) && (standardPhotoDef != null) && (standardPhotoDef.getMadImageFile () != null))
+				relation = DiplomacyPortraitState.MAD.toString ();
+			else
+				relation = DiplomacyPortraitState.NORMAL.toString ();
+		
+			if (getPortraitState () == DiplomacyPortraitState.DISAPPEARING)
+				cacheKey = DiplomacyPortraitState.APPEARING.toString () + "-" + relation + "-" + (APPEARING_TICKS - 1 - getFrameNumber ());
+			else
+				cacheKey = getPortraitState ().toString () + "-" + relation + "-" + getFrameNumber ();
+		}
 		else
-			cacheKey = getPortraitState ().toString () + (ANIMATED_STATES.contains (getPortraitState ()) ? ("-" + getFrameNumber ()) : "");
+			cacheKey = getPortraitState ().toString () + "-" + getFrameNumber ();
 		
 		BufferedImage image = wizardPortraits.get (cacheKey);
 		if (image == null)
@@ -712,9 +740,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 			else if (standardPhotoDef != null)
 			{
 				final String moodPortraitFile;
-				if ((relationScore.getMood () == WizardPortraitMood.HAPPY) && (standardPhotoDef.getHappyImageFile () != null))
+				if ((relationScore != null) && (relationScore.getMood () == WizardPortraitMood.HAPPY) && (standardPhotoDef.getHappyImageFile () != null))
 					moodPortraitFile = standardPhotoDef.getHappyImageFile ();
-				else if ((relationScore.getMood () == WizardPortraitMood.MAD) && (standardPhotoDef.getMadImageFile () != null))
+				else if ((relationScore != null) && (relationScore.getMood () == WizardPortraitMood.MAD) && (standardPhotoDef.getMadImageFile () != null))
 					moodPortraitFile = standardPhotoDef.getMadImageFile ();
 				else
 					moodPortraitFile = standardPhotoDef.getPortraitImageFile ();

@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import jakarta.xml.bind.JAXBException;
@@ -17,6 +20,9 @@ import momime.common.messages.servertoclient.DiplomacyMessage;
  */
 public final class DiplomacyMessageImpl extends DiplomacyMessage implements BaseServerToClientMessage
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (AddBuildingMessageImpl.class);
+	
 	/** Diplomacy UI */
 	private DiplomacyUI diplomacyUI;
 	
@@ -28,6 +34,8 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
+		log.debug ("Received diplomacy action " + getAction () + " from player ID " + getTalkFromPlayerID ());
+		
 		getDiplomacyUI ().setTalkingWizardID (getTalkFromPlayerID ());
 		getDiplomacyUI ().setDiplomacyAction (getAction ());
 
@@ -37,6 +45,9 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
 				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				getDiplomacyUI ().updateRelationScore ();
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
 				getDiplomacyUI ().setVisible (true);
 				break;
 				

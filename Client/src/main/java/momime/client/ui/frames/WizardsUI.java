@@ -264,8 +264,12 @@ public final class WizardsUI extends MomClientFrameUI
 
 							// Show the mirror while we wait for them to respond
 							getDiplomacyUI ().setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
+							getDiplomacyUI ().setVisibleRelationScoreID (null);
 							getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.MIRROR);
 							getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+							getDiplomacyUI ().updateRelationScore ();
+							getDiplomacyUI ().initializeText ();
+							getDiplomacyUI ().initializePortrait ();
 							getDiplomacyUI ().setVisible (true);
 						}));
 						
@@ -285,8 +289,12 @@ public final class WizardsUI extends MomClientFrameUI
 					
 					// Show the mirror while we wait for them to respond
 					getDiplomacyUI ().setTalkingWizardID (selectedWizard.getPlayerDescription ().getPlayerID ());
+					getDiplomacyUI ().setVisibleRelationScoreID (null);
 					getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.MIRROR);
 					getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+					getDiplomacyUI ().updateRelationScore ();
+					getDiplomacyUI ().initializeText ();
+					getDiplomacyUI ().initializePortrait ();
 					getDiplomacyUI ().setVisible (true);
 				}
 			}

@@ -4,7 +4,7 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	30 - Thanks for attacking wizard X, have some gold
 	45 - Thanks for the spell
 	60 - I'm going to kill you
-	75 - I don't like you anymore
+	75 - I don't like you anymore (diplomacyScreen / brokenPactPhrase)
 	90 - Lets both kill wizard X
 	
 	105 - Get out of my land or I will kill you
@@ -33,7 +33,7 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	420 - Switch off your X spell cast on Y (city curse) or I will break treaty
 	435 - Stop getting stronger or I will kill break treaty
 
-	450 - Nicely break treaty
+	450 - Nicely break treaty (diplomacyScreen / breakPactPhrase)
 	465 - Get out of my land, treaty broken
 	480 - Stop attacking my units, treaty broken
 	495 - Stop attacking my cities, treaty broken
@@ -50,20 +50,20 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	630 - Starting diplomacy (saying hi) (diplomacyScreen / normalGreetingPhrase)
 	645 - Starting diplomacy (saying hi, but mad) (diplomacyScreen / impatientGreetingPhrase)
 	660 - I'm not talking to you! (diplomacyScreen / refuseGreeting)
-	675 - Lets have a wizard pact
-	690 - Lets have an alliance
+	675 - Lets have a wizard pact (diplomacyScreen / proposeWizardPactPhrase)
+	690 - Lets have an alliance (diplomacyScreen / proposeAlliancePhrase)
 	705 - Break your treaty with wizard X
 	720 - I want your spell X
 	735 - Lets have a peace treaty
 	750 - Lets have a peace treaty if I suck up and give you X
-	765 - Agree to wizard pact
-	780 - Agree to alliance
+	765 - Agree to wizard pact (diplomacyScreen / acceptWizardPactPhrase)
+	780 - Agree to alliance (diplomacyScreen / acceptAlliancePhrase)
 	795 - Agree to peace treaty
 	810 - You were nice and gave me a spell, so sure (but in response to what?)
 	825 - Sure I broke my treaty with wizard X
 	840 - Sure lets have an alliance to kill wizard X
 	
-	855 - No
+	855 - No (diplomacyScreen / genericRefusePhrase)
 	870 - No, because of previously broken treaties
 	885 - Get out of my land, so nty to treaty
 	900 - Stop attacking my units, so nty to treaty

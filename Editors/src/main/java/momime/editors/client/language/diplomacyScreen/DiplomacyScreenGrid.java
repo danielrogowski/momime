@@ -32,9 +32,17 @@ public final class DiplomacyScreenGrid extends MoMEditorGridWithDiplomacyMessage
 		final String language = getLanguageCombo ().getSelectedItem ().toString ();
 		final List<String> list = readDiplomacyMessages (lbxFilename);
 
+		// These need to be in the order they're in the XSD or they won't import correctly
 		importDiplomacyMessages (list, 630, LanguageEditorDatabaseConstants.TAG_ENTITY_NORMAL_GREETING_PHRASE, language);
 		importDiplomacyMessages (list, 645, LanguageEditorDatabaseConstants.TAG_ENTITY_IMPATIENT_GREETING_PHRASE, language);
 		importDiplomacyMessages (list, 660, LanguageEditorDatabaseConstants.TAG_ENTITY_REFUSE_GREETING_PHRASE, language);
+		importDiplomacyMessages (list, 855, LanguageEditorDatabaseConstants.TAG_ENTITY_GENERIC_REFUSE_PHRASE, language);
+		importDiplomacyMessages (list, 675, LanguageEditorDatabaseConstants.TAG_ENTITY_PROPOSE_WIZARD_PACT_PHRASE, language);
+		importDiplomacyMessages (list, 765, LanguageEditorDatabaseConstants.TAG_ENTITY_ACCEPT_WIZARD_PACT_PHRASE, language);
+		importDiplomacyMessages (list, 690, LanguageEditorDatabaseConstants.TAG_ENTITY_PROPOSE_ALLIANCE_PHRASE, language);
+		importDiplomacyMessages (list, 780, LanguageEditorDatabaseConstants.TAG_ENTITY_ACCEPT_ALLIANCE_PHRASE, language);
+		importDiplomacyMessages (list, 450, LanguageEditorDatabaseConstants.TAG_ENTITY_BREAK_PACT_PHRASE, language);
+		importDiplomacyMessages (list, 75, LanguageEditorDatabaseConstants.TAG_ENTITY_BROKEN_PACT_PHRASE, language);
 	}
 	
 	/**

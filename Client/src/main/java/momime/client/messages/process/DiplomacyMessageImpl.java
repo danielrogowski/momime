@@ -65,9 +65,25 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().initializeText ();
 				break;
 				
+			case PROPOSE_WIZARD_PACT:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.PROPOSE_WIZARD_PACT);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case PROPOSE_ALLIANCE:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.PROPOSE_ALLIANCE);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
 			default:
 				throw new IOException ("Client doesn't know how to handle diplomacy action " + getAction ());
 		}
+		
+		log.debug ("Done with diplomacy action " + getAction () + " from player ID " + getTalkFromPlayerID ());
 	}
 	
 	/**

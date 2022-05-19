@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -21,6 +24,9 @@ import momime.server.utils.KnownWizardServerUtils;
  */
 public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage implements PostSessionClientToServerMessage
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (RequestDiplomacyMessageImpl.class);
+	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 
@@ -38,6 +44,8 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
+		log.debug ("Received diplomacy action " + getAction () + " from player ID " + sender.getPlayerDescription ().getPlayerID () + " sending to player ID " + getTalkToPlayerID ());
+		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Have to deal here with the fact that maybe we know the wizard we want to talk to, but they don't know us.  Perhaps we

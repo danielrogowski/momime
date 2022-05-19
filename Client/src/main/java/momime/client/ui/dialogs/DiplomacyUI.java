@@ -213,6 +213,24 @@ public final class DiplomacyUI extends MomClientDialogUI
 	/** We are done making proposals; see if the other wizard wants to make any proposals, otherwise end the conversation */
 	private Action doneChoicesAction;
 	
+	/** Propose a wizard pact */
+	private Action proposeWizardPactAction;
+	
+	/** Propose an alliance */
+	private Action proposeAllianceAction;
+	
+	/** Propose ending war */
+	private Action proposePeaceTreatyAction;
+	
+	/** Propose declaring war on another wizard */
+	private Action proposeDeclareWarOnAnotherWizardAction;
+	
+	/** Propose breaking alliance with another wizard */
+	private Action proposeBreakAllianceWithAnotherWizardAction;
+	
+	/** Back to main choices */
+	private Action backToMainChoicesAction;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -303,11 +321,48 @@ public final class DiplomacyUI extends MomClientDialogUI
 			initializePortrait ();
 		});
 		
-		proposeTreatyAction = new LoggingAction ((ev) -> {});
+		proposeTreatyAction = new LoggingAction ((ev) ->
+		{
+			setTextState (DiplomacyTextState.PROPOSE_TREATY);
+			initializeText ();
+		});
+		
 		breakTreatyAction = new LoggingAction ((ev) -> {});
 		offerTributeAction = new LoggingAction ((ev) -> {});
 		exchangeSpellsAction = new LoggingAction ((ev) -> {});
 		doneChoicesAction = new LoggingAction ((ev) -> {});
+		
+		proposeWizardPactAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.PROPOSE_WIZARD_PACT);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+			initializeText ();
+		});
+		
+		proposeAllianceAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.PROPOSE_ALLIANCE);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+			initializeText ();
+		});
+		
+		proposePeaceTreatyAction = new LoggingAction ((ev) -> {});
+		proposeDeclareWarOnAnotherWizardAction = new LoggingAction ((ev) -> {});
+		proposeBreakAllianceWithAnotherWizardAction = new LoggingAction ((ev) -> {});
+		
+		backToMainChoicesAction = new LoggingAction ((ev) ->
+		{
+			setTextState (DiplomacyTextState.MAIN_CHOICES);
+			initializeText ();
+		});
 		
 		// Initialize the frame
 		getDialog ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
@@ -536,6 +591,26 @@ public final class DiplomacyUI extends MomClientDialogUI
 					// Other wizard has "main choices", so we're waiting to see what they choose
 					case WAITING_FOR_CHOICE:
 						singular = getLanguages ().getDiplomacyScreen ().getWaitingForProposal ();
+						break;
+						
+					// Pick a kind of treaty to propose
+					case PROPOSE_TREATY:
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeWizardPactAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeAllianceAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposePeaceTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeDeclareWarOnAnotherWizardAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeBreakAllianceWithAnotherWizardAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
+						
+					// Other wizard proposes a wizard pact with us
+					case PROPOSE_WIZARD_PACT:
+						variants = getLanguages ().getDiplomacyScreen ().getProposeWizardPactPhrase ();
+						break;
+
+					// Other wizard proposes an alliance with us
+					case PROPOSE_ALLIANCE:
+						variants = getLanguages ().getDiplomacyScreen ().getProposeAlliancePhrase ();
 						break;
 				}
 		
@@ -883,6 +958,30 @@ public final class DiplomacyUI extends MomClientDialogUI
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 
 			doneChoicesAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getDoneChoices ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			proposeWizardPactAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposeWizardPact ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			proposeAllianceAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposeAlliance ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			proposePeaceTreatyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposePeaceTreaty ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			proposeDeclareWarOnAnotherWizardAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposeDeclareWarOnAnotherWizard ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			proposeBreakAllianceWithAnotherWizardAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getProposeBreakAllianceWithAnotherWizard ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			backToMainChoicesAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getBackToMainChoices ()).replaceAll
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 		}

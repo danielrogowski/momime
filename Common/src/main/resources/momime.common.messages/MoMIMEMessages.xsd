@@ -537,6 +537,22 @@ standardPhotoIDs over and over again</xsd:documentation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pact" type="momimemsgs:pact" />
+        </xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="pact">
+	    <xsd:annotation>
+    		<xsd:documentation>Pact or status between the wizard whose knownWizardDetails object this is in, and the playerID listed here.
+If two wizards don't have a pact listed, they're at default state (neither at war or agreed pact).
+
+Pacts are public knowledge (wizard A will know of the pact state between wizards B and C) however we don't just freely make this
+part of GeneralPublicKnowledge as then we'd be sending playerIDs around for wizards that might not yet be known.  i.e. wizard A
+only gets sent the pact state between wizards B and C after wizard A has met both of them.</xsd:documentation>
+		</xsd:annotation>
+        <xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="pactWithPlayerID" type="mps:playerID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="pactType" type="momimemsgs:pactType" />
         </xsd:sequence>
 	</xsd:complexType>
 
@@ -1434,17 +1450,33 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:documentation>Reject wizard pact</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_WIZARD_PACT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="BW"><xsd:annotation>
+				<xsd:documentation>Break wizard pact</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BREAK_WIZARD_PACT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="KW"><xsd:annotation>
+				<xsd:documentation>Broken wizard pact (response to break wizard pact)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BROKEN_WIZARD_PACT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="PA"><xsd:annotation>
 				<xsd:documentation>Propose alliance</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_ALLIANCE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="AA"><xsd:annotation>
-				<xsd:documentation>Propose alliance</xsd:documentation>
+				<xsd:documentation>Accept alliance</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_ALLIANCE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="RA"><xsd:annotation>
-				<xsd:documentation>Propose alliance</xsd:documentation>
+				<xsd:documentation>Reject alliance</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_ALLIANCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="BA"><xsd:annotation>
+				<xsd:documentation>Break alliance</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BREAK_ALLIANCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="KA"><xsd:annotation>
+				<xsd:documentation>Broken alliance (response to break alliance)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BROKEN_ALLIANCE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="PP"><xsd:annotation>
 				<xsd:documentation>Propose peace treaty</xsd:documentation>
@@ -1537,6 +1569,26 @@ So need a separate data item for this.</xsd:documentation>
 			<xsd:enumeration value="EC"><xsd:annotation>
 				<xsd:documentation>End conversation nicely (as opposed to REJECT_TALKING where you tell them to go away)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="END_CONVERSATION" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="pactType">
+	    <xsd:annotation>
+    		<xsd:documentation>Different pacts or statuses between two wizards.  If two wizards don't have a pact listed, they're at default state (neither at war or agreed pact).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Wizard pact</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="WIZARD_PACT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Alliance</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ALLIANCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="W"><xsd:annotation>
+				<xsd:documentation>War</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="WAR" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

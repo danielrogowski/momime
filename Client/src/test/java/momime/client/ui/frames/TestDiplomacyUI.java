@@ -1,4 +1,4 @@
-package momime.client.ui.dialogs;
+package momime.client.ui.frames;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,6 +29,7 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.DiplomacyScreen;
+import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.SpellClientUtilsImpl;
 import momime.client.utils.WizardClientUtils;
@@ -167,7 +168,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		when (client.getOurPlayerID ()).thenReturn (3);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/DiplomacyUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/DiplomacyUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form
@@ -190,7 +191,6 @@ public final class TestDiplomacyUI extends ClientTestData
 		diplomacy.setTextState (DiplomacyTextState.INITIAL_CONTACT);
 		
 		// Display form		
-		diplomacy.setModal (false);
 		diplomacy.setVisible (true);
 		Thread.sleep (10000);
 		diplomacy.setVisible (false);

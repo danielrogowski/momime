@@ -1,4 +1,4 @@
-package momime.client.ui.dialogs;
+package momime.client.ui.frames;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -50,6 +50,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.MeetWizardMessageImpl;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
@@ -68,7 +69,7 @@ import momime.common.utils.KnownWizardUtils;
 /**
  * Diplomacy screen for talking to other players (both human and AI)
  */
-public final class DiplomacyUI extends MomClientDialogUI
+public final class DiplomacyUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (DiplomacyUI.class);
@@ -365,8 +366,8 @@ public final class DiplomacyUI extends MomClientDialogUI
 		});
 		
 		// Initialize the frame
-		getDialog ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
-		getDialog ().addWindowListener (new WindowAdapter ()
+		getFrame ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
+		getFrame ().addWindowListener (new WindowAdapter ()
 		{
 			@Override
 			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
@@ -474,9 +475,9 @@ public final class DiplomacyUI extends MomClientDialogUI
 		textPanelLayout = getDiplomacyLayout ().findComponent ("frmDiplomacyText");
 		
 		// Lock dialog size
-		getDialog ().setContentPane (contentPane);
-		getDialog ().setResizable (false);
-		getDialog ().addMouseListener (diplomacyMouseAdapter);
+		getFrame ().setContentPane (contentPane);
+		getFrame ().setResizable (false);
+		getFrame ().addMouseListener (diplomacyMouseAdapter);
 		
 		// Set up dialog with values that should've been set before making it visible
 		updateRelationScore ();
@@ -927,7 +928,7 @@ public final class DiplomacyUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		getDialog ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getTitle ()));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getTitle ()));
 
 		try
 		{

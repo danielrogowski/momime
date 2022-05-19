@@ -10,8 +10,8 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
-import momime.client.ui.dialogs.DiplomacyPortraitState;
-import momime.client.ui.dialogs.DiplomacyUI;
+import momime.client.ui.frames.DiplomacyPortraitState;
+import momime.client.ui.frames.DiplomacyUI;
 import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.WizardsUI;

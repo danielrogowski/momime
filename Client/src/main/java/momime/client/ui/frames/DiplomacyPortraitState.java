@@ -1,4 +1,4 @@
-package momime.client.ui.dialogs;
+package momime.client.ui.frames;
 
 /**
  * Different ways we can draw the wizard portrait in the diplomacy screen

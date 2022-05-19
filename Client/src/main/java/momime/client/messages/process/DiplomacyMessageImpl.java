@@ -10,9 +10,9 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import jakarta.xml.bind.JAXBException;
-import momime.client.ui.dialogs.DiplomacyPortraitState;
-import momime.client.ui.dialogs.DiplomacyTextState;
-import momime.client.ui.dialogs.DiplomacyUI;
+import momime.client.ui.frames.DiplomacyPortraitState;
+import momime.client.ui.frames.DiplomacyTextState;
+import momime.client.ui.frames.DiplomacyUI;
 import momime.common.messages.servertoclient.DiplomacyMessage;
 
 /**

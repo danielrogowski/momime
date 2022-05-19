@@ -60,7 +60,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	 * some grey, some blue.  Also had to add a 15th frame on the end which is just the solid circle - although it isn't needed to draw the animation itself, it gets used
 	 * as a mask to chop the square corners off the wizard portrait so they don't stick out the side of the mirror.
 	 */
-	final static String MIRROR_ANIM = "OVERLAND_ENCHANTMENTS_MIRROR";
+	public final static String MIRROR_ANIM = "OVERLAND_ENCHANTMENTS_MIRROR";
 	
 	/** Number of animation frames that we pause in between fading shiny-photo and then photo-spell pic */
 	private final static int PAUSE_FRAMES = 12;

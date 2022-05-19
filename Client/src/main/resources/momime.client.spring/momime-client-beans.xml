@@ -1813,10 +1813,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="diplomacyLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/DiplomacyUI.xml" />
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/DiplomacyUI.xml" />
 	</bean>
 
-	<bean id="diplomacyUI" class="momime.client.ui.dialogs.DiplomacyUI">
+	<bean id="diplomacyUI" class="momime.client.ui.frames.DiplomacyUI">
 		<property name="diplomacyLayout" ref="diplomacyLayout" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />

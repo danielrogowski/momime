@@ -1,4 +1,4 @@
-package momime.client.ui.dialogs;
+package momime.client.ui.frames;
 
 /**
  * Different text to generate for the diplomacy screen

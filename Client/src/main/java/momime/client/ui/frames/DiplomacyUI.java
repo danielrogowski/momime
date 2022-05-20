@@ -214,6 +214,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** We are done making proposals; see if the other wizard wants to make any proposals, otherwise end the conversation */
 	private Action doneChoicesAction;
 	
+	/** Other wizard made some proposal and we accept */
+	private Action acceptProposalAction;
+	
+	/** Other wizard made some proposal and we refuse */
+	private Action refuseProposalAction;
+	
 	/** Propose a wizard pact */
 	private Action proposeWizardPactAction;
 	
@@ -332,6 +338,56 @@ public final class DiplomacyUI extends MomClientFrameUI
 		offerTributeAction = new LoggingAction ((ev) -> {});
 		exchangeSpellsAction = new LoggingAction ((ev) -> {});
 		doneChoicesAction = new LoggingAction ((ev) -> {});
+
+		acceptProposalAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			
+			switch (getTextState ())
+			{
+				case PROPOSE_WIZARD_PACT:
+					msg.setAction (DiplomacyAction.ACCEPT_WIZARD_PACT);
+					setTextState (DiplomacyTextState.ACCEPT_WIZARD_PACT);
+					break;
+
+				case PROPOSE_ALLIANCE:
+					msg.setAction (DiplomacyAction.ACCEPT_ALLIANCE);
+					setTextState (DiplomacyTextState.ACCEPT_ALLIANCE);
+					break;
+				
+				default:
+					throw new IOException ("Accepting proposal, but don't know what of proposal " + getTextState () + " is");
+			}
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			initializeText ();
+		});
+		
+		refuseProposalAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			
+			switch (getTextState ())
+			{
+				case PROPOSE_WIZARD_PACT:
+					msg.setAction (DiplomacyAction.REJECT_WIZARD_PACT);
+					break;
+
+				case PROPOSE_ALLIANCE:
+					msg.setAction (DiplomacyAction.REJECT_ALLIANCE);
+					break;
+				
+				default:
+					throw new IOException ("Refusing proposal, but don't know what of proposal " + getTextState () + " is");
+			}
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+
+			setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+			initializeText ();
+		});
 		
 		proposeWizardPactAction = new LoggingAction ((ev) ->
 		{
@@ -340,7 +396,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 			msg.setAction (DiplomacyAction.PROPOSE_WIZARD_PACT);
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 			
-			setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
 			initializeText ();
 		});
 		
@@ -351,7 +407,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 			msg.setAction (DiplomacyAction.PROPOSE_ALLIANCE);
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 			
-			setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
 			initializeText ();
 		});
 		
@@ -594,6 +650,11 @@ public final class DiplomacyUI extends MomClientFrameUI
 						singular = getLanguages ().getDiplomacyScreen ().getWaitingForProposal ();
 						break;
 						
+					// We made a proposal to the other wizard and waiting for them to accept/reject it
+					case WAITING_FOR_RESPONSE:
+						singular = getLanguages ().getDiplomacyScreen ().getWaitingForAcceptanceOfProposal ();
+						break;
+							
 					// Pick a kind of treaty to propose
 					case PROPOSE_TREATY:
 						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeWizardPactAction, MomUIConstants.GOLD, getMediumFont ()));
@@ -603,15 +664,40 @@ public final class DiplomacyUI extends MomClientFrameUI
 						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeBreakAllianceWithAnotherWizardAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
+
+					// General "no" message in response to some proposal
+					case GENERIC_REFUSE:
+						variants = getLanguages ().getDiplomacyScreen ().getGenericRefusePhrase ();
+						break;
 						
 					// Other wizard proposes a wizard pact with us
 					case PROPOSE_WIZARD_PACT:
 						variants = getLanguages ().getDiplomacyScreen ().getProposeWizardPactPhrase ();
+						
+						// Buttons to accept or refuse
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (acceptProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseProposalAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
 
 					// Other wizard proposes an alliance with us
 					case PROPOSE_ALLIANCE:
 						variants = getLanguages ().getDiplomacyScreen ().getProposeAlliancePhrase ();
+						
+						// Buttons to accept or refuse
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (acceptProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
+						
+					// Accepted wizard pact
+					case ACCEPT_WIZARD_PACT:
+						variants = getLanguages ().getDiplomacyScreen ().getAcceptWizardPactPhrase ();
+						break;
+						
+					// Accepted alliance
+					case ACCEPT_ALLIANCE:
+						variants = getLanguages ().getDiplomacyScreen ().getAcceptAlliancePhrase ();
 						break;
 				}
 		
@@ -959,6 +1045,14 @@ public final class DiplomacyUI extends MomClientFrameUI
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 
 			doneChoicesAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getDoneChoices ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			acceptProposalAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getAcceptProposal ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			refuseProposalAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getRefuseProposal ()).replaceAll
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 			

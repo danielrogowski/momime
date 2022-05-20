@@ -2513,6 +2513,18 @@
 						<xsd:selector xpath="waitingForProposal" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenWaitingForAcceptanceOfProposalPK">
+						<xsd:selector xpath="waitingForAcceptanceOfProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenAcceptProposalPK">
+						<xsd:selector xpath="acceptProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRefuseProposalPK">
+						<xsd:selector xpath="refuseProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenProposeTreatyPK">
 						<xsd:selector xpath="proposeTreaty" />
 						<xsd:field xpath="@language" />
@@ -4893,6 +4905,9 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refuseTalkTo" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForAcceptTalkTo" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForAcceptanceOfProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="acceptProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refuseProposal" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeTreaty" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakTreaty" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerTribute" />

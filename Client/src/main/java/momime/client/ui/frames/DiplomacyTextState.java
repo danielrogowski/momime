@@ -29,13 +29,25 @@ public enum DiplomacyTextState
 	
 	/** Waiting for other wizard to pick one of MAIN_CHOICES; in meantime we have nothing we can do or pick at all except we can get impatient and end the conversation */
 	WAITING_FOR_CHOICE,
+
+	/** Waiting for other wizard to accept or reject a proposal we made to them */
+	WAITING_FOR_RESPONSE,
+
+	/** General "no" message in response to some proposal */
+	GENERIC_REFUSE,
 	
 	/** Pick a type of treaty to propose */
 	PROPOSE_TREATY,
-	
+
 	/** Other wizard proposes a wizard pact with us */
 	PROPOSE_WIZARD_PACT,
 	
 	/** Other wizard proposes an alliance with us */
-	PROPOSE_ALLIANCE;
+	PROPOSE_ALLIANCE,
+
+	/** Accept wizard pact */
+	ACCEPT_WIZARD_PACT,
+	
+	/** Accept alliance */
+	ACCEPT_ALLIANCE;
 }

@@ -4602,6 +4602,15 @@ Bonus Or +GOLD_BONUS%</text>
 		<waitingForProposal language="en">
 			<text>Waiting for TALKING_PLAYER_NAME to make a proposal...</text>
 		</waitingForProposal>
+		<waitingForAcceptanceOfProposal language="en">
+			<text>Waiting for TALKING_PLAYER_NAME to consider your proposal...</text>
+		</waitingForAcceptanceOfProposal>
+		<acceptProposal language="en">
+			<text>Agree to TALKING_PLAYER_NAME's proposal</text>
+		</acceptProposal>
+		<refuseProposal language="en">
+			<text>Refuse TALKING_PLAYER_NAME's proposal</text>
+		</refuseProposal>
 		<proposeTreaty language="en">
 			<text>Propose Treaty</text>
 		</proposeTreaty>

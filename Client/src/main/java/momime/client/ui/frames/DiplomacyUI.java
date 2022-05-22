@@ -126,6 +126,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	
 	/** Which wizard we are talking to */
 	private int talkingWizardID;
+
+	/** Which wizard is the one controlling making proposals (and which one is waiting for the other side to make a proposal) */
+	private int proposingWizardID;
 	
 	/** Which wizard we are talking to */
 	private KnownWizardDetails talkingWizardDetails;
@@ -501,12 +504,19 @@ public final class DiplomacyUI extends MomClientFrameUI
 					initializePortrait ();
 				}
 				
-				else if (getTextState () == DiplomacyTextState.ACCEPT_TALK)
+				else if ((getTextState () == DiplomacyTextState.ACCEPT_TALK) ||
+					(getTextState () == DiplomacyTextState.ACCEPT_WIZARD_PACT) ||
+					(getTextState () == DiplomacyTextState.ACCEPT_ALLIANCE) ||
+					(getTextState () == DiplomacyTextState.GENERIC_REFUSE))
 				{
-					setTextState (DiplomacyTextState.MAIN_CHOICES);
+					if (getProposingWizardID () == getClient ().getOurPlayerID ())
+						setTextState (DiplomacyTextState.MAIN_CHOICES);
+					else
+						setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+					
 					initializeText ();
 				}
-				
+					
 				else if (getTextState () == DiplomacyTextState.REFUSED_TALK)
 					try
 					{
@@ -1278,6 +1288,22 @@ public final class DiplomacyUI extends MomClientFrameUI
 		talkingWizardID = w;
 	}
 
+	/**
+	 * @return Which wizard is the one controlling making proposals (and which one is waiting for the other side to make a proposal)
+	 */
+	public final int getProposingWizardID ()
+	{
+		return proposingWizardID;
+	}
+
+	/**
+	 * @param w Which wizard is the one controlling making proposals (and which one is waiting for the other side to make a proposal)
+	 */
+	public final void setProposingWizardID (final int w)
+	{
+		proposingWizardID = w;
+	}
+	
 	/**
 	 * @return Which state to draw the portrait in
 	 */

@@ -355,4 +355,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public DiplomacyMessageImpl createDiplomacyMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
+	public PactMessageImpl createPactMessage ();
 }

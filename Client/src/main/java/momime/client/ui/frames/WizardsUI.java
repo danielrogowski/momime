@@ -61,6 +61,7 @@ import momime.common.database.WizardObjective;
 import momime.common.database.WizardPersonality;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.Pact;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
@@ -143,6 +144,9 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** List of gem buttons for each wizard */
 	final List<JButton> wizardButtons = new ArrayList<JButton> ();
+	
+	/** List of pact icons for each wizard */
+	final List<JLabel> pactIcons = new ArrayList<JLabel> ();
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -438,11 +442,15 @@ public final class WizardsUI extends MomClientFrameUI
 	{
 		if (contentPane != null)
 		{
-			// Remove the old buttons
+			// Remove the old buttons and icons
 			for (final JButton button : wizardButtons)
 				contentPane.remove (button);
+
+			for (final JLabel icon: pactIcons)
+				contentPane.remove (icon);
 			
 			wizardButtons.clear ();
+			pactIcons.clear ();
 			
 			// Do we have detect magic cast or are we targeting spell blast?
 			final boolean spellBlast = (getTargetingSpell () != null) && (getTargetingSpell ().getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_BLAST));
@@ -451,7 +459,7 @@ public final class WizardsUI extends MomClientFrameUI
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
 					getClient ().getOurPlayerID (), CommonDatabaseConstants.SPELL_ID_DETECT_MAGIC, null, null, null, null) != null);
 			
-			// Create new buttons
+			// Create new buttons and icons
 			int n = 0;
 			for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			{
@@ -601,6 +609,37 @@ public final class WizardsUI extends MomClientFrameUI
 					
 					contentPane.add (wizardButton, "frmWizardsGem" + n);
 					wizardButtons.add (wizardButton);
+					
+					// Create icons for any pacts this wizard has
+					int p = 0;
+					for (final Pact pact : wizardDetails.getPact ())
+					{
+						p++;
+						
+						final String pactTypeImage;
+						switch (pact.getPactType ())
+						{
+							case WIZARD_PACT:
+								pactTypeImage = "/momime.client.graphics/ui/diplomacy/wizardPact.png";
+								break;
+								
+							case ALLIANCE:
+								pactTypeImage = "/momime.client.graphics/ui/diplomacy/alliance.png";
+								break;
+								
+							case WAR:
+								pactTypeImage = "/momime.client.graphics/ui/diplomacy/war.png";
+								break;
+							default:
+								throw new IOException ("Don't know image to draw for pact type " + pact.getPactType ());
+						}
+						
+						final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (pactTypeImage, true, null, null, null, pact.getPactWithPlayerID (), null);
+						final JLabel label = new JLabel (new ImageIcon (image));
+						pactIcons.add (label);
+						
+						contentPane.add (label, "frmWizardsPact" + n + "-" + p);
+					}
 				}
 			}
 			

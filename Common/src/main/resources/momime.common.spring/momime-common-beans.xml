@@ -154,6 +154,7 @@
     			<value>momime.common.messages.servertoclient.OverlandCastingInfoMessage</value>
     			<value>momime.common.messages.servertoclient.RandomEventMessage</value>
     			<value>momime.common.messages.servertoclient.DiplomacyMessage</value>
+    			<value>momime.common.messages.servertoclient.PactMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.UpdateTerrainMessage</value>

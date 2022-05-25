@@ -23,8 +23,8 @@ import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationWallData;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
-import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.messages.servertoclient.DiplomacyMessage;
+import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
@@ -39,6 +39,7 @@ import momime.common.messages.servertoclient.OfferAcceptedMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.OverlandCastingInfoMessage;
+import momime.common.messages.servertoclient.PactMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.PlaneShiftUnitStackMessage;
@@ -702,6 +703,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final DiplomacyMessage createDiplomacyMessage ()
 	{
 		return getFactory ().createDiplomacyMessage ();
+	}
+	
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final PactMessage createPactMessage ()
+	{
+		return getFactory ().createPactMessage ();
 	}
 	
 	/**

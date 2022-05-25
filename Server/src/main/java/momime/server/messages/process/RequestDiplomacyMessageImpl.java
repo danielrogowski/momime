@@ -14,6 +14,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
+import momime.common.messages.PactType;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.messages.servertoclient.DiplomacyMessage;
 import momime.server.MomSessionVariables;
@@ -55,9 +56,27 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		getKnownWizardServerUtils ().meetWizard (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), false, mom);
 		
 		final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl");
+
+		// Any updates needed on the server because of the action?
+		switch (getAction ())
+		{
+			case ACCEPT_WIZARD_PACT:
+				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.WIZARD_PACT, mom);
+				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.WIZARD_PACT, mom);
+				break;
+				
+			case ACCEPT_ALLIANCE:
+				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.ALLIANCE, mom);
+				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.ALLIANCE, mom);
+				break;
+				
+			default:
+				// This is fine, most diplomacy actions don't trigger updates 
+		}
+		
+		// Forward the action onto human players
 		if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 		{
-			// Just forward the request to them
 			final DiplomacyMessage msg = new DiplomacyMessage ();	
 			msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
 			msg.setAction (getAction ());

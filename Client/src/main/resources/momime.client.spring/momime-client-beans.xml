@@ -632,6 +632,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="diplomacyUI" ref="diplomacyUI" />
 	</bean>
 
+	<bean id="pactMessage" class="momime.client.messages.process.PactMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="wizardsUI" ref="wizardsUI" />
+	</bean>
+
 	<!-- Create extended versions of NTMs which include drawing implementations -->
 
 	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">

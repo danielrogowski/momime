@@ -19,10 +19,12 @@ import momime.common.database.RelationScore;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.PactType;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
 import momime.common.messages.servertoclient.MeetWizardMessage;
+import momime.common.messages.servertoclient.PactMessage;
 import momime.common.messages.servertoclient.PowerBaseHistoryPlayer;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.utils.KnownWizardUtils;
@@ -282,6 +284,46 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 			player.getConnection ().sendMessageToClient (msg.getValue ());
 		}
 	}	
+	
+	/**
+	 * This only updates the pact of the specified player; since pacts are two-way, the caller
+	 * must therefore always call this method twice, switching the player params around.
+	 * 
+	 * @param updatePlayerID Player whose pact list is being updated
+	 * @param pactPlayerID Who they have the pact with
+	 * @param pactType New type of pact; null is fine and just means previous pact is now cancelled
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws RecordNotFoundException If the wizard to update isn't found in the list
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void updatePact (final int updatePlayerID, final int pactPlayerID, final PactType pactType, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException
+	{
+		// Update true wizard details on server
+		final KnownWizardDetails trueUpdateWizard = getKnownWizardUtils ().findKnownWizardDetails (mom.getGeneralServerKnowledge ().getTrueMap ().getWizardDetails (), updatePlayerID, "updatePact");
+		getKnownWizardUtils ().updatePactWith (trueUpdateWizard.getPact (), pactPlayerID, pactType);
+
+		// Build message
+		final PactMessage msg = new PactMessage ();
+		msg.setUpdatePlayerID (updatePlayerID);
+		msg.setPactPlayerID (pactPlayerID);
+		msg.setPactType (pactType);
+		
+		// Each player who knows them
+		for (final PlayerServerDetails player : mom.getPlayers ())
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final KnownWizardDetails wizardDetails = getKnownWizardUtils ().findKnownWizardDetails (priv.getFogOfWarMemory ().getWizardDetails (), updatePlayerID);
+			if (wizardDetails != null)
+			{
+				getKnownWizardUtils ().updatePactWith (wizardDetails.getPact (), pactPlayerID, pactType);
+				if (player.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+					player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+	}
 	
 	/**
 	 * @return Methods for finding KnownWizardDetails from the list

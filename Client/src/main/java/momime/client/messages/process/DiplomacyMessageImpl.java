@@ -43,6 +43,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 		switch (getAction ())
 		{
 			case INITIATE_TALKING:
+				getDiplomacyUI ().initializeTalkingWizard ();
 				getDiplomacyUI ().setProposingWizardID (getTalkFromPlayerID ());
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes

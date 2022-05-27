@@ -91,6 +91,7 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Cu
 		if ((getKnownWizardDetails ().getPlayerID () != getClient ().getOurPlayerID ()) && (isShowAnimation () != null) && (isShowAnimation ()))
 		{
 			getDiplomacyUI ().setTalkingWizardID (getKnownWizardDetails ().getPlayerID ());
+			getDiplomacyUI ().initializeTalkingWizard ();
 			getDiplomacyUI ().setProposingWizardID (getKnownWizardDetails ().getPlayerID ());
 			getDiplomacyUI ().setMeetWizardMessage (this);
 			getDiplomacyUI ().setDiplomacyAction (null);

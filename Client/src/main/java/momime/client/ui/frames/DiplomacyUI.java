@@ -249,25 +249,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 
 		// Need this just to cut the corner off the wizard portraits
 		fadeAnim = getGraphicsDB ().findAnimation (OverlandEnchantmentsUI.MIRROR_ANIM, "DiplomacyUI");
-		
-		// Wizard portraits are stored exactly from the original LBXes (109x104) but stretched to compensate for original MoM using non-square 320x200 mode pixels (218x250).
-		// Note the original MoM doesn't use the main wizard portraits (WIZARDS.LBX) here, it uses a frame of the talking animations (DIPLOMAC.LBX), which fades out
-		// the edges of the pic so that it looks more like its in a mirror.  While it would have been easier to do that here, that would have meant no pic for overland
-		// enchantments would be available for custom wizard portraits.  So this has to work just from the main wizard portrait.
-		talkingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkingWizardID (), "DiplomacyUI");
-		
-		talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTalkingWizardID (), "DiplomacyUI (T)");
-		
-		if (talkingWizardDetails.getStandardPhotoID () != null)
-		{
-			standardPhotoDef = getClient ().getClientDB ().findWizard (talkingWizardDetails.getStandardPhotoID (), "DiplomacyUI");
-			talkingAnim = getClient ().getClientDB ().findAnimation (standardPhotoDef.getDiplomacyAnimation (), "DiplomacyUI");
-		}
-		
-		else if (talkingWizardDetails.getCustomPhoto () != null)
-			customPhoto = ImageIO.read (new ByteArrayInputStream (talkingWizardDetails.getCustomPhoto ()));
-		
+
 		// Need this to know where to draw the wizard's photo
 		final XmlLayoutComponent mirrorLocation = getDiplomacyLayout ().findComponent ("frmDiplomacyMirror");
 		
@@ -534,6 +516,36 @@ public final class DiplomacyUI extends MomClientFrameUI
 		{
 			getMusicPlayer ().setShuffle (true);
 			getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC, AnimationContainer.GRAPHICS_XML);
+		}
+	}
+	
+	/**
+	 * Must be called whenever a new conversation is starting, and talkingWizardID has just been set to a new value
+	 * @throws IOException If there is a problem
+	 */
+	public final void initializeTalkingWizard () throws IOException
+	{
+		// Wizard portraits are stored exactly from the original LBXes (109x104) but stretched to compensate for original MoM using non-square 320x200 mode pixels (218x250).
+		// Note the original MoM doesn't use the main wizard portraits (WIZARDS.LBX) here, it uses a frame of the talking animations (DIPLOMAC.LBX), which fades out
+		// the edges of the pic so that it looks more like its in a mirror.  While it would have been easier to do that here, that would have meant no pic for overland
+		// enchantments would be available for custom wizard portraits.  So this has to work just from the main wizard portrait.
+		talkingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkingWizardID (), "DiplomacyUI");
+		
+		talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTalkingWizardID (), "DiplomacyUI (T)");
+		
+		if (talkingWizardDetails.getStandardPhotoID () != null)
+		{
+			standardPhotoDef = getClient ().getClientDB ().findWizard (talkingWizardDetails.getStandardPhotoID (), "DiplomacyUI");
+			talkingAnim = getClient ().getClientDB ().findAnimation (standardPhotoDef.getDiplomacyAnimation (), "DiplomacyUI");
+			customPhoto = null;
+		}
+		
+		else if (talkingWizardDetails.getCustomPhoto () != null)
+		{
+			customPhoto = ImageIO.read (new ByteArrayInputStream (talkingWizardDetails.getCustomPhoto ()));
+			standardPhotoDef = null;
+			talkingAnim = null;
 		}
 	}
 	
@@ -865,9 +877,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 		// It might already be in the cache
 		final String cacheKey;
 		if ((customPhoto != null) && (!MIRROR_STATES.contains (getPortraitState ())))
-			cacheKey = DiplomacyPortraitState.NORMAL.toString ();
+			cacheKey = getTalkingWizardID () + "-" + DiplomacyPortraitState.NORMAL.toString ();
 		else if (!ANIMATED_STATES.contains (getPortraitState ()))
-			cacheKey = getPortraitState ().toString ();
+			cacheKey = getTalkingWizardID () + "-" + getPortraitState ().toString ();
 		else if (MIRROR_STATES.contains (getPortraitState ()))
 		{
 			final String relation;
@@ -879,12 +891,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 				relation = DiplomacyPortraitState.NORMAL.toString ();
 		
 			if (getPortraitState () == DiplomacyPortraitState.DISAPPEARING)
-				cacheKey = DiplomacyPortraitState.APPEARING.toString () + "-" + relation + "-" + (APPEARING_TICKS - 1 - getFrameNumber ());
+				cacheKey = getTalkingWizardID () + "-" + DiplomacyPortraitState.APPEARING.toString () + "-" + relation + "-" + (APPEARING_TICKS - 1 - getFrameNumber ());
 			else
-				cacheKey = getPortraitState ().toString () + "-" + relation + "-" + getFrameNumber ();
+				cacheKey = getTalkingWizardID () + "-" + getPortraitState ().toString () + "-" + relation + "-" + getFrameNumber ();
 		}
 		else
-			cacheKey = getPortraitState ().toString () + "-" + getFrameNumber ();
+			cacheKey = getTalkingWizardID () + "-" + getPortraitState ().toString () + "-" + getFrameNumber ();
 		
 		BufferedImage image = wizardPortraits.get (cacheKey);
 		if (image == null)

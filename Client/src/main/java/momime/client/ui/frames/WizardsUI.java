@@ -269,6 +269,7 @@ public final class WizardsUI extends MomClientFrameUI
 							getDiplomacyUI ().setVisibleRelationScoreID (null);
 							getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.MIRROR);
 							getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+							getDiplomacyUI ().setMeetWizardMessage (null);
 							getDiplomacyUI ().updateRelationScore ();
 							getDiplomacyUI ().initializeText ();
 							getDiplomacyUI ().initializePortrait ();
@@ -294,6 +295,7 @@ public final class WizardsUI extends MomClientFrameUI
 					getDiplomacyUI ().setVisibleRelationScoreID (null);
 					getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.MIRROR);
 					getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
+					getDiplomacyUI ().setMeetWizardMessage (null);
 					getDiplomacyUI ().updateRelationScore ();
 					getDiplomacyUI ().initializeText ();
 					getDiplomacyUI ().initializePortrait ();
@@ -611,34 +613,37 @@ public final class WizardsUI extends MomClientFrameUI
 					wizardButtons.add (wizardButton);
 					
 					// Create icons for any pacts this wizard has
-					int p = 0;
-					for (final Pact pact : wizardDetails.getPact ())
+					if (wizardDetails != null)
 					{
-						p++;
-						
-						final String pactTypeImage;
-						switch (pact.getPactType ())
+						int p = 0;
+						for (final Pact pact : wizardDetails.getPact ())
 						{
-							case WIZARD_PACT:
-								pactTypeImage = "/momime.client.graphics/ui/diplomacy/wizardPact.png";
-								break;
-								
-							case ALLIANCE:
-								pactTypeImage = "/momime.client.graphics/ui/diplomacy/alliance.png";
-								break;
-								
-							case WAR:
-								pactTypeImage = "/momime.client.graphics/ui/diplomacy/war.png";
-								break;
-							default:
-								throw new IOException ("Don't know image to draw for pact type " + pact.getPactType ());
+							p++;
+							
+							final String pactTypeImage;
+							switch (pact.getPactType ())
+							{
+								case WIZARD_PACT:
+									pactTypeImage = "/momime.client.graphics/ui/diplomacy/wizardPact.png";
+									break;
+									
+								case ALLIANCE:
+									pactTypeImage = "/momime.client.graphics/ui/diplomacy/alliance.png";
+									break;
+									
+								case WAR:
+									pactTypeImage = "/momime.client.graphics/ui/diplomacy/war.png";
+									break;
+								default:
+									throw new IOException ("Don't know image to draw for pact type " + pact.getPactType ());
+							}
+							
+							final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (pactTypeImage, true, null, null, null, pact.getPactWithPlayerID (), null);
+							final JLabel label = new JLabel (new ImageIcon (image));
+							pactIcons.add (label);
+							
+							contentPane.add (label, "frmWizardsPact" + n + "-" + p);
 						}
-						
-						final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (pactTypeImage, true, null, null, null, pact.getPactWithPlayerID (), null);
-						final JLabel label = new JLabel (new ImageIcon (image));
-						pactIcons.add (label);
-						
-						contentPane.add (label, "frmWizardsPact" + n + "-" + p);
 					}
 				}
 			}

@@ -38,6 +38,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 		
 		getDiplomacyUI ().setTalkingWizardID (getTalkFromPlayerID ());
 		getDiplomacyUI ().setDiplomacyAction (getAction ());
+		getDiplomacyUI ().setMeetWizardMessage (null);
 
 		switch (getAction ())
 		{

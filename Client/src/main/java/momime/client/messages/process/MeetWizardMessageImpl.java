@@ -11,6 +11,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.ui.frames.DiplomacyPortraitState;
+import momime.client.ui.frames.DiplomacyTextState;
 import momime.client.ui.frames.DiplomacyUI;
 import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.NewGameUI;
@@ -94,6 +95,7 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Cu
 			getDiplomacyUI ().setMeetWizardMessage (this);
 			getDiplomacyUI ().setDiplomacyAction (null);
 			getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
+			getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
 			getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());
 			getDiplomacyUI ().updateRelationScore ();
 			getDiplomacyUI ().initializeText ();

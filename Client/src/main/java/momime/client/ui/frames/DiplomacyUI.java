@@ -9,8 +9,6 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -183,9 +181,6 @@ public final class DiplomacyUI extends MomClientFrameUI
 	
 	/** Relation to use to decide the eye colour, facial expression and music */
 	private String visibleRelationScoreID;
-	
-	/** Whether we've unblocked the message queue */
-	private boolean unblocked;
 	
 	/** Text or buttons in the lower half of the screen */
 	private JPanel textPanel;
@@ -426,42 +421,6 @@ public final class DiplomacyUI extends MomClientFrameUI
 		
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
-		getFrame ().addWindowListener (new WindowAdapter ()
-		{
-			@Override
-			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
-			{
-				try
-				{
-					// Unblock the message that caused this
-					if (!unblocked)
-					{
-						if (getMeetWizardMessage () != null)
-							getClient ().finishCustomDurationMessage (getMeetWizardMessage ());
-						
-						unblocked = true;
-					}
-					
-					// Stop animation timer
-					if ((timer != null) && (timer.isRunning ()))
-					{
-						timer.stop ();
-						timer = null;
-					}
-					
-					// Go back to the overland music
-					if ((standardPhotoDef != null) && (standardPhotoDef.getDiplomacyPlayList () != null))
-					{
-						getMusicPlayer ().setShuffle (true);
-						getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC, AnimationContainer.GRAPHICS_XML);
-					}
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		});
 		
 		// Initialize the content pane
 		contentPane = new JPanel (new XmlLayoutManager (getDiplomacyLayout ()))
@@ -520,9 +479,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 				else if (getTextState () == DiplomacyTextState.REFUSED_TALK)
 					try
 					{
-						setVisible (false);
+						setVisibleFalse ();
 					}
-					catch (final IOException e)
+					catch (final Exception e)
 					{
 						log.error (e, e);
 					}
@@ -549,6 +508,33 @@ public final class DiplomacyUI extends MomClientFrameUI
 		updateRelationScore ();
 		initializeText ();
 		initializePortrait ();
+	}
+	
+	/**
+	 * Hides the frame, and takes care of any updates necessary as part of hiding it and returning to the overland map 
+	 * @throws Exception If there is a problem
+	 */
+	private final void setVisibleFalse () throws Exception
+	{
+		setVisible (false);
+		
+		// Unblock the message that caused this
+		if (getMeetWizardMessage () != null)
+			getClient ().finishCustomDurationMessage (getMeetWizardMessage ());
+		
+		// Stop animation timer
+		if ((timer != null) && (timer.isRunning ()))
+		{
+			timer.stop ();
+			timer = null;
+		}
+		
+		// Go back to the overland music
+		if ((standardPhotoDef != null) && (standardPhotoDef.getDiplomacyPlayList () != null))
+		{
+			getMusicPlayer ().setShuffle (true);
+			getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC, AnimationContainer.GRAPHICS_XML);
+		}
 	}
 	
 	/**
@@ -752,6 +738,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 			}
 			
 			// Initialize animation
+			frameNumber = 0;
 			final int frameCount = getFrameCount ();
 			if (frameCount > 0)
 			{
@@ -794,7 +781,13 @@ public final class DiplomacyUI extends MomClientFrameUI
 							initializePortrait ();
 							
 							// Figure out which text to show when the wizard first appears
-							if (getDiplomacyAction () != null)
+							if (getMeetWizardMessage () != null)
+							{
+								setTextState (DiplomacyTextState.INITIAL_CONTACT);
+								initializeText ();
+							}
+							
+							else if (getDiplomacyAction () != null)
 							{
 								switch (getDiplomacyAction ())
 								{
@@ -844,7 +837,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 						else if (getPortraitState () == DiplomacyPortraitState.DISAPPEARING)
 							try
 							{
-								setVisible (false);
+								setVisibleFalse ();
 							}
 							catch (final Exception e)
 							{

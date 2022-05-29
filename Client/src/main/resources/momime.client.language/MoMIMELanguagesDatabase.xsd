@@ -2541,8 +2541,8 @@
 						<xsd:selector xpath="exchangeSpells" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="diplomacyScreenDoneChoicesPK">
-						<xsd:selector xpath="doneChoices" />
+					<xsd:key name="diplomacyScreenEndConversationPK">
+						<xsd:selector xpath="endConversation" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="diplomacyScreenProposeWizardPactPK">
@@ -4912,7 +4912,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="breakTreaty" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerTribute" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="exchangeSpells" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="doneChoices" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="endConversation" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeWizardPact" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeAlliance" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposePeaceTreaty" />

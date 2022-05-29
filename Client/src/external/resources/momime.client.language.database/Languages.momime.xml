@@ -4623,9 +4623,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<exchangeSpells language="en">
 			<text>Exchange Spells</text>
 		</exchangeSpells>
-		<doneChoices language="en">
-			<text>See if TALKING_PLAYER_NAME wishes to make any proposals, or end conversation</text>
-		</doneChoices>
+		<endConversation language="en">
+			<text>Good Bye</text>
+		</endConversation>
 		<proposeWizardPact language="en">
 			<text>Propose Wizard Pact</text>
 		</proposeWizardPact>

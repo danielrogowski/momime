@@ -190,7 +190,8 @@ public final class TestDiplomacyUI extends ClientTestData
 		diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);
 		diplomacy.setTextState (DiplomacyTextState.INITIAL_CONTACT);
 		
-		// Display form		
+		// Display form
+		diplomacy.initializeTalkingWizard ();
 		diplomacy.setVisible (true);
 		Thread.sleep (10000);
 		diplomacy.setVisible (false);

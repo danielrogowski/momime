@@ -209,8 +209,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Suggest spell exchange */
 	private Action exchangeSpellsAction;
 	
-	/** We are done making proposals; see if the other wizard wants to make any proposals, otherwise end the conversation */
-	private Action doneChoicesAction;
+	/** End conversation nicely */
+	private Action endConversationAction;
 	
 	/** Other wizard made some proposal and we accept */
 	private Action acceptProposalAction;
@@ -317,7 +317,18 @@ public final class DiplomacyUI extends MomClientFrameUI
 		breakTreatyAction = new LoggingAction ((ev) -> {});
 		offerTributeAction = new LoggingAction ((ev) -> {});
 		exchangeSpellsAction = new LoggingAction ((ev) -> {});
-		doneChoicesAction = new LoggingAction ((ev) -> {});
+		endConversationAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.END_CONVERSATION);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+
+			setTextState (DiplomacyTextState.NONE);
+			setPortraitState (DiplomacyPortraitState.DISAPPEARING);
+			initializeText ();
+			initializePortrait ();
+		});
 
 		acceptProposalAction = new LoggingAction ((ev) ->
 		{
@@ -650,7 +661,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 						componentsBelowText.add (getUtils ().createTextOnlyButton (breakTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (offerTributeAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (exchangeSpellsAction, MomUIConstants.GOLD, getMediumFont ()));
-						componentsBelowText.add (getUtils ().createTextOnlyButton (doneChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (endConversationAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
 		
 					// Other wizard has "main choices", so we're waiting to see what they choose
@@ -1059,7 +1070,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 
-			doneChoicesAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getDoneChoices ()).replaceAll
+			endConversationAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getEndConversation ()).replaceAll
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 			

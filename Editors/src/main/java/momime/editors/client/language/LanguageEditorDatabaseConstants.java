@@ -34,6 +34,9 @@ public final class LanguageEditorDatabaseConstants
 	
 	/** Broken a pact (not just a wizard pact but any kind of pact) */
 	public final static String TAG_ENTITY_BROKEN_PACT_PHRASE = "brokenPactPhrase";
+
+	/** Other wizard got fed up of us making proposals to them and ended the conversation */
+	public final static String TAG_ENTITY_GROWN_IMPATIENT_PHRASE = "grownImpatientPhrase";
 	
 	/**
 	 * Prevent instatiation of this class

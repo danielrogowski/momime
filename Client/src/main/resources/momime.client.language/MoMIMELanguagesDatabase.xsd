@@ -2517,6 +2517,10 @@
 						<xsd:selector xpath="waitingForProposal" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenTiredOfWaitingForProposalPK">
+						<xsd:selector xpath="tiredOfWaitingForProposal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenWaitingForAcceptanceOfProposalPK">
 						<xsd:selector xpath="waitingForAcceptanceOfProposal" />
 						<xsd:field xpath="@language" />
@@ -2611,6 +2615,10 @@
 					</xsd:key>
 					<xsd:key name="diplomacyScreenBrokenPactPhrasePK">
 						<xsd:selector xpath="brokenPactPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenGrownImpatientPhrasePK">
+						<xsd:selector xpath="grownImpatientPhrase" />
 						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
     			</xsd:element>
@@ -4910,6 +4918,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refuseTalkTo" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForAcceptTalkTo" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForProposal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="tiredOfWaitingForProposal" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForAcceptanceOfProposal" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="acceptProposal" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refuseProposal" />
@@ -4980,6 +4989,12 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="brokenPactPhrase" type="momimecommon:languageTextVariant" nxe:label="Broken pact">
 				<xsd:key name="diplomacyScreenBrokenPactPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="grownImpatientPhrase" type="momimecommon:languageTextVariant" nxe:label="Grown impatient">
+				<xsd:key name="diplomacyScreenGrownImpatientPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />
 					<xsd:field xpath="@language" />
 				</xsd:key>

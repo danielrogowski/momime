@@ -1567,8 +1567,12 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PASS_CONTROL" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="EC"><xsd:annotation>
-				<xsd:documentation>End conversation nicely (as opposed to REJECT_TALKING where you tell them to go away)</xsd:documentation>
+				<xsd:documentation>Wizard who initiated diplomacy ends the conversation</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="END_CONVERSATION" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="GI"><xsd:annotation>
+				<xsd:documentation>Wizard on the receiving end ends the conversation</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="GROWN_IMPATIENT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

@@ -4605,6 +4605,9 @@ Bonus Or +GOLD_BONUS%</text>
 		<waitingForProposal language="en">
 			<text>Waiting for TALKING_PLAYER_NAME to make a proposal...</text>
 		</waitingForProposal>
+		<tiredOfWaitingForProposal language="en">
+			<text>I have no patience left for talking with TALKING_PLAYER_NAME</text>
+		</tiredOfWaitingForProposal>
 		<waitingForAcceptanceOfProposal language="en">
 			<text>Waiting for TALKING_PLAYER_NAME to consider your proposal...</text>
 		</waitingForAcceptanceOfProposal>
@@ -5351,6 +5354,83 @@ Bonus Or +GOLD_BONUS%</text>
 				<text>Genau, wie ich argwoehnte. Ihr kleidet Eure Gaunereien in leere Versprechungen!</text>
 			</textVariant>
 		</brokenPactPhrase>
+		<grownImpatientPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I tire of diplomatic negotiations. We can continue discussions at a later time.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ces negociations me fatiguent. Nous pouvons continuer les pourparlers plus tard.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin die diplomatischen Verhandlungen leid. Wir koennen unsere Debatte zu einem spaeteren Zeitpunkt fortsetzen.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>These talks get us nowhere. I must take my leave.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ces negociations n'aboutissent nulle part. Je dois me retirer.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Diese Gespraeche fuehren doch zu nichts. Ich werde mich jetzt zurueckziehen.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I have heard enough. We will talk again later.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'en ai assez. Nous reprendrons ces pourparlers plus tard.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe genug gehoert. Wir werden uns spaeter weiter unterhalten.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you try my patience. Perhaps we should speak again later.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, ma patience a des limites. Peut-etre que nous ferions mieux de reprendre les negociations plus tard.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr stellt meine Geduld auf eine schwere Probe. Vielleicht sollten wir uns spaeter weiter unterhalten.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>A thousand apologies, oh mighty OUR_PLAYER_NAME, but other duties call.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Toutes mes excuses, oh puissant OUR_PLAYER_NAME, mais le devoir m'appelle.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bitte tausendmal um Vergebung, oh OUR_PLAYER_NAME, aber ich muss mich jetzt anderen Pflichten zuwenden.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>Perhaps we can talk again later.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Peut-etre pourrons-nous continuer a negocier plus tard.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Vielleicht koennen wir uns spaeter weiter unterhalten.</text>
+			</textVariant>
+		</grownImpatientPhrase>
+		<grownImpatientPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>Pardon me, but our time is at an end.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Excusez-moi mais nous n'avons plus le temps.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bitte um Vergebung, aber wir haben lange genug verhandelt.</text>
+			</textVariant>
+		</grownImpatientPhrase>
 	</diplomacyScreen>
 	<helpScreen>
 		<title language="en">

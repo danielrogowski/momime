@@ -111,6 +111,11 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;
+
+			case GROWN_IMPATIENT:
+				getDiplomacyUI ().setTextState (DiplomacyTextState.GROWN_IMPATIENT);
+				getDiplomacyUI ().initializeText ();
+				break;
 				
 			default:
 				throw new IOException ("Client doesn't know how to handle diplomacy action " + getAction ());

@@ -49,5 +49,8 @@ public enum DiplomacyTextState
 	ACCEPT_WIZARD_PACT,
 	
 	/** Accept alliance */
-	ACCEPT_ALLIANCE;
+	ACCEPT_ALLIANCE,
+	
+	/** Other wizard got fed up of us making proposals to them and ended the conversation */ 
+	GROWN_IMPATIENT;
 }

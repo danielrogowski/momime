@@ -241,6 +241,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Back to main choices */
 	private Action backToMainChoicesAction;
 	
+	/** Tired of talking (other wizard ends conversation on us) */
+	private Action tiredOfTalkingAction;
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -379,6 +382,19 @@ public final class DiplomacyUI extends MomClientFrameUI
 			initializeText ();
 		});
 		
+		tiredOfTalkingAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.GROWN_IMPATIENT);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+
+			setTextState (DiplomacyTextState.NONE);
+			setPortraitState (DiplomacyPortraitState.DISAPPEARING);
+			initializeText ();
+			initializePortrait ();
+		});
+		
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
 		
@@ -418,6 +434,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 				// If the diplomacy screen is only used for an initial meeting or other message which has no associated options for us to pick, then clicking just closes it
 				// For any other use of the screen, assume there'll be some other option to close it with
 				if ((!MIRROR_STATES.contains (getPortraitState ())) && (getMeetWizardMessage () != null))
+				{
+					setPortraitState (DiplomacyPortraitState.DISAPPEARING);
+					initializePortrait ();
+				}
+				
+				else if (getTextState () == DiplomacyTextState.GROWN_IMPATIENT)
 				{
 					setPortraitState (DiplomacyPortraitState.DISAPPEARING);
 					initializePortrait ();
@@ -684,6 +706,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 					// Other wizard has "main choices", so we're waiting to see what they choose
 					case WAITING_FOR_CHOICE:
 						singular = getLanguages ().getDiplomacyScreen ().getWaitingForProposal ();
+						
+						// Button to end conversation
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (tiredOfTalkingAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
 						
 					// We made a proposal to the other wizard and waiting for them to accept/reject it
@@ -734,6 +760,11 @@ public final class DiplomacyUI extends MomClientFrameUI
 					// Accepted alliance
 					case ACCEPT_ALLIANCE:
 						variants = getLanguages ().getDiplomacyScreen ().getAcceptAlliancePhrase ();
+						break;
+
+					// Other wizard got fed up of us making proposals to them and ended the conversation
+					case GROWN_IMPATIENT:
+						variants = getLanguages ().getDiplomacyScreen ().getGrownImpatientPhrase ();
 						break;
 				}
 		
@@ -1124,6 +1155,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 			
 			backToMainChoicesAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getBackToMainChoices ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			tiredOfTalkingAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getTiredOfWaitingForProposal ()).replaceAll
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 		}

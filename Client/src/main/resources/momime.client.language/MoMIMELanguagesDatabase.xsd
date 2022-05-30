@@ -2501,6 +2501,10 @@
 						<xsd:selector xpath="acceptTalkTo" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenReluctantlyTalkToPK">
+						<xsd:selector xpath="reluctantlyTalkTo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenRefuseTalkToPK">
 						<xsd:selector xpath="refuseTalkTo" />
 						<xsd:field xpath="@language" />
@@ -4902,6 +4906,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notYourTurn" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="acceptTalkTo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="reluctantlyTalkTo" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refuseTalkTo" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForAcceptTalkTo" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="waitingForProposal" />

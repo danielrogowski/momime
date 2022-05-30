@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,6 +42,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import jakarta.xml.bind.JAXBException;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.AnimationContainer;
@@ -194,6 +196,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Other wizard requested to talk to us and we accept */
 	private Action acceptTalkToAction;
 	
+	/** Other wizard requested to talk to us and we reluctantly accept */
+	private Action reluctantlyTalkToAction;
+	
 	/** Other wizard requested to talk to us and we refuse */
 	private Action refuseTalkToAction;
 	
@@ -254,46 +259,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 		final XmlLayoutComponent mirrorLocation = getDiplomacyLayout ().findComponent ("frmDiplomacyMirror");
 		
 		// Actions
-		acceptTalkToAction = new LoggingAction ((ev) ->
-		{
-			if (talkingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
-			{
-				// Show popup menu to select mood to talk to the wizard with
-				final JPopupMenu popup = new JPopupMenu ();
-				
-				getClient ().getClientDB ().getRelationScore ().forEach (rs ->
-				{
-					final String relationScoreName = getLanguageHolder ().findDescription (rs.getRelationScoreName ());
-					final JMenuItem item = new JMenuItem (new LoggingAction (relationScoreName, (ev2) ->
-					{
-						final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
-						msg.setTalkToPlayerID (getTalkingWizardID ());
-						msg.setAction (DiplomacyAction.ACCEPT_TALKING);
-						msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
-						getClient ().getServerConnection ().sendMessageToServer (msg);
-
-						setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
-						initializeText ();
-					}));
-					
-					item.setFont (getSmallFont ());
-					popup.add (item);								
-				});
-				
-				popup.show (contentPane, contentPane.getWidth () / 2, (contentPane.getHeight () * 3) / 4);
-			}
-			else
-			{
-				// Don't need to ask for mood to talk to AI players with so just send it right away
-				final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
-				msg.setTalkToPlayerID (getTalkingWizardID ());
-				msg.setAction (DiplomacyAction.ACCEPT_TALKING);
-				getClient ().getServerConnection ().sendMessageToServer (msg);
-				
-				setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
-				initializeText ();
-			}
-		});
+		acceptTalkToAction = new LoggingAction ((ev) -> acceptTalkTo (DiplomacyAction.ACCEPT_TALKING));
+		reluctantlyTalkToAction = new LoggingAction ((ev) -> acceptTalkTo (DiplomacyAction.ACCEPT_TALKING_IMPATIENT));
 		
 		refuseTalkToAction = new LoggingAction ((ev) ->
 		{
@@ -531,6 +498,55 @@ public final class DiplomacyUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * Handles when we're asked to talk to a wizard and we accept
+	 * 
+	 * @param typeOfAccept Whether we accept politely or impatiently
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	private final void acceptTalkTo (final DiplomacyAction typeOfAccept)
+		throws JAXBException, XMLStreamException
+	{
+		if (talkingPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		{
+			// Show popup menu to select mood to talk to the wizard with
+			final JPopupMenu popup = new JPopupMenu ();
+			
+			getClient ().getClientDB ().getRelationScore ().forEach (rs ->
+			{
+				final String relationScoreName = getLanguageHolder ().findDescription (rs.getRelationScoreName ());
+				final JMenuItem item = new JMenuItem (new LoggingAction (relationScoreName, (ev2) ->
+				{
+					final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+					msg.setTalkToPlayerID (getTalkingWizardID ());
+					msg.setAction (typeOfAccept);
+					msg.setVisibleRelationScoreID (rs.getRelationScoreID ());
+					getClient ().getServerConnection ().sendMessageToServer (msg);
+
+					setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+					initializeText ();
+				}));
+				
+				item.setFont (getSmallFont ());
+				popup.add (item);								
+			});
+			
+			popup.show (contentPane, contentPane.getWidth () / 2, (contentPane.getHeight () * 3) / 4);
+		}
+		else
+		{
+			// Don't need to ask for mood to talk to AI players with so just send it right away
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (typeOfAccept);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+			
+			setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+			initializeText ();
+		}
+	}
+	
+	/**
 	 * Must be called whenever a new conversation is starting, and talkingWizardID has just been set to a new value
 	 * @throws IOException If there is a problem
 	 */
@@ -639,6 +655,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 						// Buttons to accept or refuse
 						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (acceptTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (reluctantlyTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseTalkToAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
 	
@@ -1050,6 +1067,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 			
+			reluctantlyTalkToAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getReluctantlyTalkTo ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+				
 			refuseTalkToAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getRefuseTalkTo ()).replaceAll
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));

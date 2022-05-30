@@ -55,6 +55,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				break;
 				
 			case ACCEPT_TALKING:
+			case ACCEPT_TALKING_IMPATIENT:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.APPEARING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.NONE);		// Text doesn't appear until the animation showing the wizard appearing completes
 				getDiplomacyUI ().setVisibleRelationScoreID (getVisibleRelationScoreID ());

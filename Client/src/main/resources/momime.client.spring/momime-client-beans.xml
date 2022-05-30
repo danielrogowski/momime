@@ -1658,6 +1658,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="playerKnowledgeUtils" ref="playerKnowledgeUtils" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="diplomacyUI" ref="diplomacyUI" />
 	</bean>
 	

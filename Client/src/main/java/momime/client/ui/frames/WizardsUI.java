@@ -33,6 +33,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 import com.ndg.swing.GridBagConstraintsNoFill;
@@ -138,6 +139,9 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/** Diplomacy UI */
 	private DiplomacyUI diplomacyUI;
@@ -247,6 +251,19 @@ public final class WizardsUI extends MomClientFrameUI
 					msg.setLanguageText (getLanguages ().getDiplomacyScreen ().getNotYourTurn ());
 					msg.setVisible (true);
 				}
+				
+				else if (getDiplomacyUI ().isVisible ())
+				{
+					final PlayerPublicDetails talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getDiplomacyUI ().getTalkingWizardID (), "WizardsUI");
+
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getDiplomacyScreen ().getTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getAlreadyInDiplomacy ()).replaceAll
+						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+					
+					msg.setVisible (true);					
+				}
+				
 				else if (selectedWizard.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 				{
 					// Show popup menu to select mood to talk to the wizard with
@@ -1239,6 +1256,22 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+	
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
 	}
 	
 	/**

@@ -52,6 +52,7 @@ import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.frames.DiplomacyUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
@@ -125,6 +126,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	
 	/** Methods for finding KnownWizardDetails from the list */
 	private KnownWizardUtils knownWizardUtils;
+	
+	/** Diplomacy UI */
+	private DiplomacyUI diplomacyUI;
 	
 	/** Minimap panel */
 	private JPanel miniMapPanel;
@@ -1365,6 +1369,17 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				text.append (BULLET_POINT + getLanguageHolder ().findDescription
 					(getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnUnassignedHeroItems ()) + System.lineSeparator ());
 			}
+			
+			// Do we still have the diplomacy screen open?
+			if (getDiplomacyUI ().isVisible ())
+			{
+				final PlayerPublicDetails talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getDiplomacyUI ().getTalkingWizardID (), "updateProductionTypesStoppingUsFromEndingTurn");
+				
+				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToDiplomacy.png");
+				text.append (BULLET_POINT + getLanguageHolder ().findDescription
+					(getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnDiplomacy ()).replaceAll
+						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)) + System.lineSeparator ());
+			}
 	
 			// Regenerate disabled button?
 			if (resourceIconFilenames.size () > 0)
@@ -1930,5 +1945,21 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setKnownWizardUtils (final KnownWizardUtils k)
 	{
 		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Diplomacy UI
+	 */
+	public final DiplomacyUI getDiplomacyUI ()
+	{
+		return diplomacyUI;
+	}
+
+	/**
+	 * @param ui Diplomacy UI
+	 */
+	public final void setDiplomacyUI (final DiplomacyUI ui)
+	{
+		diplomacyUI = ui;
 	}
 }

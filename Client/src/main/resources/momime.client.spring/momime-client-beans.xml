@@ -181,6 +181,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="historyUI" ref="historyUI" />
 		<property name="diplomacyUI" ref="diplomacyUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="yourPhotoIsOkMessage" class="momime.client.messages.process.YourPhotoIsOkMessageImpl" scope="prototype">
@@ -630,6 +631,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="diplomacyMessage" class="momime.client.messages.process.DiplomacyMessageImpl" scope="prototype">
 		<property name="diplomacyUI" ref="diplomacyUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="pactMessage" class="momime.client.messages.process.PactMessageImpl" scope="prototype">
@@ -1395,6 +1397,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="diplomacyUI" ref="diplomacyUI" />
 	</bean>
 
 	<bean id="overlandMapUI" class="momime.client.ui.frames.OverlandMapUI">
@@ -1660,6 +1663,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="diplomacyUI" ref="diplomacyUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 	
 	<bean id="optionsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1838,6 +1842,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 	
 	<!-- Prototype UI components -->

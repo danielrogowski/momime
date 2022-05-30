@@ -51,6 +51,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.MeetWizardMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
@@ -123,6 +124,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/** Which wizard we are talking to */
 	private int talkingWizardID;
@@ -499,6 +503,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 	private final void setVisibleFalse () throws Exception
 	{
 		setVisible (false);
+		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		
 		// Unblock the message that caused this
 		if (getMeetWizardMessage () != null)
@@ -1342,6 +1347,22 @@ public final class DiplomacyUI extends MomClientFrameUI
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 	
 	/**

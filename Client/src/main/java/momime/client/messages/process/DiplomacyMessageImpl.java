@@ -13,6 +13,7 @@ import jakarta.xml.bind.JAXBException;
 import momime.client.ui.frames.DiplomacyPortraitState;
 import momime.client.ui.frames.DiplomacyTextState;
 import momime.client.ui.frames.DiplomacyUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.DiplomacyMessage;
 
 /**
@@ -25,6 +26,9 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 	
 	/** Diplomacy UI */
 	private DiplomacyUI diplomacyUI;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -52,6 +56,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				getDiplomacyUI ().setVisible (true);
+				getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 				break;
 				
 			case ACCEPT_TALKING:
@@ -138,5 +143,21 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 	public final void setDiplomacyUI (final DiplomacyUI ui)
 	{
 		diplomacyUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

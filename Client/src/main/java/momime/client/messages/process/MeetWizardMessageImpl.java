@@ -16,6 +16,7 @@ import momime.client.ui.frames.DiplomacyUI;
 import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.WizardsUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.MeetWizardMessage;
@@ -52,6 +53,9 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Cu
 	
 	/** Diplomacy UI */
 	private DiplomacyUI diplomacyUI;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -102,6 +106,7 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Cu
 			getDiplomacyUI ().initializeText ();
 			getDiplomacyUI ().initializePortrait ();
 			getDiplomacyUI ().setVisible (true);
+			getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		}
 		else
 			getClient ().finishCustomDurationMessage (this);
@@ -241,5 +246,21 @@ public final class MeetWizardMessageImpl extends MeetWizardMessage implements Cu
 	public final void setDiplomacyUI (final DiplomacyUI ui)
 	{
 		diplomacyUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

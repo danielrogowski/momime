@@ -3787,6 +3787,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
 			<cannotEndTurnUnassignedHeroItems language="en">
 				<text>Your item vault is overfull.  You must assign some items to heros, or destroy them on the anvil to make more space.</text>
 			</cannotEndTurnUnassignedHeroItems>
+			<cannotEndTurnDiplomacy language="en">
+				<text>You must finish talking to TALKING_PLAYER_NAME first.</text>
+			</cannotEndTurnDiplomacy>
 		</mapRightHandBar>
 		<surveyorTab>
 			<title language="en">

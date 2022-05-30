@@ -47,6 +47,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.PlayerPickClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
@@ -145,6 +146,9 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** Diplomacy UI */
 	private DiplomacyUI diplomacyUI;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/** List of gem buttons for each wizard */
 	final List<JButton> wizardButtons = new ArrayList<JButton> ();
@@ -292,6 +296,7 @@ public final class WizardsUI extends MomClientFrameUI
 							getDiplomacyUI ().initializeText ();
 							getDiplomacyUI ().initializePortrait ();
 							getDiplomacyUI ().setVisible (true);
+							getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 						}));
 						
 						item.setFont (getSmallFont ());
@@ -319,6 +324,7 @@ public final class WizardsUI extends MomClientFrameUI
 					getDiplomacyUI ().initializeText ();
 					getDiplomacyUI ().initializePortrait ();
 					getDiplomacyUI ().setVisible (true);
+					getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 				}
 			}
 		});
@@ -1288,6 +1294,22 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setDiplomacyUI (final DiplomacyUI ui)
 	{
 		diplomacyUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 	
 	/**

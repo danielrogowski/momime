@@ -4507,6 +4507,10 @@
 					<xsd:selector xpath="cannotEndTurnUnassignedHeroItems" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
+				<xsd:key name="mapRightHandBarCannotEndTurnDiplomacyPK">
+					<xsd:selector xpath="cannotEndTurnDiplomacy" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
    			</xsd:element>
     		<xsd:element minOccurs="0" maxOccurs="1" name="surveyorTab" type="momimelangs:surveyorTab">
 				<xsd:key name="surveyorTabTitlePK">
@@ -4584,6 +4588,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnNewTurnMessagesSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnNewTurnMessagesOffer" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnUnassignedHeroItems" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnDiplomacy" />
 		</xsd:sequence>
     </xsd:complexType>
 	

@@ -30,6 +30,13 @@ public interface KnownWizardUtils
 	 */
 	public KnownWizardDetails findKnownWizardDetails (final List<KnownWizardDetails> knownWizards, final int playerID, final String caller)
 		throws RecordNotFoundException;
+
+	/**
+	 * @param pacts List of packs for a player
+	 * @param pactPlayerID Player we are interested in the pact with
+	 * @return Type of pact in effect; null = there isn't one (default state)
+	 */
+	public PactType findPactWith (final List<Pact> pacts, final int pactPlayerID);
 	
 	/**
 	 * @param pacts List of packs for a player

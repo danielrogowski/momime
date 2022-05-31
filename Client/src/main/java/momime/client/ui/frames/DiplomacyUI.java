@@ -64,6 +64,7 @@ import momime.common.database.WizardPersonality;
 import momime.common.database.WizardPortraitMood;
 import momime.common.messages.DiplomacyAction;
 import momime.common.messages.KnownWizardDetails;
+import momime.common.messages.PactType;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.utils.KnownWizardUtils;
 
@@ -134,6 +135,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Which wizard is the one controlling making proposals (and which one is waiting for the other side to make a proposal) */
 	private int proposingWizardID;
 	
+	/** Our wizard details */
+	private KnownWizardDetails ourWizardDetails;
+
 	/** Which wizard we are talking to */
 	private KnownWizardDetails talkingWizardDetails;
 	
@@ -579,12 +583,15 @@ public final class DiplomacyUI extends MomClientFrameUI
 	 */
 	public final void initializeTalkingWizard () throws IOException
 	{
+		ourWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getClient ().getOurPlayerID (), "DiplomacyUI (U)");
+
 		// Wizard portraits are stored exactly from the original LBXes (109x104) but stretched to compensate for original MoM using non-square 320x200 mode pixels (218x250).
 		// Note the original MoM doesn't use the main wizard portraits (WIZARDS.LBX) here, it uses a frame of the talking animations (DIPLOMAC.LBX), which fades out
 		// the edges of the pic so that it looks more like its in a mirror.  While it would have been easier to do that here, that would have meant no pic for overland
 		// enchantments would be available for custom wizard portraits.  So this has to work just from the main wizard portrait.
 		talkingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkingWizardID (), "DiplomacyUI");
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkingWizardID (), "DiplomacyUI (T)");
 		
 		talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTalkingWizardID (), "DiplomacyUI (T)");
 		
@@ -724,11 +731,23 @@ public final class DiplomacyUI extends MomClientFrameUI
 							
 					// Pick a kind of treaty to propose
 					case PROPOSE_TREATY:
-						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeWizardPactAction, MomUIConstants.GOLD, getMediumFont ()));
-						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeAllianceAction, MomUIConstants.GOLD, getMediumFont ()));
-						componentsBelowText.add (getUtils ().createTextOnlyButton (proposePeaceTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
-						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeDeclareWarOnAnotherWizardAction, MomUIConstants.GOLD, getMediumFont ()));
-						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeBreakAllianceWithAnotherWizardAction, MomUIConstants.GOLD, getMediumFont ()));
+						// Which kinds of treaties are relevant depends on our current pact with the wizard
+						final PactType pactType = getKnownWizardUtils ().findPactWith (ourWizardDetails.getPact (), getTalkingWizardID ());
+						
+						proposeWizardPactAction.setEnabled (pactType == null);
+						proposeAllianceAction.setEnabled ((pactType == null) || (pactType == PactType.WIZARD_PACT));
+						proposePeaceTreatyAction.setEnabled (pactType == PactType.WAR);
+						
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeWizardPactAction,
+							proposeWizardPactAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeAllianceAction,
+							proposeAllianceAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposePeaceTreatyAction,
+							proposePeaceTreatyAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeDeclareWarOnAnotherWizardAction,
+							proposeDeclareWarOnAnotherWizardAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeBreakAllianceWithAnotherWizardAction,
+							proposeBreakAllianceWithAnotherWizardAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
 

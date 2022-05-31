@@ -43,6 +43,17 @@ public final class KnownWizardUtilsImpl implements KnownWizardUtils
 	/**
 	 * @param pacts List of packs for a player
 	 * @param pactPlayerID Player we are interested in the pact with
+	 * @return Type of pact in effect; null = there isn't one (default state)
+	 */
+	@Override
+	public final PactType findPactWith (final List<Pact> pacts, final int pactPlayerID)
+	{
+		 return pacts.stream ().filter (p -> p.getPactWithPlayerID () == pactPlayerID).map (p -> p.getPactType ()).findAny ().orElse (null);
+	}
+	
+	/**
+	 * @param pacts List of packs for a player
+	 * @param pactPlayerID Player we are interested in the pact with
 	 * @param pactType Type of pact in effect; null = there isn't one (default state)
 	 */
 	@Override

@@ -260,6 +260,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="requestDiplomacyMessage" class="momime.server.messages.process.RequestDiplomacyMessageImpl" scope="prototype">
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="knownWizardServerUtils" ref="knownWizardServerUtils" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 	</bean>
 
 	<!-- User registry -->

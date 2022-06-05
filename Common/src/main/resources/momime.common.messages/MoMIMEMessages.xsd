@@ -89,8 +89,7 @@ or distributing magic power into mana, research and skill improvement.</xsd:docu
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="maintainedSpell" type="momimemsgs:memoryMaintainedSpell" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardDetails" type="momimemsgs:knownWizardDetails">
 				<xsd:annotation><xsd:documentation>This is only "knownWizardDetails" in the server's true memory.  In each player's memory
-(on both server and client) it is "diplomacyWizardDetails" and needs to be typecast.  Having said that, it will never need to be typecast on the client
-as all the diplomacy values about how we feel about other wizards are meaningless for human players.</xsd:documentation></xsd:annotation>
+(on both server and client) it is "diplomacyWizardDetails" and needs to be typecast.</xsd:documentation></xsd:annotation>
 			</xsd:element>
         </xsd:sequence>
 	</xsd:complexType>
@@ -598,6 +597,12 @@ Our visible opinion of an enemy wizard increases each turn we maintain a wizard'
 Our visible opinion of an enemy wizard increases if we give them a beneficial trade (we give them a better spell than they gave us)
 Our visible opinion of an enemy wizard is reduced each time they attack one of our cities
 Our visible opinion of an enemy wizard is reduced if they start to get too many units or cities</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="maximumGoldTribute" type="momimecommon:undoubledProductionValue">
+					    <xsd:annotation>
+	  						<xsd:documentation>This starts off at 150, and 4 possible tribute values are 25%, 50%, 75% and 100% of this.
+Each time we give a tribute, the amount we have to pay to gain the same benefit increases.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>

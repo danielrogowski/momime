@@ -53,20 +53,25 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.SpellClientUtils;
+import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
 import momime.common.database.LanguageTextVariant;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.RelationScore;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPersonality;
 import momime.common.database.WizardPortraitMood;
 import momime.common.messages.DiplomacyAction;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.PactType;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.ResourceValueUtils;
 
 /**
  * Diplomacy screen for talking to other players (both human and AI)
@@ -126,6 +131,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Text utils */
+	private TextUtils textUtils;
+	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
@@ -139,7 +150,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 	private KnownWizardDetails ourWizardDetails;
 
 	/** Which wizard we are talking to */
-	private KnownWizardDetails talkingWizardDetails;
+	private DiplomacyWizardDetails talkingWizardDetails;
 	
 	/** Which player we are talking to */
 	private PlayerPublicDetails talkingPlayer;
@@ -191,6 +202,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	
 	/** Relation to use to decide the eye colour, facial expression and music */
 	private String visibleRelationScoreID;
+	
+	/** Amount of gold donated as a tribute */
+	private Integer offerGoldAmount;
 	
 	/** Text or buttons in the lower half of the screen */
 	private JPanel textPanel;
@@ -252,6 +266,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Tired of talking (other wizard ends conversation on us) */
 	private Action tiredOfTalkingAction;
 	
+	/** Offer gold; 4 of these so one for each tier */
+	private final List<Action> offerGoldActions = new ArrayList<Action> ();
+	
 	/**
 	 * Sets up the frame once all values have been injected
 	 * @throws IOException If a resource cannot be found
@@ -293,7 +310,13 @@ public final class DiplomacyUI extends MomClientFrameUI
 		});
 		
 		breakTreatyAction = new LoggingAction ((ev) -> {});
-		offerTributeAction = new LoggingAction ((ev) -> {});
+		
+		offerTributeAction = new LoggingAction ((ev) ->
+		{
+			setTextState (DiplomacyTextState.OFFER_TRIBUTE);
+			initializeText ();
+		});
+		
 		exchangeSpellsAction = new LoggingAction ((ev) -> {});
 		endConversationAction = new LoggingAction ((ev) ->
 		{
@@ -403,6 +426,26 @@ public final class DiplomacyUI extends MomClientFrameUI
 			initializePortrait ();
 		});
 		
+		for (int tier = 0; tier < 4; tier++)
+		{
+			final int goldTier = tier + 1;
+			final Action offerGoldAction = new LoggingAction ((ev) ->
+			{
+				final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+				msg.setTalkToPlayerID (getTalkingWizardID ());
+				msg.setAction (DiplomacyAction.GIVE_GOLD);
+				msg.setOfferGoldTier (goldTier);
+				getClient ().getServerConnection ().sendMessageToServer (msg);
+
+				// The player we're giving gold to doesn't have to click "OK, I accept", the server auto-replies it.
+				// But still, wait for that reply because if its an AI player, they will convey back their improved visibleRelationScoreID as part of the response.
+				setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+				initializeText ();
+			});
+			
+			offerGoldActions.add (offerGoldAction);
+		}
+		
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
 		
@@ -456,6 +499,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 				else if ((getTextState () == DiplomacyTextState.ACCEPT_TALK) ||
 					(getTextState () == DiplomacyTextState.ACCEPT_WIZARD_PACT) ||
 					(getTextState () == DiplomacyTextState.ACCEPT_ALLIANCE) ||
+					(getTextState () == DiplomacyTextState.GIVEN_GOLD) ||
+					(getTextState () == DiplomacyTextState.GIVEN_SPELL) ||
+					(getTextState () == DiplomacyTextState.THANKS_FOR_GOLD) ||
+					(getTextState () == DiplomacyTextState.THANKS_FOR_SPELL) ||
 					(getTextState () == DiplomacyTextState.GENERIC_REFUSE))
 				{
 					if (getProposingWizardID () == getClient ().getOurPlayerID ())
@@ -590,7 +637,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 		// Note the original MoM doesn't use the main wizard portraits (WIZARDS.LBX) here, it uses a frame of the talking animations (DIPLOMAC.LBX), which fades out
 		// the edges of the pic so that it looks more like its in a mirror.  While it would have been easier to do that here, that would have meant no pic for overland
 		// enchantments would be available for custom wizard portraits.  So this has to work just from the main wizard portrait.
-		talkingWizardDetails = getKnownWizardUtils ().findKnownWizardDetails
+		talkingWizardDetails = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkingWizardID (), "DiplomacyUI (T)");
 		
 		talkingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getTalkingWizardID (), "DiplomacyUI (T)");
@@ -790,6 +837,47 @@ public final class DiplomacyUI extends MomClientFrameUI
 					case GROWN_IMPATIENT:
 						variants = getLanguages ().getDiplomacyScreen ().getGrownImpatientPhrase ();
 						break;
+						
+					// Pick a type of tribute to offer
+					case OFFER_TRIBUTE:
+						final int goldAmount = getResourceValueUtils ().findAmountStoredForProductionType
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+
+						for (int tier = 0; tier < 4; tier++)
+						{
+							final Action offerGoldAction = offerGoldActions.get (tier);
+							final int goldOffer = getKnownWizardUtils ().convertGoldOfferTierToAmount (talkingWizardDetails.getMaximumGoldTribute (), tier + 1);
+							
+							offerGoldAction.setEnabled (goldAmount >= goldOffer);
+							
+							componentsBelowText.add (getUtils ().createTextOnlyButton (offerGoldAction,
+								offerGoldAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
+						}
+						
+						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
+						
+						regenerateGoldOfferText ();						
+						break;
+
+					// Other wizard gave us gold
+					case GIVEN_GOLD:
+						singular = getLanguages ().getDiplomacyScreen ().getReceivedGold ();
+						break;
+						
+					// Other wizard gave us a spell
+					case GIVEN_SPELL:
+						singular = getLanguages ().getDiplomacyScreen ().getReceivedSpell ();
+						break;
+						
+					// Other wizard saying thanks for gold we gave them
+					case THANKS_FOR_GOLD:
+						variants = getLanguages ().getDiplomacyScreen ().getThanksForGoldPhrase ();
+						break;
+
+					// Other wizard saying thanks for spell we gave them
+					case THANKS_FOR_SPELL:
+						variants = getLanguages ().getDiplomacyScreen ().getThanksForSpellPhrase ();
+						break;
 				}
 		
 				if ((variants != null) && (!variants.isEmpty ()))
@@ -802,9 +890,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 				{
 					final PlayerPublicDetails ourWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "initializeText (O)");
 					
-					final String text = getLanguageHolder ().findDescription (singular).replaceAll
+					String text = getLanguageHolder ().findDescription (singular).replaceAll
 						("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 						("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer));
+					
+					if (getOfferGoldAmount () != null)
+						text = text.replaceAll ("GOLD_AMOUNT", getTextUtils ().intToStrCommas (getOfferGoldAmount ()));
 						
 					showText (text, componentsBelowText);
 				}
@@ -1185,10 +1276,30 @@ public final class DiplomacyUI extends MomClientFrameUI
 			tiredOfTalkingAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getTiredOfWaitingForProposal ()).replaceAll
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			regenerateGoldOfferText ();
 		}
 		catch (final IOException e)
 		{
 			log.error (e, e);
+		}
+	}
+	
+	/**
+	 * Regenerates the text for offering gold tributes
+	 * @throws RecordNotFoundException If we can't find the gold production type
+	 */
+	private final void regenerateGoldOfferText () throws RecordNotFoundException
+	{
+		final String gold = getLanguageHolder ().findDescription
+			(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "regenerateGoldOfferText").getProductionTypeDescription ());
+		
+		for (int tier = 0; tier < 4; tier++)
+		{
+			final Action offerGoldAction = offerGoldActions.get (tier);
+			final int goldOffer = getKnownWizardUtils ().convertGoldOfferTierToAmount (talkingWizardDetails.getMaximumGoldTribute (), tier + 1);
+		
+			offerGoldAction.putValue (Action.NAME, getTextUtils ().intToStrCommas (goldOffer) + " " + gold);				
 		}
 	}
 	
@@ -1369,6 +1480,38 @@ public final class DiplomacyUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
+	}
+	
+	/**
+	 * @return Text utils
+	 */
+	public final TextUtils getTextUtils ()
+	{
+		return textUtils;
+	}
+
+	/**
+	 * @param tu Text utils
+	 */
+	public final void setTextUtils (final TextUtils tu)
+	{
+		textUtils = tu;
+	}
+	
+	/**
 	 * @return Overland map right hand panel showing economy etc
 	 */
 	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
@@ -1510,5 +1653,21 @@ public final class DiplomacyUI extends MomClientFrameUI
 	public final void setVisibleRelationScoreID (final String r)
 	{
 		visibleRelationScoreID = r;
+	}
+
+	/**
+	 * @return Amount of gold donated as a tribute
+	 */
+	public final Integer getOfferGoldAmount ()
+	{
+		return offerGoldAmount;
+	}
+
+	/**
+	 * @param a Amount of gold donated as a tribute
+	 */
+	public final void setOfferGoldAmount (final Integer a)
+	{
+		offerGoldAmount = a;
 	}
 }

@@ -639,9 +639,9 @@ The to/from locations can be their bank, the anvil, or actually being used by a 
 		  						<xsd:documentation>Required for PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD and PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD.</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>						
-						<xsd:element minOccurs="1" maxOccurs="1" name="offerGoldAmount" type="momimecommon:undoubledProductionValue">
+						<xsd:element minOccurs="0" maxOccurs="1" name="offerGoldTier" type="momimectos:offerGoldTier">
 						    <xsd:annotation>
-		  						<xsd:documentation>Required for OFFER_GOLD.</xsd:documentation>
+		  						<xsd:documentation>Required for OFFER_GOLD.  1=25% of maximumGoldTribute, 2=50%, 3=75%, 4=100%.  These then get rounded down to nearest 25 gold.</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>
 		  				<xsd:element minOccurs="0" maxOccurs="1" name="offerSpellID" type="momimecommon:spellID">
@@ -667,6 +667,16 @@ The to/from locations can be their bank, the anvil, or actually being used by a 
     		<xsd:documentation>Numbers the individual hero items slots on a particular unit (0, 1, 2).</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="offerGoldTier">
+	    <xsd:annotation>
+    		<xsd:documentation>1=25% of maximumGoldTribute, 2=50%, 3=75%, 4=100%.  These then get rounded down to nearest 25 gold.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort">
+			<xsd:minInclusive value="1" />
+			<xsd:maxInclusive value="4" />
+		</xsd:restriction>
 	</xsd:simpleType>
 	
 <!--  Enums -->

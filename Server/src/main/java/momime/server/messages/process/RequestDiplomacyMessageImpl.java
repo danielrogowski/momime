@@ -14,10 +14,17 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.sessionbase.PlayerType;
 
 import jakarta.xml.bind.JAXBException;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.DiplomacyAction;
+import momime.common.messages.DiplomacyWizardDetails;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.PactType;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.messages.servertoclient.DiplomacyMessage;
+import momime.common.utils.KnownWizardUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.utils.KnownWizardServerUtils;
 
 /**
@@ -33,6 +40,15 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 
 	/** Process for making sure one wizard has met another wizard */
 	private KnownWizardServerUtils knownWizardServerUtils;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Resource calculations */
+	private ServerResourceCalculations serverResourceCalculations;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -57,6 +73,16 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		
 		final PlayerServerDetails talkToPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl");
 
+		final MomPersistentPlayerPrivateKnowledge senderPriv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge talkToPlayerPriv = (MomPersistentPlayerPrivateKnowledge) talkToPlayer.getPersistentPlayerPrivateKnowledge ();
+
+		final DiplomacyWizardDetails talkToWizard = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+			(senderPriv.getFogOfWarMemory ().getWizardDetails (), getTalkToPlayerID (), "RequestDiplomacyMessageImpl");
+		
+		// Convert gold tier to the actual amount, because the sender knows their relation to the other wizard, but the receiver won't
+		final Integer offerGoldAmount = (getOfferGoldTier () == null) ? null :
+			getKnownWizardUtils ().convertGoldOfferTierToAmount (talkToWizard.getMaximumGoldTribute (), getOfferGoldTier ());
+		
 		// Any updates needed on the server because of the action?
 		switch (getAction ())
 		{
@@ -68,6 +94,29 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			case ACCEPT_ALLIANCE:
 				getKnownWizardServerUtils ().updatePact (sender.getPlayerDescription ().getPlayerID (), getTalkToPlayerID (), PactType.ALLIANCE, mom);
 				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.ALLIANCE, mom);
+				break;
+				
+			// Actions that give automated reply without even waiting for the recipient to click anything
+			case GIVE_GOLD:
+				final DiplomacyMessage msg = new DiplomacyMessage ();	
+				msg.setTalkFromPlayerID (getTalkToPlayerID ());
+				msg.setAction (DiplomacyAction.ACCEPT_GOLD);
+				msg.setOtherPlayerID (getOtherPlayerID ());
+				msg.setOfferSpellID (getOfferSpellID ());
+				msg.setRequestSpellID (getRequestSpellID ());
+				msg.setOfferGoldAmount (offerGoldAmount);			
+				
+				sender.getConnection ().sendMessageToClient (msg);
+				
+				// Give gold				
+				getResourceValueUtils ().addToAmountStored (senderPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -offerGoldAmount);
+				getServerResourceCalculations ().sendGlobalProductionValues (sender, null, false);
+				
+				getResourceValueUtils ().addToAmountStored (talkToPlayerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, offerGoldAmount);
+				getServerResourceCalculations ().sendGlobalProductionValues (talkToPlayer, null, false);
+				
+				// Further gold offers will be more expensive (there's no message for this - client triggers same update from the ACCEPT_GOLD msg sent above)
+				talkToWizard.setMaximumGoldTribute (talkToWizard.getMaximumGoldTribute () + offerGoldAmount);
 				break;
 				
 			default:
@@ -82,9 +131,10 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			msg.setAction (getAction ());
 			msg.setVisibleRelationScoreID (getVisibleRelationScoreID ());
 			msg.setOtherPlayerID (getOtherPlayerID ());
-			msg.setOfferGoldAmount (getOfferGoldAmount ());
 			msg.setOfferSpellID (getOfferSpellID ());
 			msg.setRequestSpellID (getRequestSpellID ());
+			msg.setOfferGoldAmount (offerGoldAmount);			
+			
 			talkToPlayer.getConnection ().sendMessageToClient (msg);
 		}
 		else
@@ -125,5 +175,53 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void setKnownWizardServerUtils (final KnownWizardServerUtils k)
 	{
 		knownWizardServerUtils = k;
+	}
+	
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final ServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
 	}
 }

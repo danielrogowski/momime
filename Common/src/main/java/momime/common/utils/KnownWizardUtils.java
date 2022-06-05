@@ -44,4 +44,11 @@ public interface KnownWizardUtils
 	 * @param pactType Type of pact in effect; null = there isn't one (default state)
 	 */
 	public void updatePactWith (final List<Pact> pacts, final int pactPlayerID, final PactType pactType);
+	
+	/**
+	 * @param maximumGoldTribute Maximum gold tribute allowed, from DiplomacyWizardDetails
+	 * @param tier Gold offer tier 1..4
+	 * @return Actual gold amount for this tier
+	 */
+	public int convertGoldOfferTierToAmount (final int maximumGoldTribute, final int tier);
 }

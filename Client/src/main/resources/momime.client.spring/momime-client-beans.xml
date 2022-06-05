@@ -630,8 +630,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="diplomacyMessage" class="momime.client.messages.process.DiplomacyMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
 		<property name="diplomacyUI" ref="diplomacyUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="knownWizardUtils" ref="knownWizardUtils" />
 	</bean>
 
 	<bean id="pactMessage" class="momime.client.messages.process.PactMessageImpl" scope="prototype">
@@ -1842,6 +1844,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="textUtils" ref="textUtils" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 	

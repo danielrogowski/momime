@@ -38,6 +38,12 @@ public final class LanguageEditorDatabaseConstants
 	/** Other wizard got fed up of us making proposals to them and ended the conversation */
 	public final static String TAG_ENTITY_GROWN_IMPATIENT_PHRASE = "grownImpatientPhrase";
 	
+	/** Other wizard saying thanks for gold we gave them */
+	public final static String TAG_THANKS_FOR_GOLD_PHRASE = "thanksForGoldPhrase";
+	
+	/** Other wizard saying thanks for spell we gave them */
+	public final static String TAG_THANKS_FOR_SPELL_PHRASE = "thanksForSpellPhrase";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

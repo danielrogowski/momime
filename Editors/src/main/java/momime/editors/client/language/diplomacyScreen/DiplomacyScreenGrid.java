@@ -44,6 +44,8 @@ public final class DiplomacyScreenGrid extends MoMEditorGridWithDiplomacyMessage
 		importDiplomacyMessages (list, 450, LanguageEditorDatabaseConstants.TAG_ENTITY_BREAK_PACT_PHRASE, language);
 		importDiplomacyMessages (list, 75, LanguageEditorDatabaseConstants.TAG_ENTITY_BROKEN_PACT_PHRASE, language);
 		importDiplomacyMessages (list, 1065, LanguageEditorDatabaseConstants.TAG_ENTITY_GROWN_IMPATIENT_PHRASE, language);
+		importDiplomacyMessages (list, 15, LanguageEditorDatabaseConstants.TAG_THANKS_FOR_GOLD_PHRASE, language);
+		importDiplomacyMessages (list, 45, LanguageEditorDatabaseConstants.TAG_THANKS_FOR_SPELL_PHRASE, language);
 	}
 	
 	/**

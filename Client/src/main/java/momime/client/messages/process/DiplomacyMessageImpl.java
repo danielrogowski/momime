@@ -10,11 +10,14 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import jakarta.xml.bind.JAXBException;
+import momime.client.MomClient;
 import momime.client.ui.frames.DiplomacyPortraitState;
 import momime.client.ui.frames.DiplomacyTextState;
 import momime.client.ui.frames.DiplomacyUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.servertoclient.DiplomacyMessage;
+import momime.common.utils.KnownWizardUtils;
 
 /**
  * Notifying a player of a proposal, offer or demand to another wizard, the exact nature of which is set by the action value.
@@ -24,11 +27,17 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (AddBuildingMessageImpl.class);
 	
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/** Diplomacy UI */
 	private DiplomacyUI diplomacyUI;
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
+	/** Methods for finding KnownWizardDetails from the list */
+	private KnownWizardUtils knownWizardUtils;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -42,6 +51,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 		
 		getDiplomacyUI ().setTalkingWizardID (getTalkFromPlayerID ());
 		getDiplomacyUI ().setDiplomacyAction (getAction ());
+		getDiplomacyUI ().setOfferGoldAmount (getOfferGoldAmount ());
 		getDiplomacyUI ().setMeetWizardMessage (null);
 
 		switch (getAction ())
@@ -122,11 +132,60 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().initializeText ();
 				break;
 				
+			case GIVE_GOLD:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.GIVEN_GOLD);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case GIVE_SPELL:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.GIVEN_SPELL);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case ACCEPT_GOLD:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_GOLD);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				
+				// Further gold offers will be more expensive
+				final DiplomacyWizardDetails talkToWizard = (DiplomacyWizardDetails) getKnownWizardUtils ().findKnownWizardDetails
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getWizardDetails (), getTalkFromPlayerID (), "DiplomacyMessageImpl");
+				talkToWizard.setMaximumGoldTribute (talkToWizard.getMaximumGoldTribute () + getOfferGoldAmount ());
+				break;
+				
+			case ACCEPT_SPELL:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_SPELL);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
 			default:
 				throw new IOException ("Client doesn't know how to handle diplomacy action " + getAction ());
 		}
 		
 		log.debug ("Done with diplomacy action " + getAction () + " from player ID " + getTalkFromPlayerID ());
+	}
+	
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 	
 	/**
@@ -159,5 +218,21 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
+	}
+
+	/**
+	 * @return Methods for finding KnownWizardDetails from the list
+	 */
+	public final KnownWizardUtils getKnownWizardUtils ()
+	{
+		return knownWizardUtils;
+	}
+
+	/**
+	 * @param k Methods for finding KnownWizardDetails from the list
+	 */
+	public final void setKnownWizardUtils (final KnownWizardUtils k)
+	{
+		knownWizardUtils = k;
 	}
 }

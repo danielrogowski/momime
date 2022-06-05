@@ -30,6 +30,11 @@ public final class ServerDatabaseValues
 	/** Awareness - see areas around enemy cities */
 	public final static String SPELL_ID_AWARENESS = "SP209";
 	
+	// diplomacy
+	
+	/** Initial maximum gold tribute between any two wizards */
+	public final static int INITIAL_MAXIMUM_GOLD_TRIBUTE = 150;
+	
 	/**
 	 * Prevent instantiation
 	 */

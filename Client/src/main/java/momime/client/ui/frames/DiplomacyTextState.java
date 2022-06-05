@@ -52,5 +52,20 @@ public enum DiplomacyTextState
 	ACCEPT_ALLIANCE,
 	
 	/** Other wizard got fed up of us making proposals to them and ended the conversation */ 
-	GROWN_IMPATIENT;
+	GROWN_IMPATIENT,
+	
+	/** Pick a type of tribute to offer */
+	OFFER_TRIBUTE,
+	
+	/** Other wizard gave us gold */
+	GIVEN_GOLD,
+	
+	/** Other wizard gave us a spell */
+	GIVEN_SPELL,
+	
+	/** Other wizard saying thanks for gold we gave them */
+	THANKS_FOR_GOLD,
+
+	/** Other wizard saying thanks for spell we gave them */
+	THANKS_FOR_SPELL;
 }

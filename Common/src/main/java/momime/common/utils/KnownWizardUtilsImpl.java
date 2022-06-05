@@ -77,4 +77,18 @@ public final class KnownWizardUtilsImpl implements KnownWizardUtils
 		else if ((pactType != null) && (pact != null) && (pact.getPactType () != pactType))
 			pact.setPactType (pactType);
 	}
+	
+	/**
+	 * @param maximumGoldTribute Maximum gold tribute allowed, from DiplomacyWizardDetails
+	 * @param tier Gold offer tier 1..4
+	 * @return Actual gold amount for this tier
+	 */
+	@Override
+	public final int convertGoldOfferTierToAmount (final int maximumGoldTribute, final int tier)
+	{
+		final int percentage = tier * 25;
+		final int baseAmount = (maximumGoldTribute * percentage) / 100;
+		final int roundedAmount = (baseAmount / 25) * 25;
+		return roundedAmount;
+	}
 }

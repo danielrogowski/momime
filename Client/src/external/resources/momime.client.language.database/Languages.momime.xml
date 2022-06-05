@@ -4656,6 +4656,12 @@ Bonus Or +GOLD_BONUS%</text>
 		<backToMainChoices language="en">
 			<text>Forget It</text>
 		</backToMainChoices>
+		<receivedGold language="en">
+			<text>TALKING_PLAYER_NAME offers you a tribute of GOLD_AMOUNT gold.</text>
+		</receivedGold>
+		<receivedSpell language="en">
+			<text>TALKING_PLAYER_NAME offers you to teach you the SPELL_NAME spell.</text>
+		</receivedSpell>
 		<normalGreetingPhrase variantNumber="1">
 			<textVariant language="en">
 				<text>Hail, mighty OUR_PLAYER_NAME. I bear greetings and words of wisdom.</text>
@@ -5437,6 +5443,182 @@ Bonus Or +GOLD_BONUS%</text>
 				<text>Ich bitte um Vergebung, aber wir haben lange genug verhandelt.</text>
 			</textVariant>
 		</grownImpatientPhrase>
+		<thanksForGoldPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I thank you for your generous tribute OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je vous remercie de votre genereux tribut OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich danke Euch fuer Euren grosszuegigen Tribut, OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>Your tribute has been accepted. I look forward to your next installment.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre tribut a ete accepte. Il me tarde de recevoir votre prochain versement.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure Gabe wurde angenommen. Ich freue mich schon auf die naechste Zahlung.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I have been distrustful of your motives, but your tribute now offers a way to significantly reduce the tension between us.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je ne vous faisais pas confiance, mais votre tribut permet de reduire de facon significative les tensions qui existent entre nous.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich habe die Ehrenhaftigkeit Eurer Motive angezweifelt, aber Eure Gabe oeffnet einen Weg, die zwischen uns herrschende Spannung bedeutend zu mildern.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>You have made a wise choice in offering tribute to an obviously superior wizard.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous avez fait le bon choix en offrant un tribut a un sorcier qui, visiblement, vous est superieur.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr habt eine kluge Wahl getroffen, indem Ihr einem offensichtlich ueberlegenen Zauberer eine Friedensgabe angeboten habt.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>I greatly appreciate your support with such a magnanimous contribution.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'apprecie beaucoup votre soutien avec une si genereuse contribution.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich schaetze Eure Unterstuetzung, die in diesem edelmuetigen Beitrag zum Ausdruck kommt.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>Your generous tribute has laid many of my grievances to rest.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre genereux tribut m'a fait oublier nombre de mes griefs.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer grossmuetiger Tribut hat meine Besorgnis gemindert.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>Your magnificent contribution will go far toward establishing a lasting peace and a hopeful future for us both.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre superbe contribution va permettre d'etablir une paix durable entre nous.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer stattlicher Beitrag wird zum Aufbau eines andauernden Frieden und zu einer hoffnungstraechtigen Zukunft fuer alle Beteiligten fuehren.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="8">
+			<textVariant language="en">
+				<text>With tribute such as this, both our forces will be able to exist together in harmony.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Avec un tel tribut, nos forces pourront vivre en harmonie.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Durch solcherlei Gaben werden unser beider Voelker in Harmonie zusammenleben koennen.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="9">
+			<textVariant language="en">
+				<text>Your offer is a generous one. I hope this is the start of a new relationship between us.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre offre est genereuse. J'espere qu'elle marque le debut de relations nouvelles entre nous.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Euer Angebot ist grosszuegig. Ich hoffe, dies ist der Beginn neuer Beziehungen zwischen uns.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="10">
+			<textVariant language="en">
+				<text>Thank you OUR_PLAYER_NAME. You show respect where it is due.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Merci OUR_PLAYER_NAME. Vous savez vous montrer respectueux.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich danke Euch, OUR_PLAYER_NAME. Ihr habt den gebotenen Respekt gezollt.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="11">
+			<textVariant language="en">
+				<text>I graciously accept your tribute, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte votre tribut, OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich nehme Euren Tribut dankend an,  OUR_PLAYER_NAME.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="12">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, you have shown yourself to be worthy of respect.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, vous montrez que vous etes digne de confiance.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, Ihr habt Euch als unseres Repektes wuerdig erwiesen.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="13">
+			<textVariant language="en">
+				<text>I accept your scraps, OUR_PLAYER_NAME. Now begone!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'accepte ce maigre tribut, OUR_PLAYER_NAME. Maintenant, partez!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich nehme Eure armselige Gabe an, OUR_PLAYER_NAME. Entfernt Euch nun!</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="14">
+			<textVariant language="en">
+				<text>I have no need for your tribute, but I will accept it as a sign of your respect.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je n'ai pas besoin de votre tribut, mais je l'accepte comme etant la marque du respect que vous me portez.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich brauche Eure Almosen zwar nicht, aber ich werde Eure Gabe als Zeichen Eures Respekts annehmen.</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForGoldPhrase variantNumber="15">
+			<textVariant language="en">
+				<text>Hail OUR_PLAYER_NAME! Your contribution is greatly appreciated!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Salutations OUR_PLAYER_NAME! Votre contribution est tres appreciee!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ehre gebuehrt Euch, OUR_PLAYER_NAME! Euer Beitrag wird dankbaren Herzens entgegengenommen!</text>
+			</textVariant>
+		</thanksForGoldPhrase>
+		<thanksForSpellPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>OUR_PLAYER_NAME, I applaud your generosity. The SPELL_NAME spell proves your loyalty and good intentions.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>OUR_PLAYER_NAME, j'applaudis votre generosite. Le sort SPELL_NAME est la preuve de votre loyaute et de vos bonnes intentions.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>OUR_PLAYER_NAME, ich begruesse Eure Grosszuegigkeit. Der Zauberspruch SPELL_NAME beweist Eure Loyalitaet und guten Absichten.</text>
+			</textVariant>
+		</thanksForSpellPhrase>
 	</diplomacyScreen>
 	<helpScreen>
 		<title language="en">

@@ -32,6 +32,7 @@ import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.RelationAI;
+import momime.server.database.ServerDatabaseValues;
 
 /**
  * Process for making sure one wizard has met another wizard
@@ -90,6 +91,7 @@ public final class KnownWizardServerUtilsImpl implements KnownWizardServerUtils
 					knownWizardDetails.setWizardState (metWizard.getWizardState ());
 					knownWizardDetails.setWizardPersonalityID (metWizard.getWizardPersonalityID ());
 					knownWizardDetails.setWizardObjectiveID (metWizard.getWizardObjectiveID ());
+					knownWizardDetails.setMaximumGoldTribute (ServerDatabaseValues.INITIAL_MAXIMUM_GOLD_TRIBUTE);
 					knownWizardDetails.getPowerBaseHistory ().addAll (metWizard.getPowerBaseHistory ());
 					copyPickList (metWizard.getPick (), knownWizardDetails.getPick ());
 					

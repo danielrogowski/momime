@@ -1633,7 +1633,7 @@ Exception to this is if conjunction is true, it tells the client to update (or c
 		  						<xsd:documentation>Required for PROPOSE_DECLARE_WAR_ON_OTHER_WIZARD and PROPOSE_BREAK_ALLIANCE_WITH_OTHER_WIZARD.</xsd:documentation>
 		  					</xsd:annotation>
 		  				</xsd:element>						
-						<xsd:element minOccurs="1" maxOccurs="1" name="offerGoldAmount" type="momimecommon:undoubledProductionValue">
+						<xsd:element minOccurs="0" maxOccurs="1" name="offerGoldAmount" type="momimecommon:undoubledProductionValue">
 						    <xsd:annotation>
 		  						<xsd:documentation>Required for OFFER_GOLD.</xsd:documentation>
 		  					</xsd:annotation>

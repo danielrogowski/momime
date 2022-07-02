@@ -4656,11 +4656,14 @@ Bonus Or +GOLD_BONUS%</text>
 		<backToMainChoices language="en">
 			<text>Forget It</text>
 		</backToMainChoices>
+		<offerSpell language="en">
+			<text>Spells</text>
+		</offerSpell>
 		<receivedGold language="en">
 			<text>TALKING_PLAYER_NAME offers you a tribute of GOLD_AMOUNT gold.</text>
 		</receivedGold>
 		<receivedSpell language="en">
-			<text>TALKING_PLAYER_NAME offers you to teach you the SPELL_NAME spell.</text>
+			<text>TALKING_PLAYER_NAME offers to teach you the SPELL_NAME spell.</text>
 		</receivedSpell>
 		<normalGreetingPhrase variantNumber="1">
 			<textVariant language="en">

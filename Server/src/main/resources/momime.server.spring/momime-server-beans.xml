@@ -263,6 +263,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="knownWizardUtils" ref="knownWizardUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 
 	<!-- User registry -->

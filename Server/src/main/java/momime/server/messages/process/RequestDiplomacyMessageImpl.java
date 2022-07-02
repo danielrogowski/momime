@@ -19,12 +19,18 @@ import momime.common.messages.DiplomacyAction;
 import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.PactType;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.clienttoserver.RequestDiplomacyMessage;
 import momime.common.messages.servertoclient.DiplomacyMessage;
+import momime.common.messages.servertoclient.FullSpellListMessage;
+import momime.common.messages.servertoclient.TradeableSpellsMessage;
 import momime.common.utils.KnownWizardUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.calculations.ServerSpellCalculations;
 import momime.server.utils.KnownWizardServerUtils;
 
 /**
@@ -34,6 +40,9 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (RequestDiplomacyMessageImpl.class);
+	
+	/** Amount of space in the UI to list tradeable spells */
+	private final static int MAXIMUM_TRADEABLE_SPELLS = 5;
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
@@ -49,6 +58,12 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
+	
+	/** Server-only spell calculations */
+	private ServerSpellCalculations serverSpellCalculations;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -84,6 +99,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 			getKnownWizardUtils ().convertGoldOfferTierToAmount (talkToWizard.getMaximumGoldTribute (), getOfferGoldTier ());
 		
 		// Any updates needed on the server because of the action?
+		boolean proceed = true;
 		switch (getAction ())
 		{
 			case ACCEPT_WIZARD_PACT:
@@ -96,14 +112,13 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				getKnownWizardServerUtils ().updatePact (getTalkToPlayerID (), sender.getPlayerDescription ().getPlayerID (), PactType.ALLIANCE, mom);
 				break;
 				
-			// Actions that give automated reply without even waiting for the recipient to click anything
+			// Tributes send an automated reply without even waiting for the recipient to click anything
 			case GIVE_GOLD:
+			{
 				final DiplomacyMessage msg = new DiplomacyMessage ();	
 				msg.setTalkFromPlayerID (getTalkToPlayerID ());
 				msg.setAction (DiplomacyAction.ACCEPT_GOLD);
 				msg.setOtherPlayerID (getOtherPlayerID ());
-				msg.setOfferSpellID (getOfferSpellID ());
-				msg.setRequestSpellID (getRequestSpellID ());
 				msg.setOfferGoldAmount (offerGoldAmount);			
 				
 				sender.getConnection ().sendMessageToClient (msg);
@@ -117,6 +132,50 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				
 				// Further gold offers will be more expensive (there's no message for this - client triggers same update from the ACCEPT_GOLD msg sent above)
 				talkToWizard.setMaximumGoldTribute (talkToWizard.getMaximumGoldTribute () + offerGoldAmount);
+			}
+			break;
+			
+			// Generate list of tradeable spells
+			case GIVE_SPELL:
+			case GIVE_SPELL_BECAUSE_THREATENED:
+			case PROPOSE_EXCHANGE_SPELL:
+				if (getOfferSpellID () == null)
+				{
+					proceed = false;
+					final TradeableSpellsMessage msg = new TradeableSpellsMessage ();
+					msg.setTalkFromPlayerID (getTalkToPlayerID ());
+					msg.setAction (getAction ());
+					msg.getSpellIDKnownToUs ().addAll (getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+						(senderPriv.getSpellResearchStatus (), talkToPlayerPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()));
+					
+					if (getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
+						msg.getSpellIDKnownToThem ().addAll (getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+							(talkToPlayerPriv.getSpellResearchStatus (), senderPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()));
+					
+					sender.getConnection ().sendMessageToClient (msg);
+				}
+				else
+				{
+					final DiplomacyMessage msg = new DiplomacyMessage ();	
+					msg.setTalkFromPlayerID (getTalkToPlayerID ());
+					msg.setAction ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) ? DiplomacyAction.ACCEPT_EXCHANGE_SPELL : DiplomacyAction.ACCEPT_SPELL);
+					msg.setOtherPlayerID (getOtherPlayerID ());
+					msg.setOfferSpellID (getOfferSpellID ());
+					msg.setRequestSpellID (getRequestSpellID ());
+					
+					sender.getConnection ().sendMessageToClient (msg);
+					
+					// Learn the spell
+					final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (talkToPlayerPriv.getSpellResearchStatus (), getOfferSpellID ());
+					researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
+					
+					// Just in case the donated spell was one of the 8 spells available to research now
+					getServerSpellCalculations ().randomizeSpellsResearchableNow (talkToPlayerPriv.getSpellResearchStatus (), mom.getServerDB ());
+					
+					final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+					spellsMsg.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
+					talkToPlayer.getConnection ().sendMessageToClient (spellsMsg);
+				}
 				break;
 				
 			default:
@@ -124,25 +183,28 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 		}
 		
 		// Forward the action onto human players
-		if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
+		if (proceed)
 		{
-			final DiplomacyMessage msg = new DiplomacyMessage ();	
-			msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
-			msg.setAction (getAction ());
-			msg.setVisibleRelationScoreID (getVisibleRelationScoreID ());
-			msg.setOtherPlayerID (getOtherPlayerID ());
-			msg.setOfferSpellID (getOfferSpellID ());
-			msg.setRequestSpellID (getRequestSpellID ());
-			msg.setOfferGoldAmount (offerGoldAmount);			
-			
-			talkToPlayer.getConnection ().sendMessageToClient (msg);
-		}
-		else
-			switch (getAction ())
+			if (talkToPlayer.getPlayerDescription ().getPlayerType () == PlayerType.HUMAN)
 			{
-				default:
-					throw new IOException ("AI does not know how to respond to Diplomacy action " + getAction ());
+				final DiplomacyMessage msg = new DiplomacyMessage ();	
+				msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+				msg.setAction (getAction ());
+				msg.setVisibleRelationScoreID (getVisibleRelationScoreID ());
+				msg.setOtherPlayerID (getOtherPlayerID ());
+				msg.setOfferSpellID (getOfferSpellID ());
+				msg.setRequestSpellID (getRequestSpellID ());
+				msg.setOfferGoldAmount (offerGoldAmount);			
+				
+				talkToPlayer.getConnection ().sendMessageToClient (msg);
 			}
+			else
+				switch (getAction ())
+				{
+					default:
+						throw new IOException ("AI does not know how to respond to Diplomacy action " + getAction ());
+				}
+		}
 	}
 
 	/**
@@ -223,5 +285,37 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Server-only spell calculations
+	 */
+	public final ServerSpellCalculations getServerSpellCalculations ()
+	{
+		return serverSpellCalculations;
+	}
+
+	/**
+	 * @param calc Server-only spell calculations
+	 */
+	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
+	{
+		serverSpellCalculations = calc;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
 	}
 }

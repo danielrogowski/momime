@@ -642,6 +642,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 
+	<bean id="tradeableSpellsMessage" class="momime.client.messages.process.TradeableSpellsMessageImpl" scope="prototype">
+		<property name="diplomacyUI" ref="diplomacyUI" />
+	</bean>
+
 	<!-- Create extended versions of NTMs which include drawing implementations -->
 
 	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">

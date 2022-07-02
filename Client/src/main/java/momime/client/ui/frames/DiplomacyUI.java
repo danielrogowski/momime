@@ -62,6 +62,7 @@ import momime.common.database.LanguageText;
 import momime.common.database.LanguageTextVariant;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.RelationScore;
+import momime.common.database.Spell;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPersonality;
 import momime.common.database.WizardPortraitMood;
@@ -206,6 +207,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Amount of gold donated as a tribute */
 	private Integer offerGoldAmount;
 	
+	/** Spell donated as a tribute */
+	private String offerSpellID;
+	
 	/** Text or buttons in the lower half of the screen */
 	private JPanel textPanel;
 	
@@ -266,8 +270,14 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Tired of talking (other wizard ends conversation on us) */
 	private Action tiredOfTalkingAction;
 	
-	/** Offer gold; 4 of these so one for each tier */
+	/** Offer gold; 4 of these so one for each tier; there's always 4 of these displayed so the actions are created up front and retained */
 	private final List<Action> offerGoldActions = new ArrayList<Action> ();
+	
+	/** Offer spell; this is the initial action prior to picking which actual spell to offer */
+	private Action offerSpellAction;
+	
+	/** Spells we can give to the other wizard */
+	private final List<String> spellIDsKnownToUs = new ArrayList<String> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -446,6 +456,18 @@ public final class DiplomacyUI extends MomClientFrameUI
 			offerGoldActions.add (offerGoldAction);
 		}
 		
+		offerSpellAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.GIVE_SPELL);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+
+			// We haven't specified which spell to give - so the server will respond with a list of spells that we know that the other wizard doesn't (and they have suitable blooks)
+			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+			initializeText ();
+		});
+		
 		// Initialize the frame
 		getFrame ().setDefaultCloseOperation (WindowConstants.HIDE_ON_CLOSE);
 		
@@ -554,7 +576,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 	private final void setVisibleFalse () throws Exception
 	{
 		setVisible (false);
-		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
+		if (getOverlandMapRightHandPanel () != null)
+			getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		
 		// Unblock the message that caused this
 		if (getMeetWizardMessage () != null)
@@ -854,6 +877,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 								offerGoldAction.isEnabled () ? MomUIConstants.GOLD : MomUIConstants.GRAY, getMediumFont ()));
 						}
 						
+						componentsBelowText.add (getUtils ().createTextOnlyButton (offerSpellAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
 						
 						regenerateGoldOfferText ();						
@@ -878,6 +902,32 @@ public final class DiplomacyUI extends MomClientFrameUI
 					case THANKS_FOR_SPELL:
 						variants = getLanguages ().getDiplomacyScreen ().getThanksForSpellPhrase ();
 						break;
+						
+					// Pick a spell to give
+					case GIVE_SPELL:
+					{
+						for (final String spellID : getSpellIDsKnownToUs ())
+						{
+							final Spell spellDef = getClient ().getClientDB ().findSpell (spellID, "initializeText");
+							final Action offerSpecificSpellAction = new LoggingAction (getLanguageHolder ().findDescription (spellDef.getSpellName ()), (ev) ->
+							{
+								final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+								msg.setTalkToPlayerID (getTalkingWizardID ());
+								msg.setAction (DiplomacyAction.GIVE_SPELL);
+								msg.setOfferSpellID (spellID);
+								getClient ().getServerConnection ().sendMessageToServer (msg);
+
+								// The player we're giving a spell to doesn't have to click "OK, I accept", the server auto-replies it.
+								// But still, wait for that reply because if its an AI player, they will convey back their improved visibleRelationScoreID as part of the response.
+								setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+								initializeText ();
+							});
+							
+							componentsBelowText.add (getUtils ().createTextOnlyButton (offerSpecificSpellAction, MomUIConstants.GOLD, getMediumFont ()));
+						}
+						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
+					}
+					break;
 				}
 		
 				if ((variants != null) && (!variants.isEmpty ()))
@@ -896,6 +946,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 					
 					if (getOfferGoldAmount () != null)
 						text = text.replaceAll ("GOLD_AMOUNT", getTextUtils ().intToStrCommas (getOfferGoldAmount ()));
+					
+					if (getOfferSpellID () != null)
+						text = text.replaceAll ("SPELL_NAME", getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getOfferSpellID (), "initializeText").getSpellName ()));
 						
 					showText (text, componentsBelowText);
 				}
@@ -1274,6 +1327,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 			
 			tiredOfTalkingAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getTiredOfWaitingForProposal ()).replaceAll
+				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
+				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
+			
+			offerSpellAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getOfferSpell ()).replaceAll
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 			
@@ -1669,5 +1726,29 @@ public final class DiplomacyUI extends MomClientFrameUI
 	public final void setOfferGoldAmount (final Integer a)
 	{
 		offerGoldAmount = a;
+	}
+
+	/**
+	 * @return Spell donated as a tribute
+	 */
+	public final String getOfferSpellID ()
+	{
+		return offerSpellID;
+	}
+
+	/**
+	 * @param s Spell donated as a tribute
+	 */
+	public final void setOfferSpellID (final String s)
+	{
+		offerSpellID = s;
+	}
+	
+	/**
+	 * @return Spells we can give to the other wizard
+	 */
+	public final List<String> getSpellIDsKnownToUs ()
+	{
+		return spellIDsKnownToUs;
 	}
 }

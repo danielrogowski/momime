@@ -67,5 +67,8 @@ public enum DiplomacyTextState
 	THANKS_FOR_GOLD,
 
 	/** Other wizard saying thanks for spell we gave them */
-	THANKS_FOR_SPELL;
+	THANKS_FOR_SPELL,
+	
+	/** Pick a spell to give to other wizard */
+	GIVE_SPELL;
 }

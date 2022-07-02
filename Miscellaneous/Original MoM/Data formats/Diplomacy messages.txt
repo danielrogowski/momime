@@ -79,5 +79,5 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	1035 - I agree to stop attacking your towns and suck up by giving X gold too
 	1050 - Suck up offering a spell
 	1065 - Tired of talking to you (diplomacyScreen / grownImpatient)
-	1080 - No spells to exchange
+	1080 - No spells to exchange (diplomacyScreen / noTradeableSpells )
 	1095 - Get away from my city

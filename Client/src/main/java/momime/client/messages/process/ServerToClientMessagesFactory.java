@@ -360,4 +360,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public PactMessageImpl createPactMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public TradeableSpellsMessageImpl createTradeableSpellsMessage ();
 }

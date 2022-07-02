@@ -60,6 +60,7 @@ import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.messages.servertoclient.TradeableSpellsMessage;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
@@ -712,6 +713,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final PactMessage createPactMessage ()
 	{
 		return getFactory ().createPactMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final TradeableSpellsMessage createTradeableSpellsMessage ()
+	{
+		return getFactory ().createTradeableSpellsMessage ();
 	}
 	
 	/**

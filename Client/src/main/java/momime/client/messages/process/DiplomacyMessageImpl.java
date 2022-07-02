@@ -25,7 +25,7 @@ import momime.common.utils.KnownWizardUtils;
 public final class DiplomacyMessageImpl extends DiplomacyMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final static Log log = LogFactory.getLog (AddBuildingMessageImpl.class);
+	private final static Log log = LogFactory.getLog (DiplomacyMessageImpl.class);
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -52,6 +52,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 		getDiplomacyUI ().setTalkingWizardID (getTalkFromPlayerID ());
 		getDiplomacyUI ().setDiplomacyAction (getAction ());
 		getDiplomacyUI ().setOfferGoldAmount (getOfferGoldAmount ());
+		getDiplomacyUI ().setOfferSpellID (getOfferSpellID ());
 		getDiplomacyUI ().setMeetWizardMessage (null);
 
 		switch (getAction ())

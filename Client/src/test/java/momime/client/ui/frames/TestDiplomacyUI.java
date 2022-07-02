@@ -32,15 +32,19 @@ import momime.client.languages.database.DiplomacyScreen;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.SpellClientUtilsImpl;
+import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
 import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
 import momime.common.database.LanguageTextVariant;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.RelationScore;
 import momime.common.database.WizardEx;
 import momime.common.database.WizardPersonality;
+import momime.common.messages.DiplomacyWizardDetails;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.KnownWizardDetails;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -118,12 +122,12 @@ public final class TestDiplomacyUI extends ClientTestData
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setFogOfWarMemory (fow);
 		
-		// Wizard
+		// Wizard we're talking to
 		final KnownWizardUtils knownWizardUtils = mock (KnownWizardUtils.class);
 		
 		if (!anotherWizard)
 		{
-			final KnownWizardDetails wizardDetails1 = new KnownWizardDetails ();
+			final DiplomacyWizardDetails wizardDetails1 = new DiplomacyWizardDetails ();
 			wizardDetails1.setStandardPhotoID ("WZ12");
 			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (1), anyString ())).thenReturn (wizardDetails1);
 			
@@ -142,10 +146,14 @@ public final class TestDiplomacyUI extends ClientTestData
 		}
 		else
 		{
-			final KnownWizardDetails wizardDetails2 = new KnownWizardDetails ();
+			final DiplomacyWizardDetails wizardDetails2 = new DiplomacyWizardDetails ();
 			wizardDetails2.setCustomPhoto (Files.readAllBytes (Paths.get (getClass ().getResource ("/CustomWizardPhoto.png").toURI ())));
 			when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (2), anyString ())).thenReturn (wizardDetails2);
 		}
+
+		// Our wizard
+		final KnownWizardDetails ourWizardDetails = new KnownWizardDetails ();
+		when (knownWizardUtils.findKnownWizardDetails (eq (fow.getWizardDetails ()), eq (3), anyString ())).thenReturn (ourWizardDetails);
 		
 		// Players
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -159,6 +167,11 @@ public final class TestDiplomacyUI extends ClientTestData
 		final PlayerPublicDetails ourWizard = new PlayerPublicDetails (null, null, null);
 		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (3), anyString ())).thenReturn (ourWizard); 
 		when (wizardClientUtils.getPlayerName (ourWizard)).thenReturn ("Bob");
+		
+		// Production types
+		final ProductionTypeEx gold = new ProductionTypeEx ();
+		gold.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Gold"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "regenerateGoldOfferText")).thenReturn (gold);
 		
 		// Client
 		final MomClient client = mock (MomClient.class);
@@ -189,6 +202,7 @@ public final class TestDiplomacyUI extends ClientTestData
 		diplomacy.setRandomUtils (mock (RandomUtils.class));
 		diplomacy.setPortraitState (DiplomacyPortraitState.APPEARING);
 		diplomacy.setTextState (DiplomacyTextState.INITIAL_CONTACT);
+		diplomacy.setTextUtils (new TextUtilsImpl ());
 		
 		// Display form
 		diplomacy.initializeTalkingWizard ();

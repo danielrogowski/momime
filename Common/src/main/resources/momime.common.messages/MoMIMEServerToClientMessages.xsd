@@ -1686,10 +1686,16 @@ This message tells the client which spells they know and which the other wizard 
 		  						<xsd:documentation>The action that we need the tradeable spell list for - either GIVE_SPELL, GIVE_SPELL_BECAUSE_THREATENED or PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
 		  					</xsd:annotation>
 						</xsd:element>
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellIDKnownToUs" type="momimecommon:spellID" />
-						<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellIDKnownToThem" type="momimecommon:spellID">
+		  				<xsd:element minOccurs="0" maxOccurs="1" name="requestSpellID" type="momimecommon:spellID">
 						    <xsd:annotation>
-		  						<xsd:documentation>Only populated when action is PROPOSE_EXCHANGE_SPELL.</xsd:documentation>
+		  						<xsd:documentation>If PROPOSE_EXCHANGE_SPELL and requestSpellID isn't filled in, then its the proposer picking the spell they want from the other wizard.
+If requestSpellID is filled in, message is being sent to the other wizard to see what spell they'll offer in return.</xsd:documentation>
+		  					</xsd:annotation>
+		  				</xsd:element>						
+						<xsd:element minOccurs="0" maxOccurs="unbounded" name="tradeableSpellID" type="momimecommon:spellID">
+						    <xsd:annotation>
+		  						<xsd:documentation>If action is GIVE_SPELL or GIVE_SPELL_BECAUSE_THREATENED then this is a list of spells we can give to the other wizard.
+If action is PROPOSE_EXCHANGE_SPELL then this is a list of spells we can request that the other wizard gives to us.</xsd:documentation>
 		  					</xsd:annotation>
 						</xsd:element>
 		        	</xsd:sequence>

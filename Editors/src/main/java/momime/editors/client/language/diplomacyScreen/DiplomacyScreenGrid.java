@@ -14,7 +14,7 @@ import momime.editors.grid.MoMEditorGridWithDiplomacyMessagesImport;
 import momime.editors.server.ServerEditorDatabaseConstants;
 
 /**
- * Grid for displaying and editing unit names
+ * Grid for displaying and editing diplomacy messages
  * Allows importing initial meeting phrases from the original MoM DIPLOMSG.LBX
  */
 public final class DiplomacyScreenGrid extends MoMEditorGridWithDiplomacyMessagesImport
@@ -46,6 +46,8 @@ public final class DiplomacyScreenGrid extends MoMEditorGridWithDiplomacyMessage
 		importDiplomacyMessages (list, 1065, LanguageEditorDatabaseConstants.TAG_ENTITY_GROWN_IMPATIENT_PHRASE, language);
 		importDiplomacyMessages (list, 15, LanguageEditorDatabaseConstants.TAG_THANKS_FOR_GOLD_PHRASE, language);
 		importDiplomacyMessages (list, 45, LanguageEditorDatabaseConstants.TAG_THANKS_FOR_SPELL_PHRASE, language);
+		importDiplomacyMessages (list, 720, LanguageEditorDatabaseConstants.TAG_EXCHANGE_SPELL_OURS_PHRASE, language);
+		importDiplomacyMessages (list, 1080, LanguageEditorDatabaseConstants.TAG_REFUSE_EXCHANGE_SPELL_PHRASE, language);
 	}
 	
 	/**

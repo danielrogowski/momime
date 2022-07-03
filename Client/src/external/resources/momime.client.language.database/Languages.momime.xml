@@ -4665,6 +4665,18 @@ Bonus Or +GOLD_BONUS%</text>
 		<receivedSpell language="en">
 			<text>TALKING_PLAYER_NAME offers to teach you the SPELL_NAME spell.</text>
 		</receivedSpell>
+		<exchangeSpellTheirs language="en">
+			<text>What type of spell interests you?</text>
+		</exchangeSpellTheirs>
+		<proposeExchangeSpell language="en">
+			<text>If you want to know the secret of REQUEST_SPELL_NAME then in return I ask that you teach me the OFFER_SPELL_NAME spell.</text>
+		</proposeExchangeSpell>
+		<rejectExchangeSpell language="en">
+			<text>I want to know the secret of REQUEST_SPELL_NAME, but I refuse to teach you OFFER_SPELL_NAME for it!</text>
+		</rejectExchangeSpell>
+		<thanksForExchangingSpell language="en">
+			<text>Very well, I accept your offer and will teach you the secret of OFFER_SPELL_NAME in exchange for you teaching me REQUEST_SPELL_NAME!</text>
+		</thanksForExchangingSpell>
 		<normalGreetingPhrase variantNumber="1">
 			<textVariant language="en">
 				<text>Hail, mighty OUR_PLAYER_NAME. I bear greetings and words of wisdom.</text>
@@ -5622,6 +5634,149 @@ Bonus Or +GOLD_BONUS%</text>
 				<text>OUR_PLAYER_NAME, ich begruesse Eure Grosszuegigkeit. Der Zauberspruch SPELL_NAME beweist Eure Loyalitaet und guten Absichten.</text>
 			</textVariant>
 		</thanksForSpellPhrase>
+		<exchangeSpellOursPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>I am in great need of the spell of SPELL_NAME. Perhaps you would be willing to exchange it for another spell?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>J'ai grand besoin du sort SPELL_NAME. Peut-etre voudriez-vous l'echanger contre un autre sort?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich benoetige dringend den Zauberspruch SPELL_NAME. Wollt Ihr ihn vielleicht gegen einen anderen Zauber eintauschen?</text>
+			</textVariant>
+		</exchangeSpellOursPhrase>
+		<exchangeSpellOursPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I must know the secret of SPELL_NAME. Can I offer you another spell in exchange?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je dois absolument connaitre le secret de SPELL_NAME. Puis-je vous offrir un autre sort en echange?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich muss hinter das Geheimnis des Zauberspruchs SPELL_NAME kommen. Kann ich Euch einen anderen Zauber zum Tausch anbieten?</text>
+			</textVariant>
+		</exchangeSpellOursPhrase>
+		<exchangeSpellOursPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>I wish to know the secret of SPELL_NAME. Will you exchange it for one of my spells?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je souhaiterais connaitre le secret de SPELL_NAME. Voudriez-vous l'echanger contre un de mes sorts?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich moechte hinter das Geheimnis des Zauberspruchs SPELL_NAME kommen. Waert Ihr bereit, ihn gegen einen meiner Zaubersprueche einzutauschen?</text>
+			</textVariant>
+		</exchangeSpellOursPhrase>
+		<exchangeSpellOursPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I am awed by the wonders of SPELL_NAME. What can we offer you for its secret?</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je suis impressionne par les prodiges de SPELL_NAME. Que puis-je vous offrir pour en obtenir le secret?</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Die Macht des Zauberspruchs SPELL_NAME erfuellt mich mit Ehrfurcht. Was kann ich Euch im Tausch fuer diesen Zauber anbieten?</text>
+			</textVariant>
+		</exchangeSpellOursPhrase>
+		<refuseExchangeSpellPhrase variantNumber="1">
+			<textVariant language="en">
+				<text>You have no spell which interests me.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos sorts ne m'interessent pas.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr besitzt keinen Zauberspruch, der fuer mich von Interesse waere.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="2">
+			<textVariant language="en">
+				<text>I have no need of OUR_PLAYER_NAME cantrips.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Je n'ai aucunement besoin des sorts de OUR_PLAYER_NAME.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich brauche keinen von OUR_PLAYER_NAMEs  Zauberspruechen.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="3">
+			<textVariant language="en">
+				<text>Your primitive spells do not interest me.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vos sorts primitifs ne m'interessent pas.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure primitiven Zaubersprueche sind fuer mich nicht von Belang.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="4">
+			<textVariant language="en">
+				<text>I am far beyond your puny ability.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Mes sorts sont bien superieurs a vos sorts miteux.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ich bin Euren jaemmerlichen Faehigkeiten weit ueberlegen.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="5">
+			<textVariant language="en">
+				<text>Learn something good and we'll talk.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Apprenez quelque chose qui en vaille la peine et nous reparlerons.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Lernt etwas Brauchbares, dann koennen wir uns wieder unterhalten.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="6">
+			<textVariant language="en">
+				<text>You have a pathetic knowledge of the arts. I'm not interested.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Votre connaissance des arts fait peine a voir. Je ne suis pas interesse.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Eure Kenntnis der Zauberkunst ist jaemmerlich. Ich habe kein Interesse.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="7">
+			<textVariant language="en">
+				<text>When you gain a better understanding of magic, we will talk.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Lorsque vous comprendrez mieux la magie, nous pourrons discuter.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Habt Ihr Euch erst einmal bessere Kenntnisse der Magie angeeignet, dann koennen wir weiterreden.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="8">
+			<textVariant language="en">
+				<text>You have nothing to offer. Come back when you have learned the arts.</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Vous n'avez rien a offrir. Revenez lorsque vous aurez appris les arts.</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Ihr habt mir nichts Brauchbares anzubieten. Kommt zurueck, wenn Ihr die Kunst der Zauberei erlernt habt.</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
+		<refuseExchangeSpellPhrase variantNumber="9">
+			<textVariant language="en">
+				<text>Don't waste my time. You have nothing to offer me!</text>
+			</textVariant>
+			<textVariant language="fr">
+				<text>Ne me faites pas perdre mon temps. Vous n'avez rien a m'offrir!</text>
+			</textVariant>
+			<textVariant language="de">
+				<text>Verschwendet nicht meine Zeit! Ihr habt nichts zu bieten, was mir zunutze kommen koennte!</text>
+			</textVariant>
+		</refuseExchangeSpellPhrase>
 	</diplomacyScreen>
 	<helpScreen>
 		<title language="en">

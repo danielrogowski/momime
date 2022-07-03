@@ -44,6 +44,12 @@ public final class LanguageEditorDatabaseConstants
 	/** Other wizard saying thanks for spell we gave them */
 	public final static String TAG_THANKS_FOR_SPELL_PHRASE = "thanksForSpellPhrase";
 	
+	/** Other wizard wants one of our spells; what will we ask for in return? */
+	public final static String TAG_EXCHANGE_SPELL_OURS_PHRASE = "exchangeSpellOursPhrase";
+	
+	/** We requested a spell from the other wizard, and they said forget it OR they offered a lame spell in return and we said forget it */
+	public final static String TAG_REFUSE_EXCHANGE_SPELL_PHRASE = "refuseExchangeSpellPhrase";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

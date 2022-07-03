@@ -2593,6 +2593,22 @@
 						<xsd:selector xpath="receivedSpell" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="diplomacyScreenExchangeSpellTheirsPK">
+						<xsd:selector xpath="exchangeSpellTheirs" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenProposeExchangeSpellPK">
+						<xsd:selector xpath="proposeExchangeSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRejectExchangeSpellPK">
+						<xsd:selector xpath="rejectExchangeSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenThanksForExchangingSpellPK">
+						<xsd:selector xpath="thanksForExchangingSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="diplomacyScreenNormalGreetingPhrasePK">
 						<xsd:selector xpath="normalGreetingPhrase" />
 						<xsd:field xpath="@variantNumber" />
@@ -2643,6 +2659,14 @@
 					</xsd:key>
 					<xsd:key name="diplomacyScreenThanksForSpellPhrasePK">
 						<xsd:selector xpath="thanksForSpellPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenExchangeSpellOursPhrasePK">
+						<xsd:selector xpath="exchangeSpellOursPhrase" />
+						<xsd:field xpath="@variantNumber" />
+					</xsd:key>
+					<xsd:key name="diplomacyScreenRefuseExchangeSpellPhrasePK">
+						<xsd:selector xpath="refuseExchangeSpellPhrase" />
 						<xsd:field xpath="@variantNumber" />
 					</xsd:key>
     			</xsd:element>
@@ -4966,6 +4990,10 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="receivedGold" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="receivedSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="exchangeSpellTheirs" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="proposeExchangeSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rejectExchangeSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="thanksForExchangingSpell" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="normalGreetingPhrase" type="momimecommon:languageTextVariant" nxe:label="Normal greeting">
 				<xsd:key name="diplomacyScreenNormalGreetingPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />
@@ -5040,6 +5068,18 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="thanksForSpellPhrase" type="momimecommon:languageTextVariant" nxe:label="Thanks for spell">
 				<xsd:key name="diplomacyScreenThanksForSpellPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="exchangeSpellOursPhrase" type="momimecommon:languageTextVariant" nxe:label="Exchange spell (ours)">
+				<xsd:key name="diplomacyScreenExchangeSpellOursPhraseVariantPK">
+					<xsd:selector xpath="textVariant" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="refuseExchangeSpellPhrase" type="momimecommon:languageTextVariant" nxe:label="Refuse exchange spell">
+				<xsd:key name="diplomacyScreenRefuseExchangeSpellPhraseVariantPK">
 					<xsd:selector xpath="textVariant" />
 					<xsd:field xpath="@language" />
 				</xsd:key>

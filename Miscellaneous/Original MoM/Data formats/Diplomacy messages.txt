@@ -53,7 +53,7 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	675 - Lets have a wizard pact (diplomacyScreen / proposeWizardPactPhrase)
 	690 - Lets have an alliance (diplomacyScreen / proposeAlliancePhrase)
 	705 - Break your treaty with wizard X
-	720 - I want your spell X
+	720 - I want your spell X (diplomacyScreen / exchangeSpellOursPhrase)
 	735 - Lets have a peace treaty
 	750 - Lets have a peace treaty if I suck up and give you X
 	765 - Agree to wizard pact (diplomacyScreen / acceptWizardPactPhrase)
@@ -78,6 +78,6 @@ DIPLOMSG are split into up to 15 versions of the same message, so starting from:
 	1020 - I agree to stop attacking your towns
 	1035 - I agree to stop attacking your towns and suck up by giving X gold too
 	1050 - Suck up offering a spell
-	1065 - Tired of talking to you (diplomacyScreen / grownImpatient)
-	1080 - No spells to exchange (diplomacyScreen / noTradeableSpells )
+	1065 - Tired of talking to you (diplomacyScreen / grownImpatientPhrase)
+	1080 - No spells to exchange (diplomacyScreen / refuseExchangeSpellPhrase )
 	1095 - Get away from my city

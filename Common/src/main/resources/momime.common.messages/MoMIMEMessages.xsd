@@ -1527,8 +1527,12 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:documentation>Accept exchange spell</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_EXCHANGE_SPELL" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="RF"><xsd:annotation>
+				<xsd:documentation>Refuse exchange spell (other player immediately refuses to give us what we want, because we have nothing good to offer in return)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REFUSE_EXCHANGE_SPELL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="RE"><xsd:annotation>
-				<xsd:documentation>Reject exchange spell</xsd:documentation>
+				<xsd:documentation>Reject exchange spell (other player will give us the spell we want, but makes an unreasonable demand in return, so we reject it)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="REJECT_EXCHANGE_SPELL" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="GG"><xsd:annotation>

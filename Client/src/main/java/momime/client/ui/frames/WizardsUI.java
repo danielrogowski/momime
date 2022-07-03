@@ -293,6 +293,7 @@ public final class WizardsUI extends MomClientFrameUI
 							getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
 							getDiplomacyUI ().setMeetWizardMessage (null);
 							getDiplomacyUI ().setOfferGoldAmount (null);
+							getDiplomacyUI ().setRequestSpellID (null);
 							getDiplomacyUI ().setOfferSpellID (null);
 							getDiplomacyUI ().updateRelationScore ();
 							getDiplomacyUI ().initializeText ();
@@ -323,6 +324,7 @@ public final class WizardsUI extends MomClientFrameUI
 					getDiplomacyUI ().setTextState (DiplomacyTextState.WAITING_FOR_ACCEPT);
 					getDiplomacyUI ().setMeetWizardMessage (null);
 					getDiplomacyUI ().setOfferGoldAmount (null);
+					getDiplomacyUI ().setRequestSpellID (null);
 					getDiplomacyUI ().setOfferSpellID (null);
 					getDiplomacyUI ().updateRelationScore ();
 					getDiplomacyUI ().initializeText ();

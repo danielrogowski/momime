@@ -70,5 +70,23 @@ public enum DiplomacyTextState
 	THANKS_FOR_SPELL,
 	
 	/** Pick a spell to give to other wizard */
-	GIVE_SPELL;
+	GIVE_SPELL,
+	
+	/** Pick a spell we want from the other wizard */
+	PROPOSE_EXCHANGE_SPELL_THEIRS,
+	
+	/** Pick a spell to give to other wizard */
+	PROPOSE_EXCHANGE_SPELL_OURS,
+	
+	/** Other wizard offering us a spell exchange */
+	PROPOSE_EXCHANGE_SPELL,
+	
+	/** We requested a spell from the other wizard, but had nothing good to offer in return so they immedaitely declined */
+	REFUSE_EXCHANGE_SPELL,
+	
+	/** Other wizard is willing to give us the spell we want, but made an unreasonable demand in return so we rejected it */
+	REJECT_EXCHANGE_SPELL,
+
+	/** Other wizard saying thanks for thr trade */
+	THANKS_FOR_EXCHANGING_SPELL;
 }

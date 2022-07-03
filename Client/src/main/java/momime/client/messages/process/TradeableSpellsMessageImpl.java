@@ -10,8 +10,10 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import jakarta.xml.bind.JAXBException;
+import momime.client.ui.frames.DiplomacyPortraitState;
 import momime.client.ui.frames.DiplomacyTextState;
 import momime.client.ui.frames.DiplomacyUI;
+import momime.common.messages.DiplomacyAction;
 import momime.common.messages.servertoclient.TradeableSpellsMessage;
 
 /**
@@ -34,16 +36,27 @@ public final class TradeableSpellsMessageImpl extends TradeableSpellsMessage imp
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.debug ("Received tradeable spell list for diplomacy action " + getAction () + " from player ID " + getTalkFromPlayerID () + ": " + getSpellIDKnownToUs ().size () + " spells");
+		log.debug ("Received tradeable spell list for diplomacy action " + getAction () + " from player ID " + getTalkFromPlayerID () + ": " + getTradeableSpellID ().size () + " spells");
 		
 		getDiplomacyUI ().setTalkingWizardID (getTalkFromPlayerID ());
 		getDiplomacyUI ().setDiplomacyAction (getAction ());
 		getDiplomacyUI ().setOfferGoldAmount (null);
 		getDiplomacyUI ().setMeetWizardMessage (null);
-		getDiplomacyUI ().getSpellIDsKnownToUs ().clear ();
-		getDiplomacyUI ().getSpellIDsKnownToUs ().addAll (getSpellIDKnownToUs ());
-		getDiplomacyUI ().setTextState (DiplomacyTextState.GIVE_SPELL);
+		getDiplomacyUI ().setRequestSpellID (getRequestSpellID ());
+		getDiplomacyUI ().setOfferSpellID (null);
+		getDiplomacyUI ().getTradeableSpellIDs ().clear ();
+		getDiplomacyUI ().getTradeableSpellIDs ().addAll (getTradeableSpellID ());
+		
+		if (getAction () == DiplomacyAction.GIVE_SPELL)
+			getDiplomacyUI ().setTextState (DiplomacyTextState.GIVE_SPELL);
+		else if (getRequestSpellID () == null)
+			getDiplomacyUI ().setTextState (DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_THEIRS);
+		else
+			getDiplomacyUI ().setTextState (DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_OURS);
+		
+		getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 		getDiplomacyUI ().initializeText ();
+		getDiplomacyUI ().initializePortrait ();
 		
 		log.debug ("Done with tradeable spell list for diplomacy action " + getAction () + " from player ID " + getTalkFromPlayerID ());
 	}

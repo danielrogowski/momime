@@ -207,6 +207,9 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Amount of gold donated as a tribute */
 	private Integer offerGoldAmount;
 	
+	/** Spell requested as an exchange */
+	private String requestSpellID;
+
 	/** Spell donated as a tribute */
 	private String offerSpellID;
 	
@@ -238,7 +241,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 	private Action offerTributeAction;
 	
 	/** Suggest spell exchange */
-	private Action exchangeSpellsAction;
+	private Action exchangeSpellAction;
 	
 	/** End conversation nicely */
 	private Action endConversationAction;
@@ -276,8 +279,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 	/** Offer spell; this is the initial action prior to picking which actual spell to offer */
 	private Action offerSpellAction;
 	
-	/** Spells we can give to the other wizard */
-	private final List<String> spellIDsKnownToUs = new ArrayList<String> ();
+	/** Spells we can request to trade (whether its a list of spells they can give us, or spells we can give them, depends on current action/text state) */
+	private final List<String> tradeableSpellIDs = new ArrayList<String> ();
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -327,7 +330,18 @@ public final class DiplomacyUI extends MomClientFrameUI
 			initializeText ();
 		});
 		
-		exchangeSpellsAction = new LoggingAction ((ev) -> {});
+		exchangeSpellAction = new LoggingAction ((ev) ->
+		{
+			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
+			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setAction (DiplomacyAction.PROPOSE_EXCHANGE_SPELL);
+			getClient ().getServerConnection ().sendMessageToServer (msg);
+
+			// We haven't specified which spells to trade - so the server will respond with a list of spells that we know that the other wizard doesn't (and they have suitable blooks)
+			setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
+			initializeText ();
+		});
+		
 		endConversationAction = new LoggingAction ((ev) ->
 		{
 			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
@@ -345,6 +359,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 		{
 			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setRequestSpellID (getRequestSpellID ());
+			msg.setOfferSpellID (getOfferSpellID ());
 			
 			switch (getTextState ())
 			{
@@ -358,6 +374,12 @@ public final class DiplomacyUI extends MomClientFrameUI
 					setTextState (DiplomacyTextState.ACCEPT_ALLIANCE);
 					break;
 				
+				// Unlike other "accept proposals", its the initiating wizard doing the accepting, so they just go back to the main choice list
+				case PROPOSE_EXCHANGE_SPELL:					
+					msg.setAction (DiplomacyAction.ACCEPT_EXCHANGE_SPELL);
+					setTextState (DiplomacyTextState.MAIN_CHOICES);
+					break;
+					
 				default:
 					throw new IOException ("Accepting proposal, but don't know what of proposal " + getTextState () + " is");
 			}
@@ -370,6 +392,8 @@ public final class DiplomacyUI extends MomClientFrameUI
 		{
 			final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 			msg.setTalkToPlayerID (getTalkingWizardID ());
+			msg.setRequestSpellID (getRequestSpellID ());
+			msg.setOfferSpellID (getOfferSpellID ());
 			
 			switch (getTextState ())
 			{
@@ -380,14 +404,24 @@ public final class DiplomacyUI extends MomClientFrameUI
 				case PROPOSE_ALLIANCE:
 					msg.setAction (DiplomacyAction.REJECT_ALLIANCE);
 					break;
-				
+
+				// Other player rejects our request for a spell before they even suggest a trade
+				case PROPOSE_EXCHANGE_SPELL_OURS:		
+					msg.setAction (DiplomacyAction.REFUSE_EXCHANGE_SPELL);
+					break;
+
+				// We wanted their spell, but to give it to us they requested something way too good in return
+				case PROPOSE_EXCHANGE_SPELL:					
+					msg.setAction (DiplomacyAction.REJECT_EXCHANGE_SPELL);
+					break;
+					
 				default:
 					throw new IOException ("Refusing proposal, but don't know what of proposal " + getTextState () + " is");
 			}
 			
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 
-			setTextState (DiplomacyTextState.WAITING_FOR_CHOICE);
+			setTextState ((getTextState () == DiplomacyTextState.PROPOSE_EXCHANGE_SPELL) ? DiplomacyTextState.MAIN_CHOICES : DiplomacyTextState.WAITING_FOR_CHOICE);
 			initializeText ();
 		});
 		
@@ -525,7 +559,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 					(getTextState () == DiplomacyTextState.GIVEN_SPELL) ||
 					(getTextState () == DiplomacyTextState.THANKS_FOR_GOLD) ||
 					(getTextState () == DiplomacyTextState.THANKS_FOR_SPELL) ||
-					(getTextState () == DiplomacyTextState.GENERIC_REFUSE))
+					(getTextState () == DiplomacyTextState.GENERIC_REFUSE) ||
+					(getTextState () == DiplomacyTextState.REFUSE_EXCHANGE_SPELL) ||
+					(getTextState () == DiplomacyTextState.REJECT_EXCHANGE_SPELL) ||
+					(getTextState () == DiplomacyTextState.THANKS_FOR_EXCHANGING_SPELL))
 				{
 					if (getProposingWizardID () == getClient ().getOurPlayerID ())
 						setTextState (DiplomacyTextState.MAIN_CHOICES);
@@ -781,7 +818,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 						componentsBelowText.add (getUtils ().createTextOnlyButton (proposeTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (breakTreatyAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (offerTributeAction, MomUIConstants.GOLD, getMediumFont ()));
-						componentsBelowText.add (getUtils ().createTextOnlyButton (exchangeSpellsAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (exchangeSpellAction, MomUIConstants.GOLD, getMediumFont ()));
 						componentsBelowText.add (getUtils ().createTextOnlyButton (endConversationAction, MomUIConstants.GOLD, getMediumFont ()));
 						break;
 		
@@ -902,32 +939,85 @@ public final class DiplomacyUI extends MomClientFrameUI
 					case THANKS_FOR_SPELL:
 						variants = getLanguages ().getDiplomacyScreen ().getThanksForSpellPhrase ();
 						break;
-						
-					// Pick a spell to give
+
+					// Pick a spell to give or exchange
+					case PROPOSE_EXCHANGE_SPELL_THEIRS:
+					case PROPOSE_EXCHANGE_SPELL_OURS:
 					case GIVE_SPELL:
 					{
-						for (final String spellID : getSpellIDsKnownToUs ())
+						if (getTextState () == DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_THEIRS)
+							singular = getLanguages ().getDiplomacyScreen ().getExchangeSpellTheirs ();
+						else if (getTextState () == DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_OURS)
+							variants = getLanguages ().getDiplomacyScreen ().getExchangeSpellOursPhrase ();
+
+						for (final String spellID : getTradeableSpellIDs ())
 						{
 							final Spell spellDef = getClient ().getClientDB ().findSpell (spellID, "initializeText");
-							final Action offerSpecificSpellAction = new LoggingAction (getLanguageHolder ().findDescription (spellDef.getSpellName ()), (ev) ->
+							final Action requestSpellAction = new LoggingAction (getLanguageHolder ().findDescription (spellDef.getSpellName ()), (ev) ->
 							{
 								final RequestDiplomacyMessage msg = new RequestDiplomacyMessage ();
 								msg.setTalkToPlayerID (getTalkingWizardID ());
-								msg.setAction (DiplomacyAction.GIVE_SPELL);
-								msg.setOfferSpellID (spellID);
+								
+								if (getTextState () == DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_THEIRS)
+								{
+									msg.setAction (DiplomacyAction.PROPOSE_EXCHANGE_SPELL);
+									msg.setRequestSpellID (spellID);
+								}
+								else if (getTextState () == DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_OURS)
+								{
+									msg.setAction (DiplomacyAction.PROPOSE_EXCHANGE_SPELL);
+									msg.setRequestSpellID (getRequestSpellID ());
+									msg.setOfferSpellID (spellID);
+								}
+								else
+								{
+									msg.setAction (DiplomacyAction.GIVE_SPELL);
+									msg.setOfferSpellID (spellID);
+								}
+								
 								getClient ().getServerConnection ().sendMessageToServer (msg);
 
 								// The player we're giving a spell to doesn't have to click "OK, I accept", the server auto-replies it.
 								// But still, wait for that reply because if its an AI player, they will convey back their improved visibleRelationScoreID as part of the response.
+								// If we're offering a spell exchange, then the other player does have to choose a reply.
 								setTextState (DiplomacyTextState.WAITING_FOR_RESPONSE);
 								initializeText ();
 							});
 							
-							componentsBelowText.add (getUtils ().createTextOnlyButton (offerSpecificSpellAction, MomUIConstants.GOLD, getMediumFont ()));
+							componentsBelowText.add (getUtils ().createTextOnlyButton (requestSpellAction, MomUIConstants.GOLD, getMediumFont ()));
 						}
-						componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));
+						
+						if ((getTextState () == DiplomacyTextState.GIVE_SPELL) || (getTextState () == DiplomacyTextState.PROPOSE_EXCHANGE_SPELL_THEIRS))
+							componentsBelowText.add (getUtils ().createTextOnlyButton (backToMainChoicesAction, MomUIConstants.GOLD, getMediumFont ()));		// "Forget it" for spell tributes or initial offer
+						else
+							componentsBelowText.add (getUtils ().createTextOnlyButton (refuseProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+
+						break;
 					}
-					break;
+					
+					// Other wizard proposing a spell exchange
+					case PROPOSE_EXCHANGE_SPELL:
+						singular = getLanguages ().getDiplomacyScreen ().getProposeExchangeSpell ();
+						
+						// Buttons to accept or refuse
+						componentsBelowText.add (Box.createRigidArea (new Dimension (10, 10)));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (acceptProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						componentsBelowText.add (getUtils ().createTextOnlyButton (refuseProposalAction, MomUIConstants.GOLD, getMediumFont ()));
+						break;
+						
+					// We requested a spell from the other wizard, but had nothing good to offer in return so they immedaitely declined
+					case REFUSE_EXCHANGE_SPELL:
+						variants = getLanguages ().getDiplomacyScreen ().getRefuseExchangeSpellPhrase ();
+						break;
+
+					// Other wizard is willing to give us the spell we want, but made an unreasonable demand in return so we rejected it
+					case REJECT_EXCHANGE_SPELL:
+						singular = getLanguages ().getDiplomacyScreen ().getRejectExchangeSpell ();
+						break;
+						
+					case THANKS_FOR_EXCHANGING_SPELL:
+						singular = getLanguages ().getDiplomacyScreen ().getThanksForExchangingSpell ();
+						break;
 				}
 		
 				if ((variants != null) && (!variants.isEmpty ()))
@@ -947,8 +1037,22 @@ public final class DiplomacyUI extends MomClientFrameUI
 					if (getOfferGoldAmount () != null)
 						text = text.replaceAll ("GOLD_AMOUNT", getTextUtils ().intToStrCommas (getOfferGoldAmount ()));
 					
-					if (getOfferSpellID () != null)
-						text = text.replaceAll ("SPELL_NAME", getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getOfferSpellID (), "initializeText").getSpellName ()));
+					if (text.contains ("REQUEST_SPELL_NAME"))
+					{
+						// 2 spells in text
+						if (getRequestSpellID () != null)
+							text = text.replaceAll ("REQUEST_SPELL_NAME", getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getRequestSpellID (), "initializeText").getSpellName ()));
+						
+						if (getOfferSpellID () != null)
+							text = text.replaceAll ("OFFER_SPELL_NAME", getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getOfferSpellID (), "initializeText").getSpellName ()));
+					}
+					else
+					{
+						// 1 spell in text
+						final String spellID = (getOfferSpellID () != null) ? getOfferSpellID () : getRequestSpellID ();
+						if (spellID != null)
+							text = text.replaceAll ("SPELL_NAME", getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (spellID, "initializeText").getSpellName ()));
+					}
 						
 					showText (text, componentsBelowText);
 				}
@@ -1286,7 +1390,7 @@ public final class DiplomacyUI extends MomClientFrameUI
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 
-			exchangeSpellsAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getExchangeSpells ()).replaceAll
+			exchangeSpellAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getDiplomacyScreen ().getExchangeSpells ()).replaceAll
 				("OUR_PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourWizard)).replaceAll
 				("TALKING_PLAYER_NAME", getWizardClientUtils ().getPlayerName (talkingPlayer)));
 
@@ -1729,6 +1833,22 @@ public final class DiplomacyUI extends MomClientFrameUI
 	}
 
 	/**
+	 * @return Spell requested as an exchange
+	 */
+	public final String getRequestSpellID ()
+	{
+		return requestSpellID;
+	}
+
+	/**
+	 * @param r Spell requested as an exchange
+	 */
+	public final void setRequestSpellID (final String r)
+	{
+		requestSpellID = r;
+	}
+	
+	/**
 	 * @return Spell donated as a tribute
 	 */
 	public final String getOfferSpellID ()
@@ -1745,10 +1865,10 @@ public final class DiplomacyUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @return Spells we can give to the other wizard
+	 * @return Spells we can request to trade (whether its a list of spells they can give us, or spells we can give them, depends on current action/text state)
 	 */
-	public final List<String> getSpellIDsKnownToUs ()
+	public final List<String> getTradeableSpellIDs ()
 	{
-		return spellIDsKnownToUs;
+		return tradeableSpellIDs;
 	}
 }

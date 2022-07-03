@@ -52,6 +52,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 		getDiplomacyUI ().setTalkingWizardID (getTalkFromPlayerID ());
 		getDiplomacyUI ().setDiplomacyAction (getAction ());
 		getDiplomacyUI ().setOfferGoldAmount (getOfferGoldAmount ());
+		getDiplomacyUI ().setRequestSpellID (getRequestSpellID ());
 		getDiplomacyUI ().setOfferSpellID (getOfferSpellID ());
 		getDiplomacyUI ().setMeetWizardMessage (null);
 
@@ -162,6 +163,34 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 			case ACCEPT_SPELL:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_SPELL);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case PROPOSE_EXCHANGE_SPELL:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.PROPOSE_EXCHANGE_SPELL);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case REFUSE_EXCHANGE_SPELL:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.REFUSE_EXCHANGE_SPELL);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+				
+			case REJECT_EXCHANGE_SPELL:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.REJECT_EXCHANGE_SPELL);
+				getDiplomacyUI ().initializeText ();
+				getDiplomacyUI ().initializePortrait ();
+				break;
+
+			case ACCEPT_EXCHANGE_SPELL:
+				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
+				getDiplomacyUI ().setTextState (DiplomacyTextState.THANKS_FOR_EXCHANGING_SPELL);
 				getDiplomacyUI ().initializeText ();
 				getDiplomacyUI ().initializePortrait ();
 				break;

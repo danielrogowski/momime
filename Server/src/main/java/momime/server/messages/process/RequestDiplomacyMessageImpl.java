@@ -42,7 +42,7 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 	private final static Log log = LogFactory.getLog (RequestDiplomacyMessageImpl.class);
 	
 	/** Amount of space in the UI to list tradeable spells */
-	private final static int MAXIMUM_TRADEABLE_SPELLS = 5;
+	private final static int MAXIMUM_TRADEABLE_SPELLS = 4;
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
@@ -145,20 +145,29 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					final TradeableSpellsMessage msg = new TradeableSpellsMessage ();
 					msg.setTalkFromPlayerID (getTalkToPlayerID ());
 					msg.setAction (getAction ());
-					msg.getSpellIDKnownToUs ().addAll (getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
-						(senderPriv.getSpellResearchStatus (), talkToPlayerPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()));
-					
-					if (getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL)
-						msg.getSpellIDKnownToThem ().addAll (getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+					msg.setRequestSpellID (getRequestSpellID ());
+
+					if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () == null))
+						msg.getTradeableSpellID ().addAll (getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
 							(talkToPlayerPriv.getSpellResearchStatus (), senderPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()));
+					else
+						msg.getTradeableSpellID ().addAll (getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+							(senderPriv.getSpellResearchStatus (), talkToPlayerPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()));
 					
-					sender.getConnection ().sendMessageToClient (msg);
+					if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () != null))
+					{
+						// Other player now needs to respond with which spell they'd like in return
+						msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+						talkToPlayer.getConnection ().sendMessageToClient (msg);
+					}
+					else
+						sender.getConnection ().sendMessageToClient (msg);
 				}
-				else
+				else if (getAction () == DiplomacyAction.ACCEPT_SPELL)
 				{
 					final DiplomacyMessage msg = new DiplomacyMessage ();	
 					msg.setTalkFromPlayerID (getTalkToPlayerID ());
-					msg.setAction ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) ? DiplomacyAction.ACCEPT_EXCHANGE_SPELL : DiplomacyAction.ACCEPT_SPELL);
+					msg.setAction ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) ? DiplomacyAction.PROPOSE_EXCHANGE_SPELL : DiplomacyAction.ACCEPT_SPELL);
 					msg.setOtherPlayerID (getOtherPlayerID ());
 					msg.setOfferSpellID (getOfferSpellID ());
 					msg.setRequestSpellID (getRequestSpellID ());
@@ -177,6 +186,30 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 					talkToPlayer.getConnection ().sendMessageToClient (spellsMsg);
 				}
 				break;
+				
+			// Exchange spells
+			case ACCEPT_EXCHANGE_SPELL:
+			{
+				// Learn the spells
+				final SpellResearchStatus researchStatus1 = getSpellUtils ().findSpellResearchStatus (talkToPlayerPriv.getSpellResearchStatus (), getOfferSpellID ());
+				final SpellResearchStatus researchStatus2 = getSpellUtils ().findSpellResearchStatus (senderPriv.getSpellResearchStatus (), getRequestSpellID ());
+				researchStatus1.setStatus (SpellResearchStatusID.AVAILABLE);
+				researchStatus2.setStatus (SpellResearchStatusID.AVAILABLE);
+				
+				// Just in case the donated spell was one of the 8 spells available to research now
+				getServerSpellCalculations ().randomizeSpellsResearchableNow (talkToPlayerPriv.getSpellResearchStatus (), mom.getServerDB ());
+				getServerSpellCalculations ().randomizeSpellsResearchableNow (senderPriv.getSpellResearchStatus (), mom.getServerDB ());
+				
+				final FullSpellListMessage spellsMsg1 = new FullSpellListMessage ();
+				spellsMsg1.getSpellResearchStatus ().addAll (talkToPlayerPriv.getSpellResearchStatus ());
+				talkToPlayer.getConnection ().sendMessageToClient (spellsMsg1);
+
+				final FullSpellListMessage spellsMsg2 = new FullSpellListMessage ();
+				spellsMsg2.getSpellResearchStatus ().addAll (senderPriv.getSpellResearchStatus ());
+				sender.getConnection ().sendMessageToClient (spellsMsg2);
+
+				break;
+			}
 				
 			default:
 				// This is fine, most diplomacy actions don't trigger updates 

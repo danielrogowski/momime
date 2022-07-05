@@ -1523,6 +1523,10 @@ So need a separate data item for this.</xsd:documentation>
 				<xsd:documentation>Propose exchange spell</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PROPOSE_EXCHANGE_SPELL" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="NE"><xsd:annotation>
+				<xsd:documentation>No exchange of spells possible (each player must have at least 1 spell they can trade to the other)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NO_SPELLS_TO_EXCHANGE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="AE"><xsd:annotation>
 				<xsd:documentation>Accept exchange spell</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ACCEPT_EXCHANGE_SPELL" /></xsd:appinfo>

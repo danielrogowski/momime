@@ -1,6 +1,7 @@
 package momime.server.messages.process;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -142,26 +143,43 @@ public final class RequestDiplomacyMessageImpl extends RequestDiplomacyMessage i
 				if (getOfferSpellID () == null)
 				{
 					proceed = false;
-					final TradeableSpellsMessage msg = new TradeableSpellsMessage ();
-					msg.setTalkFromPlayerID (getTalkToPlayerID ());
-					msg.setAction (getAction ());
-					msg.setRequestSpellID (getRequestSpellID ());
-
-					if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () == null))
-						msg.getTradeableSpellID ().addAll (getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
-							(talkToPlayerPriv.getSpellResearchStatus (), senderPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()));
-					else
-						msg.getTradeableSpellID ().addAll (getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
-							(senderPriv.getSpellResearchStatus (), talkToPlayerPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()));
 					
-					if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () != null))
+					// Do we need the list of spells they can trade to us, or we can trade to them, or both (so we can verify there's even a possible trade to do)?
+					final List<String> spellIDsWeCanOffer = getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+						(senderPriv.getSpellResearchStatus (), talkToPlayerPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ());
+
+					final List<String> spellIDsWeCanRequest = ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () == null)) ?
+						getServerSpellCalculations ().findCheapestSpells (getServerSpellCalculations ().listTradeableSpells
+							(talkToPlayerPriv.getSpellResearchStatus (), senderPriv.getSpellResearchStatus ()), MAXIMUM_TRADEABLE_SPELLS, mom.getServerDB ()) : null;
+					
+					if (((spellIDsWeCanRequest != null) && ((spellIDsWeCanRequest.isEmpty ()) || (spellIDsWeCanOffer.isEmpty ()))) ||
+						((spellIDsWeCanRequest == null) && (spellIDsWeCanOffer.isEmpty ())))
 					{
-						// Other player now needs to respond with which spell they'd like in return
-						msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
-						talkToPlayer.getConnection ().sendMessageToClient (msg);
+						// No valid trade, so don't even send the request to the other player
+						final DiplomacyMessage msg = new DiplomacyMessage ();	
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setAction (DiplomacyAction.NO_SPELLS_TO_EXCHANGE);		// There isn't a separate "no spells to give" for tributes
+						msg.setOtherPlayerID (getOtherPlayerID ());
+						
+						sender.getConnection ().sendMessageToClient (msg);
 					}
 					else
-						sender.getConnection ().sendMessageToClient (msg);
+					{
+						final TradeableSpellsMessage msg = new TradeableSpellsMessage ();
+						msg.setTalkFromPlayerID (getTalkToPlayerID ());
+						msg.setAction (getAction ());
+						msg.setRequestSpellID (getRequestSpellID ());
+						msg.getTradeableSpellID ().addAll ((spellIDsWeCanRequest != null) ? spellIDsWeCanRequest : spellIDsWeCanOffer);
+						
+						if ((getAction () == DiplomacyAction.PROPOSE_EXCHANGE_SPELL) && (getRequestSpellID () != null))
+						{
+							// Other player now needs to respond with which spell they'd like in return
+							msg.setTalkFromPlayerID (sender.getPlayerDescription ().getPlayerID ());
+							talkToPlayer.getConnection ().sendMessageToClient (msg);
+						}
+						else
+							sender.getConnection ().sendMessageToClient (msg);
+					}
 				}
 				else if (getAction () == DiplomacyAction.ACCEPT_SPELL)
 				{

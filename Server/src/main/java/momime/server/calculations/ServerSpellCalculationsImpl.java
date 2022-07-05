@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import com.ndg.random.RandomUtils;
 
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.PickTypeCountContainer;
@@ -176,7 +177,9 @@ public final class ServerSpellCalculationsImpl implements ServerSpellCalculation
 		final Set<String> learnableSpellIDs = knownSpells.stream ().filter (s -> (s.getStatus () == SpellResearchStatusID.NOT_IN_SPELL_BOOK) ||
 			(s.getStatus () == SpellResearchStatusID.RESEARCHABLE) || (s.getStatus () == SpellResearchStatusID.RESEARCHABLE_NOW)).map (s -> s.getSpellID ()).collect (Collectors.toSet ());
 
-		return tradeableSpells.stream ().filter (s -> (s.getStatus () == SpellResearchStatusID.AVAILABLE) && (learnableSpellIDs.contains (s.getSpellID ()))).map (s -> s.getSpellID ()).collect (Collectors.toList ());
+		return tradeableSpells.stream ().filter
+			(s -> (s.getStatus () == SpellResearchStatusID.AVAILABLE) && (learnableSpellIDs.contains (s.getSpellID ())) && (!s.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY))).map
+			(s -> s.getSpellID ()).collect (Collectors.toList ());
 	}
 
 	/**

@@ -174,6 +174,7 @@ public final class DiplomacyMessageImpl extends DiplomacyMessage implements Base
 				getDiplomacyUI ().initializePortrait ();
 				break;
 				
+			case NO_SPELLS_TO_EXCHANGE:
 			case REFUSE_EXCHANGE_SPELL:
 				getDiplomacyUI ().setPortraitState (DiplomacyPortraitState.TALKING);
 				getDiplomacyUI ().setTextState (DiplomacyTextState.REFUSE_EXCHANGE_SPELL);
